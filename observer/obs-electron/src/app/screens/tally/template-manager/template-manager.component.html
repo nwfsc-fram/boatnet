@@ -1,0 +1,26 @@
+<p class="mat-title">Tally Templates</p>
+<p-table [value]="templateNames" [scrollable]="true" scrollHeight="400px" selectionMode="single" [(selection)]="selected">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Select</th>
+      <th>Fishery</th>
+      <th>Template Description</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-template>
+    <tr [pSelectableRow]="template" height="50">
+      <td>
+          <p-tableRadioButton [value]="template"></p-tableRadioButton>
+      </td>
+      <td>
+        {{template.fishery}}
+      </td>
+      <td>
+        {{template.description}}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<p class="mat-body-1">Selected: {{selected ? selected.fishery + ': ' + selected.description : 'None'}}</p>
+<button class="load-template-button" *ngIf="selected" mat-raised-button (click)="onLoadTemplate()">Load Template</button>
+<p><button mat-raised-button mat-dialog-close>Cancel</button></p>

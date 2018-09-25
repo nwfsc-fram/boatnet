@@ -1,0 +1,125 @@
+  <mat-sidenav-container class="species-comp-screen">
+    <mat-sidenav #sidenav mode="side" [opened]="(opened | async)" position='end'>
+<!--
+      <mat-grid-list cols="1" rowHeight="50px">
+-->
+        <div class="add-species">
+          <div class="action-buttons">
+            <div *ngIf="program === 'WCGOP'">
+                <div class="action-label">Disposition</div>
+                <p-selectButton class="action-button-small" (onChange)="setDisposition($event.value);" styleClass="action-button-small-sc" [options]="dispositions" [(ngModel)]="selectedDisposition"></p-selectButton>
+<!--
+            <div class="ui-g">
+              <div class="ui-g-4"><button mat-button class="action-button-small">R</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">D</button></div>
+            </div>
+-->
+              <div class="action-label">Weight Method</div>
+              <p-selectButton class="action-button-small" (onChange)="setWeightMethod($event.value);" styleClass="action-button-small-sc" [options]="weightMethods" [(ngModel)]="selectedWeightMethod"></p-selectButton>
+
+              <div *ngIf="selectedWeightMethod !== undefined && selectedWeightMethod['label'] !== 15">
+                  <button mat-button class="action-button-small">1/2</button>
+                  <button mat-button class="action-button-small">1/3</button>
+                  <button mat-button class="action-button-small">&‌#9728;</button>
+              </div>
+
+            <!--
+            <div class="ui-g">
+              <div class="ui-g-4"><button mat-button class="action-button-small">1</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">3</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">5</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">6</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">7</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">8</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">9</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">14</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">15</button></div>
+              <div class="ui-g-4"><button mat-button class="action-button-small">19</button></div>
+            </div>
+    -->
+
+          </div>
+
+          <div class="action-label">Actions</div>
+            <button mat-button class="action-button-large" (click)="addSpecies();">Add Species</button>
+            <div *ngIf="program !== 'WCGOP'">
+                <button mat-button class="action-button-large">Create {{grouping}}</button>
+                <button mat-button class="action-button-large">Add To {{grouping}}</button>
+                <button mat-button class="action-button-large">Active {{grouping}}</button>
+            </div>
+          </div>
+          <p-listbox class="species-list" [options]="filteredSpeciesList" [(ngModel)]="selectedSpecies" optionLabel="visibleName"></p-listbox>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content class="species-comp">
+
+      <p-treeTable [value]="data" [columns]="cols"
+          selectionMode="single" [(selection)]="selectedSpeciesComp" dataKey="species">
+        <ng-template pTemplate="header" let-columns>
+          <tr class="species-row">
+            <th *ngFor="let col of columns" width={{col.width}}>{{col.header}}</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+          <tr class="species-row" [ttSelectableRow]="rowNode"
+              (click)="setCatch(rowNode);" [matMenuTriggerFor]="menu">
+            <td *ngFor="let col of columns; let i = index">
+              <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                {{rowData[col.field]}}
+            </td>
+          </tr>
+        </ng-template>
+      </p-treeTable>
+
+      <!--
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="species-tree">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+          <button mat-icon-button disabled></button>
+          <button mat-button [matMenuTriggerFor]="menu" class="species-node-button"
+            (click)="setCatch(node);">
+            <span class="species-name">{{node.item}}</span>
+            <span class="species-protocol">{{node.protocol}}</span>
+            <span class="species-weight">{{node.weight}}</span>
+            <span class="species-count">{{node.count}}</span>
+          </button>
+        </mat-tree-node>
+        <mat-divider></mat-divider>
+        <mat-tree-node *matTreeNodeDef="let node;when: hasChildren" matTreeNodePadding>
+          <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.filename">
+            <mat-icon>
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          <button mat-button [matMenuTriggerFor]="menu" class="species-node-button"
+            (click)="setCatch(node);">
+            <span class="species-name">{{node.item}}</span>
+            <span class="species-protocol">{{node.protocol}}</span>
+            <span class="species-weight">{{node.weight}}</span>
+            <span class="species-count">{{node.count}}</span>
+          </button>
+        </mat-tree-node>
+        <mat-divider></mat-divider>
+      </mat-tree>
+      -->
+
+    </mat-sidenav-content>
+    <mat-menu #menu="matMenu" [overlapTrigger]="false">
+      <button mat-menu-item *ngIf="true" [routerLink]="['/home']">
+        <mat-icon>fitness_center</mat-icon>
+        <span>Weights/Counts</span>
+      </button>
+      <button mat-menu-item [routerLink]="['/settings']">
+        <mat-icon>straighten</mat-icon>
+        <span>Specimen Sampling</span>
+      </button>
+      <button mat-menu-item *ngIf="true" [routerLink]="['/settings']">
+        <mat-icon>star</mat-icon>
+        <span>Special Projects</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="removeSpecies();">
+        <mat-icon>close</mat-icon>
+        <span>Remove</span>
+      </button>
+    </mat-menu>
+  </mat-sidenav-container>

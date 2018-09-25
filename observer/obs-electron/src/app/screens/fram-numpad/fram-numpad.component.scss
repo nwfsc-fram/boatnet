@@ -1,0 +1,31 @@
+body {
+  margin: 40px;
+}
+
+.wrapper {
+display: grid;
+grid-gap: 10px;
+    grid-template-columns: 60px 60px 60px 60px;
+    grid-auto-rows: 50px;
+    background-color: #fff;
+    color: #444;
+}
+
+.box {
+    background-color: #444;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 150%;
+}
+
+.mat-raised-button {
+  min-width: 40px;
+  font-size: 24px;
+}
+
+.add-button {
+  font-size: 16px;
+  background-color: lightgreen;
+}
+

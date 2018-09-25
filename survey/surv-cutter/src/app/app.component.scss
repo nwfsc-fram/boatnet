@@ -1,0 +1,8 @@
+.app-fill-screen {
+  display: grid;
+  height: 95vh; // 100 vh added scrollbar
+  align-content: flex-start;
+}
+.router-class {
+  height: calc(100vh - $app-header - $app-footer)
+}
