@@ -22,8 +22,10 @@ import {
   MatButtonToggleModule,
   MatTableModule,
   MatBadgeModule,
-  MatBottomSheetModule
+  MatBottomSheetModule,
+  MatButtonModule
 } from '@angular/material';
+
 import { MenuComponent } from './menu/menu.component';
 import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
 import { TripsComponent } from './trips/trips.component';
@@ -34,6 +36,25 @@ import { VesselsComponent } from './vessels/vessels.component';
 import { PermitsComponent } from './permits/permits.component';
 import { TripDetailComponent } from './trip-detail/trip-detail.component';
 import { MessagesComponent } from './messages/messages.component';
+import { RouterModule, Routes } from '@angular/router';
+import { identifierModuleUrl } from '@angular/compiler';
+import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
+
+const appRoutes: Routes = [
+  { path: 'ots-management', component: OTSManagementComponent },
+  { path: 'manage-users', component: UserManagementComponent },
+  { path: 'trips',      component: TripsComponent },
+  { path: 'trip/:id', component: TripDetailComponent },
+  { path: 'user-preferences', component: UserPreferencesComponent },
+  { path: 'manage-vessels', component: VesselsComponent },
+  { path: 'manage-permits', component: PermitsComponent },
+  { path: 'vessel-permits', component: VesselPermitsComponent },
+  { path: '',
+    redirectTo: 'vessel-permits',
+    pathMatch: 'full'
+  },
+];
 
 @NgModule({
   declarations: [
@@ -47,9 +68,15 @@ import { MessagesComponent } from './messages/messages.component';
     VesselsComponent,
     PermitsComponent,
     TripDetailComponent,
-    MessagesComponent
+    MessagesComponent,
+    FooterComponent,
+    HeaderComponent
   ],
   imports: [
+    RouterModule.forRoot(
+      appRoutes,
+      { enableTracing: true } // <-- debugging purposes only
+    ),
     BrowserModule,
     BrowserAnimationsModule,
     MatCardModule,
@@ -69,7 +96,8 @@ import { MessagesComponent } from './messages/messages.component';
     MatButtonToggleModule,
     MatTableModule,
     MatBadgeModule,
-    MatBottomSheetModule
+    MatBottomSheetModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

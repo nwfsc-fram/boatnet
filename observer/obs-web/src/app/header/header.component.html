@@ -1,0 +1,20 @@
+<div class="header" >
+
+  <div style="float: left; ">
+    <button href="javascript:void(0)" mat-icon-button (click)="backClicked()">
+      <mat-icon>navigate_before</mat-icon>
+    </button>
+    <button href="javascript:void(0)" mat-icon-button (click)="forwardClicked()">
+        <mat-icon>navigate_next</mat-icon>
+    </button>
+  </div>
+
+  <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getTitle()">
+      {{ title }}
+  </div>
+
+  <div style="float: right">
+    <app-menu></app-menu>
+  </div>
+
+</div>

@@ -3,4 +3,32 @@
 
 body {
     font-family: sans-serif;
+    margin: 0;
+    background-color: lightgray;
 }
+
+.container {
+    margin: 55px 10px 10px 10px;
+ 
+}
+
+.default_item_border {
+    border: 2px solid black; 
+    border-radius: 5px; 
+    background-color: white; 
+    font-weight: bold;
+    padding: 10px; 
+    margin: 10px 0; 
+    text-align: left
+}
+
+.current_active {
+    border: 2px solid #0093D0; 
+    border-radius: 5px; 
+    background-color: white; 
+    font-weight: bold;
+    padding: 10px; 
+    margin: 10px 0; 
+    text-align: left
+}
+

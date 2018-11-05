@@ -1,3 +1,25 @@
-<p>
-  ots-management works!
-</p>
+<div style="text-align: center">
+
+    <h3>Year to Date Coverage Achieved:  17%</h3>
+    <button mat-raised-button color="primary">Edit Coverage Rate</button>
+    <br><br>
+
+    TARGET RATE HISTORY:
+    <br><br>
+
+    <div *ngFor="let rate of previous_covereage_rates, let i = index"> 
+
+      <div [ngClass]="{current_active: i === 0, default_item_border: true }">
+        Target Rate: {{ rate.rate }}<br>
+        <div style="float:left">
+            Start Date: {{ rate.start_date }}
+          </div>
+        <div style="float:right">
+            End Date: {{ rate.end_date }}
+          </div>  
+          <br>   
+      </div>
+          
+    </div>
+
+</div>
