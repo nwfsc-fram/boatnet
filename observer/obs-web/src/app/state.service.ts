@@ -18,6 +18,10 @@ export class StateService {
   currentPermit = new BehaviorSubject<Permit>(undefined);
   currentVessel = new BehaviorSubject<Vessel>(undefined);
 
+  headerStatus = new Subject<string>();
+
+  valid_state_names = []
+
   constructor() { 
     this.currentState = this.loadAppState();
     this.initialize(this.currentState);
@@ -52,8 +56,8 @@ export class StateService {
   private buildHeaderStatus() {
     if (this.currentState.name === 'tally') {
       this.headerStatus.next('Tally Mode');
-    } else if (this.currentState.trip && this.currentState.trip.vessel) {
-      this.headerStatus.next(this.currentState.trip.vessel.vessel_name);
+    } else if ( this.currentState.vessel) {
+      this.headerStatus.next(this.currentState.vessel.vessel_name);
     } else {
       this.headerStatus.next('');
     }
