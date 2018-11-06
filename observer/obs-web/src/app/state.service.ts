@@ -20,7 +20,7 @@ export class StateService {
 
   headerStatus = new Subject<string>();
 
-  valid_state_names = []
+  valid_state_names = ['ots-management', 'user-preferences', 'vessel-permits', 'user-management', 'vessel-management', 'permits-management']
 
   constructor() { 
     this.currentState = this.loadAppState();

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-vessel-permits',
@@ -14,9 +15,12 @@ export class VesselPermitsComponent implements OnInit {
     {vessel_name:'Raven', permit_number: 'P03mr74',target_fish: 'Shrimp',selection_type: 'trib-by-trip',selected:'no'}
   ]
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('vessel-permits');
   }
 
 }

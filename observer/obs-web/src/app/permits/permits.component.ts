@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-permits',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PermitsComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('permits-management');
   }
 
 }

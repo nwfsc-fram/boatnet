@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-vessels',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class VesselsComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('vessel-management');
   }
 
 }

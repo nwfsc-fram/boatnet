@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {InputTextModule} from 'primeng/inputtext';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-user-management',
@@ -17,9 +18,12 @@ export class UserManagementComponent implements OnInit {
     {first_name: 'Will', last_name: 'Smith', email: 'will.smith@noaa.gov', phone: '206-555-1212', role: 'provider', vessel: '-', id: '2'},
   ]
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('user-management');
   }
 
 }

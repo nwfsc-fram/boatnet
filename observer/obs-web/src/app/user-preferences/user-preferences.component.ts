@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-user-preferences',
@@ -10,9 +10,12 @@ export class UserPreferencesComponent implements OnInit {
 
   title = "User Preferences"
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('user-preferences');
   }
 
 }

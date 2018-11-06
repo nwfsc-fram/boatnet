@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-ots-management',
@@ -13,9 +14,12 @@ export class OTSManagementComponent implements OnInit {
     {rate: '18%', start_date: '1/1/2018', end_date: '7/1/2018'}
   ]
 
-  constructor() { }
+  constructor(
+    private stateSvc: StateService,
+  ) { }
 
   ngOnInit() {
+    this.stateSvc.setStateName('ots-management');
   }
 
 }

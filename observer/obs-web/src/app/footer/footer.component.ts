@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StateService } from '../state.service';
+import { AppState } from '../_models/app-state';
 
 @Component({
   selector: 'app-footer',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  name: string;
+  searchConfig = ['vessel-permits', 'user-management', 'vessel-management', 'permits-management']
+  createConfig = ['user-management', 'vessel-management', 'permits-management']
+  confirmConfig = ['user-preferences', 'ots-management']
+
+  constructor(
+    private stateService: StateService
+  ) { }
 
   ngOnInit() {
+    this.name = this.stateService.currentState.name
+
   }
 
 }
