@@ -10,7 +10,7 @@ Node.js Project setup
 * [Windows 10 configuration](#configuration-on-windows-10-node-npm-etc)
 
 ## Install Argon2 node module on Windows 10
-* Requires Visual Studio 2017 C++/CLI Components installed
+* Requires Visual Studio 2017 C++/CLI Components installed with VC++ 2015 v140 Toolset (Or, possibly, just Visual Studio 2015 with C++ support installed)
 * From Administrator command line:
 ```
 npm install --global --production windows-build-tools
