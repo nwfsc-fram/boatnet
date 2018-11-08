@@ -4,7 +4,7 @@
 body {
     font-family: sans-serif;
     margin: 0;
-    background-color: lightgray;
+    background-color: #DCE8E7;
 }
 
 .container {
@@ -22,6 +22,17 @@ body {
     text-align: left
 }
 
+.closed_item_border {
+    border: 2px solid grey; 
+    border-radius: 5px; 
+    background-color: white; 
+    font-weight: bold;
+    padding: 10px; 
+    margin: 10px 0; 
+    text-align: left;
+    color: grey
+}
+
 .current_active {
     border: 2px solid #0093D0; 
     border-radius: 5px; 
@@ -30,5 +41,13 @@ body {
     padding: 10px; 
     margin: 10px 0; 
     text-align: left
+}
+
+.trip-data {
+    font-size: larger
+}
+
+.trip-data strong {
+    color: #0093D0;
 }
 

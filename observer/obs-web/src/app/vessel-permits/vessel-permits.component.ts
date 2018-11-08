@@ -23,4 +23,9 @@ export class VesselPermitsComponent implements OnInit {
     this.stateSvc.setStateName('vessel-permits');
   }
 
+  setVesselandPermit(vessel_name, permit_number) {
+    this.stateSvc.setPermit(permit_number);
+    this.stateSvc.setVessel(vessel_name);
+  }
+
 }

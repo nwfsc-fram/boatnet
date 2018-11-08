@@ -45,7 +45,7 @@ const appRoutes: Routes = [
   { path: 'ots-management', component: OTSManagementComponent },
   { path: 'manage-users', component: UserManagementComponent },
   { path: 'trips',      component: TripsComponent },
-  { path: 'trip/:id', component: TripDetailComponent },
+  { path: 'trip', component: TripDetailComponent },
   { path: 'user-preferences', component: UserPreferencesComponent },
   { path: 'manage-vessels', component: VesselsComponent },
   { path: 'manage-permits', component: PermitsComponent },
