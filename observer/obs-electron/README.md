@@ -3,7 +3,23 @@
 
 All potentially sensitive (authentication) code is in a private repository - this code may not compile completely without it.
 
-## Install node packages
+## Installation
+### Windows:
+* Argon2 - This tool is used for authentication purposes. In order to install this module you need Visual Studio 2017. Download it from [here](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=button+cta&utm_content=download+vs2017) and select the **community free download**. Run the installer and select **Desktop Development with C++**, be sure to select the **VC++ 2015.3 v140 toolset(x86,x64)** box on the right hand column. The image below displays what to select. 
+
+<p align="center">
+  <img src="./img/visualStudioInstaller.png" alt="Visual Studio Screenshot"
+       width="654" height="450">
+</p>
+
+* Windows build tools - This installs Visual C++ Build Tools used to compile native add on modules. To install start PowerShell as Administrator and run:
+```
+npm install --global --production --vs2015 windows-build-tools
+```
+
+### Troubleshooting 
+If you get an error: missing C:\Microsoft.Cpp.Default.Props after running npm install open a VS 2017 developer command prompt and run "npm install" from there.
+
 ## Development - Web Based
 * If losing the electron capabilities is OK, you can develop and serve the pages via:
 `ng serve`
