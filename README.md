@@ -1,74 +1,24 @@
-# Boatnet - General Configuration Notes
-Node.js Project setup
+# Boatnet 
+Boatnet enables fishing boats to log information about their catch. The crew can log a variety of information including weight, count, and species data that is then pushed to a common database. This data is used by NOAA scientists to estimate how many fish can be sustainably caught. Boatnet curerntly supports two types of data collection methods surveys and observers. 
 
-### Contents
-* [Upgrading Angular](#upgrade-angular-5-to-angular-6-environment)
-* [Basic Development Workflow](#basic-development-workflow)
-* [Rebasing](#rebasing-from-master-into-your-branch)
-* [Git configuration](#git-configuration)
-  * [Git - Precommit hooks](#precommit-hooks)
-* [Windows 10 configuration](#configuration-on-windows-10-node-npm-etc)
+<p align="center">
+  <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
+       width="654" height="450">
+</p>
 
-## Install Argon2 node module on Windows 10
-* Requires windows build tools
-* From Administrator command line:
-```
-npm install --global --production windows-build-tools
-```
-* I also have visual studio 2017 install (C++) but not sure if it's required
-
-## TODO instructions for external internal dependencies
-
-## Basic Development Workflow
-
-* We are using feature branches and Gitlab/ github.com merge requests to handle workflow (instead of just committing straight to master.) This should help us all out for brief code reviews, learning, and not breaking master.
-* Example for a ticket, FIELD-123: Add xyz Component
-  * `git checkout master && git pull` newest master 
-  * `git checkout -b FIELD-123_Add_xyz_component` Create new branch and check it out
-  * `git push --set-upstream origin FIELD-123_Add_xyz_component` track your new branch upstream, so git push works. (Or add this when you do your push)
-  * Make code changes/ additions, `git add <files changed/ added>`, `git commit -m 'Observer FIELD-123: Add xyz Component'`
-  * `git push`
-  * Go to Gitlab, login, create Merge Request on your branch, assign to coworker for review
-  * Check "Remove source branch when merged"
-  * Review, reviewer then clicks "Merge" and branch should be merged and closed. If there are merge issues, follow gitlab instructions.
-* https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html
-
-## Rebasing from master into your branch
-* To update to newest code, or before you submit your branch for a merge request, 
-* commit or git stash your changes, then
-
-`git checkout master`
-
-`git pull`
-
-`git checkout your-branch`
-
-`git rebase master`
-
-* Follow prompts if there are merge conflicts. If you don't want to merge/ don't care about your version of a file:
-`git checkout --theirs whatever_file.ts`  
-  * which will wipe out your changes
-`git checkout --ours whatever_file.ts`  
-  * which will wipe out their changes
-* For each manually merged file:
-`git add merged_by_me_file.xyz`
-`git rebase --continue`
-* Then if you stashed your changes,
-`git stash pop`
-
-
-## Git configuration
-# TODO: Update for github.com
-
-* Generate keys as described in the link on this page:
+## Development Setup
+* Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
   * https://nwcgit.nwfsc.noaa.gov/profile/keys
+
 * If you are using Sourcetree, you need to import this key in PuttyGen (as described in their docs) and save the private key in .ppk format. Then, open Pageant from systray and Add Key using the file.
 * Use ssh for git clone, otherwise you'll be prompted for HTTPS authentication upon `git push`
-  * e.g. `git clone git@nwcgit.nwfsc.noaa.gov:fram-data/boatnet.git`
+```
+git clone git@github.com:nwfsc-fram/boatnet.git
+```
 * Since nwcgit is using a self-signed certificate, you'll have to disable sslVerify to access it:
 
         $ git pull
-        fatal: unable to access 'https://nwcgit.nwfsc.noaa.gov/fram-data/boatnet.git/':
+        fatal: unable to access 'https://github.com/nwfsc-fram/boatnet.git':
          SSL certificate problem: unable to get local issuer certificate
         
         $ git config --global http.sslVerify false
@@ -102,3 +52,33 @@ npm install --global --production windows-build-tools
 
         $ git secrets --install --force   #install hooks, in this working copy
         $ git secrets --register-aws      #add additional AWS credential protection for this working copy
+
+## Deployment
+Boatnet contains multiple projects located in different directories. In order to build and run a project you must navigate to the directory where your project resides. The different projects and a path to their directory are listed below some also list a README link to more info. 
+
+### Observer
+* observer/obs-electron - [README](./observer/obs-electron/README.md) A tablet application used by observers to log information. 
+* observer/obs-web - A progressive web app used to assign people to boats. 
+
+### Survey 
+General info [README](survey/README.md)
+* survey/surv-cutter -
+
+### Deployment Steps
+1) Navigate to one of the directories
+2) Run `npm install` which will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
+3) Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+## Contributing Guidelines
+1. Create your feature branch (`git checkout -b feature/fooBar`)
+2. Commit your changes (`git commit -am 'Add some fooBar'`)
+3. Push to the branch (`git push origin feature/fooBar`)
+4. Create a new Pull Request
+More detailed insturctions can be found [here](./CONTRIBUTING.md)
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
+
+

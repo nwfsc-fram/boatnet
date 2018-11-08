@@ -6,7 +6,9 @@
 /tmp
 /out-tsc
 observer/obs-electron/Observer Electron App-win32-x64/*
-observer/obs-electron/build
+observer/obs-electron/build/obs-ng
+observer/obs-electron/build/config.gypi
+
 
 # dependencies
 /node_modules
