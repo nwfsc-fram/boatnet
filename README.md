@@ -3,7 +3,7 @@ Boatnet enables fishing boats to log information about their catch. The crew can
 
 <p align="center">
   <img src="./img/FRAM_screenshot.png" alt="FRAM Screenshot"
-       width="654" height="450">
+       width="654" height="300">
 </p>
 
 ## Development Setup
