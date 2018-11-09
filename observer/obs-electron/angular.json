@@ -27,7 +27,7 @@
               "src/styles.scss",
               "node_modules/virtual-keyboard/dist/css/keyboard.min.css",
               "node_modules/primeicons/primeicons.css",
-              "node_modules/primeng/resources/themes/omega/theme.css",
+              "node_modules/primeng/resources/themes/omega/theme.scss",
               "node_modules/primeng/resources/primeng.min.css"
             ],
             "scripts": [
