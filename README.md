@@ -2,8 +2,8 @@
 Boatnet enables fishing boats to log information about their catch. The crew can log a variety of information including weight, count, and species data that is then pushed to a common database. This data is used by NOAA scientists to estimate how many fish can be sustainably caught. Boatnet curerntly supports two types of data collection methods surveys and observers. 
 
 <p align="center">
-  <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
-       width="654" height="450">
+  <img src="./img/FRAM_screenshot.png" alt="FRAM Screenshot"
+       width="654" height="300">
 </p>
 
 ## Development Setup
