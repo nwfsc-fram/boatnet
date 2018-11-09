@@ -1,8 +1,6 @@
 # ObserverElectron
 "Hybrid" web-based and electron app.
 
-All potentially sensitive (authentication) code is in a private repository - this code may not compile completely without it.
-
 ## Installation
 ### Windows:
 * Argon2 - This tool is used for authentication purposes. In order to install this module you need Visual Studio 2017. Download it from [here](https://visualstudio.microsoft.com/downloads/?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=button+cta&utm_content=download+vs2017) and select the **community free download**. Run the installer and select **Desktop Development with C++**, be sure to select the **VC++ 2015.3 v140 toolset(x86,x64)** box on the right hand column. The image below displays what to select. 

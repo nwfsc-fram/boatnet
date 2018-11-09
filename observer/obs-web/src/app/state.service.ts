@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Permit } from './_models/permit';
 import { Vessel } from './_models/vessel';
+import { Trip } from './_models/trip';
 import { AppState } from './_models/app-state';
+
 
 
 @Injectable({
@@ -17,6 +19,7 @@ export class StateService {
   
   currentPermit = new BehaviorSubject<Permit>(undefined);
   currentVessel = new BehaviorSubject<Vessel>(undefined);
+  currentTrip = new BehaviorSubject<Trip>(undefined);
 
   headerStatus = new Subject<string>();
 
@@ -85,6 +88,12 @@ export class StateService {
   setVessel(vessel: Vessel) {
     this.currentState.vessel = vessel;
     this.currentVessel.next(this.currentState.vessel);
+    this.persistAppState();
+  }
+
+  setTrip(trip: Trip) {
+    this.currentState.trip = trip;
+    this.currentTrip.next(this.currentState.trip);
     this.persistAppState();
   }
 

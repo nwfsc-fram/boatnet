@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router'
+import { StateService } from '../state.service';
 
 @Component({
   selector: 'app-header',
@@ -9,7 +10,7 @@ import { Router } from '@angular/router'
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private _location: Location, private router: Router) { }
+  constructor(private _location: Location, private router: Router, private stateSvc: StateService,) { }
 
   ngOnInit() {
   }
