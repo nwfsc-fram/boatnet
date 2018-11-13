@@ -10,8 +10,8 @@ import { AppState } from '../_models/app-state';
 export class FooterComponent implements OnInit {
 
   name: string;
-  searchConfig = ['vessel-permits', 'user-management', 'vessel-management', 'permits-management']
-  createConfig = ['user-management', 'vessel-management', 'permits-management']
+  searchConfig = ['trips', 'user-management', 'vessel-management', 'permits-management']
+  createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips']
   confirmConfig = ['user-preferences', 'ots-management']
 
   constructor(

@@ -22,15 +22,31 @@ body {
     text-align: left
 }
 
+.narrow_item_border {
+    display: flex;
+    justify-content: space-between; 
+    width: 100%;
+    border: 2px solid black; 
+    border-radius: 5px; 
+    background-color: white; 
+    font-weight: bold;
+    font-size: 15px;
+    padding: 3px; 
+    margin: 10px 0; 
+}
+
 .closed_item_border {
+    display: flex;
+    justify-content: space-between; 
+    width: 100%;
     border: 2px solid grey; 
     border-radius: 5px; 
     background-color: white; 
     font-weight: bold;
-    padding: 10px; 
+    font-size: 15px;
+    padding: 3px; 
     margin: 10px 0; 
-    text-align: left;
-    color: grey
+    color: grey;
 }
 
 .current_active {
@@ -49,5 +65,16 @@ body {
 
 .trip-data strong {
     color: #0093D0;
+}
+
+.vertical-align {
+    height: 1.5em;
+    line-height: 1.5em;
+    text-align: center;
+}
+
+.activeitem {
+    color: #0093D0;
+    border: 2px solid #0093D0;     
 }
 

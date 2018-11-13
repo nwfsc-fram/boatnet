@@ -1,17 +1,17 @@
-<div class="header" >
+<div class="header">
 
-  <div style="float: left; ">
+  <div>
     <button href="javascript:void(0)" mat-icon-button (click)="backClicked()">
       <mat-icon>navigate_before</mat-icon>
     </button>
-    <button href="javascript:void(0)" mat-icon-button (click)="forwardClicked()">
+    <!-- <button href="javascript:void(0)" mat-icon-button (click)="forwardClicked()">
         <mat-icon>navigate_next</mat-icon>
-    </button>
+    </button> -->
   </div>
 
   <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getTitle()"></div>
 
-  <div style="float: right">
+  <div>
     <app-menu></app-menu>
   </div>
 

@@ -1,55 +1,74 @@
 <div style="text-align: center">
 
   <div class="trip-data">
-    Vessel: <strong>{{ vessel }}</strong> | 
-    Permit: <strong>{{ permit }}</strong>
+    <a routerLink="/manage-vessels">
+      <strong>{{ vessel }}</strong> 
+    </a>
     <hr>
   </div>
   <strong style="float: left">Active Trips</strong>
   <br>
     <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip.trip_num)">
-      <div class="default_item_border" *ngIf="trip.vessel === vessel && trip.permit === permit && trip.status === 'active'">
-        <span style="float: left"> {{ trip.start_date }} </span>
-        <div style="display: inline-block">
-          <mat-icon style="margin-left: 2em">lock_open</mat-icon>
-          <span *ngIf="trip.selected === 'yes'; else notSelected;">
-              <mat-icon >check_box</mat-icon>
-          </span>
-          <ng-template #notSelected>
-              <mat-icon >check_box_outline_blank</mat-icon>
-          </ng-template>
-          <span *ngIf="trip.messages === 'yes'; else noMessages">
-            <mat-icon >message</mat-icon>
-          </span>
-          <ng-template #noMessages>
-              <mat-icon style="color: lightgray">message</mat-icon>
-          </ng-template>
-        </div>
-        <span style="float:right"> {{ trip.end_date }} </span>
-      </div>
-    </div>
-    <hr>
-    <strong style="float: left">Closed Trips</strong>
-    <br>
-    <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip.trip_num)">
-        <div class="closed_item_border" *ngIf="trip.vessel === vessel && trip.permit === permit && trip.status === 'closed'">
-          <span style="float: left"> {{ trip.start_date }} </span>
-          <div style="display: inline-block">
-            <mat-icon style="margin-left: 2em">lock_open</mat-icon>
+
+      <div class="narrow_item_border" *ngIf="trip.vessel === vessel && trip.status === 'active'">
+
+        <span class="vertical-align"> {{ trip.start_date }} </span>
+
+        <span class="vertical-align">
+            <mat-icon style="font-size: 15px">lock_open</mat-icon>
+
             <span *ngIf="trip.selected === 'yes'; else notSelected;">
-                <mat-icon >check_box</mat-icon>
+                <mat-icon style="font-size: 15px">check_box</mat-icon>
+            </span>
+
+            <ng-template #notSelected>
+                <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
+            </ng-template>
+
+            <span *ngIf="trip.messages === 'yes'; else noMessages">
+              <mat-icon style="font-size: 15px">message</mat-icon>
+            </span>
+
+            <ng-template #noMessages>
+                <mat-icon style="color: lightgray; font-size: 15px">message</mat-icon>
+            </ng-template>
+        </span>
+        
+        <span class="vertical-align"> {{ trip.end_date }} </span>
+
+      </div>
+
+    </div>
+
+    <hr>
+    <strong style="float: left; color: grey;">Closed Trips</strong>
+    <br>
+    <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
+        <div class="closed_item_border" *ngIf="trip.vessel === vessel && trip.status === 'closed'">
+          
+          <span class="vertical-align"> {{ trip.start_date }} </span>
+
+          <span class="vertical-align">
+            <mat-icon style="font-size: 15px">lock</mat-icon>
+
+            <span *ngIf="trip.selected === 'yes'; else notSelected;">
+                <mat-icon style="font-size: 15px" >check_box</mat-icon>
             </span>
             <ng-template #notSelected>
-                <mat-icon >check_box_outline_blank</mat-icon>
+                <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
             </ng-template>
+
             <span *ngIf="trip.messages === 'yes'; else noMessages">
-              <mat-icon >message</mat-icon>
+              <mat-icon style="font-size: 15px" >message</mat-icon>
             </span>
             <ng-template #noMessages>
-                <mat-icon style="color: lightgray">message</mat-icon>
+                <mat-icon style="color: lightgray; font-size: 15px">message</mat-icon>
             </ng-template>
-          </div>
-          <span style="float:right"> {{ trip.end_date }} </span>
+
+          </span>
+          
+          <span class="vertical-align"> {{ trip.end_date }} </span>
+
         </div>
       </div>
 

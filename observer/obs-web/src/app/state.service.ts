@@ -23,7 +23,7 @@ export class StateService {
 
   headerStatus = new Subject<string>();
 
-  valid_state_names = ['ots-management', 'user-preferences', 'vessel-permits', 'user-management', 'vessel-management', 'permits-management']
+  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'vessel-management', 'permits-management', 'trips']
 
   constructor() { 
     this.currentState = this.loadAppState();
@@ -107,6 +107,12 @@ export class StateService {
     this.currentState.vessel = undefined;
     this.currentVessel.next(undefined);
     this.persistAppState();
+  }
+
+  clearTrip() {
+    this.currentState.trip = undefined;
+    this.currentTrip.next(undefined);
+    this.persistAppState();    
   }
 
   setState(state: AppState) {

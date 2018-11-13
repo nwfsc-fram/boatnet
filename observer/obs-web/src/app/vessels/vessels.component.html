@@ -1,4 +1,10 @@
-<p>
-  vessels works!
-</p>
+
+<div *ngFor="let vessel of vessels" (click)="setVessel(vessel.name)">
+
+  <div class="narrow_item_border" [ngClass]="{activeitem: vessel.name == currentVessel }" >
+    <span class="vertical-align">{{ vessel.name }}</span>
+  </div>
+
+</div>
+
 <app-footer></app-footer>
