@@ -1,11 +1,11 @@
 
 <mat-menu #appMenu="matMenu" style="color: #0093D0; justify-content: left">
+  <button mat-menu-item routerLink="trips">Trips&nbsp;<mat-icon>directions</mat-icon></button> 
   <button mat-menu-item routerLink="user-preferences">User Preferences&nbsp;<mat-icon>person</mat-icon></button>
   <button mat-menu-item routerLink="manage-users">Manage Users&nbsp;<mat-icon>people</mat-icon></button>
   <button mat-menu-item routerLink="manage-vessels">Manage Vessels&nbsp;<mat-icon>directions_boat</mat-icon></button>
   <button mat-menu-item routerLink="manage-permits">Manage Permits&nbsp;<mat-icon>confirmation_number</mat-icon></button>
   <button mat-menu-item routerLink="ots-management">OTS Management&nbsp;<mat-icon>waves</mat-icon></button >
-  <button mat-menu-item routerLink="vessel-permits">Vessel Permits&nbsp;<mat-icon>confirmation_number</mat-icon></button> 
 </mat-menu>
 
 <button mat-icon-button [matMenuTriggerFor]="appMenu">

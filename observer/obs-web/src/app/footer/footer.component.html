@@ -1,16 +1,24 @@
 <div class="footer">
 
-  <div style="float: left" *ngIf=" searchConfig.includes(name) ">
+  <div *ngIf="searchConfig.includes(name); else noSearch ">
       <button mat-icon-button ><mat-icon>search</mat-icon></button> 
   </div>
+
+  <ng-template #noSearch>
+    <span></span>
+  </ng-template>
 
   <div *ngIf="confirmConfig.includes(name)">
     <button mat-icon-button ><mat-icon>done</mat-icon></button>
     <button mat-icon-button ><mat-icon>clear</mat-icon></button>
   </div>
 
-  <div style="float: right" *ngIf=" createConfig.includes(name) ">
-    <button mat-icon-button ><mat-icon>create</mat-icon></button> 
+  <div *ngIf=" createConfig.includes(name); else noCreate">
+    <button mat-icon-button routerLink="/trip"><mat-icon>create</mat-icon></button> 
   </div>
+
+  <ng-template #noCreate>
+    <span></span>
+  </ng-template>
 
 </div>

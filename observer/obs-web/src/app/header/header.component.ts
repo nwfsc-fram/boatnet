@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
       '/user-preferences': 'USER PREFERENCES',
       '/manage-vessels':   'MANAGE VESSELS',
       '/manage-permits':   'MANAGE PERMITS',
-      '/vessel-permits':   'VESSEL PERMITS',
+      // '/vessel-permits':   'VESSEL PERMITS',
       '/':                 'VESSEL PERMITS', 
     }
 

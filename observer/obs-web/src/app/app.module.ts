@@ -27,7 +27,7 @@ import {
 } from '@angular/material';
 
 import { MenuComponent } from './menu/menu.component';
-import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
+// import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
 import { TripsComponent } from './trips/trips.component';
 import { OTSManagementComponent } from './ots-management/ots-management.component';
 import { UserManagementComponent } from './user-management/user-management.component';
@@ -49,9 +49,9 @@ const appRoutes: Routes = [
   { path: 'user-preferences', component: UserPreferencesComponent },
   { path: 'manage-vessels', component: VesselsComponent },
   { path: 'manage-permits', component: PermitsComponent },
-  { path: 'vessel-permits', component: VesselPermitsComponent },
+  // { path: 'vessel-permits', component: VesselPermitsComponent },
   { path: '',
-    redirectTo: 'vessel-permits',
+    redirectTo: 'trips',
     pathMatch: 'full'
   },
 ];
@@ -60,7 +60,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     MenuComponent,
-    VesselPermitsComponent,
+    // VesselPermitsComponent,
     TripsComponent,
     OTSManagementComponent,
     UserManagementComponent,
