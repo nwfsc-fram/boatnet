@@ -14,7 +14,6 @@ import { NgxElectronModule, ElectronService } from 'ngx-electron';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 // import { NgSelectModule } from '@ng-select/ng-select';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
@@ -152,7 +151,6 @@ import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component
     MatMenuModule,
     MatIconModule,
     MatSlideToggleModule,
-    NgxDatatableModule,
     HttpClientModule,
     AutoCompleteModule,
     AppRoutingModule,
