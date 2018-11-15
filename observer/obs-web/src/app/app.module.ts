@@ -40,6 +40,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { identifierModuleUrl } from '@angular/compiler';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+
 
 const appRoutes: Routes = [
   { path: 'ots-management', component: OTSManagementComponent },
@@ -97,7 +105,15 @@ const appRoutes: Routes = [
     MatTableModule,
     MatBadgeModule,
     MatBottomSheetModule,
-    MatButtonModule
+    MatButtonModule,
+    MatFormFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    ToggleButtonModule,
+    SelectButtonModule,
+    DropdownModule,
+    CalendarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -8,16 +8,16 @@
   </div>
   <strong style="float: left">Active Trips</strong>
   <br>
-    <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip.trip_num)">
+    <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)">
 
-      <div class="narrow_item_border" *ngIf="trip.vessel === vessel && trip.status === 'active'">
+      <div class="narrow_item_border" *ngIf="trip.vessel === vessel && trip.is_open">
 
         <span class="vertical-align"> {{ trip.start_date }} </span>
 
         <span class="vertical-align">
             <mat-icon style="font-size: 15px">lock_open</mat-icon>
 
-            <span *ngIf="trip.selected === 'yes'; else notSelected;">
+            <span *ngIf="trip.selected; else notSelected;">
                 <mat-icon style="font-size: 15px">check_box</mat-icon>
             </span>
 
@@ -25,7 +25,7 @@
                 <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
             </ng-template>
 
-            <span *ngIf="trip.messages === 'yes'; else noMessages">
+            <span *ngIf="trip.messages; else noMessages">
               <mat-icon style="font-size: 15px">message</mat-icon>
             </span>
 
@@ -44,21 +44,21 @@
     <strong style="float: left; color: grey;">Closed Trips</strong>
     <br>
     <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-        <div class="closed_item_border" *ngIf="trip.vessel === vessel && trip.status === 'closed'">
+        <div class="closed_item_border" *ngIf="trip.vessel === vessel && !trip.is_open">
           
           <span class="vertical-align"> {{ trip.start_date }} </span>
 
           <span class="vertical-align">
             <mat-icon style="font-size: 15px">lock</mat-icon>
 
-            <span *ngIf="trip.selected === 'yes'; else notSelected;">
+            <span *ngIf="trip.selected; else notSelected;">
                 <mat-icon style="font-size: 15px" >check_box</mat-icon>
             </span>
             <ng-template #notSelected>
                 <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
             </ng-template>
 
-            <span *ngIf="trip.messages === 'yes'; else noMessages">
+            <span *ngIf="trip.messages; else noMessages">
               <mat-icon style="font-size: 15px" >message</mat-icon>
             </span>
             <ng-template #noMessages>

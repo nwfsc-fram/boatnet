@@ -1,5 +1,7 @@
 import { BoatnetBase } from './interface/boatnet-base';
-
+import { Permit } from '../_models/permit';
+import { Message } from '../_models/message';
+ 
 export class Trip implements BoatnetBase {
   id: string;
   type: 'trip';
@@ -9,10 +11,9 @@ export class Trip implements BoatnetBase {
   permit: string;
   start_date: string;
   end_date: string;
-  status: string;
-  selected: string;
-  messages: string;
+  is_open: boolean;
+  selected: boolean;
+  messages: Message[];
+  permits: Permit[];
   trip_num: string;
-  uscg_num: string;
-  state_reg: string;
 }

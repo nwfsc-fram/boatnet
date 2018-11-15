@@ -12,7 +12,7 @@ export class FooterComponent implements OnInit {
   name: string;
   searchConfig = ['trips', 'user-management', 'vessel-management', 'permits-management']
   createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips']
-  confirmConfig = ['user-preferences', 'ots-management']
+  confirmConfig = ['user-preferences', 'ots-management', 'trip']
 
   constructor(
     private stateService: StateService

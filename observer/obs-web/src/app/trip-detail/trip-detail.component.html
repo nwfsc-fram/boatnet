@@ -1,1 +1,38 @@
-Trip details:
+<div style="text-align: center">
+  <div class="trip-data">
+      <strong>{{ trip.vessel }}</strong> 
+    <hr>
+  </div>
+
+  <form mat-form [formGroup]="tripForm">
+    <div style="display: flex; justify-content: space-evenly">
+        <span><strong>Start Date: </strong></span>
+        <p-calendar formControlName="start_date" id="start_date"></p-calendar>
+    </div>
+        <br>
+        <div style="display: flex; justify-content: space-evenly">
+            <span><strong>End Date: &nbsp;</strong></span>
+            <p-calendar formControlName="end_date" id="end_date"></p-calendar>
+        </div>
+        <br>
+
+        <hr>
+        Selected:  {{ trip.selected }}   
+        
+        <hr>
+        Permits:
+        <hr>
+        Messages:
+        {{ trip.messages }}
+
+    <br><br>
+    <div>
+        <p-toggleButton onLabel="open" offLabel="closed" onIcon="pi pi-lock-open" offIcon="pi pi-lock" formControlName="is_open"></p-toggleButton>
+    </div>
+
+
+</form>
+
+</div>
+
+<app-footer></app-footer>
