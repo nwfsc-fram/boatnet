@@ -31,14 +31,20 @@ export class TripDetailComponent implements OnInit {
 
   ngOnInit() {
     this.stateSvc.setStateName('trip');
+
+    if (this.stateSvc.currentState.trip === undefined) {
+      this.trip = Trip.createTrip();
+    }
+
     this.createEditForm()
+
   }
 
   createForm() {
 
     this.tripForm = this.fb.group(
       {
-        vessel: null,
+        vessel: this.stateSvc.currentState.vessel,
         start_date: null,
         end_date: null,
         is_open: true,

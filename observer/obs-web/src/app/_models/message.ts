@@ -8,6 +8,6 @@ export class Message implements BoatnetBase {
     vessel_name: string;
     uscg_num: string;
     state_reg: string;
-    contents: string;
+    content: string;
   }
   
