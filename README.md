@@ -1,10 +1,36 @@
 # Boatnet 
-Boatnet enables fishing boats to log information about their catch. The crew can log a variety of information including weight, count, and species data that is then pushed to a common database. This data is used by NOAA scientists to estimate how many fish can be sustainably caught. Boatnet curerntly supports two types of data collection methods surveys and observers. 
+Boatnet provides a suite of tools for commercial fishing vessels. These include a tablet app for observers to log their findings and a mobile app for captains to keep track of trips. You can find more details about each project in this [section](https://github.com/nwfsc-fram/boatnet#projects)
 
 <p align="center">
   <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
        width="654" height="300">
 </p>
+
+For those only interested in running the project follow the [What to install](https://github.com/nwfsc-fram/boatnet#what-to-install) and [How to build and run](https://github.com/nwfsc-fram/boatnet#how-to-build-and-run) section and ignore the rest. The remaining sections are for development purposes only. Note: We are currently working on simplifying the process and in the future you can just download an executable and run the application.
+
+## What to install
+* Node.js - download [here](https://nodejs.org/en/)
+
+## Projects 
+Boatnet contains multiple projects located in different directories. The different projects are listed below. 
+
+### Observer Tablet
+__Directory__: observer/obs-electron 
+
+A tablet application used by observers to log information about fish caught on board. Observers can record stats such as weight, count, species type, and much more. The data collected is used to estimate how many fish can be sustainably caught. 
+
+### Observer Mobile App
+__Directory__: observer/obs-web
+
+A mobile app for our observer program where captains can log their trips and then see whether they are selected for observer coverage or not. 
+
+### Survey 
+__Directory__: survey/surv-cutter
+
+## How to build and run
+1) Navigate to the directory of the project you wish to run
+2) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
+3) Run `ng serve` then navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Development Setup
 * Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
@@ -53,22 +79,6 @@ git clone git@github.com:nwfsc-fram/boatnet.git
         $ git secrets --install --force   #install hooks, in this working copy
         $ git secrets --register-aws      #add additional AWS credential protection for this working copy
 
-## Deployment
-Boatnet contains multiple projects located in different directories. In order to build and run a project you must navigate to the directory where your project resides. The different projects and a path to their directory are listed below some also list a README link to more info. 
-
-### Observer
-* observer/obs-electron - [README](./observer/obs-electron/README.md) A tablet application used by observers to log information. 
-* observer/obs-web - A progressive web app used to assign people to boats. 
-
-### Survey 
-General info [README](survey/README.md)
-* survey/surv-cutter -
-
-### Deployment Steps
-1) Navigate to one of the directories
-2) Run `npm install` which will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-3) Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
 ## Contributing Guidelines
 1. Create your feature branch (`git checkout -b feature/fooBar`)
 2. Commit your changes (`git commit -am 'Add some fooBar'`)
@@ -79,6 +89,3 @@ More detailed insturctions can be found [here](./CONTRIBUTING.md)
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
-
-
-
