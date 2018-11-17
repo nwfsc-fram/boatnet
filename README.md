@@ -34,7 +34,7 @@ __Directory__: survey/surv-cutter
 
 ## Development Setup
 * Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
-  * https://nwcgit.nwfsc.noaa.gov/profile/keys
+  * https://github.com/settings/keys
 
 * If you are using Sourcetree, you need to import this key in PuttyGen (as described in their docs) and save the private key in .ppk format. Then, open Pageant from systray and Add Key using the file.
 * Use ssh for git clone, otherwise you'll be prompted for HTTPS authentication upon `git push`
