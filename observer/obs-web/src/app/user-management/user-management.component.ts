@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {InputTextModule} from 'primeng/inputtext';
 import { StateService } from '../state.service';
+import { User } from '../_models/user'
 
 @Component({
   selector: 'app-user-management',
@@ -24,6 +25,10 @@ export class UserManagementComponent implements OnInit {
 
   ngOnInit() {
     this.stateSvc.setStateName('user-management');
+  }
+
+  setUser(user: User) {
+    this.stateSvc.setUser(user);
   }
 
 }

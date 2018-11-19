@@ -23,8 +23,13 @@
   </div>
 
 
-  <div *ngIf=" createConfig.includes(name); else noCreate">
-    <button mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
+  <div *ngIf="createConfig.includes(name); else noCreate">
+    <div *ngIf="name === 'trips'">
+      <button mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
+    </div>
+    <div *ngIf="name === 'user-management'">
+        <button mat-icon-button routerLink="/user" (click)="clearUser()"><mat-icon>create</mat-icon></button> 
+      </div>
   </div>
 
   <ng-template #noCreate>

@@ -47,11 +47,13 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
+import { UserComponent } from './user/user.component';
 
 
 const appRoutes: Routes = [
   { path: 'ots-management', component: OTSManagementComponent },
   { path: 'manage-users', component: UserManagementComponent },
+  { path: 'user', component: UserComponent },
   { path: 'trips',      component: TripsComponent },
   { path: 'trip', component: TripDetailComponent },
   { path: 'user-preferences', component: UserPreferencesComponent },
@@ -78,7 +80,8 @@ const appRoutes: Routes = [
     TripDetailComponent,
     MessagesComponent,
     FooterComponent,
-    HeaderComponent
+    HeaderComponent,
+    UserComponent
   ],
   imports: [
     RouterModule.forRoot(
