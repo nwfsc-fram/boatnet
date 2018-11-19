@@ -3,8 +3,8 @@ import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { Permit } from './_models/permit';
 import { Vessel } from './_models/vessel';
 import { Trip } from './_models/trip';
+import { User } from './_models/user';
 import { AppState } from './_models/app-state';
-
 
 
 @Injectable({
@@ -20,10 +20,11 @@ export class StateService {
   currentPermit = new BehaviorSubject<Permit>(undefined);
   currentVessel = new BehaviorSubject<Vessel>(undefined);
   currentTrip = new BehaviorSubject<Trip>(undefined);
+  currentUser = new BehaviorSubject<User>(undefined)
 
   headerStatus = new Subject<string>();
 
-  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'vessel-management', 'permits-management', 'trips', 'trip']
+  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'user', 'vessel-management', 'permits-management', 'trips', 'trip']
 
   constructor() { 
     this.currentState = this.loadAppState();
@@ -97,6 +98,12 @@ export class StateService {
     this.persistAppState();
   }
 
+  setUser(user: User) {
+    this.currentState.user = user;
+    this.currentUser.next(this.currentState.user)
+    this.persistAppState()
+  }
+
   clearPermit() {
     this.currentState.permit = undefined;
     this.currentPermit.next(undefined);
@@ -113,6 +120,12 @@ export class StateService {
     this.currentState.trip = undefined;
     this.currentTrip.next(undefined);
     this.persistAppState();    
+  }
+
+  clearUser() {
+    this.currentState.user = undefined;
+    this.currentUser.next(undefined);
+    this.persistAppState();
   }
 
   setState(state: AppState) {

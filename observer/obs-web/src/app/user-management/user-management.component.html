@@ -1,6 +1,6 @@
 
 
-<div class="narrow_item_border" *ngFor="let user of active_users">
-  {{ user.first_name }} {{ user.last_name }} <br>
+<div class="narrow_item_border" *ngFor="let user of active_users" routerLink="/user" (click)="setUser(user)">
+  {{ user.first_name }} {{ user.last_name }}<br>
 </div>
 <app-footer></app-footer>

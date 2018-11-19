@@ -21,7 +21,7 @@ export class FooterComponent implements OnInit {
 
   ngOnInit() {
     this.name = this.stateSvc.currentState.name
-
+    console.log(this.name)
   }
 
   clearTrip() {
@@ -36,5 +36,9 @@ export class FooterComponent implements OnInit {
   closeTrip() {
     this.stateSvc.currentState.trip.is_open = false
     console.log(this.stateSvc.currentState.trip.is_open)
+  }
+
+  clearUser() {
+    this.stateSvc.clearUser()
   }
 }

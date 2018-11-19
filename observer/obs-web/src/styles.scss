@@ -25,7 +25,6 @@ body {
 .narrow_item_border {
     display: flex;
     justify-content: space-between; 
-    width: 100%;
     border: 2px solid black; 
     border-radius: 5px; 
     background-color: white; 
@@ -38,7 +37,6 @@ body {
 .closed_item_border {
     display: flex;
     justify-content: space-between; 
-    width: 100%;
     border: 2px solid grey; 
     border-radius: 5px; 
     background-color: white; 
@@ -59,11 +57,11 @@ body {
     text-align: left
 }
 
-.trip-data {
+.trip-data, .user-data {
     font-size: larger
 }
 
-.trip-data strong {
+.trip-data strong, .user-data strong {
     color: #0093D0;
 }
 
