@@ -27,7 +27,7 @@ import {
 } from '@angular/material';
 
 import { MenuComponent } from './menu/menu.component';
-// import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
+import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
 import { TripsComponent } from './trips/trips.component';
 import { OTSManagementComponent } from './ots-management/ots-management.component';
 import { UserManagementComponent } from './user-management/user-management.component';
@@ -68,7 +68,7 @@ const appRoutes: Routes = [
   declarations: [
     AppComponent,
     MenuComponent,
-    // VesselPermitsComponent,
+    VesselPermitsComponent,
     TripsComponent,
     OTSManagementComponent,
     UserManagementComponent,
