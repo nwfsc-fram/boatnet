@@ -78,3 +78,10 @@ body {
     border: 2px solid #0093D0;     
 }
 
+.flex-grid {
+    display: flex;
+  }
+
+.col {
+    flex: 1;
+  }

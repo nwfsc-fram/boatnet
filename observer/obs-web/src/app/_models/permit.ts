@@ -8,4 +8,5 @@ export class Permit implements BoatnetBase {
   vessel_name: string;
   uscg_num: string;
   state_reg: string;
+  fishery: string;
 }

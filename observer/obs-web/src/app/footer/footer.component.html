@@ -8,13 +8,23 @@
     <span></span>
   </ng-template>
 
-  <div *ngIf="confirmConfig.includes(name)">
-    <button mat-icon-button ><mat-icon>done</mat-icon></button>
-    <button mat-icon-button ><mat-icon>clear</mat-icon></button>
+  <!-- <div *ngIf="confirmConfig.includes(name)">
+    <button mat-icon-button (click)="openTrip()"><i class="pi pi-lock-open"></i></button>
+    <button mat-icon-button (click)="closeTrip()"><i class="pi pi-lock"></i></button>
+  </div> -->
+
+  <div *ngIf="name === 'trip'">
+    <div *ngIf="trip.is_open; else tripClosed">
+      <button mat-icon-button (click)="closeTrip()"><i class="pi pi-lock" style="font-size: 20px"></i></button>
+    </div>
+    <ng-template #tripClosed>
+      <button mat-icon-button (click)="openTrip()"><i class="pi pi-lock-open" style="font-size: 20px"></i></button>
+    </ng-template>
   </div>
 
+
   <div *ngIf=" createConfig.includes(name); else noCreate">
-    <button mat-icon-button routerLink="/trip"><mat-icon>create</mat-icon></button> 
+    <button mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
   </div>
 
   <ng-template #noCreate>
