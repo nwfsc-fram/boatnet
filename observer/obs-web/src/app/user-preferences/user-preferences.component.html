@@ -1,4 +1,11 @@
-<p>
-  user-preferences works!
-</p>
+
+
+<app-user></app-user>
+<hr>
+<strong>Preferred Notification Method:</strong>
+  <div class="pv6">
+    <p-selectButton [options]="notification_options" [(ngModel)]="userPreference"></p-selectButton>
+    <p>{{ userPreference }}</p>
+  </div>
+
 <app-footer></app-footer>

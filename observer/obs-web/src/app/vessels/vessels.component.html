@@ -1,8 +1,13 @@
 
-<div *ngFor="let vessel of vessels" (click)="setVessel(vessel.name)">
+<div *ngFor="let vessel of vessels" (click)="setVessel(vessel)">
 
-  <div class="narrow_item_border" [ngClass]="{activeitem: vessel.name == currentVessel }" >
-    <span class="vertical-align">{{ vessel.name }}</span>
+  <div style="display: flex; justify-content: space-between">
+    <div style="width: 90%" class="narrow_item_border" [ngClass]="{activeitem: vessel == currentVessel }" >
+      <span>{{ vessel.vessel_name }}</span>
+    </div>
+
+    <div style="margin: 6px 0; font-size: 1em" class="vertical-align" routerLink="/vessel-detail" (click)="setVessel(vessel)"><i class="pi pi-pencil"></i></div>
+
   </div>
 
 </div>

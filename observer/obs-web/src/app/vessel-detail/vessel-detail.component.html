@@ -1,0 +1,15 @@
+<form mat-form [formGroup]="vesselForm">
+    <div class="flex-grid vm5">
+        <span class="col pv6"><strong>Vessel Name: </strong></span>
+        <input class="col2" type="text" pInputText formControlName="vessel_name"/>
+    </div>
+    <div class="flex-grid vm5">
+        <span class="col pv6"><strong>Coast Guard #: </strong></span>
+        <input class="col2" type="text" pInputText formControlName="uscg_num"/>
+    </div>
+    <div class="flex-grid vm5">
+        <span class="col pv6"><strong>State Reg #: </strong></span>
+        <input class="col2" type="text" pInputText formControlName="state_reg"/>
+    </div>
+
+</form>

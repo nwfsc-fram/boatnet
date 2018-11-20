@@ -48,18 +48,22 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { UserComponent } from './user/user.component';
+import { VesselDetailComponent } from './vessel-detail/vessel-detail.component';
+import { PermitDetailComponent } from './permit-detail/permit-detail.component';
 
 
 const appRoutes: Routes = [
-  { path: 'ots-management', component: OTSManagementComponent },
-  { path: 'manage-users', component: UserManagementComponent },
-  { path: 'user', component: UserComponent },
-  { path: 'trips',      component: TripsComponent },
-  { path: 'trip', component: TripDetailComponent },
+  { path: 'ots-management',   component: OTSManagementComponent },
+  { path: 'manage-users',     component: UserManagementComponent },
+  { path: 'user',             component: UserComponent },
+  { path: 'trips',            component: TripsComponent },
+  { path: 'trip',             component: TripDetailComponent },
   { path: 'user-preferences', component: UserPreferencesComponent },
-  { path: 'manage-vessels', component: VesselsComponent },
-  { path: 'manage-permits', component: PermitsComponent },
-  // { path: 'vessel-permits', component: VesselPermitsComponent },
+  { path: 'manage-vessels',   component: VesselsComponent },
+  { path: 'vessel-detail',    component: VesselDetailComponent},
+  { path: 'manage-permits',   component: PermitsComponent },
+  { path: 'permit-detail',    component: PermitDetailComponent},
+  // { path: 'vessel-permits',component: VesselPermitsComponent },
   { path: '',
     redirectTo: 'trips',
     pathMatch: 'full'
@@ -81,7 +85,9 @@ const appRoutes: Routes = [
     MessagesComponent,
     FooterComponent,
     HeaderComponent,
-    UserComponent
+    UserComponent,
+    VesselDetailComponent,
+    PermitDetailComponent
   ],
   imports: [
     RouterModule.forRoot(

@@ -1,4 +1,8 @@
 import { BoatnetBase } from './interface/boatnet-base';
+import { v4 as uuid } from 'uuid';
+import { getBoatnetDateNow } from '../shared/util';
+import { stringify } from '@angular/core/src/util';
+import { Permit } from '../_models/permit';
 
 export class Vessel implements BoatnetBase {
   id: string;
@@ -8,4 +12,23 @@ export class Vessel implements BoatnetBase {
   vessel_name: string;
   uscg_num: string;
   state_reg: string;
+  permits: Permit[];
+
+
+  public constructor(init?: Partial<Vessel>) {
+    Object.assign(this, init);
+  }
+
+  static createVessel() {
+    return new Vessel({
+      id: uuid(),
+      type: 'vessel',
+      created_by: 'seth gerou',
+      created_date: getBoatnetDateNow(),
+      vessel_name: null,
+      uscg_num: null,
+      state_reg: null,
+    });
+  }
+
 }

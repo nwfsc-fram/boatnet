@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../state.service';
 import { AppState } from '../_models/app-state';
+import { Vessel } from '../_models/vessel';
 
 @Component({
   selector: 'app-footer',
@@ -40,5 +41,13 @@ export class FooterComponent implements OnInit {
 
   clearUser() {
     this.stateSvc.clearUser()
+  }
+
+  clearVessel() {
+    this.stateSvc.clearVessel()
+  }
+
+  clearPermit() {
+    this.stateSvc.clearPermit()
   }
 }

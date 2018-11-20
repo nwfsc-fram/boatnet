@@ -25,21 +25,15 @@ body {
 .narrow_item_border {
     display: flex;
     justify-content: space-between; 
-    border: 2px solid black; 
-    border-radius: 5px; 
-    background-color: white; 
     font-weight: bold;
     font-size: 15px;
     padding: 3px; 
-    margin: 10px 0; 
+    margin: 5px 0; 
 }
 
 .closed_item_border {
     display: flex;
     justify-content: space-between; 
-    border: 2px solid grey; 
-    border-radius: 5px; 
-    background-color: white; 
     font-weight: bold;
     font-size: 15px;
     padding: 3px; 
@@ -66,8 +60,8 @@ body {
 }
 
 .vertical-align {
-    height: 1.5em;
-    line-height: 1.5em;
+    height: 1em;
+    line-height: 1em;
     text-align: center;
 }
 
@@ -83,3 +77,80 @@ body {
 .col {
     flex: 1;
   }
+
+.col2 {
+    flex: 2;
+}
+
+.col4 {
+    flex: 4;
+}
+
+.col8 {
+    flex: 8
+}
+
+.vm5 {
+    margin: 5px 0;
+}
+
+.mat-icon-button {
+    background-color: #0093D0;
+}
+
+.footer button {
+    margin: 10px;
+}
+
+.pv6 {
+    padding: 6px 0
+}
+
+@media only screen and (max-width: 414px) {
+    .closed_item_border {
+        border: 2px solid grey; 
+        border-radius: 5px; 
+        background-color: white; 
+    }
+}
+
+@media (min-width: 415px) {
+    .closed_item_border {
+        border-top: 2px solid grey;
+    }
+}
+
+@media (max-width: 414px) {
+    .desktop {
+        display: none;
+    }
+}
+
+@media (min-width: 415px) {
+    .desktop {
+        margin-top: 10px;
+        margin-bottom: -10px;
+        display: flex;
+        justify-content: space-between
+    }
+}
+
+@media only screen and (max-width: 414px) {
+    .narrow_item_border {
+        border: 2px solid black; 
+        border-radius: 5px; 
+        background-color: white; 
+    }
+}
+
+@media only screen and (min-width: 415px) {
+    .narrow_item_border {
+        border-top: 2px solid #0093D0;  
+    }
+}
+
+@media (min-width: 415px) {
+    body {
+        background-color: white;
+    }
+}
