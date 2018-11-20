@@ -8,11 +8,6 @@ import { StateService } from '../state.service';
 })
 export class PermitsComponent implements OnInit {
 
-  permitsList = {
-    id: {},
-
-  }
-
   vessel = this.stateSvc.currentState.vessel
 
   constructor(
