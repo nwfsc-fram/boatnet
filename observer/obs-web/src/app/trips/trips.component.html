@@ -2,15 +2,20 @@
 
   <div class="trip-data">
     <a routerLink="/manage-vessels">
-      <strong>{{ vessel }}</strong> 
+      <strong>{{ vessel.vessel_name }}</strong> 
     </a>
     <hr>
   </div>
-  <strong style="float: left">Active Trips</strong>
+  <strong>Active Trips</strong>
+  <div class="desktop">
+    <div>Start Date</div>
+    <div>Trip Attributes</div>
+    <div>End Date</div>
+  </div>
   <br>
     <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)">
 
-      <div class="narrow_item_border" *ngIf="trip.vessel === vessel && trip.is_open">
+      <div class="narrow_item_border" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open">
 
         <span class="vertical-align"> {{ trip.start_date }} </span>
 
@@ -41,10 +46,15 @@
     </div>
 
     <hr>
-    <strong style="float: left; color: grey;">Closed Trips</strong>
+    <strong style="color: grey;">Closed Trips</strong>
+    <div class="desktop" style="color: grey">
+        <div>Start Date</div>
+        <div>Trip Attributes</div>
+        <div>End Date</div>
+      </div>
     <br>
     <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-        <div class="closed_item_border" *ngIf="trip.vessel === vessel && !trip.is_open">
+        <div class="closed_item_border" *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open">
           
           <span class="vertical-align"> {{ trip.start_date }} </span>
 

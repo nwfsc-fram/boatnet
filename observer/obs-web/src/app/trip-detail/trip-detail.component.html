@@ -5,29 +5,34 @@
   </div>
 
   <form mat-form [formGroup]="tripForm">
-    <div >
-        <span><strong>Start Date: </strong></span>
-        <p-calendar formControlName="start_date" id="start_date"></p-calendar>
-    </div>
+        <div class="flex-grid">
+            <span class="col pv6"><strong>Start Date: </strong></span>
+            <p-calendar class="col2" formControlName="start_date" id="start_date" [touchUI]="true"></p-calendar>
+        </div>
         <br>
-        <div >
-            <span><strong>End Date: &nbsp;</strong></span>
-            <p-calendar formControlName="end_date" id="end_date"></p-calendar>
+        <div class="flex-grid">
+            <span class="col pv6"><strong>End Date: &nbsp;</strong></span>
+            <p-calendar class="col2" formControlName="end_date" id="end_date" [touchUI]="true"></p-calendar>
         </div>
         <br>
 
         <hr>
         <div *ngIf="trip.is_open; else tripClosed">
-            <strong>Status: <span style="color: green">OPEN</span></strong>
+            <div style="float: left">
+                <strong>Status: <span style="color: green">OPEN</span></strong>
+            </div>
         </div>
 
         <ng-template #tripClosed>
-            <div>
+            <div style="float: left">
                 <strong>Status: <span style="color: red">CLOSED</span></strong>         
             </div>
         </ng-template>
 
-        <strong>Selected:</strong>  {{ trip.selected }}   
+        <div style="float: right">
+            <strong>Selected:</strong>  {{ trip.selected }}   
+        </div>
+        <br>
         
         <hr>
         <strong>Permits:</strong>
@@ -36,6 +41,8 @@
         </div>
         <hr>
         <strong>Messages:</strong>
+        <button style="float:right; color: white; margin: 5px 0" mat-icon-button><mat-icon>create</mat-icon></button> 
+        <br><br><br>
         <div *ngFor="let message of trip.messages" class="narrow_item_border">
             {{ message.content }}
         </div>

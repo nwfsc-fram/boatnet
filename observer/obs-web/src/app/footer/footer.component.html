@@ -1,7 +1,7 @@
 <div class="footer">
 
   <div *ngIf="searchConfig.includes(name); else noSearch ">
-      <button mat-icon-button ><mat-icon>search</mat-icon></button> 
+      <button class="mat-icon-button" mat-icon-button ><mat-icon>search</mat-icon></button> 
   </div>
 
   <ng-template #noSearch>
@@ -15,21 +15,27 @@
 
   <div *ngIf="name === 'trip'">
     <div *ngIf="trip.is_open; else tripClosed">
-      <button mat-icon-button (click)="closeTrip()"><i class="pi pi-lock" style="font-size: 20px"></i></button>
+      <button class="mat-icon-button" mat-icon-button (click)="closeTrip()"><i class="pi pi-lock" style="font-size: 20px"></i></button>
     </div>
     <ng-template #tripClosed>
-      <button mat-icon-button (click)="openTrip()"><i class="pi pi-lock-open" style="font-size: 20px"></i></button>
+      <button class="mat-icon-button" mat-icon-button (click)="openTrip()"><i class="pi pi-lock-open" style="font-size: 20px"></i></button>
     </ng-template>
   </div>
 
 
   <div *ngIf="createConfig.includes(name); else noCreate">
     <div *ngIf="name === 'trips'">
-      <button mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
+      <button class="mat-icon-button" mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
     </div>
     <div *ngIf="name === 'user-management'">
-        <button mat-icon-button routerLink="/user" (click)="clearUser()"><mat-icon>create</mat-icon></button> 
-      </div>
+      <button class="mat-icon-button" mat-icon-button routerLink="/user" (click)="clearUser()"><mat-icon>create</mat-icon></button> 
+    </div>
+    <div *ngIf="name === 'vessel-management'">
+      <button class="mat-icon-button" mat-icon-button routerLink="/vessel-detail" (click)="clearVessel()"><mat-icon>create</mat-icon></button> 
+    </div>
+    <div *ngIf="name === 'permits-management'">
+        <button class="mat-icon-button" mat-icon-button routerLink="/permit-detail" (click)="clearPermit()"><mat-icon>create</mat-icon></button> 
+    </div>
   </div>
 
   <ng-template #noCreate>
