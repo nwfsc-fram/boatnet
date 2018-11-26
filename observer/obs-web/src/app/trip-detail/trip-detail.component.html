@@ -7,12 +7,12 @@
   <form mat-form [formGroup]="tripForm">
         <div class="flex-grid">
             <span class="col pv6"><strong>Start Date: </strong></span>
-            <p-calendar class="col2" formControlName="start_date" id="start_date" [touchUI]="true"></p-calendar>
+            <p-calendar class="col2" formControlName="start_date" id="start_date" [showIcon]="true" [touchUI]="true" icon="pi pi-calendar"></p-calendar>
         </div>
         <br>
         <div class="flex-grid">
             <span class="col pv6"><strong>End Date: &nbsp;</strong></span>
-            <p-calendar class="col2" formControlName="end_date" id="end_date" [touchUI]="true"></p-calendar>
+            <p-calendar class="col2" formControlName="end_date" id="end_date" [showIcon]="true" [touchUI]="true" icon="pi pi-calendar"></p-calendar>
         </div>
         <br>
 
