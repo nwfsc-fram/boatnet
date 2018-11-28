@@ -12,10 +12,10 @@ export class PermitsComponent implements OnInit {
   vessel = this.stateSvc.currentState.vessel
 
   permits: Permit[] = [
-    {type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , id: "GF0001", certificate_start_date: "2019-01-01T08:00:00Z", certificate_end_date: "2019-12-31T08:00:00Z", vessel: "Excalibur", endorsed_length: 64.84, },
-    {type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , id: "GF0011", certificate_start_date: "2019-01-01T08:00:00Z", certificate_end_date: "2019-12-31T08:00:00Z", vessel: "UNIDENTIFIED", endorsed_length: 83, },
-    {type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , id: "GF0022", certificate_start_date: "2019-01-01T08:00:00Z", certificate_end_date: "2019-12-31T08:00:00Z", vessel: "Raven", endorsed_length: 64.84, },
-    {type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , id: "GF0035", certificate_start_date: "2019-01-01T08:00:00Z", certificate_end_date: "2019-12-31T08:00:00Z", vessel: "Ms Julie", endorsed_length: 64.84, },    
+    {id: "1", type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , permit_num: "GF0001", certificate_start_date: "1/1/2018", certificate_end_date: "12/31/2018", vessel: "Excalibur", endorsed_length: 64.84, },
+    {id: "2", type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "245779", fishery: "EM EFP" , permit_num: "GF0011", certificate_start_date: "7/1/2018", certificate_end_date: "12/31/2018", vessel: "UNIDENTIFIED", endorsed_length: 83, },
+    {id: "3", type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "1048304", fishery: "EM EFP" , permit_num: "GF0022", certificate_start_date: "1/1/2018", certificate_end_date: "12/31/2018", vessel: "Raven", endorsed_length: 64.84, },
+    {id: "4", type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "WN2165NM", fishery: "EM EFP" , permit_num: "GF0035", certificate_start_date: "1/1/2018", certificate_end_date: "12/31/2018", vessel: "Ms Julie", endorsed_length: 64.84, },    
   ]
 
   constructor(
@@ -24,6 +24,10 @@ export class PermitsComponent implements OnInit {
 
   ngOnInit() {
     this.stateSvc.setStateName('permits-management');
+  }
+
+  setPermit(permit) {
+    this.stateSvc.setPermit(permit)
   }
 
 }

@@ -1,7 +1,7 @@
 
 <div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
     <div class="narrow_item_border">
-        <span class="vertical-align">{{permit.id}}</span>
+        <span class="vertical-align">{{permit.permit_num}}</span>
         <span class="vertical-align">{{permit.vessel}}</span>
     </div>
 
