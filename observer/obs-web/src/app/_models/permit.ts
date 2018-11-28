@@ -5,10 +5,10 @@ export class Permit implements BoatnetBase {
   type: 'permit';
   created_by: string;
   created_date: BoatnetDate;
-  vessel_name: string;
-  uscg_num: string;
-  state_reg: string;
+  vessel: string;
+  vessel_registration_number: string;
   fishery: string;
-  active_date: BoatnetDate;
-  expiration_date: BoatnetDate;
+  certificate_start_date: BoatnetDate;
+  certificate_end_date: BoatnetDate;
+  endorsed_length: number;
 }
