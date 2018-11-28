@@ -35,6 +35,7 @@ export class HeaderComponent implements OnInit {
       '/manage-vessels':   'MANAGE VESSELS',
       '/vessel-detail':    'VESSEL DETAIL',
       '/manage-permits':   'MANAGE PERMITS',
+      '/permit-detail':    'PERMIT DETAILS',
       '/ots-management':   'OTS MANAGEMENT',
     }
 
