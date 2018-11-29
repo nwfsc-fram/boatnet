@@ -26,6 +26,17 @@ import {
   MatButtonModule
 } from '@angular/material';
 
+import { RouterModule, Routes } from '@angular/router';
+import { identifierModuleUrl } from '@angular/compiler';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { InputTextModule } from 'primeng/inputtext';
+import { ToggleButtonModule } from 'primeng/togglebutton';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+import {CardModule} from 'primeng/card';
+
 import { MenuComponent } from './menu/menu.component';
 import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
 import { TripsComponent } from './trips/trips.component';
@@ -36,21 +47,11 @@ import { VesselsComponent } from './vessels/vessels.component';
 import { PermitsComponent } from './permits/permits.component';
 import { TripDetailComponent } from './trip-detail/trip-detail.component';
 import { MessagesComponent } from './messages/messages.component';
-import { RouterModule, Routes } from '@angular/router';
-import { identifierModuleUrl } from '@angular/compiler';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { InputTextModule } from 'primeng/inputtext';
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
 import { UserComponent } from './user/user.component';
 import { VesselDetailComponent } from './vessel-detail/vessel-detail.component';
 import { PermitDetailComponent } from './permit-detail/permit-detail.component';
-
 
 const appRoutes: Routes = [
   { path: 'ots-management',   component: OTSManagementComponent },
@@ -123,6 +124,7 @@ const appRoutes: Routes = [
     SelectButtonModule,
     DropdownModule,
     CalendarModule,
+    CardModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

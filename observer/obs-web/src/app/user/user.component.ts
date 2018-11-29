@@ -21,6 +21,8 @@ export class UserComponent implements OnInit {
 
   userForm: FormGroup;
 
+  name = this.stateSvc.currentState.name
+
   constructor(
     private stateSvc: StateService,
     private fb: FormBuilder,
@@ -29,7 +31,7 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.stateSvc.setStateName('user-management');
+    this.stateSvc.setStateName('user');
     this.user = this.stateSvc.currentState.user
 
     if (this.stateSvc.currentState.user === undefined) {
@@ -53,7 +55,8 @@ export class UserComponent implements OnInit {
         address: null,
         city: null,
         state: null,
-        zip: null
+        zip: null,
+        home_port: null,
       }
     )
   }
@@ -72,7 +75,8 @@ export class UserComponent implements OnInit {
         address: this.user.address,
         city: this.user.city,
         state: this.user.state,
-        zip: this.user.zip
+        zip: this.user.zip,
+        home_port: this.user.home_port
       }
     )
   }

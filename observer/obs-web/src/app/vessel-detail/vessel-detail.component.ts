@@ -48,8 +48,7 @@ export class VesselDetailComponent implements OnInit {
       {
         id: this.vessel.id,
         vessel_name: this.vessel.vessel_name,
-        uscg_num: this.vessel.uscg_num,
-        state_reg: this.vessel.state_reg,
+        vessel_reg_num: this.vessel.vessel_reg_num,
       }
     )    
   }

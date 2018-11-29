@@ -10,8 +10,7 @@ export class Vessel implements BoatnetBase {
   created_by: string;
   created_date: BoatnetDate;
   vessel_name: string;
-  uscg_num: string;
-  state_reg: string;
+  vessel_reg_num: string;
   permits: Permit[];
 
 
@@ -26,8 +25,8 @@ export class Vessel implements BoatnetBase {
       created_by: 'seth gerou',
       created_date: getBoatnetDateNow(),
       vessel_name: null,
-      uscg_num: null,
-      state_reg: null,
+      vessel_reg_num: null,
+      permits: []
     });
   }
 

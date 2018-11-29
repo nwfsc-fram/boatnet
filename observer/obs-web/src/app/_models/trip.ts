@@ -3,37 +3,45 @@ import { Permit } from '../_models/permit';
 import { Message } from '../_models/message';
 import { v4 as uuid } from 'uuid';
 import { getBoatnetDateNow } from '../shared/util';
+import { StateService } from '../state.service';
  
 export class Trip implements BoatnetBase {
   id: string;
   type: 'trip';
+  trip_num: string;
   created_by: string;
   created_date: BoatnetDate;
   vessel: string;
   permit: string;
   start_date: string;
+  start_port: string;
   end_date: string;
+  end_port: string;
   is_open: boolean;
   selected: boolean;
+  unlisted_permit: string;
   messages: Message[];
   permits: Permit[];
-  trip_num: string;
 
-  public constructor(init?: Partial<Trip>) {
+  public constructor(init?: Partial<Trip> ) {
     Object.assign(this, init);
   }
 
-  static createTrip() {
+  static createTrip(home_port) {
     return new Trip({
       id: uuid(),
       type: 'trip',
+      trip_num: null,
       created_by: 'seth gerou',
       created_date: getBoatnetDateNow(),
       selected: false,
       vessel: null,
       is_open: true,
+      unlisted_permit: null,
       messages: [],
       permits: [],
+      start_port: home_port,
+      end_port: "same as start",
     });
   }
 

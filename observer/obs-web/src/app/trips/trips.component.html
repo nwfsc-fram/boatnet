@@ -41,6 +41,10 @@
         
         <span class="vertical-align"> {{ trip.end_date }} </span>
 
+        <span *ngFor="let permit of trip.permits" style="width: 100% ">
+          {{ permit.fishery }}
+        </span>
+
       </div>
 
     </div>
@@ -54,30 +58,36 @@
       </div>
     <br>
     <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-        <div class="closed_item_border" *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open">
-          
-          <span class="vertical-align"> {{ trip.start_date }} </span>
+        <div  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open">
+          <div class="closed_item_border">
 
-          <span class="vertical-align">
-            <mat-icon style="font-size: 15px">lock</mat-icon>
-
-            <span *ngIf="trip.selected; else notSelected;">
+            <span class="vertical-align"> {{ trip.start_date }} </span>
+            
+            <span class="vertical-align">
+              <mat-icon style="font-size: 15px">lock</mat-icon>
+              
+              <span *ngIf="trip.selected; else notSelected;">
                 <mat-icon style="font-size: 15px" >check_box</mat-icon>
-            </span>
-            <ng-template #notSelected>
+              </span>
+              <ng-template #notSelected>
                 <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
-            </ng-template>
-
-            <span *ngIf="trip.messages; else noMessages">
-              <mat-icon style="font-size: 15px" >message</mat-icon>
-            </span>
-            <ng-template #noMessages>
+              </ng-template>
+              
+              <span *ngIf="trip.messages; else noMessages">
+                <mat-icon style="font-size: 15px" >message</mat-icon>
+              </span>
+              <ng-template #noMessages>
                 <mat-icon style="color: lightgray; font-size: 15px">message</mat-icon>
-            </ng-template>
-
-          </span>
-          
-          <span class="vertical-align"> {{ trip.end_date }} </span>
+              </ng-template>
+              
+            </span>
+            
+            <span class="vertical-align"> {{ trip.end_date }} </span>
+            
+            <span *ngFor="let permit of trip.permits" style="width: 100% ">
+                {{ permit.fishery }}
+              </span>
+          </div>
 
         </div>
       </div>

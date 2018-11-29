@@ -20,6 +20,7 @@ export class User implements BoatnetBase {
   city: string;
   state: string;
   zip: string;
+  home_port: string;
 
   public constructor(init?: Partial<User>) {
     Object.assign(this, init);
@@ -42,6 +43,7 @@ export class User implements BoatnetBase {
       city: null,
       state: null,
       zip: null,
+      home_port: null
     });
   }
 
