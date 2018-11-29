@@ -31,8 +31,8 @@ export class TripDetailComponent implements OnInit {
     {label: 'GF0001 - Limited Entry - Catch Shares', value: {id: 'A21rv35', type: 'permit', permit_num: 'GF0001', fishery: 'Limited Entry - Catch Shares'}},
     {label: '90011 - Trawl Gear - MOD EFP', value: {id: 'W32be87', type: 'permit', permit_num: '90011', fishery: 'Trawl Gear - MOD EFP'}},
     {label: '777qwe - Catch Shares - Shore Side Hake', value: {id: 'N11es32', type: 'permit', permit_num: '777qwe', fishery: 'Catch Shares - Shore Side Hake'}},
-    {label: 'Open Access', value: 'Open Access'},
-    {label: 'Permit Not Listed', value: "nl"},
+    {label: 'Open Access', value: {id: 'OA', type: 'permit', permit_num: 'na', fishery: 'Open Access'}},
+    {label: 'Permit Not Listed', value: {id: 'NL', type: 'permit', permit_num: 'NL', fishery: 'Not Listed'}},
   ]
 
   tripForm: FormGroup;

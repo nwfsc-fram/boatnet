@@ -47,9 +47,12 @@
         <strong>Permits:</strong>
         <p-selectButton [options]="permits" formControlName="permits" multiple="multiple" (ngModelChange)="setTripPermits()"></p-selectButton>
 
-        <div *ngIf="trip.permits.includes('nl')">  <!-- nl = not listed -->
-            <span>Enter unlisted permit number:</span>
-            <input type="text" formControlName="unlisted_permit" id="unlisted_permit" (ngModelChange)="addUnlistedPermit()">
+        <div *ngFor="let permit of trip.permits">
+            <div *ngIf="permit.id.includes('NL')">  <!-- NL = not listed -->
+                <span>Enter unlisted permit number:</span>
+                <input type="text" formControlName="unlisted_permit" id="unlisted_permit" (ngModelChange)="addUnlistedPermit()">
+            </div>
+
         </div>
 
         <hr>
