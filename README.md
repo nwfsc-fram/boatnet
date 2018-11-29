@@ -66,6 +66,9 @@ git clone git@github.com:nwfsc-fram/boatnet.git
             Create dir C:\Program Files\Git\usr\local\share\man\man1
             Copy git-secrets/git-secrets.1 help file to C:\Program Files\Git\usr\local\share\man\man1\git-secrets.1
 
+            # For Visual Studio Code Integration
+            Copy git-secrets/git-secrets script to C:\Program Files\Git\cmd\git-secrets
+
   * MacOS & Linux
 
             $ git clone https://github.com/awslabs/git-secrets
