@@ -29,7 +29,7 @@ __Directory__: survey/surv-cutter
 2) Clone the repository - git clone git@github.com:nwfsc-fram/boatnet.git
 3) Navigate to the directory of the project you wish to run
 4) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-5) Run `ng serve` then navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+5) Run `ng serve --open` which will auto-open a browser at `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Development Setup
 * Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
