@@ -48,7 +48,12 @@ export class UserComponent implements OnInit {
         email: null,
         phone: null,
         role: null,
-        vessel: null
+        vessel: null,
+        mobile: null,
+        address: null,
+        city: null,
+        state: null,
+        zip: null
       }
     )
   }
@@ -62,7 +67,12 @@ export class UserComponent implements OnInit {
         email: this.user.email,
         phone: this.user.phone,
         role: this.user.role,
-        vessel: this.user.vessel        
+        vessel: this.user.vessel,
+        mobile: this.user.mobile,
+        address: this.user.address,
+        city: this.user.city,
+        state: this.user.state,
+        zip: this.user.zip
       }
     )
   }
