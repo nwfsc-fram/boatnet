@@ -21,6 +21,20 @@ export class TripDetailComponent implements OnInit {
 
   trip: Trip = this.stateSvc.currentState.trip
 
+  // permits = [
+  //       {title: 'GF0001', value: 1},
+  //       {title: '90011', value: 2},
+  //       {title: '777qwe', value: 3},
+  //     ]
+
+  permits = [
+    {label: 'GF0001 - Limited Entry - Catch Shares', value: {id: 'A21rv35', type: 'permit', permit_num: 'GF0001', fishery: 'Limited Entry - Catch Shares'}},
+    {label: '90011 - Trawl Gear - MOD EFP', value: {id: 'W32be87', type: 'permit', permit_num: '90011', fishery: 'Trawl Gear - MOD EFP'}},
+    {label: '777qwe - Catch Shares - Shore Side Hake', value: {id: 'N11es32', type: 'permit', permit_num: '777qwe', fishery: 'Catch Shares - Shore Side Hake'}},
+    {label: 'Open Access', value: 'Open Access'},
+    {label: 'Permit Not Listed', value: "nl"},
+  ]
+
   tripForm: FormGroup;
 
   constructor(
@@ -33,7 +47,7 @@ export class TripDetailComponent implements OnInit {
     this.stateSvc.setStateName('trip');
 
     if (this.stateSvc.currentState.trip === undefined) {
-      this.trip = Trip.createTrip();
+      this.trip = Trip.createTrip(this.stateSvc.currentState.user.home_port);
     }
 
     this.createEditForm()
@@ -51,6 +65,9 @@ export class TripDetailComponent implements OnInit {
         selected: false,
         permits: null,
         messages: false,
+        unlisted_permit: null,
+        start_port: this.stateSvc.currentState.user.home_port,
+        end_port: "Same as start"
       }
 
     )
@@ -66,8 +83,23 @@ export class TripDetailComponent implements OnInit {
         selected: this.trip.selected,
         permits: null,
         messages: this.trip.messages,
+        unlisted_permit: this.trip.unlisted_permit,
+        start_port: this.trip.start_port,
+        end_port: this.trip.end_port
       }
     )
+  }
+
+  setTripPermits() {
+    const formModel = this.tripForm.value
+    this.stateSvc.currentState.trip.permits = formModel.permits
+    console.log(this.stateSvc.currentState.trip)
+  }
+
+  addUnlistedPermit() {
+    const formModel = this.tripForm.value
+    this.stateSvc.currentState.trip.permits.push(formModel.unlisted_permit)        
+    console.log(this.stateSvc.currentState.trip)
   }
 
 }

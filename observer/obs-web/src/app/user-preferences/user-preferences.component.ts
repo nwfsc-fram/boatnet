@@ -29,12 +29,16 @@ export class UserPreferencesComponent implements OnInit {
 
   userPreference = this.userPrefs[this.user.id].notification_preference
 
+  name = this.stateSvc.currentState.name
+
   constructor(
     private stateSvc: StateService,
   ) { }
 
   ngOnInit() {
     this.stateSvc.setStateName('user-preferences');
+    this.name = this.stateSvc.currentState.name
+    console.log(this.name)
   }
 
 }

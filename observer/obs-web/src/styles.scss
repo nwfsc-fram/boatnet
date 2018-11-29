@@ -24,6 +24,7 @@ body {
 
 .narrow_item_border {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-between; 
     font-weight: bold;
     font-size: 15px;
@@ -33,6 +34,7 @@ body {
 
 .closed_item_border {
     display: flex;
+    flex-flow: row wrap;
     justify-content: space-between; 
     font-weight: bold;
     font-size: 15px;
@@ -104,6 +106,10 @@ body {
 
 .pv6 {
     padding: 6px 0
+}
+
+.bm5 {
+    margin-bottom: 5px;
 }
 
 @media only screen and (max-width: 414px) {

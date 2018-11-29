@@ -5,16 +5,25 @@
   </div>
 
   <form mat-form [formGroup]="tripForm">
-        <div class="flex-grid">
+        <div class="flex-grid bm5">
             <span class="col pv6" style="text-align: left"><strong>Start Date: </strong></span>
-            <p-calendar formControlName="start_date" id="start_date" [touchUI]="true"></p-calendar>
+            <p-calendar formControlName="start_date" id="start_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
         </div>
-        <br>
-        <div class="flex-grid">
+
+        <div class="flex-grid bm5">
+            <span class="col pv6" style="text-align: left"><strong>Start Port: </strong></span>
+            <input type="text" formControlName="start_port">
+        </div>
+
+        <div class="flex-grid bm5">
             <span class="col pv6" style="text-align: left"><strong>End Date: &nbsp;</strong></span>
-            <p-calendar formControlName="end_date" id="end_date" [touchUI]="true"></p-calendar>
+            <p-calendar formControlName="end_date" id="end_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
         </div>
-        <br>
+
+        <div class="flex-grid bm5">
+            <span class="col pv6" style="text-align: left"><strong>End Port: </strong></span>
+            <input type="text" formControlName="end_port">
+        </div>
 
         <hr>
         <div *ngIf="trip.is_open; else tripClosed">
@@ -36,9 +45,13 @@
         
         <hr>
         <strong>Permits:</strong>
-        <div *ngFor="let permit of trip.permits" class="narrow_item_border">
-            {{ permit.fishery }}
+        <p-selectButton [options]="permits" formControlName="permits" multiple="multiple" (ngModelChange)="setTripPermits()"></p-selectButton>
+
+        <div *ngIf="trip.permits.includes('nl')">  <!-- nl = not listed -->
+            <span>Enter unlisted permit number:</span>
+            <input type="text" formControlName="unlisted_permit" id="unlisted_permit" (ngModelChange)="addUnlistedPermit()">
         </div>
+
         <hr>
         <strong>Messages:</strong>
         <button style="float:right; color: white; margin: 5px 0" mat-icon-button><mat-icon>create</mat-icon></button> 
