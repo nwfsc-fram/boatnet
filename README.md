@@ -1,15 +1,12 @@
 # Boatnet 
-Boatnet provides a suite of tools for commercial fishing vessels. These include a tablet app for observers to log their findings and a mobile app for captains to keep track of trips. You can find more details about each project in this [section](https://github.com/nwfsc-fram/boatnet#projects)
+Boatnet provides a suite of tools for collecting fisheries scientific survey and observer monitoring data while aboard commercial, recreational, and NOAA vessels. These include a tablet app for observers and surveys to capture their haul-level catch information and a mobile app for captains to keep track of observer-monitored trips. You can find more details about each project in this [section](https://github.com/nwfsc-fram/boatnet#projects)
 
 <p align="center">
   <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
        width="654" height="300">
 </p>
 
-For those only interested in running the project follow the [What to install](https://github.com/nwfsc-fram/boatnet#what-to-install) and [How to build and run](https://github.com/nwfsc-fram/boatnet#how-to-build-and-run) section and ignore the rest. The remaining sections are for development purposes only. Note: We are currently working on simplifying the process and in the future you can just download an executable and run the application.
-
-## What to install
-* Node.js - download [here](https://nodejs.org/en/)
+For those only interested in running the project follow the [How to build and run](https://github.com/nwfsc-fram/boatnet#how-to-build-and-run) section and ignore the rest. The remaining sections are for development purposes only. Note: We are currently working on simplifying the process and in the future you can just download an executable and run the application.
 
 ## Projects 
 Boatnet contains multiple projects located in different directories. The different projects are listed below. 
@@ -28,9 +25,11 @@ A mobile app for our observer program where captains can log their trips and the
 __Directory__: survey/surv-cutter
 
 ## How to build and run
-1) Navigate to the directory of the project you wish to run
-2) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-3) Run `ng serve` then navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+1) Install Node.js - download [here](https://nodejs.org/en/)
+2) Clone the repository - git clone git@github.com:nwfsc-fram/boatnet.git
+3) Navigate to the directory of the project you wish to run
+4) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
+5) Run `ng serve` then navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Development Setup
 * Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
@@ -66,6 +65,9 @@ git clone git@github.com:nwfsc-fram/boatnet.git
             
             Create dir C:\Program Files\Git\usr\local\share\man\man1
             Copy git-secrets/git-secrets.1 help file to C:\Program Files\Git\usr\local\share\man\man1\git-secrets.1
+
+            # For Visual Studio Code Integration
+            Copy git-secrets/git-secrets script to C:\Program Files\Git\cmd\git-secrets
 
   * MacOS & Linux
 
