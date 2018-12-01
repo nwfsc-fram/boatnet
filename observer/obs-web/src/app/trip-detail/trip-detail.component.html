@@ -5,44 +5,48 @@
   </div>
 
   <form mat-form [formGroup]="tripForm">
-        <div class="flex-grid bm5">
+        <div class="flex-grid mb5">
             <span class="col pv6" style="text-align: left"><strong>Start Date: </strong></span>
             <p-calendar formControlName="start_date" id="start_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
         </div>
 
-        <div class="flex-grid bm5">
+        <div class="flex-grid mb5">
             <span class="col pv6" style="text-align: left"><strong>Start Port: </strong></span>
             <input type="text" formControlName="start_port">
         </div>
 
-        <div class="flex-grid bm5">
+        <div class="flex-grid mb5">
             <span class="col pv6" style="text-align: left"><strong>End Date: &nbsp;</strong></span>
             <p-calendar formControlName="end_date" id="end_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
         </div>
 
-        <div class="flex-grid bm5">
+        <div class="flex-grid mb5">
             <span class="col pv6" style="text-align: left"><strong>End Port: </strong></span>
             <input type="text" formControlName="end_port">
         </div>
 
         <hr>
-        <div *ngIf="trip.is_open; else tripClosed">
-            <div style="float: left">
-                <strong>Status: <span style="color: green">OPEN</span></strong>
+        <div class="flex-space-between">
+            <div *ngIf="trip.is_open; else tripClosed">
+                <div>
+                    <strong>Status:       
+                    <span style="color: green">OPEN</span></strong>
+                </div>
+            </div>
+
+            <ng-template #tripClosed>
+                <div>
+ 
+                    <strong>Status:     
+                    <span style="color: red">CLOSED</span></strong>    
+                </div>
+            </ng-template>
+
+            <div>
+                <strong>Selected:</strong>  {{ trip.selected }}   
             </div>
         </div>
 
-        <ng-template #tripClosed>
-            <div style="float: left">
-                <strong>Status: <span style="color: red">CLOSED</span></strong>         
-            </div>
-        </ng-template>
-
-        <div style="float: right">
-            <strong>Selected:</strong>  {{ trip.selected }}   
-        </div>
-        <br>
-        
         <hr>
         <strong>Permits:</strong>
         <p-selectButton [options]="permits" formControlName="permits" multiple="multiple" (ngModelChange)="setTripPermits()"></p-selectButton>
@@ -57,12 +61,29 @@
 
         <hr>
         <strong>Messages:</strong>
-        <button style="float:right; color: white; margin: 5px 0" mat-icon-button><mat-icon>create</mat-icon></button> 
+        <div *ngIf="trip.is_open">
+            <button style="float:right; color: white; margin: 5px 0" mat-icon-button routerLink="/message-detail"><mat-icon>create</mat-icon></button> 
+        </div>
         <br><br><br>
-        <div *ngFor="let message of trip.messages" class="narrow_item_border">
-            {{ message.content }}
+        <div *ngFor="let message of trip.messages" >
+            <div class="narrow_item_border" *ngIf="message.created_by === currentUser; else otherUsersMessage" (click)="editMessage(message)" routerLink="/message-detail">
+                <sup style="color: #0093D0">{{ message.created_by }}</sup>
+                <span style="text-align: right">{{ message.content }}</span>
+            </div>
+            <ng-template class="narrow_item_border" #otherUsersMessage>
+                    <sup style="color: #0093D0">{{ message.created_by }}</sup>
+                    <span style="text-align: right">{{ message.content }}</span>
+            </ng-template>
         </div>
 
+        <hr>
+        <div *ngIf="trip.is_open; else tripIsClosed">
+            <p-button label="Close Trip" styleClass="ui-button-danger" (click)="closeTrip()"></p-button> 
+        </div>
+
+        <ng-template #tripIsClosed>
+            <p-button label="Re-Open Trip" (click)="openTrip()"></p-button>
+        </ng-template>
     <!-- <br><br>
     <div>
         <p-toggleButton onLabel="open" offLabel="closed" onIcon="pi pi-lock-open" offIcon="pi pi-lock" formControlName="is_open"></p-toggleButton>

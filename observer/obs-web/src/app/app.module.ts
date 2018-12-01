@@ -52,6 +52,7 @@ import { HeaderComponent } from './header/header.component';
 import { UserComponent } from './user/user.component';
 import { VesselDetailComponent } from './vessel-detail/vessel-detail.component';
 import { PermitDetailComponent } from './permit-detail/permit-detail.component';
+import { MessageDetailComponent } from './message-detail/message-detail.component';
 
 const appRoutes: Routes = [
   { path: 'ots-management',   component: OTSManagementComponent },
@@ -59,6 +60,7 @@ const appRoutes: Routes = [
   { path: 'user',             component: UserComponent },
   { path: 'trips',            component: TripsComponent },
   { path: 'trip',             component: TripDetailComponent },
+  { path: 'message-detail',   component: MessageDetailComponent },
   { path: 'user-preferences', component: UserPreferencesComponent },
   { path: 'manage-vessels',   component: VesselsComponent },
   { path: 'vessel-detail',    component: VesselDetailComponent },
@@ -88,7 +90,8 @@ const appRoutes: Routes = [
     HeaderComponent,
     UserComponent,
     VesselDetailComponent,
-    PermitDetailComponent
+    PermitDetailComponent,
+    MessageDetailComponent
   ],
   imports: [
     RouterModule.forRoot(

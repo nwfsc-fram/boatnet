@@ -13,15 +13,19 @@
     <button mat-icon-button (click)="closeTrip()"><i class="pi pi-lock"></i></button>
   </div> -->
 
-  <div *ngIf="name === 'trip'">
+  <!-- <div *ngIf="name === 'trip'">
     <div *ngIf="trip.is_open; else tripClosed">
       <button class="mat-icon-button" mat-icon-button (click)="closeTrip()"><i class="pi pi-lock" style="font-size: 20px"></i></button>
     </div>
     <ng-template #tripClosed>
       <button class="mat-icon-button" mat-icon-button (click)="openTrip()"><i class="pi pi-lock-open" style="font-size: 20px"></i></button>
     </ng-template>
-  </div>
+  </div> -->
 
+  <div *ngIf="name === 'message-detail'">
+    <p-button label="Discard" icon="pi pi-trash" styleClass="ui-button-danger" (click)=discardMessage()></p-button>
+    <p-button label="Save" icon="pi pi-save" (click)="saveMessage()"></p-button>
+  </div>
 
   <div *ngIf="createConfig.includes(name); else noCreate">
     <div *ngIf="name === 'trips'">

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../state.service';
 import { Trip } from '../_models/trip';
-import { TripsComponent } from '../trips/trips.component';
+import { User } from '../_models/user';
 import {
   FormControl,
   NgForm,
@@ -20,6 +20,7 @@ import {
 export class TripDetailComponent implements OnInit {
 
   trip: Trip = this.stateSvc.currentState.trip
+  currentUser = this.stateSvc.currentState.user.first_name + " " + this.stateSvc.currentState.user.last_name
 
   // permits = [
   //       {title: 'GF0001', value: 1},
@@ -100,6 +101,22 @@ export class TripDetailComponent implements OnInit {
     const formModel = this.tripForm.value
     this.stateSvc.currentState.trip.permits.push(formModel.unlisted_permit)        
     console.log(this.stateSvc.currentState.trip)
+  }
+
+  editMessage(message) {
+    console.log(message)
+    this.stateSvc.setMessage(message)
+    this.stateSvc.currentState.trip.messages.splice(message, 1)
+  }
+
+  openTrip() {
+    this.stateSvc.currentState.trip.is_open = true
+    console.log(this.stateSvc.currentState.trip.is_open)
+  }
+
+  closeTrip() {
+    this.stateSvc.currentState.trip.is_open = false
+    console.log(this.stateSvc.currentState.trip.is_open)
   }
 
 }
