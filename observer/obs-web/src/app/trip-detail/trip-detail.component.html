@@ -67,12 +67,28 @@
         <br><br><br>
         <div *ngFor="let message of trip.messages" >
             <div class="narrow_item_border" *ngIf="message.created_by === currentUser; else otherUsersMessage" (click)="editMessage(message)" routerLink="/message-detail">
-                <sup style="color: #0093D0">{{ message.created_by }}</sup>
-                <span style="text-align: right">{{ message.content }}</span>
+                <div class="col" style="text-align: left; padding-left: 3px">
+                    <div style="color: #0093D0">
+                        {{ message.created_by }}
+                        <br>
+                        {{ message.created_date }}
+                    </div>
+                </div>
+                <div class="col2">
+                    <div style="text-align: left">{{ message.content }}</div>
+                </div>
             </div>
             <ng-template class="narrow_item_border" #otherUsersMessage>
-                    <sup style="color: #0093D0">{{ message.created_by }}</sup>
-                    <span style="text-align: right">{{ message.content }}</span>
+                    <div class="col" style="text-align: left; padding-left: 3px">
+                        <div style="color: #0093D0">
+                            {{ message.created_by }}
+                            <br>
+                            {{ message.created_date }}
+                        </div>
+                    </div>
+                    <div class="col2">
+                        <div style="text-align: left">{{ message.content }}</div>
+                    </div>
             </ng-template>
         </div>
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from '../_models/message';
 import { StateService } from '../state.service';
-
+import { getBoatnetDateNow } from '../shared/util';
 
 @Component({
   selector: 'app-message-detail',
@@ -22,6 +22,7 @@ export class MessageDetailComponent implements OnInit {
       this.message = this.stateSvc.currentState.message
     } else {
       this.message.created_by = this.stateSvc.currentState.user.first_name + " " + this.stateSvc.currentState.user.last_name
+      this.message.created_date = getBoatnetDateNow();
       this.stateSvc.setMessage(this.message)
     }
   }
