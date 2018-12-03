@@ -22,7 +22,7 @@
 <br>
   <div class="flex-grid">
     <span class="col pv6"><strong>Vessel</strong></span>
-    <p-dropdown [options]="vessels" formControlName="vessel" [autoWidth]='true' (ngModelChange)="setPermitVessel()"></p-dropdown>
+    <p-dropdown [options]="vessels" formControlName="vessel" [autoWidth]='true' [filter]="true" (ngModelChange)="setPermitVessel()"></p-dropdown>
   </div>
 <br>
   <div class="flex-grid">
