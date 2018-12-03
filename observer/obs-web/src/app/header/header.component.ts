@@ -37,6 +37,7 @@ export class HeaderComponent implements OnInit {
       '/manage-permits':   'MANAGE PERMITS',
       '/permit-detail':    'PERMIT DETAILS',
       '/ots-management':   'OTS MANAGEMENT',
+      '/message-detail':   'MESSAGE DETAIL',
     }
 
     var title = titles[this.router.url]

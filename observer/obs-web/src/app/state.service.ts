@@ -4,6 +4,7 @@ import { Permit } from './_models/permit';
 import { Vessel } from './_models/vessel';
 import { Trip } from './_models/trip';
 import { User } from './_models/user';
+import { Message } from './_models/message'
 import { AppState } from './_models/app-state';
 
 
@@ -21,10 +22,11 @@ export class StateService {
   currentVessel = new BehaviorSubject<Vessel>(undefined);
   currentTrip = new BehaviorSubject<Trip>(undefined);
   currentUser = new BehaviorSubject<User>(undefined)
+  currentMessage = new BehaviorSubject<Message>(undefined);
 
   headerStatus = new Subject<string>();
 
-  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'user', 'vessel-management', 'vessel-detail', 'permits-management', 'permit', 'trips', 'trip']
+  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'user', 'vessel-management', 'vessel-detail', 'permits-management', 'permit', 'trips', 'trip', 'message-detail']
 
   constructor() { 
     this.currentState = this.loadAppState();
@@ -104,6 +106,13 @@ export class StateService {
     this.persistAppState()
   }
 
+  setMessage(message: Message) {
+    this.currentState.message = message;
+    this.currentMessage.next(this.currentState.message)
+    this.persistAppState()
+  }
+
+
   clearPermit() {
     this.currentState.permit = undefined;
     this.currentPermit.next(undefined);
@@ -125,6 +134,12 @@ export class StateService {
   clearUser() {
     this.currentState.user = undefined;
     this.currentUser.next(undefined);
+    this.persistAppState();
+  }
+
+  clearMessage() {
+    this.currentState.message = undefined;
+    this.currentMessage.next(undefined);
     this.persistAppState();
   }
 

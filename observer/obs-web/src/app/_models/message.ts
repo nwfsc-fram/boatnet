@@ -5,9 +5,6 @@ export class Message implements BoatnetBase {
     type: 'message';
     created_by: string;
     created_date: BoatnetDate;
-    vessel_name: string;
-    uscg_num: string;
-    state_reg: string;
     content: string;
   }
   

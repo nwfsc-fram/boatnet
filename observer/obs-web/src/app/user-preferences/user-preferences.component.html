@@ -4,8 +4,8 @@
 <hr>
 <strong>Preferred Notification Method:</strong>
   <div class="pv6">
-    <p-selectButton [options]="notification_options" [(ngModel)]="userPreference"></p-selectButton>
-    <p>{{ userPreference }}</p>
+    <p-selectButton id="notificationSelect" [options]="notification_options" multiple="multiple" (onChange)="setNotificationPref($event)"></p-selectButton>
+    <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getNotificationPref()"></div>
   </div>
 
 <app-footer></app-footer>
