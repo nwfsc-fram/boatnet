@@ -79,7 +79,8 @@ export class Haul implements BoatnetBase {
       testing: {
         errors: 0,
         otc_wt: 0
-       }
+       },
+       haul_num: 5
 
     });
   }

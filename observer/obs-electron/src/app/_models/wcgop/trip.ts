@@ -14,7 +14,7 @@ export class Trip implements BoatnetBase {
   gear_type: GearType;
   comments: string;
 
-  friendly_trip_id: number;
+  friendly_trip_id: string;
   vessel: Vessel;
   fishery: string;
   skipper: string;
@@ -61,7 +61,8 @@ export class Trip implements BoatnetBase {
       dates: {
         departure_date: null,
         return_date: null
-      }
+      },
+      friendly_trip_id: 'sep 11 1234'
     });
   }
 }

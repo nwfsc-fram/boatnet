@@ -1,15 +1,13 @@
-.version {
-  font-size: small;
+.breadcrumb-label {
+  font-size: medium;
 }
 
-.username {
-  font-size: small;
-}
-.program {
-  font-size: small;
+.header-icon {
+  display: inline-flex;
+  vertical-align: middle;
+  align-items: center;
 }
 
-.header-status {
-  font-size: large;
-  font-weight: bold;
+.fill-remaining-space {
+  flex: 1 1 auto;
 }

@@ -60,6 +60,7 @@ export class HeaderToolbarComponent implements OnInit, OnDestroy {
         : false;
     });
 
+    this.currentState = this.stateService.currentState;
     this.stateSub = this.stateService.getState().subscribe(state => {
       this.handleStateChange(state);
     });

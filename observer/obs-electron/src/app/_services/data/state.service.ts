@@ -10,6 +10,8 @@ import {
   GEAR_TYPE_FG
 } from '../../_models/shared/gear-type';
 import { Program } from '../../_models/shared/program';
+import { Species } from 'src/app/_models/shared/species';
+import { Catch } from 'src/app/_models/wcgop/catch';
 
 /**
  * IObserver state service

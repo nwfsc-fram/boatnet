@@ -9,7 +9,7 @@ export class Species implements BoatnetBase {
   speciesUUID: string;
   active: boolean;
   commonName: string;
-  pacfinCode: string;
+  shortCode: string;
   scientificName: string;
   speciesCode: number;
 }
