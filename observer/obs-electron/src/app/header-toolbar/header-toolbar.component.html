@@ -1,20 +1,35 @@
 <mat-toolbar color="primary">
-  <span *ngIf="!currentUser">Observer Login</span>
-  <span fxLayoutAlign="center center" *ngIf="currentUser">
-    <mat-icon>{{isAdmin ? "supervisor_account" : "account_circle"}}</mat-icon> &nbsp;
-    <span class="username">{{currentUser.username}}: </span>
-    <span class="program">{{currentProgramName}}</span> &nbsp;
-  </span>
-  <span fxFlex="1 1 auto"></span>
-  <div *ngIf="tripSelected | async">
-    <mat-icon>directions_boat</mat-icon>
+  <button mat-button [routerLink]="['/home']" class="header-icon">
+    <mat-icon>home</mat-icon>
+  </button>
+
+  <button *ngIf="currentState.trip" mat-button [routerLink]="['/trips']">
+    <span class="breadcrumb-label">Trip: {{currentState.trip.friendly_trip_id}}</span>
+  </button>
+
+  <div *ngIf="currentState.haul" class="header-icon">
+      <mat-icon>chevron_right</mat-icon>
+      <button mat-button [routerLink]="['/hauls']">
+        <span class="breadcrumb-label">Haul: {{currentState.haul.haul_num}}</span>
+      </button>
+    </div>
+
+  <div *ngIf="currentState.catch" class="header-icon">
+    <mat-icon>chevron_right</mat-icon>
+    <button mat-button>
+      <span class="breadcrumb-label">Catch: {{currentState.catch.id}}</span>
+    </button>
   </div>
-  <span fxLayoutAlight="center center" class="header-status">{{headerStatus | async}}</span>
-  <span fxFlex="1 1 auto"></span>
-  <span *ngIf="showVersion" class="version">Version {{version}}, DB:
-    <span class="db-name">{{dbName}}</span>
-  </span>
-  <span *ngIf="currentState && debug_mode">&nbsp;(state={{currentState.name}})</span>
+
+  <div *ngIf="currentState.species" class="header-icon">
+    <mat-icon>chevron_right</mat-icon>
+    <button mat-button>
+      <span class="breadcrumb-label">Species: {{currentState.species.shortCode}}</span>
+    </button>
+  </div>
+
+  <span class="fill-remaining-space"></span>
+
   <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="currentUser">
     <mat-icon>menu</mat-icon>
   </button>
