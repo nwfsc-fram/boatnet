@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../state.service';
+import { StateService } from '../_services/data/state.service';
 import { AppState } from '../_models/app-state';
 import { Vessel } from '../_models/vessel';
 import { Router } from '@angular/router';

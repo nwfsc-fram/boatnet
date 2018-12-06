@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
-import { Permit } from './_models/permit';
-import { Vessel } from './_models/vessel';
-import { Trip } from './_models/trip';
-import { User } from './_models/user';
-import { Message } from './_models/message'
-import { AppState } from './_models/app-state';
+import { Permit } from '../../_models/permit';
+import { Vessel } from '../../_models/vessel';
+import { Trip } from '../../_models/trip';
+import { User } from '../../_models/user';
+import { Message } from '../../_models/message'
+import { AppState } from '../../_models/app-state';
 
 
 @Injectable({

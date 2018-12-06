@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {InputTextModule} from 'primeng/inputtext';
-import { StateService } from '../state.service';
+import { StateService } from '../_services/data/state.service';
 import { User } from '../_models/user'
 
 @Component({

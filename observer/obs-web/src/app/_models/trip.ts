@@ -3,7 +3,7 @@ import { Permit } from '../_models/permit';
 import { Message } from '../_models/message';
 import { v4 as uuid } from 'uuid';
 import { getBoatnetDateNow } from '../shared/util';
-import { StateService } from '../state.service';
+import { StateService } from '../_services/data/state.service';
  
 export class Trip implements BoatnetBase {
   id: string;
