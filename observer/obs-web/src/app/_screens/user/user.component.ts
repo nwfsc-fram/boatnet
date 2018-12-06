@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../_services/data/state.service';
-import { User } from '../_models/user';
+import { StateService } from '../../_services/data/state.service';
+import { User } from '../../_models/user';
 import {
   FormControl,
   NgForm,

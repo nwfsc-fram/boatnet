@@ -1,6 +1,6 @@
 import { Component, OnInit, createPlatformFactory } from '@angular/core';
-import { StateService } from '../_services/data/state.service';
-import { Permit } from '../_models/permit'
+import { StateService } from '../../_services/data/state.service';
+import { Permit } from '../../_models/permit'
 import {
   FormControl,
   NgForm,

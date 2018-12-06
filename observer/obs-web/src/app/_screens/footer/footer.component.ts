@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { StateService } from '../_services/data/state.service';
-import { AppState } from '../_models/app-state';
-import { Vessel } from '../_models/vessel';
 import { Router } from '@angular/router';
-import { Message } from '../_models/message';
+import { StateService } from '../../_services/data/state.service';
+import { AppState } from '../../_models/app-state';
+import { Vessel } from '../../_models/vessel';
+import { Message } from '../../_models/message';
 
 @Component({
   selector: 'app-footer',

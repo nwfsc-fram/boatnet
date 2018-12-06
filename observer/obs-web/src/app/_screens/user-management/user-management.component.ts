@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {InputTextModule} from 'primeng/inputtext';
-import { StateService } from '../_services/data/state.service';
-import { User } from '../_models/user'
+import { StateService } from '../../_services/data/state.service';
+import { User } from '../../_models/user'
 
 @Component({
   selector: 'app-user-management',

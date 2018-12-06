@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router'
-import { StateService } from '../_services/data/state.service';
+import { StateService } from '../../_services/data/state.service';
 
 @Component({
   selector: 'app-header',

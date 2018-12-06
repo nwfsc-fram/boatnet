@@ -37,22 +37,22 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import {CardModule} from 'primeng/card';
 
-import { MenuComponent } from './menu/menu.component';
-import { VesselPermitsComponent } from './vessel-permits/vessel-permits.component';
-import { TripsComponent } from './trips/trips.component';
-import { OTSManagementComponent } from './ots-management/ots-management.component';
-import { UserManagementComponent } from './user-management/user-management.component';
-import { UserPreferencesComponent } from './user-preferences/user-preferences.component';
-import { VesselsComponent } from './vessels/vessels.component';
-import { PermitsComponent } from './permits/permits.component';
-import { TripDetailComponent } from './trip-detail/trip-detail.component';
-import { MessagesComponent } from './messages/messages.component';
-import { FooterComponent } from './footer/footer.component';
-import { HeaderComponent } from './header/header.component';
-import { UserComponent } from './user/user.component';
-import { VesselDetailComponent } from './vessel-detail/vessel-detail.component';
-import { PermitDetailComponent } from './permit-detail/permit-detail.component';
-import { MessageDetailComponent } from './message-detail/message-detail.component';
+import { MenuComponent } from './_screens/menu/menu.component';
+import { VesselPermitsComponent } from './_screens/vessel-permits/vessel-permits.component';
+import { TripsComponent } from './_screens/trips/trips.component';
+import { OTSManagementComponent } from './_screens/ots-management/ots-management.component';
+import { UserManagementComponent } from './_screens/user-management/user-management.component';
+import { UserPreferencesComponent } from './_screens/user-preferences/user-preferences.component';
+import { VesselsComponent } from './_screens/vessels/vessels.component';
+import { PermitsComponent } from './_screens/permits/permits.component';
+import { TripDetailComponent } from './_screens/trip-detail/trip-detail.component';
+import { MessagesComponent } from './_screens/messages/messages.component';
+import { FooterComponent } from './_screens/footer/footer.component';
+import { HeaderComponent } from './_screens/header/header.component';
+import { UserComponent } from './_screens/user/user.component';
+import { VesselDetailComponent } from './_screens/vessel-detail/vessel-detail.component';
+import { PermitDetailComponent } from './_screens/permit-detail/permit-detail.component';
+import { MessageDetailComponent } from './_screens/message-detail/message-detail.component';
 
 const appRoutes: Routes = [
   { path: 'ots-management',   component: OTSManagementComponent },
