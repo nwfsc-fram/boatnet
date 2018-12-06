@@ -4,6 +4,7 @@ import PouchDB from 'pouchdb'
 import PouchdbFind from 'pouchdb-find'
 import * as CryptoPouch from 'crypto-pouch'
 
+declare var require: any
 const dbConfig = require('../dbConfig.json')
 import { Subject, BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -44,7 +45,6 @@ export class DataService {
     // TODO Tested removing encryption, and it seems to imply that we need to
     // clear the DB and re-sync (bulk insert errors)
 
-    this.populateOfflineData(); // Load static data (for no DB connection in phase 1)    
 }
 
   /**

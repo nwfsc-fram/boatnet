@@ -53,6 +53,7 @@ import { UserComponent } from './_screens/user/user.component';
 import { VesselDetailComponent } from './_screens/vessel-detail/vessel-detail.component';
 import { PermitDetailComponent } from './_screens/permit-detail/permit-detail.component';
 import { MessageDetailComponent } from './_screens/message-detail/message-detail.component';
+import { LoginComponent } from './_screens/login/login.component';
 
 const appRoutes: Routes = [
   { path: 'ots-management',   component: OTSManagementComponent },
@@ -91,7 +92,8 @@ const appRoutes: Routes = [
     UserComponent,
     VesselDetailComponent,
     PermitDetailComponent,
-    MessageDetailComponent
+    MessageDetailComponent,
+    LoginComponent
   ],
   imports: [
     RouterModule.forRoot(

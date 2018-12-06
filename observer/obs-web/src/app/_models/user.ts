@@ -22,6 +22,14 @@ export class User implements BoatnetBase {
   zip: string;
   home_port: string;
   notification_prefs: string[];
+  token: string; // For authentication via JWT
+  username: string;
+  password: string;
+  pwexpiry: string;
+  firstName: string;
+  lastName: string;
+  roles: any[];
+  programs: any[];
 
   public constructor(init?: Partial<User>) {
     Object.assign(this, init);

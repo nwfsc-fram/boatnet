@@ -6,6 +6,7 @@ import { Trip } from '../../_models/trip';
 import { User } from '../../_models/user';
 import { Message } from '../../_models/message'
 import { AppState } from '../../_models/app-state';
+import { Program } from '../../_models/program';
 
 
 @Injectable({
@@ -23,6 +24,7 @@ export class StateService {
   currentTrip = new BehaviorSubject<Trip>(undefined);
   currentUser = new BehaviorSubject<User>(undefined)
   currentMessage = new BehaviorSubject<Message>(undefined);
+  currentProgram = new BehaviorSubject<Program>(undefined);
 
   headerStatus = new Subject<string>();
 
@@ -34,7 +36,11 @@ export class StateService {
   }
 
   initialize(state) {
-
+    this.currentProgram.next(this.currentState.program);
+    this.currentProgram.subscribe(program => {
+      this.currentState.program = program;
+      this.persistAppState();
+    });
   }
 
   loadAppState(): AppState {
@@ -112,6 +118,10 @@ export class StateService {
     this.persistAppState()
   }
 
+  setProgram(program: Program) {
+    this.currentState.program = program;
+    this.currentProgram.next(program);
+  }
 
   clearPermit() {
     this.currentState.permit = undefined;

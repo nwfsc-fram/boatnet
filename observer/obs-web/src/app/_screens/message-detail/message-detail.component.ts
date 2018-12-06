@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Message } from '../../_models/message';
 import { StateService } from '../../_services/data/state.service';
-import { getBoatnetDateNow } from '../shared/util';
+import { getBoatnetDateNow } from '../../shared/util';
 
 @Component({
   selector: 'app-message-detail',
