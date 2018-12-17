@@ -26,10 +26,12 @@ __Directory__: survey/surv-cutter
 
 ## How to build and run
 1) Install Node.js - download [here](https://nodejs.org/en/)
-2) Clone the repository - `git clone git@github.com:nwfsc-fram/boatnet.git`
-3) Navigate to the directory of the project you wish to run
-4) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-5) Run `ng serve --open` which will auto-open a browser at `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+2) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
+3) Install node-gyp by launching visual studio code as administrator and running the following from a terminal (on Windows):  `npm install --global --production windows-build-tools` (Ref: https://www.npmjs.com/package/node-gyp)
+4) Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
+5) Navigate to the directory of the project you wish to run
+6) Run `npm install` from that directory. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
+7) Run `ng serve --open` which will auto-open a browser at `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Development Setup
 * Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
