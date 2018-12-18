@@ -28,6 +28,12 @@
       ],
       "fram-specimens/*": [
         "dist/fram-specimens/*"
+      ],
+      "fram-models": [
+        "dist/fram-models"
+      ],
+      "fram-models/*": [
+        "dist/fram-models/*"
       ]
     }
   }

@@ -49,20 +49,30 @@ export * from './lib/specimens/specimens.component';
 export * from './lib/fram-specimens.module';
 ```
 
-### 7. Globally link to the module
+### 7a [OPTION 1] Reference the library modules in your application directly via tsconfig.json
 
-Navigate to your built library folder (i.e into the dist\<library name>) and then create a global link
+*Locate the tsconfig.json file in your application's root folder. Add the relative "path" as such (example from obs-electron)
 
+```
+"paths": {
+  "fram-models": [
+    "../../fram-modules/dist/fram-models"
+  ]
+}
+```
+
+### 7b [OPTION 2] npm link to the module
+* `npm link` seems a little flaky/ breaks its links occasionally on Windows. Recommend [OPTION 1]
+* Navigate to your built library folder (i.e into the dist\<library name>) and then create a global link
 ```
 cd dist\fram-specimens
 npm link
 ```
+* Next, navigate to your application root directory and type:
+```
+npm link fram-specimens
+```
 
-### 7.1 Link to the new module in your local application
-
-Navigate to your application root directory and type:
-
-`npm link fram-specimens`
 
 ### 8. Use the new library in your application
 
