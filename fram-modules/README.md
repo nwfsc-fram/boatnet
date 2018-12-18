@@ -1,8 +1,12 @@
 # FramModules
 
+* Note: build the projects first (e.g `ng build fram-catch`)
+
 ## Creating and linking to a new module
 
 ### 1. Navigate to the fram-modules directory in the terminal window
+
+This top level project could be used to test the various modules in projects/ 
 
 `cd fram-modules`
 
@@ -54,13 +58,13 @@ cd dist\fram-specimens
 npm link
 ```
 
-### 8. Link to the new module in your local application
+### 7.1 Link to the new module in your local application
 
 Navigate to your application root directory and type:
 
 `npm link fram-specimens`
 
-### 9. Use the new library in your application
+### 8. Use the new library in your application
 
 Open the app.module.ts file and add:
 
@@ -97,3 +101,8 @@ Once ng serve is running, it will automatically pick up the build changes and re
 ## References  
 
 https://medium.com/@tomsu/how-to-build-a-library-for-angular-apps-4f9b38b0ed11
+
+From angular meetup:
+https://bit.ly/angular-cli-libs
+
+https://blog.angularindepth.com/creating-a-library-in-angular-6-87799552e7e5
