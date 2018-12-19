@@ -208,6 +208,41 @@
           }
         }
       }
+    },
+    "fram-models": {
+      "root": "projects/fram-models",
+      "sourceRoot": "projects/fram-models/src",
+      "projectType": "library",
+      "prefix": "fram",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/fram-models/tsconfig.lib.json",
+            "project": "projects/fram-models/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/fram-models/src/test.ts",
+            "tsConfig": "projects/fram-models/tsconfig.spec.json",
+            "karmaConfig": "projects/fram-models/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/fram-models/tsconfig.lib.json",
+              "projects/fram-models/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "fram-modules"
