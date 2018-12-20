@@ -22,7 +22,7 @@ import {
 import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
 import { AuthenticationService } from '../../../_services/auth/authentication.service';
-import { Vessel, Port, GearType } from 'fram-models';
+import { Vessel, Port, GearType } from 'bn-models';
 import { Trip } from '../../../_models/wcgop/trip';
 import { startWith, map } from 'rxjs/operators';
 

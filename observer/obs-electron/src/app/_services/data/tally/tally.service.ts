@@ -10,7 +10,7 @@ import { getBoatnetDateNow } from '../../../shared/util';
 import { AuthenticationService } from '../../auth/authentication.service';
 import { CountsWeightsData } from '../../../_models/wcgop/tally/counts-weights-data';
 import { TemplateService } from './template.service';
-import { BoatnetDate } from 'fram-models';
+import { BoatnetDate } from 'bn-models';
 
 @Injectable({
   providedIn: 'root'

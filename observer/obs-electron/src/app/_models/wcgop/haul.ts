@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import { BoatnetBase, BoatnetDate } from 'fram-models';
-import { Species } from 'fram-models';
-import { GearType } from 'fram-models';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
+import { Species } from 'bn-models';
+import { GearType } from 'bn-models';
 import { Event } from './event';
 import { CatchSample } from './catch-sample';
 import { SampleStation } from './sample-station';

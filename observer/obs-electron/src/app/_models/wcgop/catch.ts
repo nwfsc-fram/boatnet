@@ -1,5 +1,5 @@
-import { BoatnetBase, BoatnetDate } from 'fram-models';
-import { Species } from 'fram-models';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
+import { Species } from 'bn-models';
 
 export class Catch implements BoatnetBase {
   id: string;

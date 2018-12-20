@@ -25,13 +25,13 @@ If installed correctly, the build will be able to locate the file C:\OpenSSL-Win
 ### Troubleshooting 
 If you get an error: missing C:\Microsoft.Cpp.Default.Props after running npm install open a VS 2017 developer command prompt and run "npm install" from there.
 
-## Development - Build required shared fram-models module
+## Development - Build required shared bn-models module
 
-obs-electron has a dependency on fram-models, located in fram-modules. Currently building this is a manual process:
+obs-electron has a dependency on bn-models, located in bn-modules. Currently building this is a manual process:
 
 ```
-cd boatnet/fram-modules/
-ng build fram-models
+cd boatnet/bn-modules/
+ng build bn-models
 ```
 
 ## Development - Web Based

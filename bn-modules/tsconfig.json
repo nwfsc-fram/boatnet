@@ -1,0 +1,40 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
+    "paths": {
+      "bn-catch": [
+        "dist/bn-catch"
+      ],
+      "bn-catch/*": [
+        "dist/bn-catch/*"
+      ],
+      "bn-specimens": [
+        "dist/bn-specimens"
+      ],
+      "bn-specimens/*": [
+        "dist/bn-specimens/*"
+      ],
+      "bn-models": [
+        "dist/bn-models"
+      ],
+      "bn-models/*": [
+        "dist/bn-models/*"
+      ]
+    }
+  }
+}

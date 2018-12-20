@@ -8,11 +8,11 @@ import * as moment from 'moment';
 
 // Note: copy dbConfig.SAMPLE.json to dbConfig.json (prevent inadvertent commits to src control)
 const dbConfig = require('../dbConfig.json');
-import { User } from 'fram-models';
+import { User } from 'bn-models';
 import { AuthenticationService } from '../auth/authentication.service';
 import { MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR } from '@angular/material';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
-import { Species } from 'fram-models';
+import { Species } from 'bn-models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()

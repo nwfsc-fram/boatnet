@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { ElectronService } from 'ngx-electron';
 
 // Test
-import { TestModel } from 'fram-models';
+import { TestModel } from 'bn-models';
 
 @Component({
   selector: 'app-home',

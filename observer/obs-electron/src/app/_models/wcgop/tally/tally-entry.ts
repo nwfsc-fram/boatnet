@@ -1,4 +1,4 @@
-import { BoatnetBase, BoatnetDate } from 'fram-models';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
 import { TallyDataEntry } from './tally-data-entry';
 
 export class TallyData implements BoatnetBase {

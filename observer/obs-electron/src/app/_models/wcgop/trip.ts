@@ -1,8 +1,8 @@
 import { v4 as uuid } from 'uuid';
-import { BoatnetBase, BoatnetDate } from 'fram-models';
-import { Vessel } from 'fram-models';
-import { Port } from 'fram-models';
-import { GearType, GEAR_TYPE_TRAWL } from 'fram-models';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
+import { Vessel } from 'bn-models';
+import { Port } from 'bn-models';
+import { GearType, GEAR_TYPE_TRAWL } from 'bn-models';
 import { getBoatnetDateNow } from '../../shared/util';
 
 export class Trip implements BoatnetBase {

@@ -1,6 +1,6 @@
-import { Program } from 'fram-models';
-import { GearType } from 'fram-models';
-import { Species } from 'fram-models';
+import { Program } from 'bn-models';
+import { GearType } from 'bn-models';
+import { Species } from 'bn-models';
 import { Trip } from './trip';
 import { Haul } from './haul';
 import { Catch } from './catch';

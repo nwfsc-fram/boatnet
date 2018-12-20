@@ -1,4 +1,4 @@
-import { BoatnetBase, BoatnetDate } from 'fram-models';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
 
 export class CatchReceptacle implements BoatnetBase {
   id: string;
