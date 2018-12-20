@@ -10,8 +10,8 @@ import {
 import { StateService } from '../../../_services/data/state.service';
 import { Trip } from '../../../_models/wcgop/trip';
 import { Haul } from '../../../_models/wcgop/haul';
-import { Vessel } from 'fram-models';
-import { Location } from 'fram-models';
+import { Vessel } from 'bn-models';
+import { Location } from 'bn-models';
 import { DataService } from '../../../_services/data/data.service';
 import {
   FormControl,
@@ -25,8 +25,8 @@ import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import * as _moment from 'moment';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
 import { AuthenticationService } from '../../../_services/auth/authentication.service';
-import { Port } from 'fram-models';
-import { GearType } from 'fram-models';
+import { Port } from 'bn-models';
+import { GearType } from 'bn-models';
 import { startWith, map } from 'rxjs/operators';
 
 

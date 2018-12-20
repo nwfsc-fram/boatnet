@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { User } from 'fram-models';
+import { User } from 'bn-models';
 import { Subscription, Observable } from 'rxjs';
 
 import { AuthenticationService } from '../_services/auth/authentication.service';

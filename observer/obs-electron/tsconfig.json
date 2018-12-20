@@ -17,8 +17,8 @@
       "dom"
     ],
     "paths": {
-      "fram-models": [
-        "../../fram-modules/dist/fram-models"
+      "bn-models": [
+        "../../bn-modules/dist/bn-models"
       ]
     }
   }

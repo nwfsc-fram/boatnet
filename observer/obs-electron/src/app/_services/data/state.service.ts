@@ -8,8 +8,8 @@ import {
   GearType,
   GEAR_TYPE_TRAWL,
   GEAR_TYPE_FG
-} from 'fram-models';
-import { Program, Species } from 'fram-models';
+} from 'bn-models';
+import { Program, Species } from 'bn-models';
 import { Catch } from 'src/app/_models/wcgop/catch';
 
 /**
