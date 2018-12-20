@@ -1,10 +1,10 @@
-import { BoatnetBase } from '../interface/boatnet-base';
 import { v4 as uuid } from 'uuid';
+import { BoatnetBase, BoatnetDate } from 'fram-models';
+import { Species } from 'fram-models';
+import { GearType } from 'fram-models';
 import { Event } from './event';
 import { CatchSample } from './catch-sample';
 import { SampleStation } from './sample-station';
-import { Species } from '../shared/species';
-import { GearType } from '../shared/gear-type';
 import { UniqueSelectionDispatcher } from '@angular/cdk/collections';
 import { getBoatnetDateNow } from '../../shared/util';
 
@@ -85,5 +85,5 @@ export class Haul implements BoatnetBase {
     });
   }
 
-  
+
 }

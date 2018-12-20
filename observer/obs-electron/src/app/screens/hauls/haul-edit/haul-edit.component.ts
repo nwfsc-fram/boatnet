@@ -10,8 +10,8 @@ import {
 import { StateService } from '../../../_services/data/state.service';
 import { Trip } from '../../../_models/wcgop/trip';
 import { Haul } from '../../../_models/wcgop/haul';
-import { Vessel } from '../../../_models/shared/vessel';
-import { Location } from '../../../_models/shared/location';
+import { Vessel } from 'fram-models';
+import { Location } from 'fram-models';
 import { DataService } from '../../../_services/data/data.service';
 import {
   FormControl,
@@ -25,8 +25,8 @@ import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import * as _moment from 'moment';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
 import { AuthenticationService } from '../../../_services/auth/authentication.service';
-import { Port } from '../../../_models/shared/port';
-import { GearType } from '../../../_models/shared/gear-type';
+import { Port } from 'fram-models';
+import { GearType } from 'fram-models';
 import { startWith, map } from 'rxjs/operators';
 
 
@@ -212,9 +212,9 @@ export class HaulEditComponent implements OnInit {
       console.log('Got NULL HAUL. Creating new one.');
       this.haul = Haul.createWCGOPHaul(this.authService.getCurrentUsername());
     }
-    
+
     this.stateService.setHaul(this.haul);
-    
+
     this.currentProgram = this.stateService.currentProgram.getValue().desc;
     console.log(this.stateService.currentGearType);
 
@@ -307,7 +307,7 @@ export class HaulEditComponent implements OnInit {
         observer_catch_estimate: this.haul.observer_catch_estimate,
         vessel_catch_estimate: this.haul.vessel_catch_estimate,
         errors: this.haul.testing.errors,
-        bio_list: this.haul.bio_list, 
+        bio_list: this.haul.bio_list,
         haul_sampled: this.haul.haul_sampled,
         beaufort_scale: this.haul.beaufort_scale,
         brd_present: this.haul.brd_present,
@@ -368,7 +368,7 @@ export class HaulEditComponent implements OnInit {
   onGearSelect(event) {
     this.stateService.currentGearType.next(event.value);
     this.currentGearType = event.value;
-    this.displayOptions.gear_perf = this.currentGearType === "Fixed Gear" ? true : false 
+    this.displayOptions.gear_perf = this.currentGearType === "Fixed Gear" ? true : false
     console.log(this.stateService.currentGearType.value);
   }
 
@@ -459,7 +459,7 @@ onLocationSubmit() {
     this.locationId = formModel.id;
   }
 
-  const saveLocation = new Location() 
+  const saveLocation = new Location()
   saveLocation.id = this.locationId
   saveLocation.type = 'location'
   saveLocation.created_by = this.authService.getCurrentUsername()

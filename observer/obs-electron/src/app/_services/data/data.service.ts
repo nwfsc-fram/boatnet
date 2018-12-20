@@ -8,11 +8,11 @@ import * as moment from 'moment';
 
 // Note: copy dbConfig.SAMPLE.json to dbConfig.json (prevent inadvertent commits to src control)
 const dbConfig = require('../dbConfig.json');
-import { User } from '../../_models/shared/user';
+import { User } from 'fram-models';
 import { AuthenticationService } from '../auth/authentication.service';
 import { MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR } from '@angular/material';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
-import { Species } from '../../_models/shared/species';
+import { Species } from 'fram-models';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
@@ -230,6 +230,8 @@ export class DataService {
   }
 
   populateOfflineData() {
+    console.warn('Not inserting bulk data.')
+    return;
     this.getSpecies().then(species => {
       // This is temporary code to ensure species are loaded.
       if (species.length < 666) {

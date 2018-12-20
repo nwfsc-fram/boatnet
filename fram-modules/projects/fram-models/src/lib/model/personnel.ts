@@ -1,4 +1,6 @@
 import { BoatnetBase } from '../interface/boatnet-base';
+import { BoatnetDate } from '../types/boatnet-date';
+
 
 export class Personnel implements BoatnetBase {
   id: string;
