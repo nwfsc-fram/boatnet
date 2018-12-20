@@ -8,9 +8,8 @@ import {
   GearType,
   GEAR_TYPE_TRAWL,
   GEAR_TYPE_FG
-} from '../../_models/shared/gear-type';
-import { Program } from '../../_models/shared/program';
-import { Species } from 'src/app/_models/shared/species';
+} from 'fram-models';
+import { Program, Species } from 'fram-models';
 import { Catch } from 'src/app/_models/wcgop/catch';
 
 /**

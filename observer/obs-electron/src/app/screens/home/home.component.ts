@@ -3,6 +3,9 @@ import { StateService } from '../../_services/data/state.service';
 import { Observable } from 'rxjs';
 import { ElectronService } from 'ngx-electron';
 
+// Test
+import { TestModel } from 'fram-models';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -13,6 +16,9 @@ export class HomeComponent implements OnInit {
   isTabletMode: Observable<boolean>;
 
   isElectron: boolean;
+
+  testModel: TestModel;
+
   constructor(
     private stateSvc: StateService,
     private electronService: ElectronService

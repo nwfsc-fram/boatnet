@@ -2,6 +2,7 @@ export * from './types/boatnet-date';
 export * from './interface/boatnet-base';
 export * from './model/gear-type';
 export * from './model/location';
+export * from './model/personnel';
 export * from './model/port';
 export * from './model/program';
 export * from './model/species';

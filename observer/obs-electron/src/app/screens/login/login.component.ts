@@ -4,12 +4,12 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService } from '../../_services/ui/alert.service';
 import { AuthenticationService } from '../../_services/auth/authentication.service';
 import { DataService } from '../../_services/data/data.service';
-import { User } from '../../_models/shared/user';
+import { User } from 'fram-models';
 import { StateService } from '../../_services/data/state.service';
 import { AppState } from '../../_models/wcgop/app-state';
 import { Subscription, Observable } from 'rxjs';
 import { ThemeService } from '../../_services/ui/theme.service';
-import { Program } from '../../_models/shared/program';
+import { Program } from 'fram-models';
 import { ElectronService } from 'ngx-electron';
 import { ConfirmationService } from 'primeng/api';
 
