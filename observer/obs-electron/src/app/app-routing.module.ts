@@ -14,6 +14,9 @@ import { SettingsComponent } from './screens/settings/settings.component';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
 import { BackupComponent } from './screens/backup/backup.component';
 
+const pkg = require('../../package.json');
+const OBS_ELECTRON_FILENAME = 'Observer%20NG%20Setup%200.0.26+179.exe';
+
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
@@ -43,6 +46,7 @@ const routes: Routes = [
   { path: 'backup', component: BackupComponent, canActivate: [AuthGuard] },
   { path: 'tally', component: TallyComponent, canActivate: [AuthGuard] },
   { path: 'tally/pdf', component: TallyPdfComponent, canActivate: [AuthGuard] },
+  { path: 'download', redirectTo: '/' + OBS_ELECTRON_FILENAME, pathMatch: 'full' },
     // otherwise redirect to home
   { path: '**', redirectTo: '' }
 ];
