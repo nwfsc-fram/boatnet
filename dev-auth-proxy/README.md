@@ -6,7 +6,7 @@ A temporary auth server for use with developing boatnet apps without connecting 
 
 ## Development server
 
-Run `npm run server` for a dev auth server. 
+Run `npm run server` for an HTTPS (self-signed) dev auth server running on port 9000.
 
 ## Client Configuration
 
