@@ -1,4 +1,5 @@
-import { BoatnetBase } from '../interface/boatnet-base';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
+
 
 export class Specimen implements BoatnetBase {
   id: string;

@@ -1,5 +1,6 @@
-import { BoatnetBase } from '../interface/boatnet-base';
-import { Personnel } from './personnel';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
+
+import { Personnel } from 'bn-models';
 
 export class SampleStation implements BoatnetBase {
   id: string;

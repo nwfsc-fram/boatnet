@@ -4,6 +4,7 @@
  * @param url url to database
  */
 
+import { BoatnetDate } from 'bn-models';
 import * as moment from 'moment';
 
 export function parseDBName(url: string): string {

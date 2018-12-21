@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { User } from '../../_models/shared/user';
+import { User } from 'bn-models';
 import { map } from 'rxjs/operators';
 
 @Injectable()

@@ -13,6 +13,7 @@ import { HaulEditComponent } from './screens/hauls/haul-edit/haul-edit.component
 import { SettingsComponent } from './screens/settings/settings.component';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
 import { BackupComponent } from './screens/backup/backup.component';
+import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'backup', component: BackupComponent, canActivate: [AuthGuard] },
   { path: 'tally', component: TallyComponent, canActivate: [AuthGuard] },
   { path: 'tally/pdf', component: TallyPdfComponent, canActivate: [AuthGuard] },
+  { path: 'download', component: RedirectDownloadComponent, pathMatch: 'full' },
     // otherwise redirect to home
   { path: '**', redirectTo: '' }
 ];

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { User } from '../../_models/shared/user';
+import { User } from 'bn-models';
 
 @Injectable()
 export class UserService {

@@ -1,4 +1,4 @@
-import { BoatnetBase } from '../interface/boatnet-base';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
 
 export class Event implements BoatnetBase {
   id: string;

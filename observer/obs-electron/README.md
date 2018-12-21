@@ -25,6 +25,15 @@ If installed correctly, the build will be able to locate the file C:\OpenSSL-Win
 ### Troubleshooting 
 If you get an error: missing C:\Microsoft.Cpp.Default.Props after running npm install open a VS 2017 developer command prompt and run "npm install" from there.
 
+## Development - Build required shared bn-models module
+
+obs-electron has a dependency on bn-models, located in bn-modules. Currently building this is a manual process:
+
+```
+cd boatnet/bn-modules/
+ng build bn-models
+```
+
 ## Development - Web Based
 * If losing the electron capabilities is OK, you can develop and serve the pages via:
 `ng serve`

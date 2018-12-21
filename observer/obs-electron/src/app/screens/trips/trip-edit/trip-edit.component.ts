@@ -9,8 +9,6 @@ import {
   ElementRef
 } from '@angular/core';
 import { StateService } from '../../../_services/data/state.service';
-import { Trip } from '../../../_models/wcgop/trip';
-import { Vessel } from '../../../_models/shared/vessel';
 import { DataService } from '../../../_services/data/data.service';
 import {
   FormControl,
@@ -24,8 +22,8 @@ import {
 import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
 import { AuthenticationService } from '../../../_services/auth/authentication.service';
-import { Port } from '../../../_models/shared/port';
-import { GearType } from '../../../_models/shared/gear-type';
+import { Vessel, Port, GearType } from 'bn-models';
+import { Trip } from '../../../_models/wcgop/trip';
 import { startWith, map } from 'rxjs/operators';
 
 @Component({

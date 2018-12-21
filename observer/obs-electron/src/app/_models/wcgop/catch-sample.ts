@@ -1,4 +1,4 @@
-import { BoatnetBase } from '../interface/boatnet-base';
+import { BoatnetBase, BoatnetDate } from 'bn-models';
 import { CatchReceptacle } from './catch-receptacle';
 import { SampleStation } from './sample-station';
 
