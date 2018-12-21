@@ -99,6 +99,7 @@ import { InputMaskModule } from 'primeng/inputmask';
 import { DialogModule } from 'primeng/dialog';
 import { TabViewModule } from 'primeng/tabview';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
+import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
 
 @NgModule({
   declarations: [
@@ -122,7 +123,8 @@ import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component
     CountsWeightsComponent,
     TemplateManagerComponent,
     BackupComponent,
-    FramNumpadComponent
+    FramNumpadComponent,
+    RedirectDownloadComponent
   ],
   imports: [
     BrowserModule,
