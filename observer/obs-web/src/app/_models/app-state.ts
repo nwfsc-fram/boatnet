@@ -1,8 +1,9 @@
-import { Permit } from './permit';
-import { Vessel } from './vessel';
 import { Trip } from './trip';
 import { User } from './user';
+import { Permit } from './permit';
+import { Vessel } from './vessel';
 import { Message } from './message';
+import { Program } from './program';
  
 // Track global application state.
 // Generally, we should be pulling data from the PouchDB,
@@ -14,6 +15,7 @@ export class AppState {
   trip: Trip;
   user: User;
   message: Message;
+  program: Program;
 
   public constructor(init?: Partial<AppState>) {
     Object.assign(this, init);
