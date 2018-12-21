@@ -1,17 +1,18 @@
+
 import { Injectable } from '@angular/core';
 
 import PouchDB from 'pouchdb'
+
 import PouchdbFind from 'pouchdb-find'
 import * as CryptoPouch from 'crypto-pouch'
 
-declare var require: any
+
 const dbConfig = require('../dbConfig.json')
 import { Subject, BehaviorSubject } from 'rxjs';
+import { Species } from '../../_models/species';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../auth/authentication.service';
 
 @Injectable()
-
 export class DataService {
   private local_db: any;
   private remote_db: any;
@@ -23,14 +24,16 @@ export class DataService {
     retry: true
   };
 
-  private isInstantiated: boolean;
+  private mapSpeciesCodeCommonName = new Map(); // map species code to common name for PDF
 
+
+  private isInstantiated: boolean;
+  
   docChangeListener: Subject<any> = new Subject();
 
   initialSyncComplete: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private authService: AuthenticationService,
     private http: HttpClient
   ) {
     PouchDB.plugin(PouchdbFind);
@@ -44,14 +47,15 @@ export class DataService {
     // this.local_db.removeCrypto();  // will no longer encrypt/decrypt
     // TODO Tested removing encryption, and it seems to imply that we need to
     // clear the DB and re-sync (bulk insert errors)
-
 }
+
 
   /**
    * Get Vessels via a Mango query - slow without index
    */
   getVessels() {
     // TODO View instead of Mango query
+    console.log('executing the get vessels function!')
     return this.local_db.find({
       selector: {
         type: { $eq: 'vessel' }
@@ -115,10 +119,10 @@ export class DataService {
       //   Authorization: 'Basic ' + window.btoa(ro_username + ':' + ro_pw)
       // }
       // },
-      auth: {
-        username: ro_username,
-        password: ro_pw
-      },
+        auth: {
+          username: ro_username,
+          password: ro_pw
+        },
       storage: 'persistent'
     };
     if (!this.isInstantiated) {
@@ -174,14 +178,13 @@ export class DataService {
   }
 
   isUserLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+    return true
   }
 
   disconnectDB() {
     if (this.sync) {
       this.sync.cancel();
     }
-    this.authService.logout();
   }
 
   getAllDocs(): Promise<string> {

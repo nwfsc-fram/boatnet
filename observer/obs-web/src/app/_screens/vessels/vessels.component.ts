@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../_services/data/state.service';
+import { DataService } from '../../_services/data/data.service';
 
 @Component({
   selector: 'app-vessels',
@@ -15,13 +16,28 @@ export class VesselsComponent implements OnInit {
     {vessel_name: "Raven", vessel_reg_num: 'OR984325'},
   ]
 
+  // vessels: any[] = []; 
+
+  
   currentVessel = this.stateSvc.currentState.vessel
 
 
-  constructor(private stateSvc: StateService,) { }
+  constructor(
+    private stateSvc: StateService,
+    private dataSvc: DataService
+     ) { }
 
   ngOnInit() {
     this.stateSvc.setStateName('vessel-management');
+    // this.dataSvc.getVessels().then(vessels => {
+    //   this.vessels = vessels;
+    //   console.log("loaded ${this.vessels.length} vessels from db.")
+    //   }
+    // );
+
+    
+    // console.log('Vessels:')
+    // console.log(this.vessels.length)
   }
 
   setVessel(vessel) {

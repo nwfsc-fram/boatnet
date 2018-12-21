@@ -53,9 +53,13 @@ import { UserComponent } from './_screens/user/user.component';
 import { VesselDetailComponent } from './_screens/vessel-detail/vessel-detail.component';
 import { PermitDetailComponent } from './_screens/permit-detail/permit-detail.component';
 import { MessageDetailComponent } from './_screens/message-detail/message-detail.component';
-import { LoginComponent } from './_screens/login/login.component';
+import { HomeComponent } from './_screens/home/home.component';
+
+import { DataService } from './_services/data/data.service';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 const appRoutes: Routes = [
+  { path: 'home',             component: HomeComponent },
   { path: 'ots-management',   component: OTSManagementComponent },
   { path: 'manage-users',     component: UserManagementComponent },
   { path: 'user',             component: UserComponent },
@@ -69,7 +73,7 @@ const appRoutes: Routes = [
   { path: 'permit-detail',    component: PermitDetailComponent },
   // { path: 'vessel-permits',component: VesselPermitsComponent },
   { path: '',
-    redirectTo: 'trips',
+    redirectTo: 'home',
     pathMatch: 'full'
   },
 ];
@@ -93,7 +97,7 @@ const appRoutes: Routes = [
     VesselDetailComponent,
     PermitDetailComponent,
     MessageDetailComponent,
-    LoginComponent
+    HomeComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -130,8 +134,11 @@ const appRoutes: Routes = [
     DropdownModule,
     CalendarModule,
     CardModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    DataService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

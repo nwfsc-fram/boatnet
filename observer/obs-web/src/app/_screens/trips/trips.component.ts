@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../_services/data/state.service';
+import { AppState } from '../../_models/app-state';
+import { DataService } from '../../_services/data/data.service';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-trips',
@@ -108,11 +111,32 @@ export class TripsComponent implements OnInit {
 
    vessel = this.stateSvc.currentState.vessel
    permit = this.stateSvc.currentState.permit
+   isDBSynced: Observable<boolean>;
+   loading =false;
 
-  constructor(private stateSvc: StateService,) { }
+  constructor(private stateSvc: StateService,    
+              private dataService: DataService,) { }
 
   ngOnInit() {
+
+    this.isDBSynced = this.dataService.initialSyncComplete;
     this.stateSvc.setStateName('trips');
+    this.stateSvc.setState(<AppState>{ name: 'trips' })
+
+    if (this.stateSvc.currentState.vessel === undefined) {
+      this.stateSvc.setVessel({vessel_name: 'Excalibur', vessel_reg_num: '123abc' ,permits: [] , id: '123456', type: 'vessel', created_by: 'seth.gerou', created_date: '12/2/2212'})
+    }
+    if (this.stateSvc.currentState.user === undefined) {
+      this.stateSvc.setUser({first_name: 'Seth', last_name: 'Gerou', email: 'seth.gerou@noaa.gov', phone: '206-555-1212', mobile: '425-555-1212', roles: ['captain'], vessel: 'Boaty McBoatface', home_port: "Seattle", id: '0', type: 'user', created_by: 'seth.gerou', created_date: '2/2/22', address: '123 fake st', city: 'springfield', state: 'ma', zip: '12345', notification_prefs: [], token: "", username: 'sethgerou', password: 'password1', pwexpiry: '2/2/22', firstName: 'seth', lastName: 'gerou', programs: [], role: 'captain'})
+    }
+    
+    this.loading = true
+    if (!this.dataService.initialSyncComplete.getValue()) {
+      this.dataService.connectDatabase(
+        'test',
+        'test'
+      );
+    }
   }
 
   setTrip(trip) {
