@@ -13,9 +13,7 @@ import { HaulEditComponent } from './screens/hauls/haul-edit/haul-edit.component
 import { SettingsComponent } from './screens/settings/settings.component';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
 import { BackupComponent } from './screens/backup/backup.component';
-
-const pkg = require('../../package.json');
-const OBS_ELECTRON_FILENAME = 'Observer%20NG%20Setup%200.0.26+179.exe';
+import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -46,7 +44,7 @@ const routes: Routes = [
   { path: 'backup', component: BackupComponent, canActivate: [AuthGuard] },
   { path: 'tally', component: TallyComponent, canActivate: [AuthGuard] },
   { path: 'tally/pdf', component: TallyPdfComponent, canActivate: [AuthGuard] },
-  { path: 'download', redirectTo: '/' + OBS_ELECTRON_FILENAME, pathMatch: 'full' },
+  { path: 'download', component: RedirectDownloadComponent, pathMatch: 'full' },
     // otherwise redirect to home
   { path: '**', redirectTo: '' }
 ];
