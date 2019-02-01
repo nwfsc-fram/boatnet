@@ -42,18 +42,6 @@ __Directory__: survey/surv-cutter
 ```
 git clone git@github.com:nwfsc-fram/boatnet.git
 ```
-* Since nwcgit is using a self-signed certificate, you'll have to disable sslVerify to access it:
-
-        $ git pull
-        fatal: unable to access 'https://github.com/nwfsc-fram/boatnet.git':
-         SSL certificate problem: unable to get local issuer certificate
-        
-        $ git config --global http.sslVerify false
-        
-        $ git pull
-        Updating 32660ad..c05cf24
-        Fast-forward
-        ... working ...
 
     #### Precommit hooks
 * Install the [git-secrets plugin](https://github.com/awslabs/git-secrets) on your PC to prevent accidental commit of secure tokens to Git.
