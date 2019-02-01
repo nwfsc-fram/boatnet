@@ -1,12 +1,14 @@
 // Dev Auth Server - simulates an auth server
-// For use while developing Boatnet apps without an actual auth endpoint.
+// For Boatnet app development use, without an actual auth endpoint.
 
-// FRAM Data Team 2018
+// FRAM Data Team 2019
 
 import * as express from 'express';
 import { Application } from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
+
+import * as bodyParser from 'body-parser';
 
 import { login } from './login.route';
 
@@ -19,6 +21,8 @@ const optionDefinitions = [
 ];
 
 const options = commandLineArgs(optionDefinitions);
+
+app.use(bodyParser.json()); // for parsing application/json
 
 // REST API
 app.route('/login')

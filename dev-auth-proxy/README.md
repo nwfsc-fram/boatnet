@@ -8,6 +8,17 @@ A temporary auth server for use with developing boatnet apps without connecting 
 
 Run `npm run server` for an HTTPS (self-signed) dev auth server running on port 9000.
 
+## Basic Testing
+
+POST the following raw JSON to: https://localhost:9000/login using a utility such as Postman.
+```
+{
+  "username": "test",
+  "password": "test"
+}
+```
+* This will return a JWT response with roles, [tbd]
+
 ## Client Configuration
 
 To use this dev proxy, configure `proxy.json` on your client as required.
