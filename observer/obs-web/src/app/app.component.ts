@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from './_services/data/state.service';
+import { DataService } from './_services/data/data.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,8 @@ import { StateService } from './_services/data/state.service';
 export class AppComponent implements OnInit {
 
   constructor(
-    private stateService: StateService
+    private stateService: StateService,
+    private dataService: DataService
 
 
   ) 
@@ -20,5 +22,9 @@ export class AppComponent implements OnInit {
     console.log(this.stateService.getState())
   }
 
+  clearSearchString() {
+    this.dataService.searchstring = ''
+  }
 
+  
 }
