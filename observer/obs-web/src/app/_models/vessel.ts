@@ -12,6 +12,8 @@ export class Vessel implements BoatnetBase {
   vessel_name: string;
   vessel_reg_num: string;
   permits: Permit[];
+  coast_guard_number: string;
+  state_reg_number: string;
 
 
   public constructor(init?: Partial<Vessel>) {
@@ -26,7 +28,9 @@ export class Vessel implements BoatnetBase {
       created_date: getBoatnetDateNow(),
       vessel_name: null,
       vessel_reg_num: null,
-      permits: []
+      permits: [],
+      coast_guard_number: null,
+      state_reg_number: null
     });
   }
 

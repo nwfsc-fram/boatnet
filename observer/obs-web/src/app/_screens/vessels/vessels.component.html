@@ -9,7 +9,22 @@
     <div style="margin: 6px 0; font-size: 1em" class="vertical-align" routerLink="/vessel-detail" (click)="setVessel(vessel)"><i class="pi pi-pencil"></i></div>
 
   </div>
-
 </div>
 
-<app-footer></app-footer>
+  <div *ngFor="let vessel of couchData" style="width: 100% " (click)="setVessel(vessel)">
+    <div style="display: flex; justify-content: space-between">
+      <div style="width: 90%" class="narrow_item_border" [ngClass]="{activeitem: vessel == currentVessel }" >
+        {{ vessel.vessel_name }} 
+        <span *ngIf="vessel.coast_guard_number !== ''; else stateReg">
+          <span style="float:right">USCG: {{ vessel.coast_guard_number }}</span>
+        </span>
+        <ng-template #stateReg>
+          <span style="float:right">SR: {{ vessel.state_reg_number }}</span>
+        </ng-template>
+
+      </div>
+      <div style="margin: 6px 0; font-size: 1em" class="vertical-align" routerLink="/vessel-detail" (click)="setVessel(vessel)"><i class="pi pi-pencil"></i></div>
+    </div>
+  </div>
+  
+<app-footer (searchstring)="searchVessels($event)"></app-footer>

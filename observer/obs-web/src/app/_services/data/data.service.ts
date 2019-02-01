@@ -33,6 +33,8 @@ export class DataService {
 
   initialSyncComplete: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  searchstring: string;
+
   constructor(
     private http: HttpClient
   ) {
@@ -47,6 +49,12 @@ export class DataService {
     // this.local_db.removeCrypto();  // will no longer encrypt/decrypt
     // TODO Tested removing encryption, and it seems to imply that we need to
     // clear the DB and re-sync (bulk insert errors)
+
+    this.local_db.createIndex({
+      index: {
+        fields: ['type']
+      }
+    })
 }
 
 
@@ -58,7 +66,7 @@ export class DataService {
     console.log('executing the get vessels function!')
     return this.local_db.find({
       selector: {
-        type: { $eq: 'vessel' }
+        type: 'vessel',
       }
     });
   }
@@ -67,6 +75,7 @@ export class DataService {
    * Get Vessel Names from a CouchDB view, and filter
    * @param starting_name
    */
+  
   getVesselNames(starting_name: string) {
     // http://<endpoint>:6984/boatnet-dev/_design/optecs_trawl/_view/all_vessel_names
     if (starting_name && starting_name.length === 1) {

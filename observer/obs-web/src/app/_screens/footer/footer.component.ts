@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { StateService } from '../../_services/data/state.service';
 import { AppState } from '../../_models/app-state';
 import { Vessel } from '../../_models/vessel';
 import { Message } from '../../_models/message';
+import { DataService } from '../../_services/data/data.service';
+// import { EventEmitter } from 'events';
 
 @Component({
   selector: 'app-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss']
 })
+
 export class FooterComponent implements OnInit {
 
   message: Message;
@@ -18,10 +21,14 @@ export class FooterComponent implements OnInit {
   searchConfig = ['trips', 'user-management', 'vessel-management', 'permits-management']
   createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips']
   confirmConfig = ['user-preferences', 'ots-management', 'trip']
+  show: boolean = false;
+  inputtext: string = this.dataSvc.searchstring;
+  @Output() searchstring = new EventEmitter();
 
   constructor(
     private stateSvc: StateService, 
     private router: Router,
+    private dataSvc: DataService,
   ) { }
 
   ngOnInit() {
@@ -66,10 +73,15 @@ export class FooterComponent implements OnInit {
     if (confirm("are you sure you want to delete this message?")) {
       this.stateSvc.clearMessage()
       this.router.navigate(['/trip'])
-  } else {
-      return
+    } else {
+        return
+    }
   }
 
+  setSearchString() {
+    this.dataSvc.searchstring = this.inputtext
+    console.log(this.dataSvc.searchstring)
+    this.searchstring.emit(this.inputtext)
   }
 
 }

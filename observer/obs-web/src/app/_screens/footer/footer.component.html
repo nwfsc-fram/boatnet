@@ -1,8 +1,18 @@
 <div class="footer">
 
   <div *ngIf="searchConfig.includes(name); else noSearch ">
-      <button class="mat-icon-button" mat-icon-button ><mat-icon>search</mat-icon></button> 
+      <button class="mat-icon-button" mat-icon-button (click)="show = true"> <mat-icon>search</mat-icon></button> 
   </div>
+
+  <ng-container *ngIf="show">
+    <div id="searchbox" class="searchbox">
+      <i class="pi pi-chevron-left" (click)="show = false" style="color: #0093D0; padding-right: 10px"></i>
+
+      <input style="width: 70%" id="searchtext" type="text" pInputText [(ngModel)]="inputtext" (keyup)="setSearchString()" autofocus> 
+
+      <i class="pi pi-times" (click)="inputtext = ''; setSearchString()" style="color: #0093D0; padding-left: 10px"></i>
+    </div>
+  </ng-container>
 
   <ng-template #noSearch>
     <span></span>
