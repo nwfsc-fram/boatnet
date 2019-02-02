@@ -1,0 +1,12 @@
+{
+  "devUsers": [
+    {
+      "user": "test",
+      "password": "test",
+      "returnUserData": {
+        "roles": [ "admin", "observer"]
+      }
+    }
+  ],
+  "couchDBUrlRoot": "https://<your development couchdb server>:6984/example-db"
+}
