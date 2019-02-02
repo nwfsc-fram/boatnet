@@ -32,7 +32,7 @@ app.route('/login')
 if (options.secure) {
 
     const httpsServer = https.createServer({
-        key: fs.readFileSync('temp-key.pem'),
+        key: fs.readFileSync('temp-priv-key.pem'),
         cert: fs.readFileSync('temp-cert.pem')
     }, app);
 
