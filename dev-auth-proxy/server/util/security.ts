@@ -9,6 +9,7 @@ import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as argon2 from 'argon2';
+import * as SHA512 from 'crypto-js/sha512';
 
 export const randomBytes = util.promisify(crypto.randomBytes);
 
@@ -39,3 +40,9 @@ export async function createCsrfToken() {
   return await randomBytes(32).then(bytes => bytes.toString('hex'));
 }
 
+export async function verifyArgonPW(hash: string, password: string) {
+  return await argon2.verify(
+    hash,
+    SHA512(password).toString() // SHA512 for FIPS
+  );
+}

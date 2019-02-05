@@ -3,10 +3,14 @@
     {
       "user": "test",
       "password": "test",
-      "returnUserData": {
-        "roles": [ "admin", "observer" ]
+      "userData": {
+        "roles": [ "admin", "observer"],
+        "couchDBInfo": {
+          "urlRoot": "http://<your development couchdb server>:5984",
+          "userDB": "my-user-example-db",
+          "readonlyDB": "my-master-example-db"
+        }
       }
     }
-  ],
-  "couchDBUrlRoot": "https://<your development couchdb server>:6984/example-db-you-created"
+  ]
 }
