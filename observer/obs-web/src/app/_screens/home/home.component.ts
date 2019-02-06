@@ -31,7 +31,17 @@ export class HomeComponent implements OnInit {
     this.stateService.setState(<AppState>{ name: 'login' });    
 
     if (this.stateService.currentState.vessel === undefined) {
-      this.stateService.setVessel({vessel_name: 'Excalibur', vessel_reg_num: '123abc' ,permits: [] , id: '123456', type: 'vessel', created_by: 'seth.gerou', created_date: '12/2/2212'})
+      this.stateService.setVessel({
+        vessel_name: 'Excalibur', 
+        vessel_reg_num: '123abc',
+        permits: [], 
+        id: '123456', 
+        type: 'vessel', 
+        created_by: 'seth.gerou', 
+        created_date: '12/2/2212',
+        coast_guard_number: '34gsfdg',
+        state_reg_number: 'fv3443rf'
+      })
     }
     if (this.stateService.currentState.user === undefined) {
       this.stateService.setUser({first_name: 'Seth', last_name: 'Gerou', email: 'seth.gerou@noaa.gov', phone: '206-555-1212', mobile: '425-555-1212', roles: ['captain'], vessel: 'Boaty McBoatface', home_port: "Seattle", id: '0', type: 'user', created_by: 'seth.gerou', created_date: '2/2/22', address: '123 fake st', city: 'springfield', state: 'ma', zip: '12345', notification_prefs: [], token: "", username: 'sethgerou', password: 'password1', pwexpiry: '2/2/22', firstName: 'seth', lastName: 'gerou', programs: [], role: 'captain'})

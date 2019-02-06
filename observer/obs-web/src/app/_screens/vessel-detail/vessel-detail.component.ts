@@ -28,6 +28,14 @@ export class VesselDetailComponent implements OnInit {
       this.vessel = Vessel.createVessel();
     }
 
+    if (!this.vessel.vessel_reg_num) {
+      if (this.vessel.coast_guard_number !== "") {
+        this.vessel.vessel_reg_num = this.vessel.coast_guard_number
+      } else {
+        this.vessel.vessel_reg_num = this.vessel.state_reg_number
+      }
+    }
+
     this.createEditForm()
 
   }
