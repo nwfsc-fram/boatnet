@@ -1,5 +1,6 @@
 import * as jwt from 'jwt-simple';
 import * as argon2 from 'argon2';
+import * as SHA512 from 'crypto-js/sha512';
 
 import { Request, Response } from 'express';
 import { createSessionToken, createCsrfToken } from './util/security';
@@ -21,9 +22,9 @@ export async function login(req: Request, res: Response) {
     return;
   }
 
-  const validate_result = devValidateUserPw(username, password);
+  const validate_result = await devValidateUserPw(username, password);
   if (validate_result) {
-    console.log('VALIDO', validate_result);
+    console.log('Valid user result', validate_result);
     const sessionToken = await createSessionToken(validate_result);
     const csrfToken = await createCsrfToken();
 
@@ -37,7 +38,7 @@ export async function login(req: Request, res: Response) {
     res.cookie('XSRF-TOKEN', csrfToken);
 
     const result = {
-      ...validate_result,
+      user: validate_result.user,
       token: sessionToken // You can check this token at https://jwt.io/
     };
 
@@ -52,9 +53,12 @@ export async function login(req: Request, res: Response) {
   }
 }
 
-function devValidateUserPw(user: string, pw: string): any {
+async function devValidateUserPw(user: string, pw: string) {
+  /**
+   * Simplified user/pw validation for Development use
+   */
   const users = <any>authConfig.devUsers;
-  const dbUrl = <any>authConfig.couchDBUrlRoot;
+
   let authedUser: any;
   const isAuthed = users.some(u => {
     if (u.user === user && u.password === pw) {
@@ -65,10 +69,14 @@ function devValidateUserPw(user: string, pw: string): any {
 
   if (isAuthed) {
     console.log('User authorized: ', user);
+
+    const hashedPW_SHA = await SHA512(authedUser.password).toString(); // For FIPS compliance, need SHA-512 layer
+    const hashedPW = await argon2.hash(hashedPW_SHA);
     return {
       user: authedUser.user,
-      roles: authedUser.returnUserData.roles,
-      couchDBUrlRoot: dbUrl
+      hashedPW: hashedPW.toString(),
+      roles: authedUser.userData.roles,
+      couchDBInfo: authedUser.userData.couchDBInfo
     };
   } else {
     console.log('User not authorized: ', user);
