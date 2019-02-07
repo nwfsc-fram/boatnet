@@ -1,10 +1,7 @@
 import { NgModule } from '@angular/core';
-import { LoginComponent } from './login/login.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [LoginComponent],
-  imports: [
-  ],
-  exports: []
+  imports: [HttpClientModule]
 })
-export class BnAuthModule { }
+export class BnAuthModule {}

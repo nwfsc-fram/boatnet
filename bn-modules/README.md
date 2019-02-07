@@ -61,6 +61,7 @@ npm link
 npm link bn-specimens
 ```
 
+### Important
 * Next, fix webpack WARNING: `Critical dependency: the request of a dependency is an expression`
 
   * in your application's `angular.json` add preserveSymlinks: true to your build options:
@@ -75,8 +76,11 @@ npm link bn-specimens
 
 ```            
 
+* Also, if you are developing a HttpClient service, you will hit this bug: https://github.com/angular/angular/issues/25813
+`inject() must be called from an injection context`
+
 ### 6b [OPTION 2] Reference the library modules in your application directly via tsconfig.json
-* NOTE: this option throws a webpack warning that may not be a good idea to ignore. I'm using OPTION 1 for now.
+* NOTE: this option throws a webpack warning that may not be a good idea to ignore (breaks services) I'm using OPTION 1 for now.
 
 * For your application where you want to use your new component, locate the `tsconfig.json` file in your application's root folder. Add the relative "path" as such (example from obs-electron) for each library you want to use:
 
