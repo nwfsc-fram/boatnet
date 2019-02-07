@@ -1,0 +1,17 @@
+
+<strong>Active Vessel:</strong>
+  <p-selectButton id="vesselSelect" [options]="vessel_options" (onChange)="setActiveVessel($event)"></p-selectButton>
+
+  <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getActiveVessel()"></div>
+
+  <div class="pv6">
+    <strong>Preferred Notification Method:</strong>
+    <p-selectButton id="notificationSelect" [options]="notification_options" multiple="multiple" (onChange)="setNotificationPref($event)"></p-selectButton>
+
+    <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getNotificationPref()"></div>
+  </div>
+
+  <hr>
+  <app-user></app-user>
+
+<app-footer></app-footer>

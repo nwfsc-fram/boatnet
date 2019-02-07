@@ -42,7 +42,7 @@ export class VesselsComponent implements OnInit {
         }
       });
       // console.log(this.couchData)
-      console.log(results)
+      console.log(Array.from(results).sort())
       this.couchData = results
     } else {
       this.couchData = this.allVessels      
