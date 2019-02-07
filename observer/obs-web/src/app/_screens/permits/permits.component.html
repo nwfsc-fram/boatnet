@@ -1,10 +1,31 @@
 
-<div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
+<!-- <div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
     <div class="narrow_item_border">
         <span class="vertical-align">{{permit.permit_num}}</span>
         <span class="vertical-align">{{permit.vessel}}</span>
     </div>
 
+</div> -->
+
+<ul *ngIf="permitsObservable | async as permits else empty">
+
+    <li *ngFor="let permit of permits">
+    
+    </li>
+    
+</ul>
+
+<!-- <ng-template #empty> No Permits Yet </ng-template> -->
+
+<div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
+    <div class="flex-space-between">
+        <div>{{ permit.permit_number }}</div>
+        <div>owner: {{ permit.permit_owner.substring(0,15) }}
+            <br>
+            vessel: {{ permit.vessel_name.substring(0,15) }}
+        </div>
+    </div>
+    <hr>
 </div>
 
 <app-footer></app-footer>

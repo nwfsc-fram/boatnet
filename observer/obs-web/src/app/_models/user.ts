@@ -12,7 +12,7 @@ export class User implements BoatnetBase {
   first_name: string;
   last_name: string;
   email: string;
-  phone: string;
+  home: string;
   role: string;
   vessel: string;
   mobile: string;
@@ -44,7 +44,7 @@ export class User implements BoatnetBase {
       first_name: null,
       last_name: null,
       email: null,
-      phone: null,
+      home: null,
       role: null,
       vessel: null,
       mobile: null,

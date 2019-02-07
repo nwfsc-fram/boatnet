@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserPreferencesComponent } from './user-preferences.component';
+import { UserPreferencesComponent } from './user-config.component';
 
 describe('UserPreferencesComponent', () => {
   let component: UserPreferencesComponent;

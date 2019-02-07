@@ -35,14 +35,15 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
-import {CardModule} from 'primeng/card';
+import { CardModule } from 'primeng/card';
+import { MultiSelectModule } from 'primeng/multiselect';
 
 import { MenuComponent } from './_screens/menu/menu.component';
 import { VesselPermitsComponent } from './_screens/vessel-permits/vessel-permits.component';
 import { TripsComponent } from './_screens/trips/trips.component';
 import { OTSManagementComponent } from './_screens/ots-management/ots-management.component';
 import { UserManagementComponent } from './_screens/user-management/user-management.component';
-import { UserPreferencesComponent } from './_screens/user-preferences/user-preferences.component';
+import { UserConfigComponent } from './_screens/user-config/user-config.component';
 import { VesselsComponent } from './_screens/vessels/vessels.component';
 import { PermitsComponent } from './_screens/permits/permits.component';
 import { TripDetailComponent } from './_screens/trip-detail/trip-detail.component';
@@ -66,7 +67,7 @@ const appRoutes: Routes = [
   { path: 'trips',            component: TripsComponent },
   { path: 'trip',             component: TripDetailComponent },
   { path: 'message-detail',   component: MessageDetailComponent },
-  { path: 'user-preferences', component: UserPreferencesComponent },
+  { path: 'user-config',      component: UserConfigComponent },
   { path: 'manage-vessels',   component: VesselsComponent },
   { path: 'vessel-detail',    component: VesselDetailComponent },
   { path: 'manage-permits',   component: PermitsComponent },
@@ -86,7 +87,7 @@ const appRoutes: Routes = [
     TripsComponent,
     OTSManagementComponent,
     UserManagementComponent,
-    UserPreferencesComponent,
+    UserConfigComponent,
     VesselsComponent,
     PermitsComponent,
     TripDetailComponent,
@@ -134,7 +135,8 @@ const appRoutes: Routes = [
     DropdownModule,
     CalendarModule,
     CardModule,
-    HttpClientModule
+    HttpClientModule,
+    MultiSelectModule,
   ],
   providers: [
     DataService

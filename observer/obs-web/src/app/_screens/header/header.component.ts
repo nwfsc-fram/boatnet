@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit {
       '/trip':             'TRIP DETAILS',
       '/manage-users':     'MANAGE USERS',
       '/user':             'USER DETAILS',
-      '/user-preferences': 'USER PREFERENCES',
+      '/user-config':      'USER CONFIG',
       '/manage-vessels':   'MANAGE VESSELS',
       '/vessel-detail':    'VESSEL DETAIL',
       '/manage-permits':   'MANAGE PERMITS',
