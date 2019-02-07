@@ -2,7 +2,7 @@
 
 * We may consider calling this something other than "bn-modules" since Modules means something specific to Angular.
 
-* Note: `ng build bn-modules` will not automatically build the subprojects, so build the projects explicitly (e.g `ng build bn-catch`)
+* Note: `ng build bn-modules` will not automatically build the subprojects. Each directory under `projects/` is a standalone library, so you need to build the projects explicitly (e.g `ng build bn-catch`)
 
 ## Creating and linking to a new bn-modules library
 
@@ -35,7 +35,6 @@ Modify the ts, scss, html for this new specimens component as needed
 
 
 ### 4. Build the project
-`npm install`
 `ng build bn-specimens`
 
 This will create the built project as a new folder in the dist/bn-specimens folder
@@ -44,27 +43,14 @@ This will create the built project as a new folder in the dist/bn-specimens fold
 
 open `projects\bn-specimens\src\public_api.ts`
 
-This file should have the following code in it:
+Add your component to this file. Example:
 
 ```
 export * from './lib/specimens/specimens.component';
 export * from './lib/bn-specimens.module';
 ```
 
-### 6a [OPTION 1] Reference the library modules in your application directly via tsconfig.json
-
-*Locate the tsconfig.json file in your application's root folder. Add the relative "path" as such (example from obs-electron)
-
-```
-"paths": {
-  "bn-models": [
-    "../../bn-modules/dist/bn-models"
-  ]
-}
-```
-
-### 6b [OPTION 2] npm link to the module
-* `npm link` seems a little flaky/ breaks its links occasionally on Windows. Recommend [OPTION 1]
+### 61 [OPTION 1] npm link to the module
 * Navigate to your built library folder (i.e into the dist\<library name>) and then create a global link
 ```
 cd dist\bn-specimens
@@ -75,12 +61,57 @@ npm link
 npm link bn-specimens
 ```
 
+* Next, fix webpack WARNING: `Critical dependency: the request of a dependency is an expression`
+
+  * in your application's `angular.json` add preserveSymlinks: true to your build options:
+```
+...
+"architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "preserveSymlinks": true,
+            ...
+
+```            
+
+### 6b [OPTION 2] Reference the library modules in your application directly via tsconfig.json
+* NOTE: this option throws a webpack warning that may not be a good idea to ignore. I'm using OPTION 1 for now.
+
+* For your application where you want to use your new component, locate the `tsconfig.json` file in your application's root folder. Add the relative "path" as such (example from obs-electron) for each library you want to use:
+
+```
+"paths": {
+  "bn-models": [
+    "../../bn-modules/dist/bn-models"
+  ],
+  "bn-specimens": [
+    "../../bn-modules/dist/bn-specimens"
+  ]
+}
+```
+* TODO for Option 2: workaround for resulting webpack WARNING: `Critical dependency: the request of a dependency is an expression`
+
+### Verify peerDependencies versions
+If you see the error:
+`Cannot redeclare block-scoped variable 'ngDevMode'.`
+
+This is an indication of a @angular/core version mismatch.
+Your package.json for the library doesn't match the root bn-modules package.json:
+```
+"peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0"
+  }
+```
+
+To fix, change the versions in your peerDependencies to match the ones in the bn-modules package.json, as well as your application versions. One way to accomplish this is with `ng update`. E.g. `ng update @angular/core` should handle dependencies automatically.
 
 ### 7. Use the new library in your application
 
 Example:
 
-Open the app.module.ts file and add:
+Open the `src/app/app.module.ts` file and add the component:
 
 ```
 // At the top of the file
@@ -110,7 +141,9 @@ Open a second terminal window (recommend side-by-side with the running ng serve 
 
 `ng build bn-specimens`
 
-If ng serve is running as above, it will automatically pick up the build changes and reflect those in your currently running application.
+Depending on how you linked your module, 
+* tsconfig.json method: `ng serve` should pick up changes automatically
+* npm link method: You will have to restart `ng serve` in your application window (module not found errors will occur.)
 
 ## References  
 

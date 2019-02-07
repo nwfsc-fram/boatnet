@@ -1,6 +1,6 @@
-# BnAuth
+# bn-auth
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.2.0.
+Boatnet Authorization library. This module uses ngrx to handle login tasks and application state.
 
 ## Code scaffolding
 
@@ -11,14 +11,16 @@ Run `ng generate component component-name --project bn-auth` to generate a new c
 
 Run `ng build bn-auth` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Publishing
+## Linking to your project
 
-After building your library with `ng build bn-auth`, go to the dist folder `cd dist/bn-auth` and run `npm publish`.
+General instructions in bn-modules/README.md
 
-## Running unit tests
+## Procedure for adding bn-auth/ login screen to your boatnet project
+[ In Progress ]
 
-Run `ng test bn-auth` to execute the unit tests via [Karma](https://karma-runner.github.io).
+* Add NgRx support to your project. https://ngrx.io/guide/store/install and https://ngrx.io/guide/schematics
+* Add login screen component
+* Add auth guards to your router
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
