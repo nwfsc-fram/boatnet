@@ -38,6 +38,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { MultiSelectModule } from 'primeng/multiselect';
 
+import {ChartModule} from 'primeng/chart';
+
 import { MenuComponent } from './_screens/menu/menu.component';
 import { VesselPermitsComponent } from './_screens/vessel-permits/vessel-permits.component';
 import { TripsComponent } from './_screens/trips/trips.component';
@@ -137,6 +139,7 @@ const appRoutes: Routes = [
     CardModule,
     HttpClientModule,
     MultiSelectModule,
+    ChartModule,
   ],
   providers: [
     DataService

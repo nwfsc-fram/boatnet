@@ -41,7 +41,7 @@ export class PermitsComponent implements OnInit {
 
     this.permitsObservable = this.httpClient.get   
     // ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?offset=" + this.offset + "&limit=500")
-    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?offset=" + this.offset + "&limit=500")
+    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?limit=500")
         .pipe(
           // tap(console.log)
           map((res) => {

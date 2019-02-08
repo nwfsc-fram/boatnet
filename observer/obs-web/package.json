@@ -25,6 +25,7 @@
     "@angular/platform-browser-dynamic": "^7.1.4",
     "@angular/router": "^7.1.4",
     "chacha": "^2.1.0",
+    "chart.js": "^2.7.3",
     "core-js": "^2.5.4",
     "crypto-pouch": "^3.1.3",
     "hammerjs": "^2.0.8",
