@@ -25,7 +25,7 @@ const options = commandLineArgs(optionDefinitions);
 app.use(bodyParser.json()); // for parsing application/json
 
 // REST API
-app.route('/login').post(login);
+app.route('/api/login').post(login);
 
 if (options.secure) {
   const httpsServer = https.createServer(
