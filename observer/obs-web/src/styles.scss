@@ -81,6 +81,19 @@ body {
     display: flex;
   }
 
+.flow-wrap {
+    flex-flow: row wrap;
+}
+
+.side-by-side-boxes {
+    border: 2px solid #0093D0; 
+    border-radius: 15px; 
+    background-color: white;  
+    padding: 20px; 
+    margin: 15px;
+
+}
+
 .col {
     flex: 1;
   }

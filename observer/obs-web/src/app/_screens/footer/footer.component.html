@@ -50,6 +50,9 @@
     <div *ngIf="name === 'permits-management'">
         <button class="mat-icon-button" mat-icon-button routerLink="/permit-detail" (click)="clearPermit()"><mat-icon>create</mat-icon></button> 
     </div>
+    <div *ngIf="name === 'ots-management'">
+        <button class="mat-icon-button" mat-icon-button routerLink="/ots-management" (click)="clearOtsCoverage()"><mat-icon>create</mat-icon></button> 
+    </div>    
   </div>
 
   <ng-template #noCreate>

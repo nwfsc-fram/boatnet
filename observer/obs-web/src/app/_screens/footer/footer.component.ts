@@ -19,7 +19,7 @@ export class FooterComponent implements OnInit {
   name: string;
   trip = this.stateSvc.currentState.trip
   searchConfig = ['trips', 'user-management', 'vessel-management', 'permits-management']
-  createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips']
+  createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips', 'ots-management']
   confirmConfig = ['user-preferences', 'ots-management', 'trip']
   show: boolean = false;
   inputtext: string = this.dataSvc.searchstring;
@@ -61,6 +61,10 @@ export class FooterComponent implements OnInit {
 
   clearPermit() {
     this.stateSvc.clearPermit()
+  }
+
+  clearOtsCoverage() {
+    console.log("NEED TO IMPLEMENT clearOtsCoverage()")
   }
 
   saveMessage() {
