@@ -17,7 +17,7 @@ export const signJwt = util.promisify(jwt.sign);
 
 // Keys used for signing JWT
 const RSA_PRIVATE_KEY = fs.readFileSync('./temp-priv-key.pem');
-const RSA_PUBLIC_KEY = fs.readFileSync('./temp-pub-key.pem');
+export const RSA_PUBLIC_KEY = fs.readFileSync('./temp-pub-key.pem');
 
 const SESSION_DURATION = 7200;
 

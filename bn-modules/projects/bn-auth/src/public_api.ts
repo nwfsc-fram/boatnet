@@ -4,4 +4,4 @@
 
 export * from './lib/auth.service';
 export * from './lib/bn-auth.module';
-export * from './lib/boatnet-user.model';
+export * from './lib/bn-auth.models';

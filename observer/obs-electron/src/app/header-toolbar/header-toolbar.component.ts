@@ -1,8 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { User } from 'bn-models';
+import { BoatnetUser } from 'bn-auth';
 import { Subscription, Observable } from 'rxjs';
 
-import { AuthenticationService } from '../_services/auth/authentication.service';
+import { AuthService } from 'bn-auth';
 import { StateService } from '../_services/data/state.service';
 import { AppState } from '../_models/wcgop/app-state';
 import { DataService } from '../_services/data/data.service';
@@ -23,7 +23,7 @@ export class HeaderToolbarComponent implements OnInit, OnDestroy {
   stateSub: Subscription;
   programSub: Subscription;
 
-  currentUser: User;
+  currentUser: BoatnetUser;
   currentProgramName: string;
   tripSelected: Observable<Trip>;
   version: string;
@@ -42,7 +42,7 @@ export class HeaderToolbarComponent implements OnInit, OnDestroy {
   debug_mode = false;
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private stateService: StateService,
     private dataService: DataService
   ) {}

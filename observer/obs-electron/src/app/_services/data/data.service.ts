@@ -9,7 +9,7 @@ import * as moment from 'moment';
 // Note: copy dbConfig.SAMPLE.json to dbConfig.json (prevent inadvertent commits to src control)
 const dbConfig = require('../dbConfig.json');
 import { User } from 'bn-models';
-import { AuthenticationService } from '../auth/authentication.service';
+import { AuthService } from 'bn-auth';
 import { MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR } from '@angular/material';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Species } from 'bn-models';
@@ -36,7 +36,7 @@ export class DataService {
   initialSyncComplete: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private http: HttpClient
   ) {
     PouchDB.plugin(PouchdbFind);

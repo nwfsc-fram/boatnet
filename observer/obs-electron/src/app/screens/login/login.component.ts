@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AlertService } from '../../_services/ui/alert.service';
-import { AuthenticationService } from '../../_services/auth/authentication.service';
 import { DataService } from '../../_services/data/data.service';
 import { User } from 'bn-models';
 import { StateService } from '../../_services/data/state.service';
@@ -12,6 +11,7 @@ import { ThemeService } from '../../_services/ui/theme.service';
 import { Program } from 'bn-models';
 import { ElectronService } from 'ngx-electron';
 import { ConfirmationService } from 'primeng/api';
+import { AuthService, BoatnetUser, LoginResult } from 'bn-auth';
 
 @Component({
   moduleId: module.id,
@@ -31,10 +31,12 @@ export class LoginComponent implements OnInit {
 
   isDBSynced: Observable<boolean>;
 
+  loginResult$: Observable<any>;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authenticationService: AuthenticationService,
+    private authService: AuthService,
     public electronService: ElectronService,
     private alertService: AlertService,
     private confirmationService: ConfirmationService,
@@ -45,7 +47,8 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     // reset login status
-    this.authenticationService.logout();
+    this.authService.logout();
+    // Todo NgRx AppState
     this.stateService.setState(<AppState>{ name: 'login' });
 
     // get return url from route parameters or default to '/'
@@ -56,6 +59,8 @@ export class LoginComponent implements OnInit {
     this.isDBSynced = this.dataService.initialSyncComplete;
   }
 
+  changedUsername(event$) {}
+
   toggleTabletMode(checked) {
     // Emit a tablet mode change, through the state service
     this.stateService.setTabletMode(checked);
@@ -65,45 +70,38 @@ export class LoginComponent implements OnInit {
     this.themeService.setDarkTheme(checked);
   }
 
-  changedUsername(username) {
-    this.authenticationService.validateUsername(username).then(valid => {
-      if (valid) {
-        this.availablePrograms = this.authenticationService.checkPrograms(
-          username
-        );
-        if (this.availablePrograms.length > 0) {
-          this.currentUserProgram = this.availablePrograms.slice(-1)[0];
-        }
-      } else {
-        this.availablePrograms = [];
-      }
-    });
-  }
-
-  changedProgram(program) {
-    this.stateService.currentProgram.next(program);
-  }
-
-  login() {
+  async login() {
     this.loading = true;
-    this.authenticationService
-      .login(this.model.username, this.model.password)
-      .subscribe(
-        data => {
-          if (!this.dataService.initialSyncComplete.getValue()) {
-            this.dataService.connectDatabase(
-              this.model.username,
-              this.model.password
-            );
-          }
-          this.stateService.setProgram(this.currentUserProgram);
-          this.router.navigate([this.returnUrl]);
-        },
-        error => {
-          this.alertService.error(error);
-          this.loading = false;
-        }
-      );
+    const username = this.model.username;
+    const pw = this.model.password;
+    const result: LoginResult = await this.authService.login(username, pw);
+    console.log('Got Result', result);
+    if (result.error) {
+      this.alertService.error(result.error);
+      this.loading = false;
+      return;
+    } else {
+      console.log('Logged in as', result.user.user);
+      this.router.navigate([this.returnUrl]);
+    }
+    // this.authenticationService
+    //   .login(this.model.username, this.model.password)
+    //   .subscribe(
+    //     data => {
+    //       if (!this.dataService.initialSyncComplete.getValue()) {
+    //         this.dataService.connectDatabase(
+    //           this.model.username,
+    //           this.model.password
+    //         );
+    //       }
+    //       this.stateService.setProgram(this.currentUserProgram);
+    //       this.router.navigate([this.returnUrl]);
+    //     },
+    //     error => {
+    //       this.alertService.error(error);
+    //       this.loading = false;
+    //     }
+    //   );
   }
 
   onExitElectron() {

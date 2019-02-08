@@ -7,3 +7,8 @@ export interface BoatnetUser {
     readonlyDB: string;
   };
 }
+
+export interface LoginResult {
+  user?: BoatnetUser;
+  error?: string;
+}
