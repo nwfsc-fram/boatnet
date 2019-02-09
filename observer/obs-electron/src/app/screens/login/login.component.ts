@@ -75,13 +75,12 @@ export class LoginComponent implements OnInit {
     const username = this.model.username;
     const pw = this.model.password;
     const result: LoginResult = await this.authService.login(username, pw);
-    console.log('Got Result', result);
     if (result.error) {
       this.alertService.error(result.error);
       this.loading = false;
       return;
     } else {
-      console.log('Logged in as', result.user.user);
+      console.log('Logged in as', result.user.username);
       this.router.navigate([this.returnUrl]);
     }
     // this.authenticationService

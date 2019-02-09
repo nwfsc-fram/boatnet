@@ -39,11 +39,14 @@ export class AuthService {
 
   async login(user: string, pw: string): Promise<LoginResult> {
     try {
-      const key = await this.getPubKey().toPromise();
-      const loginResult = await this.loginKeyVerify(user, pw, key).toPromise();
-      console.log(loginResult);
+      const key: string = await this.getPubKey().toPromise();
+      const loginResult: BoatnetUser = await this.loginKeyVerify(
+        user,
+        pw,
+        key
+      ).toPromise();
       if (loginResult) {
-        return of({ user: loginResult}).toPromise();
+        return of({ user: loginResult }).toPromise();
       }
     } catch (err) {
       return of({ error: err.error.message }).toPromise();
@@ -65,7 +68,7 @@ export class AuthService {
         map(result => {
           const verified = jsonwebtoken.verify(result.token, pubKey);
           console.log('[Service]', verified);
-          this.authedUser = verified.sub;
+          this.authedUser = JSON.parse(verified.sub);
           return this.authedUser;
         })
       );

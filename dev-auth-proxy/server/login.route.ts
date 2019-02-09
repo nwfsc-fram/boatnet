@@ -38,7 +38,7 @@ export async function login(req: Request, res: Response) {
     res.cookie('XSRF-TOKEN', csrfToken);
 
     const result = {
-      user: validate_result.user,
+      user: validate_result.username,
       token: sessionToken // You can check this token at https://jwt.io/
     };
 
@@ -61,7 +61,7 @@ async function devValidateUserPw(user: string, pw: string) {
 
   let authedUser: any;
   const isAuthed = users.some(u => {
-    if (u.user === user && u.password === pw) {
+    if (u.username === user && u.password === pw) {
       authedUser = u;
       return true;
     }
@@ -73,7 +73,7 @@ async function devValidateUserPw(user: string, pw: string) {
     const hashedPW_SHA = await SHA512(authedUser.password).toString(); // For FIPS compliance, need SHA-512 layer
     const hashedPW = await argon2.hash(hashedPW_SHA);
     return {
-      user: authedUser.user,
+      username: authedUser.username,
       hashedPW: hashedPW.toString(),
       roles: authedUser.userData.roles,
       couchDBInfo: authedUser.userData.couchDBInfo

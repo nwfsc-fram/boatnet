@@ -1,5 +1,5 @@
 export interface BoatnetUser {
-  user: string;
+  username: string;
   roles: string[];
   couchDBInfo: {
     urlRoot: string;

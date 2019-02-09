@@ -1,7 +1,7 @@
 {
   "devUsers": [
     {
-      "user": "test",
+      "username": "test",
       "password": "test",
       "userData": {
         "roles": [ "admin", "observer"],
