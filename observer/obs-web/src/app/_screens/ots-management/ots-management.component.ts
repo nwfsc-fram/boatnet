@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../_services/data/state.service';
+import { OtsTarget } from '../../_models/ots-target';
 
 @Component({
   selector: 'app-ots-management',
@@ -62,6 +63,12 @@ export class OTSManagementComponent implements OnInit {
 
   ngOnInit() {
     this.stateSvc.setStateName('ots-management');
+    this.stateSvc.clearOtsTarget();
+  }
+
+  setOtsTarget(coverage) {
+    this.stateSvc.setOtsTarget(coverage);
+    console.log(this.stateSvc.currentOtsTarget)
   }
 
 }

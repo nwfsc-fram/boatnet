@@ -60,10 +60,12 @@ import { HomeComponent } from './_screens/home/home.component';
 
 import { DataService } from './_services/data/data.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { OtsTargetDetailComponent } from './_screens/ots-target-detail/ots-target-detail.component';
 
 const appRoutes: Routes = [
   { path: 'home',             component: HomeComponent },
   { path: 'ots-management',   component: OTSManagementComponent },
+  { path: 'ots-target-detail' ,component: OtsTargetDetailComponent }, 
   { path: 'manage-users',     component: UserManagementComponent },
   { path: 'user',             component: UserComponent },
   { path: 'trips',            component: TripsComponent },
@@ -101,6 +103,7 @@ const appRoutes: Routes = [
     PermitDetailComponent,
     MessageDetailComponent,
     HomeComponent,
+    OtsTargetDetailComponent,
   ],
   imports: [
     RouterModule.forRoot(

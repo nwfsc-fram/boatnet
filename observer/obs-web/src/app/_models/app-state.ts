@@ -4,6 +4,7 @@ import { Permit } from './permit';
 import { Vessel } from './vessel';
 import { Message } from './message';
 import { Program } from './program';
+import { OtsTarget } from './ots-target';
  
 // Track global application state.
 // Generally, we should be pulling data from the PouchDB,
@@ -16,6 +17,7 @@ export class AppState {
   user: User;
   message: Message;
   program: Program;
+  otstarget: OtsTarget;
 
   public constructor(init?: Partial<AppState>) {
     Object.assign(this, init);
