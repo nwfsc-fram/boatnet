@@ -30,9 +30,11 @@
   <div class="col4">
     <h2 style="text-align: center; text-transform: uppercase">Fishery Coverage Targets:</h2>
 
+    <a routerLink="/ots-target-detail">
       <div class="ots-new-target">New Fishery Target</div>
+    </a>
 
-    <div *ngFor="let coverage of ots_coverages">
+    <div *ngFor="let coverage of ots_coverages" routerLink="/ots-target-detail" (click)="setOtsTarget(coverage)">
       <div *ngIf="coverage.coverage_type === 'fishery'" class="side-by-side-boxes">
         <div class="ots-target">{{ coverage.coverage_target }}</div>
         <br>
@@ -64,9 +66,11 @@
   <div class="col4 ">
       <h2 style="text-align: center; text-transform: uppercase">Port Coverage Targets: </h2>
 
-      <div class="ots-new-target">New Port Target</div>     
+      <a routerLink="/ots-target-detail">
+        <div class="ots-new-target">New Port Target</div>     
+      </a>
 
-      <div *ngFor="let coverage of ots_coverages">
+      <div *ngFor="let coverage of ots_coverages" routerLink="/ots-target-detail" (click)="setOtsTarget(coverage)">
           <div *ngIf="coverage.coverage_type === 'port'" class="side-by-side-boxes">
             <div  class="ots-target">{{ coverage.coverage_target }}</div>
             <br>
@@ -98,9 +102,11 @@
   <div class="col4">
     <h2 style="text-align: center; text-transform: uppercase">Vessel Coverage Targets:</h2>
 
-    <div class="ots-new-target">New Vessel Target</div>
+    <a routerLink="/ots-target-detail">
+      <div class="ots-new-target">New Vessel Target</div>
+    </a>
 
-    <div *ngFor="let coverage of ots_coverages">
+    <div *ngFor="let coverage of ots_coverages" routerLink="/ots-target-detail" (click)="setOtsTarget(coverage)">
         <div *ngIf="coverage.coverage_type === 'vessel'" class="side-by-side-boxes">
           <div class="ots-target">{{ coverage.coverage_target }}</div>
           <br>
