@@ -5,6 +5,8 @@ import { map, retry, catchError } from 'rxjs/operators';
 import { BoatnetUser, LoginResult } from './bn-auth.models';
 
 import * as jsonwebtoken from 'jsonwebtoken';
+import * as pemjwk from 'pem-jwk';
+
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +32,15 @@ export class AuthService {
   }
 
   getPubKey(): Observable<string> {
+    /**
+     * Returns PEM key for JWT signature verification
+     */
     return this.http.get<any>('/api/pubkey').pipe(
       map(result => {
-        return result.publicKey;
+        const jwkKey = result.keys[0]; // assuming our key is first
+          // TODO If we add multiple keys, we would use 'kid' property for matching
+        const pemKey = pemjwk.jwk2pem(jwkKey);
+        return pemKey;
       })
     );
   }

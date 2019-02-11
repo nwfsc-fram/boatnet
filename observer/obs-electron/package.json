@@ -78,6 +78,7 @@
     "nan": "^2.12.1",
     "ngx-electron": "^2.0.0",
     "pdfmake": "^0.1.39",
+    "pem-jwk": "^2.0.0",
     "pouchdb": "^7.0.0",
     "pouchdb-find": "^7.0.0",
     "primeicons": "^1.0.0",

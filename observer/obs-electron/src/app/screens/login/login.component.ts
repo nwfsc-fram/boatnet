@@ -81,26 +81,15 @@ export class LoginComponent implements OnInit {
       return;
     } else {
       console.log('Logged in as', result.user.username);
+      if (!this.dataService.initialSyncComplete.getValue()) {
+        this.dataService.connectDatabase(
+          this.model.username,
+          this.model.password
+        );
+      }
+      // TODO set Program?
       this.router.navigate([this.returnUrl]);
     }
-    // this.authenticationService
-    //   .login(this.model.username, this.model.password)
-    //   .subscribe(
-    //     data => {
-    //       if (!this.dataService.initialSyncComplete.getValue()) {
-    //         this.dataService.connectDatabase(
-    //           this.model.username,
-    //           this.model.password
-    //         );
-    //       }
-    //       this.stateService.setProgram(this.currentUserProgram);
-    //       this.router.navigate([this.returnUrl]);
-    //     },
-    //     error => {
-    //       this.alertService.error(error);
-    //       this.loading = false;
-    //     }
-    //   );
   }
 
   onExitElectron() {

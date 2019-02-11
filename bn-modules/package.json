@@ -24,6 +24,7 @@
     "core-js": "^2.5.4",
     "jsonwebtoken": "^8.4.0",
     "ng-packagr": "^4.7.0",
+    "pem-jwk": "^2.0.0",
     "primeicons": "^1.0.0",
     "primeng": "^7.0.3",
     "rxjs": "~6.4.0",
