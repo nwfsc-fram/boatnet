@@ -37,6 +37,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { MultiSelectModule } from 'primeng/multiselect';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
 import {ChartModule} from 'primeng/chart';
 
@@ -143,6 +144,7 @@ const appRoutes: Routes = [
     HttpClientModule,
     MultiSelectModule,
     ChartModule,
+    ProgressSpinnerModule,
   ],
   providers: [
     DataService

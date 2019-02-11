@@ -41,7 +41,8 @@ export class PermitsComponent implements OnInit {
 
     this.permitsObservable = this.httpClient.get   
     // ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?offset=" + this.offset + "&limit=500")
-    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?limit=500")
+    // ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?limit=500")
+    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
         .pipe(
           // tap(console.log)
           map((res) => {
@@ -54,13 +55,6 @@ export class PermitsComponent implements OnInit {
                 this.permits.push(item)
                 console.log(this.permits)
               }
-            }
-
-            if (res['hasMore'] === true) {
-              this.hasMore = true
-              this.offset += 500 
-            } else {
-              this.hasMore = false
             }
             
         }) 

@@ -15,7 +15,9 @@
     
 </ul>
 
-<!-- <ng-template #empty> No Permits Yet </ng-template> -->
+<div class="centered-spinner" *ngIf="permits.length === 0">
+    <p-progressSpinner animationDuration="1s"></p-progressSpinner>
+</div>
 
 <div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
     <div class="flex-space-between">
@@ -27,5 +29,6 @@
     </div>
     <hr>
 </div>
+
 
 <app-footer></app-footer>
