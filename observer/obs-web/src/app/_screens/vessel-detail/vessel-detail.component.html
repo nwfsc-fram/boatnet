@@ -1,4 +1,32 @@
-<form mat-form [formGroup]="vesselForm">
+
+<div class="current_active">
+        <div class="flex-space-between"><span>Vessel Name:</span>    <span>{{ vessel.vessel_name }}</span></div>
+        <div class="flex-space-between"><span>Coast Guard No:</span>    <span>{{ vessel.coast_guard_number }}</span></div>
+        <div class="flex-space-between"><span>Vessel Reg Num</span>    <span>{{ vessel.vessel_reg_num }}</span></div>
+        <div class="flex-space-between"><span>State:</span>    <span>{{ vessel.state }}</span></div>        
+        <hr>
+        <div class="flex-space-between"><span>Port Name:</span>    <span>{{ vessel.port_name }}</span></div>
+        <div class="flex-space-between"><span>IFQ Port Code:</span>    <span>{{ vessel.ifq_port_code }}</span></div> 
+        <div class="flex-space-between"><span>IFQ Port Id:</span>    <span>{{ vessel.ifq_port_id }}</span></div>        
+        <div class="flex-space-between"><span>Port Code:</span>    <span>{{ vessel.port_code }}</span></div>
+        <div class="flex-space-between"><span>Port Group:</span>    <span>{{ vessel.port_group }}</span></div>
+        <div class="flex-space-between"><span>Port Id:</span>    <span>{{ vessel.port_id }}</span></div>
+        <hr>    
+        <div class="flex-space-between"><span>Vessel Type:</span>    <span>{{ vessel.type }}</span></div>
+        <div class="flex-space-between"><span>Vessel Status:</span>    <span>{{ vessel.status }}</span></div>  
+        <div class="flex-space-between"><span>Registered Length ({{vessel.registered_length_um}}):</span>    <span>{{ vessel.registered_length }}</span></div>
+        <div class="flex-space-between"><span>Safety Decal Expiration:</span>    <span>{{ vessel.safety_decal_exp }}</span></div>
+        <div class="flex-space-between"><span>Is Mothership:</span>    <span *ngIf="vessel.is_mothership else not_mothership">Yes</span>
+            <ng-template #not_mothership>No</ng-template></div>
+        <hr>
+        <div class="flex-space-between"><span>Permits:</span>     <span>{{ vessel.permits }}</span></div>
+        <div class="flex-space-between"><span>Notes:</span>    <span>{{ vessel.notes }}</span></div>
+
+    </div>
+
+<app-footer></app-footer>
+
+<!-- <form mat-form [formGroup]="vesselForm">
     <div >
         <div><strong>Vessel Name: </strong></div>
         <input style="width: 100%" type="text" pInputText formControlName="vessel_name"/>
@@ -8,5 +36,5 @@
         <div><strong>Vessel Reg Number: </strong></div>
         <input style="width: 100%" type="text" pInputText formControlName="vessel_reg_num"/>
     </div>
+</form> -->
 
-</form>

@@ -1,30 +1,21 @@
 
-<div *ngFor="let vessel of vessels" (click)="setVessel(vessel)">
-
-  <div style="display: flex; justify-content: space-between">
-    <div style="width: 90%" class="narrow_item_border" [ngClass]="{activeitem: vessel == currentVessel }" >
-      <span>{{ vessel.vessel_name }}</span>
-    </div>
-
-    <div style="margin: 6px 0; font-size: 1em" class="vertical-align" routerLink="/vessel-detail" (click)="setVessel(vessel)"><i class="pi pi-pencil"></i></div>
-
-  </div>
+<div *ngIf="couchData.length === 0" class="centered-spinner">
+    <p-progressSpinner animationDuration="1s"></p-progressSpinner>
 </div>
 
-  <div *ngFor="let vessel of couchData" style="width: 100% " (click)="setVessel(vessel)">
-    <div style="display: flex; justify-content: space-between">
-      <div style="width: 90%" class="narrow_item_border" [ngClass]="{activeitem: vessel == currentVessel }" >
-        {{ vessel.vessel_name }} 
-        <span *ngIf="vessel.coast_guard_number !== ''; else stateReg">
-          <span style="float:right">USCG: {{ vessel.coast_guard_number }}</span>
-        </span>
-        <ng-template #stateReg>
-          <span style="float:right">SR: {{ vessel.state_reg_number }}</span>
-        </ng-template>
-
+  <div *ngFor="let vessel of couchData" routerLink="/vessel-detail" (click)="setVessel(vessel)">
+    <div class="flex-space-between list-items">
+      <div>{{ vessel.vessel_name }} </div>
+        <div>
+            <span *ngIf="vessel.coast_guard_number !== ''; else stateReg">
+                <span>USCG: {{ vessel.coast_guard_number }}</span>
+              </span>
+              <ng-template #stateReg>
+                <span>SR: {{ vessel.state_reg_number }}</span>
+              </ng-template>
+        </div>
       </div>
-      <div style="margin: 6px 0; font-size: 1em" class="vertical-align" routerLink="/vessel-detail" (click)="setVessel(vessel)"><i class="pi pi-pencil"></i></div>
-    </div>
+      <hr>
   </div>
   
 <app-footer (searchstring)="searchVessels($event)"></app-footer>

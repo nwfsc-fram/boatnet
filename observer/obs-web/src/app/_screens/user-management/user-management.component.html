@@ -1,6 +1,9 @@
 
 
-<div class="narrow_item_border" *ngFor="let user of active_users" routerLink="/user" (click)="setUser(user)">
-  {{ user.first_name }} {{ user.last_name }}<br>
+<div *ngFor="let user of active_users" routerLink="/user" (click)="setUser(user)">
+  <div  class="flex-space-between list-items">
+    {{ user.first_name }} {{ user.last_name }}
+  </div>
+  <hr>
 </div>
 <app-footer></app-footer>

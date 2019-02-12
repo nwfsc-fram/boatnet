@@ -124,7 +124,8 @@ export class TripsComponent implements OnInit {
     this.stateSvc.setState(<AppState>{ name: 'trips' })
 
     if (this.stateSvc.currentState.vessel === undefined) {
-      this.stateSvc.setVessel({vessel_name: 'Excalibur', 'coast_guard_number': 'fgr243rt', 'state_reg_number': '12fef23', vessel_reg_num: '123abc' ,permits: [] , id: '123456', type: 'vessel', created_by: 'seth.gerou', created_date: '12/2/2212'})
+      this.stateSvc.setVessel({vessel_name: 'Excalibur', 'coast_guard_number': 'fgr243rt', 'state_reg_number': '12fef23', vessel_reg_num: '123abc' ,permits: [] , id: '123456', type: 'vessel', created_by: 'seth.gerou', created_date: '12/2/2212', ifq_port_code: "452",
+      ifq_port_id: 558, is_mothership: "", notes: "", port_code: "PRN", port_group: "SF", port_id: "11486", port_name: "PRINCETON (HALF MOON BAY)", registered_length: null, registered_length_um: "", safety_decal_exp: "", state: "CA", vessel_orig_id: "14637", vessel_status: "A", vessel_type: "2", vessel_uuid: "58291e7b-2651-4561-8841-d3e8200ee5f7"})
     }
     if (this.stateSvc.currentState.user === undefined) {
       this.stateSvc.setUser({first_name: 'Seth', last_name: 'Gerou', email: 'seth.gerou@noaa.gov', home: '206-555-1212', mobile: '425-555-1212', roles: ['captain'], vessel: 'Boaty McBoatface', home_port: "Seattle", id: '0', type: 'user', created_by: 'seth.gerou', created_date: '2/2/22', address: '123 fake st', city: 'springfield', state: 'ma', zip: '12345', notification_prefs: [], token: "", username: 'sethgerou', password: 'password1', pwexpiry: '2/2/22', firstName: 'seth', lastName: 'gerou', programs: [], role: 'captain'})

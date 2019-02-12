@@ -8,11 +8,7 @@
 </div> -->
 
 <ul *ngIf="permitsObservable | async as permits">
-
-    <li *ngFor="let permit of permits">
-    
-    </li>
-    
+    <li *ngFor="let permit of permits"></li>
 </ul>
 
 <div class="centered-spinner" *ngIf="permits.length === 0">
@@ -20,7 +16,7 @@
 </div>
 
 <div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
-    <div class="flex-space-between">
+    <div class="flex-space-between list-items">
         <div>{{ permit.permit_number }}</div>
         <div>owner: {{ permit.permit_owner.substring(0,15) }}
             <br>
