@@ -76,7 +76,7 @@ npm link bn-specimens
 
 ```            
 
-* Also, if you are developing a HttpClient service, you will hit this bug: https://github.com/angular/angular/issues/25813
+* (Also, if you are developing a HttpClient service, without this fix, you will hit this bug: https://github.com/angular/angular/issues/25813 )
 `inject() must be called from an injection context`
 
 ### 6b [OPTION 2] Reference the library modules in your application directly via tsconfig.json
