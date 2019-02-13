@@ -32,3 +32,19 @@
 `git rebase --continue`
 * Then if you stashed your changes,
 `git stash pop`
+
+## After your pull request is merged
+
+After your pull request is merged, you can safely delete your branch and pull the changes from the main (upstream) repository:
+
+* Delete the remote branch on GitHub either through the GitHub web UI or locally
+`git push origin --delete my-branch`
+    
+* Check out the master branch:
+`git checkout master -f`
+
+* Delete the local branch:
+`git branch -D my-fix-branch`
+
+* Update your master with the latest upstream version:
+`git pull --ff upstream master`

@@ -1,0 +1,16 @@
+{
+  "devUsers": [
+    {
+      "user": "test",
+      "password": "test",
+      "userData": {
+        "roles": [ "admin", "observer"],
+        "couchDBInfo": {
+          "urlRoot": "http://<your development couchdb server>:5984",
+          "userDB": "my-user-example-db",
+          "readonlyDB": "my-master-example-db"
+        }
+      }
+    }
+  ]
+}

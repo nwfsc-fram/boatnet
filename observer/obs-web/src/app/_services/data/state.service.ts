@@ -7,7 +7,8 @@ import { User } from '../../_models/user';
 import { Message } from '../../_models/message'
 import { AppState } from '../../_models/app-state';
 import { Program } from '../../_models/program';
-
+import { OtsTarget } from '../../_models/ots-target';
+ 
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +26,11 @@ export class StateService {
   currentUser = new BehaviorSubject<User>(undefined)
   currentMessage = new BehaviorSubject<Message>(undefined);
   currentProgram = new BehaviorSubject<Program>(undefined);
+  currentOtsTarget = new BehaviorSubject<OtsTarget>(undefined);
 
   headerStatus = new Subject<string>();
 
-  valid_state_names = ['ots-management', 'user-preferences', 'user-management', 'user', 'vessel-management', 'vessel-detail', 'permits-management', 'permit', 'trips', 'trip', 'message-detail']
+  valid_state_names = ['ots-management', 'ots-target-detail', 'user-config', 'user-management', 'user', 'vessel-management', 'vessel-detail', 'permits-management', 'permit', 'trips', 'trip', 'message-detail']
 
   constructor() { 
     this.currentState = this.loadAppState();
@@ -121,6 +123,17 @@ export class StateService {
   setProgram(program: Program) {
     this.currentState.program = program;
     this.currentProgram.next(program);
+  }
+
+  setOtsTarget(OtsTarget: OtsTarget) {
+    this.currentState.otstarget = OtsTarget;
+    this.currentOtsTarget.next(OtsTarget)
+  }
+
+  clearOtsTarget() {
+    this.currentState.otstarget = undefined;
+    this.currentOtsTarget.next(undefined);
+    this.persistAppState();
   }
 
   clearPermit() {

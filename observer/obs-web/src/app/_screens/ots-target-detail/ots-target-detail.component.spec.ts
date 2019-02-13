@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserPreferencesComponent } from './user-preferences.component';
+import { OtsTargetDetailComponent } from './ots-target-detail.component';
 
-describe('UserPreferencesComponent', () => {
-  let component: UserPreferencesComponent;
-  let fixture: ComponentFixture<UserPreferencesComponent>;
+describe('OtsTargetDetailComponent', () => {
+  let component: OtsTargetDetailComponent;
+  let fixture: ComponentFixture<OtsTargetDetailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserPreferencesComponent ]
+      declarations: [ OtsTargetDetailComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UserPreferencesComponent);
+    fixture = TestBed.createComponent(OtsTargetDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,35 +1,25 @@
-<form mat-form [formGroup]="permitForm">
+<div class="current_active">
 
-  <div class="flex-grid">
-    <span class="col pv6"><strong>Permit Number:</strong></span>
-    <input class="col" type="text" formControlName="permit_num" id="permit_num">
-  </div>
+<div class="flex-space-between">
+    <span>Permit Number:</span>
+    <span>{{ permit.permit_number }}</span>
+</div>  
+
+<div class="flex-space-between">
+  <span>Vessel Name:</span>
+  <span>{{ permit.vessel_name }}</span>
+</div>
+
+<div class="flex-space-between">
+  <span>Vessel Registration Number:</span>
+  <span>{{ permit.vessel_registration_number }}</span>
+</div>
 <br>
-  <div class="flex-grid">
-    <span class="col pv6"><strong>Fishery</strong></span>
-    <input class="col" type="text" formControlName="fishery" id="fishery">
-  </div>
-<br>
-  <div class="flex-grid">
-    <span class="col pv6"><strong>Certificate Start Date</strong></span>
-    <p-calendar formControlName="certificate_start_date" id="certificate_start_date" [touchUI]="true"></p-calendar>
-  </div>
-<br>
-  <div class="flex-grid">
-      <span class="col pv6"><strong>Certificate End Date</strong></span>
-      <p-calendar formControlName="certificate_end_date" id="certificate_end_date" [touchUI]="true"></p-calendar>
-    </div>
-<br>
-  <div class="flex-grid">
-    <span class="col pv6"><strong>Vessel</strong></span>
-    <p-dropdown [options]="vessels" formControlName="vessel" [autoWidth]='true' [filter]="true" (ngModelChange)="setPermitVessel()"></p-dropdown>
-  </div>
-<br>
-  <div class="flex-grid">
-      <span class="col pv6"><strong>Vessel Registration Number</strong></span>
-      <div style="display:inline-block; margin:12px; font-weight: bold" [innerHtml]="getVesselRegNum()"></div>
-    </div>
-  
-</form>
+
+<div>
+  <div>Active Captains:</div>
+  <p-multiSelect [options]="captains" [(ngModel)]="selectedCaptains" optionLabel="name" [filter]="true" [panelStyle]="{minWidth: '20em'}">
+  </p-multiSelect>
+</div>
 
 <app-footer></app-footer>

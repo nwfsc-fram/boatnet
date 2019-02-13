@@ -43,3 +43,4 @@ testem.log
 Thumbs.db
 observer/obs-web/src/app/_services/dbConfig.json
 observer/.idea/
+dev-auth-proxy/server/config/authProxyConfig.json

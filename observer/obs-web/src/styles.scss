@@ -32,6 +32,11 @@ body {
     margin: 5px 0; 
 }
 
+.selected {
+    border: 2px solid #0093D0;   
+    color: #0093D0; 
+}
+
 .closed_item_border {
     display: flex;
     flex-flow: row wrap;
@@ -76,6 +81,19 @@ body {
     display: flex;
   }
 
+.flow-wrap {
+    flex-flow: row wrap;
+}
+
+.side-by-side-boxes {
+    border: 2px solid #0093D0; 
+    border-radius: 15px; 
+    background-color: white;  
+    padding: 20px; 
+    margin: 15px;
+
+}
+
 .col {
     flex: 1;
   }
@@ -112,7 +130,7 @@ body {
     margin-bottom: 5px;
 }
 
-.flex-space-between{
+.flex-space-between {
     display: flex;
     justify-content: space-between
 }
@@ -157,6 +175,13 @@ body {
 @media only screen and (min-width: 415px) {
     .narrow_item_border {
         border-top: 2px solid #0093D0;  
+        color: #0093D0;
+    }
+}
+
+@media only screen and (max-width: 415px) {
+    .selected {
+        border: 2px solid #0093D0;  
     }
 }
 

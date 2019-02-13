@@ -13,9 +13,9 @@
     <div>End Date</div>
   </div>
   <br>
-    <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)">
-
-      <div class="narrow_item_border" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open">
+    <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >
+      
+      <div class="narrow_item_border" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" [ngClass]="{selected: trip.selected === true}">
 
         <span class="vertical-align"> {{ trip.start_date }} </span>
 
@@ -23,7 +23,7 @@
             <mat-icon style="font-size: 15px">lock_open</mat-icon>
 
             <span *ngIf="trip.selected; else notSelected;">
-                <mat-icon style="font-size: 15px">check_box</mat-icon>
+                <mat-icon style="font-size: 15px; color: #0093D0">check_box</mat-icon>
             </span>
 
             <ng-template #notSelected>
@@ -58,8 +58,8 @@
       </div>
     <br>
     <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-        <div  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open">
-          <div class="closed_item_border">
+        <div  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
+          <div class="closed_item_border" [ngClass]="{selected: trip.selected === true}">
 
             <span class="vertical-align"> {{ trip.start_date }} </span>
             
@@ -84,7 +84,7 @@
             
             <span class="vertical-align"> {{ trip.end_date }} </span>
             
-            <span *ngFor="let permit of trip.permits" style="width: 100% ">
+            <span *ngFor="let permit of trip.permits" style="width: 100% " >
                 {{ permit.fishery }}
               </span>
           </div>
