@@ -1,98 +1,42 @@
-<div style="text-align: center">
 
-  <div class="trip-data">
-    <a routerLink="/manage-vessels" style="text-decoration: none;">
-      <strong>{{ vessel.vessel_name }}</strong> 
-    </a>
-    <hr>
-  </div>
-  <strong>Active Trips</strong>
-  <div class="desktop">
-    <div>Start Date</div>
-    <div>Trip Attributes</div>
-    <div>End Date</div>
-  </div>
-  <br>
-    <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >
-      
-      <div class="narrow_item_border" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" [ngClass]="{selected: trip.selected === true}">
+  <a routerLink="/user-config" style="text-decoration: none;">
+    <div class="heading">{{ vessel.vessel_name }}</div> 
+  </a>
+  <div class="subheading">Active Trips</div>
 
-        <span class="vertical-align"> {{ trip.start_date }} </span>
-
-        <span class="vertical-align">
-            <mat-icon style="font-size: 15px">lock_open</mat-icon>
-
-            <span *ngIf="trip.selected; else notSelected;">
-                <mat-icon style="font-size: 15px; color: #0093D0">check_box</mat-icon>
-            </span>
-
-            <ng-template #notSelected>
-                <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
-            </ng-template>
-
-            <span *ngIf="trip.messages; else noMessages">
-              <mat-icon style="font-size: 15px">message</mat-icon>
-            </span>
-
-            <ng-template #noMessages>
-                <mat-icon style="color: lightgray; font-size: 15px">message</mat-icon>
-            </ng-template>
+  
+  <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >      
+    <div class="list-item" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" >
+      <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
+        
+        <span class="status-icons"> 
+          <i class="pi pi-check" *ngIf="trip.selected"></i>
+          <i class="pi pi-comment" *ngIf="trip.messages"></i>
         </span>
         
-        <span class="vertical-align"> {{ trip.end_date }} </span>
-
-        <span *ngFor="let permit of trip.permits" style="width: 100% ">
-          {{ permit.fishery }}
-        </span>
-
       </div>
-
+      <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
     </div>
+  </div>
+  
+  <div class="new-trip-button">
+    <button class="mat-icon-button" style="color: white;" mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
+  </div>
+  
+  <div class="subheading closed">Closed Trips</div>
+  <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
+    <div class="list-item closed"  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
+        <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
 
-    <hr>
-    <strong style="color: grey;">Closed Trips</strong>
-    <div class="desktop" style="color: grey">
-        <div>Start Date</div>
-        <div>Trip Attributes</div>
-        <div>End Date</div>
-      </div>
-    <br>
-    <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-        <div  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
-          <div class="closed_item_border" [ngClass]="{selected: trip.selected === true}">
-
-            <span class="vertical-align"> {{ trip.start_date }} </span>
-            
-            <span class="vertical-align">
-              <mat-icon style="font-size: 15px">lock</mat-icon>
-              
-              <span *ngIf="trip.selected; else notSelected;">
-                <mat-icon style="font-size: 15px" >check_box</mat-icon>
-              </span>
-              <ng-template #notSelected>
-                <mat-icon style="font-size: 15px">check_box_outline_blank</mat-icon>
-              </ng-template>
-              
-              <span *ngIf="trip.messages; else noMessages">
-                <mat-icon style="font-size: 15px" >message</mat-icon>
-              </span>
-              <ng-template #noMessages>
-                <mat-icon style="color: lightgray; font-size: 15px">message</mat-icon>
-              </ng-template>
-              
-            </span>
-            
-            <span class="vertical-align"> {{ trip.end_date }} </span>
-            
-            <span *ngFor="let permit of trip.permits" style="width: 100% " >
-                {{ permit.fishery }}
-              </span>
-          </div>
+          <span class="status-icons"> 
+            <i class="pi pi-check" *ngIf="trip.selected"></i>
+            <i class="pi pi-comment" *ngIf="trip.messages"></i>
+          </span>
 
         </div>
-      </div>
+        <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
+    </div>
+  </div>
 
 
-</div>
-
-<app-footer></app-footer>
+<app-footer (searchstring)="searchTrips($event)"></app-footer>

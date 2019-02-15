@@ -29,7 +29,37 @@ export class PermitsComponent implements OnInit {
 
   hasMore: Boolean = false;
   offset: number = 0;
-  permits = []
+  permits: any = []
+  allPermits = []
+  searchstring = '';
+
+  searchPermits(searchstring) {  
+
+    var keys = Object.keys(this.allPermits[0])
+    console.log(keys)
+    var results = new Set()
+    
+    if (searchstring !== '') {
+      this.allPermits.filter(function(element) {
+        // return element.state_reg_number.toLowerCase().includes('00') || element.vessel_name.toLowerCase().includes('q');
+        
+        for (var iterkey of keys) {
+          if (element[iterkey]) {
+            if (element[iterkey].toString().toLowerCase().includes(searchstring)) {
+              results.add(element)
+            }
+            // return element[iterkey].toLowerCase().includes('a')
+          }
+        }
+      });
+      // console.log(this.couchData)
+      console.log(Array.from(results).sort())
+      this.permits = results
+    } else {
+      this.permits = this.allPermits      
+      console.log(this.permits)
+    }
+  }
 
   constructor(
     private stateSvc: StateService,
@@ -41,7 +71,8 @@ export class PermitsComponent implements OnInit {
 
     this.permitsObservable = this.httpClient.get   
     // ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?offset=" + this.offset + "&limit=500")
-    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?limit=500")
+    // ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_v/?limit=500")
+    ("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
         .pipe(
           // tap(console.log)
           map((res) => {
@@ -55,17 +86,12 @@ export class PermitsComponent implements OnInit {
                 console.log(this.permits)
               }
             }
-
-            if (res['hasMore'] === true) {
-              this.hasMore = true
-              this.offset += 500 
-            } else {
-              this.hasMore = false
-            }
             
         }) 
 
-      )        
+      )  
+      
+    this.allPermits = this.permits
           
   }
 

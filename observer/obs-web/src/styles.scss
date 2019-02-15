@@ -2,19 +2,67 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 
 body {
-    font-family: sans-serif;
+    font-family: 'roboto', Arial, Helvetica, sans-serif;
     margin: 0;
-    background-color: #DCE8E7;
+    background-color: white;
+}
+
+.heading {
+    color: #1675d1;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: 'roboto', Arial, Helvetica, sans-serif; 
+    letter-spacing: 2px;
+    text-align: left;
+    margin-left: 20px;
+}
+
+.subheading {
+    color: black;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-align: left;
+    margin: 20px;
+}
+
+.card {
+    margin: 3px;
+    border: 1px solid lightgrey;
+    stroke: 3px;
+}
+
+.card-heading {
+    color: #1675d1;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: 'roboto', Arial, Helvetica, sans-serif; 
+    letter-spacing: 2px;
+    text-align: left;
+    margin: 16px 20px;
+}
+
+.card-contents {
+    margin: 16px 20px; 
+}
+
+.card-input-label {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.card-input-divider {
+    margin: 20px;
 }
 
 .container {
-    margin: 55px 10px 10px 10px;
+    margin: 85px 10px 10px 10px;
  
 }
 
 .default_item_border {
     border: 2px solid black; 
-    border-radius: 5px; 
+    // border-radius: 5px; 
     background-color: white; 
     font-weight: bold;
     padding: 10px; 
@@ -30,17 +78,18 @@ body {
     font-size: 15px;
     padding: 3px; 
     margin: 5px 0; 
+    text-align: left
 }
 
 .selected {
-    border: 2px solid #0093D0;   
-    color: #0093D0; 
+    background-color: #1675d1;
+    color: white;
 }
 
 .closed_item_border {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between; 
+    // display: flex;
+    // flex-flow: row wrap;
+    // justify-content: space-between; 
     font-weight: bold;
     font-size: 15px;
     padding: 3px; 
@@ -49,21 +98,13 @@ body {
 }
 
 .current_active {
-    border: 2px solid #0093D0; 
-    border-radius: 5px; 
+    border: 2px solid #1675d1; 
+    // border-radius: 5px; 
     background-color: white; 
     font-weight: bold;
     padding: 10px; 
     margin: 10px 0; 
     text-align: left
-}
-
-.trip-data, .user-data {
-    font-size: larger
-}
-
-.trip-data strong, .user-data strong {
-    color: #0093D0;
 }
 
 .vertical-align {
@@ -73,8 +114,50 @@ body {
 }
 
 .activeitem {
-    color: #0093D0;
-    border: 2px solid #0093D0;     
+    color: #1675d1;
+    border: 2px solid #1675d1;     
+}
+
+.list-item {
+    margin: 20px 20px;
+    text-align: left;
+    padding-bottom: 10px;
+    border-bottom: 1px solid lightgrey
+}
+
+.closed {
+    color: gray;
+}
+
+.first-line {
+    font-weight: bold;
+}
+
+.second-line {
+    font-size: small;
+}
+
+.status-icons {
+    float: right;
+    font-size: 20px;
+}
+
+.new-trip-button {
+    text-align: right;
+    margin: 20px;
+}
+
+.centered-spinner {
+    position: fixed;
+    z-index: 999;
+    height: 100px;
+    width: 100px;
+    overflow: visible;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .flex-grid {
@@ -86,8 +169,8 @@ body {
 }
 
 .side-by-side-boxes {
-    border: 2px solid #0093D0; 
-    border-radius: 15px; 
+    border: 2px solid #1675d1; 
+    // border-radius: 15px; 
     background-color: white;  
     padding: 20px; 
     margin: 15px;
@@ -100,6 +183,10 @@ body {
 
 .col2 {
     flex: 2;
+}
+
+.col3 {
+    flex: 3;
 }
 
 .col4 {
@@ -115,7 +202,7 @@ body {
 }
 
 .mat-icon-button {
-    background-color: #0093D0;
+    background-color: #1976d2;
 }
 
 .footer button {
@@ -138,7 +225,7 @@ body {
 @media only screen and (max-width: 414px) {
     .closed_item_border {
         border: 2px solid grey; 
-        border-radius: 5px; 
+        // border-radius: 5px; 
         background-color: white; 
     }
 }
@@ -160,28 +247,36 @@ body {
         margin-top: 10px;
         margin-bottom: -10px;
         display: flex;
-        justify-content: space-between
+        justify-content: space-between;
+        font-weight: bold;
     }
 }
 
 @media only screen and (max-width: 414px) {
     .narrow_item_border {
         border: 2px solid black; 
-        border-radius: 5px; 
+        // border-radius: 5px; 
         background-color: white; 
     }
 }
 
 @media only screen and (min-width: 415px) {
     .narrow_item_border {
-        border-top: 2px solid #0093D0;  
-        color: #0093D0;
+
+        color: #1675d1;
     }
 }
 
 @media only screen and (max-width: 415px) {
     .selected {
-        border: 2px solid #0093D0;  
+        background-color: #1675d1;
+        color: white;
+    }
+}
+
+@media only screen and (min-width: 414px) {
+    .selected {
+        border: none;  
     }
 }
 

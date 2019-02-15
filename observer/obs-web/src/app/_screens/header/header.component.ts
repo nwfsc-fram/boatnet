@@ -26,18 +26,18 @@ export class HeaderComponent implements OnInit {
   getTitle() {
 
     var titles = {
-      '/':                 'TRIPS', 
-      '/trips':            'TRIPS',
-      '/trip':             'TRIP DETAILS',
-      '/manage-users':     'MANAGE USERS',
-      '/user':             'USER DETAILS',
-      '/user-config':      'USER CONFIG',
-      '/manage-vessels':   'MANAGE VESSELS',
-      '/vessel-detail':    'VESSEL DETAIL',
-      '/manage-permits':   'MANAGE PERMITS',
-      '/permit-detail':    'PERMIT DETAILS',
-      '/ots-management':   'OTS MANAGEMENT',
-      '/message-detail':   'MESSAGE DETAIL',
+      '/':                 'Trips', 
+      '/trips':            'Trips',
+      '/trip':             'Trip Details',
+      '/manage-users':     'Manage Users',
+      '/user':             'User Details',
+      '/user-config':      'User Config',
+      '/manage-vessels':   'Manage Vessels',
+      '/vessel-detail':    'Vessel Detail',
+      '/manage-permits':   'Manage Permits',
+      '/permit-detail':    'Permit Details',
+      '/ots-management':   'OTS Management',
+      '/message-detail':   'Message Detail',
     }
 
     var title = titles[this.router.url]

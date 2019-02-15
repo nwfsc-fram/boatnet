@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { StateService } from '../../_services/data/state.service';
 import { Trip } from '../../_models/trip';
 import { User } from '../../_models/user';
+import { Vessel} from '../../_models/vessel'
+
 import {
   FormControl,
   NgForm,
@@ -19,7 +21,8 @@ import {
 
 export class TripDetailComponent implements OnInit {
 
-  trip: Trip = this.stateSvc.currentState.trip
+  trip: Trip = this.stateSvc.currentState.trip;
+  vessel: Vessel = this.stateSvc.currentState.vessel;
   currentUser = this.stateSvc.currentState.user.first_name + " " + this.stateSvc.currentState.user.last_name
 
   // permits = [
@@ -48,7 +51,7 @@ export class TripDetailComponent implements OnInit {
     this.stateSvc.setStateName('trip');
 
     if (this.stateSvc.currentState.trip === undefined) {
-      this.trip = Trip.createTrip(this.stateSvc.currentState.user.home_port);
+      this.trip = Trip.createTrip(this.stateSvc.currentState.user.home_port, this.stateSvc.currentState.vessel);
     }
 
     this.createEditForm()
@@ -59,7 +62,7 @@ export class TripDetailComponent implements OnInit {
 
     this.tripForm = this.fb.group(
       {
-        vessel: this.stateSvc.currentState.vessel,
+        vessel: this.vessel,
         start_date: null,
         end_date: null,
         is_open: true,

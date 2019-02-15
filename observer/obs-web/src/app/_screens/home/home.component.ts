@@ -40,7 +40,23 @@ export class HomeComponent implements OnInit {
         created_by: 'seth.gerou', 
         created_date: '12/2/2212',
         coast_guard_number: '34gsfdg',
-        state_reg_number: 'fv3443rf'
+        state_reg_number: 'fv3443rf',
+        ifq_port_code: "452",
+        ifq_port_id: 558,
+        is_mothership: "",
+        notes: "",
+        port_code: "PRN",
+        port_group: "SF",
+        port_id: "11486",
+        port_name: "PRINCETON (HALF MOON BAY)",
+        registered_length: null,
+        registered_length_um: "",
+        safety_decal_exp: "",
+        state: "CA",
+        vessel_orig_id: "14637",
+        vessel_status: "A",
+        vessel_type: "2",
+        vessel_uuid: "58291e7b-2651-4561-8841-d3e8200ee5f7"
       })
     }
     if (this.stateService.currentState.user === undefined) {

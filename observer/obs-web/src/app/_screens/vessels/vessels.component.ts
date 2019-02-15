@@ -18,7 +18,7 @@ export class VesselsComponent implements OnInit {
 
   // vessels: any[] = []; 
   currentVessel = this.stateSvc.currentState.vessel
-  couchData: any
+  couchData: any = []
   allVessels: any
   searchstring = '';
 
