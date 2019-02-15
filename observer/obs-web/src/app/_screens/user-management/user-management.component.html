@@ -1,9 +1,7 @@
 
 
-<div *ngFor="let user of active_users" routerLink="/user" (click)="setUser(user)">
-  <div  class="flex-space-between list-items">
-    {{ user.first_name }} {{ user.last_name }}
-  </div>
-  <hr>
+<div class="list-item" *ngFor="let user of activeUsers" routerLink="/user" (click)="setUser(user)">
+  <div  class="first-line">{{ user.first_name }} {{ user.last_name }}</div>
 </div>
-<app-footer></app-footer>
+
+<app-footer (searchstring)="searchActiveUsers($event)"></app-footer>

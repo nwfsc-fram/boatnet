@@ -1,28 +1,28 @@
 
-<div class="current_active">
-        <div class="flex-space-between"><span>Vessel Name:</span>    <span>{{ vessel.vessel_name }}</span></div>
-        <div class="flex-space-between"><span>Coast Guard No:</span>    <span>{{ vessel.coast_guard_number }}</span></div>
-        <div class="flex-space-between"><span>Vessel Reg Num</span>    <span>{{ vessel.vessel_reg_num }}</span></div>
-        <div class="flex-space-between"><span>State:</span>    <span>{{ vessel.state }}</span></div>        
-        <hr>
-        <div class="flex-space-between"><span>Port Name:</span>    <span>{{ vessel.port_name }}</span></div>
-        <div class="flex-space-between"><span>IFQ Port Code:</span>    <span>{{ vessel.ifq_port_code }}</span></div> 
-        <div class="flex-space-between"><span>IFQ Port Id:</span>    <span>{{ vessel.ifq_port_id }}</span></div>        
-        <div class="flex-space-between"><span>Port Code:</span>    <span>{{ vessel.port_code }}</span></div>
-        <div class="flex-space-between"><span>Port Group:</span>    <span>{{ vessel.port_group }}</span></div>
-        <div class="flex-space-between"><span>Port Id:</span>    <span>{{ vessel.port_id }}</span></div>
-        <hr>    
-        <div class="flex-space-between"><span>Vessel Type:</span>    <span>{{ vessel.type }}</span></div>
-        <div class="flex-space-between"><span>Vessel Status:</span>    <span>{{ vessel.status }}</span></div>  
-        <div class="flex-space-between"><span>Registered Length ({{vessel.registered_length_um}}):</span>    <span>{{ vessel.registered_length }}</span></div>
-        <div class="flex-space-between"><span>Safety Decal Expiration:</span>    <span>{{ vessel.safety_decal_exp }}</span></div>
-        <div class="flex-space-between"><span>Is Mothership:</span>    <span *ngIf="vessel.is_mothership else not_mothership">Yes</span>
-            <ng-template #not_mothership>No</ng-template></div>
-        <hr>
-        <div class="flex-space-between"><span>Permits:</span>     <span>{{ vessel.permits }}</span></div>
-        <div class="flex-space-between"><span>Notes:</span>    <span>{{ vessel.notes }}</span></div>
+<div class="card">
+    <div class="card-heading">{{ vessel.vessel_name }}</div>
 
+    <div class="card-contents">
+        <div class="card-input-label">Vessel Reg Num:</div>    <div>{{ vessel.coast_guard_number? vessel.coast_guard_number:vessel.vessel_reg_num }}</div>
+        <div class="card-input-label">State:</div>    <div>{{ vessel.state }}</div>        
+        <hr>
+        <div class="card-input-label">Port Name:</div>    <div>{{ vessel.port_name }}</div>
+        <!-- <div class="card-input-label">IFQ Port Code:</div>    <div>{{ vessel.ifq_port_code }}</div> 
+        <div class="card-input-label">IFQ Port Id:</div>    <div>{{ vessel.ifq_port_id }}</div>        
+        <div class="card-input-label">Port Code:</div>    <div>{{ vessel.port_code }}</div>
+        <div class="card-input-label">Port Group:</div>    <div>{{ vessel.port_group }}</div>
+        <div class="card-input-label">Port Id:</div>    <div>{{ vessel.port_id }}</div> --> 
+        <!-- <div class="card-input-label">Vessel Type:</div>    <div>{{ vessel.type }}</div>
+        <div class="card-input-label">Vessel Status:</div>    <div>{{ vessel.vessel_status }}</div>  
+        <div class="card-input-label">Registered Length ({{vessel.registered_length_um}}):</div>    <div>{{ vessel.registered_length }}</div>
+        <div class="card-input-label">Safety Decal Expiration:</div>    <div>{{ vessel.safety_decal_exp? vessel.safety_decal_exp:'N/A' }}</div>
+        <div class="card-input-label">Is Mothership:</div>    <div>{{ vessel.is_mothership? 'Yes':'No' }}</div> -->
+        <hr>
+        <div class="card-input-label">Permits:</div>     <div>{{ vessel.permits? vessel.permits.length:'-' }}</div>
+        <div class="card-input-label">Notes:</div>    <div>{{ vessel.notes? vessel.notes.length:'-' }}</div>
+        
     </div>
+</div>
 
 <app-footer></app-footer>
 

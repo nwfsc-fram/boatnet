@@ -1,26 +1,45 @@
-<div class="current_active">
+<div class="card">
+  
+  <div class="card-heading">ACTIVE CAPTAINS:</div>
+  
+  <div class="card-contents">
 
-  <div class="flex-space-between">
-      <span>Permit Number:</span>
-      <span>{{ permit.permit_number }}</span>
-  </div>  
-
-  <div class="flex-space-between">
-    <span>Vessel Name:</span>
-    <span>{{ permit.vessel_name }}</span>
+ 
+  <p-multiSelect [options]="captains" [(ngModel)]="selectedCaptains" optionLabel="name" [filter]="true" [panelStyle]="{minWidth: '20em'}"></p-multiSelect>
+  
   </div>
 
+  <div class="card-heading">VESSEL DETAILS:</div>
+
+  <div class="card-contents">
+  <div class="flex-space-between"><span>Vessel Name:</span>  <span>{{ permit.vessel_name }}</span></div>
+  <div class="flex-space-between"><span>Vessel Registration Number:</span>  <span>{{ permit.vessel_registration_number }}</span></div>
+  <div class="flex-space-between"><span>Length:</span>  <span>{{ permit.vessel_length }}'</span></div>
   <div class="flex-space-between">
-    <span>Vessel Registration Number:</span>
-    <span>{{ permit.vessel_registration_number }}</span>
+    <div>Owner:</div>
+    <div style="text-align: right;">{{ permit.vessel_owner }}</div>
+    
   </div>
-  <br>
-
-  <div>
-    <div>Active Captains:</div>
-    <p-multiSelect [options]="captains" [(ngModel)]="selectedCaptains" optionLabel="name" [filter]="true" [panelStyle]="{minWidth: '20em'}">
-    </p-multiSelect>
-  </div>
-
 </div>
+
+  <div class="card-heading">PERMIT DETAILS:</div>
+
+  <div class="card-contents">
+  <div class="flex-space-between"><span>Permit Number:</span>  <span>{{ permit.permit_number }}</span></div>  
+  <div class="flex-space-between"><span>Trawl Gear:</span>  <span>{{ permit.trawl_gear }}</span></div>
+  <div class="flex-space-between"><span>Longline Gear:</span>  <span>{{ permit.longline_gear }}</span></div>
+  <div class="flex-space-between"><span>Trap Pot Gear:</span>  <span>{{ permit.trap_pot_gear }}</span></div>
+  <div class="flex-space-between"><span>Small Fleet:</span>  <span>{{ permit.small_fleet }}</span></div>
+  <div class="flex-space-between"><span>Endorsed Length:</span>  <span>{{ permit.endorsed_length }}'</span></div>
+  <div class="flex-space-between"><span>Sablefish Endorsement:</span>  <span>{{ permit.sablefish_endorsement }}</span></div>
+  <div class="flex-space-between"><span>Sablefish Tier:</span>  <span>{{ permit.sablefish_tier? permit.sablefish_tier:'N/A' }}</span></div>
+  <div class="flex-space-between"><span>CP Endorsement:</span>  <span>{{ permit.cp_endorsement }}</span></div>
+  <div class="flex-space-between"><span>MS Endorsement:</span>  <span>{{ permit.ms_endorsement }}</span></div>
+  <div class="flex-space-between"><span>MS Catcher Vessel:</span>  <span>{{ permit.mothership_catcher_vessel }}</span></div>
+  <div class="flex-space-between"><span>Whiting Percent:</span>  <span>{{ permit.whiting_percent? permit.whiting_percent:'N/A' }}</span></div>
+  <div class="flex-space-between"><span>Whiting Assignment:</span>  <span>{{ permit.whiting_assignment? permit.whiting_assignment: 'N/A'}}</span></div>
+  <div class="flex-space-between"><span>Owner On Board Exempt:</span>  <span>{{ permit.owner_on_board_exempt? 'Yes':'No' }}</span></div>
+</div>
+</div>
+
 <app-footer></app-footer>

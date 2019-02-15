@@ -12,7 +12,7 @@ import { Subscription, Observable } from 'rxjs';
 
 export class TripsComponent implements OnInit {
 
-  trips = [
+  trips: any = [
     {vessel: 'Excalibur', 'coast_guard_number': 'fgr243rt', start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM', is_open: false, selected: false, start_port: "Newport", end_port: "same as start", messages: [], id: '123456', permits: [{id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares', },]}, 
     {vessel: 'Excalibur', 'coast_guard_number': 'fgr243rt', permits: [
       {id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares'},
@@ -113,6 +113,37 @@ export class TripsComponent implements OnInit {
    permit = this.stateSvc.currentState.permit
    isDBSynced: Observable<boolean>;
    loading =false;
+   searchstring = '';
+   allTrips: any;
+
+   searchTrips(searchstring) {  
+
+    var keys = Object.keys(this.allTrips[0])
+    console.log(keys)
+    var results = new Set()
+    
+    if (searchstring !== '') {
+      this.allTrips.filter(function(element) {
+        // return element.state_reg_number.toLowerCase().includes('00') || element.vessel_name.toLowerCase().includes('q');
+        
+        for (var iterkey of keys) {
+          if (element[iterkey]) {
+            if (element[iterkey].toString().toLowerCase().includes(searchstring)) {
+              results.add(element)
+            }
+            // return element[iterkey].toLowerCase().includes('a')
+          }  
+        }
+
+      });
+      // console.log(this.couchData)
+      console.log(Array.from(results).sort())
+      this.trips = results
+    } else {
+      this.trips = this.allTrips     
+      console.log(this.trips)
+    }
+  }
 
   constructor(private stateSvc: StateService,    
               private dataService: DataService,) { }
@@ -138,6 +169,12 @@ export class TripsComponent implements OnInit {
         'test'
       );
     }
+
+    this.allTrips = this.trips;
+  }
+
+  clearTrip() {
+    this.stateSvc.clearTrip()
   }
 
   setTrip(trip) {

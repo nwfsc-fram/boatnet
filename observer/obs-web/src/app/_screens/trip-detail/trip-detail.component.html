@@ -1,55 +1,39 @@
-<div style="text-align: center">
-  <div class="trip-data">
-      <strong>{{ trip.vessel }}</strong> 
-    <hr>
-  </div>
+<div class="card closed">
 
-  <form mat-form [formGroup]="tripForm">
-        <div class="flex-grid mb5">
-            <span class="col pv6" style="text-align: left"><strong>Start Date: </strong></span>
+<div class="card-heading">{{ trip.vessel }}
+        <span class="status-icons"> 
+                <i class="pi pi-check" *ngIf="trip.selected"></i>
+                <i class="pi pi-comment" *ngIf="trip.messages"></i>
+              </span>
+</div>
+
+
+    <div class="card-contents">
+
+        <form mat-form [formGroup]="tripForm">
+        <br>
+        <div class="ui-float-label">
             <p-calendar formControlName="start_date" id="start_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
+            <label for="start_date">Start Date</label>
         </div>
-
-        <div class="flex-grid mb5">
-            <span class="col pv6" style="text-align: left"><strong>Start Port: </strong></span>
-            <input type="text" formControlName="start_port">
-        </div>
-
-        <div class="flex-grid mb5">
-            <span class="col pv6" style="text-align: left"><strong>End Date: &nbsp;</strong></span>
+        <div class="card-input-divider"></div>
+        <div class="ui-float-label">
             <p-calendar formControlName="end_date" id="end_date" [touchUI]="true" showTime="true" hourFormat="12"></p-calendar>
+            <label for="end_date">End Date</label>
         </div>
-
-        <div class="flex-grid mb5">
-            <span class="col pv6" style="text-align: left"><strong>End Port: </strong></span>
-            <input type="text" formControlName="end_port">
+        <div class="card-input-divider"></div>
+        <div class="ui-float-label">
+            <input type="text" size="20" formControlName="start_port" pInputText>
+            <label for="start_port">Start Port</label>
         </div>
-
-        <hr>
-        <div class="flex-space-between">
-            <div *ngIf="trip.is_open; else tripClosed">
-                <div>
-                    <strong>Status:       
-                    <span style="color: green">OPEN</span></strong>
-                </div>
+        <div class="card-input-divider"></div>
+        <div class="ui-float-label">
+                <input type="text" size="20" formControlName="end_port" pInputText>
+                <label for="end_port">End Port</label>
             </div>
-
-            <ng-template #tripClosed>
-                <div>
- 
-                    <strong>Status:     
-                    <span style="color: red">CLOSED</span></strong>    
-                </div>
-            </ng-template>
-
-            <div>
-                <strong>Selected:</strong>  {{ trip.selected }}   
-            </div>
-        </div>
-
-        <hr>
-        <strong>Permits:</strong>
-        <p-selectButton [options]="permits" formControlName="permits" multiple="multiple" (ngModelChange)="setTripPermits()"></p-selectButton>
+        <div class="card-input-divider"></div>
+            <div class="card-input-label">Permits:</div>
+            <p-selectButton id="trip-permits" [options]="permits" formControlName="permits" multiple="multiple" (ngModelChange)="setTripPermits()"></p-selectButton>
 
         <div *ngFor="let permit of trip.permits">
             <div *ngIf="permit.id.includes('NL')">  <!-- NL = not listed -->
@@ -68,7 +52,7 @@
         <div *ngFor="let message of trip.messages" >
             <div class="narrow_item_border" *ngIf="message.created_by === currentUser; else otherUsersMessage" (click)="editMessage(message)" routerLink="/message-detail">
                 <div class="col" style="text-align: left; padding-left: 3px">
-                    <div style="color: #0093D0">
+                    <div style="color: #1675d1">
                         {{ message.created_by }}
                         <br>
                         {{ message.created_date }}
@@ -80,7 +64,7 @@
             </div>
             <ng-template class="narrow_item_border" #otherUsersMessage>
                     <div class="col" style="text-align: left; padding-left: 3px">
-                        <div style="color: #0093D0">
+                        <div style="color: #1675d1">
                             {{ message.created_by }}
                             <br>
                             {{ message.created_date }}
@@ -106,8 +90,8 @@
     </div> -->
 
 
-</form>
-
+        </form>
+    </div>
 </div>
 
 <app-footer></app-footer>

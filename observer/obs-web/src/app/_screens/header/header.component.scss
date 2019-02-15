@@ -2,10 +2,24 @@
     position: fixed;
     left: 0;
     top: 0;
+    z-index: 1;
     width: 100%;
-    background-color: #0093D0;
+    height: 70px;
+    background-color: #1675d1;
     color: white;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'roboto', Arial, Helvetica, sans-serif; 
+    letter-spacing: 2px;
     text-align: center;
     display: flex;
     justify-content: space-between; 
+}
+
+.header-item {
+    margin: 25px;
+}
+
+.header-menu {
+    margin: 21px 30px;
 }

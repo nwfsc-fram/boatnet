@@ -16,15 +16,15 @@
 </div>
 
 <div *ngFor="let permit of permits" routerLink="/permit-detail" (click)="setPermit(permit)">
-    <div class="flex-space-between list-items">
-        <div>{{ permit.permit_number }}</div>
-        <div>owner: {{ permit.permit_owner.substring(0,15) }}
-            <br>
-            vessel: {{ permit.vessel_name.substring(0,15) }}
+    <div class="list-item">
+        <div class="first-line">{{ permit.permit_number }}
+            <span class="status-icons"> 
+                <i class="material-icons" *ngIf=" 1 > 0.5">assignment_ind</i>
+            </span>
         </div>
+        <div class="second-line">{{ permit.vessel_name }}</div>
     </div>
-    <hr>
 </div>
 
 
-<app-footer></app-footer>
+<app-footer (searchstring)="searchPermits($event)"></app-footer>

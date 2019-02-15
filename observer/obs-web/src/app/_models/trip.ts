@@ -27,7 +27,7 @@ export class Trip implements BoatnetBase {
     Object.assign(this, init);
   }
 
-  static createTrip(home_port) {
+  static createTrip(home_port, vessel) {
     return new Trip({
       id: uuid(),
       type: 'trip',
@@ -35,7 +35,7 @@ export class Trip implements BoatnetBase {
       created_by: 'seth gerou',
       created_date: getBoatnetDateNow(),
       selected: false,
-      vessel: null,
+      vessel: vessel,
       is_open: true,
       unlisted_permit: null,
       messages: [],
