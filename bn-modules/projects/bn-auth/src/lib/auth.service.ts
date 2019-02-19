@@ -1,4 +1,4 @@
-import { Injectable, Inject, Optional } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, exhaustMap } from 'rxjs/operators';
@@ -9,15 +9,25 @@ import * as utils from 'minimalistic-crypto-utils';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as pemjwk from 'pem-jwk';
 
+@Injectable()
+export class AuthServiceConfig {
+  /**
+   * https://angular.io/guide/dependency-injection-in-action#injectiontoken
+   */
+  authUrl = 'https://localhost:9000';
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(
-    private http: HttpClient,
-    @Inject('authUrl') @Optional() public authUrl?: string
-  ) {
-    this.authUrl = authUrl || 'https://localhost:9000';
+  protected authUrl: string;
+
+  constructor(private http: HttpClient,
+    @Optional() authConfig: AuthServiceConfig) {
+    const defaultConfig = new AuthServiceConfig();
+    this.authUrl = authConfig ? authConfig.authUrl : defaultConfig.authUrl;
+    console.log('[AuthService] Auth Base URL', this.authUrl);
   }
 
   public authedUserToken: BoatnetUserToken;
