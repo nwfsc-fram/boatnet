@@ -74,7 +74,7 @@ import { AddNamedComponent } from './screens/tally/add-named/add-named.component
 import { KeyboardDirective } from './_directives/keyboard.directive';
 import { PdfGenerationService } from './_services/pdf/pdf-generation.service';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
-import { AuthService } from 'bn-auth';  // Need to npm link
+import { AuthService, AuthServiceConfig } from 'bn-auth'; // Need to npm link
 import { UserService } from './_services/data/user.service';
 import { AlertService } from './_services/ui/alert.service';
 import { CountsWeightsComponent } from './screens/tally/counts-weights/counts-weights.component';
@@ -88,7 +88,7 @@ import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TableModule } from 'primeng/table';
-import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -101,6 +101,8 @@ import { TabViewModule } from 'primeng/tabview';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
 import { BnAuthModule } from 'bn-auth';
+
+const dbConfig = require('./_services/dbConfig.json');
 
 @NgModule({
   declarations: [
@@ -175,11 +177,15 @@ import { BnAuthModule } from 'bn-auth';
     InputMaskModule,
     DialogModule,
     TabViewModule
-    ],
+  ],
   providers: [
     AuthGuard,
     AlertService,
     AuthService,
+    {
+      provide: AuthServiceConfig,
+      useValue: { authUrl: (<any>dbConfig).authUrl }
+    },
     UserService,
     {
       provide: HTTP_INTERCEPTORS,

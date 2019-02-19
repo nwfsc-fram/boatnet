@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, exhaustMap } from 'rxjs/operators';
@@ -9,11 +9,26 @@ import * as utils from 'minimalistic-crypto-utils';
 import * as jsonwebtoken from 'jsonwebtoken';
 import * as pemjwk from 'pem-jwk';
 
+@Injectable()
+export class AuthServiceConfig {
+  /**
+   * https://angular.io/guide/dependency-injection-in-action#injectiontoken
+   */
+  authUrl = 'https://localhost:9000';
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  protected authUrl: string;
+
+  constructor(private http: HttpClient,
+    @Optional() authConfig: AuthServiceConfig) {
+    const defaultConfig = new AuthServiceConfig();
+    this.authUrl = authConfig ? authConfig.authUrl : defaultConfig.authUrl;
+    console.log('[AuthService] Auth Base URL', this.authUrl);
+  }
 
   public authedUserToken: BoatnetUserToken;
 
@@ -35,7 +50,7 @@ export class AuthService {
     /**
      * Returns PEM key for JWT signature verification
      */
-    return this.http.get<any>('/api/pubkey').pipe(
+    return this.http.get<any>(this.authUrl + '/api/pubkey').pipe(
       map(result => {
         const jwkKeyLoaded = result.keys[0]; // assuming our key is first
         // TODO If we add multiple keys, we would use 'kid' property for matching
@@ -85,7 +100,7 @@ export class AuthService {
     pubKey: string
   ): Observable<BoatnetUserToken> {
     return this.http
-      .post<any>('/api/login', {
+      .post<any>(this.authUrl + '/api/login', {
         username: username,
         password: password
       })
@@ -121,7 +136,6 @@ export class AuthService {
           return throwError(err);
         })
       );
-
   }
 
   private checkPassword(

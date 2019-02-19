@@ -9,7 +9,6 @@ import { DataService } from '../_services/data/data.service';
 
 const pkg = require('../../../package.json');
 const dbConfig = require('../_services/dbConfig.json');
-import { parseDBName } from '../shared/util';
 import { Trip } from '../_models/wcgop/trip';
 
 @Component({
@@ -51,7 +50,7 @@ export class HeaderToolbarComponent implements OnInit, OnDestroy {
     this.version = this.version = (<any>pkg).version;
     this.currentUser = this.authService.getCurrentUser();
     this.version = this.version = (<any>pkg).version;
-    this.dbName = parseDBName((<any>dbConfig).boatnet_url);
+    this.dbName = '-';
 
     this.userSub = this.authService.getUserObs().subscribe(user => {
       this.currentUser = user;

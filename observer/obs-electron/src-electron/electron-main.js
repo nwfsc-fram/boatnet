@@ -40,8 +40,8 @@ function createWindow() {
     })
   });
 
-  win.setFullScreen(true);
-  win.setMenu(null);
+  //win.setFullScreen(true);
+  //win.setMenu(null);
 
   // and load the index.html of the app.
   win.loadURL(

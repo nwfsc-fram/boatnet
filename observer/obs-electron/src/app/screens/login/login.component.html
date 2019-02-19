@@ -20,12 +20,6 @@
         <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
         <div *ngIf="f.submitted && !password.valid" class="help-block">Password is required</div>
       </mat-form-field>
-      <mat-form-field>
-        <mat-label>Program</mat-label>
-        <mat-select [(value)]="currentUserProgram" (valueChange)="changedProgram($event)">
-          <mat-option [value]="program" *ngFor="let program of availablePrograms">{{program.desc}}</mat-option>
-        </mat-select>
-      </mat-form-field>
       <div class="login-button">
         <button mat-raised-button [disabled]="loading" color="primary">Login</button>
       </div>
