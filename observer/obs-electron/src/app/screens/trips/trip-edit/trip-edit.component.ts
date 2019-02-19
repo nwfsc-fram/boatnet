@@ -21,7 +21,7 @@ import {
 } from '@angular/forms';
 import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
-import { AuthenticationService } from '../../../_services/auth/authentication.service';
+import { AuthService } from 'bn-auth';
 import { Vessel, Port, GearType } from 'bn-models';
 import { Trip } from '../../../_models/wcgop/trip';
 import { startWith, map } from 'rxjs/operators';
@@ -56,7 +56,7 @@ export class TripEditComponent implements OnInit, OnChanges {
   @ViewChild('fishery') fisheryRef: ElementRef;
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private stateService: StateService,
     private dataService: DataService,
     private router: Router,

@@ -8,7 +8,7 @@
 
     <form class="login-container" name="form" (ngSubmit)="f.form.valid && login()" #f="ngForm" novalidate>
       <mat-form-field [ngClass]="{ 'has-error': f.submitted && !username.valid }" floatLabel="true" hideRequiredMarker="true">
-        <mat-label>Username (Test mode - use any username)</mat-label>
+        <mat-label>Username</mat-label>
         <input matInput id="username" [appKeyboard]="isTabletMode | async" keyboardLayout="username" placeHolder="Username" type="text" autocomplete="username" name="username" [(ngModel)]="model.username" #username="ngModel"
           (ngModelChange)="changedUsername($event)" />
         <div *ngIf="f.submitted && !username.valid" class="help-block">Username is required</div>

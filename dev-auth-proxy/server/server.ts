@@ -11,8 +11,7 @@ import * as https from 'https';
 import * as bodyParser from 'body-parser';
 
 import { login } from './login.route';
-import * as argon2 from 'argon2';
-import * as SHA512 from 'crypto-js/sha512';
+import { pubkey } from './pubkey.route';
 
 const app: Application = express();
 
@@ -25,7 +24,10 @@ const options = commandLineArgs(optionDefinitions);
 app.use(bodyParser.json()); // for parsing application/json
 
 // REST API
-app.route('/login').post(login);
+// Login
+app.route('/api/login').post(login);
+// Public Key (dev use only)
+app.route('/api/pubkey').get(pubkey);
 
 if (options.secure) {
   const httpsServer = https.createServer(

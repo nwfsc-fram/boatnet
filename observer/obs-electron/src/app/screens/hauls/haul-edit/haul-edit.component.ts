@@ -24,7 +24,7 @@ import {
 import { Route, ActivatedRoute, Params, Router } from '@angular/router';
 import * as _moment from 'moment';
 import { Subscription, Observable, of as obsOf } from 'rxjs';
-import { AuthenticationService } from '../../../_services/auth/authentication.service';
+import { AuthService } from 'bn-auth';
 import { Port } from 'bn-models';
 import { GearType } from 'bn-models';
 import { startWith, map } from 'rxjs/operators';
@@ -179,7 +179,7 @@ export class HaulEditComponent implements OnInit {
   ]
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private stateService: StateService,
     private dataSvc: DataService,
     private route: ActivatedRoute,
