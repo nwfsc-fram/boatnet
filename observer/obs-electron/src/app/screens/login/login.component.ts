@@ -11,7 +11,7 @@ import { ThemeService } from '../../_services/ui/theme.service';
 import { Program } from 'bn-models';
 import { ElectronService } from 'ngx-electron';
 import { ConfirmationService } from 'primeng/api';
-import { AuthService, BoatnetUser, LoginResult } from 'bn-auth';
+import { AuthService } from 'bn-auth';
 
 @Component({
   moduleId: module.id,
@@ -70,26 +70,27 @@ export class LoginComponent implements OnInit {
     this.themeService.setDarkTheme(checked);
   }
 
-  async login() {
+  login() {
     this.loading = true;
     const username = this.model.username;
     const pw = this.model.password;
-    const result: LoginResult = await this.authService.login(username, pw);
-    if (result.error) {
-      this.alertService.error(result.error);
-      this.loading = false;
-      return;
-    } else {
-      console.log('Logged in as', result.user.username);
-      if (!this.dataService.initialSyncComplete.getValue()) {
-        this.dataService.connectDatabase(
-          this.model.username,
-          this.model.password
-        );
+    this.authService.login(username, pw).subscribe(
+      result => {
+        console.log('Logged in as', result.username);
+        // if (!this.dataService.initialSyncComplete.getValue()) {
+        //   this.dataService.connectDatabase(
+        //     this.model.username,
+        //     this.model.password
+        //   );
+        // }
+        this.router.navigate([this.returnUrl]);
+      },
+      loginError => {
+        this.loading = false;
+        this.alertService.error(loginError);
+        console.error(loginError);
       }
-      // TODO set Program?
-      this.router.navigate([this.returnUrl]);
-    }
+    );
   }
 
   onExitElectron() {

@@ -1,9 +1,9 @@
 import * as jwt from 'jwt-simple';
-import * as argon2 from 'argon2';
+import * as crypto from 'crypto';
 import * as SHA512 from 'crypto-js/sha512';
 
 import { Request, Response } from 'express';
-import { createSessionToken, createCsrfToken } from './util/security';
+import { createSessionToken, createCsrfToken, hashBoatnetPW } from './util/security';
 const authConfig = require('./config/authProxyConfig.json');
 
 export async function login(req: Request, res: Response) {
@@ -69,12 +69,10 @@ async function devValidateUserPw(user: string, pw: string) {
 
   if (isAuthed) {
     console.log('User authorized: ', user);
-
-    const hashedPW_SHA = await SHA512(authedUser.password).toString(); // For FIPS compliance, need SHA-512 layer
-    const hashedPW = await argon2.hash(hashedPW_SHA);
+    const hashedPW = await hashBoatnetPW(authedUser.password);
     return {
       username: authedUser.username,
-      hashedPW: hashedPW.toString(),
+      hashedPW: hashedPW,
       roles: authedUser.userData.roles,
       couchDBInfo: authedUser.userData.couchDBInfo
     };
