@@ -1,11 +1,8 @@
 # bn-auth
 
-Boatnet Authorization library. This module uses ngrx to handle login tasks and application state.
+Boatnet Authorization library.
 
-## Code scaffolding
-
-Run `ng generate component component-name --project bn-auth` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project bn-auth`.
-> Note: Don't forget to add `--project bn-auth` or else it will be added to the default project in your `angular.json` file. 
+Communicates with auth endpoint (see observer/dev-auth-proxy for development) and handles offline cached authentication.
 
 ## Build and Link
 
@@ -24,17 +21,18 @@ npm link ../bn-modules/dist/bn-auth
 ## Procedure for adding bn-auth/ login screen to your boatnet project
 [ In Progress ]
 
-* Use the dev-auth-proxy unless you are going live.
-  * Create proxy.json, see obs-electron for example
-  * In package.json, "start": "ng serve --proxy-config ./proxy.json",
-* Add NgRx support to your project. Brief version, from  https://ngrx.io/guide/store/install and https://ngrx.io/guide/schematics:
+* Use the dev-auth-proxy unless you are going live. You will need a proxy.json file and `--proxy-config` argument for `ng serve` 
+  1. Create proxy.json, see obs-electron for example
+  2. In package.json, "start": "ng serve --proxy-config ./proxy.json",
+* Link bn-auth from your project
 ```
-cd your-project
-npm install @ngx/schematics
-... TODO
+cd bn-modules
+npm install
+ng build bn-auth
+cd ../your-project
+npm link ../../bn-modules/dist/bn-auth
 ```
-* Add login screen component
-* Add auth guards to your router
+* Add auth guards to your router and login screen component - see obs-electron for example usage.
 
 
 
