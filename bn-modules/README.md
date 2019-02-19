@@ -51,14 +51,10 @@ export * from './lib/bn-specimens.module';
 ```
 
 ### 61 [OPTION 1] npm link to the module
-* Navigate to your built library folder (i.e into the dist\<library name>) and then create a global link
+* After building your module, create a link directly (i.e into the dist\<library name>) via this command:
 ```
-cd dist\bn-specimens
-npm link
-```
-* Next, navigate to your application root directory and type:
-```
-npm link bn-specimens
+cd <your-project-directory>
+npm link ../bn-modules/dist/bn-specimens
 ```
 
 ### Important

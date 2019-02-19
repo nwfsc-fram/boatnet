@@ -11,10 +11,8 @@ Run `ng generate component component-name --project bn-auth` to generate a new c
 
 ```
 ng build bn-auth
-cd dist/bn-auth
-npm link
 cd ../your-project/
-npm link bn-auth
+npm link ../bn-modules/dist/bn-auth
 ```
 
 * After this, you can simply rebuild `ng build bn-auth` without having to re-link.
