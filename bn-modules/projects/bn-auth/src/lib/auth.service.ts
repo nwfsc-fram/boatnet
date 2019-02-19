@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, exhaustMap } from 'rxjs/operators';
@@ -13,7 +13,12 @@ import * as pemjwk from 'pem-jwk';
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject('authUrl') @Optional() public authUrl?: string
+  ) {
+    this.authUrl = authUrl || 'https://localhost:9000';
+  }
 
   public authedUserToken: BoatnetUserToken;
 
@@ -35,7 +40,7 @@ export class AuthService {
     /**
      * Returns PEM key for JWT signature verification
      */
-    return this.http.get<any>('/api/pubkey').pipe(
+    return this.http.get<any>(this.authUrl + '/api/pubkey').pipe(
       map(result => {
         const jwkKeyLoaded = result.keys[0]; // assuming our key is first
         // TODO If we add multiple keys, we would use 'kid' property for matching
@@ -85,7 +90,7 @@ export class AuthService {
     pubKey: string
   ): Observable<BoatnetUserToken> {
     return this.http
-      .post<any>('/api/login', {
+      .post<any>(this.authUrl + '/api/login', {
         username: username,
         password: password
       })
@@ -121,7 +126,6 @@ export class AuthService {
           return throwError(err);
         })
       );
-
   }
 
   private checkPassword(
