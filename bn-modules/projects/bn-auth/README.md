@@ -7,6 +7,8 @@ Communicates with auth endpoint (see observer/dev-auth-proxy for development) an
 ## Build and Link
 
 ```
+cd <path>/bn-modules
+npm install
 ng build bn-auth
 cd ../your-project/
 npm link ../bn-modules/dist/bn-auth
