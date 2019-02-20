@@ -60,14 +60,12 @@ npm link ../../bn-modules/dist/bn-auth
 ```
 * Add auth guards to your router and login screen component - see obs-electron for example usage.
 * Modify the following:
-* `src/app/app.module.ts`
-
-```
-* Add bn-auth dependencies to your project:
+  * Add bn-auth dependencies to your project:
 ```
 npm install {cryptojs,jsonwebtoken,pem-jwk}
 
 ```
+* Modify `src/app/app.module.ts`
 ...
 // Assuming you have this dbConfig file
 const dbConfig = require('./_services/dbConfig.json');
