@@ -14,6 +14,17 @@ cd ../your-project/
 npm link ../bn-modules/dist/bn-auth
 ```
 
+## Locked file error
+If you see (this example is for bn-auth)
+```
+BUILD ERROR
+EPERM: operation not permitted, unlink 'C:\git\boatnet\bn-modules\dist\bn-auth\lib'
+```
+  * this is something OS/ antivirus related it seems, but usually this works:
+```
+npm unlink dist/bn-auth
+```
+
 * After this, you can simply rebuild `ng build bn-auth` without having to re-link.
 * Alternative linking instructions in bn-modules/README.md
 ### Make sure to add the preserveSymLinks: true to your project's angular.json
