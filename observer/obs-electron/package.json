@@ -9,7 +9,7 @@
   "author": "FRAM Data Team",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --proxy-config ./proxy.json",
+    "start": "ng serve --proxy-config ./proxy.conf.json",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

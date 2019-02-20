@@ -12,9 +12,9 @@ import * as pemjwk from 'pem-jwk';
 @Injectable()
 export class AuthServiceConfig {
   /**
-   * https://angular.io/guide/dependency-injection-in-action#injectiontoken
+   * Note that this will be read from dbConfig.json. See app.module.ts
    */
-  authUrl = 'https://localhost:9000';
+  authUrl = '';
 }
 
 @Injectable({
