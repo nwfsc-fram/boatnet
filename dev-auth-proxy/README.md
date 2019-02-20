@@ -27,7 +27,7 @@ Run `npm run server` for an HTTPS (self-signed) dev auth server running on port 
 
 ## Basic Testing
 
-POST the following raw JSON to: https://localhost:9000/login using a utility such as Postman.
+POST the following raw JSON to: https://localhost:9000/api/login using a utility such as Postman.
 ```
 {
   "username": "test",
