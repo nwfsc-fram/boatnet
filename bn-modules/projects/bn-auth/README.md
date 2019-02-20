@@ -65,8 +65,15 @@ npm link ../../bn-modules/dist/bn-auth
 ...
 import { BnAuthModule, AuthService, AuthServiceConfig } from 'bn-auth';
 ...
+ imports: [
+    BnAuthModule, 
+...
+
+ providers: [
+  ...
+    AuthService,
+    {
+      provide: AuthServiceConfig,
+      useValue: { authUrl: (<any>dbConfig).authUrl }
+    },
 ```
-
-
-
-
