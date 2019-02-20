@@ -46,9 +46,8 @@ npm unlink dist/bn-auth
 `inject() must be called from an injection context`
 
 ## Procedure for adding bn-auth/ login screen to your boatnet project
-[ In Progress ]
 
-* Use the dev-auth-proxy unless you are going live. You will need a proxy.json file and `--proxy-config` argument for `ng serve` 
+* Use the dev-auth-proxy unless you are going live. You will need a proxy.json file and `--proxy-config` argument for `ng serve` (these instructions are also in observer/bn-modules/README.md)
   1. Create proxy.json, see obs-electron for example
   2. In package.json, "start": "ng serve --proxy-config ./proxy.json",
 * Link bn-auth from your project
