@@ -27,8 +27,22 @@ npm unlink dist/bn-auth
 
 * After this, you can simply rebuild `ng build bn-auth` without having to re-link.
 * Alternative linking instructions in bn-modules/README.md
-### Make sure to add the preserveSymLinks: true to your project's angular.json
-* Otherwise, you will hit this bug: https://github.com/angular/angular/issues/25813
+
+### Important
+* Next, fix webpack WARNING: `Critical dependency: the request of a dependency is an expression`
+
+  * in your application's `angular.json` add preserveSymlinks: true to your build options:
+```
+...
+"architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "preserveSymlinks": true,
+            ...
+
+```            
+  * Otherwise, you will hit this bug: https://github.com/angular/angular/issues/25813
 `inject() must be called from an injection context`
 
 ## Procedure for adding bn-auth/ login screen to your boatnet project
