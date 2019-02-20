@@ -63,6 +63,11 @@ npm link ../../bn-modules/dist/bn-auth
 * `src/app/app.module.ts`
 
 ```
+* Add bn-auth dependencies to your project:
+```
+npm install {cryptojs,jsonwebtoken,pem-jwk}
+
+```
 ...
 // Assuming you have this dbConfig file
 const dbConfig = require('./_services/dbConfig.json');
