@@ -1,3 +1,4 @@
 {
-    "authUrl": "https://localhost:9000/"
+    "authUrl": "",
+    "note": "Leave authUrl blank for localhost proxy (see proxy.json)"
 }
