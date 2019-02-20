@@ -17,6 +17,7 @@ import { from } from 'rxjs';
 export class PermitsComponent implements OnInit {
 
   vessel = this.stateSvc.currentState.vessel
+  activePermit = this.stateSvc.currentState.permit
 
   // permits: Permit[] = [
   //   {id: "1", type: "permit", created_by: "seth.gerou", created_date: '9/9/2018', vessel_registration_number : "250226", fishery: "EM EFP" , permit_num: "GF0001", certificate_start_date: "1/1/2018", certificate_end_date: "12/31/2018", vessel: "Excalibur", endorsed_length: 64.84, },

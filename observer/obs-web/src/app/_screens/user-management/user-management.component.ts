@@ -57,10 +57,15 @@ export class UserManagementComponent implements OnInit {
   ngOnInit() {
     this.stateSvc.setStateName('user-management');
     this.allActiveUsers = this.activeUsers;
+    console.log(this.stateSvc.currentState.name)
   }
 
   setUser(user: User) {
     this.stateSvc.setUser(user);
+  }
+
+  clearUser() {
+    this.stateSvc.clearUser();
   }
 
 }

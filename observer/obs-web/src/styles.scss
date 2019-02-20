@@ -41,6 +41,26 @@ body {
     margin: 16px 20px;
 }
 
+.card-sub-heading {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    font-family: 'roboto', Arial, Helvetica, sans-serif; 
+    letter-spacing: 2px;
+    text-align: left;
+    margin: 16px 20px;    
+    border-bottom: 1px solid lightgray;
+}
+
+.card-field-title {
+    font-weight: bold;
+}
+
+.card-field-value {
+    padding-left: 50px;
+    font-weight: initial;
+}
+
 .card-contents {
     margin: 16px 20px; 
 }
@@ -142,7 +162,7 @@ body {
     font-size: 20px;
 }
 
-.new-trip-button {
+.new-item-button {
     text-align: right;
     margin: 20px;
 }
@@ -222,6 +242,15 @@ body {
     justify-content: space-between
 }
 
+.flex-space-desktop {
+    display: flex;
+    justify-content: space-between
+}
+
+.desktop {
+    display: flex
+}
+
 @media only screen and (max-width: 414px) {
     .closed_item_border {
         border: 2px solid grey; 
@@ -283,5 +312,11 @@ body {
 @media (min-width: 415px) {
     body {
         background-color: white;
+    }
+}
+
+@media only screen and (max-width: 415px) {
+    .flex-space-desktop {
+        display: inherit
     }
 }
