@@ -59,6 +59,14 @@ cd ../your-project
 npm link ../../bn-modules/dist/bn-auth
 ```
 * Add auth guards to your router and login screen component - see obs-electron for example usage.
+* Modify the following:
+* `src/app/app.module.ts`
+```
+...
+import { BnAuthModule, AuthService, AuthServiceConfig } from 'bn-auth';
+...
+```
+
 
 
 
