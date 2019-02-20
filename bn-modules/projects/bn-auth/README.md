@@ -65,6 +65,9 @@ npm link ../../bn-modules/dist/bn-auth
 npm install cryptojs
 npm install jsonwebtoken
 npm install pem-jwk
+
+(or for node v10:)
+npm install {cryptojs,jsonwebtoken,pem-jwk}
 ```
 * Modify `src/app/app.module.ts`
 ```
