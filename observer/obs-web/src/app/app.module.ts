@@ -2,7 +2,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { AuthGuard } from './_guards/auth.guard';
 
 import {
   MatCardModule,
@@ -26,7 +29,7 @@ import {
   MatButtonModule
 } from '@angular/material';
 
-import { RouterModule, Routes } from '@angular/router';
+// import { RouterModule, Routes } from '@angular/router';
 import { identifierModuleUrl } from '@angular/compiler';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -59,35 +62,37 @@ import { PermitDetailComponent } from './_screens/permit-detail/permit-detail.co
 import { MessageDetailComponent } from './_screens/message-detail/message-detail.component';
 import { HomeComponent } from './_screens/home/home.component';
 import { BnAuthModule, AuthService, AuthServiceConfig } from 'bn-auth';
+import { OtsTargetDetailComponent } from './_screens/ots-target-detail/ots-target-detail.component';
+import { DebrieferComponent } from './_screens/debriefer/debriefer.component';
 
 import { DataService } from './_services/data/data.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { DebrieferComponent } from './_screens/debriefer/debriefer.component';
-import { OtsTargetDetailComponent } from './_screens/ots-target-detail/ots-target-detail.component';
+import { LoginComponent } from './_screens/login/login.component';
+
 
 const dbConfig = require('./_services/dbConfig.json');
 
-const appRoutes: Routes = [
-  { path: 'home',             component: HomeComponent },
-  { path: 'ots-management',   component: OTSManagementComponent },
-  { path: 'ots-target-detail' ,component: OtsTargetDetailComponent }, 
-  { path: 'manage-users',     component: UserManagementComponent },
-  { path: 'debriefer',             component: DebrieferComponent },
-  { path: 'user',             component: UserComponent },
-  { path: 'trips',            component: TripsComponent },
-  { path: 'trip',             component: TripDetailComponent },
-  { path: 'message-detail',   component: MessageDetailComponent },
-  { path: 'user-config',      component: UserConfigComponent },
-  { path: 'manage-vessels',   component: VesselsComponent },
-  { path: 'vessel-detail',    component: VesselDetailComponent },
-  { path: 'manage-permits',   component: PermitsComponent },
-  { path: 'permit-detail',    component: PermitDetailComponent },
-  // { path: 'vessel-permits',component: VesselPermitsComponent },
-  { path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  },
-];
+// const appRoutes: Routes = [
+//   { path: 'home',             component: HomeComponent },
+//   { path: 'ots-management',   component: OTSManagementComponent },
+//   { path: 'ots-target-detail' ,component: OtsTargetDetailComponent }, 
+//   { path: 'manage-users',     component: UserManagementComponent },
+//   { path: 'debriefer',             component: DebrieferComponent },
+//   { path: 'user',             component: UserComponent },
+//   { path: 'trips',            component: TripsComponent },
+//   { path: 'trip',             component: TripDetailComponent },
+//   { path: 'message-detail',   component: MessageDetailComponent },
+//   { path: 'user-config',      component: UserConfigComponent },
+//   { path: 'manage-vessels',   component: VesselsComponent },
+//   { path: 'vessel-detail',    component: VesselDetailComponent },
+//   { path: 'manage-permits',   component: PermitsComponent },
+//   { path: 'permit-detail',    component: PermitDetailComponent },
+//   // { path: 'vessel-permits',component: VesselPermitsComponent },
+//   { path: '',
+//     redirectTo: 'home',
+//     pathMatch: 'full'
+//   },
+// ];
 
 @NgModule({
   declarations: [
@@ -111,12 +116,9 @@ const appRoutes: Routes = [
     HomeComponent,
     DebrieferComponent,
     OtsTargetDetailComponent,
+    LoginComponent,
   ],
   imports: [
-    RouterModule.forRoot(
-      appRoutes,
-      { enableTracing: true } // <-- debugging purposes only
-    ),
     BrowserModule,
     BnAuthModule,
     BrowserAnimationsModule,
@@ -152,9 +154,11 @@ const appRoutes: Routes = [
     MultiSelectModule,
     ChartModule,
     ProgressSpinnerModule,
+    AppRoutingModule,
   ],
   providers: [
     AuthService,
+    AuthGuard,
     {
       provide: AuthServiceConfig,
       useValue: { authUrl: (<any>dbConfig).authUrl }
