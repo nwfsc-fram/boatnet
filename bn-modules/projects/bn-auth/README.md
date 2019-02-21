@@ -62,13 +62,18 @@ npm link ../../bn-modules/dist/bn-auth
 * Modify the following:
   * Add bn-auth dependencies to your project:
 ```
-npm install cryptojs
+npm install crypto-js
 npm install jsonwebtoken
 npm install pem-jwk
 
 (or for node v10:)
-npm install {cryptojs,jsonwebtoken,pem-jwk}
+npm install {crypto-js,jsonwebtoken,pem-jwk}
 ```
+* Whenever you run npm install, you have to re-link the module:
+```
+npm link ../../bn-modules/dist/bn-auth
+```
+
 * Modify `src/app/app.module.ts`
 ```
 ...
