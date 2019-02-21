@@ -10,6 +10,7 @@
   
       <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >      
         <div class="list-item" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" >
+          <div class="item-num">{{ trip.trip_num }}</div>
           <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
             
             <span class="status-icons"> 
@@ -29,6 +30,8 @@
       <div class="subheading closed">Closed Trips</div>
       <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
         <div class="list-item closed"  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
+            <div class="item-num">{{ trip.trip_num }}</div>
+
             <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
 
               <span class="status-icons"> 

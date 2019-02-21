@@ -1,6 +1,8 @@
 <div class="card closed">
 
-<div class="card-heading">{{ trip.vessel }}
+<div class="card-heading">
+    <span class=trip-num>{{ trip.trip_num }}</span>
+    {{ trip.vessel }}
         <span class="status-icons"> 
                 <i class="pi pi-check" *ngIf="trip.selected"></i>
                 <i class="pi pi-comment" *ngIf="trip.messages"></i>
