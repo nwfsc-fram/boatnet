@@ -8,6 +8,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "downlevelIteration": true,
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
@@ -34,6 +35,14 @@
       ],
       "bn-models/*": [
         "dist/bn-models/*"
+      ],
+      "bn-auth": [
+        "dist/bn-auth",
+        "dist/bn-auth"
+      ],
+      "bn-auth/*": [
+        "dist/bn-auth/*",
+        "dist/bn-auth/*"
       ]
     }
   }

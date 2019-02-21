@@ -8,8 +8,8 @@ import * as crypto from 'crypto';
 
 import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
-import * as argon2 from 'argon2';
 import * as SHA512 from 'crypto-js/sha512';
+import { Observable } from 'rxjs';
 
 export const randomBytes = util.promisify(crypto.randomBytes);
 
@@ -17,7 +17,7 @@ export const signJwt = util.promisify(jwt.sign);
 
 // Keys used for signing JWT
 const RSA_PRIVATE_KEY = fs.readFileSync('./temp-priv-key.pem');
-const RSA_PUBLIC_KEY = fs.readFileSync('./temp-pub-key.pem');
+export const RSA_PUBLIC_KEY = fs.readFileSync('./temp-pub-key.pem');
 
 const SESSION_DURATION = 7200;
 
@@ -40,9 +40,17 @@ export async function createCsrfToken() {
   return await randomBytes(32).then(bytes => bytes.toString('hex'));
 }
 
-export async function verifyArgonPW(hash: string, password: string) {
-  return await argon2.verify(
-    hash,
-    SHA512(password).toString() // SHA512 for FIPS
-  );
+export async function hashBoatnetPW(password: string): Promise<string> {
+  const hash = crypto.randomBytes(20).toString('hex');
+  const hashedPW = hash + password;
+  const hashedPW_SHA = await SHA512(hashedPW).toString(); // For FIPS compliance, need SHA-512 layer
+  const hashedPW_Final = hash + '|' + hashedPW_SHA.toString();
+  return hashedPW_Final;
 }
+
+// export async function verifyArgonPW(hash: string, password: string) {
+//   return await argon2.verify(
+//     hash,
+//     SHA512(password).toString() // SHA512 for FIPS
+//   );
+// }

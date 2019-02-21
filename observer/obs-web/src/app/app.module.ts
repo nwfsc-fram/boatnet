@@ -58,11 +58,14 @@ import { VesselDetailComponent } from './_screens/vessel-detail/vessel-detail.co
 import { PermitDetailComponent } from './_screens/permit-detail/permit-detail.component';
 import { MessageDetailComponent } from './_screens/message-detail/message-detail.component';
 import { HomeComponent } from './_screens/home/home.component';
+import { BnAuthModule, AuthService, AuthServiceConfig } from 'bn-auth';
 
 import { DataService } from './_services/data/data.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { DebrieferComponent } from './_screens/debriefer/debriefer.component';
 import { OtsTargetDetailComponent } from './_screens/ots-target-detail/ots-target-detail.component';
+
+const dbConfig = require('./_services/dbConfig.json');
 
 const appRoutes: Routes = [
   { path: 'home',             component: HomeComponent },
@@ -115,6 +118,7 @@ const appRoutes: Routes = [
       { enableTracing: true } // <-- debugging purposes only
     ),
     BrowserModule,
+    BnAuthModule,
     BrowserAnimationsModule,
     MatCardModule,
     MatDialogModule,
@@ -150,6 +154,11 @@ const appRoutes: Routes = [
     ProgressSpinnerModule,
   ],
   providers: [
+    AuthService,
+    {
+      provide: AuthServiceConfig,
+      useValue: { authUrl: (<any>dbConfig).authUrl }
+    },
     DataService
   ],
   bootstrap: [AppComponent]

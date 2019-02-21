@@ -7,7 +7,7 @@ import { TallyButton } from '../../../_models/wcgop/tally/tally-button';
 import { TallyDataEntry } from '../../../_models/wcgop/tally/tally-data-entry';
 import { TallyData } from '../../../_models/wcgop/tally/tally-entry';
 import { getBoatnetDateNow } from '../../../shared/util';
-import { AuthenticationService } from '../../auth/authentication.service';
+import { AuthService } from 'bn-auth';
 import { CountsWeightsData } from '../../../_models/wcgop/tally/counts-weights-data';
 import { TemplateService } from './template.service';
 import { BoatnetDate } from 'bn-models';
@@ -42,7 +42,7 @@ export class TallyService {
   };
 
   constructor(
-    private authService: AuthenticationService,
+    private authService: AuthService,
     private dataService: DataService,
     private templateService: TemplateService,
     private http: HttpClient

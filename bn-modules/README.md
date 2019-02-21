@@ -1,8 +1,10 @@
-# FramModules
+# Boatnet Module Libraries
 
-* Note: build the projects first (e.g `ng build bn-catch`)
+* We may consider calling this something other than "bn-modules" since Modules means something specific to Angular.
 
-## Creating and linking to a new module
+* Note: `ng build bn-modules` will not automatically build the subprojects. Each directory under `projects/` is a standalone library, so you need to build the projects explicitly (e.g `ng build bn-catch`)
+
+## Creating and linking to a new bn-modules library
 
 ### 1. Navigate to the bn-modules directory in the terminal window
 
@@ -12,71 +14,104 @@ This top level project could be used to test the various modules in projects/
 
 ### 2. Generate a new library
 
-Note how we always prepend the library name with "fram-" and also give it the fram prefix
+For these examples, we will create a 'specimens' library
 
-`ng generate library bn-specimens --prefix=fram`
+Note how we always prepend the library name with "bn-" and also give it the bn- prefix
 
-### 3. Create your library components
-Still doing this from the bn-modules directory
+`ng generate library bn-specimens --prefix=bn`
 
-`ng g c specimens --project=bn-specimens --styleext=scss`
+### 3. Create additional library component(s), libraries, etc.
+Specify your project with the `--project=` flag.
 
-modify the ts, scss, html for this new specimens component as needed
+Still doing this from the bn-modules directory:
 
-### 4. Build the module
+`ng generate component specimens --project=bn-specimens --styleext=scss`
 
+Modify the ts, scss, html for this new specimens component as needed
+
+* Optional
+  * Remove the default `src/lib/bn-specimens.component.*` and `src/lib/bn-specimens.service.*` files and remove references in the bn-specimens.module.ts file, if you don't want a default component or service. 
+  * Remove exports to the component and service in `src/public_api.ts`
+
+
+### 4. Build the project
 `ng build bn-specimens`
 
 This will create the built project as a new folder in the dist/bn-specimens folder
 
-### 5. Remove extra, generated files that are not needed for the library
+### 5. Edit the public_api.ts interface file to export the correct components
 
-bn-specimens.component.spec.ts  
-bn-specimens.component.ts  
-bn-specimens.service.spec.ts  
-bn-specimens.service.ts  
+open `projects\bn-specimens\src\public_api.ts`
 
-You only need to keep the bn-specimens.module.ts file
-
-### 6. Edit the public_api.ts interface file to export the correct components
-
-open projects\bn-specimens\src\public_api.ts
-
-This file should have the following code in it:
+Add your component to this file. Example:
 
 ```
 export * from './lib/specimens/specimens.component';
 export * from './lib/bn-specimens.module';
 ```
 
-### 7a [OPTION 1] Reference the library modules in your application directly via tsconfig.json
+### 61 [OPTION 1] npm link to the module
+* After building your module, create a link directly (i.e into the dist\<library name>) via this command:
+```
+cd <your-project-directory>
+npm link ../bn-modules/dist/bn-specimens
+```
 
-*Locate the tsconfig.json file in your application's root folder. Add the relative "path" as such (example from obs-electron)
+### Important
+* Next, fix webpack WARNING: `Critical dependency: the request of a dependency is an expression`
+
+  * in your application's `angular.json` add preserveSymlinks: true to your build options:
+```
+...
+"architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "preserveSymlinks": true,
+            ...
+
+```            
+
+* (Also, if you are developing a HttpClient service, without this fix, you will hit this bug: https://github.com/angular/angular/issues/25813 )
+`inject() must be called from an injection context`
+
+### 6b [OPTION 2] Reference the library modules in your application directly via tsconfig.json
+* NOTE: this option throws a webpack warning that may not be a good idea to ignore (breaks services) I'm using OPTION 1 for now.
+
+* For your application where you want to use your new component, locate the `tsconfig.json` file in your application's root folder. Add the relative "path" as such (example from obs-electron) for each library you want to use:
 
 ```
 "paths": {
   "bn-models": [
     "../../bn-modules/dist/bn-models"
+  ],
+  "bn-specimens": [
+    "../../bn-modules/dist/bn-specimens"
   ]
 }
 ```
+* TODO for Option 2: workaround for resulting webpack WARNING: `Critical dependency: the request of a dependency is an expression`
 
-### 7b [OPTION 2] npm link to the module
-* `npm link` seems a little flaky/ breaks its links occasionally on Windows. Recommend [OPTION 1]
-* Navigate to your built library folder (i.e into the dist\<library name>) and then create a global link
+### Verify peerDependencies versions
+If you see the error:
+`Cannot redeclare block-scoped variable 'ngDevMode'.`
+
+This is an indication of a @angular/core version mismatch.
+Your package.json for the library doesn't match the root bn-modules package.json:
 ```
-cd dist\bn-specimens
-npm link
-```
-* Next, navigate to your application root directory and type:
-```
-npm link bn-specimens
+"peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0"
+  }
 ```
 
+To fix, change the versions in your peerDependencies to match the ones in the bn-modules package.json, as well as your application versions. One way to accomplish this is with `ng update`. E.g. `ng update @angular/core` should handle dependencies automatically.
 
-### 8. Use the new library in your application
+### 7. Use the new library in your application
 
-Open the app.module.ts file and add:
+Example:
+
+Open the `src/app/app.module.ts` file and add the component:
 
 ```
 // At the top of the file
@@ -91,12 +126,12 @@ import { SpecimensComponent } from 'bn-specimens';
 
 ## Working with an already linked module
 
-Once you have taken the above steps to create and link to a new library, then when making modifications to it and testing those out, all you need to do is the following
+Once you have taken the above steps to create and link to a new library, then when making modifications to it and testing those out:
 
-### 1. Run the application
-For the purposes of this example, we'll run the sample application in the bn-modules directory:
+### 1. Run your application
+
 ```
-cd bn-modules
+cd your-app-that-uses-bn-modules
 ng serve
 ```
 
@@ -106,7 +141,9 @@ Open a second terminal window (recommend side-by-side with the running ng serve 
 
 `ng build bn-specimens`
 
-Once ng serve is running, it will automatically pick up the build changes and reflect those in the currently running application
+Depending on how you linked your module, 
+* tsconfig.json method: `ng serve` should pick up changes automatically
+* npm link method: You will have to restart `ng serve` in your application window (module not found errors will occur.)
 
 ## References  
 

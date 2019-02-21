@@ -243,6 +243,41 @@
           }
         }
       }
+    },
+    "bn-auth": {
+      "root": "projects/bn-auth",
+      "sourceRoot": "projects/bn-auth/src",
+      "projectType": "library",
+      "prefix": "bn",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/bn-auth/tsconfig.lib.json",
+            "project": "projects/bn-auth/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/bn-auth/src/test.ts",
+            "tsConfig": "projects/bn-auth/tsconfig.spec.json",
+            "karmaConfig": "projects/bn-auth/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/bn-auth/tsconfig.lib.json",
+              "projects/bn-auth/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "bn-modules"

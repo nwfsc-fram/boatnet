@@ -27,7 +27,7 @@ Run `npm run server` for an HTTPS (self-signed) dev auth server running on port 
 
 ## Basic Testing
 
-POST the following raw JSON to: https://localhost:9000/login using a utility such as Postman.
+POST the following raw JSON to: https://localhost:9000/api/login using a utility such as Postman.
 ```
 {
   "username": "test",
@@ -39,6 +39,10 @@ POST the following raw JSON to: https://localhost:9000/login using a utility suc
 
 ## Client Configuration
 
-To use this dev proxy, configure `proxy.json` on your client as required.
-Refer to the `package.json` in the `observer/obs-electron` project as an example.
+To use this dev proxy in your project:
+* Configure `proxy.conf.json` on your client as required (copy from obs-electron/proxy.conf.json to start.)
+* Refer to the `package.json` in the `observer/obs-electron` and add a "start" command like so:
+ ```
+ "start": "ng serve --proxy-config ./proxy.conf.json"
+ ```
 

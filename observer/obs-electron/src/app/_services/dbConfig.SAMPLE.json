@@ -1,7 +1,4 @@
 {
-    "boatnet_url": "http://localhost:5984/boatnet-dev",    
-    "readonly_data_username": "Get these from Will",
-    "readonly_data_password": "",
-    "readwrite_data_username": "",
-    "readwrite_data_password": ""
+    "authUrl": "",
+    "note": "Leave authUrl blank for localhost proxy (see proxy.json)"
 }
