@@ -74,7 +74,7 @@ import { AddNamedComponent } from './screens/tally/add-named/add-named.component
 import { KeyboardDirective } from './_directives/keyboard.directive';
 import { PdfGenerationService } from './_services/pdf/pdf-generation.service';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
-import { AuthService, AuthServiceConfig } from 'bn-auth'; // Need to npm link
+import { BnAuthModule, AuthService, AuthServiceConfig } from 'bn-auth'; // Need to npm link
 import { UserService } from './_services/data/user.service';
 import { AlertService } from './_services/ui/alert.service';
 import { CountsWeightsComponent } from './screens/tally/counts-weights/counts-weights.component';
@@ -100,7 +100,8 @@ import { DialogModule } from 'primeng/dialog';
 import { TabViewModule } from 'primeng/tabview';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
-import { BnAuthModule } from 'bn-auth';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers';
 
 const dbConfig = require('./_services/dbConfig.json');
 
@@ -176,7 +177,8 @@ const dbConfig = require('./_services/dbConfig.json');
     InputTextModule,
     InputMaskModule,
     DialogModule,
-    TabViewModule
+    TabViewModule,
+    StoreModule.forRoot(reducers, { metaReducers })
   ],
   providers: [
     AuthGuard,
