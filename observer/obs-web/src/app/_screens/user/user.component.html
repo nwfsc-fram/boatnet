@@ -1,46 +1,61 @@
-<div class="card-contents">
+<div class="card" >
+  <div class="card-heading desktop">User Details:<br></div>
+  <div class="card-contents">
+    
+    <form mat-form [formGroup]="userForm">
 
-<form mat-form [formGroup]="userForm">
-  <div class="flex-grid vm5">
-    <span class="col pv6"><strong>First Name: </strong></span>
-    <input class="col2" type="text" pInputText formControlName="first_name"/>
-  </div>
-  <div class="flex-grid vm5">
-    <span class="col pv6"><strong>Last Name: </strong></span>
-    <input class="col2" type="text" pInputText formControlName="last_name"/>
-  </div>
-  <div class="flex-grid vm5">
-    <span class="col pv6"><strong>Email: </strong></span>
-    <input class="col2" type="text" pInputText formControlName="email"/>
-  </div>
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>Mobile: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="mobile"/>
-    </div>
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>Home: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="home"/>
-    </div>
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>Address: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="address"/>
-    </div>  
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>City: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="city"/>
-    </div>  
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>State: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="state"/>
-    </div>  
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>Zip: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="zip"/>
-    </div>   
-  <div class="flex-grid vm5">
-      <span class="col pv6"><strong>Home Port: </strong></span>
-      <input class="col2" type="text" pInputText formControlName="home_port"/>    
-  </div> 
-</form>
+      <br>
+      <div class="ui-float-label">
+        <input type="text" pInputText formControlName="first_name" style="width:100%"/>
+        <label for="first_name">First Name</label>
+      </div>
+      <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+        <input type="text" pInputText formControlName="last_name" style="width:100%"/>
+        <label for="last_name">Last Name</label>
+      </div>
+      <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+        <input type="text" pInputText formControlName="email" style="width:100%"/>
+        <label for="email">Email</label>
+      </div>
+      <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="mobile" style="width:100%"/>
+          <label for="mobile">Mobile</label>
+        </div>
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="home" style="width:100%"/>
+          <label for="home">Home Phone</label>
+        </div>
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="address" style="width:100%"/>
+          <label for="address">Address</label>
+        </div>  
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="city" style="width:100%"/>
+          <label for="city">City</label>
+        </div>  
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="state" style="width:100%"/>
+          <label for="state">State</label>
+        </div>  
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="zip" style="width:100%"/>
+          <label for="zip">Zip Code</label>
+        </div>   
+        <div class="card-input-divider"></div>
+      <div class="ui-float-label">
+          <input type="text" pInputText formControlName="home_port" style="width:100%"/>   
+          <label for="home_port">Home Port</label> 
+      </div> 
+    </form>
   
-</div>
+  </div>
+
+</div> 

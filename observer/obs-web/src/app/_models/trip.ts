@@ -31,7 +31,7 @@ export class Trip implements BoatnetBase {
     return new Trip({
       id: uuid(),
       type: 'trip',
-      trip_num: null,
+      trip_num: '17',
       created_by: 'seth gerou',
       created_date: getBoatnetDateNow(),
       selected: false,

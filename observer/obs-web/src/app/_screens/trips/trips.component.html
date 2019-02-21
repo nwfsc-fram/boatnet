@@ -1,42 +1,55 @@
 
-  <a routerLink="/user-config" style="text-decoration: none;">
-    <div class="heading">{{ vessel.vessel_name }}</div> 
-  </a>
-  <div class="subheading">Active Trips</div>
+  <div class="flex-space-desktop">
+
+    <div>
+      <a routerLink="/user-config" style="text-decoration: none;">
+        <div class="heading">{{ vessel.vessel_name }}</div> 
+      </a>
+      <div class="subheading">Active Trips</div>
 
   
-  <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >      
-    <div class="list-item" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" >
-      <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
-        
-        <span class="status-icons"> 
-          <i class="pi pi-check" *ngIf="trip.selected"></i>
-          <i class="pi pi-comment" *ngIf="trip.messages"></i>
-        </span>
-        
-      </div>
-      <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
-    </div>
-  </div>
-  
-  <div class="new-trip-button">
-    <button class="mat-icon-button" style="color: white;" mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
-  </div>
-  
-  <div class="subheading closed">Closed Trips</div>
-  <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
-    <div class="list-item closed"  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
-        <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
-
-          <span class="status-icons"> 
-            <i class="pi pi-check" *ngIf="trip.selected"></i>
-            <i class="pi pi-comment" *ngIf="trip.messages"></i>
-          </span>
-
+      <div *ngFor="let trip of trips" routerLink="/trip" (click)="setTrip(trip)" >      
+        <div class="list-item" *ngIf="trip.vessel === vessel.vessel_name && trip.is_open" >
+          <div class="item-num">{{ trip.trip_num }}</div>
+          <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
+            
+            <span class="status-icons"> 
+              <i class="pi pi-check" *ngIf="trip.selected"></i>
+              <i class="pi pi-comment" *ngIf="trip.messages"></i>
+            </span>
+            
+          </div>
+          <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
         </div>
-        <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
-    </div>
-  </div>
+      </div>
+      
+      <div class="new-item-button">
+        <button class="mat-icon-button" style="color: white;" mat-icon-button routerLink="/trip" (click)="clearTrip()"><mat-icon>create</mat-icon></button> 
+      </div>
+  
+      <div class="subheading closed">Closed Trips</div>
+      <div *ngFor="let trip of trips"  routerLink="/trip" (click)="setTrip(trip)">
+        <div class="list-item closed"  *ngIf="trip.vessel === vessel.vessel_name && !trip.is_open" >
+            <div class="item-num">{{ trip.trip_num }}</div>
 
+            <div class="first-line"> {{ trip.permits[0].fishery }} <span *ngIf="trip.permits.length > 1">&nbsp;+</span>
+
+              <span class="status-icons"> 
+                <i class="pi pi-check" *ngIf="trip.selected"></i>
+                <i class="pi pi-comment" *ngIf="trip.messages"></i>
+              </span>
+
+            </div>
+            <div class="second-line"> {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }} </div>
+        </div>
+      </div>
+
+    </div>
+
+<div class="desktop">
+  <app-trip-detail></app-trip-detail>
+</div>
+
+</div>
 
 <app-footer (searchstring)="searchTrips($event)"></app-footer>
