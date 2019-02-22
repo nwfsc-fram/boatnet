@@ -5,7 +5,7 @@ import PouchDB from 'pouchdb'
 
 import PouchdbFind from 'pouchdb-find'
 import * as CryptoPouch from 'crypto-pouch'
-
+import { AuthService } from 'bn-auth';
 
 const dbConfig = require('../dbConfig.json')
 import { Subject, BehaviorSubject } from 'rxjs';
@@ -36,6 +36,7 @@ export class DataService {
   searchstring: string;
 
   constructor(
+    private authService: AuthService,
     private http: HttpClient
   ) {
     PouchDB.plugin(PouchdbFind);
@@ -187,7 +188,7 @@ export class DataService {
   }
 
   isUserLoggedIn(): boolean {
-    return true
+    return this.authService.isLoggedIn();
   }
 
   disconnectDB() {

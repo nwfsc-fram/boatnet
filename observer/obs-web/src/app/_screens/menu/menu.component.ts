@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'bn-auth';
+import { DataService } from '../../_services/data/data.service'
 
 @Component({
   selector: 'app-menu',
@@ -7,10 +9,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MenuComponent implements OnInit {
 
-  constructor() { }
+  loggedIn = this.dataService.isUserLoggedIn()
+
+  constructor(
+    private dataService: DataService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
   }
+
+  logOut() {
+    this.authService.logout();
+  }
+
+
 
 }
 

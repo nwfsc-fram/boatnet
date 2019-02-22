@@ -31,7 +31,7 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.stateSvc.setStateName('user');
+    // this.stateSvc.setStateName('user');
     this.user = this.stateSvc.currentState.user
 
     if (this.stateSvc.currentState.user === undefined) {

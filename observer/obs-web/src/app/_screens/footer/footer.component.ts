@@ -18,7 +18,7 @@ export class FooterComponent implements OnInit {
   message: Message;
   name: string;
   trip = this.stateSvc.currentState.trip
-  searchConfig = ['trips', 'user-management', 'user', 'vessel-management', 'permits-management']
+  searchConfig = ['trips', 'user-management', 'vessel-management', 'permits-management']
   createConfig = ['user-management', 'vessel-management', 'permits-management', 'trips', 'ots-management']
   confirmConfig = ['user-preferences', 'ots-management', 'trip']
   show: boolean = false;
