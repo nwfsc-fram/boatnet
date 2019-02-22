@@ -22,10 +22,13 @@ import {
   MatBottomSheetModule
 } from '@angular/material';
 
+
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
   declarations: [],
@@ -52,7 +55,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCheckboxModule,
     MatRadioModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatMomentDateModule
   ],
   exports: [
     MatCardModule,
@@ -76,7 +80,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatCheckboxModule,
     MatRadioModule,
     MatButtonModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatMomentDateModule
   ]
 })
 export class MaterialModule {}

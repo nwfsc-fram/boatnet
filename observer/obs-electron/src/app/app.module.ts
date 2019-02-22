@@ -13,7 +13,8 @@ import { NgxElectronModule, ElectronService } from 'ngx-electron';
 
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { MaterialModule } from './_modules/material/material.module';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { PrimeNGModule  } from './_modules/primeng/primeng.module';
+import { ConfirmationService } from 'primeng/api';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -56,25 +57,9 @@ import { CountsWeightsComponent } from './screens/tally/counts-weights/counts-we
 import { TemplateManagerComponent } from './screens/tally/template-manager/template-manager.component';
 import { TemplateService } from './_services/data/tally/template.service';
 import { BackupComponent } from './screens/backup/backup.component';
-
-import { DragDropModule } from 'primeng/dragdrop';
-import { MessagesModule } from 'primeng/messages';
-import { MessageModule } from 'primeng/message';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { TableModule } from 'primeng/table';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputMaskModule } from 'primeng/inputmask';
-import { DialogModule } from 'primeng/dialog';
-import { TabViewModule } from 'primeng/tabview';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
+
 import { StoreModule } from '@ngrx/store';
 import { reducers, metaReducers } from './reducers';
 
@@ -117,21 +102,7 @@ const dbConfig = require('./_services/dbConfig.json');
     HttpClientModule,
     AutoCompleteModule,
     AppRoutingModule,
-    MatMomentDateModule,
-    ConfirmDialogModule,
-    DragDropModule,
-    MessagesModule,
-    MessageModule,
-    ProgressSpinnerModule,
-    TableModule,
-    ToggleButtonModule,
-    SelectButtonModule,
-    DropdownModule,
-    CalendarModule,
-    InputTextModule,
-    InputMaskModule,
-    DialogModule,
-    TabViewModule,
+    PrimeNGModule,
     StoreModule.forRoot(reducers, { metaReducers })
   ],
   providers: [
