@@ -21,6 +21,10 @@ $min_login_width: 400px;
   justify-content: center;
 }
 
+.login-button .mat-primary {
+  background-color: #1675d1;
+}
+
 
 @keyframes ui-progress-spinner-color {
     100%,

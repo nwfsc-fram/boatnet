@@ -4,6 +4,7 @@ import { StateService } from '../../_services/data/state.service';
 import { AppState } from '../../_models/app-state';
 import { DataService } from '../../_services/data/data.service';
 import { Subscription, Observable } from 'rxjs';
+import { AuthService } from 'bn-auth';
 
 @Component({
   selector: 'app-home',
@@ -20,11 +21,14 @@ export class HomeComponent implements OnInit {
   
   isDBSynced: Observable<boolean>;
 
+  user = this.authService.getUserObs()
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private dataService: DataService,
     private stateService: StateService,
+    private authService: AuthService,
   ) { }
 
   ngOnInit() {
@@ -68,6 +72,7 @@ export class HomeComponent implements OnInit {
 
     this.isDBSynced = this.dataService.initialSyncComplete;
     this.login()
+
   }
 
   login() {

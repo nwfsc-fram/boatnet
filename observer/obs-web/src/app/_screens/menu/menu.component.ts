@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'bn-auth';
 import { DataService } from '../../_services/data/data.service'
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-menu',
@@ -9,7 +10,7 @@ import { DataService } from '../../_services/data/data.service'
 })
 export class MenuComponent implements OnInit {
 
-  loggedIn = this.dataService.isUserLoggedIn()
+  loggedIn = this.authService.isLoggedIn()
 
   constructor(
     private dataService: DataService,
@@ -22,8 +23,6 @@ export class MenuComponent implements OnInit {
   logOut() {
     this.authService.logout();
   }
-
-
 
 }
 

@@ -76,28 +76,6 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 const dbConfig = require('./_services/dbConfig.json');
 
-// const appRoutes: Routes = [
-//   { path: 'home',             component: HomeComponent },
-//   { path: 'ots-management',   component: OTSManagementComponent },
-//   { path: 'ots-target-detail' ,component: OtsTargetDetailComponent }, 
-//   { path: 'manage-users',     component: UserManagementComponent },
-//   { path: 'debriefer',             component: DebrieferComponent },
-//   { path: 'user',             component: UserComponent },
-//   { path: 'trips',            component: TripsComponent },
-//   { path: 'trip',             component: TripDetailComponent },
-//   { path: 'message-detail',   component: MessageDetailComponent },
-//   { path: 'user-config',      component: UserConfigComponent },
-//   { path: 'manage-vessels',   component: VesselsComponent },
-//   { path: 'vessel-detail',    component: VesselDetailComponent },
-//   { path: 'manage-permits',   component: PermitsComponent },
-//   { path: 'permit-detail',    component: PermitDetailComponent },
-//   // { path: 'vessel-permits',component: VesselPermitsComponent },
-//   { path: '',
-//     redirectTo: 'home',
-//     pathMatch: 'full'
-//   },
-// ];
-
 @NgModule({
   declarations: [
     AppComponent,

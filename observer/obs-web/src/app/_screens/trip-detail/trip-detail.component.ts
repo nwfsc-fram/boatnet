@@ -51,7 +51,7 @@ export class TripDetailComponent implements OnInit {
     this.stateSvc.setStateName('trip');
 
     if (this.stateSvc.currentState.trip === undefined) {
-      this.trip = Trip.createTrip(this.stateSvc.currentState.user.home_port, this.stateSvc.currentState.vessel);
+      this.trip = Trip.createTrip(this.stateSvc.currentState.user.home_port, this.stateSvc.currentState.vessel.vessel_name);
     }
 
     this.createEditForm()
