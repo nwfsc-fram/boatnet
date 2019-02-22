@@ -11,33 +11,9 @@ import {
 
 import { NgxElectronModule, ElectronService } from 'ngx-electron';
 
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-
-// import { NgSelectModule } from '@ng-select/ng-select';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { MaterialModule } from './_modules/material/material.module';
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
-
-import {
-  MatCardModule,
-  MatDialogModule,
-  MatListModule,
-  MatOptionModule,
-  MatSelectModule,
-  MatInputModule,
-  MatToolbarModule,
-  MatDatepickerModule,
-  MatNativeDateModule,
-  MatSnackBarModule,
-  MatMenuModule,
-  MatIconModule,
-  MatSlideToggleModule,
-  MatAutocompleteModule,
-  MatButtonToggleModule,
-  MatTableModule,
-  MatBadgeModule,
-  MatBottomSheetModule
-} from '@angular/material';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -49,8 +25,7 @@ import { JwtInterceptor } from './_helpers';
 import { AuthGuard } from './_guards/auth.guard';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio';
+
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { fakeBackendProvider } from './_helpers';
@@ -138,26 +113,7 @@ const dbConfig = require('./_services/dbConfig.json');
     FlexLayoutModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatAutocompleteModule,
-    MatInputModule,
-    MatBadgeModule,
-    MatBottomSheetModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatCardModule,
-    MatDialogModule,
-    MatListModule,
-    MatSelectModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatToolbarModule,
-    MatOptionModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatSnackBarModule,
-    MatMenuModule,
-    MatIconModule,
-    MatSlideToggleModule,
+    MaterialModule,
     HttpClientModule,
     AutoCompleteModule,
     AppRoutingModule,
@@ -168,8 +124,6 @@ const dbConfig = require('./_services/dbConfig.json');
     MessageModule,
     ProgressSpinnerModule,
     TableModule,
-    MatCheckboxModule,
-    MatRadioModule,
     ToggleButtonModule,
     SelectButtonModule,
     DropdownModule,
