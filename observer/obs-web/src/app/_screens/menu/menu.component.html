@@ -7,6 +7,10 @@
   <button mat-menu-item routerLink="manage-vessels">Manage Vessels&nbsp;<mat-icon>directions_boat</mat-icon></button>
   <button mat-menu-item routerLink="manage-permits">Manage Permits&nbsp;<mat-icon>confirmation_number</mat-icon></button>
   <button mat-menu-item routerLink="ots-management">OTS Management&nbsp;<mat-icon>waves</mat-icon></button >
+    <div *ngIf="!loggedIn">
+      <hr>
+      <button  mat-menu-item routerLink="login" (click)="logOut()">Log Out</button >
+    </div>
 </mat-menu>
 
 <!-- <button mat-icon-button [matMenuTriggerFor]="appMenu" > -->

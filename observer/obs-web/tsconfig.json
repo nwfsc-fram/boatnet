@@ -18,6 +18,11 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "bn-models": [
+        "../../bn-modules/dist/bn-models"
+      ]
+    }
   }
 }

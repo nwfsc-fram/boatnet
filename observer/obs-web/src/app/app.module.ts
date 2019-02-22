@@ -41,6 +41,8 @@ import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { MultiSelectModule } from 'primeng/multiselect';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
 
 import {ChartModule} from 'primeng/chart';
 
@@ -68,7 +70,9 @@ import { DebrieferComponent } from './_screens/debriefer/debriefer.component';
 import { DataService } from './_services/data/data.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './_screens/login/login.component';
-
+import { AlertService } from './_services/ui/alert.service';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 const dbConfig = require('./_services/dbConfig.json');
 
@@ -155,6 +159,9 @@ const dbConfig = require('./_services/dbConfig.json');
     ChartModule,
     ProgressSpinnerModule,
     AppRoutingModule,
+    MessagesModule,
+    MessageModule,
+    ConfirmDialogModule
   ],
   providers: [
     AuthService,
@@ -163,6 +170,8 @@ const dbConfig = require('./_services/dbConfig.json');
       provide: AuthServiceConfig,
       useValue: { authUrl: (<any>dbConfig).authUrl }
     },
+    AlertService,
+    ConfirmationService,
     DataService
   ],
   bootstrap: [AppComponent]
