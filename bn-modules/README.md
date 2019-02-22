@@ -55,6 +55,8 @@ export * from './lib/bn-specimens.module';
 ```
 cd <your-project-directory>
 npm link ../bn-modules/dist/bn-specimens
+# or for Windows:
+npm link ..\bn-modules\dist\bn-specimens
 ```
 
 ### Important
