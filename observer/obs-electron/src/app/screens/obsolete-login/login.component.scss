@@ -10,9 +10,9 @@ $min_login_width: 400px;
   justify-content: right;
 }
 .login-container > * {
-    display: grid;
-    grid-template-columns: minmax($min_login_width, 20%);
-    justify-content: center;
+  display: grid;
+  grid-template-columns: minmax($min_login_width, 20%);
+  justify-content: center;
 }
 
 .login-button {
@@ -24,5 +24,3 @@ $min_login_width: 400px;
   display: grid;
   justify-content: center;
 }
-
-

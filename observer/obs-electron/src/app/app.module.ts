@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 
 import { AppRoutingModule } from './app-routing.module';
+
 import {
   Location,
   PathLocationStrategy,
@@ -32,7 +33,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { fakeBackendProvider } from './_helpers';
 
 import { HomeComponent } from './screens/home/home.component';
-import { LoginComponent } from './screens/login/login.component';
 import { HeaderToolbarComponent } from './header-toolbar/header-toolbar.component';
 import { DataService } from './_services/data/data.service';
 import { HaulsComponent } from './screens/hauls/hauls.component';
@@ -60,8 +60,12 @@ import { BackupComponent } from './screens/backup/backup.component';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
 
+import { AuthModule } from './auth/auth.module';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+
+import { reducers, metaReducers } from './state';
 
 const dbConfig = require('./_services/dbConfig.json');
 
@@ -70,7 +74,6 @@ const dbConfig = require('./_services/dbConfig.json');
     AppComponent,
     AlertDirective,
     HomeComponent,
-    LoginComponent,
     HeaderToolbarComponent,
     HaulsComponent,
     KeyboardDirective,
@@ -103,7 +106,13 @@ const dbConfig = require('./_services/dbConfig.json');
     AutoCompleteModule,
     AppRoutingModule,
     PrimeNGModule,
-    StoreModule.forRoot(reducers, { metaReducers })
+    AuthModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreDevtoolsModule.instrument({
+      name: 'obs-electron',
+      logOnly: environment.production,
+    }),
+    EffectsModule.forRoot([])
   ],
   providers: [
     AuthGuard,

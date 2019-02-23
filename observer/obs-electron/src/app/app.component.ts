@@ -6,6 +6,9 @@ import { Subscription, Observable } from 'rxjs';
 import { ThemeService } from './_services/ui/theme.service';
 import * as electron from 'electron';
 
+import { Store } from '@ngrx/store';
+import * as fromStore from './state';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -15,12 +18,14 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Observer NG';
   isDarkTheme: Observable<boolean>;
   syncSub: Subscription;
+  loggedIn$ = this.store.select(fromStore.selectIsLoggedIn);
 
   constructor(
     public electronService: ElectronService,
     private database: DataService,
     private alertService: AlertService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private store: Store<fromStore.State>
   ) {}
 
   // https://github.com/ThorstenHans/ngx-electron has electron service details

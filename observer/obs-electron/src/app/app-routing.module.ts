@@ -1,9 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './screens/home/home.component';
-import { LoginComponent } from './screens/login/login.component';
+// import { LoginComponent } from './screens/login/login.component';
 import { TallyComponent } from './screens/tally/tally.component';
-import { AuthGuard } from './_guards/auth.guard';
 import { TripsComponent } from './screens/trips/trips.component';
 import { TripListComponent } from './screens/trips/trip-list/trip-list.component';
 import { TripEditComponent } from './screens/trips/trip-edit/trip-edit.component';
@@ -14,11 +13,13 @@ import { SettingsComponent } from './screens/settings/settings.component';
 import { TallyPdfComponent } from './screens/tally/tally-pdf/tally-pdf.component';
 import { BackupComponent } from './screens/backup/backup.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
+import { LoginPageComponent } from './auth/components/login-page.component';
+import { AuthGuard } from './_guards/auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginPageComponent },
   { path: 'settings', component: SettingsComponent },
   {
     path: 'trips',
