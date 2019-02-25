@@ -7,5 +7,15 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
-  "projects": {}
+  "projects": {
+    "obs-electron": {
+      "tags": []
+    },
+    "obs-electron-e2e": {
+      "tags": []
+    },
+    "dev-auth-proxy": {
+      "tags": []
+    }
+  }
 }
