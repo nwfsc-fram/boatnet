@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@boatnet/bn-models": ["libs/bn-models/src/index.ts"]
+      "@boatnet/bn-models": ["libs/bn-models/src/index.ts"],
+      "@boatnet/bn-security": ["libs/bn-security/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

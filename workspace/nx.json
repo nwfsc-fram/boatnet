@@ -19,6 +19,9 @@
     },
     "bn-models": {
       "tags": []
+    },
+    "bn-security": {
+      "tags": []
     }
   }
 }

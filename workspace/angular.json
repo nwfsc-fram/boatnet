@@ -229,6 +229,37 @@
           "styleext": "scss"
         }
       }
+    },
+    "bn-security": {
+      "root": "libs/bn-security",
+      "sourceRoot": "libs/bn-security/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-security/tsconfig.lib.json",
+              "libs/bn-security/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "libs/bn-security/jest.config.js",
+            "tsConfig": "libs/bn-security/tsconfig.spec.json",
+            "setupFile": "libs/bn-security/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
+        }
+      }
     }
   },
   "cli": {
