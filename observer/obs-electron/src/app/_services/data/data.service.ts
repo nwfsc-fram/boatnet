@@ -9,7 +9,7 @@ import * as moment from 'moment';
 // Note: copy dbConfig.SAMPLE.json to dbConfig.json (prevent inadvertent commits to src control)
 const dbConfig = require('../dbConfig.json');
 import { User } from 'bn-models';
-import { AuthService } from 'bn-auth';
+import { AuthService, BoatnetUser, CouchDBInfo } from 'bn-auth';
 import { MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR } from '@angular/material';
 import { Subject, Observable, BehaviorSubject } from 'rxjs';
 import { Species } from 'bn-models';
@@ -26,6 +26,8 @@ export class DataService {
     live: true,
     retry: true
   };
+
+  private couchDBInfo: CouchDBInfo;
 
   private mapSpeciesCodeCommonName = new Map(); // map species code to common name for PDF
 
@@ -145,15 +147,15 @@ export class DataService {
     );
   }
 
-  connectDatabase(username: string, password: string) {
-    // Ignoring username, password for now
-    console.log(
-      `WARN: ignored u/p for ${username}, using local login for DB auth.`
-    );
-    const ro_username = (<any>dbConfig).readonly_data_username;
-    const ro_pw = (<any>dbConfig).readonly_data_password;
+  connectDatabase(user: BoatnetUser, password: string) {
+    this.couchDBInfo = user.couchDBInfo;
+    // const couch_username = this.couchDBInfo.username;
+    // const couch_password = password;
+    console.log('TODO: Use actual user/pw for couch. Using dbConfig.json values instead.');
+    const couch_username = (<any>dbConfig).readonly_data_username;
+    const couch_password = (<any>dbConfig).readonly_data_password;
+
     const pouchOpts = {
-      // TODO JWT
       skip_setup: true,
       // ajax: {
       // headers: {
@@ -161,14 +163,15 @@ export class DataService {
       // }
       // },
       auth: {
-        username: ro_username,
-        password: ro_pw
+        username: couch_username,
+        password: couch_password
       },
       storage: 'persistent'
     };
     if (!this.isInstantiated) {
-      console.log('Set up remote DB.');
-      this.remote_db = new PouchDB((<any>dbConfig).boatnet_url, pouchOpts);
+      const roDB = this.couchDBInfo.urlRoot + this.couchDBInfo.readonlyDB;
+      console.log('Set up remote DB.', roDB);
+      this.remote_db = new PouchDB(roDB, pouchOpts);
       this.isInstantiated = true;
     }
     this.startSync();
@@ -186,7 +189,7 @@ export class DataService {
       .on('complete', complete => {
         // only fired for non-live sync
         console.log(
-          `Initial sync complete from ${(<any>dbConfig).boatnet_url}`
+          `Initial sync complete from ${this.couchDBInfo.urlRoot}`
         );
         this.initialSyncComplete.next(true);
         this.local_db
