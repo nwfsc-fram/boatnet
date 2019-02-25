@@ -40,4 +40,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
+  <h2>VESSELS</h2>
+  <div *ngFor="let vessel of vesselsFromDB$ | async">
+    <li>{{vessel.vessel_name}}</li>
+  </div>
 </div>

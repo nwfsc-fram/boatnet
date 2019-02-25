@@ -4,6 +4,11 @@ import { Trip } from '../../../_models/wcgop/trip';
 import { StateService } from '../../../_services/data/state.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatTableDataSource } from '@angular/material';
+import { Store, select } from '@ngrx/store';
+import * as fromStore from '../../../state';
+import { AllVesselsRequested } from 'src/app/data-layer/vessel/vessel.actions';
+import { Observable } from 'rxjs';
+import { VesselsState } from 'src/app/data-layer/vessel/vessel.reducer';
 
 @Component({
   selector: 'app-trip-list',
@@ -37,11 +42,14 @@ export class TripListComponent implements OnInit {
 
   tripButtonText = 'Start New Trip';
 
+  vesselsFromDB$: Observable<any[]>;
+
   constructor(
     private http: HttpClient,
     private stateSvc: StateService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private store: Store<fromStore.State>
   ) {}
 
   ngOnInit() {
@@ -49,6 +57,10 @@ export class TripListComponent implements OnInit {
     this.fetchTrips().then(data => {
       this.dataSource.data = data;
     });
+
+    this.store.dispatch(new AllVesselsRequested());
+
+    this.vesselsFromDB$ = this.store.pipe(select(state => state.vessels.vessels));
   }
 
   fetchTrips() {

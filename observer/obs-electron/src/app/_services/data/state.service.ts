@@ -81,7 +81,8 @@ export class StateService {
   }
 
   persistAppState() {
-    console.log('Save state:', this.currentState);
+    // TODO remove this in favor of NgRx
+    // console.log('Save state:', this.currentState);
     this.buildHeaderStatus();
     localStorage.setItem(
       StateService.STATE_KEY,

@@ -65,6 +65,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 
+import { VesselEffects } from './data-layer/vessel/vessel.effects';
 import { reducers, metaReducers } from './state';
 
 const dbConfig = require('./_services/dbConfig.json');
