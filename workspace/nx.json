@@ -16,6 +16,9 @@
     },
     "dev-auth-proxy": {
       "tags": []
+    },
+    "bn-models": {
+      "tags": []
     }
   }
 }

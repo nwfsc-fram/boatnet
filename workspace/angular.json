@@ -45,9 +45,7 @@
               "apps/obs-electron/src/favicon.ico",
               "apps/obs-electron/src/assets"
             ],
-            "styles": [
-              "apps/obs-electron/src/styles.scss"
-            ],
+            "styles": ["apps/obs-electron/src/styles.scss"],
             "scripts": [],
             "es5BrowserSupport": true
           },
@@ -103,9 +101,7 @@
               "apps/obs-electron/tsconfig.app.json",
               "apps/obs-electron/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -143,9 +139,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "apps/obs-electron-e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -163,9 +157,7 @@
             "outputPath": "dist/apps/dev-auth-proxy",
             "main": "apps/dev-auth-proxy/src/main.ts",
             "tsConfig": "apps/dev-auth-proxy/tsconfig.app.json",
-            "assets": [
-              "apps/dev-auth-proxy/src/assets"
-            ]
+            "assets": ["apps/dev-auth-proxy/src/assets"]
           },
           "configurations": {
             "production": {
@@ -195,9 +187,7 @@
               "apps/dev-auth-proxy/tsconfig.app.json",
               "apps/dev-auth-proxy/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -206,6 +196,37 @@
             "jestConfig": "apps/dev-auth-proxy/jest.config.js",
             "tsConfig": "apps/dev-auth-proxy/tsconfig.spec.json"
           }
+        }
+      }
+    },
+    "bn-models": {
+      "root": "libs/bn-models",
+      "sourceRoot": "libs/bn-models/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-models/tsconfig.lib.json",
+              "libs/bn-models/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/bn-models/src/test.ts",
+            "tsConfig": "libs/bn-models/tsconfig.spec.json",
+            "karmaConfig": "libs/bn-models/karma.conf.js"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
         }
       }
     }
