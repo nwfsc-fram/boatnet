@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 
 import { AppRoutingModule } from './app-routing.module';
+
 import {
   Location,
   PathLocationStrategy,
@@ -11,33 +12,10 @@ import {
 
 import { NgxElectronModule, ElectronService } from 'ngx-electron';
 
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-
-// import { NgSelectModule } from '@ng-select/ng-select';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { MatMomentDateModule } from '@angular/material-moment-adapter';
-
-import {
-  MatCardModule,
-  MatDialogModule,
-  MatListModule,
-  MatOptionModule,
-  MatSelectModule,
-  MatInputModule,
-  MatToolbarModule,
-  MatDatepickerModule,
-  MatNativeDateModule,
-  MatSnackBarModule,
-  MatMenuModule,
-  MatIconModule,
-  MatSlideToggleModule,
-  MatAutocompleteModule,
-  MatButtonToggleModule,
-  MatTableModule,
-  MatBadgeModule,
-  MatBottomSheetModule
-} from '@angular/material';
+import { MaterialModule } from './_modules/material/material.module';
+import { PrimeNGModule  } from './_modules/primeng/primeng.module';
+import { ConfirmationService } from 'primeng/api';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -49,14 +27,12 @@ import { JwtInterceptor } from './_helpers';
 import { AuthGuard } from './_guards/auth.guard';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio';
+
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { fakeBackendProvider } from './_helpers';
 
 import { HomeComponent } from './screens/home/home.component';
-import { LoginComponent } from './screens/login/login.component';
 import { HeaderToolbarComponent } from './header-toolbar/header-toolbar.component';
 import { DataService } from './_services/data/data.service';
 import { HaulsComponent } from './screens/hauls/hauls.component';
@@ -81,27 +57,16 @@ import { CountsWeightsComponent } from './screens/tally/counts-weights/counts-we
 import { TemplateManagerComponent } from './screens/tally/template-manager/template-manager.component';
 import { TemplateService } from './_services/data/tally/template.service';
 import { BackupComponent } from './screens/backup/backup.component';
-
-import { DragDropModule } from 'primeng/dragdrop';
-import { MessagesModule } from 'primeng/messages';
-import { MessageModule } from 'primeng/message';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
-import { TableModule } from 'primeng/table';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
-import { CalendarModule } from 'primeng/calendar';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputMaskModule } from 'primeng/inputmask';
-import { DialogModule } from 'primeng/dialog';
-import { TabViewModule } from 'primeng/tabview';
 import { FramNumpadComponent } from './screens/fram-numpad/fram-numpad.component';
 import { RedirectDownloadComponent } from './_helpers/redirect-download/redirect-download.component';
+
+import { AuthModule } from './auth/auth.module';
 import { StoreModule } from '@ngrx/store';
-import { reducers, metaReducers } from './reducers';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+
+import { VesselEffects } from './data-layer/vessel/vessel.effects';
+import { reducers, metaReducers } from './state';
 
 const dbConfig = require('./_services/dbConfig.json');
 
@@ -110,7 +75,6 @@ const dbConfig = require('./_services/dbConfig.json');
     AppComponent,
     AlertDirective,
     HomeComponent,
-    LoginComponent,
     HeaderToolbarComponent,
     HaulsComponent,
     KeyboardDirective,
@@ -138,47 +102,18 @@ const dbConfig = require('./_services/dbConfig.json');
     FlexLayoutModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatAutocompleteModule,
-    MatInputModule,
-    MatBadgeModule,
-    MatBottomSheetModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatCardModule,
-    MatDialogModule,
-    MatListModule,
-    MatSelectModule,
-    MatTableModule,
-    MatFormFieldModule,
-    MatToolbarModule,
-    MatOptionModule,
-    MatNativeDateModule,
-    MatDatepickerModule,
-    MatSnackBarModule,
-    MatMenuModule,
-    MatIconModule,
-    MatSlideToggleModule,
+    MaterialModule,
     HttpClientModule,
     AutoCompleteModule,
     AppRoutingModule,
-    MatMomentDateModule,
-    ConfirmDialogModule,
-    DragDropModule,
-    MessagesModule,
-    MessageModule,
-    ProgressSpinnerModule,
-    TableModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    ToggleButtonModule,
-    SelectButtonModule,
-    DropdownModule,
-    CalendarModule,
-    InputTextModule,
-    InputMaskModule,
-    DialogModule,
-    TabViewModule,
-    StoreModule.forRoot(reducers, { metaReducers })
+    PrimeNGModule,
+    AuthModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreDevtoolsModule.instrument({
+      name: 'obs-electron',
+      logOnly: environment.production,
+    }),
+    EffectsModule.forRoot([])
   ],
   providers: [
     AuthGuard,

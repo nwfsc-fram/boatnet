@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AlertService } from '../../_services/ui/alert.service';
@@ -12,6 +12,11 @@ import { Program } from 'bn-models';
 import { ElectronService } from 'ngx-electron';
 import { ConfirmationService } from 'primeng/api';
 import { AuthService } from 'bn-auth';
+import { Credentials } from '../../auth/models/authentication.model';
+
+import { Store } from '@ngrx/store';
+import * as fromStore from '../../state';
+import { Login } from '../../auth/actions/auth.actions';
 
 @Component({
   moduleId: module.id,
@@ -19,6 +24,9 @@ import { AuthService } from 'bn-auth';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  error$ = this.store.select(fromStore.selectLoginPageError);
+  pending$ = this.store.select(fromStore.selectLoginPagePending);
+
   model: any = {};
   loading = false;
   hide = true;
@@ -33,6 +41,8 @@ export class LoginComponent implements OnInit {
 
   loginResult$: Observable<any>;
 
+  loginError$ = this.store.select(fromStore.selectLoginPageError);
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -42,13 +52,14 @@ export class LoginComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private dataService: DataService,
     private stateService: StateService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private store: Store<fromStore.State>
   ) {}
 
   ngOnInit() {
     // reset login status
     this.authService.logout();
-    // Todo NgRx AppState
+    // TODO Remove in favor of NgRx AppState
     this.stateService.setState(<AppState>{ name: 'login' });
 
     // get return url from route parameters or default to '/'
@@ -57,6 +68,10 @@ export class LoginComponent implements OnInit {
     this.isTabletMode = this.stateService.tabletMode;
     this.isDarkTheme = this.themeService.isDarkTheme;
     this.isDBSynced = this.dataService.initialSyncComplete;
+  }
+
+  onLogin(credentials: Credentials) {
+    this.store.dispatch(new Login(credentials));
   }
 
   changedUsername(event$) {}
@@ -72,25 +87,29 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.loading = true;
-    const username = this.model.username;
-    const pw = this.model.password;
-    this.authService.login(username, pw).subscribe(
-      result => {
-        console.log('Logged in as', result.username);
-        // if (!this.dataService.initialSyncComplete.getValue()) {
-        //   this.dataService.connectDatabase(
-        //     this.model.username,
-        //     this.model.password
-        //   );
-        // }
-        this.router.navigate([this.returnUrl]);
-      },
-      loginError => {
-        this.loading = false;
-        this.alertService.error(loginError);
-        console.error(loginError);
-      }
-    );
+    const credentials: Credentials = {
+      username: this.model.username,
+      password: this.model.password
+    };
+
+    this.onLogin(credentials);
+    // this.authService.login(username, pw).subscribe(
+    //   result => {
+    //     console.log('Logged in as', result.username);
+    //     // if (!this.dataService.initialSyncComplete.getValue()) {
+    //     //   this.dataService.connectDatabase(
+    //     //     this.model.username,
+    //     //     this.model.password
+    //     //   );
+    //     // }
+    //     this.router.navigate([this.returnUrl]);
+    //   },
+    //   loginError => {
+    //     this.loading = false;
+    //     this.alertService.error(loginError);
+    //     console.error(loginError);
+    //   }
+    // );
   }
 
   onExitElectron() {

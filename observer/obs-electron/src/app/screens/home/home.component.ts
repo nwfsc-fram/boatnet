@@ -5,6 +5,8 @@ import { ElectronService } from 'ngx-electron';
 
 // Test
 import { TestModel } from 'bn-models';
+import { DataService } from 'src/app/_services/data/data.service';
+import { AuthService } from 'bn-auth';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private stateSvc: StateService,
+    private dataService: DataService,
+    private authService: AuthService,
     private electronService: ElectronService
   ) {
     this.isElectron = this.electronService.isElectronApp;
@@ -29,5 +33,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.stateSvc.setStateName('home');
     this.isTabletMode = this.stateSvc.tabletMode;
+    if (!this.dataService.initialSyncComplete.getValue()) {
+      // TODO temp store pw or use couchdb cookie
+      this.dataService.connectDatabase(this.authService.getCurrentUser(), '');
+    }
   }
 }

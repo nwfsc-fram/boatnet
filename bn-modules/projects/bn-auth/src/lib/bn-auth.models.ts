@@ -4,13 +4,15 @@ export interface BoatnetUserToken {
   sub: BoatnetUser;
 }
 
+export interface CouchDBInfo {
+  urlRoot: string;
+  userDB: string;
+  readonlyDB: string;
+}
+
 export interface BoatnetUser {
   username: string;
   hashedPW: string;
   roles: string[];
-  couchDBInfo: {
-    urlRoot: string;
-    userDB: string;
-    readonlyDB: string;
-  };
+  couchDBInfo: CouchDBInfo;
 }
