@@ -1,12 +1,16 @@
 {
   "devUsers": [
     {
-      "user": "test",
+      "username": "test",
       "password": "test",
-      "returnUserData": {
-        "roles": [ "admin", "observer"]
+      "userData": {
+        "roles": [ "admin", "observer"],
+        "couchDBInfo": {
+          "urlRoot": "http://<your server>:5984",
+          "userDB": "your-testdb",
+          "readonlyDB": "your-readonly-testdb"
+        }
       }
     }
-  ],
-  "couchDBUrlRoot": "https://<your development couchdb server>:6984/example-db"
+  ]
 }

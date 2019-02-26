@@ -177,7 +177,8 @@
         "serve": {
           "builder": "@nrwl/builders:node-execute",
           "options": {
-            "buildTarget": "dev-auth-proxy:build"
+            "buildTarget": "dev-auth-proxy:build",
+            "args": ["--secure"]
           }
         },
         "lint": {

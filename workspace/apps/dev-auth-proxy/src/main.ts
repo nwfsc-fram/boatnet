@@ -14,6 +14,7 @@ import { login } from './routes/login.route';
 import { pubkey } from './routes/pubkey.route';
 
 import { RSA_PRIVATE_KEY, RSA_CERT } from '@boatnet/bn-security';
+
 const app: Application = express();
 
 const commandLineArgs = require('command-line-args');
@@ -49,9 +50,9 @@ if (options.secure) {
   );
 } else {
   // launch an HTTP Server
-  const httpServer = app.listen(9000, () => {
+  const httpServer = app.listen(3333, () => {
     console.log(
-      'HTTP Server running at https://localhost:' + httpServer.address().port
+      'HTTP Server running at http://localhost:' + httpServer.address().port
     );
   });
 }

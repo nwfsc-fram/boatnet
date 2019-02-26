@@ -9,13 +9,15 @@
   },
   "projects": {
     "obs-electron": {
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["bn-models"]
     },
     "obs-electron-e2e": {
       "tags": []
     },
     "dev-auth-proxy": {
-      "tags": []
+      "tags": [],
+      "implicitDependencies": ["bn-security"]
     },
     "bn-models": {
       "tags": []
