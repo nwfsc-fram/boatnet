@@ -41,7 +41,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-observer/obs-web/src/app/_services/dbConfig.json
 observer/.idea/
-dev-auth-proxy/server/config/authProxyConfig.json
-workspace/apps/dev-auth-proxy/src/config/authProxyConfig.json
+**/authProxyConfig.json
+**/dbConfig.json
