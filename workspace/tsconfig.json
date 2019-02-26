@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@boatnet/bn-models": ["libs/bn-models/src/index.ts"],
-      "@boatnet/bn-security": ["libs/bn-security/src/index.ts"]
+      "@boatnet/bn-security": ["libs/bn-security/src/index.ts"],
+      "@boatnet/bn-auth": ["libs/bn-auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

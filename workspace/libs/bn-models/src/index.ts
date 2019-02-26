@@ -1,4 +1,5 @@
-export interface TestModel {
-  _id: string;
-  title: string;
-}
+/*
+ * Public API Surface of bn-models
+ */
+
+export * from './lib/bn-models.module';

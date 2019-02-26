@@ -261,6 +261,37 @@
           "styleext": "scss"
         }
       }
+    },
+    "bn-auth": {
+      "root": "libs/bn-auth",
+      "sourceRoot": "libs/bn-auth/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-auth/tsconfig.lib.json",
+              "libs/bn-auth/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/bn-auth/src/test.ts",
+            "tsConfig": "libs/bn-auth/tsconfig.spec.json",
+            "karmaConfig": "libs/bn-auth/karma.conf.js"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
+        }
+      }
     }
   },
   "cli": {
