@@ -2,8 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc/apps/obs-electron",
-    "types": ["node"],
-    "typeRoots": ["../node_modules/@types"]
+    "types": []
   },
   "exclude": ["src/test.ts", "**/*.spec.ts"],
   "include": ["**/*.ts"]
