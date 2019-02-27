@@ -46,8 +46,11 @@
               "apps/obs-electron/src/assets"
             ],
             "styles": [
+              "apps/obs-electron/src/styles.scss",
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "apps/obs-electron/src/styles.scss"
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeng/resources/themes/omega/theme.scss"
             ],
             "scripts": [],
             "es5BrowserSupport": true
@@ -326,7 +329,7 @@
               "./node_modules/primeicons/primeicons.css",
               "./node_modules/primeng/resources/primeng.min.css",
               "./node_modules/primeng/resources/themes/omega/theme.scss",
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
             ],
             "scripts": [],
             "es5BrowserSupport": true
