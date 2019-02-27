@@ -4,12 +4,12 @@ export class GearType {
   num: number;
 }
 
-export const GEAR_TYPE_TRAWL = <GearType> {
+export const GEAR_TYPE_TRAWL = <GearType>{
   desc: 'Trawl',
   num: 1
 };
 
-export const GEAR_TYPE_FG = <GearType> {
+export const GEAR_TYPE_FG = <GearType>{
   desc: 'Fixed Gear',
   num: 2
 };

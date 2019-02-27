@@ -45,7 +45,10 @@
               "apps/obs-electron/src/favicon.ico",
               "apps/obs-electron/src/assets"
             ],
-            "styles": ["apps/obs-electron/src/styles.scss"],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/obs-electron/src/styles.scss"
+            ],
             "scripts": [],
             "es5BrowserSupport": true
           },
@@ -101,7 +104,9 @@
               "apps/obs-electron/tsconfig.app.json",
               "apps/obs-electron/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {
@@ -111,7 +116,9 @@
             "tsConfig": "apps/obs-electron/tsconfig.spec.json",
             "karmaConfig": "apps/obs-electron/karma.conf.js",
             "polyfills": "apps/obs-electron/src/polyfills.ts",
-            "styles": [],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+            ],
             "scripts": [],
             "assets": []
           }
@@ -139,7 +146,9 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "apps/obs-electron-e2e/tsconfig.e2e.json",
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         }
       }
@@ -157,7 +166,9 @@
             "outputPath": "dist/apps/dev-auth-proxy",
             "main": "apps/dev-auth-proxy/src/main.ts",
             "tsConfig": "apps/dev-auth-proxy/tsconfig.app.json",
-            "assets": ["apps/dev-auth-proxy/src/assets"]
+            "assets": [
+              "apps/dev-auth-proxy/src/assets"
+            ]
           },
           "configurations": {
             "production": {
@@ -178,7 +189,9 @@
           "builder": "@nrwl/builders:node-execute",
           "options": {
             "buildTarget": "dev-auth-proxy:build",
-            "args": ["--secure"]
+            "args": [
+              "--secure"
+            ]
           }
         },
         "lint": {
@@ -188,7 +201,9 @@
               "apps/dev-auth-proxy/tsconfig.app.json",
               "apps/dev-auth-proxy/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {
@@ -213,7 +228,9 @@
               "libs/bn-models/tsconfig.lib.json",
               "libs/bn-models/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {
@@ -244,7 +261,9 @@
               "libs/bn-security/tsconfig.lib.json",
               "libs/bn-security/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {
@@ -275,7 +294,9 @@
               "libs/bn-auth/tsconfig.lib.json",
               "libs/bn-auth/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**"]
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "test": {

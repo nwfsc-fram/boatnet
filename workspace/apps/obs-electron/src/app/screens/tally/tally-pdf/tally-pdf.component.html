@@ -1,0 +1,55 @@
+<mat-card>
+  <mat-card-content>
+    <mat-card>
+      <div class="trip-haul-inputs">
+        <span class="mat-subheading-2">Trip #</span>
+        <input
+          matInput
+          type="text"
+          keyboardLayout="integer"
+          [(ngModel)]="tripId"
+        />
+        <span class="mat-subheading-2">Haul #</span>
+        <input
+          matInput
+          type="text"
+          keyboardLayout="integer"
+          [(ngModel)]="haulId"
+        />
+      </div>
+      <br />
+      <button
+        mat-raised-button
+        style="background-color: lightgreen"
+        (click)="generatePDF()"
+      >
+        Generate PDF
+      </button>
+      &nbsp; <button mat-raised-button (click)="onBack()">Back to Tally</button>
+    </mat-card>
+  </mat-card-content>
+
+  <mat-card-content>
+    <h2 class="mat-h2">Preview:</h2>
+    <h3 class="mat-h3 preview-header">
+      <span>TRIP # {{ tripId }}</span
+      >&nbsp; <span>HAUL # {{ haulId }}</span
+      >&nbsp; <span>DATE {{ formDate }}</span>
+    </h3>
+    <mat-table *ngIf="previewData" [dataSource]="previewData">
+      <ng-container
+        *ngFor="let column of previewColumns; let i = index"
+        [matColumnDef]="column"
+      >
+        <mat-header-cell *matHeaderCellDef>{{
+          previewColumnTitles[i]
+        }}</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{
+          getRowText(row[column], i)
+        }}</mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="previewColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: previewColumns"></mat-row>
+    </mat-table>
+  </mat-card-content>
+</mat-card>

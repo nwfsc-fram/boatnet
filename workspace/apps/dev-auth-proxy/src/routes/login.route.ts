@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
-import { createSessionToken, createCsrfToken, hashBoatnetPW } from '@boatnet/bn-security';
+import {
+  createSessionToken,
+  createCsrfToken,
+  hashBoatnetPW
+} from '@boatnet/bn-security';
 const authConfig = require('../config/authProxyConfig.json');
 
 export async function login(req: Request, res: Response) {

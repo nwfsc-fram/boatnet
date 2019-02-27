@@ -23,8 +23,10 @@ export class AuthServiceConfig {
 export class AuthService {
   protected authUrl: string;
 
-  constructor(private http: HttpClient,
-    @Optional() authConfig: AuthServiceConfig) {
+  constructor(
+    private http: HttpClient,
+    @Optional() authConfig: AuthServiceConfig
+  ) {
     const defaultConfig = new AuthServiceConfig();
     this.authUrl = authConfig ? authConfig.authUrl : defaultConfig.authUrl;
     console.log('[AuthService] Auth Base URL', this.authUrl);

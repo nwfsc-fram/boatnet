@@ -3,3 +3,4 @@
  */
 
 export * from './lib/bn-models.module';
+export * from './lib/util/util';

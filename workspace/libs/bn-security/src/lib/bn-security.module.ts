@@ -22,9 +22,15 @@ export const randomBytes = util.promisify(crypto.randomBytes);
 export const signJwt = util.promisify(jwt.sign);
 
 // TEMPORARY Keys used for signing JWT - NOT SECURE! (Publicly committed)
-export const RSA_CERT = fs.readFileSync('./libs/bn-security/src/key/temp-cert.pem');
-export const RSA_PRIVATE_KEY = fs.readFileSync('./libs/bn-security/src/key/temp-priv-key.pem');
-export const RSA_PUBLIC_KEY = fs.readFileSync('./libs/bn-security/src/key/temp-pub-key.pem');
+export const RSA_CERT = fs.readFileSync(
+  './libs/bn-security/src/key/temp-cert.pem'
+);
+export const RSA_PRIVATE_KEY = fs.readFileSync(
+  './libs/bn-security/src/key/temp-priv-key.pem'
+);
+export const RSA_PUBLIC_KEY = fs.readFileSync(
+  './libs/bn-security/src/key/temp-pub-key.pem'
+);
 
 const SESSION_DURATION = 7200;
 

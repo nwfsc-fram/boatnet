@@ -1,0 +1,29 @@
+{
+  "templateNames": [
+    {
+      "fishery": "-",
+      "templateName": "default",
+      "description": "Empty Template"
+    },
+    {
+      "fishery": "Catch Shares",
+      "templateName": "cs_sabl_ll",
+      "description": "SABL Long Line"
+    },
+    {
+      "fishery": "Catch Shares",
+      "templateName": "cs_sabl_pot",
+      "description": "SABL POT"
+    },
+    {
+      "fishery": "Non-Catch Shares",
+      "templateName": "ncs_sabl_ll",
+      "description": "SABL Long Line"
+    },
+    {
+      "fishery": "Non-Catch Shares",
+      "templateName": "ncs_sabl_pot",
+      "description": "SABL POT"
+    }
+  ]
+}
