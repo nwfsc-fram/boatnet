@@ -434,6 +434,303 @@
           }
         }
       }
+    },
+    "survey-surv-cutter": {
+      "root": "apps/survey/surv-cutter/",
+      "sourceRoot": "apps/survey/surv-cutter/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:class": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@nrwl/schematics:directive": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:guard": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:module": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:pipe": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:service": {
+          "skipTests": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/survey/surv-cutter",
+            "index": "apps/survey/surv-cutter/src/index.html",
+            "main": "apps/survey/surv-cutter/src/main.ts",
+            "polyfills": "apps/survey/surv-cutter/src/polyfills.ts",
+            "tsConfig": "apps/survey/surv-cutter/tsconfig.app.json",
+            "assets": [
+              "apps/survey/surv-cutter/src/favicon.ico",
+              "apps/survey/surv-cutter/src/assets"
+            ],
+            "styles": ["apps/survey/surv-cutter/src/styles.scss"],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/survey/surv-cutter/src/environments/environment.ts",
+                  "with": "apps/survey/surv-cutter/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "survey-surv-cutter:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "survey-surv-cutter:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "survey-surv-cutter:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/survey/surv-cutter/tsconfig.app.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    },
+    "survey-surv-fpc": {
+      "root": "apps/survey/surv-fpc/",
+      "sourceRoot": "apps/survey/surv-fpc/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:class": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@nrwl/schematics:directive": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:guard": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:module": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:pipe": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:service": {
+          "skipTests": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/survey/surv-fpc",
+            "index": "apps/survey/surv-fpc/src/index.html",
+            "main": "apps/survey/surv-fpc/src/main.ts",
+            "polyfills": "apps/survey/surv-fpc/src/polyfills.ts",
+            "tsConfig": "apps/survey/surv-fpc/tsconfig.app.json",
+            "assets": [
+              "apps/survey/surv-fpc/src/favicon.ico",
+              "apps/survey/surv-fpc/src/assets"
+            ],
+            "styles": ["apps/survey/surv-fpc/src/styles.scss"],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/survey/surv-fpc/src/environments/environment.ts",
+                  "with": "apps/survey/surv-fpc/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "survey-surv-fpc:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "survey-surv-fpc:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "survey-surv-fpc:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/survey/surv-fpc/tsconfig.app.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    },
+    "survey-surv-hm": {
+      "root": "apps/survey/surv-hm/",
+      "sourceRoot": "apps/survey/surv-hm/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:class": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@nrwl/schematics:directive": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:guard": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:module": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:pipe": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:service": {
+          "skipTests": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/survey/surv-hm",
+            "index": "apps/survey/surv-hm/src/index.html",
+            "main": "apps/survey/surv-hm/src/main.ts",
+            "polyfills": "apps/survey/surv-hm/src/polyfills.ts",
+            "tsConfig": "apps/survey/surv-hm/tsconfig.app.json",
+            "assets": [
+              "apps/survey/surv-hm/src/favicon.ico",
+              "apps/survey/surv-hm/src/assets"
+            ],
+            "styles": ["apps/survey/surv-hm/src/styles.scss"],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/survey/surv-hm/src/environments/environment.ts",
+                  "with": "apps/survey/surv-hm/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "survey-surv-hm:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "survey-surv-hm:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "survey-surv-hm:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/survey/surv-hm/tsconfig.app.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
     }
   },
   "cli": {
