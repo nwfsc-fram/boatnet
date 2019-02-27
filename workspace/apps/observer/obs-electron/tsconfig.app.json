@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc/apps/obs-electron",
+    "outDir": "../../../dist/out-tsc/apps/obs-electron",
     "types": []
   },
   "exclude": ["src/test.ts", "**/*.spec.ts"],

@@ -32,13 +32,13 @@
     "obs-web-e2e": {
       "tags": []
     },
-    "survey-surv-cutter": {
+    "surv-cutter": {
       "tags": []
     },
-    "survey-surv-fpc": {
+    "surv-fpc": {
       "tags": []
     },
-    "survey-surv-hm": {
+    "surv-hm": {
       "tags": []
     }
   }
