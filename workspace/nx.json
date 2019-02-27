@@ -31,6 +31,15 @@
     },
     "obs-web-e2e": {
       "tags": []
+    },
+    "surv-cutter": {
+      "tags": []
+    },
+    "surv-fpc": {
+      "tags": []
+    },
+    "surv-hm": {
+      "tags": []
     }
   }
 }

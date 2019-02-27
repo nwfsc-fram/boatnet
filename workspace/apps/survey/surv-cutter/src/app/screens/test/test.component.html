@@ -1,0 +1,64 @@
+<!--
+  <p-accordion>
+    <p-accordionTab header="Salads">
+      Salads...
+    </p-accordionTab>
+    <p-accordionTab header="Pasta">
+      Pasta...
+    </p-accordionTab>
+    <p-accordionTab header="Pizza" [selected]="true">
+      <p-radioButton
+        label="Double cheese 🧀🧀"
+        name="pizza"
+        value="double-cheese"
+        [(ngModel)]="pizzaSelection">
+      </p-radioButton><br>
+
+      <p-radioButton
+        label="Anchovy"
+        name="pizza"
+        value="anchovy"
+        [(ngModel)]="pizzaSelection">
+      </p-radioButton><br>
+
+      <p-radioButton
+        label="Meat lover's 🍖"
+        name="pizza"
+        value="meat-lover"
+        [(ngModel)]="pizzaSelection">
+      </p-radioButton>
+    </p-accordionTab>
+  </p-accordion>
+
+  <br>
+
+  <p-panel header="Extras" *ngIf="pizzaSelection && pizzaSelection.length">
+    🍕 Would you like extra cheese on your pizza?
+    <button pButton type="button" label="Ok, yeah!"></button>
+  </p-panel>
+-->
+<div class="screen">
+  <p-treeTable [value]="data" [columns]="cols">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns">{{ col.header }}</th>
+      </tr>
+    </ng-template>
+    <ng-template
+      pTemplate="body"
+      let-rowNode
+      let-rowData="rowData"
+      let-columns="columns"
+    >
+      <tr>
+        <td *ngFor="let col of columns; let i = index">
+          <p-treeTableToggler
+            [rowNode]="rowNode"
+            *ngIf="i == 0"
+          ></p-treeTableToggler>
+          {{ rowData[col.field] }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+</div>
