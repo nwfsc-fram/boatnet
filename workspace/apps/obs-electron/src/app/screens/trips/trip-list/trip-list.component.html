@@ -1,0 +1,49 @@
+<div style="margin: 10px;">
+  <div>
+    <button mat-raised-button (click)="newTrip()">{{ tripButtonText }}</button>
+  </div>
+  <div class="trip-list">
+    <table mat-table #table [dataSource]="dataSource">
+      <ng-container matColumnDef="friendly_trip_id">
+        <th mat-header-cell *matHeaderCellDef>Trip ID</th>
+        <td mat-cell *matCellDef="let trip">{{ trip.friendly_trip_id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="vessel_name">
+        <th mat-header-cell *matHeaderCellDef>Vessel Name</th>
+        <td mat-cell *matCellDef="let trip">{{ trip.vessel.vessel_name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="dept_port">
+        <th mat-header-cell *matHeaderCellDef>Dept. Port</th>
+        <td mat-cell *matCellDef="let trip">
+          {{ trip.ports.departure_port.port_name }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dept_date">
+        <th mat-header-cell *matHeaderCellDef>Dept. Date</th>
+        <td mat-cell *matCellDef="let trip">{{ trip.dates.departure_date }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="ret_port">
+        <th mat-header-cell *matHeaderCellDef>Ret. Port</th>
+        <td mat-cell *matCellDef="let trip">
+          {{ trip.ports.return_port.port_name }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="ret_date">
+        <th mat-header-cell *matHeaderCellDef>Dept. Date</th>
+        <td mat-cell *matCellDef="let trip">{{ trip.dates.return_date }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+  <h2>VESSELS</h2>
+  <div *ngFor="let vessel of (vesselsFromDB$ | async)">
+    <li>{{ vessel.vessel_name }}</li>
+  </div>
+</div>

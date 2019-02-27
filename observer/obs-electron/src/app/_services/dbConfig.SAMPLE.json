@@ -1,4 +1,0 @@
-{
-    "authUrl": "",
-    "note": "Leave authUrl blank for localhost proxy (see proxy.json)"
-}

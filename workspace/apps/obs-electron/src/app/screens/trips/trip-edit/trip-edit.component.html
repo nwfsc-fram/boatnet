@@ -1,0 +1,172 @@
+<div style="margin: 25px;">
+  <mat-button-toggle-group name="tripDetailsType" [(ngModel)]="buttonToggled">
+    <mat-button-toggle value="start-trip" ngDefaultControl
+      >Trip Start Details</mat-button-toggle
+    >
+    <mat-button-toggle value="end-trip" ngDefaultControl
+      >Trip End Details</mat-button-toggle
+    >
+  </mat-button-toggle-group>
+
+  <form mat-form [formGroup]="tripForm">
+    <div class="trip-details" *ngIf="buttonToggled === 'start-trip'">
+      <mat-form-field>
+        <mat-label>Gear Type</mat-label>
+        <mat-select formControlName="gear_type">
+          <mat-option [value]="gear" *ngFor="let gear of availableGearTypes">{{
+            gear.desc
+          }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <span formGroupName="vessel">
+        <mat-form-field floatLabel="true" class="makewide">
+          <mat-label>Vessel Name</mat-label>
+          <input
+            matInput
+            autocomplete="vessel_name"
+            formControlName="vessel_name"
+            (ngModelChange)="updatedVesselName($event)"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete
+            #auto="matAutocomplete"
+            autoActiveFirstOption="false"
+          >
+            <mat-option
+              *ngFor="let option of (filteredVesselNames | async)"
+              [value]="option"
+            >
+              {{ option }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field floatLabel="true" class="makewide">
+          <mat-label>USCG/ State Reg #</mat-label>
+          <input matInput formControlName="uscg_num_state_reg" />
+        </mat-form-field>
+      </span>
+      <mat-form-field floatLabel="true">
+        <mat-label>Fishery</mat-label>
+        <input matInput formControlName="fishery" #fishery />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Skipper's Name</mat-label>
+        <input matInput keyboardPosition="top" formControlName="skipper" />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label># of Crew</mat-label>
+        <input
+          matInput
+          class="ui-keyboard-top"
+          keyboardLayout="integer"
+          formControlName="num_crew"
+        />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Observer Logbook #</mat-label>
+        <input
+          matInput
+          keyboardLayout="integer"
+          formControlName="obs_logbook_num"
+        />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Permits/ Licenses</mat-label>
+        <input
+          matInput
+          autocomplete="licenses_permits"
+          formControlName="licenses_permits"
+        />
+      </mat-form-field>
+      <span formGroupName="dates">
+        <mat-form-field floatLabel="true" class="makewide">
+          <mat-label>Departure Date</mat-label>
+          <input matInput formControlName="departure_date" />
+        </mat-form-field>
+      </span>
+      <span formGroupName="ports">
+        <mat-form-field floatLabel="true" class="makewide">
+          <mat-label>Departure Port</mat-label>
+          <input
+            matInput
+            name="departure_port_name"
+            formControlName="departure_port_name"
+          />
+        </mat-form-field>
+      </span>
+    </div>
+    <div
+      mat-dialog-content
+      class="trip-details"
+      *ngIf="buttonToggled === 'end-trip'"
+    >
+      <div style="padding-top: 20px;">
+        <mat-slide-toggle name="partial_trip" formControlName="partial_trip"
+          >Partial Trip</mat-slide-toggle
+        >
+      </div>
+      <mat-slide-toggle name="fish_processed" formControlName="fish_processed"
+        >Fish Processed During Trip</mat-slide-toggle
+      >
+      <mat-form-field floatLabel="true" *ngIf="partialTrip">
+        <mat-label>Total # of Fishing Days</mat-label>
+        <input
+          matInput
+          keyboardLayout="integer"
+          formControlName="fishing_days_num"
+        />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Vessel Logbook Name</mat-label>
+        <input matInput formControlName="vessel_logbook_name" />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Vessel Logbook Page #</mat-label>
+        <input
+          matInput
+          keyboardLayout="integer"
+          formControlName="vessel_logbook_page_num"
+        />
+      </mat-form-field>
+      <span formGroupName="ports">
+        <mat-form-field floatLabel="true">
+          <mat-label>Return Port</mat-label>
+          <input
+            matInput
+            name="return_port_name"
+            formControlName="return_port_name"
+          />
+        </mat-form-field>
+      </span>
+      <span formGroupName="dates">
+        <mat-form-field floatLabel="true">
+          <mat-label>Return Date</mat-label>
+          <input matInput formControlName="return_date" />
+        </mat-form-field>
+      </span>
+      <mat-form-field floatLabel="true">
+        <mat-label>First Receiver</mat-label>
+        <input matInput formControlName="first_receiver" />
+      </mat-form-field>
+      <mat-form-field floatLabel="true">
+        <mat-label>Fish Ticket # / State / Date</mat-label>
+        <input matInput formControlName="fish_tickets" />
+      </mat-form-field>
+    </div>
+    <button
+      mat-raised-button
+      type="button"
+      (click)="onSubmit()"
+      [disabled]="tripForm.pristine || tripForm.invalid"
+      class="btn btn-success"
+    >
+      Save
+    </button>
+    &nbsp;
+    <button mat-raised-button type="button" (click)="onCancelBack()">
+      {{ tripForm.valid && tripForm.pristine ? 'Back to Trips' : 'Cancel' }}
+    </button>
+  </form>
+</div>

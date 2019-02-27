@@ -1,0 +1,111 @@
+[
+  {
+    "id": "a14642f1-bf58-47eb-8975-2604d733b8a8",
+    "type": "trip",
+    "created_by": {
+      "id": "user-id-something",
+      "username": "willsmith",
+      "firstName": "Will",
+      "lastName": "Smith"
+    },
+    "created_date": "2018-05-01",
+    "friendly_trip_id": 1,
+    "vessel": {
+      "vessel_name": "Test Vessel"
+    },
+    "ports": {
+      "departure_port": { "port_name": "Port 1" },
+      "return_port": { "port_name": "Port 2" }
+    },
+    "dates": {
+      "departure_date": "2018-05-02",
+      "return_date": "2018-05-03"
+    },
+    "testing": {
+      "otc_wt": "17",
+      "errors": 0
+    },
+    "wm": "14",
+    "gear_perf": 5,
+    "gear_type": "Trawl",
+    "target_strategy": "Albacore",
+    "otc": 27,
+    "observer_catch_estimate": 223,
+    "vessel_catch_estimate": 224,
+    "bio_list": 2,
+    "haul_sampled": true,
+    "beaufort_scale": 3,
+    "brd_present": true,
+    "short_wired": true,
+    "locations": [
+      {
+        "id": 0,
+        "type": "location",
+        "created_by": "Seth Gerou",
+        "created_date": "Fri Jul 13 2018 13:27:44 GMT-0800",
+        "location_type": "set",
+        "date_time": "Fri Jul 13 2018 13:27:44 GMT-0800",
+        "lat": "+31°12.12'",
+        "lon": "-122°35.32'",
+        "fishing_depth": 1,
+        "bottom_depth": 999
+      },
+      {
+        "id": 1,
+        "type": "location",
+        "created_by": "Seth Gerou",
+        "created_date": "Thu Jul 12 2018 13:27:44 GMT-0700",
+        "location_type": "up",
+        "date_time": "Thu Jul 12 2018 13:27:44 GMT-0700",
+        "lat": "47.65725",
+        "lon": "123.56774",
+        "fishing_depth": 2,
+        "bottom_depth": 999
+      },
+      {
+        "id": 2,
+        "type": "location",
+        "created_by": "Seth Gerou",
+        "created_date": "Thu Jul 12 2018 13:27:44 GMT-1000",
+        "location_type": "type1",
+        "date_time": "Thu Jul 12 2018 13:27:44 GMT-1000",
+        "lat": "47.65725",
+        "lon": 123.56774,
+        "fishing_depth": 3,
+        "bottom_depth": 987
+      }
+    ]
+  },
+  {
+    "id": "2b2d0c21-ce6f-40de-953b-e94a75978059",
+    "type": "trip",
+    "created_by": {
+      "id": "user-id-something",
+      "username": "willsmith",
+      "firstName": "Will",
+      "lastName": "Smith"
+    },
+    "created_date": "2018-05-01",
+    "friendly_trip_id": 2,
+    "vessel": {
+      "vessel_name": "Another Test"
+    },
+    "ports": {
+      "departure_port": { "port_name": "Port 1" },
+      "return_port": { "port_name": "Port 4" }
+    },
+    "dates": {
+      "departure_date": "2018-05-02",
+      "return_date": "2018-05-03"
+    },
+    "testing": {
+      "otc_wt": "42",
+      "errors": 2
+    },
+    "wm": "6",
+    "gear_perf": "3",
+    "gear_type": "Fixed Gear",
+    "target_strategy": "Cod",
+    "locations": []
+  }
+]

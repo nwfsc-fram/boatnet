@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es5",
+    "module": "es2015",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@boatnet/bn-models": ["libs/bn-models/src/index.ts"],
+      "@boatnet/bn-security": ["libs/bn-security/src/index.ts"],
+      "@boatnet/bn-auth": ["libs/bn-auth/src/index.ts"]
+    },
+    "downlevelIteration": true
+  },
+  "exclude": ["node_modules", "tmp"]
+}

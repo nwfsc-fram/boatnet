@@ -30,7 +30,6 @@ export async function createSessionToken(userInfo: any) {
 }
 
 export async function decodeJwt(token: string) {
-  // For test/ debug
   const payload = await jwt.verify(token, RSA_PUBLIC_KEY);
   console.log('Decoded JWT payload', payload);
   return payload;
@@ -47,10 +46,3 @@ export async function hashBoatnetPW(password: string): Promise<string> {
   const hashedPW_Final = hash + '|' + hashedPW_SHA.toString();
   return hashedPW_Final;
 }
-
-// export async function verifyArgonPW(hash: string, password: string) {
-//   return await argon2.verify(
-//     hash,
-//     SHA512(password).toString() // SHA512 for FIPS
-//   );
-// }

@@ -1,0 +1,36 @@
+<div>
+  <mat-form-field>
+    <input
+      type="text"
+      [(ngModel)]="speciesCode"
+      matInput
+      [formControl]="myControl"
+      keyboardLayout="username"
+      [matAutocomplete]="auto"
+    />
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option
+        *ngFor="let option of (filteredOptions | async)"
+        [value]="option.code"
+        >{{ option.label }}</mat-option
+      >
+    </mat-autocomplete>
+  </mat-form-field>
+  <button
+    mat-raised-button
+    type="button"
+    class="add-named-btn"
+    (click)="onSubmit()"
+  >
+    {{ acceptText }}
+  </button>
+</div>
+<div>
+  <textarea
+    name="temp"
+    cols="30"
+    rows="20"
+    style="width: 100%; visibility: hidden;"
+    disabled
+  >(TODO: VIRTUAL KEYBOARD)</textarea>
+</div>

@@ -1,0 +1,76 @@
+<mat-toolbar color="primary">
+  <button mat-button [routerLink]="['/home']" class="header-icon">
+    <mat-icon>home</mat-icon>
+  </button>
+
+  <button *ngIf="currentState.trip" mat-button [routerLink]="['/trips']">
+    <span class="breadcrumb-label"
+      >Trip: {{ currentState.trip.friendly_trip_id }}</span
+    >
+  </button>
+
+  <div *ngIf="currentState.haul" class="header-icon">
+    <mat-icon>chevron_right</mat-icon>
+    <button mat-button [routerLink]="['/hauls']">
+      <span class="breadcrumb-label"
+        >Haul: {{ currentState.haul.haul_num }}</span
+      >
+    </button>
+  </div>
+
+  <div *ngIf="currentState.catch" class="header-icon">
+    <mat-icon>chevron_right</mat-icon>
+    <button mat-button>
+      <span class="breadcrumb-label">Catch: {{ currentState.catch.id }}</span>
+    </button>
+  </div>
+
+  <div *ngIf="currentState.species" class="header-icon">
+    <mat-icon>chevron_right</mat-icon>
+    <button mat-button>
+      <span class="breadcrumb-label"
+        >Species: {{ currentState.species.shortCode }}</span
+      >
+    </button>
+  </div>
+
+  <span class="fill-remaining-space"></span>
+
+  <button mat-icon-button [matMenuTriggerFor]="menu" *ngIf="currentUser">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item *ngIf="showHome" [routerLink]="['/home']">
+      <mat-icon>home</mat-icon>
+      <span>Home</span>
+    </button>
+    <button *ngIf="isAdmin" mat-menu-item [routerLink]="['/users']">
+      <mat-icon>supervisor_account</mat-icon>
+      <span>User Management</span>
+    </button>
+    <button
+      *ngIf="showTemplateManager"
+      mat-menu-item
+      (click)="onShowTemplateMgr()"
+    >
+      <mat-icon>view_module</mat-icon>
+      <span>Manage Templates</span>
+    </button>
+    <button *ngIf="showTallyPDF" mat-menu-item [routerLink]="['/tally/pdf']">
+      <mat-icon>note</mat-icon>
+      <span>Generate Tally PDF</span>
+    </button>
+    <button *ngIf="showBackup" mat-menu-item [routerLink]="['/backup']">
+      <mat-icon>backup</mat-icon>
+      <span>Backup DB</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/settings']">
+      <mat-icon>settings</mat-icon>
+      <span>Settings</span>
+    </button>
+    <button mat-menu-item [routerLink]="['/login']" (click)="logOut()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>

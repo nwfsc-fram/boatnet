@@ -1,0 +1,99 @@
+<mat-card>
+  <mat-card-content>
+    <span class="mat-title">
+      {{ data.speciesCode }}
+      <span
+        *ngIf="commonName.length > 0"
+        class="caption"
+        style="font-style: italic"
+        >({{ commonName }})</span
+      >
+      - {{ data.disposition }}
+    </span>
+    <br />
+    <span class="mat-title">
+      Current total tally: {{ data.fishCount }}
+      <span *ngIf="data.countsWeights.basketTotalFishCount"
+        >, Weighed count: {{ data.countsWeights.basketTotalFishCount }}</span
+      >
+      <span *ngIf="data.countsWeights.averageFishWeight"
+        >, Average weight:
+        {{ data.countsWeights.averageFishWeight.toFixed(4) }}</span
+      >
+    </span>
+    <p class="mat-body-1">
+      <p-message
+        class="mat-title"
+        severity="error"
+        *ngIf="data.countsWeights.basketTotalFishCount > data.fishCount"
+        text="Error: Total tally count &lt; weighed count."
+      ></p-message>
+    </p>
+  </mat-card-content>
+</mat-card>
+<p-table
+  [value]="cwData"
+  [scrollable]="true"
+  scrollHeight="150px"
+  (onEditComplete)="dataUpdated({ data: $event })"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Count</th>
+      <th>Weight</th>
+      <th>Avg. Weight</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-cwData>
+    <tr class="data-row">
+      <td>{{ cwData.count }}</td>
+      <td>{{ cwData.weight ? cwData.weight.toFixed(2) : '' }}</td>
+      <td>{{ cwData.avg ? cwData.avg.toFixed(4) : '' }}</td>
+      <td>
+        <button mat-button type="button" (click)="onDelete(cwData)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<p></p>
+<div class="cw-grid-numpad">
+  <p class="mat-title cw-entry-grid">
+    <span [ngClass]="{ 'input-label-active': isCountFocus }">Count:</span>
+    <input
+      [ngClass]="{ 'input-active': isCountFocus }"
+      matInput
+      type="text"
+      width="60"
+      (click)="setCountActive(true)"
+      #count
+    />
+    <span></span>
+    <span [ngClass]="{ 'input-label-active': !isCountFocus }">Weight:</span>
+    <input
+      [ngClass]="{ 'input-active': !isCountFocus }"
+      matInput
+      type="text"
+      width="60"
+      (click)="setCountActive(false)"
+      #weight
+    />
+  </p>
+  <app-fram-numpad
+    (keyPress)="onKeyPress($event)"
+    [showDecimal]="!isCountFocus"
+    [showOk]="isCountFocus"
+    [showAdd]="!isCountFocus"
+  ></app-fram-numpad>
+  <mat-dialog-actions>
+    <button
+      mat-raised-button
+      class="done-button"
+      [mat-dialog-close]="data.countsWeights"
+    >
+      Done with <br />Counts/ Weights
+    </button>
+  </mat-dialog-actions>
+</div>

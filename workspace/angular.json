@@ -1,0 +1,452 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "",
+  "projects": {
+    "obs-electron": {
+      "root": "apps/obs-electron/",
+      "sourceRoot": "apps/obs-electron/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:class": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:component": {
+          "style": "scss",
+          "skipTests": true
+        },
+        "@nrwl/schematics:directive": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:guard": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:module": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:pipe": {
+          "skipTests": true
+        },
+        "@nrwl/schematics:service": {
+          "skipTests": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/obs-electron",
+            "index": "apps/obs-electron/src/index.html",
+            "main": "apps/obs-electron/src/main.ts",
+            "polyfills": "apps/obs-electron/src/polyfills.ts",
+            "tsConfig": "apps/obs-electron/tsconfig.app.json",
+            "assets": [
+              "apps/obs-electron/src/favicon.ico",
+              "apps/obs-electron/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/obs-electron/src/styles.scss"
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/obs-electron/src/environments/environment.ts",
+                  "with": "apps/obs-electron/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "obs-electron:build",
+            "proxyConfig": "apps/obs-electron/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "obs-electron:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "obs-electron:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/obs-electron/tsconfig.app.json",
+              "apps/obs-electron/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/obs-electron/src/test.ts",
+            "tsConfig": "apps/obs-electron/tsconfig.spec.json",
+            "karmaConfig": "apps/obs-electron/karma.conf.js",
+            "polyfills": "apps/obs-electron/src/polyfills.ts",
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+            ],
+            "scripts": [],
+            "assets": []
+          }
+        }
+      }
+    },
+    "obs-electron-e2e": {
+      "root": "apps/obs-electron-e2e",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/obs-electron-e2e/protractor.conf.js",
+            "devServerTarget": "obs-electron:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "obs-electron:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/obs-electron-e2e/tsconfig.e2e.json",
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    },
+    "dev-auth-proxy": {
+      "root": "apps/dev-auth-proxy",
+      "sourceRoot": "apps/dev-auth-proxy/src",
+      "projectType": "application",
+      "prefix": "dev-auth-proxy",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/builders:node-build",
+          "options": {
+            "outputPath": "dist/apps/dev-auth-proxy",
+            "main": "apps/dev-auth-proxy/src/main.ts",
+            "tsConfig": "apps/dev-auth-proxy/tsconfig.app.json",
+            "assets": ["apps/dev-auth-proxy/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/dev-auth-proxy/src/environments/environment.ts",
+                  "with": "apps/dev-auth-proxy/src/environments/environment.prod.ts"
+                }
+              ],
+              "externalDependencies": "none"
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/builders:node-execute",
+          "options": {
+            "buildTarget": "dev-auth-proxy:build",
+            "args": ["--secure"]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/dev-auth-proxy/tsconfig.app.json",
+              "apps/dev-auth-proxy/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "apps/dev-auth-proxy/jest.config.js",
+            "tsConfig": "apps/dev-auth-proxy/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "bn-models": {
+      "root": "libs/bn-models",
+      "sourceRoot": "libs/bn-models/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-models/tsconfig.lib.json",
+              "libs/bn-models/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/bn-models/src/test.ts",
+            "tsConfig": "libs/bn-models/tsconfig.spec.json",
+            "karmaConfig": "libs/bn-models/karma.conf.js"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
+        }
+      }
+    },
+    "bn-security": {
+      "root": "libs/bn-security",
+      "sourceRoot": "libs/bn-security/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-security/tsconfig.lib.json",
+              "libs/bn-security/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/builders:jest",
+          "options": {
+            "jestConfig": "libs/bn-security/jest.config.js",
+            "tsConfig": "libs/bn-security/tsconfig.spec.json",
+            "setupFile": "libs/bn-security/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
+        }
+      }
+    },
+    "bn-auth": {
+      "root": "libs/bn-auth",
+      "sourceRoot": "libs/bn-auth/src",
+      "projectType": "library",
+      "prefix": "boatnet",
+      "architect": {
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/bn-auth/tsconfig.lib.json",
+              "libs/bn-auth/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "libs/bn-auth/src/test.ts",
+            "tsConfig": "libs/bn-auth/tsconfig.spec.json",
+            "karmaConfig": "libs/bn-auth/karma.conf.js"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "styleext": "scss"
+        }
+      }
+    },
+    "obs-web": {
+      "root": "apps/obs-web/",
+      "sourceRoot": "apps/obs-web/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/obs-web",
+            "index": "apps/obs-web/src/index.html",
+            "main": "apps/obs-web/src/main.ts",
+            "polyfills": "apps/obs-web/src/polyfills.ts",
+            "tsConfig": "apps/obs-web/tsconfig.app.json",
+            "assets": [
+              "apps/obs-web/src/favicon.ico",
+              "apps/obs-web/src/assets"
+            ],
+            "styles": [
+              "apps/obs-web/src/styles.scss",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeng/resources/themes/omega/theme.scss",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+            ],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/obs-web/src/environments/environment.ts",
+                  "with": "apps/obs-web/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "obs-web:build",
+            "proxyConfig": "apps/obs-web/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "obs-web:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "obs-web:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/obs-web/tsconfig.app.json",
+              "apps/obs-web/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/obs-web/src/test.ts",
+            "tsConfig": "apps/obs-web/tsconfig.spec.json",
+            "karmaConfig": "apps/obs-web/karma.conf.js",
+            "polyfills": "apps/obs-web/src/polyfills.ts",
+            "styles": [
+              "apps/obs-web/src/styles.scss",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeng/resources/themes/omega/theme.scss",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+            ],
+            "scripts": [],
+            "assets": []
+          }
+        }
+      }
+    },
+    "obs-web-e2e": {
+      "root": "apps/obs-web-e2e",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/obs-web-e2e/protractor.conf.js",
+            "devServerTarget": "obs-web:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "obs-web:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/obs-web-e2e/tsconfig.e2e.json",
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "warnings": {
+      "typescriptMismatch": false,
+      "versionMismatch": false
+    },
+    "defaultCollection": "@nrwl/schematics"
+  },
+  "schematics": {
+    "@nrwl/schematics:application": {
+      "style": "scss"
+    },
+    "@nrwl/schematics:library": {
+      "style": "scss"
+    }
+  },
+  "defaultProject": "obs-electron"
+}
