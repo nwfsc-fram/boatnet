@@ -321,7 +321,13 @@
               "apps/obs-web/src/favicon.ico",
               "apps/obs-web/src/assets"
             ],
-            "styles": ["apps/obs-web/src/styles.scss"],
+            "styles": [
+              "apps/obs-web/src/styles.scss",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeng/resources/themes/omega/theme.scss",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+            ],
             "scripts": [],
             "es5BrowserSupport": true
           },
@@ -387,7 +393,13 @@
             "tsConfig": "apps/obs-web/tsconfig.spec.json",
             "karmaConfig": "apps/obs-web/karma.conf.js",
             "polyfills": "apps/obs-web/src/polyfills.ts",
-            "styles": [],
+            "styles": [
+              "apps/obs-web/src/styles.scss",
+              "./node_modules/primeicons/primeicons.css",
+              "./node_modules/primeng/resources/primeng.min.css",
+              "./node_modules/primeng/resources/themes/omega/theme.scss",
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
+            ],
             "scripts": [],
             "assets": []
           }

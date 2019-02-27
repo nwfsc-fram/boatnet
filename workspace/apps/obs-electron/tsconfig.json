@@ -1,7 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["jasmine"]
+    "types": ["jasmine"],
+    "downlevelIteration": true
   },
   "include": ["**/*.ts"]
 }

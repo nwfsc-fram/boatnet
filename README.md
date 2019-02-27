@@ -91,8 +91,11 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 
 This project uses the Nx workspace tool from nrwl to make use of the "monorepo" development environment.
 
+All boatnet apps, libs, and tools are moved to the 'workspace' directory.
+
 - Overview: https://nx.dev/getting-started/what-is-nx
-- For specific use of the nx tools, see [this README.](./workspace/README.md)
+- Install Nx schematics globally `npm install -g @nrwl/schematics'
+- For boatnet specific use of the nx tools, see [this README.](./workspace/README.md)
 
 ## Contributing Guidelines
 

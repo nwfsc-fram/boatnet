@@ -344,7 +344,7 @@ export class TallyService {
     });
 
     // set catch #'s
-    // Note: added "downlevelIteration": true to tsconfig.app.json for map iteration option
+    // Note: added "downlevelIteration": true to tsconfig.json for map iteration option
     for (const entry of tallyData.entries()) {
       entry[1].catch = entry[0] + 1;
     }
