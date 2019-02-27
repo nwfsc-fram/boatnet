@@ -18,27 +18,40 @@ Nx is designed to help you create and build enterprise grade Angular application
 
 Run `ng generate app myapp` to generate an application. When using Nx, you can create multiple applications and libraries in the same CLI workspace. Read more [here](http://nrwl.io/nx).
 
+The Angular Console application https://angularconsole.com/ has a UI for running the Nx schematics and works well.
+
 ## Development server
 
-Run `ng serve --project=myapp` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve myapp` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
 Run `ng generate component component-name --project=myapp` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
+The Angular Console is useful for configuring parameters here.
+
 ## Build
 
-Run `ng build --project=myapp` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `ng build myapp` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Running unit tests
+## Common Boatnet Nx Operations to try
+* Auto-format your code prior to commit
+```
+npm run format
+```
+* Create a library
+```
+ng generate library bn-example
+```
+  * To use, simply import '@boatnet/bn-example' in your code. See libs/bn-auth and libs/bn-models for examples.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+* Detect which apps your changes affect https://nx.dev/guides/monorepo-affected
+```
+npm run affected:build -- --base=master
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```
+* Dependency graphs for libraries and apps
+```
+npm run dep-graph
+npm run affected:dep-graph -- --base=master
+```
