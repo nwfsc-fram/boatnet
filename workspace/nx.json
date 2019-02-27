@@ -25,6 +25,12 @@
     },
     "bn-auth": {
       "tags": []
+    },
+    "obs-web": {
+      "tags": []
+    },
+    "obs-web-e2e": {
+      "tags": []
     }
   }
 }

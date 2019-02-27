@@ -104,9 +104,7 @@
               "apps/obs-electron/tsconfig.app.json",
               "apps/obs-electron/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -146,9 +144,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "apps/obs-electron-e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -166,9 +162,7 @@
             "outputPath": "dist/apps/dev-auth-proxy",
             "main": "apps/dev-auth-proxy/src/main.ts",
             "tsConfig": "apps/dev-auth-proxy/tsconfig.app.json",
-            "assets": [
-              "apps/dev-auth-proxy/src/assets"
-            ]
+            "assets": ["apps/dev-auth-proxy/src/assets"]
           },
           "configurations": {
             "production": {
@@ -189,9 +183,7 @@
           "builder": "@nrwl/builders:node-execute",
           "options": {
             "buildTarget": "dev-auth-proxy:build",
-            "args": [
-              "--secure"
-            ]
+            "args": ["--secure"]
           }
         },
         "lint": {
@@ -201,9 +193,7 @@
               "apps/dev-auth-proxy/tsconfig.app.json",
               "apps/dev-auth-proxy/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -228,9 +218,7 @@
               "libs/bn-models/tsconfig.lib.json",
               "libs/bn-models/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -261,9 +249,7 @@
               "libs/bn-security/tsconfig.lib.json",
               "libs/bn-security/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -294,9 +280,7 @@
               "libs/bn-auth/tsconfig.lib.json",
               "libs/bn-auth/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         },
         "test": {
@@ -311,6 +295,128 @@
       "schematics": {
         "@nrwl/schematics:component": {
           "styleext": "scss"
+        }
+      }
+    },
+    "obs-web": {
+      "root": "apps/obs-web/",
+      "sourceRoot": "apps/obs-web/src",
+      "projectType": "application",
+      "prefix": "boatnet",
+      "schematics": {
+        "@nrwl/schematics:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/obs-web",
+            "index": "apps/obs-web/src/index.html",
+            "main": "apps/obs-web/src/main.ts",
+            "polyfills": "apps/obs-web/src/polyfills.ts",
+            "tsConfig": "apps/obs-web/tsconfig.app.json",
+            "assets": [
+              "apps/obs-web/src/favicon.ico",
+              "apps/obs-web/src/assets"
+            ],
+            "styles": ["apps/obs-web/src/styles.scss"],
+            "scripts": [],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/obs-web/src/environments/environment.ts",
+                  "with": "apps/obs-web/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "obs-web:build",
+            "proxyConfig": "apps/obs-electron/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "obs-web:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "obs-web:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/obs-web/tsconfig.app.json",
+              "apps/obs-web/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/obs-web/src/test.ts",
+            "tsConfig": "apps/obs-web/tsconfig.spec.json",
+            "karmaConfig": "apps/obs-web/karma.conf.js",
+            "polyfills": "apps/obs-web/src/polyfills.ts",
+            "styles": [],
+            "scripts": [],
+            "assets": []
+          }
+        }
+      }
+    },
+    "obs-web-e2e": {
+      "root": "apps/obs-web-e2e",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "apps/obs-web-e2e/protractor.conf.js",
+            "devServerTarget": "obs-web:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "obs-web:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "apps/obs-web-e2e/tsconfig.e2e.json",
+            "exclude": ["**/node_modules/**"]
+          }
         }
       }
     }
