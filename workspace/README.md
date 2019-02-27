@@ -37,7 +37,7 @@ The Angular Console is useful for configuring parameters here.
 Run `ng build myapp` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
 ## Common Boatnet Nx Operations to try
-* Auto-format your code prior to commit
+* Auto-format your code prior to commit, to avoid linting errors etc:
 ```
 npm run format
 ```

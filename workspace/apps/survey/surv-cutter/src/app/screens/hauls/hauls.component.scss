@@ -1,0 +1,12 @@
+table {
+  width: 100%;
+}
+mat-button-toggle {
+  height: 60px;
+  // line-height: 60px;
+  // display: table-cell;
+  // text-align: center;
+  display: inline-flex;
+  align-items: flex-end;
+  // vertical-align: center;
+}
