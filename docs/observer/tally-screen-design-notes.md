@@ -86,7 +86,7 @@ to their eyes.
 
 #### Same initial screen reversed for use in right hand
 
-![InitialScreenOnRightHand](screenshots/tally_initial_tablet_in_right_hand_setting.png)
+![InitialScreenOnRightHand](../../img/wiki/observer/tally_initial_tablet_in_right_hand_setting.png)
 
 Note the order of the button in the control row is reversed as well,
 with the most frequently used button, all-tallies-for, placed
@@ -94,7 +94,7 @@ nearest the ergonomic edge.
 
 #### Setting Screen
 
-![Settings](screenshots/tally_settings_options.png)
+![Settings](../../img/wiki/observer/tally_settings_options.png)
 
 The tablet in left hand or in right hand is discussed above.
 
@@ -120,7 +120,7 @@ The highlight of a decremented tally button is different
 from an increment: an orange outline rather than white and
 the text is underlined:
 
-![TallyDecrementMode](screenshots/tally_decrement_tally_mode.png)
+![TallyDecrementMode](../../img/wiki/observer/tally_decrement_tally_mode.png)
 
 The highlighting in the prototype of both the last incremented and the last
 decremented tally buttons is likely too subtle for the harsh
@@ -135,7 +135,7 @@ and an unsuccessful decrement when the count has already reached zero.
 When the rightmost button in the default control row, the "All Tallies For ..."
 button, is pressed, all the buttons in the grid are set to blinking
 so that a button for that species can be selected:
-![x](screenshots/tally_all_tallies_for_select.png)
+![x](../../img/wiki/observers/tally_all_tallies_for_select.png)
 
 After a species is selected, the contents of the control row change
 to the full set of discard reasons for that species, with current tally counts:
@@ -147,12 +147,12 @@ are highlighted (thick border).
 ### Modify grid layout
 When the "Modify Layout" button of the default control row is pressed,
 the control row is used to display all the modify options:
-![x](screenshots/tally_modify_layout_options.png)
+![x](../../img/wiki/observer/tally_modify_layout_options.png)
 
 #### Modify grid layout: add button to already present species
 When the "Add Tally" button is pressed, all of the grid tally buttons
 are set to blinking:
-![x](screenshots/tally_add_tally_choose_species.png)
+![x](../../img/wiki/observer/tally_add_tally_choose_species.png)
 
 The observer clicks one to choose a species. After the species is chosen,
 the control row shows all the discard reasons for that species - without
@@ -163,12 +163,12 @@ The user selects a discard reason not already in the grid.
 In this example, the observer selects "REG" (Regulatory),
 at which point all the empty cells in the grid are set to blinking:
 
-![x](screenshots/tally_add_tally_choose_location.png)
+![x](../../img/wiki/observer/tally_add_tally_choose_location.png)
 
 In this example, the observer selects the second row from the top
 and the fourth column from the left:
 
-![x](screenshots/tally_add_tally_complete_highlight_til_first_click.png)
+![x](../../img/wiki/observer/tally_add_tally_complete_highlight_til_first_click.png)
 
 The new tally button is placed and temporarily highlighted.
 The highlight goes away with the first click on the grid.
@@ -182,15 +182,15 @@ After the observer enters a species abbreviation and clicks OK,
 the control row displays all the possible discard reasons, and retain,
 for that species. The reasons don't show a tally count. The tally
 reasons are all set blinking, inviting the observer to chooose one:
-![x](screenshots/tally_button_add_choose_discard_reason.png)
+![x](../../img/wiki/observer/tally_button_add_choose_discard_reason.png)
 
 After the observer selects a reason (here "Reg"), the empty cells in the grid
 are all set to blinking, inviting the observer to select where then new
 tally button is to be placed:
-![x](screenshots/tally_button_add_choose_location.png)
+![x](../../img/wiki/observer/tally_button_add_choose_location.png)
 
 In this example, the observer chooses the bottom left:
-![x](screenshots/tally_button_added_highlight_til_first_click.png)
+![x](../../img/wiki/observer/tally_button_added_highlight_til_first_click.png)
 The newly added tally button is temporarily highlighted (highlight removed
 on the next mouse click).
 
@@ -206,12 +206,12 @@ The first two:
 The control row content is changed to all the discard reasons, and retain,
 all set to blinking:
 
-![x](screenshots/tally_add_temp_species_choose_DR.png)
+![x](../../img/wiki/observer/tally_add_temp_species_choose_DR.png)
 
 When the observer chooses a reason (the third click), a clearly temporary names
 is assigned and a location in the grid is assigned (as near as possible
 to bottom left, row major):
-![x](screenshots/tally_add_temp_species_location_assigned.png)
+![x](../../img/wiki/observer/tally_add_temp_species_location_assigned.png)
 
 #### Modify grid layout: name a temporary species
 The "Name Temp Species" button is enabled only if the grid contains
@@ -220,12 +220,12 @@ at least one temporary button is in the grid.
 When the observer clicks the "Name Temp Species" all of the temporary
 tally buttons (with an abbreviation in the form "(TEMP1)" are set
 to blinking.
-![x](screenshots/tally_name_temp_species_choose.png)
+![x](../../img/wiki/observer/tally_name_temp_species_choose.png)
 
 When the observer selects a temporary button, a pop-up window to allow
 an actual species abbreviation will be displayed. (This prototype
 doesn't yet have a species pulldown):
-![x](screenshots/tally_name_temp_species_enter.png)
+![x](../../img/wiki/observer/tally_name_temp_species_enter.png)
 
 After entering a species abbreviation and clicking OK, the temporary
 tile is renamed (not shown).
@@ -234,7 +234,7 @@ tile is renamed (not shown).
 When the observer clicks the "Delete Tally" button, all tally buttons
 in the grid with a zero count are set to blinking:
 
-![x](screenshots/tally_delete_choose_zero_only.png)
+![x](../../img/wiki/observer/tally_delete_choose_zero_only.png)
 
 When the observer clicks on a tally button, it is removed from the grid
 (not shown)
@@ -242,16 +242,16 @@ When the observer clicks on a tally button, it is removed from the grid
 #### Modify grid layout: move a tally button
 When the observer clicks the "Move Tally" button, all tally buttons
 in the grid are set blinking:
-![x](screenshots/tally_move_choose.png)
+![x](../../img/wiki/observer/tally_move_choose.png)
 
 When the observer chooses a button to move, the chosen button is highlighted
 (here ABCD in the bottom left corner) and all empty cells are set to blinking:
-![x](screenshots/tally_move_choose_dest.png)
+![x](../../img/wiki/observer/tally_move_choose_dest.png)
 
 When the observer chooses an empty cell (here the third row from the top
 and the fourth column from the right), the tally button is moved there:
 
-![x](screenshots/tally_move_complete.png)
+![x](../../img/wiki/observer/tally_move_complete.png)
 
 ### Tally History
 
@@ -259,7 +259,7 @@ Brought up by clicking the "Tally Hist" button in the
 bottom blue bar. Placed away from the ergonomic edge
 (tablet-in-right-hand mode places on right side).
 
-![x](screenshots/tally_history.png)
+![x](../../img/wiki/observer/tally_history.png)
 
 Note absence of OK button: click anywhere out of tally history
 window will dismiss the popup.
@@ -285,7 +285,7 @@ buttons.
 
 I looked at 11K fixed gear sets from 2014 to 2017 inclusive:
 
-![x](screenshots/tally_button_count_distribution.png)
+![x](../../img/wiki/observer/tally_button_count_distribution.png)
 
 Summary
 * A 8x4 grid would handle all but 4 of the 11K+ sets on one page, assuming all 32 cells were used.
