@@ -18,7 +18,7 @@ of discard tallies: Market, Regulatory, Predation, and Drop.
 
 ## Initial Screen
 
-![InitialScreenOnLeftHand](screenshots/tally_initial_screen.png)
+![InitialScreenOnLeftHand](../../img/wiki/observer/tally_initial_screen.png)
 
 There are four sections in the tally screen:
 * A standard navigation and title bar at the top
