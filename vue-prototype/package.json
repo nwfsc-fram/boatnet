@@ -1,4 +1,18 @@
 {
   "private": "true",
-  "workspaces": ["apps/dev-auth-server", "libs/bn-security"]
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "del-dist": "lerna exec --parallel -- del-cli dist",
+    "prebuild": "yarn del-dist",
+    "build": "lerna exec -- babel src -d dist",
+    "start": "node packages/weather-app/dist/weather-app"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "del-cli": "^1.1.0",
+    "lerna": "^3.13.1"
+  }
 }

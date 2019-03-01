@@ -1,6 +1,7 @@
 # Working with Yarn Workspaces
 # [ Work in Progress ]
 
+
 ## Directory Descriptions
 * `apps` Applications
 * `libs` Libraries
@@ -26,15 +27,6 @@ mkdir [apps,libs,tools]/my-thing && cd [apps,libs,tools]/my-thing
 yarn init -y
 ```
 
-* Add your new app/lib/tool to the workspace package.json "workspaces" array.
-```
-{
-    ...
-"workspaces": ["apps/dev-auth-server", ..., "apps/your-app"]
-    ...
-}
-```
-
 * Add cross-env and other dependencies to your new `package.json`:
 ```
 {
@@ -52,3 +44,5 @@ yarn init -y
 https://medium.com/justfrontendthings/how-to-create-and-publish-your-own-vuejs-component-library-on-npm-using-vue-cli-28e60943eed3
 
 https://medium.com/naresh-bhatia/sharing-ui-components-with-lerna-and-yarn-workspaces-be1ebca06efe
+
+https://github.com/nareshbhatia/lerna-workspaces-concepts
