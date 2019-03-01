@@ -15,7 +15,9 @@ function login(username: string, password: string) {
     body: JSON.stringify({ username, password })
   };
 
-  return fetch(`${apiUrl}/api/login`, requestOptions)
+  //  return fetch(`${apiUrl}/api/login`, requestOptions)
+
+  return fetch(`/api/login`, requestOptions)
     .then(handleResponse)
     .then((user) => {
       // login successful if there's a jwt token in the response
