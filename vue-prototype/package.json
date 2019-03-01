@@ -1,0 +1,4 @@
+{
+  "private": "true",
+  "workspaces": ["apps/dev-auth-server", "libs/bn-security"]
+}
