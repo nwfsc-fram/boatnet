@@ -11,7 +11,7 @@ observer/obs-electron/build/config.gypi
 
 
 # dependencies
-/node_modules
+**/node_modules
 
 # IDEs and editors
 /.idea
@@ -42,5 +42,7 @@ testem.log
 .DS_Store
 Thumbs.db
 observer/.idea/
+
+# user-config
 **/authProxyConfig.json
 **/dbConfig.json
