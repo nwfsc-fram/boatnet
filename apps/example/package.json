@@ -10,7 +10,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@boatnet/bn-utilbn-util": "file:../../libs/bn-util",
+    "@boatnet/bn-util": "file:../../libs/bn-util",
     "register-service-worker": "^1.5.2",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",

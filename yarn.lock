@@ -592,7 +592,8 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@boatnet/bn-utilbn-util@file:libs/bn-util":
+
+"@boatnet/bn-util@file:libs/bn-util":
   version "0.1.0"
 
 "@cypress/listr-verbose-renderer@0.4.1":

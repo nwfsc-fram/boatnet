@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "main": "index.ts",
   "types": "index.d.ts",
-  "private": "true",
+  "private": true,
   "scripts": {
     "build": "tsc index.ts -d --module commonjs --outDir dist/"
   },
