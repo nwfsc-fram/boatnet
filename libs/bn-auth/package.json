@@ -1,0 +1,27 @@
+{
+  "name": "@boatnet/bn-auth",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./components/index.ts",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build ./src/components/index.ts",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@types/pouchdb-browser": "^6.1.3",
+    "vue": "^2.6.6",
+    "vue-class-component": "^6.0.0",
+    "vue-property-decorator": "^7.0.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-typescript": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "fibers": "^3.1.1",
+    "sass": "^1.16.0",
+    "sass-loader": "^7.1.0",
+    "typescript": "^3.0.0",
+    "vue-template-compiler": "^2.5.21"
+  }
+}

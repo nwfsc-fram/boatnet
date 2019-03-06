@@ -42,9 +42,9 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 - Mac: Ensure read/write access to /usr/local/lib/node_modules/npm/node_modules then run `yarn global add node-gyp`
 
 4. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
-5. Run `yarn install` from that directory. 
+5. Run `yarn install` from that directory.
 6. (OPTIONAL) In windows, you should run this from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-7. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve` 
+7. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve`
 8. See specific `lerna` instructions below.
 
 ## Further Development Setup
@@ -104,7 +104,7 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
   * `lerna add whatever-package` (Add a single dependency to matched packages)
-  
+
 * For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
   * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
 ```
@@ -116,7 +116,7 @@ yarn install
 npm install -g lerna
 ```
   * If this isn't an option for you (permissions or whatever,) you can use `npx lerna <command>` for the lerna commands instead.
-  
+
 * Lerna is already configured for boatnet, see the root `lerna.json` and `package.json` for the specifics.
 * Lerna commands can be executed from any folder in the project
 * Yarn doesn't use `package-lock.json` files. If you see one of these, you can delete it. It might indicate that you accidentally used npm.
@@ -143,10 +143,12 @@ git add .
 ```
 lerna bootstrap
 ```
-* Add whatever dependencies using `lerna`.  like this. Note that these dependencies are available to ALL projects, so you may not need to add anything:
+* Add whatever dependencies using `lerna`.  like this. Note that these dependencies are available to ALL projects, so you may not need to add anything. You should include the `@types` packages as well if available.
 ```
 lerna add crypto-js
+lerna add @types/crypto-js
 lerna add pouchdb-browser
+lerna add @types/pouchdb-browser
 (etc)
 ```
 * Run your app:
