@@ -1,8 +1,8 @@
 {
-  "name": "@boatnet/bn-util",
+  "name": "@boatnet/bn-auth",
   "version": "0.1.0",
-  "main": "index.ts",
-  "types": "index.d.ts",
+  "main": "src/index.ts",
+  "types": "src/index.d.ts",
   "private": true,
   "scripts": {
     "build": "tsc index.ts -d --module commonjs --outDir dist/"

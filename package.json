@@ -1,14 +1,14 @@
 {
-  "private": "true",
+  "private": true,
   "workspaces": [
     "apps/*",
-    "libs/*"
+    "libs/*",
+    "tools/*"
   ],
   "scripts": {
     "del-dist": "lerna exec --parallel -- del-cli dist",
     "prebuild": "yarn del-dist",
-    "build": "lerna exec -- babel src -d dist",
-    "start": "node packages/weather-app/dist/weather-app"
+    "build": "lerna exec -- babel src -d dist"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

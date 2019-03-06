@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "obs-wcgop-optecs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,6 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@boatnet/bn-util": "file:../../libs/bn-util",
     "crypto-js": "^3.1.9-1",
     "pouchdb-browser": "^7.0.0",
     "register-service-worker": "^1.5.2",
@@ -36,15 +35,5 @@
     "sass-loader": "^7.1.0",
     "typescript": "^3.0.0",
     "vue-template-compiler": "^2.5.21"
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not ie <= 8"
-  ]
+  }
 }
