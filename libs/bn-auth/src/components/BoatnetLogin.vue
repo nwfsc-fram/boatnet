@@ -1,21 +1,15 @@
 <template>
   <div class="hello">
-    {{ msg }}
-    <BoatnetLogin/>
+    <h1>TODO: Login Screen</h1>
   </div>
 </template>
 
-
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TESTING_123, BoatnetExample } from '@boatnet/bn-util';
-import PouchDB from 'pouchdb-browser';
-
-const thing: BoatnetExample = { test: TESTING_123 };
 
 @Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg = thing.test;
+export default class BoatnetLogin extends Vue {
+
 }
 </script>
 
