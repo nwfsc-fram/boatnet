@@ -13,21 +13,23 @@ For those only interested in running the project follow the [How to build and ru
 
 Boatnet contains multiple projects located in different directories. The different projects are listed below.
 
-### Observer Tablet
+### OPTECS (Observer Program Technology Enhanced Collection System)
 
-**Directory**: apps/obs-electron
+**Directory**: apps/obs-wcgop-optecs
 
 A tablet application used by observers to log information about fish caught on board. Observers can record stats such as weight, count, species type, and much more. The data collected is used to estimate how many fish can be sustainably caught.
 
 ### Observer Mobile App
 
-**Directory**: observer/obs-web
+**Directory**: apps/obs-web
 
 A mobile app for our observer program where captains can log their trips and then see whether they are selected for observer coverage or not.
 
 ### Survey
 
-**Directory**: survey/surv-cutter
+**Directory**: apps/surv-*
+
+Survey applications
 
 ## How to build and run
 
@@ -41,7 +43,8 @@ A mobile app for our observer program where captains can log their trips and the
 4. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
 5. Run `yarn install` from that directory. 
 6. (OPTIONAL) In windows, you should run this from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-7. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `npm run start` [TODO expand upon tihs when yarn workspaces are configured]
+7. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve` 
+8 See specific `lerna` instructions below.
 
 ## Further Development Setup
 
@@ -95,51 +98,58 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 5. Create a new Pull Request
    Specific detailed instructions can be found [here](./CONTRIBUTING.md)
 
-# Working with Yarn Workspaces
-# [ Work in Progress ]
-
-
-## Directory Descriptions
-* `apps` Applications
-* `libs` Libraries
-* `tools` Tools
-
-## Creating a new app, tool, or library
-For Vue.js apps or libraries:
+## Lerna + Yarn Workspaces
+* https://github.com/lerna/lerna
+* You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
+  * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
+  * `lerna add whatever-package` (Add a single dependency to matched packages)
+  
+* For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
+  * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
 ```
-cd apps
-vue create app-name
-# or,
-cd libs
-vue create library-name
-
-cd whatever-name
-# ? vue add @o3o/packages
+cd /c/git/boatnet/
+yarn install
 ```
-* Be sure to manually select features to specify TypeScript.
-
-For plain ol' node.js apps/ tools etc:
+* [Required] Install lerna globally
 ```
-mkdir [apps,libs,tools]/my-thing && cd [apps,libs,tools]/my-thing
-yarn init -y
+npm install -g lerna
 ```
+  * If this isn't an option for you (permissions or whatever,) you can use `npx lerna <command>` for the lerna commands instead.
+  
+* Lerna is already configured for boatnet, see the root `lerna.json` and `package.json` for the specifics.
+* Lerna commands can be executed from any folder in the project
+* Yarn doesn't use `package-lock.json` files. If you see one of these, you can delete it. It might indicate that you accidentally used npm.
 
-* Add cross-env and other dependencies to your new `package.json`:
+### Creating and configuring dependencies for a new app, library, or tool:
+* Create a ticket and make a branch:
 ```
-{
-  "name": "workspace-a",
-  "version": "1.0.0",
-
-  "dependencies": {
-    "cross-env": "^5.2.0",
-    "bn-auth": "1.0.0"
-  }
-}
+git pull
+git checkout -b 'new-wcgop-optecs'
 ```
-
-* TODO these
-https://medium.com/justfrontendthings/how-to-create-and-publish-your-own-vuejs-component-library-on-npm-using-vue-cli-28e60943eed3
-
-https://medium.com/naresh-bhatia/sharing-ui-components-with-lerna-and-yarn-workspaces-be1ebca06efe
-
-https://github.com/nareshbhatia/lerna-workspaces-concepts
+* Create your app in apps/ (or lib in libs/, tool in tools/) and add to source control:
+```
+cd apps/
+vue create obs-wcgop-optecs
+cd obs-wcgop-optecs
+git add .
+```
+* Modify your new `package.json` to be private:
+```
+"private": true,
+```
+* Run lerna bootstrap. This adds your new project to our workspace (you only need to do this once for your new project. It searches for your new package.json.)
+  * This also replaces `npm install`/ `yarn install` for our workflow! You'll be using `lerna add` from now on.
+```
+lerna bootstrap
+```
+* Add whatever dependencies using `lerna`.  like this. Note that these dependencies are available to ALL projects, so you may not need to add anything:
+```
+lerna add crypto-js
+lerna add pouchdb-browser
+(etc)
+```
+* Run your app:
+```
+cd apps/obs-wcgop-optecs
+yarn serve
+```
