@@ -152,9 +152,10 @@ lerna run build
 * Add whatever dependencies using `lerna`.  like this. Note that these dependencies are available to ALL projects, so you may not need to add anything. You should include the `@types` packages as well if available.
 ```
 lerna add crypto-js
-lerna add @types/crypto-js
+lerna add --dev @types/crypto-js
 lerna add pouchdb-browser
-lerna add @types/pouchdb-browser
+lerna add --dev @types/pouchdb-browser
+lerna add something-weird --scope='obs-my-weird-app-only'
 (etc)
 ```
 * Run your app:
