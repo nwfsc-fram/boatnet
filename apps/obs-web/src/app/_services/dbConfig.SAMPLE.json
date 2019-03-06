@@ -1,9 +1,0 @@
-{
-  "authUrl": "",
-  "note": "Leave authUrl blank for localhost proxy (see proxy.json)",
-  "boatnet_url": "http://localhost:5984/boatnet-dev",
-  "readonly_data_username": "Get these from Fram Data team",
-  "readonly_data_password": "",
-  "readwrite_data_username": "",
-  "readwrite_data_password": ""
-}

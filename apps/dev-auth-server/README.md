@@ -1,9 +1,16 @@
 # Development Auth Server
 # dev-auth-proxy
 
-A temporary auth server for use with developing boatnet apps without connecting to a live auth server.
+A dev-only auth server for use with developing boatnet apps without connecting to a live auth server.
 
-(Note that bn-temp-cert.pem and temp-\*-key.pem are just temporary certificates/keys and are NOT intended for any production use!)
+## Running server
+```
+yarn start
+```
+This will start an HTTPS (self-signed) dev auth server running on port 9000.
+
+## Certificates
+Note that bn-temp-cert.pem and temp-\*-key.pem are just temporary certificates/keys and are NOT intended for any production use!
 
 If you want to generate your own temporary keys for dev use,
 
@@ -13,12 +20,6 @@ openssl rsa -in temp-priv-key.pem -pubout > temp-pub-key.pem
 openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -subj //CN=localhost
 ```
 
-## Running server
-```
-npm install
-npm start
-```
-This will start an HTTPS (self-signed) dev auth server running on port 9000.
 
 ## Configuration file for Development Auth Proxy
 
