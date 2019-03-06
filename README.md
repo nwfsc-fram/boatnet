@@ -163,3 +163,8 @@ lerna add something-weird --scope='obs-my-weird-app-only'
 cd apps/obs-wcgop-optecs
 yarn serve
 ```
+* Delete all node_modules folders (might be useful)
+```
+lerna clean
+```
+See the [lerna docs](https://github.com/lerna/lerna) for more functionality
