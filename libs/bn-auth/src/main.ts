@@ -1,8 +1,12 @@
 import Vue from 'vue';
-import App from './App.vue';
+import BoatnetLogin from './components/BoatnetLogin.vue';
 
-Vue.config.productionTip = false;
+const Components: any = {
+  BoatnetLogin
+};
 
-new Vue({
-  render: (h) => h(App),
-}).$mount('#app');
+Object.keys(Components).forEach((name) => {
+  Vue.component(name, Components[name]);
+});
+
+export default Components;

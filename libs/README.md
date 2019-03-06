@@ -13,6 +13,7 @@ vue create bn-mylib
 "name": "@boatnet/bn-auth",
 ```
 * Remove `App.vue`
+* Remove `App.vue`
 * Create `components/index.ts` (use `bn-auth/components/index.ts` as an example)
 * Create component, e.g. `components/BoatnetLogin.ts`
   * For shared library components, use BoatnetXxxx.ts naming format
@@ -37,15 +38,17 @@ lerna bootstrap
 cd libs/bn-mylib
 yarn build
 ```
+or
+```
+lerna run build
+```
 
-## Using Your Library
-* Add reference via `lerna`:
-```
-cd apps/your-application
-lerna add @boatnet/bn-mylib
-```
-* Import, use, enjoy in your .Vue components:
+## Using Your Library (requires it to be built first!)
+Import, declare, enjoy in your .Vue components:
 ```...
-import { BoatnetLogin } from '@boatnet/bn-auth';
+import BoatnetLogin from '@boatnet/bn-auth';
+...
+Vue.component(BoatnetLogin);
 ...
 ```
+* [ TODO other steps to use in template]

@@ -2,10 +2,12 @@
   "name": "@boatnet/bn-auth",
   "version": "0.1.0",
   "private": true,
-  "main": "./components/index.ts",
+  "badMain": "./dist/BoatnetAuth.common.js",
+  "main": "./src/main.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build ./src/components/index.ts",
+    "build-bundle": "vue-cli-service build --target lib --name boatnet ./src/main.ts",
+    "build": "vue-cli-service build ./src/main.ts",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

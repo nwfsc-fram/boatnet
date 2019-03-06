@@ -8,7 +8,7 @@
   "scripts": {
     "del-dist": "lerna exec --parallel -- del-cli dist",
     "prebuild": "yarn del-dist",
-    "build": "lerna exec -- babel src -d dist"
+    "build": "lerna run build"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
