@@ -32,6 +32,7 @@ A mobile app for our observer program where captains can log their trips and the
 Survey applications
 
 ## How to build and run
+Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Install Node.js - download [here](https://nodejs.org/en/)
 2. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
@@ -44,7 +45,7 @@ Survey applications
 5. Run `yarn install` from that directory. 
 6. (OPTIONAL) In windows, you should run this from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
 7. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve` 
-8 See specific `lerna` instructions below.
+8. See specific `lerna` instructions below.
 
 ## Further Development Setup
 
