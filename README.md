@@ -109,10 +109,6 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 
 * For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
   * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
-```
-cd /c/git/boatnet/
-yarn install
-```
 * [Required] Install lerna globally
 ```
 npm install -g lerna
@@ -123,6 +119,12 @@ npm install -g lerna
 * Lerna commands can be executed from any folder in the project
 * Yarn doesn't use `package-lock.json` files. If you see one of these, you can delete it. It might indicate that you accidentally used npm.
 
+* Getting started:
+```
+cd /c/git/boatnet/
+lerna bootstrap
+lerna run build
+```
 ### Creating and configuring dependencies for a new app, library, or tool:
 * Create a ticket and make a branch:
 ```
