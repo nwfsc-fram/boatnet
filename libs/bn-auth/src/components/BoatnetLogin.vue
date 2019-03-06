@@ -1,6 +1,22 @@
 <template>
-  <div class="hello">
-    <h1>TODO: Login Screen</h1>
+  <div>
+    <h4>Login</h4>
+    <form @submit.prevent="login">
+      <label for="username">Username</label>
+      <div>
+        <input id="username" type="text" v-model="username" required>
+      </div>
+
+      <label for="password">Password</label>
+      <div>
+        <input id="password" type="password" v-model="password" required>
+      </div>
+
+      <label for="password-confirm">Confirm Password</label>
+      <div>
+        <input id="password-confirm" type="password" v-model="passwordConfirmation" required>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -9,7 +25,13 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class BoatnetLogin extends Vue {
+  private username = '';
+  private password = '';
+  private passwordConfirmation = '';
 
+  constructor() {
+    super();
+  }
 }
 </script>
 
