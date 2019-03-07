@@ -58,9 +58,24 @@ lerna run build
 
 Import, declare, enjoy in your .Vue components:
 
-```...
+```
+<template>
+  <div>
+    <boatnet-login/>
+  </div>
+</template>
+...
 import BoatnetLogin from '@boatnet/bn-auth';
 ...
 Vue.component(BoatnetLogin);
 ...
+
 ```
+## Useful Links
+
+* Refactoring from .js to .ts in Vue: https://johnpapa.net/vue-typescript/
+* Experimental Decorators Warning:
+  * Preferences -> settings, User settings.json, added
+"javascript.implicitProjectConfig.experimentalDecorators": true
+  * Restarted VSCode
+## Some Exam

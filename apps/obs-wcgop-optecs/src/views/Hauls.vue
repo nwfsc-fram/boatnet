@@ -1,21 +1,24 @@
 <template>
   <div>
-    <h1>{{programName}} Boatnet Hauls</h1>
+    <boatnet-hauls v-bind:program-info="WCGOPSettings"/>
   </div>
 </template>
 
+
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { BoatnetHaulsSettings } from '../models/BoatnetHaulsSettings';
+import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-hauls';
+
+Vue.component(BoatnetHauls);
 
 @Component
-export default class BoatnetHauls extends Vue {
-  get programName() {
-    // Computed Property
-    return this.programInfo ? this.programInfo.name : '';
-  }
-  @Prop() public programInfo: BoatnetHaulsSettings | undefined;
+export default class Hauls extends Vue {
+  private WCGOPSettings: BoatnetHaulsSettings;
 
+  constructor() {
+    super();
+    this.WCGOPSettings = { name: 'WCGOP' };
+  }
 }
 </script>
 
