@@ -47,7 +47,7 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 7. Run `lerna run build` (builds all apps and libraries.)
 8. (OPTIONAL) In windows, you should run this from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
 9. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve`
-10. See More specific `lerna` instructions below.
+10. See [specific `lerna` instructions](https://github.com/nwfsc-fram/boatnet#using-lerna) below.
 
 ## Further Development Setup
 
@@ -101,7 +101,7 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 5. Create a new Pull Request
    Specific detailed instructions can be found [here](./CONTRIBUTING.md)
 
-## Lerna + Yarn Workspaces
+## Using Lerna
 * https://github.com/lerna/lerna
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
