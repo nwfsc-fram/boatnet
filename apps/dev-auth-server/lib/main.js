@@ -24,11 +24,12 @@ var commandLineArgs = require('command-line-args');
 var optionDefinitions = [{ name: 'secure', type: Boolean }];
 var options = commandLineArgs(optionDefinitions);
 app.use(bodyParser.json()); // for parsing application/json
+var API_VERSION = 'v1';
 // REST API
 // Login
-app.route('/api/login').post(login_route_1.login);
+app.route('/api/' + API_VERSION + '/login').post(login_route_1.login);
 // Public Key (dev use only)
-app.route('/api/pubkey').get(pubkey_route_1.pubkey);
+app.route('/api/' + API_VERSION + '/pubkey').get(pubkey_route_1.pubkey);
 if (options.secure) {
     var httpsServer_1 = https.createServer({
         // Temporary Keys, not secret and publically shared
