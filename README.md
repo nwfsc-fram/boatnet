@@ -189,3 +189,8 @@ yarn serve
 lerna clean
 ```
 See the [lerna docs](https://github.com/lerna/lerna) for more functionality
+
+* Global package remove (careful)
+```
+lerna exec -- yarn remove my-package || lerna bootstrap 
+```
