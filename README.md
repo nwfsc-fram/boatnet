@@ -36,8 +36,10 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Install Node.js - download [here](https://nodejs.org/en/)
 
+2. Install `yarn`
+  * `npm install -g yarn`
 
-1. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
+3. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
 
 <details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
 <p>
@@ -53,7 +55,8 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 </p>
 </details>
 
-3. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
+  
+4. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
 
 1. Install `lerna` globally: `npm install -g lerna`
 
