@@ -41,7 +41,7 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 3. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
 
-<details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
+      * <details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
 <p>
 * These are optional steps, not currently required.
 
