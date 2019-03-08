@@ -35,19 +35,35 @@ Survey applications
 Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Install Node.js - download [here](https://nodejs.org/en/)
-2. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
-3. (OPTIONAL) Install node-gyp by launching visual studio code as administrator and running the following from a terminal (Ref: https://www.npmjs.com/package/node-gyp):
+
+
+1. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
+
+<details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
+<p>
+* These are optional steps, not currently required.
+
+1. (OPTIONAL) Install node-gyp by launching visual studio code as administrator and running the following from a terminal (Ref: https://www.npmjs.com/package/node-gyp):
 
 - Windows: `npm install -g windows-build-tools`
 - Mac: Ensure read/write access to /usr/local/lib/node_modules/npm/node_modules then run `yarn global add node-gyp`
 
-4. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
-5. Install `lerna` globally: `npm install -g lerna`
-6. Run `lerna bootstrap` (handles the `yarn install` automatically.)
-7. Run `lerna run build` (builds all apps and libraries.)
-8. (OPTIONAL) In windows, you should run this from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-9. Navigate to the project you need, e.g. `cd apps/dev-auth-proxy` and `yarn serve`
-10. See [specific `lerna` instructions](https://github.com/nwfsc-fram/boatnet#using-lerna) below.
+1. In windows, you should run the initial build from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
+
+</p>
+</details>
+
+3. Clone the repository: `git clone git@github.com:nwfsc-fram/boatnet.git`
+
+1. Install `lerna` globally: `npm install -g lerna`
+
+1. Run `lerna bootstrap` (handles the `yarn install` automatically.)
+
+1. Run `lerna run build` (builds all apps and libraries.)
+
+1. Navigate to the project you need, e.g. `cd apps/example` and `yarn serve`
+
+1. See more [specific `lerna` instructions](https://github.com/nwfsc-fram/boatnet#using-lerna) below.
 
 ## Further Development Setup
 
