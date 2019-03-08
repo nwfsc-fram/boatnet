@@ -100,12 +100,12 @@
 
 <script>
 export default {
-  name: 'LayoutDefault',
+    name: 'LayoutDefault',
 
-  data () {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop
+    data() {
+      return {
+        leftDrawerOpen: this.$q.platform.is.desktop
+      };
     }
-  }
-}
+  };
 </script>
