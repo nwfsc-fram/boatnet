@@ -1,11 +1,14 @@
 # Install and Configure Quasar 1.0.0 (Beta) with our Lerna Workspace + Typescript
-Note we are using 1.0.0. Older versions are not particularly Typescript friendly.
 
 https://v1.quasar-framework.org/
 
+* Note we are using 1.0.0. Older versions are not particularly Typescript friendly.
+* There are some issues that appear to be specific to our lerna monorepo configuration.
+
 ## Initial Installation (Vue CLI Integration)
+* Example for an app already generated via `vue create`:
 ```
-cd apps/obs-wcgop-optecs
+cd apps/example
 vue add quasar@beta
 vue invoke quasar
 ? Allow Quasar to replace App.vue, About.vue, Home.vue and (if available) router.js? Yes
@@ -17,16 +20,21 @@ vue invoke quasar
 ```
 
 ## Compilation Fixes
+* `failed to locate @import file ` error:
+  * Comment out imports with tilde format in `src/styles/**.styl`
+  * Add import of `quasar.min.css` in main.ts
 * Copied `postcss.config.js` to root `boatnet/` directory
   * https://github.com/quasarframework/vue-cli-plugin-quasar/issues/3
-* Commented out various quasar.styl imports, added import of `quasar.min.css` in main.ts
 * For the error `Cannot find module 'quasar'`:
   * https://github.com/quasarframework/vue-cli-plugin-quasar/issues/4
-  * Need to declare quasar types. In `shims-vue.d.ts`:
+  * Need to declare quasar type. In `shims-vue.d.ts`:
 ```
 declare module 'quasar'
-declare module 'quasar-framework/*'
 ```
 
 ## Linting Warning Fixes
+* Added to `tslint.json`:
+```
+    "trailing-comma": false
+```
 * Handled one by one. VS Code plugin doesn't autoformat `.vue` files, so might see if there's a plugin that works for that.
