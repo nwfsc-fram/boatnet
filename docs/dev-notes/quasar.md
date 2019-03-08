@@ -37,4 +37,4 @@ declare module 'quasar'
 ```
     "trailing-comma": false
 ```
-* Handled one by one. VS Code plugin doesn't autoformat `.vue` files, so might see if there's a plugin that works for that.
+* Used `vetur` VSC plugin for autoformat. [TODO: tweaks performed to Vetur]
