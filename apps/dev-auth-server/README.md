@@ -5,7 +5,7 @@ A dev-only auth server for use with developing boatnet apps without connecting t
 
 ## Running server
 ```
-yarn start
+yarn serve
 ```
 This will start an HTTPS (self-signed) dev auth server running on port 9000.
 

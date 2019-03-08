@@ -25,11 +25,12 @@ const options = commandLineArgs(optionDefinitions);
 
 app.use(bodyParser.json()); // for parsing application/json
 
+const API_VERSION = 'v1';
 // REST API
 // Login
-app.route('/api/login').post(login);
+app.route('/api/' + API_VERSION + '/login').post(login);
 // Public Key (dev use only)
-app.route('/api/pubkey').get(pubkey);
+app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
 
 if (options.secure) {
   const httpsServer = https.createServer(

@@ -10,6 +10,8 @@ observer/obs-electron/build/obs-ng
 observer/obs-electron/build/config.gypi
 
 
+# logs
+lerna-debug.log*
 # dependencies
 **/node_modules
 
