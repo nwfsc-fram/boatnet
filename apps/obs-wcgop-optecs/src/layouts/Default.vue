@@ -11,101 +11,106 @@
           icon="menu"
         />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-toolbar-title>Boatnet WCGOP OPTECS</q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>v0.0.0</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      content-class="bg-grey-2"
-    >
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list>
-        <q-item-label header>Navigation</q-item-label>
+
         <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="home" />
+            <q-icon name="note"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Home</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item to="/about" exact>
-          <q-item-section avatar>
-            <q-icon name="info" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>About</q-item-label>
+            <q-item-label>Notes</q-item-label>
           </q-item-section>
         </q-item>
 
-        <q-item-label header>Essential Links</q-item-label>
-        <q-item clickable tag="a" target="_blank" href="https://v1.quasar-framework.org">
+        <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="school" />
+            <q-icon name="settings"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Docs</q-item-label>
-            <q-item-label caption>v1.quasar-framework.org</q-item-label>
+            <q-item-label>Settings</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://github.com/quasarframework/">
+
+        <q-separator/>
+
+        <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="code" />
+            <q-icon name="cloud_upload"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Github</q-item-label>
-            <q-item-label caption>github.com/quasarframework</q-item-label>
+            <q-item-label>Upload Data</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable tag="a" target="_blank" href="http://chat.quasar-framework.org">
+
+        <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="chat" />
+            <q-icon name="settings_backup_restore"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Discord Chat Channel</q-item-label>
-            <q-item-label caption>chat.quasar-framework.org</q-item-label>
+            <q-item-label>External Backup</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://forum.quasar-framework.org">
+
+        <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="forum" />
+            <q-icon name="warning"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Forum</q-item-label>
-            <q-item-label caption>forum.quasar-framework.org</q-item-label>
+            <q-item-label>Trip Errors</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://twitter.com/quasarframework">
+
+        <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="rss_feed" />
+            <q-icon name="dialpad"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Twitter</q-item-label>
-            <q-item-label caption>@quasarframework</q-item-label>
+            <q-item-label>Sampling Assistant</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator/>
+
+        <q-item to="/" exact>
+          <q-item-section avatar>
+            <q-icon name="exit_to_app"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Logout</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator/>
+
+        <q-item to="/" exact>
+          <q-item-section>
+            <q-item-label>Last Sync: 3/8/2019 12:00</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
 export default {
-    name: 'LayoutDefault',
+  name: 'LayoutDefault',
 
-    data() {
-      return {
-        leftDrawerOpen: this.$q.platform.is.desktop
-      };
-    }
-  };
+  data() {
+    return {
+      leftDrawerOpen: this.$q.platform.is.desktop
+    };
+  }
+};
 </script>
