@@ -170,13 +170,13 @@ lerna bootstrap
 ```
 lerna run build
 ```
-* Add whatever dependencies using `lerna`.  like this. Note that these dependencies are available to ALL projects, so you may not need to add anything. You should include the `@types` packages as well if available.
+* Add whatever dependencies using `lerna add`, but note that these dependencies are available to ALL projects, so you will usually want to use the `--scope` flag. You should include the `@types` packages as well if available.
 ```
-lerna add crypto-js
-lerna add --dev @types/crypto-js
-lerna add pouchdb-browser
-lerna add --dev @types/pouchdb-browser
-lerna add something-weird --scope='obs-my-weird-app-only'
+lerna add crypto-js --scope='obs-wcgop-optecs'
+lerna add --dev @types/crypto-js --scope='obs-wcgop-optecs'
+lerna add pouchdb-browser --scope='example'
+lerna add --dev @types/pouchdb-browser --scope='example'
+lerna add @boatnet/bn-models   [this will install this dependency to all projects - use sparingly]
 (etc)
 ```
 * Run your app:
