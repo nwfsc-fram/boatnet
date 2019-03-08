@@ -188,9 +188,10 @@ yarn serve
 ```
 lerna clean
 ```
-See the [lerna docs](https://github.com/lerna/lerna) for more functionality
 
-* Global package remove (careful)
+* Global package remove (careful!) Useful if you accidentally globally add a package (instead of using `--scope`)
 ```
 lerna exec -- yarn remove my-package || lerna bootstrap 
 ```
+
+See the [lerna docs](https://github.com/lerna/lerna) for more functionality
