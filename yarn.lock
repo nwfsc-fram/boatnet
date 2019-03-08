@@ -595,15 +595,17 @@
 "@boatnet/bn-auth@file:libs/bn-auth":
   version "0.1.0"
   dependencies:
-    "@types/pouchdb-browser" "^6.1.3"
     vue "^2.6.6"
     vue-class-component "^6.0.0"
     vue-property-decorator "^7.0.0"
 
+"@boatnet/bn-models@file:libs/bn-models":
+  version "0.1.0"
+
 "@boatnet/bn-util@file:libs/bn-util":
   version "0.1.0"
   dependencies:
-    "@boatnet/bn-auth" "file:../../Users/Will.Smith/AppData/Local/Yarn/Cache/v1/npm-@boatnet/bn-auth"
+    "@boatnet/bn-auth" "file:../../Users/Will.Smith/AppData/Local/Yarn/Cache/v4/npm-@boatnet-bn-util-0.1.0-f6b9997e-7f07-4bed-8691-db39ad2ac4bb-1552074903548/node_modules/@boatnet/bn-auth"
     "@types/pouchdb-browser" "^6.1.3"
     crypto-js "^3.1.9-1"
     pouchdb-browser "^7.0.0"

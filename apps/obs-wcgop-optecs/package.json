@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@boatnet/bn-auth": "file:..\\..\\libs\\bn-auth",
+    "@boatnet/bn-models": "file:..\\..\\libs\\bn-models",
     "@boatnet/bn-util": "file:../../libs/bn-util",
     "@quasar/extras": "^1.0.0",
     "@types/pouchdb-browser": "^6.1.3",
