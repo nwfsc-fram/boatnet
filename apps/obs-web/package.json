@@ -1,5 +1,6 @@
 {
-  "name": "Obs-Web",
+  "name": "obs-web",
+  "description": "Observer Web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
