@@ -1,4 +1,4 @@
-// Unique fields of WCGOP hauls
+// WCGOP Haul
 import { BaseHaul } from '../_base/baseHaul';
 
 export const WCGOPHaulTypeName = 'wcgop-haul';
