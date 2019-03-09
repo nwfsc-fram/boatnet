@@ -1,6 +1,6 @@
 <template>
   <q-page padding>
-    <p>This is an about page</p>
+    <p>TODO: Settings Page</p>
   </q-page>
 </template>
 
@@ -8,5 +8,5 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class PageAbout extends Vue {}
+export default class PageSettings extends Vue {}
 </script>
