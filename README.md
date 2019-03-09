@@ -184,7 +184,7 @@ lerna add @boatnet/bn-models   [this will install this dependency to all project
 cd apps/obs-wcgop-optecs
 yarn serve
 ```
-* Delete all node_modules folders (might be useful)
+* Delete all node_modules folders. This is useful for library development and when VSC intellisense is confused.
 ```
 lerna clean
 ```
