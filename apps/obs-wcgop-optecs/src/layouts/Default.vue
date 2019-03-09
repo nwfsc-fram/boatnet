@@ -29,7 +29,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/about" exact>
+        <q-item to="/settings" exact>
           <q-item-section avatar>
             <q-icon name="settings"/>
           </q-item-section>
