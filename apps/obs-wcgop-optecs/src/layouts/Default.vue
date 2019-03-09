@@ -39,6 +39,16 @@
         </q-item>
 
         <q-separator/>
+        <q-item to="/hauls" exact>
+          <q-item-section avatar>
+            <q-icon name="shopping_basket"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Hauls</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator/>
 
         <q-item to="/" exact>
           <q-item-section avatar>

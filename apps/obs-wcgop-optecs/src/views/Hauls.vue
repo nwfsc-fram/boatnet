@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <q-page padding>
     <boatnet-hauls v-bind:program-info="WCGOPSettings"/>
-  </div>
+  </q-page>
 </template>
 
 
