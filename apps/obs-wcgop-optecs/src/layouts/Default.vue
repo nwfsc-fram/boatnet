@@ -78,7 +78,7 @@
 
         <q-separator/>
 
-        <q-item to="/" exact>
+        <q-item to="/login" exact>
           <q-item-section avatar>
             <q-icon name="exit_to_app"/>
           </q-item-section>
