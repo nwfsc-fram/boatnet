@@ -22,7 +22,7 @@ vue invoke quasar
 ## Compilation Fixes
 * `failed to locate @import file ` error:
   * Comment out imports with tilde format in `src/styles/**.styl`
-  * Add import of `quasar.min.css` in main.ts
+  * Add `import 'quasar/dist/quasar.min.css'` in main.ts
 * Copied `postcss.config.js` to root `boatnet/` directory
   * https://github.com/quasarframework/vue-cli-plugin-quasar/issues/3
 * For the error `Cannot find module 'quasar'`:
