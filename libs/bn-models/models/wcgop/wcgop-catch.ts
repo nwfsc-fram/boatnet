@@ -1,5 +1,5 @@
 // WCGOP Catch
-import { BaseCatch } from '../_base';
+import { BaseCatch } from '../_base/baseCatch';
 
 export const WCGOPCatchTypeName = 'wcgop-catch';
 
