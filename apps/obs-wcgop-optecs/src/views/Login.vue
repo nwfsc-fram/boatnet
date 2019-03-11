@@ -1,6 +1,8 @@
 <template>
   <div>
-    <boatnet-login/>
+    <q-page padding>
+      <boatnet-login/>
+    </q-page>
   </div>
 </template>
 
