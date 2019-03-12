@@ -1,23 +1,29 @@
 <template>
   <q-page padding>
-    <p>Current gear type: {{ currentGearType }}</p>
-    <p>Example Haul: {{ currentHaul }}</p>
+    <p>Current program: {{ currentProgram }}</p>
+    <p>Example Trip: {{ currentTrip }}</p>
   </q-page>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { WCGOPHaul, Port, getNowDate } from '@boatnet/bn-models';
+import {
+  WCGOPTrip,
+  WCGOPTripTypeName,
+  Port,
+  PortTypeName,
+  getNowDate
+} from '@boatnet/bn-models';
 
 @Component
 export default class PageHome extends Vue {
-  private example: WCGOPHaul;
+  private example: WCGOPTrip;
 
-  get currentGearType(): string {
-    return this.example ? this.example.gearType : '-';
+  get currentProgram(): string | undefined {
+    return this.example ? this.example.program : '-';
   }
 
-  get currentHaul(): string {
+  get currentTrip(): string {
     return this.example ? JSON.stringify(this.example) : '-';
   }
 
@@ -26,26 +32,22 @@ export default class PageHome extends Vue {
 
     const examplePort: Port = {
       _id: 'asdf',
-      type: 'port',
-      created_by: 'test',
-      created_date: getNowDate(),
-      name: 'Some Test Port'
+      type: PortTypeName,
+      createdBy: 'test',
+      createdDate: getNowDate(),
+      name: 'Test Port'
     };
 
     this.example = {
       _id: 'fake-id-123',
-      type: 'wcgop-haul',
-      created_by: 'test',
-      created_date: '2019',
-      gearType: 'Trawl',
-      startPort: {
-        port: examplePort,
-        date: 'test'
-      },
-      endPort: {
-        port: examplePort,
-        date: 'test'
-      },
+      type: WCGOPTripTypeName,
+      program: 'Catch Shares',
+      createdBy: 'test',
+      createdDate: getNowDate(),
+      departurePort: examplePort,
+      departureDate: getNowDate(),
+      returnPort: examplePort,
+      returnDate: getNowDate(),
       legacyData: {
         stuff: [1, 3, 4],
         other: 'test'

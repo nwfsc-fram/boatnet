@@ -19,7 +19,6 @@
 
     <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list>
-
         <q-item to="/" exact>
           <q-item-section avatar>
             <q-icon name="note"/>
@@ -35,6 +34,16 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Settings</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator/>
+        <q-item to="/hauls" exact>
+          <q-item-section avatar>
+            <q-icon name="shopping_basket"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Hauls</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -78,7 +87,7 @@
 
         <q-separator/>
 
-        <q-item to="/" exact>
+        <q-item to="/login" exact>
           <q-item-section avatar>
             <q-icon name="exit_to_app"/>
           </q-item-section>
@@ -103,14 +112,17 @@
   </q-layout>
 </template>
 
-<script>
-export default {
-  name: 'LayoutDefault',
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import { Platform } from 'quasar';
 
-  data() {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop
-    };
+@Component
+export default class LayoutDefault extends Vue {
+  private leftDrawerOpen: boolean;
+
+  constructor() {
+    super();
+    this.leftDrawerOpen = Platform.is.desktop;
   }
-};
+}
 </script>
