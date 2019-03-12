@@ -98,14 +98,17 @@
   </q-layout>
 </template>
 
-<script>
-export default {
-  name: 'LayoutDefault',
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import { Platform } from 'quasar';
 
-  data() {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop,
-    };
+@Component
+export default class LayoutDefault extends Vue {
+  private leftDrawerOpen: boolean;
+
+  constructor() {
+    super();
+    this.leftDrawerOpen = Platform.is.desktop;
   }
-};
+}
 </script>
