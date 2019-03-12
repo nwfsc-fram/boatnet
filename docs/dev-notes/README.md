@@ -115,12 +115,15 @@ lerna add @boatnet/bn-models   [this will install this dependency to all project
 cd apps/obs-wcgop-optecs
 yarn serve
 ```
-* Delete all node_modules folders. This is required for library development (so your app uses the newest library changes) and when VSC intellisense is confused.
+
+* Delete all node_modules folders with `lerna clean`.
+  * This is required for library development (so your app uses the newest library changes,) after creating a new project via `vue create`.
 ```
 lerna clean
 ```
   * This command is usually followed by `lerna bootstrap`
-  * VSC gets a `node_modules` locked file occasionally for `lerna clean`, so I simply restart VSC.
+  * Note: VSC gets a `node_modules` locked file occasionally for `lerna clean`, so I simply restart VSC.
+
 * Global package remove (careful!) Useful if you accidentally globally add a package (instead of using `--scope`)
 ```
 lerna exec -- yarn remove my-package || lerna bootstrap
