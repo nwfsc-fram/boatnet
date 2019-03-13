@@ -1,11 +1,12 @@
 // WCGOP Haul
-import { BaseHaul } from '../_base/baseHaul';
+import { BaseOperation } from '../_base/base-operation';
 
-export const WCGOPHaulTypeName = 'wcgop-haul';
+export const WcgopHaulTypeName = 'wcgop-haul';
 
 // TODO: Create both WCGOP Trawl and Fixed Gear haul types?
-export interface WCGOPHaul extends BaseHaul {
-  // catches?: WCGOPCatch[];  // TODO
+export interface WcgopHaul extends BaseOperation {
+  // catches?: WcgopCatch[];  // TODO
+  haulNum: number;
   observerTotalCatch?: {
     value: number;
     units: string;

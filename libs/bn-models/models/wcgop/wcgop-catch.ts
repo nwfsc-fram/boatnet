@@ -1,18 +1,16 @@
 // WCGOP Catch
-import { BaseCatch } from '../_base/baseCatch';
+import { BaseCatch } from '../_base/base-catch';
+import { Measurement } from '../_common/index';
 
-export const WCGOPCatchTypeName = 'wcgop-catch';
+export const WcgopCatchTypeName = 'wcgop-catch';
 
-export interface WCGOPCatch extends BaseCatch {
+export interface WcgopCatch extends BaseCatch {
 
   specimens?: any[]; // TODO Specimens interface
   baskets?: any[]; // TODO Baskets interface
 
   weightMethod: string;
-  weight?: {
-    value: number;
-    units: string;
-  };
+  weight?: Measurement;
   count?: number;
   disposition?: string;
   discardReason?: string;

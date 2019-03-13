@@ -1,5 +1,7 @@
-export * from './port';
+export * from './couch-id';
 export * from './boatnet-date';
+export * from './boatnet-user';
+export * from './port';
 export * from './contact';
 export * from './first-receiver';
 export * from './fishery';
@@ -7,3 +9,7 @@ export * from './port';
 export * from './program';
 export * from './trip-status';
 export * from './vessel';
+export * from './location-event';
+export * from './measurement';
+export * from './species';
+export * from './biostructure';
