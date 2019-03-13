@@ -8,9 +8,8 @@
     "build": "tsc index.ts -d --module commonjs --outDir dist/"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.6",
     "tsc": "^1.20150623.0"
   },
-  "license": "MIT",
-  "dependencies": {
-  }
+  "license": "MIT"
 }
