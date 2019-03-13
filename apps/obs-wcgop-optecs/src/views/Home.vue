@@ -8,8 +8,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {
-  WCGOPTrip,
-  WCGOPTripTypeName,
+  WcgopTrip,
+  WcgopTripTypeName,
   Port,
   PortTypeName,
   getNowDate
@@ -17,7 +17,7 @@ import {
 
 @Component
 export default class PageHome extends Vue {
-  private example: WCGOPTrip;
+  private example: WcgopTrip;
 
   get currentProgram(): string | undefined {
     return this.example ? this.example.program : '-';
@@ -35,12 +35,13 @@ export default class PageHome extends Vue {
       type: PortTypeName,
       createdBy: 'test',
       createdDate: getNowDate(),
+      portId: 'Some-Port',
       name: 'Test Port'
     };
 
     this.example = {
       _id: 'fake-id-123',
-      type: WCGOPTripTypeName,
+      type: WcgopTripTypeName,
       program: 'Catch Shares',
       createdBy: 'test',
       createdDate: getNowDate(),
@@ -48,7 +49,7 @@ export default class PageHome extends Vue {
       departureDate: getNowDate(),
       returnPort: examplePort,
       returnDate: getNowDate(),
-      legacyData: {
+      legacy: {
         stuff: [1, 3, 4],
         other: 'test'
       }
