@@ -1,13 +1,11 @@
 // Base Event - Fishing Locations, etc
 
-import { Base } from './base';
 import { BoatnetDate, Measurement } from '../_common/index';
-// TODO Import GEOJSON
-// import { Point } from 'geo-json';
+import { Point } from 'geojson'; // GeoJSON https://tools.ietf.org/html/rfc7946
 
-export interface BaseEvent extends Base {
+export interface BaseEvent  {
     // TODO Result property?
-    // location: Point;  // TODO GEOJSON
+    location: Point;
     depth?: Measurement;
     date: BoatnetDate;
 }

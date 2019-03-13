@@ -1,5 +1,6 @@
 // WCGOP Haul
 import { BaseOperation } from '../_base/base-operation';
+import { LocationEvent } from '../_common/index';
 
 export const WcgopHaulTypeName = 'wcgop-haul';
 
@@ -7,6 +8,7 @@ export const WcgopHaulTypeName = 'wcgop-haul';
 export interface WcgopHaul extends BaseOperation {
   // catches?: WcgopCatch[];  // TODO
   haulNum: number;
+  locations: LocationEvent[];
   observerTotalCatch?: {
     value: number;
     units: string;
