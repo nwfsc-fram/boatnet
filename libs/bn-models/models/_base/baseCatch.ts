@@ -4,4 +4,5 @@ import { Base } from './base';
 // TODO other common Catch fields?
 export interface BaseCatch extends Base {
   catchNum?: number;
+  // Specimens and Baskets will be in subclass
 }

@@ -48,7 +48,7 @@ export default class PageHome extends Vue {
       departureDate: getNowDate(),
       returnPort: examplePort,
       returnDate: getNowDate(),
-      legacyData: {
+      legacy: {
         stuff: [1, 3, 4],
         other: 'test'
       }

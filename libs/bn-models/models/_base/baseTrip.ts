@@ -14,7 +14,7 @@ import {
 // Base Trip Class, intended to be subclassed
 // TODO: What are common fields of trip?
 export interface BaseTrip extends Base {
-  haulIDs?: string[]; // Haul ID's
+  haulIDs?: string[]; // Haul _id
 
   vessel?: Vessel;
   // user: same as createdBy?

@@ -11,5 +11,5 @@ export interface Base {
   updatedDate?: BoatnetDate; // ISO 8601 date
   comments?: string; // Optional Comments
   dataSource?: string; // hostname available?
-  legacyData?: any; // Optional legacy data from original database import
+  legacy?: any; // Optional legacy data from original database import
 }

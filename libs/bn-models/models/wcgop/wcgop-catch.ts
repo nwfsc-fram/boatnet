@@ -4,6 +4,10 @@ import { BaseCatch } from '../_base/baseCatch';
 export const WCGOPCatchTypeName = 'wcgop-catch';
 
 export interface WCGOPCatch extends BaseCatch {
+
+  specimens?: any[]; // TODO Specimens interface
+  baskets?: any[]; // TODO Baskets interface
+
   weightMethod: string;
   weight?: {
     value: number;
@@ -27,7 +31,6 @@ export interface WCGOPCatch extends BaseCatch {
     count?: number;
     gearSegments?: number;
   };
-
-  //catch_category?: string; // legacyData
-  //catchPurity?: string; // legacyData
+  //catch_category?: string; // legacy
+  //catchPurity?: string; // legacy
 }
