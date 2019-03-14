@@ -60,8 +60,6 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Install `lerna` globally: `npm install -g lerna`
 
-1. Run `lerna bootstrap` (handles the `yarn install` automatically.)
-
 1. Run `lerna run build` (builds all apps and libraries.)
 
 1. Navigate to the project you need, e.g. `cd apps/example` and `yarn serve`
