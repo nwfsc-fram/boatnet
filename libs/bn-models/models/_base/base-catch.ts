@@ -1,6 +1,10 @@
 // Base Catch Class, intended to be subclassed
 import { Base } from './base';
 
+// Ignore simple interface linting warning
+// https://github.com/palantir/tslint/blob/master/docs/usage/rule-flags/index.md
+/* tslint:disable:no-empty-interface */
+
 export interface BaseCatch extends Base {
   // use createdDate for sequential ordering
 }
