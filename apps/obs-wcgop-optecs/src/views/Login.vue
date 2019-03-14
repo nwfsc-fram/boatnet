@@ -1,38 +1,68 @@
 <template>
   <div>
-    <q-page padding>
-      <boatnet-login/>
-    </q-page>
+    <h2>Login</h2>
+    <form @submit.prevent="handleSubmit">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          v-model="username"
+          name="username"
+          class="form-control"
+          :class="{ 'is-invalid': submitted && !username }"
+        >
+        <div v-show="submitted && !username" class="invalid-feedback">Username is required</div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          v-model="password"
+          name="password"
+          class="form-control"
+          :class="{ 'is-invalid': submitted && !password }"
+        >
+        <div v-show="submitted && !password" class="invalid-feedback">Password is required</div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary" :disabled="status.loggingIn">Login</button>
+        <img
+          v-show="status.loggingIn"
+          src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
+        >
+        <router-link to="/register" class="btn btn-link">Register</router-link>
+      </div>
+    </form>
   </div>
 </template>
 
+<script>
+import { mapState, mapActions } from 'vuex';
 
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetLogin from '@boatnet/bn-auth';
-
-Vue.component(BoatnetLogin);
-
-@Component
-export default class Login extends Vue {
-
-}
+export default {
+  data() {
+    return {
+      username: '',
+      password: '',
+      submitted: false
+    };
+  },
+  computed: {
+    ...mapState('account', ['status'])
+  },
+  created() {
+    // reset login status
+    this.logout();
+  },
+  methods: {
+    ...mapActions('account', ['login', 'logout']),
+    handleSubmit(e) {
+      this.submitted = true;
+      const { username, password } = this;
+      if (username && password) {
+        this.login({ username, password });
+      }
+    }
+  }
+};
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
