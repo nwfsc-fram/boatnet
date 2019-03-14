@@ -1,5 +1,6 @@
+
 // array in local storage for registered users
-let users = JSON.parse(localStorage.getItem('users')) || [
+let users = JSON.parse(localStorage.getItem('users') || '') || [
   {
     id: 1,
     username: 'test',
@@ -17,12 +18,13 @@ export function configureFakeBackend() {
       // wrap in timeout to simulate server api call
       setTimeout(() => {
         // authenticate
-        if (url.endsWith('/api/v1/login') && opts.method === 'POST') {
+        const urlStr = url as string;
+        if (urlStr.endsWith('/api/v1/login') && opts && opts.method === 'POST') {
           // get parameters from post request
-          let params = JSON.parse(opts.body);
+          const params = JSON.parse(opts.body as string);
 
           // find if any user matches login credentials
-          let filteredUsers = users.filter((user) => {
+          const filteredUsers = users.filter((user: any) => {
             return (
               user.username === params.username &&
               user.password === params.password
@@ -31,8 +33,8 @@ export function configureFakeBackend() {
 
           if (filteredUsers.length) {
             // if login details are valid return user details and fake jwt token
-            let user = filteredUsers[0];
-            let responseJson = {
+            const user = filteredUsers[0];
+            const responseJson = {
               id: user.id,
               username: user.username,
               firstName: user.firstName,
@@ -43,7 +45,7 @@ export function configureFakeBackend() {
             resolve({
               ok: true,
               text: () => Promise.resolve(JSON.stringify(responseJson))
-            });
+            } as Response);
           } else {
             // else return error
             reject('Username or password is incorrect');
