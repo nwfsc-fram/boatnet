@@ -16,14 +16,13 @@ import {
   getNowDate,
   WcgopHaul,
   WcgopHaulTypeName,
-LocationEvent
+  LocationEvent
 } from '@boatnet/bn-models';
 
 @Component
 export default class PageHome extends Vue {
   private exampleHaul: WcgopHaul;
   private exampleTrip: WcgopTrip;
-
 
   get currentProgram(): string | undefined {
     return this.exampleTrip ? this.exampleTrip.program : '-';
@@ -50,19 +49,20 @@ export default class PageHome extends Vue {
     };
 
     const fakeLocation: LocationEvent = {
-      location: {  // GeoJSON https://tools.ietf.org/html/rfc7946
-        type: "Point",
+      location: {
+        // GeoJSON https://tools.ietf.org/html/rfc7946
+        type: 'Point',
         coordinates: [124.6, 10.1]
       },
       date: getNowDate()
-    }
+    };
     const fakeLocation2: LocationEvent = {
       location: {
-        type: "Point",
+        type: 'Point',
         coordinates: [122.6, 10.9]
       },
       date: getNowDate()
-    }
+    };
 
     this.exampleHaul = {
       _id: 'fake-haul-123',
@@ -70,9 +70,9 @@ export default class PageHome extends Vue {
       createdBy: 'test',
       createdDate: getNowDate(),
       haulNum: 1,
-      locations: [ fakeLocation, fakeLocation2 ]
+      locations: [fakeLocation, fakeLocation2]
       // ... other data
-    }
+    };
 
     this.exampleTrip = {
       _id: 'fake-id-123',
