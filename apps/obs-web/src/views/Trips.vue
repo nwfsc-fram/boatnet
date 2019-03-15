@@ -82,7 +82,9 @@ export default{
       console.log(this.$store.getters.trips)
     },
     methods: {
-      closeTrip() 
+      closeTrip() {
+        
+      }
     }
 };
 </script>

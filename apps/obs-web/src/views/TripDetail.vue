@@ -18,6 +18,7 @@ export default Vue.extend({
     data() {
         return {
             trip: this.$store.state.trips[this.$route.params.id],
+        }
     }
 });
 </script>
