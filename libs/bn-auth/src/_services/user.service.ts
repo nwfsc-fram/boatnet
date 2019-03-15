@@ -1,12 +1,5 @@
-// import config from 'config';
-import { authHeader } from '../_helpers';
-
-const apiUrl = 'https://localhost:9000';
-
-export const userService = {
-  login,
-  logout
-};
+// User Auth routines loosely based on sample code in
+// http://jasonwatmore.com/post/2018/07/14/vue-vuex-user-registration-and-login-tutorial-example
 
 function login(username: string, password: string) {
   // TODO use axios for this instead?
@@ -16,7 +9,8 @@ function login(username: string, password: string) {
     body: JSON.stringify({ username, password })
   };
 
-  // fetch(`${apiUrl}/api/v1/login`, requestOptions)
+  // const apiUrl = 'https://localhost:9000';
+  // fetch(`${apiUrl}/api/v1/login`, requestOptions)  // Expect proxy
   return fetch(`/api/v1/login`, requestOptions)
     .then(handleResponse)
     .then((user) => {
@@ -52,3 +46,8 @@ function handleResponse(response: any) {
     return data;
   });
 }
+
+export const userService = {
+  login,
+  logout
+};

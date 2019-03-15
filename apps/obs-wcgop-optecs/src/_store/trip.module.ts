@@ -1,6 +1,4 @@
-// Vuex Account Module
-
-// Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
+// Vuex Trip Module
 
 import { userService } from '@boatnet/bn-auth';
 import router from '../router';
