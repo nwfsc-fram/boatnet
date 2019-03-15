@@ -55,7 +55,8 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 * https://github.com/lerna/lerna
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
-  * `lerna add whatever-package` (Add a single dependency to matched packages)
+  * `lerna clean` (Run AFTER bootstrap)
+  * `lerna add whatever-package --scope="my-project"` (Add a single dependency to matched scope, e.g. obs-wcgop-optecs)
 
 * For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
   * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
@@ -73,6 +74,7 @@ npm install -g lerna
 ```
 cd /c/git/boatnet/
 lerna bootstrap
+lerna clean
 lerna run build
 ```
 ### Creating and configuring dependencies for a new app, library, or tool:
