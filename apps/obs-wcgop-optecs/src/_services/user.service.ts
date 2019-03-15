@@ -39,7 +39,6 @@ function logout() {
 }
 
 function handleResponse(response: any) {
-  console.log('IN HANDLE RESPONSE');
   return response.text().then((text: any) => {
     const data = text && JSON.parse(text);
     if (!response.ok) {

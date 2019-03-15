@@ -1,24 +1,27 @@
 // Vuex Account Module
+
+// Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
+
 import { userService } from '../_services';
 import router from '../router';
 
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
+import { AccountState, User, RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
 const userStored = localStorage.getItem('user');
-let user: any;
-
+let user: User | null = null;
 if (userStored) {
   user = JSON.parse(userStored);
 }
 
-const state = user
-  ? { status: { loggedIn: true }, user }
-  : { status: {}, user: null };
+export const state: AccountState =  user
+? { status: { loggedIn: true }, user }
+: { status: {}, user: null };
 
-const actions = {
+const actions: ActionTree<AccountState, RootState> = {
   login({ dispatch, commit }: any, { username, password }: any) {
     commit('loginRequest', { username });
 
@@ -39,7 +42,7 @@ const actions = {
   }
 };
 
-const mutations = {
+const mutations: MutationTree<AccountState> = {
   loginRequest(newState: any, newUser: any) {
     newState.status = { loggingIn: true };
     newState.user = newUser;
@@ -58,7 +61,7 @@ const mutations = {
   }
 };
 
-export const account = {
+export const account: Module<AccountState, RootState> = {
   namespaced: true,
   state,
   actions,

@@ -1,18 +1,24 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { StoreOptions } from 'vuex';
 
-import { alert } from './_store/alert.module';
-import { account } from './_store/account.module';
-// import { users } from './users.module';
+import { alert } from '@/_store/alert.module';
+import { account } from '@/_store/account.module';
+
+import { RootState } from '@/_store/types/types';
+
+
+// Primary app store: following examples at https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
+const store: StoreOptions<RootState> = {
+  state: {
+    version: '1.0.0'
+  },
   modules: {
     alert,
     account
-    // users
   }
-});
+};
 
-export default store;
+export default new Vuex.Store<RootState>(store);
