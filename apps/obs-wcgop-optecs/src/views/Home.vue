@@ -10,7 +10,7 @@ import Trips from './Trips.vue';
 
 @Component({
   components: {
-    'trips': Trips
+    trips: Trips
   }
 })
 export default class PageHome extends Vue {}

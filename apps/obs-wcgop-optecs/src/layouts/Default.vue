@@ -11,9 +11,7 @@
           icon="menu"
         />
 
-        <q-toolbar-title>Boatnet WCGOP OPTECS</q-toolbar-title>
-
-        <div>v0.0.0</div>
+        <optecs-breadcrumbs />
       </q-toolbar>
     </q-header>
 
@@ -105,8 +103,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
+import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
-@Component
+@Component({
+  components: {
+    'optecs-breadcrumbs': OptecsBreadcrumbs
+  }
+}
+
+)
 export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
 
