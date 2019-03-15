@@ -16,8 +16,10 @@ import '@quasar/extras/material-icons/material-icons.css';
 
 import {
   Quasar,
+  QBanner,
   QLayout,
   QHeader,
+  QInput,
   QDrawer,
   QSeparator,
   QPageContainer,
@@ -35,8 +37,10 @@ import {
 Vue.use(Quasar, {
   config: {},
   components: {
+    QBanner,
     QLayout,
     QHeader,
+    QInput,
     QDrawer,
     QSeparator,
     QPageContainer,

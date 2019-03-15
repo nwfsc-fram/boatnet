@@ -40,18 +40,16 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
   * `npm install -g yarn`
 
 3. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
-
-      * <details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
+<details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>
 <p>
+  
 * These are optional steps, not currently required.
 
 * (OPTIONAL) Install node-gyp by launching visual studio code as administrator and running the following from a terminal (Ref: https://www.npmjs.com/package/node-gyp):
-
 - Windows: `npm install -g windows-build-tools`
 - Mac: Ensure read/write access to /usr/local/lib/node_modules/npm/node_modules then run `yarn global add node-gyp`
 
 * (OPTIONAL) In windows, you should run the initial build from a Visual Studio command prompt. This will install packages specified in packages.json. (re-run when other devs add packages to packages.json)
-
 </p>
 </details>
 
@@ -60,7 +58,9 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Install `lerna` globally: `npm install -g lerna`
 
-1. Run `lerna bootstrap` (handles the `yarn install` automatically.)
+1. Run `lerna bootstrap` (runs npm install, builds single node_modules)
+
+1. Run `lerna clean` (cleans node_modules in subfolders)
 
 1. Run `lerna run build` (builds all apps and libraries.)
 
