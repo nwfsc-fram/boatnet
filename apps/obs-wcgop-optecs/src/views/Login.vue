@@ -16,7 +16,7 @@
         label="Password"
         :rules="[val => !!val || 'Password is required']"
       />
-      <div v-if="alert.message" :class="`alert ${alert.type}`">{{alert.message}}</div>
+      <q-banner rounded  v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
       <div>
         <q-btn color="primary" label="Login" type="submit" :disabled="account.loggingIn"/>
         <img
