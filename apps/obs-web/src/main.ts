@@ -2,6 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import VueResource from 'vue-resource'
 import './registerServiceWorker';
 
 import 'quasar/dist/quasar.min.css'; // WS- Added this after commenting out .styl imports
@@ -22,8 +23,15 @@ import {
   QList,
   QItem,
   QItemSection,
-  QItemLabel
+  QItemLabel,
+  QCard,
+  QCardSection,
+  QCardActions,
+  QSelect,
+  QInput
 } from 'quasar';
+
+Vue.use(VueResource);
 
 Vue.use(Quasar, {
   config: {},
@@ -40,7 +48,12 @@ Vue.use(Quasar, {
     QList,
     QItem,
     QItemSection,
-    QItemLabel
+    QItemLabel,
+    QCard,
+    QCardSection,
+    QCardActions,
+    QSelect,
+    QInput
   },
   directives: {},
   plugins: {}
