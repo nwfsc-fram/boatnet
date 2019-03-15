@@ -18,6 +18,7 @@ import {
   Quasar,
   QLayout,
   QHeader,
+  QInput,
   QDrawer,
   QSeparator,
   QPageContainer,
@@ -37,6 +38,7 @@ Vue.use(Quasar, {
   components: {
     QLayout,
     QHeader,
+    QInput,
     QDrawer,
     QSeparator,
     QPageContainer,
