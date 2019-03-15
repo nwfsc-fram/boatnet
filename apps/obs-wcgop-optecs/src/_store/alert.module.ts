@@ -1,9 +1,15 @@
-const state = {
+import Vue from 'vue';
+import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
+import { AlertState, RootState } from '@/_store/types/types';
+
+Vue.use(Vuex);
+
+export const state: AlertState = {
   type: null,
   message: null
 };
 
-const actions = {
+const actions: ActionTree<AlertState, RootState> = {
   success({ commit }: any, message: string) {
     commit('success', message);
   },
@@ -11,11 +17,11 @@ const actions = {
     commit('error', message);
   },
   clear({ commit }: any, message: string) {
-    commit('success', message);
+    commit('clear', message);
   }
 };
 
-const mutations = {
+const mutations: MutationTree<AlertState> = {
   success(newState: any, message: string) {
     newState.type = 'alert-success';
     newState.message = message;
@@ -30,7 +36,7 @@ const mutations = {
   }
 };
 
-export const alert = {
+export const alert: Module<AlertState, RootState> = {
   namespaced: true,
   state,
   actions,

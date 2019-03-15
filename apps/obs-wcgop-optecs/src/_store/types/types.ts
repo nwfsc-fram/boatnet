@@ -11,7 +11,12 @@ export interface User {
 export interface AccountState {
   status: {
     loggingIn?: boolean;
-    loggedIn?: boolean
+    loggedIn?: boolean;
   };
   user: User | null;
+}
+
+export interface AlertState {
+  type: string | null;
+  message: string | null;
 }

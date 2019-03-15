@@ -16,36 +16,43 @@
         label="Password"
         :rules="[val => !!val || 'Password is required']"
       />
-
+      <div v-if="alert.message" :class="`alert ${alert.type}`">{{alert.message}}</div>
       <div>
-        <q-btn color="primary" label="Login" type="submit" :disabled="status.loggingIn"/>
+        <q-btn color="primary" label="Login" type="submit" :disabled="account.loggingIn"/>
         <img
-          v-show="status.loggingIn"
+          v-show="account.loggingIn"
           src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
         >
       </div>
+
     </form>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+import { mapState } from 'vuex';
 import { State, Action, Getter } from 'vuex-class';
-// import { mapState, mapActions } from 'vuex';
-import { Component, Prop } from 'vue-property-decorator';
-import { AccountState, User } from '../_store/types/types';
-
-const namespace: string = 'account';
+import { Component, Prop, Watch } from 'vue-property-decorator'; // https://github.com/kaorun343/vue-property-decorator
+import { AccountState, AlertState, User } from '../_store/types/types';
 
 @Component
 export default class Login extends Vue {
-  @State('account') private status!: AccountState;
-  @Action('login', { namespace }) private login: any;
-  @Action('logout', { namespace }) private logout: any;
+  @State('account') private account!: AccountState;
+  @State('alert') private alert!: AlertState;
+  @Action('login', { namespace: 'account' }) private login: any;
+  @Action('logout', { namespace: 'account' }) private logout: any;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
 
   private username = '';
   private password = '';
   private submitted = false;
+  private errorMsg = '';
+
+  @Watch('$route', { immediate: true, deep: true })
+  private onUrlChange(newVal: any) {
+    this.clear();
+  }
 
   private mounted() {
     // reset login status
