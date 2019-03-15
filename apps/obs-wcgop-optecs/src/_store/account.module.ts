@@ -3,6 +3,7 @@
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
 import { userService } from '@boatnet/bn-auth';
+
 import router from '../router';
 
 import Vue from 'vue';

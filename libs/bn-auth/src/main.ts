@@ -13,4 +13,5 @@ Object.keys(Components).forEach((name) => {
 });
 
 export * from './_services/user.service';
+export * from './models/auth.model';
 export default Components;
