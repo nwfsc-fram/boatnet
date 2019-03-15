@@ -117,7 +117,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
 
 @Component
-export default class LayoutDefault extends Vue {
+export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
 
   constructor() {
