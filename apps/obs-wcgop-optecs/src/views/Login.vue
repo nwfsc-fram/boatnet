@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
+    <q-header elevated class="basic">
       <q-toolbar>
         <q-btn flat dense round/>
 
@@ -10,7 +10,7 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
-      <div class="q-pa-md" style="max-width: 300px;">
+      <div class="q-pa-md" self-center style="max-width: 300px;">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md">
           <q-input
             outlined
@@ -36,6 +36,15 @@
             >
           </div>
         </form>
+        <br>
+        <br>
+        <div>
+        <router-link to="/" disabled=true>Forgot Password</router-link>
+        </div>
+        <br>
+        <div>
+        <router-link to="/" disabled=true>Change Password</router-link>
+        </div>
       </div>
     </q-page-container>
   </q-layout>

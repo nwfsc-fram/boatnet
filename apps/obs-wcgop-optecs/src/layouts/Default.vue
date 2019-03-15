@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
+    <q-header elevated class="basic">
       <q-toolbar>
         <q-btn
           flat
@@ -34,16 +34,6 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Settings</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-separator/>
-        <q-item to="/hauls" exact>
-          <q-item-section avatar>
-            <q-icon name="shopping_basket"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Hauls</q-item-label>
           </q-item-section>
         </q-item>
 
