@@ -4,13 +4,13 @@
       <q-input
         outlined
         bottom-slots
-        v-model="text"
+        v-model="searchText"
         label="Search"
         maxlength="12"
         style="width: 200px;"
       >
         <template v-slot:append>
-          <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
+          <q-icon v-if="searchText !== ''" name="close" @click="searchText = ''" class="cursor-pointer"/>
           <q-icon name="search"/>
         </template>
       </q-input>
@@ -57,6 +57,7 @@ import moment from 'moment';
   }
 })
 export default class Trips extends Vue {
+  private searchText = '';
   private columns = [
     {
       name: 'tripId',
