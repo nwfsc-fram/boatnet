@@ -1,15 +1,32 @@
 <template>
   <q-page padding>
-    <q-table
-      title="Trips"
-      :data="data"
-      :columns="columns"
-      row-key="name"
-      selection="single"
-      :selected.sync="selected"
-    />
+    <div class="row justify-end">
+      <q-input
+        outlined
+        bottom-slots
+        v-model="text"
+        label="Search"
+        maxlength="12"
+        style="width: 200px;"
+      >
+        <template v-slot:append>
+          <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
+          <q-icon name="search"/>
+        </template>
+      </q-input>
+    </div>
 
-    <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div>
+    <q-table title="Trips" :data="data" :columns="columns" :selected.sync="selected"/>
+
+    <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
+    <div class="row">
+      <q-btn color="primary" icon="playlist_add" label="Add Trip"/>
+      <q-btn icon="edit" label="Edit Trip" disabled="true"/>
+      <q-btn icon="done" label="End Trip" disabled="true"/>
+      <q-btn icon="delete_forever" label="Delete Trip" disabled="true"/>
+      <q-space/>
+      <q-btn icon="play_arrow" label="Go to Hauls"/>
+    </div>
   </q-page>
 </template>
 
@@ -23,153 +40,77 @@ import {
   WcgopTripTypeName,
   Port,
   PortTypeName,
-  getNowDate,
   WcgopHaul,
   WcgopHaulTypeName,
-  LocationEvent
+  LocationEvent,
+  Vessel
 } from '@boatnet/bn-models';
 
-@Component
+import moment from 'moment';
+// Vue.prototype.moment = moment;
+
+@Component({
+  data() {
+    return {
+      selected: []
+    };
+  }
+})
 export default class Trips extends Vue {
-  @Prop() private selected: any = undefined;
   private columns = [
     {
-      name: 'desc',
+      name: 'tripId',
       required: true,
-      label: 'Dessert (100g serving)',
+      label: 'Trip Id',
       align: 'left',
-      field: (row: any) => row.name,
-      format: (val: any) => `${val}`,
+      field: '_id',
       sortable: true
     },
     {
-      name: 'calories',
+      name: 'vesselName',
       align: 'center',
-      label: 'Calories',
-      field: 'calories',
+      label: 'Vessel Name',
+      field: (row: any) => row.vessel.name,
       sortable: true
     },
-    { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-    { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
-    { name: 'protein', label: 'Protein (g)', field: 'protein' },
-    { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
     {
-      name: 'calcium',
-      label: 'Calcium (%)',
-      field: 'calcium',
-      sortable: true,
-      sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10)
+      name: 'departurePort',
+      align: 'center',
+      label: 'Departure Port',
+      field: (row: any) => row.departurePort.name,
+      sortable: true
     },
     {
-      name: 'iron',
-      label: 'Iron (%)',
-      field: 'iron',
-      sortable: true,
-      sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10)
+      name: 'departureDate',
+      align: 'center',
+      label: 'Departure Date',
+      field: (row: any) => moment(row.departureDate).format('MM/DD/YY'),
+      sortable: true
+    },
+    {
+      name: 'returnPort',
+      align: 'center',
+      label: 'Return Port',
+      field: (row: any) => row.departurePort.name,
+      sortable: true
+    },
+    {
+      name: 'returnDate',
+      align: 'center',
+      label: 'Return Date',
+      field: (row: any) => moment(row.departureDate).format('MM/DD/YY'),
+      sortable: true
+    },
+    {
+      name: 'errors',
+      align: 'center',
+      label: 'Errors',
+      field: (row: any) => 2, // TODO Error calc
+      sortable: true
     }
   ];
-  private data = [
-    {
-      name: 'Frozen Yogurt',
-      calories: 159,
-      fat: 6.0,
-      carbs: 24,
-      protein: 4.0,
-      sodium: 87,
-      calcium: '14%',
-      iron: '1%'
-    },
-    {
-      name: 'Ice cream sandwich',
-      calories: 237,
-      fat: 9.0,
-      carbs: 37,
-      protein: 4.3,
-      sodium: 129,
-      calcium: '8%',
-      iron: '1%'
-    },
-    {
-      name: 'Eclair',
-      calories: 262,
-      fat: 16.0,
-      carbs: 23,
-      protein: 6.0,
-      sodium: 337,
-      calcium: '6%',
-      iron: '7%'
-    },
-    {
-      name: 'Cupcake',
-      calories: 305,
-      fat: 3.7,
-      carbs: 67,
-      protein: 4.3,
-      sodium: 413,
-      calcium: '3%',
-      iron: '8%'
-    },
-    {
-      name: 'Gingerbread',
-      calories: 356,
-      fat: 16.0,
-      carbs: 49,
-      protein: 3.9,
-      sodium: 327,
-      calcium: '7%',
-      iron: '16%'
-    },
-    {
-      name: 'Jelly bean',
-      calories: 375,
-      fat: 0.0,
-      carbs: 94,
-      protein: 0.0,
-      sodium: 50,
-      calcium: '0%',
-      iron: '0%'
-    },
-    {
-      name: 'Lollipop',
-      calories: 392,
-      fat: 0.2,
-      carbs: 98,
-      protein: 0,
-      sodium: 38,
-      calcium: '0%',
-      iron: '2%'
-    },
-    {
-      name: 'Honeycomb',
-      calories: 408,
-      fat: 3.2,
-      carbs: 87,
-      protein: 6.5,
-      sodium: 562,
-      calcium: '0%',
-      iron: '45%'
-    },
-    {
-      name: 'Donut',
-      calories: 452,
-      fat: 25.0,
-      carbs: 51,
-      protein: 4.9,
-      sodium: 326,
-      calcium: '2%',
-      iron: '22%'
-    },
-    {
-      name: 'KitKat',
-      calories: 518,
-      fat: 26.0,
-      carbs: 65,
-      protein: 7,
-      sodium: 54,
-      calcium: '12%',
-      iron: '6%'
-    }
-  ];
+  private data: any = [];
+
   private exampleTrip: WcgopTrip;
 
   get currentProgram(): string | undefined {
@@ -187,27 +128,65 @@ export default class Trips extends Vue {
       _id: 'asdf',
       type: PortTypeName,
       createdBy: 'test',
-      createdDate: getNowDate(),
-      portId: 'Some-Port',
-      name: 'Test Port'
+      createdDate: moment().format(),
+      portId: 'OXNARD-Port',
+      name: 'Oxnard'
+    };
+
+    const examplePort2: Port = {
+      _id: 'asdf',
+      type: PortTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      portId: 'Townsend-Port',
+      name: 'Port Townsend'
+    };
+
+    const exampleVessel: Vessel = {
+      name: 'Sadie K'
+    };
+
+    const exampleVessel2: Vessel = {
+      name: 'Pickle Pelican'
     };
 
     this.exampleTrip = {
-      _id: 'fake-id-123',
+      _id: '1',
       type: WcgopTripTypeName,
       createdBy: 'test',
-      createdDate: getNowDate(),
+      createdDate: moment().format(),
       program: 'Catch Shares',
       departurePort: examplePort,
-      departureDate: getNowDate(),
-      returnPort: examplePort,
-      returnDate: getNowDate(),
+      departureDate: moment().format(),
+      returnPort: examplePort2,
+      returnDate: moment()
+        .add(1, 'days')
+        .format(),
+      vessel: exampleVessel,
       // ... other data
       legacy: {
         stuff: [1, 3, 4],
         other: 'test'
       }
     };
+
+    const exampleTrip2 = {
+      _id: '2',
+      type: WcgopTripTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      program: 'Catch Shares',
+      departurePort: examplePort2,
+      departureDate: moment()
+        .subtract(1, 'days')
+        .format(),
+      returnPort: examplePort,
+      returnDate: moment().format(),
+      vessel: exampleVessel2
+      // ... other data
+    };
+
+    this.data = [this.exampleTrip, exampleTrip2];
   }
 }
 </script>
@@ -227,5 +206,9 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.q-btn {
+  height: 75px;
 }
 </style>

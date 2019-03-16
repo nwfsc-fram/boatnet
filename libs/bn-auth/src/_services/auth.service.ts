@@ -1,12 +1,12 @@
 // Vuex Auth Module
 
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
-//import { BoatnetUser, BoatnetUserToken } from '@/models/auth.model';
-//import * as cryptoJS from 'crypto-js';
+// import { BoatnetUser, BoatnetUserToken } from '@/models/auth.model';
+// import * as cryptoJS from 'crypto-js';
 
-//import * as utils from 'minimalistic-crypto-utils';
-//import * as jsonwebtoken from 'jsonwebtoken';
-//import * as pemjwk from 'pem-jwk';
+// import * as utils from 'minimalistic-crypto-utils';
+// import * as jsonwebtoken from 'jsonwebtoken';
+// import * as pemjwk from 'pem-jwk';
 
 //  public authedUserToken: BoatnetUserToken;
 

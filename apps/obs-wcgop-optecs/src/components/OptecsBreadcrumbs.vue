@@ -1,9 +1,7 @@
 <template>
   <q-breadcrumbs active-color="white" style="font-size: 16px" gutter="md">
     <q-space></q-space>
-    <q-breadcrumbs-el label="Trips" icon="home"/>
-    <q-breadcrumbs-el label="Components" icon="widgets"/>
-    <q-breadcrumbs-el label="Toolbar"/>
+    <q-breadcrumbs-el label="Trips" icon="home" to="/home" />
   </q-breadcrumbs>
 </template>
 
