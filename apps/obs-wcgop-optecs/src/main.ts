@@ -13,10 +13,11 @@ import './styles/quasar.styl';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 
-
 import {
   Quasar,
   QBanner,
+  QBreadcrumbs,
+  QBreadcrumbsEl,
   QLayout,
   QHeader,
   QInput,
@@ -24,6 +25,8 @@ import {
   QSeparator,
   QPageContainer,
   QPage,
+  QSpace,
+  QTable,
   QToolbar,
   QToolbarTitle,
   QBtn,
@@ -38,6 +41,8 @@ Vue.use(Quasar, {
   config: {},
   components: {
     QBanner,
+    QBreadcrumbs,
+    QBreadcrumbsEl,
     QLayout,
     QHeader,
     QInput,
@@ -45,6 +50,8 @@ Vue.use(Quasar, {
     QSeparator,
     QPageContainer,
     QPage,
+    QSpace,
+    QTable,
     QToolbar,
     QToolbarTitle,
     QBtn,
