@@ -1,3 +1,6 @@
+# Learning Typescript
+* Free eBook: https://basarat.gitbooks.io/typescript/content/docs/why-typescript.html
+
 # Vue.js Useful Links
 
 * Refactoring Vue.js javascript to Typescript
