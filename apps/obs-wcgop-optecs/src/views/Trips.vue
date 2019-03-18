@@ -166,8 +166,7 @@ export default class Trips extends Vue {
       vessel: exampleVessel,
       // ... other data
       legacy: {
-        stuff: [1, 3, 4],
-        other: 'test'
+        tripId: 123
       }
     };
 
