@@ -1,3 +1,3 @@
 export interface BoatnetHaulsSettings {
-  name: string;
+  columns: any[];
 }
