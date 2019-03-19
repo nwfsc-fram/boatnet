@@ -10,6 +10,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@boatnet/bn-common": "file:..\\..\\libs\\bn-common",
     "@boatnet/bn-auth": "file:..\\..\\libs\\bn-auth",
     "@boatnet/bn-models": "file:..\\..\\libs\\bn-models",
     "@boatnet/bn-util": "file:..\\..\\libs/bn-util",

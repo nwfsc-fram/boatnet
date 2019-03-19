@@ -1,4 +1,4 @@
-# bn-hauls
+# bn-common
 
 ## Project setup
 ```
