@@ -5,10 +5,7 @@
 **/dist-server
 **/tmp
 **/out-tsc
-observer/obs-electron/Observer Electron App-win32-x64/*
-observer/obs-electron/build/obs-ng
-observer/obs-electron/build/config.gypi
-
+**/dev-auth-server/lib
 
 # logs
 lerna-debug.log*

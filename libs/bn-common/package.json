@@ -1,5 +1,5 @@
 {
-  "name": "@boatnet/bn-hauls",
+  "name": "@boatnet/bn-common",
   "version": "0.1.0",
   "private": true,
   "main": "./src/main.ts",

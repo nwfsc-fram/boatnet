@@ -7,16 +7,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-hauls';
+import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { WcgopHaul } from '@boatnet/bn-models';
 
-// Vue.component(BoatnetHauls);
+Vue.component(BoatnetHauls);
 
-@Component({
-  components: {
-    'boatnet-hauls': BoatnetHauls
-  }
-})
+@Component
 export default class Hauls extends Vue {
   private WCGOPSettings: BoatnetHaulsSettings;
 

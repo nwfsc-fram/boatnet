@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import BoatnetHauls from './components/BoatnetHauls.vue';
+import BoatnetTrips from './components/BoatnetTrips.vue';
 
 const Components: any = {
-  BoatnetHauls
+  BoatnetHauls,
+  BoatnetTrips
 };
 
 Object.keys(Components).forEach((name) => {
@@ -10,4 +12,5 @@ Object.keys(Components).forEach((name) => {
 });
 
 export * from './models/BoatnetHaulsSettings';
+export * from './models/BoatnetTripsSettings';
 export default Components;
