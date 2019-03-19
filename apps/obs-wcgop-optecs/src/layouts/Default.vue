@@ -17,7 +17,7 @@
 
     <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list>
-        <q-item to="/" exact>
+        <q-item to="/comments" exact>
           <q-item-section avatar>
             <q-icon name="note"/>
           </q-item-section>
@@ -37,7 +37,7 @@
 
         <q-separator/>
 
-        <q-item to="/" exact>
+        <q-item to="/upload" exact>
           <q-item-section avatar>
             <q-icon name="cloud_upload"/>
           </q-item-section>
@@ -46,7 +46,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/" exact>
+        <q-item to="/backup" exact>
           <q-item-section avatar>
             <q-icon name="settings_backup_restore"/>
           </q-item-section>
@@ -55,7 +55,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/" exact>
+        <q-item to="/errors" exact>
           <q-item-section avatar>
             <q-icon name="warning"/>
           </q-item-section>
@@ -64,7 +64,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/" exact>
+        <q-item to="/sampling" exact>
           <q-item-section avatar>
             <q-icon name="dialpad"/>
           </q-item-section>
