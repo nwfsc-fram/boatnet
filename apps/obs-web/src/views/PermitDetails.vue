@@ -1,12 +1,12 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card bg-primary text-white">
+    <q-card class="my-card">
         <q-card-section>
             <div class="text-h6">Active Captains</div>
             <q-select
             v-model="permitCaptains"
             filled
-            bg-color="white"
+            color="primary"
             multiple
             use-chips
             use-input

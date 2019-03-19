@@ -4,12 +4,13 @@ import DefaultLayout from './layouts/Default.vue';
 import Home from './views/Home.vue';
 import About from './views/About.vue';
 import Trips from './views/Trips.vue';
-import TripDetail from './views/TripDetail.vue';
+import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
 import OTSManagement from './views/OTSManagement.vue';
 import UserConfig from './views/UserConfig.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import PermitDetails from './views/PermitDetails.vue';
+import UserDetails from './views/UserDetails.vue';
 
 Vue.use(Router);
 
@@ -22,13 +23,14 @@ export default new Router({
         { path: '', name: 'Home', component: Home },
         { path: '/about', name: 'About', component: About },
         { path: '/trips', name: 'Trips', component: Trips},
-        { path: '/trips/:id', name: 'Trip Detail', component: TripDetail },
+        { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
         { path: '/debriefer', redirect: '' },
         { path: '/permits', name: 'Permits', component: Permits},
-        { path: 'permits/:id', name: 'Permit Details', component: PermitDetails },
+        { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
         { path: 'user-config', name: 'User Config', component: UserConfig },        
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
+        { path: '/users/:id', name: 'User Details', component: UserDetails}
       ]
     }
   ],

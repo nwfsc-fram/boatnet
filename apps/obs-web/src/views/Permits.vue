@@ -6,13 +6,13 @@
             </q-btn>
         </div>
         <q-list bordered separator>
-            <q-item v-for="(permit, i) of filteredPermits" :key="i">
-                <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black">
+            <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(i)">
+                <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
                 <q-item-section>
                     <q-item-label>{{ permit.permit_number }}</q-item-label>
                     <q-item-label caption>{{ permit.vessel_name }}</q-item-label>
                 </q-item-section>
-                </router-link>
+                <!-- </router-link> -->
             </q-item>
             <div style="text-align: center; background-color: white" class="fixed-bottom q-pa-md q-gutter-sm">
                 <q-input v-model="filterText" label="Search"></q-input>
@@ -43,7 +43,10 @@ export default {
             this.$store.dispatch('updatePermits', permitArray) 
             console.log(this.$store.state.permits)
             })
-        }
+        },
+    permitDetails(i) {
+        this.$router.push({path: '/permits/'+ i})
+    }
     },
     computed: {
         permits: {

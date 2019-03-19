@@ -28,8 +28,13 @@ import {
   QCardSection,
   QCardActions,
   QSelect,
-  QInput
+  QInput,
+  QDate,
+  QPopupProxy,
+  QSlideItem
 } from 'quasar';
+
+import UserDetails from './views/UserDetails.vue';
 
 Vue.use(VueResource);
 
@@ -53,12 +58,16 @@ Vue.use(Quasar, {
     QCardSection,
     QCardActions,
     QSelect,
-    QInput
+    QInput,
+    QDate,
+    QPopupProxy,
+    QSlideItem
   },
   directives: {},
   plugins: {}
 });
 
+Vue.component('appUserDetails', UserDetails);
 Vue.config.productionTip = false;
 
 new Vue({

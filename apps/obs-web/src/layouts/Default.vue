@@ -11,10 +11,20 @@
           icon="menu"
         />
 
+        <q-btn
+        flat
+        dense
+        round
+        @click="navigateBack"
+        aria-label="Back"
+        icon="chevron_left"
+        />
+
         <q-toolbar-title>
-          <span v-if="this.$router.currentRoute.name == 'Trips'"> 
+          <span v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"> 
             {{ this.$store.state.activeVessel.name }} 
           </span>
+          <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }} 
         </q-toolbar-title>
 
@@ -103,7 +113,13 @@ export default {
   data() {
     return {
       leftDrawerOpen: this.$q.platform.is.desktop,
+      currentTrip: this.$store.state.currentTrip
     };
+  },
+  methods: {
+    navigateBack() {
+        this.$router.back()
+    }
   }
 };
 </script>
