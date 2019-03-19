@@ -11,7 +11,7 @@ declare type Brd = any;
 export interface WcgopHaul extends BaseOperation {
   // catches?: WcgopCatch[];  // TODO
   haulNum: number;
-  locations: LocationEvent[];
+  locations?: LocationEvent[];
   observerTotalCatch?: {
     value: number;
     units: string;
