@@ -12,6 +12,10 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
+      path: '/login',
+      component: Login,
+    },
+    {
       path: '/',
       component: DefaultLayout,
       children: [
@@ -29,12 +33,13 @@ const router = new Router({
           path: '/hauls',
           name: 'hauls',
           component: Hauls
-        },
-        {
-          path: '/login',
-          name: 'login',
-          component: Login
         }
+        // },
+        // {
+        //   path: '/login',
+        //   name: 'login',
+        //   component: Login
+        // }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

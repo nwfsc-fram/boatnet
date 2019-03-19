@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
+    <q-header elevated class="basic">
       <q-toolbar>
         <q-btn
           flat
@@ -11,9 +11,7 @@
           icon="menu"
         />
 
-        <q-toolbar-title>Boatnet WCGOP OPTECS</q-toolbar-title>
-
-        <div>v0.0.0</div>
+        <optecs-breadcrumbs />
       </q-toolbar>
     </q-header>
 
@@ -34,16 +32,6 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Settings</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-separator/>
-        <q-item to="/hauls" exact>
-          <q-item-section avatar>
-            <q-icon name="shopping_basket"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Hauls</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -115,9 +103,16 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
+import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
-@Component
-export default class LayoutDefault extends Vue {
+@Component({
+  components: {
+    'optecs-breadcrumbs': OptecsBreadcrumbs
+  }
+}
+
+)
+export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
 
   constructor() {

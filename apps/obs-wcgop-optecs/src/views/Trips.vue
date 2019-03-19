@@ -1,21 +1,22 @@
 <template>
-  <div class="hello">
-    {{ msg }}
-    <BoatnetLogin/>
-  </div>
+  <boatnet-trips v-bind:program-info="WCGOPSettings"/>
 </template>
 
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TESTING_123, BoatnetExample } from '@boatnet/bn-util';
-import PouchDB from 'pouchdb-browser';
+import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
 
-const thing: BoatnetExample = { test: TESTING_123 };
+Vue.component(BoatnetTrips);
 
 @Component
-export default class HelloWorld extends Vue {
-  @Prop() private msg = thing.test;
+export default class Hauls extends Vue {
+  private WCGOPSettings: BoatnetTripsSettings;
+
+  constructor() {
+    super();
+    this.WCGOPSettings = { name: 'WCGOP' };
+  }
 }
 </script>
 

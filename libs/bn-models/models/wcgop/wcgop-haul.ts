@@ -4,6 +4,9 @@ import { LocationEvent } from '../_common/index';
 
 export const WcgopHaulTypeName = 'wcgop-haul';
 
+declare type Hlfc = any;
+declare type Brd = any;
+
 // TODO: Create both WCGOP Trawl and Fixed Gear haul types?
 export interface WcgopHaul extends BaseOperation {
   // catches?: WcgopCatch[];  // TODO
@@ -34,9 +37,10 @@ export interface WcgopHaul extends BaseOperation {
 
   beaufortValue?: number;
   targetStrategy?: string;
-  efp?: boolean;
-  brd?: boolean;
   deterrentUsed?: boolean;
   calWeight?: number;
   fit?: number;
+  hlfc?: Hlfc[];
+  brd?: Brd[];
+
 }

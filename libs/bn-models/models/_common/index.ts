@@ -13,3 +13,4 @@ export * from './location-event';
 export * from './measurement';
 export * from './species';
 export * from './biostructure';
+export * from './logbook-type';

@@ -7,13 +7,44 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-hauls';
+import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-common';
+import { WcgopHaul } from '@boatnet/bn-models';
 
 Vue.component(BoatnetHauls);
 
 @Component
 export default class Hauls extends Vue {
   private WCGOPSettings: BoatnetHaulsSettings;
+
+  private exampleHaul: WcgopHaul | null = null;
+
+
+  // const fakeLocation: LocationEvent = {
+  //     location: {
+  //       // GeoJSON https://tools.ietf.org/html/rfc7946
+  //       type: 'Point',
+  //       coordinates: [124.6, 10.1]
+  //     },
+  //     date: getNowDate()
+  //   };
+  //   const fakeLocation2: LocationEvent = {
+  //     location: {
+  //       type: 'Point',
+  //       coordinates: [122.6, 10.9]
+  //     },
+  //     date: getNowDate()
+  //   };
+
+  //   this.exampleHaul = {
+  //     _id: 'fake-haul-123',
+  //     type: WcgopHaulTypeName,
+  //     createdBy: 'test',
+  //     createdDate: getNowDate(),
+  //     haulNum: 1,
+  //     locations: [fakeLocation, fakeLocation2]
+  //     // ... other data
+  //   };
+
 
   constructor() {
     super();

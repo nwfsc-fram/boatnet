@@ -27,7 +27,6 @@
     "@boatnet/bn-auth": "file:..\\..\\libs\\bn-auth",
     "body-parser": "^1.18.3",
     "command-line-args": "^5.0.2",
-    "crypto": "^1.0.1",
     "crypto-js": "^3.1.9-1",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.0",
