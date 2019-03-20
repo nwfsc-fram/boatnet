@@ -2,6 +2,7 @@
 import { BaseOperation } from '../_base/base-operation';
 import { LocationEvent } from '../_common/index';
 import { WcgopBrd, WcgopHlfc } from './index';
+import { WcgopSightingEvent } from './wcgop-sighting-event';
 
 export const WcgopHaulTypeName = 'wcgop-haul';
 
@@ -40,4 +41,8 @@ export interface WcgopHaul extends BaseOperation {
   fit?: number;
   hlfc?: WcgopHlfc[];
   brd?: WcgopBrd[];
+
+  isHaulUnsampled?: boolean;
+  isGearLost?: boolean;
+  sightingEvents?: WcgopSightingEvent[];
 }
