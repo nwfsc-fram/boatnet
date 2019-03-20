@@ -18,6 +18,35 @@
     </div>
 </template>
 
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class UserDetails extends Vue{
+
+    private get user() {
+        return this.$store.getters.activeUser
+    }
+
+    private get usStates() {
+        return this.$store.state.usStates
+    }
+
+    private get ports() {
+        return this.$store.state.ports
+    }
+
+    constructor() {
+        super()
+    }
+
+}
+</script>
+
+<!--
 <script>
 export default {
     data() {
@@ -41,4 +70,4 @@ export default {
     }
 }
 </script>
-
+-->

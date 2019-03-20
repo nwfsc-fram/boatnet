@@ -31,19 +31,19 @@
  
                 <p><strong>Permits</strong></p>
 
-            <q-select
-            v-model="trip.permits"
-            filled
-            bg-color="white"
-            color="primary"
-            multiple
-            use-chips
-            use-input
-            stack-label
-            :options="permits"
-            style="width: 100%"
-            >
-            </q-select>
+                <q-select
+                v-model="trip.permits"
+                filled
+                bg-color="white"
+                color="primary"
+                multiple
+                use-chips
+                use-input
+                stack-label
+                :options="permits"
+                style="width: 100%"
+                >
+                </q-select>
 
                 <p><strong>Messages</strong></p>
                 <div class="q-pa-md" style="max-width: 350px">
@@ -61,36 +61,28 @@
 </template>
 
 <script lang="ts">
+
 import Vue from 'vue';
-import trip from './Trips.vue'
-export default Vue.extend({
-    data() {
-        return {
-            trip: this.$store.state.trips[this.$route.params.id],
-            permits: ['one', 'two', 'three','four', 'five', 'six','seven']
-        }
-    },
-    methods: {
-        onLeft() {
-            console.log('Left action triggered.')
-        },
-        onRight() {
-            console.log('Right action triggered.')
-        }
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class TripDetails extends Vue{
+    
+    private trip =  this.$store.state.trips[this.$route.params.id]
+    private permits = ['one', 'two', 'three','four', 'five', 'six','seven']
+
+    constructor() {
+        super()
     }
-})
+
+}
+
 </script>
 
 <style scoped>
-    p {
-        margin-bottom: 5px;
-    }
-
-    .q-field {
-        padding-bottom: 5px;
-    }
+    p { margin-bottom: 5px; }
+    .q-field { padding-bottom: 5px; }
 </style>
->
 
-</style>
 

@@ -4,11 +4,24 @@
   </q-page>
 </template>
 
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import { Component, Prop } from 'vue-property-decorator';
+
+@Component
+export default class Home extends Vue{
+
+  name = this.$store.state.activeVessel.name
+
+  constructor() {
+    super()
+  }
+  
+}
+</script>
+
+
 <style>
 </style>
-
-<script>
-export default {
-  name: 'PageHome'
-};
-</script>

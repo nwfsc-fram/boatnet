@@ -26,6 +26,42 @@
     </div>
 </template>
 
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class UserConfig extends Vue{
+
+    private vessels = ['Excalibur', 'Raven']
+    private notificationOptions = ['email', 'sms/text', 'app']
+
+    private get activeVessel() {
+        return this.$store.getters.activeVessel
+    } 
+
+    private set activeVessel(value) {
+        this.$store.dispatch('updateActiveVessel', value)
+    }
+
+    private get activeUser() {
+        return this.$store.getters.activeUser
+    }
+
+    private set activeUser(value) {
+        this.$store.dispatch('updateActiveUser', value)
+    }
+    
+    constructor() {
+        super()
+    }
+
+}
+</script>
+
+<!--
 <script>
 export default {
     data() {
@@ -54,4 +90,4 @@ export default {
     }
 }
 </script>
-
+-->

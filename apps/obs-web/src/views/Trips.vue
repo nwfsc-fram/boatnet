@@ -43,6 +43,72 @@
   </div>
 </template>
 
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class Trips extends Vue{
+
+    private get trips() {
+        return this.$store.getters.trips
+    }
+
+    private set trips(value) {
+        this.$store.dispatch('updateTrips', value)
+    } 
+
+    private get openTrips() {
+      return this.$store.getters.openTrips
+    }
+
+    private set openTrips(value) {
+      this.$store.dispatch('updateTrips', value)
+    }
+
+    private get closedTrips() {
+      return this.$store.getters.closedTrips
+    }
+
+    private set closedTrips(value) {
+      this.$store.dispatch('updateTrips', value)
+    }
+
+    private created() {
+      this.$store.dispatch('updateActiveTrip', '')
+      console.log(this.$store.getters.trips)
+    }
+
+    private closeTrip(i:number) {
+        this.$store.state.trips[i].is_open = false;
+      }
+
+    private reOpenTrip(i:number) {
+        this.$store.state.trips[i].is_open = true;
+      }
+
+    private getTripDetails(i:number) {
+        this.$store.dispatch('updateActiveTrip', this.trips[i])
+        // this.$store.state.activeTrip = this.trips[i]
+        this.$router.push({path: '/trips/'+ i})
+      }
+
+    constructor() {
+        super()
+    }
+}
+</script>
+
+<style lang="stylus" scoped>
+  .my-card
+    width 100%
+    max-width 450px
+</style>
+
+
+<!--
 <script>
 
 import Vue from 'vue';
@@ -94,11 +160,4 @@ export default{
     }
 };
 </script>
-
-
-<style lang="stylus" scoped>
-.my-card
-  width 100%
-  max-width 450px
-
-</style>
+-->

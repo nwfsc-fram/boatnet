@@ -11,10 +11,12 @@ import UserConfig from './views/UserConfig.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import UserDetails from './views/UserDetails.vue';
+import LogBookCapture from './views/LogBookCapture.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -30,9 +32,11 @@ export default new Router({
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
         { path: 'user-config', name: 'User Config', component: UserConfig },        
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
-        { path: '/users/:id', name: 'User Details', component: UserDetails}
+        { path: '/users/:id', name: 'User Details', component: UserDetails},
+        { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
       ]
     }
-  ],
-  mode: 'history'
+  ]
 });
+
+export default router;

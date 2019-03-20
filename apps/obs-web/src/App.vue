@@ -9,6 +9,10 @@
 <script lang="ts">
 import Vue from 'vue';
 
-export default Vue.extend({
-});
+export default class App extends Vue{
+
+  constructor() { 
+     super()
+  }
+};
 </script>

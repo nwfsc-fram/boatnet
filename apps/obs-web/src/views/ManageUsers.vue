@@ -10,17 +10,26 @@
     </div>    
 </template>
 
-<script>
-export default {
-    computed: {
-        users() {
-            return this.$store.getters.users
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+@Component
+export default class ManageUsers extends Vue{
+
+    private get users() {
+        return this.$store.getters.users
+    }
+    
+    private userDetails(i:number) {
+        this.$router.push({path: '/users/' + i})
         }
-    },
-    methods: {
-        userDetails(i) {
-            this.$router.push({path: '/users/' + i})
-        }
+
+    constructor() {
+        super()
     }
 }
 </script>

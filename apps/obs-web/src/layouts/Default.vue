@@ -51,6 +51,12 @@
           <q-item-label caption>create a trip / view trip history.</q-item-label></q-item-section>
         </q-item>  
 
+        <q-item to="/log-book-capture" exact>
+          <q-item-section avatar><q-icon name="camera_alt" /></q-item-section>
+          <q-item-section><q-item-label>Log Book Capture</q-item-label>
+          <q-item-label caption>Use camera to take log book photo for upload</q-item-label></q-item-section>
+        </q-item>
+
         <q-item to="/debriefer" exact>
           <q-item-section avatar><q-icon name="beenhere" /></q-item-section>
           <q-item-section><q-item-label>Debriefer</q-item-label>
@@ -106,20 +112,30 @@
   </q-layout>
 </template>
 
-<script>
-export default {
-  name: 'LayoutDefault',
 
-  data() {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop,
-      currentTrip: this.$store.state.currentTrip
-    };
-  },
-  methods: {
-    navigateBack() {
-        this.$router.back()
+
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Platform } from 'quasar';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class DefaultLayout extends Vue{
+  private leftDrawerOpen: boolean;
+  name = 'LayoutDefault';
+  currentTrip = this.$store.state.currentTrip;
+
+  navigateBack() {
+    this.$router.back()
     }
+
+  constructor() {
+    super();
+    this.leftDrawerOpen = Platform.is.desktop;
   }
-};
+
+}
 </script>
+

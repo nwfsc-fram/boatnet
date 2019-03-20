@@ -21,6 +21,59 @@
     </div>
 </template>
 
+<script lang="ts">
+
+import Vue from 'vue';
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop } from 'vue-property-decorator';
+
+export default class Permits extends Vue{
+
+    private filterText:string = ''
+    private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner']
+
+    getPermits() {
+        this.$http.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
+        .then(response => {
+            return response.json()
+        })
+        .then(data => {
+            const permitArray = []
+            for (var permit of data.items)
+                { permitArray.push(permit)}
+            console.log(permitArray)
+            this.$store.dispatch('updatePermits', permitArray) 
+            console.log(this.$store.state.permits)
+            })
+        }
+
+    private permitDetails(i:number) {
+        this.$router.push({path: '/permits/'+ i})
+    }
+
+    private get permits() {
+        return this.$store.getters.permits
+    }
+
+    private set permits(value) {
+        this.$store.dispatch('updatePermits', value)
+    } 
+
+    private filteredPermits() {
+        if (this.filterText.length > 0) {
+            // implement search 
+            return this.permits;
+        } else { return this.permits; }
+    }
+
+    constructor() {
+        super()
+    }
+}
+</script>
+
+<!--
 <script>
 export default {
     data() {
@@ -57,7 +110,6 @@ export default {
                 this.$store.dispatch('updatePermits', value)
             }
         },
-
         filteredPermits() {
             if (this.filterText.length > 0) {
                 // implement search - as a mixin? 
@@ -70,3 +122,4 @@ export default {
     },
 }
 </script>
+-->
