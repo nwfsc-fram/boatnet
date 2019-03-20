@@ -10,7 +10,10 @@ import { Point } from 'geojson';
 import {
   WcgopHaul,
   WcgopHaulTypeName,
-  LocationEvent
+  LocationEvent,
+  WcgopCatch,
+  WcgopCatchTypeName,
+  SpeciesTypeName
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -21,6 +24,8 @@ Vue.component(BoatnetHauls);
 export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
   private wcgopHaulsData: any[];
+
+  private exampleCatch: WcgopCatch;
 
   constructor() {
     super();
@@ -136,6 +141,8 @@ export default class Hauls extends Vue {
       haulNum: 2,
       targetStrategy: 'BANK'
     };
+
+
 
     this.wcgopHaulsData = [exampleHaul, exampleHaul2];
   }

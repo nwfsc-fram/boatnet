@@ -14,6 +14,8 @@ import {
 } from '../_common/index';
 
 import { WcgopSightingEvent, WcgopFishTicket } from './index';
+import { WcgopBrd } from './wcgop-brd';
+import { WcgopHlfc } from './wcgop-hlfc';
 
 export const WcgopTripTypeName = 'wcgop-trip';
 
@@ -35,7 +37,10 @@ export interface WcgopTrip extends BaseTrip {
   isDataQualityPassing?: boolean;
   debriefer?: Contact;
   sightingEvents?: WcgopSightingEvent[];
-  sightingEventHauls?: CouchID[]; // Haul UUID's where this sighting occurred
+  sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred
+  brd?: WcgopBrd[];
+  hlfc?: WcgopHlfc[];
+
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[];
   waiver?: Waiver;

@@ -1,2 +1,6 @@
-// TODO HLFC interface definition
-export type WcgopHlfc = any;
+import { CouchID } from '../_common/index';
+
+export interface WcgopHlfc {
+  // TODO HLFC interface definition
+  hlfcOps?: CouchID[]; // Operation UUID's where BRD used
+}
