@@ -44,5 +44,4 @@ export interface WcgopHaul extends BaseOperation {
 
   isHaulUnsampled?: boolean;
   isGearLost?: boolean;
-  sightingEvents?: WcgopSightingEvent[];
 }

@@ -9,7 +9,8 @@ import {
   Contact,
   Certificate,
   Waiver,
-  GearType
+  GearType,
+  CouchID
 } from '../_common/index';
 
 import { WcgopSightingEvent, WcgopFishTicket } from './index';
@@ -34,6 +35,7 @@ export interface WcgopTrip extends BaseTrip {
   isDataQualityPassing?: boolean;
   debriefer?: Contact;
   sightingEvents?: WcgopSightingEvent[];
+  sightingEventHauls?: CouchID[]; // Haul UUID's where this sighting occurred
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[];
   waiver?: Waiver;
