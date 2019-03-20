@@ -1,31 +1,44 @@
 // WCGOP Catch
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement } from '../_common/index';
+import { WcgopSpeciesItem } from './wcgop-species-item';
+import { WcgopSpecimen } from './wcgop-specimen';
 
 export const WcgopCatchTypeName = 'wcgop-catch';
 
 export interface WcgopCatch extends BaseCatch {
-  specimens?: any[]; // TODO Specimens interface
-  baskets?: any[]; // TODO Baskets interface
+  catchNum?: number;
 
-  weightMethod: string;
+  disposition?: string;
+  weightMethod?: string;
+  speciesItems?: WcgopSpeciesItem[];
+
+  specimens?: WcgopSpecimen[];
   weight?: Measurement;
   count?: number;
-  disposition?: string;
-  discardReason?: string;
-  volume?: {
-    value: number;
-    units: string;
-  };
-  density?: {
-    value: number;
-    units: string;
-  };
+  volume?: Measurement;
+  density?: Measurement;
   hooksSampled?: number;
-  sample?: {
-    weight?: number;
-    units?: string;
-    count?: number;
-    gearSegments?: number;
+  sampleWeight?: Measurement;
+
+  sampleCount?: number;
+  gearSegmentsSampled?: number;
+
+  legacy?: {
+    catchCategoryId?: number;
+    catchCategoryName?: string;
+    catchCategoryCode?: string;
+    catchPurity?: string;
+
+    basketsWeighedItq: number;
+    totalBasketsItq: number;
+    partialBasketWeightItq: number;
+    unitsSampledItq: number;
+    totalUnitsItq: number;
+    // All other _ITQ fields NULL, can ignore (confirm with Neil)
+
+    basketWeightKp: number;
+    addlBasketWeightKp: number;
+    basketWeightCountKp: number;
   };
 }

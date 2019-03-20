@@ -1,5 +1,5 @@
 import { Base } from './base';
-import { Measurement } from '../_common/index';
+import { Measurement, MeasurementDevice } from '../_common/index';
 
 export interface BaseContainer extends Base {
     // Use createdDate for sequence
@@ -7,4 +7,5 @@ export interface BaseContainer extends Base {
     weight: Measurement;
     tareWeight?: Measurement;
     isSubsample?: boolean;
+    measurementDevice?: MeasurementDevice;
 }
