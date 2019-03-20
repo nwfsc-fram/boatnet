@@ -15,3 +15,6 @@ export * from './measurement-device';
 export * from './species';
 export * from './biostructure';
 export * from './logbook-type';
+export * from './certificate';
+export * from './gear-type';
+export * from './waiver';

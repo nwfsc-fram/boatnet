@@ -6,16 +6,13 @@ import {
   FirstReceiver,
   TripStatus,
   LogbookType,
-  Contact
-} from '../_common/index';
-
-import {
-  WcgopSightingEvent,
-  WcgopFishTicket,
+  Contact,
   Certificate,
   Waiver,
   GearType
-} from './index';
+} from '../_common/index';
+
+import { WcgopSightingEvent, WcgopFishTicket } from './index';
 
 export const WcgopTripTypeName = 'wcgop-trip';
 
