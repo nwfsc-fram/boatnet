@@ -21,7 +21,7 @@ import moment from 'moment';
 
 @Component
 export default class Trips extends Vue {
-  @Prop() tripNum!: string; // Passed by router
+  @Prop() private tripNum!: string; // Passed by router
   private wcgopTripData: any;
 
   constructor() {

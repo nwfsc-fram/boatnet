@@ -39,23 +39,22 @@
         <br>
         <br>
         <div>
-        <router-link to="/" disabled=true>Forgot Password</router-link>
+          <router-link to="/" disabled="true">Forgot Password</router-link>
         </div>
         <br>
         <div>
-        <router-link to="/" disabled=true>Change Password</router-link>
+          <router-link to="/" disabled="true">Change Password</router-link>
         </div>
       </div>
     </q-page-container>
   </q-layout>
-
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Watch } from 'vue-property-decorator'; // https://github.com/kaorun343/vue-property-decorator
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+// https://github.com/kaorun343/vue-property-decorator
 import { AccountState, AlertState, User } from '../_store/types/types';
 
 @Component
