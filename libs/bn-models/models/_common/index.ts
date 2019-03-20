@@ -11,6 +11,7 @@ export * from './trip-status';
 export * from './vessel';
 export * from './location-event';
 export * from './measurement';
+export * from './measurement-device';
 export * from './species';
 export * from './biostructure';
 export * from './logbook-type';

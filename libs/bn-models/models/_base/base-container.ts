@@ -7,4 +7,5 @@ export interface BaseContainer extends Base {
     weight: Measurement;
     tareWeight?: Measurement;
     isSubsample?: boolean;
+    measurementDevice?: MeasurementDevice;
 }
