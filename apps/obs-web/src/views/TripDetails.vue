@@ -3,7 +3,7 @@
         <q-card>
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-                <p><strong>Trip # {{ trip.trip_num }}</strong></p>
+                <p><strong>Trip # {{ trip.trip_num }} - <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span></strong></p>
 
                 <q-input filled v-model="trip.start_date" mask="date" :rules="['date']" :dense="true" label="Start Date">
                 <template v-slot:append>
@@ -45,14 +45,38 @@
                 >
                 </q-select>
 
+                <q-btn round color="primary" icon="message" size="sm" @click="prompt=true" style="float:right"/>
+
                 <p><strong>Messages</strong></p>
-                <div class="q-pa-md" style="max-width: 350px">
-                    <q-list bordered separator>
-                        <q-item clickable :dense="true" v-ripple v-for="message in trip.messages" :key="message">
-                            <q-item-section>{{ message }}</q-item-section>
+                <div v-if="tripMessages.length > 0">
+                    <br>
+                    <q-list bordered separator class="rounded-borders">
+                        <q-item clickable :dense="true" v-for="message in tripMessages" :key="message.datetime">
+                            <q-item-section>
+                                <q-item-label class="text-primary">{{ message.author }} <span style="float:right"> 5 minutes ago </span></q-item-label>
+                                <q-item-label><strong>{{ message.text }}</strong></q-item-label>
+                            </q-item-section>
                         </q-item>
                     </q-list>
                 </div>
+
+                    <q-dialog v-model="prompt" persistent>
+                    <q-card style="min-width: 300px">
+                        <q-card-section>
+                        <div class="text-h6">New Message</div>
+                        </q-card-section>
+
+                        <q-card-section>
+                        <q-input dense v-model="newMessage" autofocus @keyup.enter="addMessage" />
+                        </q-card-section>
+
+                        <q-card-actions align="right" class="text-primary">
+                        <q-btn flat label="Cancel" @click="prompt = false" />
+                        <q-btn flat label="Add" @click="addMessage" />
+                        </q-card-actions>
+                    </q-card>
+                    </q-dialog>
+
             </q-card-section>
         </q-card>
     </div>
@@ -70,6 +94,18 @@ export default class TripDetails extends Vue{
     
     private trip =  this.$store.state.trips[this.$route.params.id]
     private permits = ['one', 'two', 'three','four', 'five', 'six','seven']
+    prompt = false
+    private newMessage:string = false
+
+    private addMessage() {
+        this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: 'tuesday' ,text: this.newMessage});
+        this.newMessage = '';
+        this.prompt = false;
+    }
+
+    private get tripMessages() {
+        return this.trip.messages.reverse()
+    }
 
     constructor() {
         super()
@@ -85,8 +121,22 @@ import Vue from 'vue';
 export default {
     data() {
         return {
-            trip: this.$store.state.trips[this.$route.params.id],
-            permits: ['one', 'two', 'three','four', 'five', 'six','seven']
+            trip: this.$store.state.activeTrip,
+            permits: ['one', 'two', 'three','four', 'five', 'six','seven'],
+            prompt: false,
+            newMessage: ''
+        }
+    },
+    methods: {
+        addMessage() {
+            this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: Date.now() ,text: this.newMessage});
+            this.newMessage = '';
+            this.prompt = false;
+        }
+    },
+    computed: {
+        tripMessages() {
+                return this.trip.messages.reverse()
         }
     }
 }

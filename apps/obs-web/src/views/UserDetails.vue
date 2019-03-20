@@ -51,14 +51,8 @@ export default class UserDetails extends Vue{
 <script>
 export default {
     data() {
-        if (this.$route.params.id) {
-            return {
-                user: this.$store.state.users[this.$route.params.id]
-            }
-        } else {
-            return {
-                user: this.$store.getters.activeUser
-            }
+        return {
+            user: this.$store.getters.activeUser
         }
     },
     computed: {
@@ -66,7 +60,7 @@ export default {
             return this.$store.state.usStates
         },
         ports() {
-            return this.$store.state.ports
+            return this.$store.state.ports.sort()
         }
     }
 }

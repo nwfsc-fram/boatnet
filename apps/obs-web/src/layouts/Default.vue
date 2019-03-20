@@ -36,31 +36,31 @@
       bordered
       content-class="bg-grey-2"
     >
-      <q-list>
+      <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
         <q-item to="/" exact>
           <q-item-section avatar><q-icon name="home" /></q-item-section>
           <q-item-section><q-item-label>Home</q-item-label>
-          <q-item-label caption>summary / status page depending on role?</q-item-label></q-item-section>
+          <q-item-label caption>summary / status page</q-item-label></q-item-section>
         </q-item>
 
         <q-item to="/trips" exact>
           <q-item-section avatar><q-icon name="directions" /></q-item-section>
           <q-item-section><q-item-label>Trips</q-item-label>
-          <q-item-label caption>create a trip / view trip history.</q-item-label></q-item-section>
+          <q-item-label caption>create a trip / view trip history</q-item-label></q-item-section>
         </q-item>  
 
         <q-item to="/log-book-capture" exact>
           <q-item-section avatar><q-icon name="camera_alt" /></q-item-section>
           <q-item-section><q-item-label>Log Book Capture</q-item-label>
-          <q-item-label caption>Use camera to take log book photo for upload</q-item-label></q-item-section>
+          <q-item-label caption>take/upload logbook photo</q-item-label></q-item-section>
         </q-item>
 
         <q-item to="/debriefer" exact>
           <q-item-section avatar><q-icon name="beenhere" /></q-item-section>
           <q-item-section><q-item-label>Debriefer</q-item-label>
-          <q-item-label caption>debriefer module description.</q-item-label></q-item-section>
+          <q-item-label caption>debriefer module description</q-item-label></q-item-section>
         </q-item>
 
 
@@ -89,7 +89,7 @@
         <q-item to="/manage-users" exact>
           <q-item-section avatar><q-icon name="people" /></q-item-section>
           <q-item-section><q-item-label>Manage Users</q-item-label>
-          <q-item-label caption>Search for and edit user conact info</q-item-label></q-item-section>
+          <q-item-label caption>edit user conact info</q-item-label></q-item-section>
         </q-item>
 
         <!-- <q-item to="/manage-vessels" exact>

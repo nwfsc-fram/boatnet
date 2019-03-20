@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
         <q-list bordered separator>
-            <q-item v-for="(user, i) of users" :key="i" @click="userDetails(i)">
+            <q-item v-for="(user, i) of users" :key="i" @click="userDetails(user)">
                 <q-item-section>
                     <q-item-label>{{ user.name }} ({{ user.role }})</q-item-label>
                 </q-item-section>
@@ -26,6 +26,8 @@ export default class ManageUsers extends Vue{
     }
     
     private userDetails(i:number) {
+        this.$store.state.activeUser = user
+        const index = this.$store.state.users.indexOf(user)
         this.$router.push({path: '/users/' + i})
         }
 
@@ -44,8 +46,10 @@ export default {
         }
     },
     methods: {
-        userDetails(i) {
-            this.$router.push({path: '/users/' + i})
+        userDetails(user) {
+            this.$store.state.activeUser = user
+            const index = this.$store.state.users.indexOf(user)
+            this.$router.push({path: '/users/' + index})
         }
     }
 

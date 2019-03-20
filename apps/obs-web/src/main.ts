@@ -11,7 +11,7 @@ import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
-  QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel, QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QPopupProxy, QSlideItem
+  QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel, QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QPopupProxy, QSlideItem, QDialog
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -21,7 +21,7 @@ Vue.use(VueResource);
 Vue.use(Quasar, {
   config: {},
   components: {
-    QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar, QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel, QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QPopupProxy, QSlideItem
+    QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar, QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel, QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QPopupProxy, QSlideItem, QDialog
   },
   directives: {},
   plugins: {}
