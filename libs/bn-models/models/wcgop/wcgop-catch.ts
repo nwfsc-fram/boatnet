@@ -2,6 +2,7 @@
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement } from '../_common/index';
 import { WcgopSpeciesItem } from './wcgop-species-item';
+import { WcgopSpecimen } from './wcgop-specimen';
 
 export const WcgopCatchTypeName = 'wcgop-catch';
 
@@ -10,11 +11,9 @@ export interface WcgopCatch extends BaseCatch {
 
   disposition?: string;
   weightMethod?: string;
-  species?: WcgopSpeciesItem[];
+  speciesItems?: WcgopSpeciesItem[];
 
-  specimens?: any[]; // TODO Specimens interface
-  baskets?: any[]; // TODO Baskets interface
-
+  specimens?: WcgopSpecimen[];
   weight?: Measurement;
   count?: number;
   volume?: Measurement;

@@ -25,8 +25,6 @@ export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
   private wcgopHaulsData: any[];
 
-  private exampleCatch: WcgopCatch;
-
   constructor() {
     super();
     this.wcgopHaulsSettings = {

@@ -7,3 +7,6 @@ export * from './wcgop-fish-ticket';
 export * from './wcgop-sighting-event';
 export * from './wcgop-brd';
 export * from './wcgop-hlfc';
+export * from './wcgop-basket';
+export * from './wcgop-specimen';
+export * from './wcgop-discard-reason';
