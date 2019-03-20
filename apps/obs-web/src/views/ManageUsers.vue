@@ -1,5 +1,6 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
+        <q-btn color="primary" @click="newUser">New User</q-btn>
         <q-list bordered separator>
             <q-item v-for="(user, i) of users" :key="i" @click="userDetails(user)">
                 <q-item-section>
@@ -49,6 +50,12 @@ export default {
         userDetails(user) {
             this.$store.state.activeUser = user
             const index = this.$store.state.users.indexOf(user)
+            this.$router.push({path: '/users/' + index})
+        },
+        newUser() {
+            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
+            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
+            const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
             this.$router.push({path: '/users/' + index})
         }
     }

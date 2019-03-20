@@ -2,7 +2,8 @@
     <div class="q-pa-md  q-gutter-md">
         <q-card>
             <q-card-section>
-            <p><strong>{{ user.name }}</strong></p>
+            <q-input filled v-model="user.name" label="Name"></q-input>
+            <q-select filled v-model="user.role" label="Role" :options="roles"></q-select>
             <q-input filled v-model="user.email" label="Email Address" type="email"></q-input>
             <q-input filled v-model="user.mobile" label="Mobile Number" type="tel"></q-input>
             <q-input filled v-model="user.home" label="Home Number" type="tel"></q-input>
@@ -37,7 +38,11 @@ export default class UserDetails extends Vue{
     }
 
     private get ports() {
-        return this.$store.state.ports
+        return this.$store.state.ports.sort()
+    }
+
+    private get roles() {
+        return this.$store.state.roles.sort()
     }
 
     constructor() {
@@ -52,7 +57,7 @@ export default class UserDetails extends Vue{
 export default {
     data() {
         return {
-            user: this.$store.getters.activeUser
+            user: this.$store.getters.activeUser,
         }
     },
     computed: {
@@ -61,6 +66,9 @@ export default {
         },
         ports() {
             return this.$store.state.ports.sort()
+        },
+        roles() {
+            return this.$store.state.roles.sort()
         }
     }
 }
