@@ -32,6 +32,13 @@ export default class ManageUsers extends Vue{
         this.$router.push({path: '/users/' + i})
         }
 
+    private newUSer() {
+        this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
+        this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
+        const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
+        this.$router.push({path: '/users/' + index})        
+    }
+
     constructor() {
         super()
     }
