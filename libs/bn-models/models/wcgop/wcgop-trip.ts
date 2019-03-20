@@ -6,17 +6,18 @@ import {
   FirstReceiver,
   TripStatus,
   LogbookType,
-  Contact
+  Contact,
+  Certificate,
+  Waiver,
+  GearType,
+  CouchID
 } from '../_common/index';
 
-export const WcgopTripTypeName = 'wcgop-trip';
+import { WcgopSightingEvent, WcgopFishTicket } from './index';
+import { WcgopBrd } from './wcgop-brd';
+import { WcgopHlfc } from './wcgop-hlfc';
 
-// TODO Create these types
-declare type WcgopSightingEvent = any;
-declare type WcgopFishTicket = any;
-declare type Certificate = any;
-declare type Waiver = any;
-declare type GearType = any;
+export const WcgopTripTypeName = 'wcgop-trip';
 
 export interface WcgopTrip extends BaseTrip {
   observer?: Contact; // formerly User ID, TODO Specifics
@@ -36,6 +37,10 @@ export interface WcgopTrip extends BaseTrip {
   isDataQualityPassing?: boolean;
   debriefer?: Contact;
   sightingEvents?: WcgopSightingEvent[];
+  sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred
+  brd?: WcgopBrd[];
+  hlfc?: WcgopHlfc[];
+
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[];
   waiver?: Waiver;

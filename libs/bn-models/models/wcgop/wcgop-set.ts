@@ -1,33 +1,38 @@
 // WCGOP Haul
 import { BaseOperation } from '../_base/base-operation';
-import { LocationEvent, Measurement, GearType } from '../_common/index';
+import { LocationEvent, Measurement } from '../_common/index';
 import { WcgopBrd, WcgopHlfc } from './index';
 import { WcgopSightingEvent } from './wcgop-sighting-event';
-import { WcgopCatch } from './wcgop-catch';
 
-export const WcgopHaulTypeName = 'wcgop-haul';
-
-declare type WcgopTargetStrategy = any; // TODO
+export const WcgopSetTypeName = 'wcgop-set';
 
 // TODO: Create both WCGOP Trawl and Fixed Gear haul types?
-export interface WcgopHaul extends BaseOperation {
+export interface WcgopSet extends BaseOperation {
+  // catches?: WcgopCatch[];  // TODO
   haulNum: number;
   locations?: LocationEvent[];
   observerTotalCatch?: {
     measurement?: Measurement;
     weightMethod?: string;
   };
-  gearType?: GearType;
-  gearPerformance?: string;
-  beaufortValue?: number;
   volume?: Measurement;
   density?: Measurement;
-  targetStrategy?: WcgopTargetStrategy;
+  gearType?: string;
+  gearPerformance?: string;
   isEfpUsed?: boolean;
+
+  isDeterrentUsed?: boolean;
+
+  avgSoakTime?: Measurement; // minutes? confirm with Neil
+  totalHooks?: number;
+  totalHooksLost?: number;
+  totalGearSegments?: number;
+  gearSegmentsLost?: number;
 
   excluderType?: string; // TODO lookup
 
-  isDeterrentUsed?: boolean;
+  beaufortValue?: number;
+  targetStrategy?: string;
   calWeight?: number;
   fit?: number;
 
@@ -39,9 +44,8 @@ export interface WcgopHaul extends BaseOperation {
   legacy?: {
     fishingActivityId: number;
     tripId: number;
-    catchWeightKp?: number;
-    catchCountKp?: number;
+    hooksSetKp: number;
+    sampleWeightKp?: number;
+    sampleCountKp?: number;
   };
-
-  catches?: WcgopCatch[];
 }

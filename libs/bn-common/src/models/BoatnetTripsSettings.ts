@@ -1,3 +1,3 @@
 export interface BoatnetTripsSettings {
-  name: string;
+  columns: any[];
 }
