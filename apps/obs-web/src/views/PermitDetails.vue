@@ -46,6 +46,38 @@
     </div>   
 </template>
 
+<script>
+
+const captains = ['seth', 'bob', 'sally', 'betty']
+
+export default {
+
+    data() {
+        return {
+            permit: this.$store.state.permits[this.$route.params.id],
+            permitCaptains: [],
+            options: captains            
+        }
+    },
+    methods: {
+        filterFn (val, update) {
+        if (val === '') {
+            update(() => {
+            this.options = captains
+            })
+            return
+        }
+
+      update(() => {
+        const needle = val.toLowerCase()
+        this.options = captains.filter(v => v.toLowerCase().indexOf(needle) > -1)
+      })
+    }
+    }
+}
+</script>
+
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -82,7 +114,7 @@ export default class PermitDetails extends Vue{
 
 }
 </script>
-
+-->
 
 <style lang="stylus" scoped>
 .my-card

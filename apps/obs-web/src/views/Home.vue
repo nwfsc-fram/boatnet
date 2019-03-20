@@ -4,6 +4,7 @@
   </q-page>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -21,7 +22,18 @@ export default class Home extends Vue{
   
 }
 </script>
+--> 
 
+<script>
+export default {
+  data() {
+    return {
+      name: this.$store.state.activeVessel.name
+    }
+  }
+}
+</script>
 
 <style>
+
 </style>

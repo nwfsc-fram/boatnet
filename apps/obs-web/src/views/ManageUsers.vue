@@ -10,6 +10,7 @@
     </div>    
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -33,3 +34,21 @@ export default class ManageUsers extends Vue{
     }
 }
 </script>
+-->
+
+<script>
+export default {
+    data() {
+        return {
+            users: this.$store.getters.users
+        }
+    },
+    methods: {
+        userDetails(i) {
+            this.$router.push({path: '/users/' + i})
+        }
+    }
+
+}
+</script>
+

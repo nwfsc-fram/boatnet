@@ -18,6 +18,7 @@
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -45,8 +46,8 @@ export default class UserDetails extends Vue{
 
 }
 </script>
+--> 
 
-<!--
 <script>
 export default {
     data() {
@@ -70,4 +71,4 @@ export default {
     }
 }
 </script>
--->
+

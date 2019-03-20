@@ -112,8 +112,25 @@
   </q-layout>
 </template>
 
+<script>
+export default {
+  name: 'LayoutDefault',
 
+  data() {
+    return {
+      leftDrawerOpen: this.$q.platform.is.desktop,
+      currentTrip: this.$store.state.currentTrip
+    };
+  },
+  methods: {
+    navigateBack() {
+        this.$router.back()
+    }
+  }
+};
+</script>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -139,3 +156,4 @@ export default class DefaultLayout extends Vue{
 }
 </script>
 
+-->

@@ -26,6 +26,7 @@
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -60,8 +61,8 @@ export default class UserConfig extends Vue{
 
 }
 </script>
+-->
 
-<!--
 <script>
 export default {
     data() {
@@ -90,4 +91,4 @@ export default {
     }
 }
 </script>
--->
+

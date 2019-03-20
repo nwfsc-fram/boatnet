@@ -1,9 +1,15 @@
 <template>
-    <div>
-        OTS Management
+    <div class="q-pa-md  q-gutter-md">
+        <q-card>
+            <q-card-section>
+                OTS Management
+            </q-card-section>
+        </q-card>
+        
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -19,3 +25,4 @@ export default class OTSManagement extends Vue{
     }
 }
 </script>
+-->

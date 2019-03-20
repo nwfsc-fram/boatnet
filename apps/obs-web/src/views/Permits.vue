@@ -21,6 +21,7 @@
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -72,8 +73,8 @@ export default class Permits extends Vue{
     }
 }
 </script>
+-->
 
-<!--
 <script>
 export default {
     data() {
@@ -122,4 +123,4 @@ export default {
     },
 }
 </script>
--->
+

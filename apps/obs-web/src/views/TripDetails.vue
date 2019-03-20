@@ -54,12 +54,11 @@
                     </q-list>
                 </div>
             </q-card-section>
-
-
         </q-card>
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -79,6 +78,20 @@ export default class TripDetails extends Vue{
 }
 
 </script>
+-->
+
+<script>
+import Vue from 'vue';
+export default {
+    data() {
+        return {
+            trip: this.$store.state.trips[this.$route.params.id],
+            permits: ['one', 'two', 'three','four', 'five', 'six','seven']
+        }
+    }
+}
+</script>
+
 
 <style scoped>
     p { margin-bottom: 5px; }

@@ -8,6 +8,7 @@
     </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -17,6 +18,13 @@ import { Component, Prop } from 'vue-property-decorator';
 
 @Component
 export default class LogBookCapture extends Vue{
+    
+}
+</script>
+-->
+
+<script>
+export default {
     
 }
 </script>

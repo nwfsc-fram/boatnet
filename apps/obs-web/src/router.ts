@@ -15,8 +15,8 @@ import LogBookCapture from './views/LogBookCapture.vue';
 
 Vue.use(Router);
 
-const router = new Router({
-  mode: 'history',
+export default new Router({
+
   routes: [
     {
       path: '/',
@@ -36,7 +36,32 @@ const router = new Router({
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
       ]
     }
-  ]
+  ],
+  mode: 'history'
 });
 
-export default router;
+// const router = new Router({
+//   mode: 'history',
+//   routes: [
+//     {
+//       path: '/',
+//       component: DefaultLayout,
+//       children: [
+//         { path: '', name: 'Home', component: Home },
+//         { path: '/about', name: 'About', component: About },
+//         { path: '/trips', name: 'Trips', component: Trips},
+//         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
+//         { path: '/debriefer', redirect: '' },
+//         { path: '/permits', name: 'Permits', component: Permits},
+//         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
+//         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
+//         { path: 'user-config', name: 'User Config', component: UserConfig },        
+//         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
+//         { path: '/users/:id', name: 'User Details', component: UserDetails},
+//         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
+//       ]
+//     }
+//   ]
+// });
+
+// export default router;

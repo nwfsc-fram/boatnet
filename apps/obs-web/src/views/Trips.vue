@@ -43,6 +43,7 @@
   </div>
 </template>
 
+<!--
 <script lang="ts">
 
 import Vue from 'vue';
@@ -100,15 +101,8 @@ export default class Trips extends Vue{
     }
 }
 </script>
+-->
 
-<style lang="stylus" scoped>
-  .my-card
-    width 100%
-    max-width 450px
-</style>
-
-
-<!--
 <script>
 
 import Vue from 'vue';
@@ -160,4 +154,12 @@ export default{
     }
 };
 </script>
--->
+
+
+<style lang="stylus" scoped>
+  .my-card
+    width 100%
+    max-width 450px
+</style>
+
+
