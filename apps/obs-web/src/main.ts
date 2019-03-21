@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import VueResource from 'vue-resource'
+// import VueResource from 'vue-resource'
 import './registerServiceWorker';
 
 import 'quasar/dist/quasar.min.css'; // WS- Added this after commenting out .styl imports
@@ -16,7 +16,7 @@ import {
 
 import UserDetails from './views/UserDetails.vue';
 
-Vue.use(VueResource);
+// Vue.use(VueResource);
 
 Vue.use(Quasar, {
   config: {},

@@ -27,26 +27,26 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class UserDetails extends Vue{
+export default class UserDetails extends Vue {
 
     private get user() {
-        return this.$store.getters.activeUser
+        return this.$store.getters.activeUser;
     }
 
     private get usStates() {
-        return this.$store.state.usStates
+        return this.$store.state.usStates;
     }
 
     private get ports() {
-        return this.$store.state.ports.sort()
+        return this.$store.state.ports.sort();
     }
 
     private get roles() {
-        return this.$store.state.roles.sort()
+        return this.$store.state.roles.sort();
     }
 
     constructor() {
-        super()
+        super();
     }
 
 }

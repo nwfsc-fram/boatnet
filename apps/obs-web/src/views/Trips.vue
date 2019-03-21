@@ -69,37 +69,41 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class Trips extends Vue{
+export default class Trips extends Vue {
 
-    private alert = false
+    private alert = false;
+
+    constructor() {
+        super();
+    }
 
     private get trips() {
-        return this.$store.getters.trips
+        return this.$store.getters.trips;
     }
 
     private set trips(value) {
-        this.$store.dispatch('updateTrips', value)
+        this.$store.dispatch('updateTrips', value);
     } 
 
     private get openTrips() {
-      return this.$store.getters.openTrips
+      return this.$store.getters.openTrips;
     }
 
     private set openTrips(value) {
-      this.$store.dispatch('updateTrips', value)
+      this.$store.dispatch('updateTrips', value);
     }
 
     private get closedTrips() {
-      return this.$store.getters.closedTrips
+      return this.$store.getters.closedTrips;
     }
 
     private set closedTrips(value) {
-      this.$store.dispatch('updateTrips', value)
+      this.$store.dispatch('updateTrips', value);
     }
 
     private created() {
-      this.$store.dispatch('updateActiveTrip', '')
-      console.log(this.$store.getters.trips)
+      this.$store.dispatch('updateActiveTrip', '');
+      console.log(this.$store.getters.trips);
     }
 
     private closeTrip(trip: any) {
@@ -115,22 +119,19 @@ export default class Trips extends Vue{
       }
 
     private getTripDetails(trip: any) {
-        this.$store.dispatch('updateActiveTrip', trip)
-        // this.$store.state.activeTrip = this.trips[i]
-        this.$router.push({path: '/trips/'+ trip.trip_num})
+        this.$store.dispatch('updateActiveTrip', trip);
+        // this.$store.state.activeTrip = this.trips[i];
+        this.$router.push({path: '/trips/'+ trip.trip_num});
       }
 
     private newTrip() {
-        const newTripNum = this.$store.state.trips.length + 1
-        this.$store.state.trips.push({type: 'trip', trip_num: newTripNum, vessel: this.$store.state.activeVessel, permits: [], messages: [], start_port: this.$store.state.activeUser.homeport, end_port: 'same as start'})
-        this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length -1])
-        console.log(this.$store.state.activeTrip)
-        this.$router.push({path: '/trips/' + newTripNum})
+        const newTripNum = this.$store.state.trips.length + 1;
+        this.$store.state.trips.push({type: 'trip', trip_num: newTripNum, vessel: this.$store.state.activeVessel, permits: [], messages: [], start_port: this.$store.state.activeUser.homeport, end_port: 'same as start'});
+        this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length -1]);
+        console.log(this.$store.state.activeTrip);
+        this.$router.push({path: '/trips/' + newTripNum});
       }
 
-    constructor() {
-        super()
-    }
 }
 </script>
 

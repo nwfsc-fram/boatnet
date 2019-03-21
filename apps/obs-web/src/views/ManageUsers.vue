@@ -19,27 +19,27 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class ManageUsers extends Vue{
+export default class ManageUsers extends Vue {
 
     private get users() {
-        return this.$store.getters.users
+        return this.$store.getters.users;
     }
     
     private userDetails(user: any) {
-            this.$store.state.activeUser = user
-            const index = this.$store.state.users.indexOf(user)
-            this.$router.push({path: '/users/' + index})
+            this.$store.state.activeUser = user;
+            const index = this.$store.state.users.indexOf(user);
+            this.$router.push({path: '/users/' + index});
         }
 
     private newUser() {
-            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
-            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
-            const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
-            this.$router.push({path: '/users/' + index})
+            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null});
+            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1];
+            const index = this.$store.state.users.indexOf(this.$store.state.activeUser);
+            this.$router.push({path: '/users/' + index});
         }
 
     constructor() {
-        super()
+        super();
     }
 }
 </script>

@@ -25,9 +25,8 @@
                 </template>
                 </q-input>
 
-                <q-input filled v-model="trip.start_port" type="text" :dense="true" label="Start Port"></q-input>
-
-                <q-input filled v-model="trip.end_port" type="text" :dense="true" label="End Port"></q-input> 
+                <q-select filled v-model="trip.start_port" :dense="true" label="Start Port" :options="ports"></q-select>
+                <q-select filled v-model="trip.end_port" :dense="true" label="End Port" :options="ports"></q-select>
  
                 <p><strong>Permits</strong></p>
 
@@ -89,12 +88,17 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class TripDetails extends Vue{
+export default class TripDetails extends Vue {
     
-    private trip =  this.$store.state.activeTrip
-    private permits = ['one', 'two', 'three','four', 'five', 'six','seven']
-    private prompt = false
-    private newMessage:string = ''
+    private trip =  this.$store.state.activeTrip;
+    private permits = [
+        {label: 'permit one', value: 42},
+        {label: 'permit two', value: 17},
+        {label: 'permit three', value: 7},
+        ];
+    private prompt = false;
+    private newMessage:string = '';
+    private ports = this.$store.state.ports
 
     private addMessage() {
             this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: Date.now() ,text: this.newMessage});
@@ -103,11 +107,11 @@ export default class TripDetails extends Vue{
         }
 
     private get tripMessages() {
-                return this.trip.messages.reverse()
+                return this.trip.messages.reverse();
         }
 
     constructor() {
-        super()
+        super();
     }
 
 }

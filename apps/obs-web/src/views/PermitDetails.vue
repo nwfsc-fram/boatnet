@@ -86,31 +86,32 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class PermitDetails extends Vue{
+export default class PermitDetails extends Vue {
     
-    private captains = ['seth', 'bob', 'sally', 'betty']
+    private captains = ['seth', 'bob', 'sally', 'betty'];
     
-    permit = this.$store.state.permits[this.$route.params.id]
+    private permit = this.$store.state.activePermit;
 
-    permitCaptains = []
+    private permitCaptains = [];
     
-    options = this.captains
-
+    // private options = this.captains;
+    private options = this.captains
+ 
     filterFn (val:string, update: any) {
         if (val === '') {
             update(() => {
-            this.options = this.captains
+            this.options = this.captains;
             })
             return
         }
       update(() => {
-        const needle = val.toLowerCase()
-        this.options = this.captains.filter(v => v.toLowerCase().indexOf(needle) > -1)
+        const needle = val.toLowerCase();
+        this.options = this.options.filter(v => v.toLowerCase().indexOf(needle) > -1);
       })
     }
     
     constructor() {
-        super()
+        super();
     }
 
 }

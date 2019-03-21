@@ -19,12 +19,12 @@ import { mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class About extends Vue{
+export default class About extends Vue {
 
-  name = this.$store.state.activeVessel.name
+  private name = this.$store.state.activeVessel.name;
 
   constructor() {
-    super()
+    super();
   }
   
 }

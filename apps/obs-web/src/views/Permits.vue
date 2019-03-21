@@ -6,7 +6,7 @@
             </q-btn>
         </div>
         <q-list bordered separator>
-            <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(i)">
+            <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(permit, i)">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
                 <q-item-section>
                     <q-item-label>{{ permit.permit_number }}</q-item-label>
@@ -21,61 +21,51 @@
     </div>
 </template>
 
-<!--
 <script lang="ts">
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import axios from 'axios';
 
 @Component
-export default class Permits extends Vue{
+export default class Permits extends Vue {
 
-    private filterText:string = ''
-    private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner']
+    private filterText:string = '';
+    private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];
 
-    getPermits() {
-        this.$http.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            const permitArray = []
-            for (var permit of data.items)
-                { permitArray.push(permit)}
-            console.log(permitArray)
-            this.$store.dispatch('updatePermits', permitArray) 
-            console.log(this.$store.state.permits)
+    private getPermits() {
+        axios.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
+            .then(response => {
+                console.log(response.data.items);
+                this.$store.dispatch('updatePermits', response.data.items);
+                console.log(this.$store.state.permits);
             })
-        }
-
-    private permitDetails(i:number) {
-        this.$router.push({path: '/permits/'+ i})
     }
 
-    private get permits() {
-        return this.$store.getters.permits
+    private permitDetails(permit: any, i: number) {
+        this.$store.state.activePermit = permit;
+        this.$router.push({path: '/permits/'+ i});
     }
 
-    private set permits(value) {
-        this.$store.dispatch('updatePermits', value)
-    } 
+    private permits = this.$store.state.permits;
 
-    private filteredPermits() {
+    private get filteredPermits() {
         if (this.filterText.length > 0) {
             // implement search 
-            return this.permits;
-        } else { return this.permits; }
+            return this.$store.state.permits
+        } else { return this.$store.state.permits }
     }
 
     constructor() {
-        super()
+        super();
     }
 }
 </script>
--->
 
+<!--
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -84,20 +74,27 @@ export default {
         }
     },
     methods: {
+    // getPermits() {
+    //     this.$http.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
+    //     .then(response => {
+    //         return response.json()
+    //     })
+    //     .then(data => {
+    //         const permitArray = []
+    //         for (var permit of data.items)
+    //             { permitArray.push(permit)}
+    //         console.log(permitArray)
+    //         this.$store.dispatch('updatePermits', permitArray) 
+    //         console.log(this.$store.state.permits)
+    //         })
+    //     },
     getPermits() {
-        this.$http.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            const permitArray = []
-            for (var permit of data.items)
-                { permitArray.push(permit)}
-            console.log(permitArray)
-            this.$store.dispatch('updatePermits', permitArray) 
-            console.log(this.$store.state.permits)
+        axios.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
+            .then(response => {
+                console.log(response.data.items)
+                this.$store.dispatch('updatePermits', response.data.items)
             })
-        },
+    },
     permitDetails(i) {
         this.$router.push({path: '/permits/'+ i})
     }
@@ -123,4 +120,4 @@ export default {
     },
 }
 </script>
-
+-->

@@ -15,7 +15,7 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class LogBookCapture extends Vue{
+export default class LogBookCapture extends Vue {
     
 }
 </script>

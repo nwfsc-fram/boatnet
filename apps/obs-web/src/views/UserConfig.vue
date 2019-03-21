@@ -33,29 +33,29 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class UserConfig extends Vue{
+export default class UserConfig extends Vue {
 
-    private vessels = ['Excalibur', 'Raven']
-    private notificationOptions = ['email', 'sms/text', 'app']
+    private vessels = ['Excalibur', 'Raven'];
+    private notificationOptions = ['email', 'sms/text', 'app'];
 
     private get activeVessel() {
-        return this.$store.getters.activeVessel
-    } 
+        return this.$store.getters.activeVessel;
+    }
 
     private set activeVessel(value) {
-        this.$store.dispatch('updateActiveVessel', value)
+        this.$store.dispatch('updateActiveVessel', value);
     }
 
     private get activeUser() {
-        return this.$store.getters.activeUser
+        return this.$store.getters.activeUser;
     }
 
     private set activeUser(value) {
-        this.$store.dispatch('updateActiveUser', value)
+        this.$store.dispatch('updateActiveUser', value);
     }
-    
+
     constructor() {
-        super()
+        super();
     }
 
 }

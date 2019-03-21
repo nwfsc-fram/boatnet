@@ -16,10 +16,10 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class OTSManagement extends Vue{
+export default class OTSManagement extends Vue {
 
     constructor() {
-        super()
+        super();
     }
 }
 </script>
