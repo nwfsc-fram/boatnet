@@ -30,11 +30,8 @@ export interface WcgopTrip extends BaseTrip {
   logbookNum?: number;
   logbookType?: LogbookType;
   observerLogbookNum?: number;
-  isExpanded?: boolean;
-  doExpand?: boolean; // should expand or not after manual calculation
   isFishProcessed?: boolean;
   tripStatus?: TripStatus;
-  isDataQualityPassing?: boolean;
   debriefer?: Contact;
   sightingEvents?: WcgopSightingEvent[];
   sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred

@@ -12,6 +12,7 @@ declare type Viability = string;
 declare type LifeStage = string;
 declare type Population = string;
 declare type Maturity = string;
+declare type Protocol = string; // TODO Protocol interface
 
 export interface BaseSpecimen extends Base {
   species?: Species; // TODO needed?
@@ -35,7 +36,7 @@ export interface BaseSpecimen extends Base {
   wholeSpecimen?: Biostructure;
   numSpecimens?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent;
-  protocol?: any; // TODO Protocol interface
+  protocol?: Protocol;
   specialProjects?: any; // arbitrary special project data
   frequency?: number; // 1 if undefined
 }

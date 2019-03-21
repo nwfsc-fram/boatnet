@@ -8,8 +8,6 @@ import {
   CouchID
 } from '../_common/index';
 
-// Base Trip Class, intended to be subclassed
-// TODO: What are common fields of trip?
 export interface BaseTrip extends Base {
   haulIDs?: CouchID[]; // Haul UUID's
   captain?: Contact;
@@ -19,4 +17,8 @@ export interface BaseTrip extends Base {
   departureDate?: BoatnetDate;
   returnPort?: Port;
   returnDate?: BoatnetDate;
+  // Metadata
+  isExpanded?: boolean;
+  doExpand?: boolean; // should expand or not after manual calculation
+
 }
