@@ -34,7 +34,7 @@ export default new Vuex.Store({
       {name: 'Neil Riley', role: 'Staff', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232},
       {name: 'Will Smith', role: 'Provider', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232}
     ],
-    roles: ['Captain', 'Observer', 'Staff', 'Provider'],
+    roles: ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'],
     usStates: [
       'AL','AK','AS','AZ','AR','CA','CO','CT','DE','DC','FM','FL','GA',
       'GU','HI','ID','IL','IN','IA','KS','KY','LA','ME','MH','MD','MA',

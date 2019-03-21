@@ -11,13 +11,12 @@
     </div>    
 </template>
 
-<!--
+
 <script lang="ts">
 
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import router from 'vue-router';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class ManageUsers extends Vue{
@@ -26,26 +25,26 @@ export default class ManageUsers extends Vue{
         return this.$store.getters.users
     }
     
-    private userDetails(i:number) {
-        this.$store.state.activeUser = user
-        const index = this.$store.state.users.indexOf(user)
-        this.$router.push({path: '/users/' + i})
+    private userDetails(user: any) {
+            this.$store.state.activeUser = user
+            const index = this.$store.state.users.indexOf(user)
+            this.$router.push({path: '/users/' + index})
         }
 
-    private newUSer() {
-        this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
-        this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
-        const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
-        this.$router.push({path: '/users/' + index})        
-    }
+    private newUser() {
+            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
+            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
+            const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
+            this.$router.push({path: '/users/' + index})
+        }
 
     constructor() {
         super()
     }
 }
 </script>
--->
 
+<!--
 <script>
 export default {
     data() {
@@ -69,4 +68,4 @@ export default {
 
 }
 </script>
-
+-->

@@ -82,30 +82,29 @@
     </div>
 </template>
 
-<!--
 <script lang="ts">
 
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import router from 'vue-router';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
+@Component
 export default class TripDetails extends Vue{
     
-    private trip =  this.$store.state.trips[this.$route.params.id]
+    private trip =  this.$store.state.activeTrip
     private permits = ['one', 'two', 'three','four', 'five', 'six','seven']
-    prompt = false
-    private newMessage:string = false
+    private prompt = false
+    private newMessage:string = ''
 
     private addMessage() {
-        this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: 'tuesday' ,text: this.newMessage});
-        this.newMessage = '';
-        this.prompt = false;
-    }
+            this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: Date.now() ,text: this.newMessage});
+            this.newMessage = '';
+            this.prompt = false;
+        }
 
     private get tripMessages() {
-        return this.trip.messages.reverse()
-    }
+                return this.trip.messages.reverse()
+        }
 
     constructor() {
         super()
@@ -114,8 +113,8 @@ export default class TripDetails extends Vue{
 }
 
 </script>
--->
 
+<!--
 <script>
 import Vue from 'vue';
 export default {
@@ -141,7 +140,7 @@ export default {
     }
 }
 </script>
-
+-->
 
 <style scoped>
     p { margin-bottom: 5px; }

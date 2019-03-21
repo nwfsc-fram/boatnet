@@ -46,6 +46,7 @@
     </div>   
 </template>
 
+<!--
 <script>
 
 const captains = ['seth', 'bob', 'sally', 'betty']
@@ -76,35 +77,35 @@ export default {
     }
 }
 </script>
+-->
 
-<!--
 <script lang="ts">
 
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import router from 'vue-router';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-const captains = ['seth', 'bob', 'sally', 'betty']
-
+@Component
 export default class PermitDetails extends Vue{
-
+    
+    private captains = ['seth', 'bob', 'sally', 'betty']
+    
     permit = this.$store.state.permits[this.$route.params.id]
 
     permitCaptains = []
     
-    options = captains
+    options = this.captains
 
-    filterFn (val:string, update) {
+    filterFn (val:string, update: any) {
         if (val === '') {
             update(() => {
-            this.options = captains
+            this.options = this.captains
             })
             return
         }
       update(() => {
         const needle = val.toLowerCase()
-        this.options = captains.filter(v => v.toLowerCase().indexOf(needle) > -1)
+        this.options = this.captains.filter(v => v.toLowerCase().indexOf(needle) > -1)
       })
     }
     
@@ -114,7 +115,7 @@ export default class PermitDetails extends Vue{
 
 }
 </script>
--->
+
 
 <style lang="stylus" scoped>
 .my-card

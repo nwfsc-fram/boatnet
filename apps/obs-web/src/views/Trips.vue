@@ -62,14 +62,13 @@
   </div>
 </template>
 
-<!--
 <script lang="ts">
 
-import Vue from 'vue';
 import { mapState } from 'vuex';
 import router from 'vue-router';
-import { Component, Prop } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
+@Component
 export default class Trips extends Vue{
 
     private alert = false
@@ -103,22 +102,22 @@ export default class Trips extends Vue{
       console.log(this.$store.getters.trips)
     }
 
-    private closeTrip(trip_num:number) {
-        this.$store.state.trips[trip_num].is_open = false;
+    private closeTrip(trip: any) {
+        trip.is_open = false;
       }
 
-    private reOpenTrip(trip_num:number) {
+    private reOpenTrip(trip: any) {
         if (this.openTrips.length < 2) {
           trip.is_open = true;
         } else {
-          this.alert = true
+          this.alert = true;
         }
       }
 
-    private getTripDetails(trip_num:number) {
-        this.$store.dispatch('updateActiveTrip', this.trips[trip_num])
-        // this.$store.state.activeTrip = this.trips[trip_num]
-        this.$router.push({path: '/trips/'+ trip_num})
+    private getTripDetails(trip: any) {
+        this.$store.dispatch('updateActiveTrip', trip)
+        // this.$store.state.activeTrip = this.trips[i]
+        this.$router.push({path: '/trips/'+ trip.trip_num})
       }
 
     private newTrip() {
@@ -134,8 +133,8 @@ export default class Trips extends Vue{
     }
 }
 </script>
--->
 
+<!--
 <script>
 
 import Vue from 'vue';
@@ -203,7 +202,7 @@ export default{
     }
 };
 </script>
-
+-->
 
 <style lang="stylus" scoped>
   .my-card
