@@ -1,5 +1,5 @@
 export interface Measurement {
   measurementType?: string;
-  value: number;
+  value: number | string;
   units: string;
 }
