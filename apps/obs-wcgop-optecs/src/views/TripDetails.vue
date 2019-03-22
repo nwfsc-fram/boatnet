@@ -4,59 +4,68 @@
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="start">
         <div class="q-pa-md">
-          <div class="q-gutter-md row">
-            <q-input outlined v-model="text"/>
-
-            <q-input outlined v-model="text" label="Label (stacked)" stack-label/>
-
-            <q-input outlined v-model="text" label="Label"/>
-
+          <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
+          <!-- so be sure to use q-col-gutter -->
+          <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
             <q-input
               outlined
+              class="col-2"
               v-model="ph"
-              label="Label"
-              placeholder="Placeholder"
-              hint="With placeholder"
-
+              label="Vessel Name"
             />
-
             <q-input
               outlined
+              class="col-2"
               v-model="ph"
-              placeholder="Placeholder"
-              hint="With placeholder"
-
+              label="Fishery"
             />
-
             <q-input
               outlined
-              square
-              v-model="text"
-              hint="With perfect square borders"
-
+              class="col-2"
+              v-model="ph"
+              label="USGS / State Reg #"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="ph"
+              label="Skipper's Name"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="ph"
+              label="# of Crew"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="ph"
+              label="Observer Logbook #"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="ph"
+              label="Departure Date/ Time"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="ph"
+              label="Departure Port"
             />
 
-            <q-input outlined v-model="text">
-              <template v-slot:prepend>
-                <q-icon name="event"/>
-              </template>
-            </q-input>
-
-            <q-input outlined v-model="text">
-              <template v-slot:append>
-              </template>
-            </q-input>
-
-            <q-input outlined bottom-slots v-model="text" label="Label" counter>
-              <template v-slot:prepend>
-                <q-icon name="place"/>
-              </template>
-              <template v-slot:append>
-                <q-icon name="close" @click="text = ''" class="cursor-pointer"/>
-              </template>
-
-              <template v-slot:hint>Field hint</template>
-            </q-input>
+            <div class="text-h6 col-2">Permit / License Numbers</div>
+            <!-- TODO this should be a component -->
+            <div class="row">
+                <q-input
+                  outlined
+                  class="col-12"
+                  v-model="ph"
+                  label="Permit/ License #"
+                />
+            </div>
 
           </div>
         </div>
@@ -65,7 +74,7 @@
       <q-tab-panel name="end">
         <div class="q-pa-md">
           <div class="q-gutter-md row">
-            <q-input outlined v-model="text"/>
+            <q-input outlined v-model="text" class="col-6"/>
 
             <q-input
               outlined
