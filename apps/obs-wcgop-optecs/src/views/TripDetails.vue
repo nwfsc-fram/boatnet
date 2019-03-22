@@ -7,14 +7,40 @@
           <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
           <!-- so be sure to use q-col-gutter -->
           <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-            <q-input outlined class="col-2" v-model="ph" label="Vessel Name"/>
-            <q-input outlined class="col-2" v-model="ph" label="Fishery"/>
-            <q-input outlined class="col-2" v-model="ph" label="USGS / State Reg #"/>
-            <q-input outlined class="col-2" v-model="ph" label="Skipper's Name"/>
-            <q-input outlined class="col-2" v-model="ph" label="# of Crew"/>
-            <q-input outlined class="col-2" v-model="ph" label="Observer Logbook #"/>
-            <q-input outlined class="col-2" v-model="ph" label="Departure Date/ Time"/>
-            <q-input outlined class="col-2" v-model="ph" label="Departure Port"/>
+            <q-input outlined class="col-2" v-model="currentTrip.vessel.name" label="Vessel Name"/>
+            <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
+            <q-input
+              outlined
+              class="col-2"
+              readonly
+              v-model="vesselReg"
+              label="USGS / State Reg #"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.captain.name"
+              label="Skipper's Name"
+            />
+            <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.observerLogbookNum"
+              label="Observer Logbook #"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              :value="formatDate(currentTrip.departureDate)"
+              label="Departure Date/ Time"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.departurePort.name"
+              label="Departure Port"
+            />
 
             <div class="text-h6 col-2">Permit / License Numbers</div>
             <!-- TODO this should be a component -->
@@ -27,13 +53,12 @@
 
       <q-tab-panel name="end">
         <div class="q-pa-md">
-          <div class="q-col-gutter-md column"  style="height:400px; max-height: 100%;">
-
+          <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
             <div class="col-2">
               <div class="text-h8 col-3">Partial Trip</div>
               <q-btn-toggle
                 class="col-auto"
-                v-model="isPartialTrip"
+                v-model="currentTrip.isPartialTrip"
                 toggle-color="primary"
                 :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
               />
@@ -43,40 +68,61 @@
               <div class="text-h8 col-3">Fish Processed During Trip</div>
               <q-btn-toggle
                 class="col-auto"
-                v-model="isFishProcessed"
+                v-model="currentTrip.isFishProcessed"
                 toggle-color="primary"
                 :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
               />
             </div>
 
-            <q-input outlined class="col-2" v-model="ph" label="Vessel Logbook Name"/>
-            <q-input outlined class="col-2" v-model="ph" label="Vessel Logbook Page #"/>
-            <q-input outlined class="col-2" v-model="ph" label="Return Port"/>
-            <q-input outlined class="col-2" v-model="ph" label="Return Date/Time"/>
-            <q-input outlined class="col-2" v-model="ph" label="First Receiver"/>
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.logbookType"
+              label="Vessel Logbook Name"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.logbookNum"
+              label="Vessel Logbook Page #"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              v-model="currentTrip.returnPort.name"
+              label="Return Port"
+            />
+            <q-input
+              outlined
+              class="col-2"
+              :value="formatDate(currentTrip.returnDate)"
+              label="Return Date/Time"
+            />
+            <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
             <div class="text-h6 col-2">Fish Tickets</div>
             <!-- TODO this should be a component -->
             <div class="row">
               <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
             </div>
-
           </div>
         </div>
       </q-tab-panel>
     </q-tab-panels>
-    <q-option-group
-      v-model="tab"
-      inline
-      :options="[
+    <div class="row justify-center">
+      <q-option-group
+        v-model="tab"
+        inline
+        :options="[
           { label: '', value: 'start' },
           { label: '', value: 'end' },
         ]"
-    />
+      />
+    </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 
 import { Point } from 'geojson';
 import {
@@ -97,16 +143,14 @@ export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) private tripNum!: number; // Passed by router
   private wcgopTripData: any;
-  private tab: string; // Current tab (start or end)
-  private text = ''; // TEMP
-  private ph = ''; // TEMP
+  private tab!: string; // Current tab (start or end)
 
-  private isPartialTrip: boolean | null = null;
-  private isFishProcessed: boolean | null = null;
+  private currentTrip!: WcgopTrip;
+
+  private ph = ''; // TEMP
 
   constructor() {
     super();
-
     this.tab = this.startTab;
     const examplePort: Port = {
       _id: 'asdf',
@@ -127,16 +171,25 @@ export default class Trips extends Vue {
     };
 
     const exampleVessel: Vessel = {
-      name: 'Sadie K'
+      name: 'Sadie K',
+      uscg: 'ABC123'
     };
 
-    const exampleTrip = {
+    // TODO This is just an example trip
+    this.currentTrip = {
       _id: '1',
-      tripNum: 1,
+      tripNum: this.tripNum,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
       program: 'Catch Shares',
+      fishery: { name: 'Catch Shares' },
+      captain: {
+        name: 'Capt. Hook'
+      },
+      crewSize: 25,
+      isPartialTrip: false,
+      observerLogbookNum: 123,
       departurePort: examplePort,
       departureDate: moment().format(),
       returnPort: examplePort2,
@@ -144,12 +197,35 @@ export default class Trips extends Vue {
         .add(1, 'days')
         .format(),
       vessel: exampleVessel,
+      firstReceivers: [{
+        name: 'Crangon Seafoods'
+      }],
       // ... other data
       legacy: {
         tripId: 123
       }
     };
-    this.wcgopTripData = exampleTrip;
+  }
+
+  get firstReceiverName(): string | undefined {
+    if (
+      this.currentTrip.firstReceivers &&
+      this.currentTrip.firstReceivers.length
+    ) {
+      return this.currentTrip.firstReceivers[0].name;
+    }
+  }
+  get vesselReg() {
+    if (this.currentTrip.vessel) {
+      return this.currentTrip.vessel.uscg
+        ? this.currentTrip.vessel.uscg
+        : this.currentTrip.vessel.stateReg;
+    }
+  }
+
+  // TODO move to shared util?
+  private formatDate(dateStr: string): string {
+    return moment(dateStr).format('MM/DD/YY hh:mm');
   }
 }
 </script>

@@ -20,6 +20,7 @@ import { WcgopHlfc } from './wcgop-hlfc';
 export const WcgopTripTypeName = 'wcgop-trip';
 
 export interface WcgopTrip extends BaseTrip {
+  tripNum?: number; // For optecs internal use, sequential
   observer?: Contact; // formerly User ID, TODO Specifics
   program?: Program;
   isPartialTrip?: boolean;
