@@ -1,19 +1,18 @@
 // Vuex Auth Module
 
+/* tslint:disable:no-console */
+
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
-// import { BoatnetUser, BoatnetUserToken } from '@/models/auth.model';
-// import * as cryptoJS from 'crypto-js';
 
-// import * as utils from 'minimalistic-crypto-utils';
-// import * as jsonwebtoken from 'jsonwebtoken';
-// import * as pemjwk from 'pem-jwk';
+import cryptoJS from 'crypto-js';
 
-//  public authedUserToken: BoatnetUserToken;
+import jsonwebtoken from 'jsonwebtoken';
+import pemjwk from 'pem-jwk';
+import { BoatnetUserToken } from '../models/auth.model';
 
-/**
- * TODO: Better username validation, maybe check for email address if we use email
- * @param username username for validation against db
- */
+// const authedUserToken: BoatnetUserToken | undefined;
+
+// TODO: Better username validation, maybe check for email address if we use email
 async function validateUsername(username: string): Promise<boolean> {
   return new Promise((resolve, reject) => {
     if (username.length > 3) {
@@ -21,6 +20,95 @@ async function validateUsername(username: string): Promise<boolean> {
     } else {
       resolve(false);
     }
+  });
+}
+
+// TODO Refactor login routine commented out below
+async function login(username: string, password: string) {
+  // TODO use axios for this instead?
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  };
+
+  // const apiUrl = 'https://localhost:9000';
+  // fetch(`${apiUrl}/api/v1/login`, requestOptions)  // Expect proxy
+  return fetch(`/api/v1/login`, requestOptions)
+    .then(handleResponse)
+    .then((user) => {
+      // login successful if there's a jwt token in the response
+      if (user.token) {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      return user;
+    });
+}
+
+// TODO Refactor logout routine commented out below
+function logout() {
+  // remove user from local storage to log user out
+  localStorage.removeItem('user');
+}
+
+
+function storePubKey(jwkKey: string) {
+  localStorage.setItem('jwk-pub-key', JSON.stringify(jwkKey));
+}
+
+function storeUserToken(userToken: BoatnetUserToken) {
+  const bnUsers = localStorage.getItem('bn-users') || '';
+  let usersMap = new Map(JSON.parse(bnUsers));
+  if (!usersMap) {
+    usersMap = new Map();
+  }
+  usersMap.set(userToken.sub.username, userToken);
+  localStorage.setItem('bn-users', JSON.stringify([...usersMap]));
+}
+
+function getStoredUserToken(username: string): BoatnetUserToken | undefined {
+  const bnUsers = localStorage.getItem('bn-users') || '';
+  const storedUsers = new Map(JSON.parse(bnUsers));
+  if (storedUsers && storedUsers.has(username)) {
+    return storedUsers.get(username) as BoatnetUserToken;
+  } else {
+    return undefined;
+  }
+}
+
+function checkPassword(
+  storedUser: BoatnetUserToken,
+  password: string
+): boolean {
+  const pwVals = storedUser.sub.hashedPW.split('|');
+  if (pwVals.length !== 2) {
+    throw new Error('Error parsing PW string.');
+  }
+
+  const salt = pwVals[0];
+  const hashedPW = pwVals[1];
+
+  const hashedPwSHA = cryptoJS.SHA512(salt + password).toString(); // For FIPS compliance, need SHA-512 layer
+  const verified = hashedPW === hashedPwSHA;
+  return verified;
+}
+
+function handleResponse(response: any) {
+  return response.text().then((text: any) => {
+    const data = text && JSON.parse(text);
+    if (!response.ok) {
+      if (response.status === 401) {
+        // auto logout if 401 response returned from api
+        logout();
+        // location.reload(true);
+      }
+
+      const error = (data && data.message) || response.statusText;
+      return Promise.reject(error);
+    }
+
+    return data;
   });
 }
 
@@ -51,26 +139,6 @@ async function validateUsername(username: string): Promise<boolean> {
         }
       })
     );
-  }
-
-  private storeUserToken(userToken: BoatnetUserToken) {
-    let usersMap = new Map(JSON.parse(localStorage.getItem('bn-users')));
-    console.log(usersMap);
-    if (!usersMap) {
-      usersMap = new Map();
-    }
-    usersMap.set(userToken.sub.username, userToken);
-    console.log('Stored', usersMap);
-    localStorage.setItem('bn-users', JSON.stringify([...usersMap]));
-  }
-
-  private getStoredUserToken(username: string): BoatnetUserToken {
-    const storedUsers = new Map(JSON.parse(localStorage.getItem('bn-users')));
-    if (storedUsers && storedUsers.has(username)) {
-      return <BoatnetUserToken>storedUsers.get(username);
-    } else {
-      return undefined;
-    }
   }
 
   private loginKeyVerify(
@@ -117,22 +185,7 @@ async function validateUsername(username: string): Promise<boolean> {
       );
   }
 
-  private checkPassword(
-    storedUser: BoatnetUserToken,
-    password: string
-  ): boolean {
-    const pwVals = storedUser.sub.hashedPW.split('|');
-    if (pwVals.length !== 2) {
-      throw new Error('Error parsing PW string.');
-    }
 
-    const salt = pwVals[0];
-    const hashedPW = pwVals[1];
-
-    const hashedPW_SHA = cryptoJS.SHA512(salt + password).toString(); // For FIPS compliance, need SHA-512 layer
-    const verified = hashedPW === hashedPW_SHA;
-    return verified;
-  }
 
   login(user: string, pw: string): Observable<BoatnetUser> {
     // Login, and use cached credentials if unable to connect to login server.
@@ -160,10 +213,6 @@ async function validateUsername(username: string): Promise<boolean> {
     // localStorage.removeItem('currentUser');
   }
 
-  getUserObs(): Observable<BoatnetUser> {
-    return of(this.authedUserToken ? this.authedUserToken.sub : undefined);
-  }
-
   public isLoggedIn(): boolean {
     return !!this.authedUserToken;
   }
@@ -179,23 +228,12 @@ async function validateUsername(username: string): Promise<boolean> {
     return user;
   }
 
-  private storePubKey(jwkKey) {
-    localStorage.setItem('jwk-pub-key', JSON.stringify(jwkKey));
-  }
 
-  private getCouchUserDBName(username): string {
-    // Converts username to couchdb format
-    if (username) {
-      const nameArr = utils.toArray(username);
-      return 'userdb-' + utils.toHex(nameArr);
-    } else {
-      throw new Error('Invalid username');
-    }
-  }
 }
 */
 
-// Work in progress
 export const authService = {
-  validateUsername
+  validateUsername,
+  login,
+  logout
 };

@@ -48,3 +48,21 @@ export async function hashBoatnetPW(password: string): Promise<string> {
   const hashedPW_Final = hash + '|' + hashedPW_SHA.toString();
   return hashedPW_Final;
 }
+
+export function getCouchUserDBName(username: string): string {
+  // Converts username to couchdb format
+  if (username) {
+    return 'userdb-' + toHex(username);
+  } else {
+    throw new Error('Invalid username');
+  }
+}
+
+export function toHex(str: string): string {
+  // https://stackoverflow.com/questions/21647928/javascript-unicode-string-to-hex
+  let result = '';
+  for (let i = 0; i < str.length; i++) {
+    result += str.charCodeAt(i).toString(16);
+  }
+  return result;
+}

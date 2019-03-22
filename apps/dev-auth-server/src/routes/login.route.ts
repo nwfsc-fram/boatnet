@@ -2,8 +2,10 @@ import { Request, Response } from 'express';
 import {
   createSessionToken,
   createCsrfToken,
-  hashBoatnetPW
+  hashBoatnetPW,
+  getCouchUserDBName
 } from '../util/security';
+
 const authConfig = require('../config/authProxyConfig.json');
 
 export async function login(req: Request, res: Response) {
@@ -74,7 +76,10 @@ async function devValidateUserPw(user: string, pw: string) {
       username: authedUser.username,
       hashedPW: hashedPW,
       roles: authedUser.userData.roles,
-      couchDBInfo: authedUser.userData.couchDBInfo
+      couchDBInfo: {
+        ...authedUser.userData.couchDBInfo,
+        userDB: getCouchUserDBName(authedUser.username)
+      }
     };
   } else {
     console.log('User not authorized: ', user);

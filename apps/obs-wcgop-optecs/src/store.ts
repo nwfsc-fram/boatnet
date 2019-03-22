@@ -2,10 +2,9 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 
 import { alert } from '@/_store/alert.module';
-import { account } from '@/_store/account.module';
+import { auth } from '@/_store/auth.module';
 
 import { RootState } from '@/_store/types/types';
-
 
 // Primary app store: following examples at https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
@@ -17,7 +16,7 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     alert,
-    account
+    auth
   }
 };
 

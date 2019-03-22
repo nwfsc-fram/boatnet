@@ -29,9 +29,9 @@
           />
           <q-banner rounded v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
           <div>
-            <q-btn color="primary" label="Login" type="submit" :disabled="account.loggingIn"/>
+            <q-btn color="primary" label="Login" type="submit" :disabled="auth.loggingIn"/>
             <img
-              v-show="account.loggingIn"
+              v-show="auth.loggingIn"
               src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
             >
           </div>
@@ -55,14 +55,14 @@ import { mapState } from 'vuex';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-import { AccountState, AlertState, User } from '../_store/types/types';
+import { AuthState, AlertState, User } from '../_store/types/types';
 
 @Component
 export default class Login extends Vue {
-  @State('account') private account!: AccountState;
+  @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
-  @Action('login', { namespace: 'account' }) private login: any;
-  @Action('logout', { namespace: 'account' }) private logout: any;
+  @Action('login', { namespace: 'auth' }) private login: any;
+  @Action('logout', { namespace: 'auth' }) private logout: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
   private username = '';
