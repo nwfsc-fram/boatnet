@@ -143,10 +143,10 @@ import moment from 'moment';
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) private tripNum!: number; // Passed by router
-  private wcgopTripData: any;
-  private tab!: string; // Current tab (start or end)
 
-  private currentTrip!: WcgopTrip;
+  private tab: string; // Current tab (start or end)
+
+  private currentTrip: WcgopTrip;
 
   private ph = ''; // TEMP
 

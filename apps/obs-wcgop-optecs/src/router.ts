@@ -6,6 +6,7 @@ import Login from './views/Login.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Hauls from './views/Hauls.vue';
+import HaulDetails from './views/HaulDetails.vue';
 
 Vue.use(Router);
 
@@ -14,7 +15,7 @@ const router = new Router({
   routes: [
     {
       path: '/login',
-      component: Login,
+      component: Login
     },
     {
       path: '/',
@@ -40,6 +41,11 @@ const router = new Router({
           path: '/hauls',
           name: 'hauls',
           component: Hauls
+        },
+        {
+          path: '/hauldetails/:haulNum',
+          name: 'hauldetails',
+          component: HaulDetails
         }
       ]
     }, // otherwise redirect to home
