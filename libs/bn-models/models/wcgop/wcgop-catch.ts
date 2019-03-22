@@ -25,6 +25,7 @@ export interface WcgopCatch extends BaseCatch {
   gearSegmentsSampled?: number;
 
   legacy?: {
+    catchId?: number;
     catchCategoryId?: number;
     catchCategoryName?: string;
     catchCategoryCode?: string;
