@@ -7,152 +7,59 @@
           <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
           <!-- so be sure to use q-col-gutter -->
           <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Vessel Name"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Fishery"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="USGS / State Reg #"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Skipper's Name"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="# of Crew"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Observer Logbook #"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Departure Date/ Time"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="ph"
-              label="Departure Port"
-            />
+            <q-input outlined class="col-2" v-model="ph" label="Vessel Name"/>
+            <q-input outlined class="col-2" v-model="ph" label="Fishery"/>
+            <q-input outlined class="col-2" v-model="ph" label="USGS / State Reg #"/>
+            <q-input outlined class="col-2" v-model="ph" label="Skipper's Name"/>
+            <q-input outlined class="col-2" v-model="ph" label="# of Crew"/>
+            <q-input outlined class="col-2" v-model="ph" label="Observer Logbook #"/>
+            <q-input outlined class="col-2" v-model="ph" label="Departure Date/ Time"/>
+            <q-input outlined class="col-2" v-model="ph" label="Departure Port"/>
 
             <div class="text-h6 col-2">Permit / License Numbers</div>
             <!-- TODO this should be a component -->
             <div class="row">
-                <q-input
-                  outlined
-                  class="col-12"
-                  v-model="ph"
-                  label="Permit/ License #"
-                />
+              <q-input outlined class="col-12" v-model="ph" label="Permit/ License #"/>
             </div>
-
           </div>
         </div>
       </q-tab-panel>
 
       <q-tab-panel name="end">
         <div class="q-pa-md">
-          <div class="q-gutter-md row">
-            <q-input outlined v-model="text" class="col-6"/>
+          <div class="q-col-gutter-md column"  style="height:400px; max-height: 100%;">
 
-            <q-input
-              outlined
-              bottom-slots
-              v-model="text"
-              label="Label"
-              counter
-              maxlength="12"
+            <div class="col-2">
+              <div class="text-h8 col-3">Partial Trip</div>
+              <q-btn-toggle
+                class="col-auto"
+                v-model="isPartialTrip"
+                toggle-color="primary"
+                :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+              />
+            </div>
 
-            >
-              <template v-slot:before>
-                <q-icon name="flight_takeoff"/>
-              </template>
+            <div class="col-2">
+              <div class="text-h8 col-3">Fish Processed During Trip</div>
+              <q-btn-toggle
+                class="col-auto"
+                v-model="isFishProcessed"
+                toggle-color="primary"
+                :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+              />
+            </div>
 
-              <template v-slot:append>
-                <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
-                <q-icon name="search"/>
-              </template>
+            <q-input outlined class="col-2" v-model="ph" label="Vessel Logbook Name"/>
+            <q-input outlined class="col-2" v-model="ph" label="Vessel Logbook Page #"/>
+            <q-input outlined class="col-2" v-model="ph" label="Return Port"/>
+            <q-input outlined class="col-2" v-model="ph" label="Return Date/Time"/>
+            <q-input outlined class="col-2" v-model="ph" label="First Receiver"/>
+            <div class="text-h6 col-2">Fish Tickets</div>
+            <!-- TODO this should be a component -->
+            <div class="row">
+              <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
+            </div>
 
-              <template v-slot:hint>Field hint</template>
-            </q-input>
-
-            <q-input
-              outlined
-              bottom-slots
-              v-model="text"
-              label="Label"
-              counter
-              maxlength="12"
-
-            >
-              <template v-slot:before>
-              </template>
-
-              <template v-slot:append>
-                <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
-                <q-icon name="schedule"/>
-              </template>
-
-              <template v-slot:hint>Field hint</template>
-
-              <template v-slot:after>
-                <q-btn round dense flat icon="send"/>
-              </template>
-            </q-input>
-
-            <q-input
-              outlined
-              bottom-slots
-              v-model="text"
-              label="Label"
-              counter
-              maxlength="12"
-
-            >
-              <template v-slot:before>
-                <q-icon name="event"/>
-              </template>
-
-              <template v-slot:hint>Field hint</template>
-
-              <template v-slot:append>
-                <q-btn round dense flat icon="add"/>
-              </template>
-            </q-input>
-
-            <q-input outlined v-model="text" hint="Disable" disable/>
-
-            <q-input outlined v-model="text" hint="Readonly" readonly/>
-
-            <q-input
-              outlined
-              v-model="text"
-              hint="Disable and readonly"
-
-              disable
-              readonly
-            />
           </div>
         </div>
       </q-tab-panel>
@@ -193,7 +100,9 @@ export default class Trips extends Vue {
   private tab: string; // Current tab (start or end)
   private text = ''; // TEMP
   private ph = ''; // TEMP
-  private dense = false;
+
+  private isPartialTrip: boolean | null = null;
+  private isFishProcessed: boolean | null = null;
 
   constructor() {
     super();
