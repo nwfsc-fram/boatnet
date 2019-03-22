@@ -1,9 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
-import Home from './views/Home.vue';
 import Settings from './views/Settings.vue';
 import Login from './views/Login.vue';
+import Trips from './views/Trips.vue';
+import TripDetails from './views/TripDetails.vue';
 import Hauls from './views/Hauls.vue';
 
 Vue.use(Router);
@@ -21,8 +22,14 @@ const router = new Router({
       children: [
         {
           path: '',
-          name: 'home',
-          component: Home
+          name: 'trips',
+          component: Trips
+        },
+        {
+          path: '/tripdetails/:tripNum',
+          name: 'tripdetails',
+          component: TripDetails,
+          props: true
         },
         {
           path: '/settings',
@@ -34,12 +41,6 @@ const router = new Router({
           name: 'hauls',
           component: Hauls
         }
-        // },
-        // {
-        //   path: '/login',
-        //   name: 'login',
-        //   component: Login
-        // }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

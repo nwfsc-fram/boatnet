@@ -2,9 +2,9 @@
   <q-breadcrumbs active-color="white" style="font-size: 16px" gutter="md">
     <q-space></q-space>
     <q-breadcrumbs-el label="Trips" icon="home" to="/" />
-    <q-breadcrumbs-el label="1" to="/" />
+    <q-breadcrumbs-el label="1" to="/tripdetails/1" />
     <q-breadcrumbs-el label="Hauls" to="/hauls" />
-    <q-breadcrumbs-el label="1" to="/hauls" />
+    <q-breadcrumbs-el label="1" to="/hauldetails" />
   </q-breadcrumbs>
 </template>
 

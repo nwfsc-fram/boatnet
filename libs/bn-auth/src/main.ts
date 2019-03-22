@@ -12,6 +12,6 @@ Object.keys(Components).forEach((name) => {
   Vue.component(name, Components[name]);
 });
 
-export * from './_services/user.service';
+export * from './_services/auth.service';
 export * from './models/auth.model';
 export default Components;

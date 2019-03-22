@@ -8,7 +8,7 @@ export interface User {
   token: string;
 }
 
-export interface AccountState {
+export interface AuthState {
   status: {
     loggingIn?: boolean;
     loggedIn?: boolean;
