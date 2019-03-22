@@ -4,7 +4,8 @@
     <q-breadcrumbs-el label="Trips" icon="home" to="/" />
     <q-breadcrumbs-el label="1" to="/tripdetails/1" />
     <q-breadcrumbs-el label="Hauls" to="/hauls" />
-    <q-breadcrumbs-el label="1" to="/hauldetails" />
+    <q-breadcrumbs-el label="1" to="/hauldetails/1" />
+    <q-breadcrumbs-el label="" to="/hauldetails/1" />
   </q-breadcrumbs>
 </template>
 
