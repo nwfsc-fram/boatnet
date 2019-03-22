@@ -1,5 +1,162 @@
 <template>
-  <h3>Trip #{{tripNum}} Details </h3>
+  <q-page padding>
+    <div class="text-h6">Trip #{{tripNum}} Details</div>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="start">
+        <div class="q-pa-md">
+          <div class="q-gutter-md row">
+            <q-input outlined v-model="text"/>
+
+            <q-input outlined v-model="text" label="Label (stacked)" stack-label/>
+
+            <q-input outlined v-model="text" label="Label"/>
+
+            <q-input
+              outlined
+              v-model="ph"
+              label="Label"
+              placeholder="Placeholder"
+              hint="With placeholder"
+
+            />
+
+            <q-input
+              outlined
+              v-model="ph"
+              placeholder="Placeholder"
+              hint="With placeholder"
+
+            />
+
+            <q-input
+              outlined
+              square
+              v-model="text"
+              hint="With perfect square borders"
+
+            />
+
+            <q-input outlined v-model="text">
+              <template v-slot:prepend>
+                <q-icon name="event"/>
+              </template>
+            </q-input>
+
+            <q-input outlined v-model="text">
+              <template v-slot:append>
+              </template>
+            </q-input>
+
+            <q-input outlined bottom-slots v-model="text" label="Label" counter>
+              <template v-slot:prepend>
+                <q-icon name="place"/>
+              </template>
+              <template v-slot:append>
+                <q-icon name="close" @click="text = ''" class="cursor-pointer"/>
+              </template>
+
+              <template v-slot:hint>Field hint</template>
+            </q-input>
+
+          </div>
+        </div>
+      </q-tab-panel>
+
+      <q-tab-panel name="end">
+        <div class="q-pa-md">
+          <div class="q-gutter-md row">
+            <q-input outlined v-model="text"/>
+
+            <q-input
+              outlined
+              bottom-slots
+              v-model="text"
+              label="Label"
+              counter
+              maxlength="12"
+
+            >
+              <template v-slot:before>
+                <q-icon name="flight_takeoff"/>
+              </template>
+
+              <template v-slot:append>
+                <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
+                <q-icon name="search"/>
+              </template>
+
+              <template v-slot:hint>Field hint</template>
+            </q-input>
+
+            <q-input
+              outlined
+              bottom-slots
+              v-model="text"
+              label="Label"
+              counter
+              maxlength="12"
+
+            >
+              <template v-slot:before>
+              </template>
+
+              <template v-slot:append>
+                <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer"/>
+                <q-icon name="schedule"/>
+              </template>
+
+              <template v-slot:hint>Field hint</template>
+
+              <template v-slot:after>
+                <q-btn round dense flat icon="send"/>
+              </template>
+            </q-input>
+
+            <q-input
+              outlined
+              bottom-slots
+              v-model="text"
+              label="Label"
+              counter
+              maxlength="12"
+
+            >
+              <template v-slot:before>
+                <q-icon name="event"/>
+              </template>
+
+              <template v-slot:hint>Field hint</template>
+
+              <template v-slot:append>
+                <q-btn round dense flat icon="add"/>
+              </template>
+            </q-input>
+
+            <q-input outlined v-model="text" hint="Disable" disable/>
+
+            <q-input outlined v-model="text" hint="Readonly" readonly/>
+
+            <q-input
+              outlined
+              v-model="text"
+              hint="Disable and readonly"
+
+              disable
+              readonly
+            />
+          </div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
+    <q-option-group
+      v-model="tab"
+      inline
+      :options="[
+          { label: '', value: 'start' },
+          { label: '', value: 'end' },
+        ]"
+    />
+  </q-page>
 </template>
 
 <script lang="ts">
@@ -21,12 +178,18 @@ import moment from 'moment';
 
 @Component
 export default class Trips extends Vue {
-  @Prop() private tripNum!: string; // Passed by router
+  @Prop({ default: 'start' }) public startTab!: string;
+  @Prop(Number) private tripNum!: number; // Passed by router
   private wcgopTripData: any;
+  private tab: string; // Current tab (start or end)
+  private text = ''; // TEMP
+  private ph = ''; // TEMP
+  private dense = false;
 
   constructor() {
     super();
 
+    this.tab = this.startTab;
     const examplePort: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -49,12 +212,9 @@ export default class Trips extends Vue {
       name: 'Sadie K'
     };
 
-    const exampleVessel2: Vessel = {
-      name: 'Pickle Pelican'
-    };
-
     const exampleTrip = {
       _id: '1',
+      tripNum: 1,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
