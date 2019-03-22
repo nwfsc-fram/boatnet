@@ -1,8 +1,8 @@
 <template>
   <q-page padding>
-    <div class="text-h6">Trip #{{tripNum}} Details</div>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="start">
+        <div class="text-h5 row justify-center">Trip #{{tripNum}} Start</div>
         <div class="q-pa-md">
           <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
           <!-- so be sure to use q-col-gutter -->
@@ -52,6 +52,7 @@
       </q-tab-panel>
 
       <q-tab-panel name="end">
+        <div class="text-h5 row justify-center">Trip #{{tripNum}} End</div>
         <div class="q-pa-md">
           <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
             <div class="col-2">
