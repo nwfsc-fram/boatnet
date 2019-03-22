@@ -1,5 +1,24 @@
 <template>
-  <h3>Trip #{{tripNum}} Details </h3>
+  <q-page padding>
+    <div class="text-h6">Trip #{{tripNum}} Details</div>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="start">
+        <div class="text-h6">Trip Start</div>Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+
+      <q-tab-panel name="end">
+        <div class="text-h6">Trip End</div>Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      </q-tab-panel>
+    </q-tab-panels>
+    <q-option-group
+      v-model="tab"
+      inline
+      :options="[
+          { label: '', value: 'start' },
+          { label: '', value: 'end' },
+        ]"
+    />
+  </q-page>
 </template>
 
 <script lang="ts">
@@ -21,12 +40,14 @@ import moment from 'moment';
 
 @Component
 export default class Trips extends Vue {
-  @Prop() private tripNum!: string; // Passed by router
+  @Prop({ default: 'start' }) public startTab!: string;
+  @Prop(Number) private tripNum!: number; // Passed by router
   private wcgopTripData: any;
-
+  private tab: string;
   constructor() {
     super();
 
+    this.tab = this.startTab;
     const examplePort: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -49,12 +70,9 @@ export default class Trips extends Vue {
       name: 'Sadie K'
     };
 
-    const exampleVessel2: Vessel = {
-      name: 'Pickle Pelican'
-    };
-
     const exampleTrip = {
       _id: '1',
+      tripNum: 1,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),

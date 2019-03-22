@@ -29,7 +29,7 @@ const router = new Router({
           path: '/tripdetails/:tripNum',
           name: 'tripdetails',
           component: TripDetails,
-          props: true
+          props: (route) => ({ tripNum: Number(route.params.tripNum) })
         },
         {
           path: '/settings',
