@@ -45,7 +45,8 @@ const router = new Router({
         {
           path: '/hauldetails/:haulNum',
           name: 'hauldetails',
-          component: HaulDetails
+          component: HaulDetails,
+          props: (route) => ({ haulNum: Number(route.params.haulNum) })
         }
       ]
     }, // otherwise redirect to home

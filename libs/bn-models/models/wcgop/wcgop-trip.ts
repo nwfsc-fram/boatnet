@@ -40,9 +40,9 @@ export interface WcgopTrip extends BaseTrip {
   hlfc?: WcgopHlfc[];
 
   fishTickets?: WcgopFishTicket[];
-  certificates?: Certificate[];
+  certificates?: Certificate[]; // Permits and Licenses
   waiver?: Waiver;
-  intendedGearType?: GearType; // only for when there is no Haul data
+  intendedGearType?: GearType; // only for when there is no Haul data (no fishing activity)
   legacy?: {
     tripId?: number;
     otcKp?: number;

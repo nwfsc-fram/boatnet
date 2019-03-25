@@ -8,8 +8,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Point } from 'geojson';
 import {
-  WcgopHaul,
-  WcgopHaulTypeName,
+  WcgopOperation,
+  WcgopOperationTypeName,
   LocationEvent,
   WcgopCatch,
   WcgopCatchTypeName,
@@ -119,7 +119,7 @@ export default class Hauls extends Vue {
 
     const exampleHaul = {
       _id: '1',
-      type: WcgopHaulTypeName,
+      type: WcgopOperationTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
       haulNum: 1,

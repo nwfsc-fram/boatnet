@@ -9,7 +9,7 @@ import {
 } from '../_common/index';
 
 export interface BaseTrip extends Base {
-  haulIDs?: CouchID[]; // Haul UUID's
+  operationIDs?: CouchID[]; // Haul/ Set UUID's
   captain?: Contact;
   vessel?: Vessel;
   // Do we want plannedDeparturePort?
