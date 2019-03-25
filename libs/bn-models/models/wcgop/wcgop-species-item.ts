@@ -1,20 +1,30 @@
+// WCGOP Species Item
+// Combines:
+// SPECIES_COMPOSITIONS
+// SPECIES_COMPOSITION_ITEMS
+// BIO_SPECIMENS
+
 import { Base } from '../_base';
 import { Species, Measurement } from '../_common/index';
 import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
+import { WcgopSpecimen } from './wcgop-specimen';
 
-// Combines SPECIES_COMPOSITIONS and
-// SPECIES_COMPOSITION_ITEMS and
-// SPECIES_COMPOSITION_BASKETS
+
+declare type RockfishHandlingCode = string; // TODO
+
 export interface WcgopSpeciesItem {
-  // TODO
   species: Species;
   discardReason?: WcgopDiscardReason;
   speciesWeight?: Measurement;
   speciesCount?: number; // SPECIES_NUMBER
   totalTally?: number;
 
-  basket?: WcgopBasket[];
+  specimens?: WcgopSpecimen[];
+
+  basket?: WcgopBasket[]; //
+
+  handling?: RockfishHandlingCode; // Rockfish Handling
 
   legacy?: {
     speciesCompId?: number;
@@ -26,6 +36,5 @@ export interface WcgopSpeciesItem {
     speciesNumberKpItq?: number;
     catchSampleMethod?: string;
     basketNumber?: number;
-    handling?: string; // ? Ask neil what this is
   };
 }

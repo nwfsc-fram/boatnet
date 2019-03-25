@@ -44,7 +44,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import {
-  WcgopHaul
+  WcgopOperation
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -55,7 +55,7 @@ export default class Trips extends Vue {
   @Prop(Number) private haulNum!: number; // Passed by router
   private tab!: string; // Current tab (start or end)
 
-  private currentHaul: WcgopHaul | undefined;
+  private currentHaul: WcgopOperation | undefined;
 
   constructor() {
     super();

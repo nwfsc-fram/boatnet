@@ -24,16 +24,10 @@ export interface BaseSpecimen extends Base {
   lifeStage?: LifeStage;
   population?: Population; // Probably for Trawl
   maturity?: Maturity;
-  cutting?: Biostructure; // for Corals / Sponges/ etc
-  finClip?: Biostructure;
-  finRay?: Biostructure;
-  otolith?: Biostructure;
-  ovary?: Biostructure;
-  tissue?: Biostructure;
-  stomach?: Biostructure;
-  scales?: Biostructure;
-  snout?: Biostructure;
-  wholeSpecimen?: Biostructure;
+
+  biostructures?: Biostructure[];
+  // TODO How do we handle special project PI?
+
   numSpecimens?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent;
   protocol?: Protocol;

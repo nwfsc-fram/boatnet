@@ -131,8 +131,8 @@ import {
   WcgopTripTypeName,
   Port,
   PortTypeName,
-  WcgopHaul,
-  WcgopHaulTypeName,
+  WcgopOperation,
+  WcgopOperationTypeName,
   LocationEvent,
   Vessel
 } from '@boatnet/bn-models';
