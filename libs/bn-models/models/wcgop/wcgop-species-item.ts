@@ -10,7 +10,6 @@ import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
 
-
 declare type RockfishHandlingCode = string; // TODO
 
 export interface WcgopSpeciesItem {
@@ -36,7 +35,6 @@ export interface WcgopSpeciesItem {
     speciesNumberKpItq?: number;
     catchSampleMethod?: string;
     basketNumber?: number;
-    
     obsprodLoadDate?: BoatnetDate;
   };
 }

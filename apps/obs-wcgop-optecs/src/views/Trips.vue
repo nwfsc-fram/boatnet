@@ -16,7 +16,8 @@ import {
   WcgopOperation,
   WcgopOperationTypeName,
   LocationEvent,
-  Vessel
+  Vessel,
+VesselTypeName
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -90,7 +91,6 @@ export default class Trips extends Vue {
       type: PortTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      portId: 'OXNARD-Port',
       name: 'Oxnard'
     };
 
@@ -99,16 +99,23 @@ export default class Trips extends Vue {
       type: PortTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      portId: 'Townsend-Port',
       name: 'Port Townsend'
     };
 
     const exampleVessel: Vessel = {
-      name: 'Sadie K'
+      _id: '1',
+      type: VesselTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      vesselName: 'Sadie K'
     };
 
     const exampleVessel2: Vessel = {
-      name: 'Pickle Pelican'
+      _id: '1',
+      type: VesselTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      vesselName: 'Pickle Pelican'
     };
 
     const exampleTrip = {

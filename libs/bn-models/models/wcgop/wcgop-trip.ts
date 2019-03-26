@@ -54,7 +54,7 @@ export interface WcgopTrip extends BaseTrip {
     permitNum?: string; // ETL to Certificate
     licenseNum?: string; // ETL to Certificate
     isNoFishingActivity?: boolean; // did fishing NOT occur?
-    
+
     obsprodLoadDate?: BoatnetDate;
   };
 }
