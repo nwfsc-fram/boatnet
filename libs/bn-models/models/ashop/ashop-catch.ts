@@ -1,34 +1,35 @@
-// WCGOP Catch
-// Import from CATCHES table
-
+// A-SHOP Catch
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement } from '../_common/index';
-import { WcgopSpeciesItem } from './wcgop-species-item';
+import { AshopSpeciesItem } from './ashop-species-item';
+import { AshopSpecimen } from './ashop-specimen';
 
-export const WcgopCatchTypeName = 'wcgop-catch';
+export const AshopCatchTypeName = 'Ashop-catch';
 
-export interface WcgopCatch extends BaseCatch {
-  catchNum?: number; // sequential
+export interface AshopCatch extends BaseCatch {
+  catchNum?: number;
 
+  percentRetained?: number;
   disposition?: string;
   weightMethod?: string;
-  speciesItems?: WcgopSpeciesItem[];
+  speciesItems?: AshopSpeciesItem[];
+
+  specimens?: AshopSpecimen[];
   weight?: Measurement;
   count?: number;
+  volume?: Measurement;
+  density?: Measurement;
   hooksSampled?: number;
   sampleWeight?: Measurement;
+
   sampleCount?: number;
   gearSegmentsSampled?: number;
 
   legacy?: {
-    catchId?: number;
     catchCategoryId?: number;
     catchCategoryName?: string;
     catchCategoryCode?: string;
     catchPurity?: string;
-
-    volume?: Measurement;
-    density?: Measurement;
 
     basketsWeighedItq: number;
     totalBasketsItq: number;

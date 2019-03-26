@@ -1,6 +1,5 @@
 export * from './wcgop-trip';
-export * from './wcgop-haul';
-export * from './wcgop-set';
+export * from './wcgop-operation';
 export * from './wcgop-catch';
 export * from './wcgop-species-item';
 export * from './wcgop-fish-ticket';

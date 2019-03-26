@@ -17,4 +17,6 @@ export * from './biostructure';
 export * from './logbook-type';
 export * from './certificate';
 export * from './gear-type';
+export * from './vessel-type';
 export * from './waiver';
+export * from './weight-method';

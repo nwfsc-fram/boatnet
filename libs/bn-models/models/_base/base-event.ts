@@ -4,7 +4,7 @@ import { BoatnetDate, Measurement } from '../_common/index';
 import { Point } from 'geojson'; // GeoJSON https://tools.ietf.org/html/rfc7946
 
 export interface BaseEvent  {
-    location: Point;
+    location?: Point;
     depth?: Measurement;
-    date: BoatnetDate;
+    date?: BoatnetDate;
 }

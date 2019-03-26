@@ -1,4 +1,6 @@
 // TODO Full implementation
 export const FisheryTypeName = 'fishery';
 
-export type Fishery = any;
+export interface Fishery {
+    name: string;
+}

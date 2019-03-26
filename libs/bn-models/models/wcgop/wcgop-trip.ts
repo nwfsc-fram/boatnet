@@ -20,6 +20,7 @@ import { WcgopHlfc } from './wcgop-hlfc';
 export const WcgopTripTypeName = 'wcgop-trip';
 
 export interface WcgopTrip extends BaseTrip {
+  tripNum?: number; // For optecs internal use, sequential
   observer?: Contact; // formerly User ID, TODO Specifics
   program?: Program;
   isPartialTrip?: boolean;
@@ -30,11 +31,8 @@ export interface WcgopTrip extends BaseTrip {
   logbookNum?: number;
   logbookType?: LogbookType;
   observerLogbookNum?: number;
-  isExpanded?: boolean;
-  doExpand?: boolean; // should expand or not after manual calculation
   isFishProcessed?: boolean;
   tripStatus?: TripStatus;
-  isDataQualityPassing?: boolean;
   debriefer?: Contact;
   sightingEvents?: WcgopSightingEvent[];
   sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred
@@ -42,9 +40,9 @@ export interface WcgopTrip extends BaseTrip {
   hlfc?: WcgopHlfc[];
 
   fishTickets?: WcgopFishTicket[];
-  certificates?: Certificate[];
+  certificates?: Certificate[]; // Permits and Licenses
   waiver?: Waiver;
-  intendedGearType?: GearType; // only for when there is no Haul data
+  intendedGearType?: GearType; // only for when there is no Haul data (no fishing activity)
   legacy?: {
     tripId?: number;
     otcKp?: number;

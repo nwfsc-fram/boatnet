@@ -1,32 +1,33 @@
-// Vuex Account Module
+// Vuex Auth Module
 
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
-import { userService } from '@boatnet/bn-auth';
+import { authService } from '@boatnet/bn-auth';
 
 import router from '../router';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { AccountState, User, RootState } from '@/_store/types/types';
+import { AuthState, User, RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
+// TODO: use auth service for this
 const userStored = localStorage.getItem('user');
 let user: User | null = null;
 if (userStored) {
   user = JSON.parse(userStored);
 }
 
-export const state: AccountState =  user
+export const state: AuthState =  user
 ? { status: { loggedIn: true }, user }
 : { status: {}, user: null };
 
-const actions: ActionTree<AccountState, RootState> = {
+const actions: ActionTree<AuthState, RootState> = {
   login({ dispatch, commit }: any, { username, password }: any) {
     commit('loginRequest', { username });
 
-    userService.login(username, password).then(
+    authService.login(username, password).then(
       (u: any) => {
         commit('loginSuccess', u);
         router.push('/');
@@ -38,12 +39,12 @@ const actions: ActionTree<AccountState, RootState> = {
     );
   },
   logout({ commit }: any) {
-    userService.logout();
+    authService.logout();
     commit('logout');
   }
 };
 
-const mutations: MutationTree<AccountState> = {
+const mutations: MutationTree<AuthState> = {
   loginRequest(newState: any, newUser: any) {
     newState.status = { loggingIn: true };
     newState.user = newUser;
@@ -62,7 +63,7 @@ const mutations: MutationTree<AccountState> = {
   }
 };
 
-export const account: Module<AccountState, RootState> = {
+export const auth: Module<AuthState, RootState> = {
   namespaced: true,
   state,
   actions,

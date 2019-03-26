@@ -1,10 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
-import Home from './views/Home.vue';
 import Settings from './views/Settings.vue';
 import Login from './views/Login.vue';
+import Trips from './views/Trips.vue';
+import TripDetails from './views/TripDetails.vue';
 import Hauls from './views/Hauls.vue';
+import HaulDetails from './views/HaulDetails.vue';
 
 Vue.use(Router);
 
@@ -13,7 +15,7 @@ const router = new Router({
   routes: [
     {
       path: '/login',
-      component: Login,
+      component: Login
     },
     {
       path: '/',
@@ -21,8 +23,14 @@ const router = new Router({
       children: [
         {
           path: '',
-          name: 'home',
-          component: Home
+          name: 'trips',
+          component: Trips
+        },
+        {
+          path: '/tripdetails/:tripNum',
+          name: 'tripdetails',
+          component: TripDetails,
+          props: (route) => ({ tripNum: Number(route.params.tripNum) })
         },
         {
           path: '/settings',
@@ -33,13 +41,13 @@ const router = new Router({
           path: '/hauls',
           name: 'hauls',
           component: Hauls
+        },
+        {
+          path: '/hauldetails/:haulNum',
+          name: 'hauldetails',
+          component: HaulDetails,
+          props: (route) => ({ haulNum: Number(route.params.haulNum) })
         }
-        // },
-        // {
-        //   path: '/login',
-        //   name: 'login',
-        //   component: Login
-        // }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }
