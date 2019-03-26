@@ -12,6 +12,11 @@
                         <q-date v-model="trip.start_date" />
                     </q-popup-proxy>
                     </q-icon>
+                    <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-time v-model="trip.start_time" />
+                    </q-popup-proxy>
+                    </q-icon>
                 </template>
                 </q-input>
 
@@ -22,11 +27,16 @@
                         <q-date v-model="trip.end_date" />
                     </q-popup-proxy>
                     </q-icon>
+                    <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-time v-model="trip.end_time" />
+                    </q-popup-proxy>
+                    </q-icon>
                 </template>
                 </q-input>
 
-                <q-select filled v-model="trip.start_port" :dense="true" label="Start Port" :options="ports"></q-select>
-                <q-select filled v-model="trip.end_port" :dense="true" label="End Port" :options="ports"></q-select>
+                <q-select filled v-model="trip.start_port" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select filled v-model="trip.end_port" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
  
                 <p><strong>Permits</strong></p>
 
@@ -77,6 +87,14 @@
                     </q-dialog>
 
             </q-card-section>
+
+            <q-card-actions v-if="newTrip" align="right" class="text-primary">
+                <q-btn flat label="Cancel" @click="deleteTrip"/>
+                <q-btn flat label="Create Trip" color="primary" @click="createTrip"/>
+            </q-card-actions>
+            <q-card-actions v-else align="right" class="text-primary">
+                <q-btn flat label="Done" color="primary" @click="goToTrips"></q-btn>
+            </q-card-actions>
         </q-card>
     </div>
 </template>
@@ -86,10 +104,11 @@
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { date } from 'quasar';
 
 @Component
 export default class TripDetails extends Vue {
-    
+
     private trip =  this.$store.state.activeTrip;
     private permits = [
         {label: 'permit one', value: 42},
@@ -97,11 +116,21 @@ export default class TripDetails extends Vue {
         {label: 'permit three', value: 7},
         ];
     private prompt = false;
-    private newMessage:string = '';
-    private ports = this.$store.state.ports
+    private newMessage: string = '';
+    private ports = this.$store.state.ports.sort();
+    private portOptions = this.ports;
+    private newTrip = this.$store.state.newTrip;
+
+    constructor() {
+        super();
+    }
 
     private addMessage() {
-            this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: Date.now() ,text: this.newMessage});
+            this.trip.messages.push({
+                                    author: this.$store.state.activeUser.name ,
+                                    datetime: Date.now() ,
+                                    text: this.newMessage
+                                    });
             this.newMessage = '';
             this.prompt = false;
         }
@@ -110,8 +139,31 @@ export default class TripDetails extends Vue {
                 return this.trip.messages.reverse();
         }
 
-    constructor() {
-        super();
+    private filterFn(val: string, update: any) {
+        if (val === '') {
+            update(() => {
+                    this.portOptions = this.ports;
+                });
+                return;
+        }
+      update(() => {
+        const searchString = val.toLowerCase();
+        this.portOptions = this.portOptions.filter(v => v.toLowerCase().indexOf(searchString) > -1);
+      });
+    }
+
+    private deleteTrip() {
+        this.$store.state.trips.pop()
+        this.$store.state.activeTrip = null
+        this.$router.push({path: '/trips/'});
+    }
+    
+    private createTrip() {
+        this.$router.push({path: '/trips/'});
+    }
+
+    private goToTrips() {
+        this.$router.push({path: '/trips/'})
     }
 
 }

@@ -10,9 +10,9 @@
             <hr>
             <q-input filled v-model="user.address" label="Address" type="street-address"></q-input>  
             <q-input filled v-model="user.city" label="City" type="address-level2"></q-input>
-            <q-select filled v-model="user.state" label="State" :options="usStates"></q-select>
+            <q-select filled v-model="user.state" label="State" type="address-level1" @filter="filterStates" use-input stack-label :options="usStateOptions"></q-select>
             <q-input filled v-model="user.zipcode" label="Zip Code" type="postal-code"></q-input>
-            <q-select filled v-model="user.homeport" label="Home Port" :options="ports"></q-select>
+            <q-select filled v-model="user.homeport" label="Home Port" @filter="filterPorts" use-input stack-label :options="portOptions"></q-select>
 
             </q-card-section>
         </q-card>
@@ -29,24 +29,41 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class UserDetails extends Vue {
 
-    private get user() {
-        return this.$store.getters.activeUser;
-    }
-
-    private get usStates() {
-        return this.$store.state.usStates;
-    }
-
-    private get ports() {
-        return this.$store.state.ports.sort();
-    }
-
-    private get roles() {
-        return this.$store.state.roles.sort();
-    }
+    private ports = this.$store.state.ports.sort();
+    private portOptions = this.ports;
+    private usStates = this.$store.state.usStates.sort();
+    private usStateOptions = this.usStates;
+    private user = this.$store.state.activeUser;
+    private roles = this.$store.state.roles.sort();
 
     constructor() {
         super();
+    }
+
+    private filterPorts(val: string, update: any) {
+        if (val === '') {
+            update(() => {
+            this.portOptions = this.ports;
+            });
+            return;
+        }
+      update(() => {
+        const searchString = val.toLowerCase();
+        this.portOptions = this.portOptions.filter(v => v.toLowerCase().indexOf(searchString) > - 1 );
+      });
+    }
+
+    private filterStates(val: string , update: any) {
+        if (val === '') {
+            update(() => {
+                    this.usStateOptions = this.usStates;
+                });
+                return;
+        }
+      update(() => {
+        const searchString = val.toLowerCase();
+        this.usStateOptions = this.usStateOptions.filter(v => v.toLowerCase().indexOf(searchString) > - 1 );
+      });
     }
 
 }

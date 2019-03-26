@@ -96,6 +96,10 @@ export default class PermitDetails extends Vue {
     
     // private options = this.captains;
     private options = this.captains
+
+    constructor() {
+        super();
+    }
  
     filterFn (val:string, update: any) {
         if (val === '') {
@@ -105,14 +109,11 @@ export default class PermitDetails extends Vue {
             return
         }
       update(() => {
-        const needle = val.toLowerCase();
-        this.options = this.options.filter(v => v.toLowerCase().indexOf(needle) > -1);
+        const searchString = val.toLowerCase();
+        this.options = this.options.filter(v => v.toLowerCase().indexOf(searchString) > -1);
       })
     }
     
-    constructor() {
-        super();
-    }
 
 }
 </script>

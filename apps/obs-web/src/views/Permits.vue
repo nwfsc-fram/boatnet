@@ -33,11 +33,12 @@ export default class Permits extends Vue {
 
     private filterText:string = '';
     private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];
+    private permits = this.$store.state.permits;
+    private permitOptions = this.permits
 
     private getPermits() {
         axios.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
             .then(response => {
-                console.log(response.data.items);
                 this.$store.dispatch('updatePermits', response.data.items);
                 console.log(this.$store.state.permits);
             })
@@ -48,12 +49,13 @@ export default class Permits extends Vue {
         this.$router.push({path: '/permits/'+ i});
     }
 
-    private permits = this.$store.state.permits;
 
     private get filteredPermits() {
         if (this.filterText.length > 0) {
-            // implement search 
-            return this.$store.state.permits
+            console.log(this.permitOptions)
+            return this.permitOptions.filter( permit => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) )
+
+
         } else { return this.$store.state.permits }
     }
 

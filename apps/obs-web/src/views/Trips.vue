@@ -17,7 +17,7 @@
             <span v-if="trip.permits.length > 1">&nbsp;+</span></div>
           {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }}
           <div style="float:right">
-            <q-icon v-if="trip.messages" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
+            <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
             <q-icon v-if="trip.selected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
           </div>
         </q-card-section>
@@ -83,7 +83,7 @@ export default class Trips extends Vue {
 
     private set trips(value) {
         this.$store.dispatch('updateTrips', value);
-    } 
+    }
 
     private get openTrips() {
       return this.$store.getters.openTrips;
@@ -121,14 +121,24 @@ export default class Trips extends Vue {
     private getTripDetails(trip: any) {
         this.$store.dispatch('updateActiveTrip', trip);
         // this.$store.state.activeTrip = this.trips[i];
-        this.$router.push({path: '/trips/'+ trip.trip_num});
+        this.$router.push({path: '/trips/' + trip.trip_num});
       }
 
     private newTrip() {
         const newTripNum = this.$store.state.trips.length + 1;
-        this.$store.state.trips.push({type: 'trip', trip_num: newTripNum, vessel: this.$store.state.activeVessel, permits: [], messages: [], start_port: this.$store.state.activeUser.homeport, end_port: 'same as start'});
-        this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length -1]);
+        this.$store.state.trips.push({
+                                      type: 'trip',
+                                      trip_num: newTripNum,
+                                      is_open: true,
+                                      vessel: this.$store.state.activeVessel,
+                                      permits: [],
+                                      messages: [],
+                                      start_port: this.$store.state.activeUser.homeport,
+                                      end_port: 'same as start'
+                                      });
+        this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length - 1]);
         console.log(this.$store.state.activeTrip);
+        this.$store.state.newTrip = true;
         this.$router.push({path: '/trips/' + newTripNum});
       }
 
