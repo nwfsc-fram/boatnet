@@ -51,7 +51,6 @@ export interface WcgopOperation extends BaseOperation {
     catchCountKp?: number;
     volume?: Measurement;
     density?: Measurement;
-    
     obsprodLoadDate?: BoatnetDate;
   };
 }

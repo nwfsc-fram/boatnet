@@ -6,18 +6,18 @@ export const PortTypeName = 'port';
 
 // TODO add an at-sea transfer Port ID to DB
 
-export interface Port extends Base{    
+export interface Port extends Base {
   name?: string;
   code?: string;
   group?: string;
   state?: string;
 
-  legacy: {
+  legacy?: {
     portId?: number;
     obsprodLoadDate?: BoatnetDate;
 
     // Possibly legacy, unclear what these values represent.
     ifqPortId?: number;
-    ifqPortCode?: number
-  }
+    ifqPortCode?: number;
+  };
 }

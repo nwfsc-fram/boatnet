@@ -39,7 +39,7 @@ export interface WcgopSpecimen extends BaseSpecimen {
     rackId?: string;
     rackPosition?: string;
     // -- End lab analysis docstore items --
-    
+
     obsprodLoadDate?: BoatnetDate;
 
     // DISSECTION.BS_RESULT is null, skip it.

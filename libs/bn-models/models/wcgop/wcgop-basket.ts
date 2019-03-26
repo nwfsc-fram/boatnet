@@ -5,7 +5,6 @@ export interface WcgopBasket extends BaseContainer {
   legacy?: {
     speciesCompItemId?: number;
     speciesCompBasketId?: number;
-    
     obsprodLoadDate?: BoatnetDate;
   };
 }

@@ -7,7 +7,7 @@
           <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
           <!-- so be sure to use q-col-gutter -->
           <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-            <q-input outlined class="col-2" v-model="currentTrip.vessel.name" label="Vessel Name"/>
+            <q-input outlined class="col-2" v-model="currentTrip.vessel.vesselName" label="Vessel Name"/>
             <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
             <q-input
               outlined
@@ -19,7 +19,7 @@
             <q-input
               outlined
               class="col-2"
-              v-model="currentTrip.captain.name"
+              v-model="captainName"
               label="Skipper's Name"
             />
             <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
@@ -134,7 +134,10 @@ import {
   WcgopOperation,
   WcgopOperationTypeName,
   LocationEvent,
-  Vessel
+  Vessel,
+Contact,
+ContactTypeName,
+VesselTypeName
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -158,7 +161,6 @@ export default class Trips extends Vue {
       type: PortTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      portId: 'OXNARD-Port',
       name: 'Oxnard'
     };
 
@@ -167,13 +169,25 @@ export default class Trips extends Vue {
       type: PortTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      portId: 'Townsend-Port',
       name: 'Port Townsend'
     };
 
+    const exampleContact: Contact = {
+      _id: 'asdf',
+      type: ContactTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      firstName: 'Seadog',
+      lastName: 'McGillicutty'
+    };
+
     const exampleVessel: Vessel = {
-      name: 'Sadie K',
-      uscg: 'ABC123'
+      _id: 'asdf',
+      type: VesselTypeName,
+      createdBy: 'test',
+      createdDate: moment().format(),
+      vesselName: 'Sadie K',
+      coastGuardNumber: 'ABC123'
     };
 
     // TODO This is just an example trip
@@ -183,11 +197,11 @@ export default class Trips extends Vue {
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      program: 'Catch Shares',
-      fishery: { name: 'Catch Shares' },
-      captain: {
-        name: 'Capt. Hook'
+      program: {
+        name: 'Catch Shares'
       },
+      fishery: { name: 'Catch Shares' },
+      captain: exampleContact,
       crewSize: 25,
       isPartialTrip: false,
       observerLogbookNum: 123,
@@ -198,14 +212,22 @@ export default class Trips extends Vue {
         .add(1, 'days')
         .format(),
       vessel: exampleVessel,
-      firstReceivers: [{
-        name: 'Crangon Seafoods'
-      }],
+      firstReceivers: [
+        {
+          name: 'Crangon Seafoods'
+        }
+      ],
       // ... other data
       legacy: {
         tripId: 123
       }
     };
+  }
+
+  get captainName(): string | undefined {
+    if (this.currentTrip.captain) {
+      return this.currentTrip.captain.firstName + ' ' + this.currentTrip.captain.lastName;
+    }
   }
 
   get firstReceiverName(): string | undefined {
@@ -218,9 +240,9 @@ export default class Trips extends Vue {
   }
   get vesselReg() {
     if (this.currentTrip.vessel) {
-      return this.currentTrip.vessel.uscg
-        ? this.currentTrip.vessel.uscg
-        : this.currentTrip.vessel.stateReg;
+      return this.currentTrip.vessel.coastGuardNumber
+        ? this.currentTrip.vessel.coastGuardNumber
+        : this.currentTrip.vessel.stateRegulationNumber;
     }
   }
 
