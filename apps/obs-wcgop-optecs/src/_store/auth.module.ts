@@ -2,22 +2,17 @@
 
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
-import { authService } from '@boatnet/bn-auth';
+import { authService, BoatnetUser } from '@boatnet/bn-auth';
 
 import router from '../router';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { AuthState, User, RootState } from '@/_store/types/types';
+import { AuthState, RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
-// TODO: use auth service for this
-const userStored = localStorage.getItem('user');
-let user: User | null = null;
-if (userStored) {
-  user = JSON.parse(userStored);
-}
+const user = authService.getStoredUser();
 
 export const state: AuthState =  user
 ? { status: { loggedIn: true }, user }

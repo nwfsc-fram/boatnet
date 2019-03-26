@@ -55,7 +55,7 @@ import { mapState } from 'vuex';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-import { AuthState, AlertState, User } from '../_store/types/types';
+import { AuthState, AlertState } from '../_store/types/types';
 
 @Component
 export default class Login extends Vue {
