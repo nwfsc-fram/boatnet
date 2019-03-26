@@ -2,7 +2,7 @@
 // Import from CATCHES table
 
 import { BaseCatch } from '../_base/base-catch';
-import { Measurement } from '../_common/index';
+import { Measurement, BoatnetDate } from '../_common/index';
 import { WcgopSpeciesItem } from './wcgop-species-item';
 
 export const WcgopCatchTypeName = 'wcgop-catch';
@@ -30,15 +30,17 @@ export interface WcgopCatch extends BaseCatch {
     volume?: Measurement;
     density?: Measurement;
 
-    basketsWeighedItq: number;
-    totalBasketsItq: number;
-    partialBasketWeightItq: number;
-    unitsSampledItq: number;
-    totalUnitsItq: number;
+    basketsWeighedItq?: number;
+    totalBasketsItq?: number;
+    partialBasketWeightItq?: number;
+    unitsSampledItq?: number;
+    totalUnitsItq?: number;
     // All other _ITQ fields NULL, can ignore (confirm with Neil)
 
-    basketWeightKp: number;
-    addlBasketWeightKp: number;
-    basketWeightCountKp: number;
+    basketWeightKp?: number;
+    addlBasketWeightKp?: number;
+    basketWeightCountKp?: number;
+
+    obsprodLoadDate?: BoatnetDate;
   };
 }

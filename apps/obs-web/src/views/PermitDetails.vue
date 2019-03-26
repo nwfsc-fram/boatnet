@@ -1,12 +1,12 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card bg-primary text-white">
+    <q-card class="my-card">
         <q-card-section>
             <div class="text-h6">Active Captains</div>
             <q-select
             v-model="permitCaptains"
             filled
-            bg-color="white"
+            color="primary"
             multiple
             use-chips
             use-input
@@ -46,6 +46,7 @@
     </div>   
 </template>
 
+<!--
 <script>
 
 const captains = ['seth', 'bob', 'sally', 'betty']
@@ -76,6 +77,47 @@ export default {
     }
 }
 </script>
+-->
+
+<script lang="ts">
+
+import { mapState } from 'vuex';
+import router from 'vue-router';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+
+@Component
+export default class PermitDetails extends Vue {
+    
+    private captains = ['seth', 'bob', 'sally', 'betty'];
+    
+    private permit = this.$store.state.activePermit;
+
+    private permitCaptains = [];
+    
+    // private options = this.captains;
+    private options = this.captains
+
+    constructor() {
+        super();
+    }
+ 
+    filterFn (val:string, update: any) {
+        if (val === '') {
+            update(() => {
+            this.options = this.captains;
+            })
+            return
+        }
+      update(() => {
+        const searchString = val.toLowerCase();
+        this.options = this.options.filter(v => v.toLowerCase().indexOf(searchString) > -1);
+      })
+    }
+    
+
+}
+</script>
+
 
 <style lang="stylus" scoped>
 .my-card

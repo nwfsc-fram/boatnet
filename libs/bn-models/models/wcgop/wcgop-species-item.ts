@@ -5,7 +5,7 @@
 // BIO_SPECIMENS
 
 import { Base } from '../_base';
-import { Species, Measurement } from '../_common/index';
+import { Species, Measurement, BoatnetDate } from '../_common/index';
 import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
@@ -36,5 +36,7 @@ export interface WcgopSpeciesItem {
     speciesNumberKpItq?: number;
     catchSampleMethod?: string;
     basketNumber?: number;
+    
+    obsprodLoadDate?: BoatnetDate;
   };
 }

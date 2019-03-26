@@ -4,7 +4,8 @@ import {
   LocationEvent,
   Measurement,
   GearType,
-  WeightMethod
+  WeightMethod,
+  BoatnetDate
 } from '../_common/index';
 import { WcgopCatch } from './wcgop-catch';
 
@@ -50,5 +51,7 @@ export interface WcgopOperation extends BaseOperation {
     catchCountKp?: number;
     volume?: Measurement;
     density?: Measurement;
+    
+    obsprodLoadDate?: BoatnetDate;
   };
 }
