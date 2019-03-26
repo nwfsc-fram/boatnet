@@ -1,19 +1,16 @@
+import { BoatnetUser } from '@boatnet/bn-auth';
+
 // Root state for app store
 export interface RootState {
   version: string;
 }
 
-export interface User {
-  user: string;
-  token: string;
-}
-
 export interface AuthState {
   status: {
-    loggingIn?: boolean;
-    loggedIn?: boolean;
+    isLoggingIn?: boolean;
+    isLoggedIn?: boolean;
   };
-  user: User | null;
+  user: BoatnetUser | null;
 }
 
 export interface AlertState {
