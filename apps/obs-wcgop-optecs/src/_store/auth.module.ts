@@ -12,16 +12,15 @@ import { AuthState, RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
-const user = authService.getStoredUser();
+const user = authService.getCurrentUser();
 
 export const state: AuthState =  user
-? { status: { loggedIn: true }, user }
+? { status: { isLoggedIn: true }, user }
 : { status: {}, user: null };
 
 const actions: ActionTree<AuthState, RootState> = {
   login({ dispatch, commit }: any, { username, password }: any) {
     commit('loginRequest', { username });
-
     authService.login(username, password).then(
       (u: any) => {
         commit('loginSuccess', u);
@@ -41,11 +40,11 @@ const actions: ActionTree<AuthState, RootState> = {
 
 const mutations: MutationTree<AuthState> = {
   loginRequest(newState: any, newUser: any) {
-    newState.status = { loggingIn: true };
+    newState.status = { isLoggingIn: true };
     newState.user = newUser;
   },
   loginSuccess(newState: any, newUser: any) {
-    newState.status = { loggedIn: true };
+    newState.status = { isLoggedIn: true };
     newState.user = newUser;
   },
   loginFailure(newState: any) {

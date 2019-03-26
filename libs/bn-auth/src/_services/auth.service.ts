@@ -26,44 +26,40 @@ async function validateUsername(username: string): Promise<boolean> {
 
 // TODO Refactor login routine commented out below
 async function login(username: string, password: string) {
-
   const pubKey = await getPubKey();
-  const userResponse = await axios.post('/api/v1/login', { username, password }).catch( (err) => {
-    if (err.response.status === 401) {
-      throw new Error('Invalid username or password.');
-    } else {
-      throw new Error(err);
-    }
-  });
-  const user = userResponse.data;
-  const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
-  verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
-  storeUserToken(verified);
-  // catchError(err => {
-  //   if (err.status === 401) {
-  //     return throwError('Invalid username or password.');
-  //   }
-  //   console.log('Getting stored user, because of error:', err);
-  //   const storedUser = this.getStoredUserToken(username);
-  //   if (!storedUser) {
-  //     return throwError(
-  //       'Unable to log in using cached credentials. Internet connection required.'
-  //     );
-  //   } else {
-  //     const isStoredPwOK = this.checkPassword(storedUser, password);
-  //     if (!isStoredPwOK) {
-  //       return throwError('Invalid offline username or password.');
-  //     } else {
-  //       this.authedUserToken = storedUser;
-  //       return of(this.authedUserToken);
-  //     }
-  //   }
+  const userResponse = await axios
+    .post('/api/v1/login', { username, password })
+    .catch((err) => {
+      if (err.response.status === 401) {
+        throw new Error('Invalid username or password.');
+      } else {
+        // Offline
+      }
+    });
 
-  //     // login successful if there's a jwt token in the response
-  //     if (user.token) {
-  //       // store user details and jwt token in local storage to keep user logged in between page refreshes
-  //       localStorage.setItem('user', JSON.stringify(user));
-  //     }
+  if (userResponse) {
+    const user = userResponse.data;
+    const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
+    verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
+    console.log('Logged in as', verified.sub.username);
+    storeUserToken(verified);
+    setCurrentUser(verified.sub);
+  } else {
+    console.log('Auth is Offline: to recover using cached credentials');
+    const storedUser = getStoredUserToken(username);
+    if (!storedUser) {
+      throw new Error(
+        'Unable to log in using stored credentials. Internet connection required.'
+      );
+    } else {
+        const isStoredPwOK = checkPassword(storedUser, password);
+        if (!isStoredPwOK) {
+          throw new Error('Invalid offline username or password.');
+        } else {
+          setCurrentUser(storedUser.sub);
+        }
+    }
+  }
 }
 
 // TODO Refactor logout routine commented out below
@@ -72,13 +68,26 @@ function logout() {
   localStorage.removeItem('user');
 }
 
-function getStoredUser(): BoatnetUser | undefined {
+function setCurrentUser(user: BoatnetUser) {
+    // TODO: Vuex store instead of localstorage
+  // store user details and jwt token in local storage to keep user logged in between page refreshes
+  localStorage.setItem('user', JSON.stringify(user));
+}
+
+function getCurrentUser(): BoatnetUser | undefined {
+  // TODO: Vuex store instead of localstorage
   const userStored = localStorage.getItem('user');
   let user: BoatnetUser | undefined;
   if (userStored) {
     user = JSON.parse(userStored);
   }
   return user;
+}
+
+function isLoggedIn(): boolean {
+  // TODO Temp: use Vuex instead
+  const logged = localStorage.getItem('user');
+  return !!logged;
 }
 
 async function getPubKey() {
@@ -112,10 +121,10 @@ function storePubKey(jwkKey: string) {
 }
 
 function storeUserToken(userToken: BoatnetUserToken) {
-  const bnUsers = localStorage.getItem('bn-users') || '';
-  let usersMap = new Map(JSON.parse(bnUsers));
-  if (!usersMap) {
-    usersMap = new Map();
+  const bnUsers = localStorage.getItem('bn-users');
+  let usersMap = new Map();
+  if (bnUsers) {
+    usersMap = new Map(JSON.parse(bnUsers));
   }
   usersMap.set(userToken.sub.username, userToken);
   localStorage.setItem('bn-users', JSON.stringify([...usersMap]));
@@ -124,12 +133,13 @@ function storeUserToken(userToken: BoatnetUserToken) {
 
 function getStoredUserToken(username: string): BoatnetUserToken | undefined {
   const bnUsers = localStorage.getItem('bn-users') || '';
-  const storedUsers = new Map(JSON.parse(bnUsers));
-  if (storedUsers && storedUsers.has(username)) {
-    return storedUsers.get(username) as BoatnetUserToken;
-  } else {
-    return undefined;
+  if (bnUsers) {
+    const storedUsers = new Map(JSON.parse(bnUsers));
+    if (storedUsers && storedUsers.has(username)) {
+      return storedUsers.get(username) as BoatnetUserToken;
+    }
   }
+  return undefined;
 }
 
 function checkPassword(
@@ -240,21 +250,11 @@ function handleResponse(response: any) {
     // localStorage.removeItem('currentUser');
   }
 
-  public isLoggedIn(): boolean {
-    return !!this.authedUserToken;
-  }
 
   public getCurrentUser(): BoatnetUser {
     // TODO: Observable only?
     return this.authedUserToken ? this.authedUserToken.sub : undefined;
   }
-
-  public getCurrentUsername(): string {
-    // TODO
-    const user = 'test'; // this.getCurrentUser();
-    return user;
-  }
-
 
 }
 */
@@ -263,5 +263,6 @@ export const authService = {
   validateUsername,
   login,
   logout,
-  getStoredUser
+  getCurrentUser,
+  isLoggedIn
 };

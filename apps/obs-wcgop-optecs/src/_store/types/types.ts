@@ -7,8 +7,8 @@ export interface RootState {
 
 export interface AuthState {
   status: {
-    loggingIn?: boolean;
-    loggedIn?: boolean;
+    isLoggingIn?: boolean;
+    isLoggedIn?: boolean;
   };
   user: BoatnetUser | null;
 }
