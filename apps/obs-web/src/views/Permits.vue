@@ -53,7 +53,7 @@ export default class Permits extends Vue {
     private get filteredPermits() {
         if (this.filterText.length > 0) {
             console.log(this.permitOptions)
-            return this.permitOptions.filter( permit => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) )
+            return this.permitOptions.filter( (permit: any) => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) )
 
 
         } else { return this.$store.state.permits }

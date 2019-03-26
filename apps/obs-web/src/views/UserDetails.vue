@@ -62,7 +62,7 @@ export default class UserDetails extends Vue {
         }
       update(() => {
         const searchString = val.toLowerCase();
-        this.usStateOptions = this.usStateOptions.filter(v => v.toLowerCase().indexOf(searchString) > - 1 );
+        this.usStateOptions = this.usStateOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
       });
     }
 

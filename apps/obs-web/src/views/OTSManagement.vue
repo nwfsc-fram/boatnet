@@ -178,12 +178,12 @@ export default class OTSManagement extends Vue {
         this.prompt = false;
     }
 
-    private editTarget(target) {
+    private editTarget(target: any) {
         this.target = target;
         this.edit = true;
     }
 
-    private setActive(target) {
+    private setActive(target: any ) {
         this.target = target
         this.reactivate = true;
     }
