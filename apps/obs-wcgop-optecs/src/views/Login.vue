@@ -23,6 +23,7 @@
           <q-input
             outlined
             ref="password"
+            type="password"
             v-model="password"
             label="Password"
             :rules="[val => !!val || 'Password is required']"

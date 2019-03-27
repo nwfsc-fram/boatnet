@@ -1,5 +1,5 @@
 import { Base } from '../_base';
-import { Species } from '../_common/index';
+import { Species, CouchID } from '../_common/index';
 import { AshopBasket, AshopSpecimen } from './index';
 
 export interface AshopSampleSpecies extends Base {
@@ -9,4 +9,6 @@ export interface AshopSampleSpecies extends Base {
   percentRetained?: number;
   baskets?: AshopBasket[];
   specimens?: AshopSpecimen[];
+
+  sightingEventIds?: CouchID[];
 }
