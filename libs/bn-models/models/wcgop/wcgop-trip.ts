@@ -35,8 +35,8 @@ export interface WcgopTrip extends BaseTrip {
   isFishProcessed?: boolean;
   tripStatus?: TripStatus;
   debriefer?: Contact;
+
   sightingEvents?: WcgopSightingEvent[];
-  sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred
   brd?: WcgopBrd[];
   hlfc?: WcgopHlfc[];
 

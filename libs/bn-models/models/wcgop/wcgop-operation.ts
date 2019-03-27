@@ -5,7 +5,8 @@ import {
   Measurement,
   GearType,
   WeightMethod,
-  BoatnetDate
+  BoatnetDate,
+  CouchID
 } from '../_common/index';
 import { WcgopCatch } from './wcgop-catch';
 
@@ -31,6 +32,9 @@ export interface WcgopOperation extends BaseOperation {
   isOperationUnsampled?: boolean;
   isGearLost?: boolean;
   isDataQualityPassing?: boolean;
+
+
+  sightingEventIds?: CouchID[];
 
   // Set operation specific fields:
   avgSoakTime?: Measurement;

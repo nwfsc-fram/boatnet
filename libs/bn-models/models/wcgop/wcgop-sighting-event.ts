@@ -1,12 +1,10 @@
-import { BaseEvent } from '../_base';
-import { Species, Measurement, BoatnetDate } from '../_common';
-
-// TODO interface definition
+import { Species, Measurement, BoatnetDate, CouchID, LocationEvent } from '../_common';
 
 export const WcgopSightingEventTypeName = 'wcgop-sighting-event';
 
-export interface WcgopSightingEvent extends BaseEvent {
-  species1?: Species;
+export interface WcgopSightingEvent extends LocationEvent {
+  // Populate _id for use in references
+  species?: Species;
   minNumber?: number;
   maxNumber?: number;
   bestNumber?: number;

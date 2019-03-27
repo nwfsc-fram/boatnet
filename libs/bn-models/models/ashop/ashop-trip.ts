@@ -37,8 +37,8 @@ export interface AshopTrip extends BaseTrip {
   fishery?: Fishery; // default to A-SHOP
   crewSize?: number;
   didFishingOccur?: boolean;
-  sightingEvents?: AshopSightingEvent[]; // MMSBT
-  sightingEventOps?: CouchID[]; // Operation UUID's where this sighting occurred
+
+  sightingEvents?: AshopSightingEvent[];
 
   brd?: AshopBrd[];
   // TODO Possibly reuse WcgopBrd, include Bird Detternce

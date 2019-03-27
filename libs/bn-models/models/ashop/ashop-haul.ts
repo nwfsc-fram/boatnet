@@ -1,7 +1,7 @@
 // Ashop Haul
 import { BaseOperation } from '../_base/base-operation';
-import { LocationEvent, Measurement, GearType } from '../_common/index';
-import { AshopBrd, AshopSightingEvent, AshopCatch } from './index';
+import { LocationEvent, Measurement, GearType, CouchID } from '../_common/index';
+import { AshopBrd, AshopSightingEvent } from './index';
 
 export const AshopHaulTypeName = 'ashop-haul';
 
@@ -51,6 +51,8 @@ export interface AshopHaul extends BaseOperation {
   isGearLost?: boolean;
   tribalDelivery?: string; // TODO name of tribe LOOKUP
   sampleDesignType?: string; // TODO lookup
+
+  sightingEventIds?: CouchID[];
 
   legacy?: {
     haulSeq?: number;
