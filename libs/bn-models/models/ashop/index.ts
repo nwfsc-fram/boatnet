@@ -1,6 +1,6 @@
 export * from './ashop-basket';
 export * from './ashop-brd';
-export * from './ashop-catch';
+export * from './ashop-sample';
 export * from './ashop-cruise';
 export * from './ashop-discard-reason';
 export * from './ashop-haul';

@@ -4,7 +4,6 @@
 // SPECIES_COMPOSITION_ITEMS
 // BIO_SPECIMENS
 
-import { Base } from '../_base';
 import { Species, Measurement, BoatnetDate } from '../_common/index';
 import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
@@ -12,7 +11,7 @@ import { WcgopSpecimen } from './wcgop-specimen';
 
 declare type RockfishHandlingCode = string; // TODO
 
-export interface WcgopSpeciesItem {
+export interface WcgopCatchSpecies {
   species: Species;
   discardReason?: WcgopDiscardReason;
   speciesWeight?: Measurement;
