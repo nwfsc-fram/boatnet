@@ -36,6 +36,10 @@ export default class Permits extends Vue {
     private permits = this.$store.state.permits;
     private permitOptions = this.permits
 
+    constructor() {
+        super();
+    }
+
     private getPermits() {
         axios.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
             .then(response => {
@@ -53,15 +57,15 @@ export default class Permits extends Vue {
     private get filteredPermits() {
         if (this.filterText.length > 0) {
             console.log(this.permitOptions)
-            return this.permitOptions.filter( (permit: any) => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) )
+            return this.permitOptions.filter( (permit: any) => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) );
 
 
-        } else { return this.$store.state.permits }
+        } else {
+            return this.$store.state.permits;
+            }
     }
 
-    constructor() {
-        super();
-    }
+
 }
 </script>
 

@@ -52,8 +52,9 @@
     <q-dialog v-model="alert">
       <q-card>
         <q-card-section>
-          <div>Only 2 active trips are permitted.  <br>Please close a trip.</div>
-          <q-btn flat color="primary" style="float: right" @click="alert = false">OK</q-btn>
+          <div class="text-h6">Only 2 active trips are permitted.  <br>Please close a trip.</div>
+          <q-btn color="primary" size="md" style="float: right" @click="alert = false">OK</q-btn>
+          <br><br>
         </q-card-section>
       </q-card>
     </q-dialog>

@@ -57,10 +57,10 @@
                 </q-input>
                 </q-card-section>
 
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" @click="prompt = false" />
-                <q-btn flat label="Create Target" @click="createTarget" />
-                </q-card-actions>
+                <q-card-section align="right" class="text-primary">
+                <q-btn label="Cancel" @click="prompt = false" />
+                <q-btn color="primary" label="Create Target" @click="createTarget" />
+                </q-card-section>
             </q-card>
         </q-dialog>
 
@@ -96,9 +96,9 @@
                 </q-input>
                 </q-card-section>
 
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Close" @click="edit = false" />
-                </q-card-actions>
+                <q-card-section align="right" class="text-primary">
+                <q-btn color="primary" label="Close" @click="edit = false" />
+                </q-card-section>
             </q-card>
         </q-dialog>
 

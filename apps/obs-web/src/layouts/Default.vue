@@ -57,6 +57,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/ots-dashboard" exact>
+          <q-item-section avatar>
+            <q-icon name="waves"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>OTS Dashboard</q-item-label>
+            <q-item-label caption>Monitor OTS Performance</q-item-label>
+          </q-item-section>
+        </q-item>        
+
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
             <q-icon name="beenhere"/>

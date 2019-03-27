@@ -89,11 +89,11 @@
             </q-card-section>
 
             <q-card-actions v-if="newTrip" align="right" class="text-primary">
-                <q-btn flat label="Cancel" @click="deleteTrip"/>
-                <q-btn flat label="Create Trip" color="primary" @click="createTrip"/>
+                <q-btn label="Cancel" @click="deleteTrip"/>
+                <q-btn label="Create Trip" color="primary" @click="createTrip"/>
             </q-card-actions>
             <q-card-actions v-else align="right" class="text-primary">
-                <q-btn flat label="Done" color="primary" @click="goToTrips"></q-btn>
+                <q-btn label="Done" color="primary" @click="goToTrips"></q-btn>
             </q-card-actions>
         </q-card>
     </div>
@@ -136,15 +136,15 @@ export default class TripDetails extends Vue {
         }
 
     private get tripMessages() {
-                return this.trip.messages.reverse();
+        return this.trip.messages.reverse();
         }
 
     private filterFn(val: string, update: any) {
         if (val === '') {
             update(() => {
                     this.portOptions = this.ports;
-                });
-                return;
+            });
+        return;
         }
       update(() => {
         const searchString = val.toLowerCase();
@@ -153,17 +153,17 @@ export default class TripDetails extends Vue {
     }
 
     private deleteTrip() {
-        this.$store.state.trips.pop()
-        this.$store.state.activeTrip = null
+        this.$store.state.trips.pop();
+        this.$store.state.activeTrip = null;
         this.$router.push({path: '/trips/'});
     }
-    
+
     private createTrip() {
         this.$router.push({path: '/trips/'});
     }
 
     private goToTrips() {
-        this.$router.push({path: '/trips/'})
+        this.$router.push({path: '/trips/'});
     }
 
 }

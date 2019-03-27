@@ -43,8 +43,8 @@ export default class UserDetails extends Vue {
     private filterPorts(val: string, update: any) {
         if (val === '') {
             update(() => {
-            this.portOptions = this.ports;
-            });
+                this.portOptions = this.ports;
+                });
             return;
         }
       update(() => {
@@ -56,13 +56,13 @@ export default class UserDetails extends Vue {
     private filterStates(val: string , update: any) {
         if (val === '') {
             update(() => {
-                    this.usStateOptions = this.usStates;
+                this.usStateOptions = this.usStates;
                 });
-                return;
+            return;
         }
-      update(() => {
-        const searchString = val.toLowerCase();
-        this.usStateOptions = this.usStateOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+        update(() => {
+            const searchString = val.toLowerCase();
+            this.usStateOptions = this.usStateOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
       });
     }
 

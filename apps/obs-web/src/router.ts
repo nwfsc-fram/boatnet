@@ -6,11 +6,12 @@ import About from './views/About.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
-import OTSManagement from './views/OTSManagement.vue';
-import UserConfig from './views/UserConfig.vue';
-import ManageUsers from './views/ManageUsers.vue';
 import PermitDetails from './views/PermitDetails.vue';
+import OTSManagement from './views/OTSManagement.vue';
+import OTSDashboard from './views/OTSDashboard.vue';
+import ManageUsers from './views/ManageUsers.vue';
 import UserDetails from './views/UserDetails.vue';
+import UserConfig from './views/UserConfig.vue';
 import LogBookCapture from './views/LogBookCapture.vue';
 
 Vue.use(Router);
@@ -55,6 +56,7 @@ const router = new Router({
         { path: '/permits', name: 'Permits', component: Permits},
         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
+        { path: '/ots-dashboard', name: 'OTS Dashboard', component: OTSDashboard },
         { path: 'user-config', name: 'User Config', component: UserConfig },        
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
         { path: '/users/:id', name: 'User Details', component: UserDetails},

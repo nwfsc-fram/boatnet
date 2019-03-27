@@ -3,7 +3,7 @@
     <div class="q-pa-md  q-gutter-md">
         <q-card>
             <q-card-section>
-                <q-select v-model="activeVessel.name" :options="vessels" label="Active Vessel" ></q-select>
+                <q-select v-model="activeVessel" :options="vessels" label="Active Vessel" ></q-select>
                 <br>
                 <q-select
                     v-model="activeUser.notification_prefs"
