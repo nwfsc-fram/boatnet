@@ -16,21 +16,21 @@ declare type Protocol = string; // TODO Protocol interface
 
 export interface BaseSpecimen extends Base {
   species?: Species; // TODO needed?
-  sex?: Sex; // TODO Common Lookup
+  sex?: Sex; // TODO Lookup
   length?: Measurement;
   width?: Measurement;
   weight?: Measurement;
   viability?: Viability;
   lifeStage?: LifeStage;
-  population?: Population; // Probably for Trawl
+  population?: Population; // Probably for Trawl Survey
   maturity?: Maturity;
 
   biostructures?: Biostructure[];
   // TODO How do we handle special project PI?
 
-  numSpecimens?: number; // TODO ?? We think this is a bag of specimens
+  numSpecimensInBag?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent;
   protocol?: Protocol;
-  specialProjects?: any; // arbitrary special project data
-  frequency?: number; // 1 if undefined
+  specialProjects?: any[]; // TODO move to Protocol: arbitrary special project data
+  frequency?: number; // = 1 if undefined (WCGOP only)
 }

@@ -1,5 +1,5 @@
 export interface Measurement {
-  measurementType?: string;
+  measurementType?: string; // TODO Lookup
   value: number | string;
   units: string;
 }

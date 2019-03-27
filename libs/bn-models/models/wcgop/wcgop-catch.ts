@@ -3,16 +3,15 @@
 
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement, BoatnetDate } from '../_common/index';
-import { WcgopSpeciesItem } from './wcgop-species-item';
+import { WcgopCatchSpecies } from './wcgop-catch-species';
 
 export const WcgopCatchTypeName = 'wcgop-catch';
 
 export interface WcgopCatch extends BaseCatch {
   catchNum?: number; // sequential
-
   disposition?: string;
   weightMethod?: string;
-  speciesItems?: WcgopSpeciesItem[];
+  species?: WcgopCatchSpecies[];
   weight?: Measurement;
   count?: number;
   hooksSampled?: number;
