@@ -58,16 +58,15 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'vuex';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 import { AuthState, AlertState } from '../_store/types/types';
-import { VueTouchKeyboard } from 'vue-touch-keyboard';
+// import { VueTouchKeyboard } from 'vue-touch-keyboard';
 
-// import style from 'vue-touch-keyboard/dist/vue-touch-keyboard.css'; // load default style
+// import style from 'vue-touch-keyboard/dist/vue-touch-keyboard.css'; // TODO: do this in scss below
 
-// TODO: Broken
+// TODO: Broken install?
 //  Vue.use(VueTouchKeyboard);
 
 @Component
