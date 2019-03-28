@@ -31,7 +31,7 @@ Vue.use(Router);
 //         { path: '/permits', name: 'Permits', component: Permits},
 //         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
 //         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
-//         { path: 'user-config', name: 'User Config', component: UserConfig },        
+//         { path: 'user-config', name: 'User Config', component: UserConfig },
 //         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
 //         { path: '/users/:id', name: 'User Details', component: UserDetails},
 //         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
@@ -57,7 +57,7 @@ const router = new Router({
         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
         { path: '/ots-dashboard', name: 'OTS Dashboard', component: OTSDashboard },
-        { path: 'user-config', name: 'User Config', component: UserConfig },        
+        { path: 'user-config', name: 'User Config', component: UserConfig },
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
         { path: '/users/:id', name: 'User Details', component: UserDetails},
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }

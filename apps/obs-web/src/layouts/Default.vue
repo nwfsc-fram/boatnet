@@ -146,7 +146,7 @@ export default {
   },
   methods: {
     navigateBack() {
-        this.$router.back()
+        this.$router.back();
     }
   }
 };

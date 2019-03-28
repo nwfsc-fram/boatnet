@@ -31,35 +31,33 @@ import axios from 'axios';
 @Component
 export default class Permits extends Vue {
 
-    private filterText:string = '';
+    private filterText: string = '';
     private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];
     private permits = this.$store.state.permits;
-    private permitOptions = this.permits
+    private permitOptions = this.permits;
 
     constructor() {
         super();
     }
 
     private getPermits() {
-        axios.get("https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500")
-            .then(response => {
+        axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
+            .then( (response) => {
                 this.$store.dispatch('updatePermits', response.data.items);
-                console.log(this.$store.state.permits);
-            })
+            });
     }
 
     private permitDetails(permit: any, i: number) {
         this.$store.state.activePermit = permit;
-        this.$router.push({path: '/permits/'+ i});
+        this.$router.push({path: '/permits/' + i});
     }
 
 
     private get filteredPermits() {
         if (this.filterText.length > 0) {
-            console.log(this.permitOptions)
-            return this.permitOptions.filter( (permit: any) => permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) || permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) );
-
-
+            return this.permitOptions.filter( (permit: any) =>
+                permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) ||
+                permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) );
         } else {
             return this.$store.state.permits;
             }

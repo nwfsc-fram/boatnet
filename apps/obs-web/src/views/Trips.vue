@@ -102,7 +102,6 @@ export default class Trips extends Vue {
 
     private created() {
       this.$store.dispatch('updateActiveTrip', '');
-      console.log(this.$store.getters.trips);
     }
 
     private closeTrip(trip: any) {
@@ -136,7 +135,6 @@ export default class Trips extends Vue {
                                       end_port: 'same as start'
                                       });
         this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length - 1]);
-        console.log(this.$store.state.activeTrip);
         this.$store.state.newTrip = true;
         this.$router.push({path: '/trips/' + newTripNum});
       }

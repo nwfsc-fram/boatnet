@@ -147,39 +147,42 @@ export default class OTSManagement extends Vue {
     private targetTypes = this.$store.state.targetTypes;
     private fisheries = this.$store.state.fisheries;
     private curDate = moment().format();
-    private options = []
+    private options = [];
 
     private get targets() {
-        console.log(this.target.targetType)
-        if (this.target.targetType == 'Vessel') {
-            const vessels = new Set()
-            const permits = this.$store.state.permits
+        if (this.target.targetType === 'Vessel') {
+            const vessels = new Set();
+            const permits = this.$store.state.permits;
             for (const permit of permits) {
-                vessels.add(permit.vessel_name)
+                vessels.add(permit.vessel_name);
             }
-            return Array.from(vessels).sort()
+            return Array.from(vessels).sort();
         } else if (this.target.targetType === 'Port Group') {
-            return this.$store.state.portGroups
+            return this.$store.state.portGroups;
         } else {
-            return ['fishery wide']
+            return ['fishery wide'];
         }
-    };
+    }
 
     private get activeTargets() {
         if (this.$store.getters.activeOTSTargets) {
-            return this.$store.getters.activeOTSTargets.reverse()
+            return this.$store.getters.activeOTSTargets.reverse();
         } else {
-            return []
+            return [];
         }
     }
 
     private get expiredTargets() {
         if (this.$store.getters.expiredOTSTargets) {
-            return this.$store.getters.expiredOTSTargets.reverse()
+            return this.$store.getters.expiredOTSTargets.reverse();
         } else {
-            return []
+            return [];
         }
     }
+
+    constructor() {
+        super();
+        }
 
     private newTarget() {
         this.target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null};
@@ -197,7 +200,7 @@ export default class OTSManagement extends Vue {
     }
 
     private setActive(target: any ) {
-        this.target = target
+        this.target = target;
         this.reactivate = true;
     }
 
@@ -209,14 +212,7 @@ export default class OTSManagement extends Vue {
 
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('YYYY/MM/DD');
-  }    
-
-  created() {
-      console.log(this.curDate)
   }
 
-    constructor() {
-        super();
-    }
 }
 </script>

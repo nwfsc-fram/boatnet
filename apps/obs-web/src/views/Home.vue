@@ -17,7 +17,6 @@ export default class Home extends Vue {
   constructor() {
     super();
   }
-  
 }
 </script>
 

@@ -47,10 +47,10 @@ export default class UserDetails extends Vue {
                 });
             return;
         }
-      update(() => {
-        const searchString = val.toLowerCase();
-        this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
-      });
+        update(() => {
+            const searchString = val.toLowerCase();
+            this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+            });
     }
 
     private filterStates(val: string , update: any) {
@@ -63,9 +63,8 @@ export default class UserDetails extends Vue {
         update(() => {
             const searchString = val.toLowerCase();
             this.usStateOptions = this.usStateOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
-      });
-    }
-
+            });
+        }
 }
 </script>
 

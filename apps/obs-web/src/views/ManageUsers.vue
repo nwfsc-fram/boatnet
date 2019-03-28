@@ -24,7 +24,11 @@ export default class ManageUsers extends Vue {
     private get users() {
         return this.$store.getters.users;
     }
-    
+
+    constructor() {
+        super();
+        }
+
     private userDetails(user: any) {
             this.$store.state.activeUser = user;
             const index = this.$store.state.users.indexOf(user);
@@ -33,14 +37,11 @@ export default class ManageUsers extends Vue {
 
     private newUser() {
             this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null});
-            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1];
+            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length - 1];
             const index = this.$store.state.users.indexOf(this.$store.state.activeUser);
             this.$router.push({path: '/users/' + index});
         }
 
-    constructor() {
-        super();
-    }
 }
 </script>
 

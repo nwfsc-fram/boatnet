@@ -8,134 +8,236 @@ export default new Vuex.Store({
   state: {
     activeVessel: 'Excalibur',
     activeTrip: '',
-    activeUser: { name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '', zipcode: '', homeport: '', notification_prefs: [] },
+    activeUser: { name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '',
+                  zipcode: '', homeport: '', notification_prefs: [] },
     permits: [],
     activePermit: '',
     newTrip: false,
     targetTypes: ['Fishery', 'Vessel', 'Port Group'],
     fisheries: ['EM EFP', 'Limited Entry - Catch Shares', 'Trawl Gear - MOD EFP', 'Catch Shares - Shore Side Hake'],
     otsTargets: [
-      {fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40, startDate: '2019-03-26T08:20:33-07:00', endDate: null},
-      {fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37, startDate: '2019-03-26T08:20:33-07:00', endDate: null },
-      {fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25, startDate: '2019-03-26T08:20:33-07:00', endDate: null},
-      {fishery: 'EM EFP', targetType: 'Port Group', target: 'AT' , rate: 25, startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'},
+      { fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
+      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
+      { fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
+      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
+      { fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
+      { fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+      startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00' },
     ],
     trips: [
-      { type: 'trip', trip_num: '3', vessel: 'Excalibur', coast_guard_number: 'fgr243rt', 
-      start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM', is_open: false,
-      selected: false, start_port: 'Newport', end_port: 'same as start', messages: [], 
-      id: '123456', permits: [
-        { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-        fishery: 'Limited Entry - Catch Shares', },] },
-      { type: 'trip', trip_num: '2', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
+      {
+        type: 'trip', trip_num: '3', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
+        start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM', is_open: false,
+        selected: false, start_port: 'Newport', end_port: 'same as start', messages: [],
+        id: '123456', permits: [
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares',
+          }, ]
+      },
+      {
+        type: 'trip', trip_num: '2', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' },
-      ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM', is_open: false, selected: true, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-      { type: 'trip', trip_num: '1', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
-      permits: [
-        { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-        { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-        { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-      ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-      { type: 'trip', trip_num: '5', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
-      permits: [
-        { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }]
-      , start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM', is_open: true, selected: true, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-      { type: 'trip', trip_num: '4', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
-      permits: [
-        { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-        { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' }
-      ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM', is_open: true, selected: false, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-      { type: 'trip', trip_num: '2', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
-      permits: [
-        { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-        { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-        { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-      ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM', is_open: false, selected: true, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-      { type: 'trip', trip_num: '1', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
-      permits: [
-        { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-        { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-        { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-      ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-      end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '3', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM', is_open: true, selected: true, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '4', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM', is_open: true, selected: true, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '3', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM', is_open: true, selected: false, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '2', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '1', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM', is_open: false, selected: true, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '4', vessel: 'Raven', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '5', vessel: 'Raven', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM', is_open: true, selected: true, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '3', vessel: 'Raven', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '2', vessel: 'Raven', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM', is_open: false, selected: true, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
-    { type: 'trip', trip_num: '1', vessel: 'Raven', coast_guard_number: 'fgr243rt',
-    permits: [
-      { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something', fishery: 'Limited Entry - Catch Shares' },
-      { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something', fishery: 'Trawl Gear - MOD EFP' },
-      { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something', fishery: 'Catch Shares - Shore Side Hake' }
-    ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM', is_open: false, selected: false, start_port: 'Newport',
-    end_port: 'same as start', messages: [], id: '123456' },
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' },
+        ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
+        is_open: false, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '1', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
+        is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '5', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }]
+        , start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
+          is_open: true, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '4', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' }
+        ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
+          is_open: true, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '2', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
+          is_open: false, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '1', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
+          is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '3', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
+        is_open: true, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '4', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
+        is_open: true, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '3', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
+        is_open: true, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '2', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
+        is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '1', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
+        is_open: false, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '4', vessel: 'Raven', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+          fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+          fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+          fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
+        is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '5', vessel: 'Raven', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+          fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+          fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+          fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
+        is_open: true, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '3', vessel: 'Raven', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+          fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+          fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+          fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM',
+        is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '2', vessel: 'Raven', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
+        is_open: false, selected: true, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
+      {
+        type: 'trip', trip_num: '1', vessel: 'Raven', coast_guard_number: 'fgr243rt',
+        permits: [
+          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares' },
+          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP' },
+          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake' }
+        ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
+        is_open: false, selected: false, start_port: 'Newport',
+        end_port: 'same as start', messages: [], id: '123456'
+      },
     ],
 
     users: [
@@ -156,7 +258,7 @@ export default new Vuex.Store({
       'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
     ],
     portGroups: [
-      'AT', 
+      'AT',
       'BB',
       'CB',
       'CC',
@@ -309,43 +411,45 @@ export default new Vuex.Store({
 
   },
   getters: {
-    permits: state => { return state.permits; },
-    trips: state => { return state.trips; },
-    users: state => { return state.users; },
-    activeTrip: state => { return state.activeTrip; },
-    activeVessel: state => { return state.activeVessel; },
-    activeUser: state => { return state.activeUser; },
-    openTrips: state => { 
+    permits: (state) => state.permits,
+    trips: (state) => state.trips,
+    users: (state) => state.users,
+    activeTrip: (state) => state.activeTrip,
+    activeVessel: (state) => state.activeVessel,
+    activeUser: (state) => state.activeUser,
+    openTrips: (state) => {
       return state.trips.filter(
-        trip => {
-          return trip.vessel == state.activeVessel && trip.is_open == true
-          }
-        ); },
-    closedTrips: state => { 
-      return state.trips.filter(
-        trip => {
-          return trip.vessel == state.activeVessel && trip.is_open == false
-          }
-        ); },
-    activeOTSTargets: state => { 
-      return state.otsTargets.filter(
-        target => {
-          if (target.endDate) {
-            return moment(target.endDate) >= moment()
-          } else {
-            return target
-          }
-          } 
-        )
+        (trip) => {
+          return trip.vessel === state.activeVessel && trip.is_open === true;
+        }
+      );
     },
-    expiredOTSTargets: state => { 
+    closedTrips: (state) => {
+      return state.trips.filter(
+        (trip) => {
+          return trip.vessel === state.activeVessel && trip.is_open === false;
+        }
+      );
+    },
+    activeOTSTargets: (state) => {
       return state.otsTargets.filter(
-        target => {
+        (target) => {
           if (target.endDate) {
-            return moment(target.endDate) < moment()
+            return moment(target.endDate) >= moment();
+          } else {
+            return target;
           }
-        } 
-      )
+        }
+      );
+    },
+    expiredOTSTargets: (state) => {
+      return state.otsTargets.filter(
+        (target) => {
+          if (target.endDate) {
+            return moment(target.endDate) < moment();
+          }
+        }
+      );
     }
   },
   mutations: {

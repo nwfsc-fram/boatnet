@@ -140,16 +140,16 @@ export default class TripDetails extends Vue {
 
     private filterFn(val: string, update: any) {
         if (val === '') {
-            update(() => {
-                    this.portOptions = this.ports;
-            });
-        return;
+            update( () => {
+                this.portOptions = this.ports;
+                });
+            return;
         }
-      update(() => {
-        const searchString = val.toLowerCase();
-        this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > -1);
-      });
-    }
+        update( () => {
+            const searchString = val.toLowerCase();
+            this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > -1);
+            });
+        }
 
     private deleteTrip() {
         this.$store.state.trips.pop();
@@ -171,7 +171,7 @@ export default class TripDetails extends Vue {
 
 <style lang="stylus" scoped>
 .my-card
-  width 95%
+    width 95%
 
 </style>
 

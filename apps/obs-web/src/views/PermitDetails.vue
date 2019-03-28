@@ -91,38 +91,34 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class PermitDetails extends Vue {
-    
+
     private captains = [
         {label: 'Seth', value: 1234, eggplant: 'eww'},
         {label: 'Bob', value: 5678, eggplant: 'eww'},
         {label: 'Sally', value: 3234, eggplant: 'eww'},
         {label: 'Betty', value: 9293, eggplant: 'yum'}
     ];
-    
-    private permit = this.$store.state.activePermit;
 
+    private permit = this.$store.state.activePermit;
     private permitCaptains = [];
-    
-    // private options = this.captains;
-    private options = this.captains
+    private options = this.captains;
 
     constructor() {
         super();
     }
- 
-    private filterFn (val:string, update: any) {
+
+    private filterFn(val: string, update: any) {
         if (val === '') {
             update(() => {
-            this.options = this.captains;
-            })
-            return
+                this.options = this.captains;
+                });
+            return;
         }
-      update(() => {
-        const searchString = val.toLowerCase();
-        this.options = this.options.filter(v => v.label.toLowerCase().indexOf(searchString) > -1);
-      })
-    }
-    
+        update(() => {
+            const searchString = val.toLowerCase();
+            this.options = this.options.filter( (v) => v.label.toLowerCase().indexOf(searchString) > -1);
+            });
+        }
 
 }
 </script>
