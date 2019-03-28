@@ -1,11 +1,11 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
-        <q-card>
+        <q-card class="my-card">
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
                 <p><strong>Trip # {{ trip.trip_num }} - <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span></strong></p>
 
-                <q-input filled v-model="trip.start_date" mask="date" :rules="['date']" :dense="true" label="Start Date">
+                <q-input v-model="trip.start_date" mask="date" :rules="['date']" :dense="true" label="Start Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -20,7 +20,7 @@
                 </template>
                 </q-input>
 
-                <q-input filled v-model="trip.end_date" mask="date" :rules="['date']" :dense="true" label="End Date">
+                <q-input v-model="trip.end_date" mask="date" :rules="['date']" :dense="true" label="End Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -35,14 +35,13 @@
                 </template>
                 </q-input>
 
-                <q-select filled v-model="trip.start_port" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select filled v-model="trip.end_port" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.start_port" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.end_port" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
  
                 <p><strong>Permits</strong></p>
 
                 <q-select
                 v-model="trip.permits"
-                filled
                 bg-color="white"
                 color="primary"
                 multiple
@@ -169,6 +168,12 @@ export default class TripDetails extends Vue {
 }
 
 </script>
+
+<style lang="stylus" scoped>
+.my-card
+  width 95%
+
+</style>
 
 <!--
 <script>

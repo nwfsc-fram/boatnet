@@ -1,16 +1,14 @@
 <template>
-  <div>
-  <div class="q-pa-md row items-start q-gutter-md">
-
-    <span style="text-align: center">
+  <div class="q-pa-md q-gutter-md">
+    <div>
       <q-btn v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
       <q-btn v-else color="blue-grey-2" @click="alert = true">New Trip</q-btn>
-    </span>
+    </div>
       <div v-if="openTrips.length > 0"  class="text-h6"><strong>Active Trips</strong></div>
-
+  <div class=" row items-start" >
       <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-primary text-white" v-if="trip.is_open"> -->
 
-      <q-card v-for="(trip, i) in openTrips" :key="trip.trip_num" class="my-card bg-primary text-white">
+      <q-card v-for="(trip, i) in openTrips" :key="trip.trip_num" class="my-card bg-primary text-white" style="margin: 10px">
         <q-card-section>
           <div class="text-h6">{{ trip.trip_num }} 
             <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span>
@@ -26,12 +24,12 @@
           <q-btn flat @click="closeTrip(trip)">Close</q-btn>
         </q-card-actions>
     </q-card>
-    
+    </div>
     <div v-if="closedTrips.length > 0"  class="text-h6"><strong>Closed Trips</strong></div>
-
+    <div class=" row items-start"> 
     <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
-    <q-card v-for="(trip, i) in closedTrips" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white">
+    <q-card v-for="(trip, i) in closedTrips" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
       <q-card-section>
         <div class="text-h6">{{ trip.trip_num }} 

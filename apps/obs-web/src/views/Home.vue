@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center">
-    <img alt="noaa fisheries logo" src="../assets/noaa-fisheries-rgb-2line-horizontal_1.jpg" style="width: 90%">
+    <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
   </q-page>
 </template>
 
@@ -34,5 +34,15 @@ export default {
 -->
 
 <style>
+
+.hero-logo {
+  width: 40%
+}
+
+@media screen and (orientation: portrait) {
+  .hero-logo {
+    width: 80%
+  }
+}
 
 </style>

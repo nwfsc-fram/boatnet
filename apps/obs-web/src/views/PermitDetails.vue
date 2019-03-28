@@ -1,48 +1,52 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card">
-        <q-card-section>
-            <div class="text-h6">Active Captains</div>
-            <q-select
-            v-model="permitCaptains"
-            filled
-            color="primary"
-            multiple
-            use-chips
-            use-input
-            stack-label
-            :options="options"
-            @filter="filterFn"
-            style="width: 100%"
-            >
-            </q-select>
-        </q-card-section>
-        <q-card-section>
-            <div class="text-h6">Vessel</div>
-            <div>Name: {{ permit.vessel_name }}</div>
-            <div>Reg. No.: {{ permit.vessel_registration_number }}</div>
-            <div>Length: {{ permit.vessel_length }}</div>
-            <div>Owner: {{ permit.vessel_owner }}</div>                        
-        </q-card-section>
+    <q-card class="my-card ">
 
-        <q-card-section>
-            <div class="text-h6">Permit</div>
-            <div>Number: {{ permit.permit_number }}</div>
-            <div>Endorsed Length: {{ permit.endorsed_length }}</div>
-            <div>Trawl Gear: {{ permit.trawl_gear }}</div>
-            <div>Longline Gear: {{ permit.longline_gear }}</div>
-            <div>Trap Pot Gear: {{ permit.trap_pot_gear }}</div>
-            <div>Small Fleet: {{ permit.small_fleet }}</div>
-            <div>Sablefish Endorsement: {{ permit.sabelfish_endorsement }}</div>
-            <div>Sablefish Tier: {{ permit.sablefish_tier ? permit.sablefish_tier : 'N/A' }}</div>
-            <div>CP Endorsement: {{ permit.cp_endorsement }}</div>
-            <div>MS Endorsement: {{ permit.ms_endorsement }}</div>
-            <div>MS Catcher Vessel: {{ permit.mothership_catcher_vessel }}</div>
-            <div>Whiting Percent: {{ permit.whiting_percent ? permit.whiting_percent : 'N/A' }}</div>
-            <div>Whiting Assignment {{ permit.whiting_assignment? permit.whiting_assignment: 'N/A' }}</div>
-            <div>Owner On Board Exempt: {{ permit.owner_on_board_exempt ? 'Yes' : 'No' }}</div>
-        </q-card-section>
-    </q-card>     
+                <q-card-section>
+                    <div class="text-h6">Vessel: {{ permit.vessel_name }}</div>
+                    <div style="margin-left: 10px">
+                        <div>Reg. No.: {{ permit.vessel_registration_number }}</div>
+                        <div>Length: {{ permit.vessel_length }}'</div>
+                        <div>Owner: {{ permit.vessel_owner }}</div>                        
+                        <q-select
+                        v-model="permitCaptains"
+                        color="primary"
+                    
+                        multiple
+                        use-chips
+                        use-input
+                        label="Active Captains"
+                        :options="options"
+                        @filter="filterFn"
+                        style="width: 100%; font-size: 16px"
+                        >
+                        </q-select>
+                    </div>
+                </q-card-section>
+
+                <q-card-section>
+                    <div class="text-h6">Permit: {{ permit.permit_number }}</div>
+
+                    <div style="margin-left: 10px">Endorsed Length: {{ permit.endorsed_length }}'</div>
+
+                    <div class="text-h6">Endorsements:</div>
+                        <ul style="margin-top: 0">
+                            <li v-if="permit.trawl_gear">Trawl Gear</li>
+                            <li v-if="permit.longline_gear">Longline Gear</li>
+                            <li v-if="permit.trap_pot_gear">Trap Pot Gear</li>
+                            <li v-if="permit.small_fleet">Small Fleet</li>
+                            <li v-if="permit.sablefish_endorsement">Sablefish Endorsement</li>
+                            <li v-if="permit.sablefish_tier">Sablefish Tier {{ permit.sablefish_tier }}</li>
+                            <li v-if="permit.cp_endorsement">Catcher Processor</li>
+                            <li v-if="permit.ms_endorsement">Mothership</li>
+                            <li v-if="permit.mothership_catcher_vessel">Mothership Catcher</li>
+                            <li v-if="permit.whiting_percent">Whiting %: {{ permit.whiting_percent }}</li>
+                            <li v-if="permit.whiting_assignment">Whiting Assignment: {{ permit.whiting_assignment }}</li>
+                            <li v-if="permit.owner_on_board_exempt">Owner On Board Exempt</li>
+                        </ul>
+                </q-card-section>
+            </q-card>
+    
     </div>   
 </template>
 
@@ -88,7 +92,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class PermitDetails extends Vue {
     
-    private captains = ['seth', 'bob', 'sally', 'betty'];
+    private captains = [
+        {label: 'Seth', value: 1234, eggplant: 'eww'},
+        {label: 'Bob', value: 5678, eggplant: 'eww'},
+        {label: 'Sally', value: 3234, eggplant: 'eww'},
+        {label: 'Betty', value: 9293, eggplant: 'yum'}
+    ];
     
     private permit = this.$store.state.activePermit;
 
@@ -101,7 +110,7 @@ export default class PermitDetails extends Vue {
         super();
     }
  
-    filterFn (val:string, update: any) {
+    private filterFn (val:string, update: any) {
         if (val === '') {
             update(() => {
             this.options = this.captains;
@@ -110,7 +119,7 @@ export default class PermitDetails extends Vue {
         }
       update(() => {
         const searchString = val.toLowerCase();
-        this.options = this.options.filter(v => v.toLowerCase().indexOf(searchString) > -1);
+        this.options = this.options.filter(v => v.label.toLowerCase().indexOf(searchString) > -1);
       })
     }
     
@@ -122,6 +131,6 @@ export default class PermitDetails extends Vue {
 <style lang="stylus" scoped>
 .my-card
   width 100%
-  max-width 450px
+  max-width: 400px
 
 </style>

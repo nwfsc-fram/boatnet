@@ -43,14 +43,24 @@
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                <q-select v-model="target.fishery" :options="fisheries" :rules="[val =>  !!val || 'Required']" label="Fishery"/>
+                <q-select v-model="target.targetType" :options="targetTypes" :rules="[val => !!val || 'Reqired']" label="Target Type" />
+                <q-select v-model="target.target" :options="targets" :rules="[val =>  !!val || 'Required']" label="Target" />
+                <q-input v-model="target.rate" :rules="[val => { return val <= 100 && val >= 0 && !!val || 'Rate is required, and must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
+                <q-input :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
                         <q-date v-model="target.startDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+                <q-input :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                    <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="target.endDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
@@ -71,11 +81,12 @@
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
+                <q-select v-model="target.fishery" :options="fisheries" label="Fishery"/>
+                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" />
+                <q-select v-model="target.target" :options="targets" label="Target" />
+                <q-input v-model="target.rate" :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
 
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                <q-input :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -85,7 +96,7 @@
                 </template>
                 </q-input>
 
-                <q-input filled :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                <q-input :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -129,23 +140,25 @@ import moment from 'moment';
 export default class OTSManagement extends Vue {
 
     private otsTargets = this.$store.state.otsTargets;
-    private target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null };
+    private target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null };
     private prompt = false;
     private edit = false;
     private reactivate = false;
     private targetTypes = this.$store.state.targetTypes;
     private fisheries = this.$store.state.fisheries;
     private curDate = moment().format();
+    private options = []
 
     private get targets() {
-        if (this.target.targetType === 'vessel') {
+        console.log(this.target.targetType)
+        if (this.target.targetType == 'Vessel') {
             const vessels = new Set()
             const permits = this.$store.state.permits
             for (const permit of permits) {
                 vessels.add(permit.vessel_name)
             }
             return Array.from(vessels).sort()
-        } else if (this.target.targetType === 'port group') {
+        } else if (this.target.targetType === 'Port Group') {
             return this.$store.state.portGroups
         } else {
             return ['fishery wide']
@@ -169,7 +182,7 @@ export default class OTSManagement extends Vue {
     }
 
     private newTarget() {
-        this.target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null};
+        this.target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null};
         this.prompt = true;
     }
 

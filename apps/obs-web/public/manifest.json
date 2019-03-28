@@ -1,6 +1,6 @@
 {
-  "name": "example",
-  "short_name": "example",
+  "name": "obs-web",
+  "short_name": "obs-web",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

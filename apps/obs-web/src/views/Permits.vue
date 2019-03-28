@@ -1,7 +1,7 @@
 <template>
     <div>
         <div style="text-align: center" class="q-pa-md q-gutter-sm">
-            <q-btn @click="getPermits">
+            <q-btn color="primary" @click="getPermits">
                 get permits
             </q-btn>
         </div>
@@ -9,8 +9,8 @@
             <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(permit, i)">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
                 <q-item-section>
-                    <q-item-label>{{ permit.permit_number }}</q-item-label>
-                    <q-item-label caption>{{ permit.vessel_name }}</q-item-label>
+                    <q-item-label ><strong>{{ permit.permit_number }}</strong> <span class="text-primary" style="position: relative; left: 20px">{{ permit.vessel_name }}</span></q-item-label>
+                    <!-- <q-item-label caption>{{ permit.vessel_name }}</q-item-label> -->
                 </q-item-section>
                 <!-- </router-link> -->
             </q-item>
