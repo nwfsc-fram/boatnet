@@ -13,6 +13,8 @@ import './styles/quasar.styl';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 
+import { VueTouchKeyboard} from 'vue-touch-keyboard';
+
 import {
   Quasar,
   QBanner,
@@ -82,6 +84,8 @@ Vue.use(Quasar, {
 });
 
 Vue.config.productionTip = false;
+
+// Vue.use(VueTouchKeyboard);
 
 new Vue({
   router,

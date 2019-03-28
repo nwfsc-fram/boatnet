@@ -2,7 +2,7 @@
   <q-page padding>
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel name="start">
-        <div class="text-h5 row justify-center">Trip #{{tripNum}} Start</div>
+        <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
         <div class="q-pa-md">
           <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
           <!-- so be sure to use q-col-gutter -->
@@ -268,5 +268,8 @@ li {
 }
 a {
   color: #42b983;
+}
+.example-flexbox-row {
+  flex-direction: row;
 }
 </style>
