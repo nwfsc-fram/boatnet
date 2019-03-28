@@ -1,9 +1,8 @@
 // TODO Full implementation
 import { Port } from './port';
-import { Measurement } from './measurement';
 import { Base } from '../_base';
-import { BoatnetDate } from './boatnet-date';
 import { VesselType } from './vessel-type';
+import { BoatnetDate, Measurement } from '../_common';
 
 export const VesselTypeName = 'vessel';
 

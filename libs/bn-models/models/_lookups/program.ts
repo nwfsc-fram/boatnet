@@ -1,5 +1,5 @@
 import { Base } from '../_base';
-import { BoatnetDate } from './boatnet-date';
+import { BoatnetDate } from '../_common';
 
 export const ProgramTypeName = 'program';
 

@@ -1,8 +1,9 @@
-import { WcgopSpeciesItem } from '../wcgop/wcgop-species-item';
+
+import { WcgopCatchSpecies } from '../wcgop/wcgop-catch-species';
 
 export interface SpeciesMix {
   name: string;
-  speciesItems?: WcgopSpeciesItem[];
+  speciesItems?: WcgopCatchSpecies[];
   mixes?: SpeciesMix[];
 }
 

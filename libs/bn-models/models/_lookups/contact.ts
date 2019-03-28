@@ -1,6 +1,6 @@
 import { Base } from '../_base';
-import { Port } from './port';
-import { BoatnetDate } from './boatnet-date';
+import { Port } from '../_lookups/port';
+import { BoatnetDate } from '../_common/boatnet-date';
 
 // TODO Full implementation
 export const ContactTypeName = 'contact';
