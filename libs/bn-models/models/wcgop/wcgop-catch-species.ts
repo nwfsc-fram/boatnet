@@ -4,16 +4,15 @@
 // SPECIES_COMPOSITION_ITEMS
 // BIO_SPECIMENS
 
-import { Base } from '../_base';
-import { Species, Measurement } from '../_common/index';
+import { Species, Measurement, BoatnetDate, CouchID } from '../_common/index';
 import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
-
+import { WcgopSightingEvent } from './wcgop-sighting-event';
 
 declare type RockfishHandlingCode = string; // TODO
 
-export interface WcgopSpeciesItem {
+export interface WcgopCatchSpecies {
   species: Species;
   discardReason?: WcgopDiscardReason;
   speciesWeight?: Measurement;
@@ -22,9 +21,11 @@ export interface WcgopSpeciesItem {
 
   specimens?: WcgopSpecimen[];
 
-  basket?: WcgopBasket[]; //
+  basket?: WcgopBasket[];
 
   handling?: RockfishHandlingCode; // Rockfish Handling
+
+  sightingEventIds?: CouchID[];
 
   legacy?: {
     speciesCompId?: number;
@@ -36,5 +37,6 @@ export interface WcgopSpeciesItem {
     speciesNumberKpItq?: number;
     catchSampleMethod?: string;
     basketNumber?: number;
+    obsprodLoadDate?: BoatnetDate;
   };
 }

@@ -62,7 +62,7 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Run `lerna clean` (cleans node_modules in subfolders)
 
-1. Run `lerna run build` (builds all apps and libraries.)
+1. Run `lerna run build` (builds all apps and libraries. This is optional, but should be performed prior to pushing changes, to ensure all projects still build correctly.)
 
 1. Navigate to the project you need, e.g. `cd apps/example` and `yarn serve`
 

@@ -1,2 +1,6 @@
-// TODO interface definition
-export type AshopSightingEvent = any;
+// tslint:disable no-empty-interface
+import { LocationEvent } from "../_common";
+
+export interface AshopSightingEvent extends LocationEvent {
+
+}

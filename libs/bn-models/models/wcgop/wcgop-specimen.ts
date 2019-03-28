@@ -1,5 +1,6 @@
 import { BaseSpecimen } from '../_base';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
+import { BoatnetDate } from '../_common';
 
 declare type WcgopBiosampleMethod = any;
 
@@ -38,6 +39,8 @@ export interface WcgopSpecimen extends BaseSpecimen {
     rackId?: string;
     rackPosition?: string;
     // -- End lab analysis docstore items --
+
+    obsprodLoadDate?: BoatnetDate;
 
     // DISSECTION.BS_RESULT is null, skip it.
     // BIO_SPECIMEN_ITEMS.BAND_ID is null, skip it

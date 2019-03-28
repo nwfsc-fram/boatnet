@@ -8,6 +8,8 @@ import TripDetails from './views/TripDetails.vue';
 import Hauls from './views/Hauls.vue';
 import HaulDetails from './views/HaulDetails.vue';
 
+import { authService } from '@boatnet/bn-auth';
+
 Vue.use(Router);
 
 const router = new Router({
@@ -58,9 +60,9 @@ router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('user');
+  const logged = authService.isLoggedIn();
 
-  if (authRequired && !loggedIn) {
+  if (authRequired && !logged) {
     return next('/login');
   }
   next();
