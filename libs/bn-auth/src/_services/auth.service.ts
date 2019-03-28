@@ -3,13 +3,14 @@
 /* tslint:disable:no-console */
 
 import axios from 'axios';
+import https from 'https';
 import cryptoJS from 'crypto-js';
 
 import jsonwebtoken from 'jsonwebtoken';
 import pemjwk from 'pem-jwk';
 import { BoatnetUserToken, BoatnetUser } from '../models/auth.model';
 
-// const authedUserToken: BoatnetUserToken | undefined;
+import dbConfig from '../config/dbConfig';
 
 // TODO: Better username validation, maybe check for email address if we use email
 async function validateUsername(username: string): Promise<boolean> {
@@ -24,13 +25,18 @@ async function validateUsername(username: string): Promise<boolean> {
 
 async function login(username: string, password: string) {
   const pubKey = await getPubKey();
+  const apiUrl = dbConfig && dbConfig.apiUrl ? dbConfig.apiUrl : '';
   const userResponse = await axios
-    .post('/api/v1/login', { username, password })
+    .post(apiUrl + '/api/v1/login', { username, password })
     .catch((err) => {
-      if (err.response.status === 401) {
+      console.log(err);
+      if (err.response && err.response.status === 401) {
         throw new Error('Invalid username or password.');
       } else {
         // Offline
+        throw new Error(
+          'Unable to log in using stored credentials. Internet connection required.'
+        );
       }
     });
 
@@ -42,7 +48,7 @@ async function login(username: string, password: string) {
     storeUserToken(verified);
     setCurrentUser(verified.sub);
   } else {
-    console.log('Auth is Offline: to recover using cached credentials');
+    console.log('Auth is Offline: Trying cached credentials');
     const storedUser = getStoredUserToken(username);
     if (!storedUser) {
       throw new Error(
@@ -90,7 +96,8 @@ async function getPubKey() {
   // Gets public key for JWT verification.
   // Pull from localstorage for offline mode
   try {
-    const result: any = await axios.get('/api/v1/pubkey');
+    const apiUrl = dbConfig && dbConfig.apiUrl ? dbConfig.apiUrl : '';
+    const result: any = await axios.get(apiUrl + '/api/v1/pubkey');
     if (result.status === 200) {
       const jwkKeyLoaded = result.data.keys[0]; // assuming our key is first
       // TODO If we add multiple keys, we would use 'kid' property for matching
