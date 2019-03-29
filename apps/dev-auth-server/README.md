@@ -7,10 +7,12 @@ A dev-only auth server for use with developing boatnet apps without connecting t
 - Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file. 
 - Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials. 
 - Set up a CouchDB databse configuration for development, replace the dummy couch config with
-  - Example: `"couchDBInfo": {
-          "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
-          "readonlyDB": "boatnet-dev-testing"
-        }`
+```
+"couchDBInfo": {
+  "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
+  "readonlyDB": "boatnet-dev-testing"
+}
+```
 - Launch the auth server by navigating to apps/dev-auth-server directory and run yarn serve. This will start an HTTPS (self-signed) dev auth server running on port 9000. 
 
 ## Certificates
