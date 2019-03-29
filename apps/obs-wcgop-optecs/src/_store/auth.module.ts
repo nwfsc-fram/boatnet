@@ -22,7 +22,8 @@ const actions: ActionTree<AuthState, RootState> = {
   login({ dispatch, commit }: any, { username, password }: any) {
     commit('loginRequest', { username });
     authService.login(username, password).then(
-      (u: any) => {
+      (u: BoatnetUser) => {
+        dispatch('alert/clear', {}, { root: true });
         commit('loginSuccess', u);
         router.push('/');
       },

@@ -23,7 +23,7 @@ async function validateUsername(username: string): Promise<boolean> {
   });
 }
 
-async function login(username: string, password: string) {
+async function login(username: string, password: string): Promise<BoatnetUser> {
   const pubKey = await getPubKey();
   const apiUrl = dbConfig && dbConfig.apiUrl ? dbConfig.apiUrl : '';
   const userResponse = await axios
@@ -47,6 +47,7 @@ async function login(username: string, password: string) {
     console.log('Logged in as', verified.sub.username);
     storeUserToken(verified);
     setCurrentUser(verified.sub);
+    return verified.sub;
   } else {
     console.log('Auth is Offline: Trying cached credentials');
     const storedUser = getStoredUserToken(username);
@@ -60,6 +61,7 @@ async function login(username: string, password: string) {
         throw new Error('Invalid offline username or password.');
       } else {
         setCurrentUser(storedUser.sub);
+        return storedUser.sub;
       }
     }
   }
@@ -131,7 +133,6 @@ function storeUserToken(userToken: BoatnetUserToken) {
   }
   usersMap.set(userToken.sub.username, userToken);
   localStorage.setItem('bn-users', JSON.stringify([...usersMap]));
-  console.log('Stored JWT for ', userToken.sub.username);
 }
 
 function getStoredUserToken(username: string): BoatnetUserToken | undefined {
