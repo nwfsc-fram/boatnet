@@ -4,6 +4,8 @@
 # Vue.js Useful Links
 * Typescript Property Decorators
   * https://github.com/kaorun343/vue-property-decorator
+* Typescript Vuex Class Decorators
+  * https://github.com/ktsn/vuex-class
   
 * Refactoring Vue.js javascript to Typescript
   * https://johnpapa.net/vue-typescript/
