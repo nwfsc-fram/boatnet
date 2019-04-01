@@ -1,6 +1,12 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { StoreOptions } from 'vuex';
 import moment from 'moment';
+
+import { alert } from '@/_store/alert.module';
+import { auth } from '@/_store/auth.module';
+import { Permit } from '@/_store/types/types.ts';
+
+import { RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
@@ -8,22 +14,107 @@ export default new Vuex.Store({
   state: {
     activeVessel: 'Excalibur',
     activeTrip: '',
-    activeUser: { name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '',
-                  zipcode: '', homeport: '', notification_prefs: [] },
-    permits: [],
+    activeUser: {
+      name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '',
+      zipcode: '', homeport: '', notification_prefs: []
+    },
+    permits: [
+      { permit_number: 'GF0001', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'F/V VIGOROUS INC',
+      permit_owner_address: '6533 SEAVIEW AVE NW APT 607A', permit_owner_city: 'SEATTLE',
+      permit_owner_state: 'WA', permit_owner_zip: 98117, vessel_name: 'VIGOROUS',
+      vessel_length: 64.33, vessel_registration_number: 250226,
+      vessel_owner: 'F/V VIGOROUS INC AND GLEM FISHERIES LLC',
+      vessel_owner_address: '6533 SEAVIEW AVE NW APT 607A',
+      vessel_owner_city: 'SEATTLE', vessel_owner_state: 'WA',
+      vessel_owner_zip: 98117, trawl_gear: 'No', longline_gear: 'Yes',
+      trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 64.84,
+      sablefish_endorsement: 'Yes', sablefish_tier: '1', cp_endorsement: 'No',
+      ms_endorsement: 'No', mothership_catcher_vessel: 'No', whiting_percent: null,
+      whiting_assignment: null, status: 'Active', goid: '2108', ghid: '9687',
+      owner_on_board_exempt: 'Yes' },
+      { permit_number: 'GF0002', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'ERICKSON, SHERYL ANN ',
+      permit_owner_address: '602 DAWLEY ROAD', permit_owner_city: 'SEQUIM',
+      permit_owner_state: 'WA', permit_owner_zip: '98382', vessel_name: 'GALLOWS POINT',
+      vessel_length: 43, vessel_registration_number: 'WN2165NM',
+      vessel_owner: 'OVERMAN, INGRID JOAN', vessel_owner_address:
+      'PO BOX 724', vessel_owner_city: 'GRAYLAND', vessel_owner_state: 'WA',
+      vessel_owner_zip: '98547', trawl_gear: 'No', longline_gear: 'Yes',
+      trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 44.3,
+      sablefish_endorsement: 'Yes', sablefish_tier: '3', cp_endorsement: 'No',
+      ms_endorsement: 'No', mothership_catcher_vessel: 'No', whiting_percent: null,
+      whiting_assignment: null, status: 'Active', goid: '10208', ghid: '9393',
+      owner_on_board_exempt: 'No' },
+      { permit_number: 'GF0003', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'THE THOR CORPORATION',
+      permit_owner_address: '5525 SE SCENIC LN  UNIT 204', permit_owner_city: 'VANCOUVER',
+      permit_owner_state: 'WA', permit_owner_zip: '98661', vessel_name: 'GOLDEN CHALICE',
+      vessel_length: 56.75, vessel_registration_number: '548356',
+      vessel_owner: 'GOLDEN CHALICE LLC AND QV LLC', vessel_owner_address: 'PO BOX 1729',
+      vessel_owner_city: 'GIG HARBOR', vessel_owner_state: 'WA', vessel_owner_zip: '98335',
+      trawl_gear: 'No', longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No',
+      endorsed_length: 69, sablefish_endorsement: 'Yes', sablefish_tier: '2',
+      cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
+      whiting_percent: null, whiting_assignment: null, status: 'Active',
+      goid: '6216', ghid: '9847', owner_on_board_exempt: 'Yes' },
+      { permit_number: 'GF0004', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z',
+      permit_owner: 'FLETCHER, JEFFREY L AND FLETCHER, TYNA L',
+      permit_owner_address: '560 KINGS AVE', permit_owner_city: 'LAKESIDE',
+      permit_owner_state: 'OR', permit_owner_zip: '97449', vessel_name: 'GINNY G',
+      vessel_length: 54.1, vessel_registration_number: '630351',
+      vessel_owner: 'FLETCHER, JEFFREY L AND FLETCHER, TYNA L',
+      vessel_owner_address: '560 KINGS AVE', vessel_owner_city: 'LAKESIDE',
+      vessel_owner_state: 'OR', vessel_owner_zip: '97449', trawl_gear: 'No',
+      longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No',
+      endorsed_length: 35, sablefish_endorsement: 'Yes', sablefish_tier: '3',
+      cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
+      whiting_percent: null, whiting_assignment: null, status: 'Active',
+      goid: '2269', ghid: '2353', owner_on_board_exempt: 'Yes' },
+      { permit_number: 'GF0005', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'GREEN, MATTHEW KEONI',
+      permit_owner_address: '602 15TH AVE E', permit_owner_city: 'SEATTLE', permit_owner_state: 'WA',
+      permit_owner_zip: '98112', vessel_name: 'ESTHER LOUISE', vessel_length: 37.5,
+      vessel_registration_number: '545715', vessel_owner: 'CARROLL, PAAVO K',
+      vessel_owner_address: '184 MAIN STREET', vessel_owner_city: 'MORRO BAY',
+      vessel_owner_state: 'CA', vessel_owner_zip: '93442', trawl_gear: 'No', longline_gear: 'Yes',
+      trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 33, sablefish_endorsement: 'No',
+      sablefish_tier: null, cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
+      whiting_percent: null, whiting_assignment: null, status: 'Active', goid: '9531', ghid: '9532',
+      owner_on_board_exempt: null },
+      { permit_number: 'GF0006', certificate_start_date: '2019-01-01T08:00:00Z',
+      certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'D\'AMATO, ONOFRIO', permit_owner_address:
+      '1380 N PACIFIC ST', permit_owner_city: 'OCEANSIDE', permit_owner_state: 'CA', permit_owner_zip: '92054',
+      vessel_name: 'M TOO', vessel_length: 35, vessel_registration_number: '988700',
+      vessel_owner: 'D\'AMATO, ONOFRIO', vessel_owner_address: '1380 N PACIFIC ST',
+      vessel_owner_city: 'OCEANSIDE', vessel_owner_state: 'CA', vessel_owner_zip: '92054', trawl_gear: 'No',
+      longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 32,
+      sablefish_endorsement: 'No', sablefish_tier: null, cp_endorsement: 'No', ms_endorsement: 'No',
+      mothership_catcher_vessel: 'No', whiting_percent: null, whiting_assignment: null, status: 'Active',
+      goid: '1317', ghid: '1335', owner_on_board_exempt: null }
+    ],
     activePermit: '',
     newTrip: false,
     targetTypes: ['Fishery', 'Vessel', 'Port Group'],
     fisheries: ['EM EFP', 'Limited Entry - Catch Shares', 'Trawl Gear - MOD EFP', 'Catch Shares - Shore Side Hake'],
     otsTargets: [
-      { fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
-      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
-      { fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
-      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
-      { fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-      startDate: '2019-03-26T08:20:33-07:00', endDate: null },
-      { fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-      startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00' },
+      {
+        fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
+        startDate: '2019-03-26T08:20:33-07:00', endDate: null
+      },
+      {
+        fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
+        startDate: '2019-03-26T08:20:33-07:00', endDate: null
+      },
+      {
+        fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+        startDate: '2019-03-26T08:20:33-07:00', endDate: null
+      },
+      {
+        fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+        startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'
+      },
     ],
     trips: [
       {
@@ -39,12 +130,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '2', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' },
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          },
         ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
         is_open: false, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -52,12 +149,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '1', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
         is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -65,58 +168,82 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '5', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }]
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }]
         , start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
-          is_open: true, selected: true, start_port: 'Newport',
+        is_open: true, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
       },
       {
         type: 'trip', trip_num: '4', vessel: 'Excalibur', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          }
         ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
-          is_open: true, selected: false, start_port: 'Newport',
+        is_open: true, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
       },
       {
         type: 'trip', trip_num: '2', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
-          is_open: false, selected: true, start_port: 'Newport',
+        is_open: false, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
       },
       {
         type: 'trip', trip_num: '1', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
-          is_open: false, selected: false, start_port: 'Newport',
+        is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
       },
       {
         type: 'trip', trip_num: '3', vessel: 'Ms Julie', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
         is_open: true, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -124,12 +251,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '4', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
         is_open: true, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -137,12 +270,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '3', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
         is_open: true, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -150,12 +289,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '2', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '12/1/2018 10:01 AM', end_date: '12/15/2018 3:33 PM',
         is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -163,12 +308,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '1', vessel: 'Last Straw', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
         is_open: false, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -176,12 +327,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '4', vessel: 'Raven', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-          fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-          fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-          fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
         is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -189,12 +346,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '5', vessel: 'Raven', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-          fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-          fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-          fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '11/7/2018 10:01 AM', end_date: '11/23/2018 3:33 PM',
         is_open: true, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -202,12 +365,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '3', vessel: 'Raven', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-          fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-          fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-          fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '8/03/2018 10:01 AM', end_date: '8/20/2018 3:33 PM',
         is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -215,12 +384,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '2', vessel: 'Raven', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '9/9/2018 10:01 AM', end_date: '9/17/2018 3:33 PM',
         is_open: false, selected: true, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -228,12 +403,18 @@ export default new Vuex.Store({
       {
         type: 'trip', trip_num: '1', vessel: 'Raven', coast_guard_number: 'fgr243rt',
         permits: [
-          { id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
-            fishery: 'Limited Entry - Catch Shares' },
-          { id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
-            fishery: 'Trawl Gear - MOD EFP' },
-          { id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
-            fishery: 'Catch Shares - Shore Side Hake' }
+          {
+            id: 'A21rv35', type: 'permit', uscg_num: 'sdr234', state_reg: 'something',
+            fishery: 'Limited Entry - Catch Shares'
+          },
+          {
+            id: 'W32be87', type: 'permit', uscg_num: 'abc123', state_reg: 'something',
+            fishery: 'Trawl Gear - MOD EFP'
+          },
+          {
+            id: 'N11es32', type: 'permit', uscg_num: '777qwe', state_reg: 'something',
+            fishery: 'Catch Shares - Shore Side Hake'
+          }
         ], start_date: '10/23/2018 10:01 AM', end_date: '10/31/2018 3:33 PM',
         is_open: false, selected: false, start_port: 'Newport',
         end_port: 'same as start', messages: [], id: '123456'
@@ -241,11 +422,26 @@ export default new Vuex.Store({
     ],
 
     users: [
-      { name: 'Seth Gerou', role: 'Captain', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232 },
-      { name: 'Melina Shak', role: 'Captain', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232 },
-      { name: 'Nick Schaffer', role: 'Observer', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232 },
-      { name: 'Neil Riley', role: 'Staff', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232 },
-      { name: 'Will Smith', role: 'Provider', email: 'user@noaa.gov', mobile: 2065551212, home: 4322221232 }
+      {
+        name: 'Seth Gerou', roles: ['Captain'], email: 'user@noaa.gov',
+        mobile: 2065551212, home: 4322221232, homeport: 'Seattle'
+      },
+      {
+        name: 'Melina Shak', roles: ['Captain'], email: 'user@noaa.gov',
+        mobile: 2065551212, home: 4322221232, homeport: 'Seattle'
+      },
+      {
+        name: 'Nick Schaffer', roles: ['Observer'], email: 'user@noaa.gov',
+        mobile: 2065551212, home: 4322221232, homeport: 'Seattle'
+      },
+      {
+        name: 'Neil Riley', roles: ['Staff'], email: 'user@noaa.gov',
+        mobile: 2065551212, home: 4322221232, homeport: 'Seattle'
+      },
+      {
+        name: 'Will Smith', roles: ['Provider'], email: 'user@noaa.gov',
+        mobile: 2065551212, home: 4322221232, homeport: 'Seattle'
+      }
     ],
 
     roles: ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'],

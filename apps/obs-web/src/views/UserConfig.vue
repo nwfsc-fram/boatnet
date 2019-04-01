@@ -3,11 +3,12 @@
     <div class="q-pa-md  q-gutter-md">
         <q-card>
             <q-card-section>
-                <q-select v-model="activeVessel" :options="vessels" label="Active Vessel" ></q-select>
+                <q-card-title class="text-h6">User Settings</q-card-title>
+                <q-select dense v-model="activeVessel" :options="vessels" label="Active Vessel" ></q-select>
                 <br>
                 <q-select
+                    dense
                     v-model="activeUser.notification_prefs"
-                    filled
                     bg-color="white"
                     color="primary"
                     multiple

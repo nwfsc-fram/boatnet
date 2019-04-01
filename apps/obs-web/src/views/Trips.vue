@@ -13,7 +13,7 @@
           <div class="text-h6">{{ trip.trip_num }} 
             <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span>
             <span v-if="trip.permits.length > 1">&nbsp;+</span></div>
-          {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }}
+          <span v-if="trip.start_date">{{ trip.start_date.split(" ")[0] }}</span> - <span v-if="trip.end_date">{{ trip.end_date.split(" ")[0] }}</span>
           <div style="float:right">
             <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
             <q-icon v-if="trip.selected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
@@ -35,7 +35,7 @@
         <div class="text-h6">{{ trip.trip_num }} 
           <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span>
           <span v-if="trip.permits.length > 1">&nbsp;+</span></div>
-        {{ trip.start_date.split(" ")[0] }} - {{ trip.end_date.split(" ")[0] }}
+          <span v-if="trip.start_date">{{ trip.start_date.split(" ")[0] }}</span> - <span v-if="trip.end_date">{{ trip.end_date.split(" ")[0] }}</span>
         <div style="float:right">
           <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
           <q-icon v-if="trip.selected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
@@ -50,7 +50,7 @@
     <q-dialog v-model="alert">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Only 2 active trips are permitted.  <br>Please close a trip.</div>
+          <div class="text-h6">Only 2 active trips are permitted.  Please close a trip.</div>
           <q-btn color="primary" size="md" style="float: right" @click="alert = false">OK</q-btn>
           <br><br>
         </q-card-section>

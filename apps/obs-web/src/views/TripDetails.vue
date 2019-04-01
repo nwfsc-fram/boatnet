@@ -109,11 +109,13 @@ import { date } from 'quasar';
 export default class TripDetails extends Vue {
 
     private trip =  this.$store.state.activeTrip;
-    private permits = [
-        {label: 'permit one', value: 42},
-        {label: 'permit two', value: 17},
-        {label: 'permit three', value: 7},
-        ];
+    // private permits = [
+    //     {label: 'permit one', value: 42},
+    //     {label: 'permit two', value: 17},
+    //     {label: 'permit three', value: 7},
+    //     ];
+    private permits = this.$store.state.permits.map( (permit: any) =>
+        ({label: permit.permit_number, value: permit.vessel_name}) );
     private prompt = false;
     private newMessage: string = '';
     private ports = this.$store.state.ports.sort();

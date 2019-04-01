@@ -13,6 +13,9 @@ import ManageUsers from './views/ManageUsers.vue';
 import UserDetails from './views/UserDetails.vue';
 import UserConfig from './views/UserConfig.vue';
 import LogBookCapture from './views/LogBookCapture.vue';
+import Login from './views/Login.vue';
+
+import { authService } from '@boatnet/bn-auth';
 
 Vue.use(Router);
 
@@ -45,6 +48,10 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
+      path: '/login',
+      component: Login
+    },
+    {
       path: '/',
       component: DefaultLayout,
       children: [
@@ -62,8 +69,21 @@ const router = new Router({
         { path: '/users/:id', name: 'User Details', component: UserDetails},
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
       ]
-    }
+    }, // otherwise redirect to home
+    { path: '*', redirect: '/' }
   ]
 });
+
+// router.beforeEach((to, from, next) => {
+//   // redirect to login page if not logged in and trying to access a restricted page
+//   const publicPages = ['/login'];
+//   const authRequired = !publicPages.includes(to.path);
+//   const logged = authService.isLoggedIn();
+
+//   if (authRequired && !logged) {
+//     return next('/login');
+//   }
+//   next();
+// });
 
 export default router;

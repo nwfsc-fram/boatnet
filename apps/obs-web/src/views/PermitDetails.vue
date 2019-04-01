@@ -9,7 +9,7 @@
                         <div>Length: {{ permit.vessel_length }}'</div>
                         <div>Owner: {{ permit.vessel_owner }}</div>                        
                         <q-select
-                        v-model="permitCaptains"
+                        v-model="permit.activeCaptains"
                         color="primary"
                     
                         multiple
@@ -31,18 +31,18 @@
 
                     <div class="text-h6">Endorsements:</div>
                         <ul style="margin-top: 0">
-                            <li v-if="permit.trawl_gear">Trawl Gear</li>
-                            <li v-if="permit.longline_gear">Longline Gear</li>
-                            <li v-if="permit.trap_pot_gear">Trap Pot Gear</li>
-                            <li v-if="permit.small_fleet">Small Fleet</li>
-                            <li v-if="permit.sablefish_endorsement">Sablefish Endorsement</li>
+                            <li v-if="permit.trawl_gear === 'Yes'">Trawl Gear</li>
+                            <li v-if="permit.longline_gear === 'Yes'">Longline Gear</li>
+                            <li v-if="permit.trap_pot_gear === 'Yes'">Trap Pot Gear</li>
+                            <li v-if="permit.small_fleet === 'Yes'">Small Fleet</li>
+                            <li v-if="permit.sablefish_endorsement === 'Yes'">Sablefish Endorsement</li>
                             <li v-if="permit.sablefish_tier">Sablefish Tier {{ permit.sablefish_tier }}</li>
-                            <li v-if="permit.cp_endorsement">Catcher Processor</li>
-                            <li v-if="permit.ms_endorsement">Mothership</li>
-                            <li v-if="permit.mothership_catcher_vessel">Mothership Catcher</li>
+                            <li v-if="permit.cp_endorsement === 'Yes'">Catcher Processor</li>
+                            <li v-if="permit.ms_endorsement === 'Yes'">Mothership</li>
+                            <li v-if="permit.mothership_catcher_vessel === 'Yes'">Mothership Catcher</li>
                             <li v-if="permit.whiting_percent">Whiting %: {{ permit.whiting_percent }}</li>
                             <li v-if="permit.whiting_assignment">Whiting Assignment: {{ permit.whiting_assignment }}</li>
-                            <li v-if="permit.owner_on_board_exempt">Owner On Board Exempt</li>
+                            <li v-if="permit.owner_on_board_exempt === 'Yes'">Owner On Board Exempt</li>
                         </ul>
                 </q-card-section>
             </q-card>

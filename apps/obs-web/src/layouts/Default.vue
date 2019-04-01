@@ -16,7 +16,7 @@
         <q-toolbar-title>
           <span
             v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"
-          >{{ this.$store.state.activeVessel.name }}</span>
+          >{{ this.$store.state.activeVessel }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
@@ -151,6 +151,19 @@ export default {
   }
 };
 </script>
+
+<style>
+    .q-field__label {
+        color: #027be3 !important;
+    }
+
+    .q-field__native {
+      font-weight: bold !important;
+    }
+
+
+</style>
+
 
 <!-- 
 <script lang="ts">
