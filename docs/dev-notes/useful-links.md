@@ -10,7 +10,8 @@
     * This article doesn't have private/public/protected for declarations, so you need to add those. E.g. `title: string;` becomes `private title: string;`
   * https://alligator.io/vuejs/typescript-class-components/
   
-* Vuex and Typescript  
+* Vuex and Typescript  (Kind of half-baked at the moment)
+  * https://github.com/vuejs/vuex/issues/564
   * https://codeburst.io/vuex-and-typescript-3427ba78cfa8
   * Investigating: 
       * https://championswimmer.in/vuex-module-decorators/
