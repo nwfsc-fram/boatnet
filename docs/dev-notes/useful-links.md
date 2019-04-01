@@ -14,6 +14,7 @@
   
 * Vuex and Typescript
   * https://codeburst.io/vuex-and-typescript-3427ba78cfa8
+  * https://medium.com/coding-blocks/writing-vuex-modules-in-neat-typescript-classes-9bf7b505e7b5
   
   
 ## Vue.js and Typescript Video Tutorials
