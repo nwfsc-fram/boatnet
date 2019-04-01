@@ -58,7 +58,7 @@ export function getCouchUserDBName(username: string): string {
   }
 }
 
-export function toHex(str: string): string {
+function toHex(str: string): string {
   // https://stackoverflow.com/questions/21647928/javascript-unicode-string-to-hex
   let result = '';
   for (let i = 0; i < str.length; i++) {
