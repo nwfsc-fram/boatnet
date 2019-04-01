@@ -2,13 +2,12 @@
 
 // Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
-import { authService, BoatnetUser } from '@boatnet/bn-auth';
-
-import router from '../router';
+import { authService } from '../_services/auth.service';
+import { BoatnetUser } from '../models/auth.model';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { AuthState, RootState } from '@/_store/types/types';
+import { AuthState } from '@boatnet/bn-auth';
 
 Vue.use(Vuex);
 
@@ -18,18 +17,18 @@ export const state: AuthState =  user
 ? { status: { isLoggedIn: true }, user }
 : { status: {}, user: null };
 
-const actions: ActionTree<AuthState, RootState> = {
+const actions: ActionTree<AuthState, any> = {
   login({ dispatch, commit }: any, { username, password }: any) {
     commit('loginRequest', { username });
     authService.login(username, password).then(
       (u: BoatnetUser) => {
-        dispatch('alert/clear', {}, { root: true });
+        // dispatch('alert/clear', {}, { root: true }); // TODO
         commit('loginSuccess', u);
-        router.push('/');
+        // router.push('/'); // TODO
       },
       (error: any) => {
         commit('loginFailure', error);
-        dispatch('alert/error', error, { root: true });
+        // dispatch('alert/error', error, { root: true }); // TODO
       }
     );
   },
@@ -48,8 +47,8 @@ const mutations: MutationTree<AuthState> = {
     newState.status = { isLoggedIn: true };
     newState.user = newUser;
   },
-  loginFailure(newState: any) {
-    newState.status = {};
+  loginFailure(newState: any, errorMsg: string) {
+    newState.status = { error: { message: errorMsg } };
     newState.user = null;
   },
   logout(newState: any) {
@@ -58,7 +57,7 @@ const mutations: MutationTree<AuthState> = {
   }
 };
 
-export const auth: Module<AuthState, RootState> = {
+export const auth: Module<AuthState, any> = {
   namespaced: true,
   state,
   actions,

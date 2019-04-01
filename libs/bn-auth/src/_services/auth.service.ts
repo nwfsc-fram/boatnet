@@ -29,27 +29,23 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
   const userResponse = await axios
     .post(apiUrl + '/api/v1/login', { username, password })
     .catch((err) => {
-      console.log(err);
+      console.log('[Auth Service]', err);
       if (err.response && err.response.status === 401) {
         throw new Error('Invalid username or password.');
-      } else {
-        // Offline
-        throw new Error(
-          'Unable to log in using stored credentials. Internet connection required.'
-        );
       }
+      // Else - possibly offline - Continue
     });
 
   if (userResponse) {
     const user = userResponse.data;
     const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
     verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
-    console.log('Logged in as', verified.sub.username);
+    console.log('[Auth Service] Logged in as', verified.sub.username);
     storeUserToken(verified);
     setCurrentUser(verified.sub);
     return verified.sub;
   } else {
-    console.log('Auth is Offline: Trying cached credentials');
+    console.log('[Auth Service] Auth is Offline: Trying cached credentials');
     const storedUser = getStoredUserToken(username);
     if (!storedUser) {
       throw new Error(
@@ -69,6 +65,7 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
 
 function logout() {
   // TODO: Vuex store instead of localstorage
+  console.log('[Auth Service] Logged out');
   localStorage.removeItem('user');
 }
 
@@ -78,12 +75,14 @@ function setCurrentUser(user: BoatnetUser) {
   localStorage.setItem('user', JSON.stringify(user));
 }
 
-function getCurrentUser(): BoatnetUser | undefined {
+function getCurrentUser(): BoatnetUser | null {
   // TODO: Vuex store instead of localstorage
   const userStored = localStorage.getItem('user');
-  let user: BoatnetUser | undefined;
+  let user: BoatnetUser | null;
   if (userStored) {
     user = JSON.parse(userStored);
+  } else {
+    user = null;
   }
   return user;
 }
@@ -111,7 +110,7 @@ async function getPubKey() {
     const jwkKey = localStorage.getItem('jwk-pub-key');
     if (jwkKey) {
       const storedJWK = JSON.parse(jwkKey);
-      console.log('PEM key retrieved from localStorage.');
+      console.log('[Auth Service] PEM key retrieved from localStorage.');
       return pemjwk.jwk2pem(storedJWK);
     } else {
       throw new Error(
