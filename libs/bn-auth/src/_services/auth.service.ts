@@ -32,12 +32,8 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
       console.log('[Auth Service]', err);
       if (err.response && err.response.status === 401) {
         throw new Error('Invalid username or password.');
-      } else {
-        // Offline
-        throw new Error(
-          'Unable to log in using stored credentials. Internet connection required.'
-        );
       }
+      // Else - possibly offline - Continue
     });
 
   if (userResponse) {
