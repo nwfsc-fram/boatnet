@@ -14,7 +14,7 @@
   
 * Vuex and Typescript
   * https://codeburst.io/vuex-and-typescript-3427ba78cfa8
-  * https://github.com/utahta/vue-vuex-typescript-example
+  
   
 ## Vue.js and Typescript Video Tutorials
  * Audio isn't great on these, but covers Vue.js + TypeScript:
