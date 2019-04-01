@@ -11,9 +11,10 @@
   * https://alligator.io/vuejs/typescript-class-components/
   
 * Vuex and Typescript  (Kind of half-baked at the moment)
-  * https://github.com/vuejs/vuex/issues/564
+  * https://github.com/fernandoescolar/types-vue/blob/master/README.md
   * https://codeburst.io/vuex-and-typescript-3427ba78cfa8
-  * Investigating: 
+  * https://github.com/vuejs/vuex/issues/564
+  * Investigated, but not currently using: 
       * https://championswimmer.in/vuex-module-decorators/
       * https://github.com/sascha245/vuex-context
   
