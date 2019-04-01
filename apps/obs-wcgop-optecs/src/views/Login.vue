@@ -10,6 +10,7 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
+      <div>Is Logged In: {{isLoggedIn}}</div>
       <div class="q-pa-md" self-center style="max-width: 300px;">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md">
           <q-input
@@ -31,8 +32,8 @@
           />
           <q-banner rounded v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
           <div>
-            <q-btn color="primary" label="Login" type="submit" :disabled="auth.status.isLoggingIn"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <q-spinner v-show="auth.status.isLoggingIn" color="primary" size="3em" :thickness="2"/>
+            <q-btn color="primary" label="Login" type="submit" :disabled="isLoggingIn"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <q-spinner v-show="isLoggingIn" color="primary" size="3em" :thickness="2"/>
           </div>
         </form>
         <br>
@@ -61,20 +62,17 @@
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-import { AuthState, AlertState } from '../_store/types/types';
-// import { VueTouchKeyboard } from 'vue-touch-keyboard';
-
-// import style from 'vue-touch-keyboard/dist/vue-touch-keyboard.css'; // TODO: do this in scss below
-
-// TODO: Broken install?
-//  Vue.use(VueTouchKeyboard);
+import router from '../router';
+import { AlertState } from '../_store/types/types';
+import { AuthModule, AuthState } from '@boatnet/bn-auth';
+// import auth from '@boatnet/bn-auth';
 
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
-  @Action('login', { namespace: 'auth' }) private login: any;
-  @Action('logout', { namespace: 'auth' }) private logout: any;
+  // @Action('login', { namespace: 'auth' }) private login: any;
+  // @Action('logout', { namespace: 'auth' }) private logout: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
   private username = '';
@@ -89,6 +87,16 @@ export default class Login extends Vue {
     useKbEvents: false,
     preventClickEvent: false
   };
+
+public get isLoggingIn(): boolean {
+    const isLoggingIn = !!AuthModule.status.isLoggingIn;
+    return isLoggingIn;
+  }
+
+  public get isLoggedIn(): boolean {
+    const isLoggedIn = !!AuthModule.status.isLoggedIn;
+    return isLoggedIn;
+  }
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
@@ -115,14 +123,19 @@ export default class Login extends Vue {
 
   private mounted() {
     // reset login status
-    this.logout();
+    AuthModule.logout();
+    this.clear();
+    // this.auth.subscribe((mutation: any, state: any) => {
+    //   console.log(mutation.type);
+    // })
   }
 
   private handleSubmit(e: any) {
     this.submitted = true;
     const { username, password } = this;
     if (username && password) {
-      this.login({ username, password });
+
+      AuthModule.login({ username, password });
     }
   }
 }

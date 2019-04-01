@@ -78,12 +78,14 @@ function setCurrentUser(user: BoatnetUser) {
   localStorage.setItem('user', JSON.stringify(user));
 }
 
-function getCurrentUser(): BoatnetUser | undefined {
+function getCurrentUser(): BoatnetUser | null {
   // TODO: Vuex store instead of localstorage
   const userStored = localStorage.getItem('user');
-  let user: BoatnetUser | undefined;
+  let user: BoatnetUser | null;
   if (userStored) {
     user = JSON.parse(userStored);
+  } else {
+    user = null;
   }
   return user;
 }

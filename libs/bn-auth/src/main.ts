@@ -13,5 +13,6 @@ Object.keys(Components).forEach((name) => {
 });
 
 export * from './_services/auth.service';
+export * from './_store/';
 export * from './models/auth.model';
 export default Components;
