@@ -14,6 +14,8 @@
   * https://codeburst.io/vuex-and-typescript-3427ba78cfa8
   * https://championswimmer.in/vuex-module-decorators/
   
+  * Investigating:  https://github.com/sascha245/vuex-context
+  
 ## Vue.js and Typescript Video Tutorials
  * Audio isn't great on these, but covers Vue.js + TypeScript:
  * https://www.youtube.com/results?search_query=real+world+app+-+vue+js+and+typescript+
