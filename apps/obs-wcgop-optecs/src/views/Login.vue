@@ -81,7 +81,6 @@ export default class Login extends Vue {
   private username = '';
   private password = '';
   private submitted = false;
-  private errorMsg = '';
 
   private visible = false;
   private layout = 'normal';
@@ -90,6 +89,8 @@ export default class Login extends Vue {
     useKbEvents: false,
     preventClickEvent: false
   };
+
+  private unsubscribe: any;
 
   public get isLoggingIn(): boolean {
     const isLoggingIn = !!this.auth.status.isLoggingIn;
@@ -120,22 +121,23 @@ export default class Login extends Vue {
   }
 
   private mounted() {
-    // reset login status
-    this.logout();
-    this.clear();
+    this.logout(); // reset login status
+    this.clear(); // clear errors
 
-    // On successful login, navigate to home
-    this.$store.subscribe((mutation: any, state: any) => {
+    this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
         case 'auth/loginSuccess':
-          router.push('/');
+          router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
           this.error(state.auth.status.error.message);
           break;
       }
-
     });
+  }
+
+  private beforeDestroy() {
+    this.unsubscribe();
   }
 
   private handleSubmit(e: any) {
