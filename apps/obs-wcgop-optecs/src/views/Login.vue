@@ -73,7 +73,6 @@ export default class Login extends Vue {
 
   @Action('login', { namespace: 'auth' }) private login: any;
   @Action('logout', { namespace: 'auth' }) private logout: any;
-  @Mutation('loginSuccess', { namespace: 'auth' }) private loginSuccess: any;
 
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;

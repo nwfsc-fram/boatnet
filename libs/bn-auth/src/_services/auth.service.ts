@@ -13,8 +13,12 @@ import { BoatnetUserToken, BoatnetUser } from '../models/auth.model';
 import dbConfig from '../config/dbConfig';
 
 class AuthService {
+
+  private currentUser: BoatnetUser | null = null;
+  private currentCredentials: { username: string; password: string } | undefined;
+
   constructor() {
-    console.log('[Auth Service] Instantiated');
+    this.currentUser = this.getCurrentUser();
   }
 
   // TODO: Better username validation, maybe check for email address if we use email
@@ -45,9 +49,9 @@ class AuthService {
       const user = userResponse.data;
       const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
       verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
-      console.log('[Auth Service] Logged in as', verified.sub.username);
       this.storeUserToken(verified);
       this.setCurrentUser(verified.sub);
+      this.setCredentials(username, password);
       return verified.sub;
     } else {
       console.log('[Auth Service] Auth is Offline: Trying cached credentials');
@@ -62,6 +66,7 @@ class AuthService {
           throw new Error('Invalid offline username or password.');
         } else {
           this.setCurrentUser(storedUser.sub);
+          this.setCredentials(username, password);
           return storedUser.sub;
         }
       }
@@ -69,16 +74,24 @@ class AuthService {
   }
 
   public logout() {
-    // TODO: Vuex store instead of localstorage
-    console.log('[Auth Service] Logged out');
     localStorage.removeItem('user');
+    this.currentUser = null;
+    delete this.currentCredentials;
   }
 
   public getCurrentUser(): BoatnetUser | null {
-    // TODO: Vuex store instead of localstorage
+    const isDevMode = (process.env.NODE_ENV === 'development');
+
+    if (this.currentUser) {
+      return this.currentUser;
+    } else if (!isDevMode) {
+      return null; // Do not store user (Production mode)
+    }
+
     const userStored = localStorage.getItem('user');
     let user: BoatnetUser | null;
     if (userStored) {
+      console.log('[Auth Service] Dev mode: auto-login using stored user.');
       user = JSON.parse(userStored);
     } else {
       user = null;
@@ -87,15 +100,24 @@ class AuthService {
   }
 
   public isLoggedIn(): boolean {
-    // TODO: Vuex store instead of localstorage
     const logged = localStorage.getItem('user');
     return !!logged;
   }
 
+  public getCredentials(): any {
+    // For CouchDB access (TODO cookie or JWT for couch)
+    return this.currentCredentials;
+  }
+
   private setCurrentUser(user: BoatnetUser) {
-    // TODO: Vuex store instead of localstorage
     // store user details and jwt token in local storage to keep user logged in between page refreshes
+    this.currentUser = user;
     localStorage.setItem('user', JSON.stringify(user));
+  }
+
+  private setCredentials(username: string, password: string) {
+    // For CouchDB access (TODO cookie or JWT for couch)
+    this.currentCredentials = { username, password }; // Not stored in local storage.
   }
 
   private async getPubKey() {
@@ -169,10 +191,3 @@ class AuthService {
 }
 
 export const authService = new AuthService();
-// export const authService = {
-//   validateUsername,
-//   login,
-//   logout,
-//   getCurrentUser,
-//   isLoggedIn
-// };
