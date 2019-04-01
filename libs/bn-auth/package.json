@@ -18,8 +18,7 @@
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
-    "vuex-class": "^0.3.2",
-    "vuex-module-decorators": "^0.9.8"
+    "vuex-class": "^0.3.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",

@@ -29,7 +29,7 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
   const userResponse = await axios
     .post(apiUrl + '/api/v1/login', { username, password })
     .catch((err) => {
-      console.log(err);
+      console.log('[Auth Service]', err);
       if (err.response && err.response.status === 401) {
         throw new Error('Invalid username or password.');
       } else {
@@ -44,12 +44,12 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
     const user = userResponse.data;
     const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
     verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
-    console.log('Logged in as', verified.sub.username);
+    console.log('[Auth Service] Logged in as', verified.sub.username);
     storeUserToken(verified);
     setCurrentUser(verified.sub);
     return verified.sub;
   } else {
-    console.log('Auth is Offline: Trying cached credentials');
+    console.log('[Auth Service] Auth is Offline: Trying cached credentials');
     const storedUser = getStoredUserToken(username);
     if (!storedUser) {
       throw new Error(
@@ -69,6 +69,7 @@ async function login(username: string, password: string): Promise<BoatnetUser> {
 
 function logout() {
   // TODO: Vuex store instead of localstorage
+  console.log('[Auth Service] Logged out');
   localStorage.removeItem('user');
 }
 
@@ -113,7 +114,7 @@ async function getPubKey() {
     const jwkKey = localStorage.getItem('jwk-pub-key');
     if (jwkKey) {
       const storedJWK = JSON.parse(jwkKey);
-      console.log('PEM key retrieved from localStorage.');
+      console.log('[Auth Service] PEM key retrieved from localStorage.');
       return pemjwk.jwk2pem(storedJWK);
     } else {
       throw new Error(

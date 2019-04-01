@@ -10,7 +10,6 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
-      <div>Is Logged In: {{isLoggedIn}}</div>
       <div class="q-pa-md" self-center style="max-width: 300px;">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md">
           <q-input
@@ -59,21 +58,25 @@
 </template>
 
 <script lang="ts">
-import { State, Action, Getter } from 'vuex-class';
+import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
+
 import router from '../router';
 import { AlertState } from '../_store/types/types';
-import { AuthModule, AuthState } from '@boatnet/bn-auth';
-// import auth from '@boatnet/bn-auth';
+import { AuthState } from '@boatnet/bn-auth';
 
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
-  // @Action('login', { namespace: 'auth' }) private login: any;
-  // @Action('logout', { namespace: 'auth' }) private logout: any;
+
+  @Action('login', { namespace: 'auth' }) private login: any;
+  @Action('logout', { namespace: 'auth' }) private logout: any;
+  @Mutation('loginSuccess', { namespace: 'auth' }) private loginSuccess: any;
+
   @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
 
   private username = '';
   private password = '';
@@ -88,24 +91,19 @@ export default class Login extends Vue {
     preventClickEvent: false
   };
 
-public get isLoggingIn(): boolean {
-    const isLoggingIn = !!AuthModule.status.isLoggingIn;
+  public get isLoggingIn(): boolean {
+    const isLoggingIn = !!this.auth.status.isLoggingIn;
     return isLoggingIn;
   }
 
   public get isLoggedIn(): boolean {
-    const isLoggedIn = !!AuthModule.status.isLoggedIn;
-    return isLoggedIn;
+    const isLoggedIn = !!this.auth.status.isLoggedIn;
+    return false;
   }
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     this.clear();
-  }
-
-  private accept(text: string) {
-    alert('Input text: ' + text);
-    this.hide();
   }
 
   private show(e: any) {
@@ -123,19 +121,29 @@ public get isLoggingIn(): boolean {
 
   private mounted() {
     // reset login status
-    AuthModule.logout();
+    this.logout();
     this.clear();
-    // this.auth.subscribe((mutation: any, state: any) => {
-    //   console.log(mutation.type);
-    // })
+
+    // On successful login, navigate to home
+    this.$store.subscribe((mutation: any, state: any) => {
+      switch (mutation.type) {
+        case 'auth/loginSuccess':
+          router.push('/');
+          break;
+        case 'auth/loginFailure':
+          this.error(state.auth.status.error.message);
+          break;
+      }
+
+    });
   }
 
   private handleSubmit(e: any) {
+    this.clear();
     this.submitted = true;
     const { username, password } = this;
     if (username && password) {
-
-      AuthModule.login({ username, password });
+      this.login({ username, password });
     }
   }
 }

@@ -1,83 +1,65 @@
 // Vuex Auth Module
 
-// Typescript examples:
-// https://medium.com/coding-blocks/writing-vuex-modules-in-neat-typescript-classes-9bf7b505e7b5
-// https://github.com/coding-blocks-archives/realworld-vue-typescript/blob/master/src/store/modules/users.ts
+// Typescript examples https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 
-import { authService, BoatnetUser } from '@boatnet/bn-auth';
+import { authService } from '../_services/auth.service';
+import { BoatnetUser } from '../models/auth.model';
 
 import Vue from 'vue';
-import Vuex, { ActionTree, MutationTree } from 'vuex';
-import { AuthState } from './types/types';
-// import { Module } from 'module';
-
-import {
-  getModule,
-  Module,
-  Mutation,
-  VuexModule,
-  Action
-} from 'vuex-module-decorators';
+import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
+import { AuthState } from '@boatnet/bn-auth';
 
 Vue.use(Vuex);
 
-interface UserLoginInfo {
-  username: string;
-  password: string;
-}
+const user = authService.getCurrentUser();
 
-@Module({
+export const state: AuthState =  user
+? { status: { isLoggedIn: true }, user }
+: { status: {}, user: null };
+
+const actions: ActionTree<AuthState, any> = {
+  login({ dispatch, commit }: any, { username, password }: any) {
+    commit('loginRequest', { username });
+    authService.login(username, password).then(
+      (u: BoatnetUser) => {
+        // dispatch('alert/clear', {}, { root: true }); // TODO
+        commit('loginSuccess', u);
+        // router.push('/'); // TODO
+      },
+      (error: any) => {
+        commit('loginFailure', error);
+        // dispatch('alert/error', error, { root: true }); // TODO
+      }
+    );
+  },
+  logout({ commit }: any) {
+    authService.logout();
+    commit('logout');
+  }
+};
+
+const mutations: MutationTree<AuthState> = {
+  loginRequest(newState: any, newUser: any) {
+    newState.status = { isLoggingIn: true };
+    newState.user = newUser;
+  },
+  loginSuccess(newState: any, newUser: any) {
+    newState.status = { isLoggedIn: true };
+    newState.user = newUser;
+  },
+  loginFailure(newState: any, errorMsg: string) {
+    newState.status = { error: { message: errorMsg } };
+    newState.user = null;
+  },
+  logout(newState: any) {
+    newState.status = {};
+    newState.user = null;
+  }
+};
+
+export const auth: Module<AuthState, any> = {
   namespaced: true,
-  name: 'auth',
-  store: new Vuex.Store<AuthState>({}),
-  dynamic: true // TODO: needed?
-})
-class Auth extends VuexModule implements AuthState {
-  // public user = authService.getCurrentUser();
-  public user: BoatnetUser | null = authService.getCurrentUser();
-  public status: any = this.user ? { isLoggedIn: true } : {};
-
-  @Mutation
-  public loginRequest() {
-    this.status = { isLoggingIn: true };
-    this.user = null;
-    authService.logout();
-  }
-
-  @Mutation
-  public loginSuccess(newUser: BoatnetUser) {
-    this.status = { isLoggedIn: true };
-    this.user = newUser;
-  }
-
-  @Mutation
-  public loginFailure() {
-    this.status = {};
-    this.user = null;
-    authService.logout();
-  }
-
-  @Mutation
-  public logout() {
-    this.status = {};
-    this.user = null;
-    authService.logout();
-  }
-
-  @Action
-  public async login(userLogin: UserLoginInfo) {
-    try {
-      this.loginRequest();
-      const user = await authService.login(
-        userLogin.username,
-        userLogin.password
-      );
-      this.loginSuccess(user);
-    } catch (error) {
-      // TODO dispatch('alert/error', error, { root: true });
-      this.loginFailure();
-    }
-  }
-}
-
-export const AuthModule = getModule(Auth);
+  state,
+  actions,
+  mutations
+};

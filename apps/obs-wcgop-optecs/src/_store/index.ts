@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 
 import { alert } from '@/_store/alert.module';
-import { AuthModule } from '@boatnet/bn-auth';
+import { auth } from '@boatnet/bn-auth';
 
 import { RootState } from '@/_store/types/types';
 
@@ -18,7 +18,7 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     alert,
-    AuthModule
+    auth
   }
 };
 
