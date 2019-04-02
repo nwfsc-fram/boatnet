@@ -1,7 +1,9 @@
 <template>
-    <div class="q-pa-md  q-gutter-md">
-        <div class="text-h5">Active Targets</div>
-        <q-btn  color="primary" @click="newTarget">New Selection Target</q-btn>
+    <div >
+        <div style="text-align: center" class="q-pa-md q-gutter-md">
+        <q-btn color="primary" @click="newTarget">New Selection Target</q-btn>
+        </div>
+        <div style="text-align: center" class="text-h6"><strong>Active Targets</strong></div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of activeTargets" :key="i" @click="editTarget(target)">
                 <q-item-section avatar style="font-size:24px">
@@ -18,7 +20,7 @@
 
             </q-item>
         </q-list>
-        <div class="text-h5">Expired Targets</div>
+        <div style="text-align: center" class="text-h6"><strong>Expired Targets</strong></div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of expiredTargets" :key="i" @click="setActive(target)">
                 <q-item-section avatar style="font-size:24px">
@@ -43,10 +45,11 @@
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                <q-select v-model="target.fishery" :options="fisheries" :rules="[val =>  !!val || 'Required']" label="Fishery"/>
+                <q-select v-model="target.targetType" :options="targetTypes" :rules="[val => !!val || 'Reqired']" label="Target Type" />
+                <q-select v-model="target.target" :options="targets" :rules="[val =>  !!val || 'Required']" label="Target" />
+                <q-input v-model="target.rate" :rules="[val => { return val <= 100 && val >= 0 && !!val || 'Rate is required, and must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
+                <q-input :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -55,37 +58,7 @@
                     </q-icon>
                 </template>
                 </q-input>
-                </q-card-section>
-
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" @click="prompt = false" />
-                <q-btn flat label="Create Target" @click="createTarget" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
-
-        <q-dialog v-model="edit">
-            <q-card style="minWidth:400px;minHeight:400px">
-                <q-card-section>
-                    <div class="text-h6">Edit OTS Target</div>
-                </q-card-section>
-
-                <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
-
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
-                    <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-date v-model="target.startDate" />
-                    </q-popup-proxy>
-                    </q-icon>
-                </template>
-                </q-input>
-
-                <q-input filled :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                <q-input :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
@@ -96,9 +69,49 @@
                 </q-input>
                 </q-card-section>
 
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Close" @click="edit = false" />
-                </q-card-actions>
+                <q-card-section align="right" class="text-primary">
+                <q-btn label="Cancel" @click="prompt = false" />
+                <q-btn color="primary" label="Create Target" @click="createTarget" />
+                </q-card-section>
+            </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="edit">
+            <q-card style="minWidth:400px;minHeight:400px">
+                <q-card-section>
+                    <div class="text-h6">Edit OTS Target</div>
+                </q-card-section>
+
+                <q-card-section>
+                <q-select v-model="target.fishery" :options="fisheries" label="Fishery"/>
+                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" />
+                <q-select v-model="target.target" :options="targets" label="Target" />
+                <q-input v-model="target.rate" :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
+
+                <q-input :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                    <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="target.startDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+
+                <q-input :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                    <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="target.endDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+                </q-card-section>
+
+                <q-card-section align="right" class="text-primary">
+                <q-btn color="primary" label="Close" @click="edit = false" />
+                </q-card-section>
             </q-card>
         </q-dialog>
 
@@ -129,47 +142,52 @@ import moment from 'moment';
 export default class OTSManagement extends Vue {
 
     private otsTargets = this.$store.state.otsTargets;
-    private target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null };
+    private target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null };
     private prompt = false;
     private edit = false;
     private reactivate = false;
     private targetTypes = this.$store.state.targetTypes;
     private fisheries = this.$store.state.fisheries;
     private curDate = moment().format();
+    private options = [];
 
     private get targets() {
-        if (this.target.targetType === 'vessel') {
-            const vessels = new Set()
-            const permits = this.$store.state.permits
+        if (this.target.targetType === 'Vessel') {
+            const vessels = new Set();
+            const permits = this.$store.state.permits;
             for (const permit of permits) {
-                vessels.add(permit.vessel_name)
+                vessels.add(permit.vessel_name);
             }
-            return Array.from(vessels).sort()
-        } else if (this.target.targetType === 'port group') {
-            return this.$store.state.portGroups
+            return Array.from(vessels).sort();
+        } else if (this.target.targetType === 'Port Group') {
+            return this.$store.state.portGroups;
         } else {
-            return ['fishery wide']
+            return ['fishery wide'];
         }
-    };
+    }
 
     private get activeTargets() {
         if (this.$store.getters.activeOTSTargets) {
-            return this.$store.getters.activeOTSTargets.reverse()
+            return this.$store.getters.activeOTSTargets.reverse();
         } else {
-            return []
+            return [];
         }
     }
 
     private get expiredTargets() {
         if (this.$store.getters.expiredOTSTargets) {
-            return this.$store.getters.expiredOTSTargets.reverse()
+            return this.$store.getters.expiredOTSTargets.reverse();
         } else {
-            return []
+            return [];
         }
     }
 
+    constructor() {
+        super();
+        }
+
     private newTarget() {
-        this.target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null};
+        this.target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null};
         this.prompt = true;
     }
 
@@ -184,7 +202,7 @@ export default class OTSManagement extends Vue {
     }
 
     private setActive(target: any ) {
-        this.target = target
+        this.target = target;
         this.reactivate = true;
     }
 
@@ -196,14 +214,7 @@ export default class OTSManagement extends Vue {
 
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('YYYY/MM/DD');
-  }    
-
-  created() {
-      console.log(this.curDate)
   }
 
-    constructor() {
-        super();
-    }
 }
 </script>
