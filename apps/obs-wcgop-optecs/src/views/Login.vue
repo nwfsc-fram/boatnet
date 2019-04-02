@@ -31,8 +31,8 @@
           />
           <q-banner rounded v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
           <div>
-            <q-btn color="primary" label="Login" type="submit" :disabled="auth.status.isLoggingIn"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <q-spinner v-show="auth.status.isLoggingIn" color="primary" size="3em" :thickness="2"/>
+            <q-btn color="primary" label="Login" type="submit" :disabled="isLoggingIn"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <q-spinner v-show="isLoggingIn" color="primary" size="3em" :thickness="2"/>
           </div>
         </form>
         <br>
@@ -58,29 +58,29 @@
 </template>
 
 <script lang="ts">
-import { State, Action, Getter } from 'vuex-class';
+import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-import { AuthState, AlertState } from '../_store/types/types';
-// import { VueTouchKeyboard } from 'vue-touch-keyboard';
 
-// import style from 'vue-touch-keyboard/dist/vue-touch-keyboard.css'; // TODO: do this in scss below
-
-// TODO: Broken install?
-//  Vue.use(VueTouchKeyboard);
+import router from '../router';
+import { AlertState } from '../_store/types/types';
+import { AuthState } from '@boatnet/bn-auth';
 
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
+
   @Action('login', { namespace: 'auth' }) private login: any;
   @Action('logout', { namespace: 'auth' }) private logout: any;
+  @Mutation('loginSuccess', { namespace: 'auth' }) private loginSuccess: any;
+
   @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
 
   private username = '';
   private password = '';
   private submitted = false;
-  private errorMsg = '';
 
   private visible = false;
   private layout = 'normal';
@@ -90,14 +90,21 @@ export default class Login extends Vue {
     preventClickEvent: false
   };
 
+  private unsubscribe: any;
+
+  public get isLoggingIn(): boolean {
+    const isLoggingIn = !!this.auth.status.isLoggingIn;
+    return isLoggingIn;
+  }
+
+  public get isLoggedIn(): boolean {
+    const isLoggedIn = !!this.auth.status.isLoggedIn;
+    return false;
+  }
+
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     this.clear();
-  }
-
-  private accept(text: string) {
-    alert('Input text: ' + text);
-    this.hide();
   }
 
   private show(e: any) {
@@ -114,11 +121,27 @@ export default class Login extends Vue {
   }
 
   private mounted() {
-    // reset login status
-    this.logout();
+    this.logout(); // reset login status
+    this.clear(); // clear errors
+
+    this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
+      switch (mutation.type) {
+        case 'auth/loginSuccess':
+          router.push('/'); // On successful login, navigate to home
+          break;
+        case 'auth/loginFailure':
+          this.error(state.auth.status.error.message);
+          break;
+      }
+    });
+  }
+
+  private beforeDestroy() {
+    this.unsubscribe();
   }
 
   private handleSubmit(e: any) {
+    this.clear();
     this.submitted = true;
     const { username, password } = this;
     if (username && password) {
