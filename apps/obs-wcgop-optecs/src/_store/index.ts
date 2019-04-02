@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 
 import { alert } from '@/_store/alert.module';
 import { auth } from '@boatnet/bn-auth';
+import { baseCouch } from '@boatnet/bn-couch';
 
 import { RootState } from '@/_store/types/types';
 
@@ -18,7 +19,8 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     alert,
-    auth
+    auth,
+    baseCouch
   }
 };
 

@@ -75,7 +75,7 @@
 
         <q-separator/>
 
-        <q-item @click.native="logout()" to="/login" exact>
+        <q-item to="/login" exact>
           <q-item-section avatar>
             <q-icon name="exit_to_app"/>
           </q-item-section>
@@ -106,8 +106,6 @@ import { Platform } from 'quasar';
 
 import router from '../router';
 
-import { authService } from '@boatnet/bn-auth';
-
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
 @Component({
@@ -125,9 +123,5 @@ export default class DefaultLayout extends Vue {
     this.leftDrawerOpen = Platform.is.desktop;
   }
 
-  private logout() {
-    // authService.logout();
-    router.push('/login');
-  }
 }
 </script>
