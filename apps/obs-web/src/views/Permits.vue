@@ -5,6 +5,7 @@
                 get permits
             </q-btn>
         </div>
+        <div style="text-align: center" class="text-h6"><strong>Active Permits</strong></div>
         <q-list bordered separator>
             <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(permit, i)">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->

@@ -1,9 +1,9 @@
 <template>
     <div>
     <div class="q-pa-md  q-gutter-md">
+                <div class="text-h6" style="text-align: center"><strong>User Settings</strong></div>
         <q-card>
             <q-card-section>
-                <q-card-title class="text-h6">User Settings</q-card-title>
                 <q-select dense v-model="activeVessel" :options="vessels" label="Active Vessel" ></q-select>
                 <br>
                 <q-select

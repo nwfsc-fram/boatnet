@@ -1,8 +1,8 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
+            <div class="text-h6" style="text-align: center"><strong>User Details</strong></div>
         <q-card>
             <q-card-section>
-            <q-card-title class="text-h6">User Details</q-card-title>
             <q-input dense v-model="user.name" label="Name"></q-input>
             <q-select dense v-model="user.roles" label="Roles" multiple use-chips :options="roles"></q-select>
             <q-input dense v-model="user.email" label="Email Address" type="email"></q-input>

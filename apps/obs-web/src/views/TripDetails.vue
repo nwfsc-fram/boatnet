@@ -3,40 +3,32 @@
         <q-card class="my-card">
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-                <p><strong>Trip # {{ trip.trip_num }} - <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span></strong></p>
+                <p><strong>Trip # {{ trip.tripNum }} - <span v-if="trip.fishery">{{ trip.fishery.name }}</span></strong></p>
 
-                <q-input v-model="trip.start_date" mask="date" :rules="['date']" :dense="true" label="Start Date">
+                <q-input v-model="trip.departureDate" mask="date" :rules="['date']" :dense="true" label="Start Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.start_date" />
-                    </q-popup-proxy>
-                    </q-icon>
-                    <q-icon name="access_time" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-time v-model="trip.start_time" />
+                        <q-date v-model="trip.departureDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-input v-model="trip.end_date" mask="date" :rules="['date']" :dense="true" label="End Date">
+                <q-input v-model="trip.returnDate" mask="date" :rules="['date']" :dense="true" label="End Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.end_date" />
-                    </q-popup-proxy>
-                    </q-icon>
-                    <q-icon name="access_time" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-time v-model="trip.end_time" />
+                        <q-date v-model="trip.returnDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-select v-model="trip.start_port" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select v-model="trip.end_port" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.departurePort.name" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+
+                <q-select v-model="trip.fishery.name" :dense="true" label="Fishery" stack-label :options="fisheryOptions"></q-select>
  
                 <p><strong>Permits</strong></p>
 
@@ -109,11 +101,6 @@ import { date } from 'quasar';
 export default class TripDetails extends Vue {
 
     private trip =  this.$store.state.activeTrip;
-    // private permits = [
-    //     {label: 'permit one', value: 42},
-    //     {label: 'permit two', value: 17},
-    //     {label: 'permit three', value: 7},
-    //     ];
     private permits = this.$store.state.permits.map( (permit: any) =>
         ({label: permit.permit_number, value: permit.vessel_name}) );
     private prompt = false;
@@ -121,9 +108,11 @@ export default class TripDetails extends Vue {
     private ports = this.$store.state.ports.sort();
     private portOptions = this.ports;
     private newTrip = this.$store.state.newTrip;
+    private fisheryOptions = this.$store.state.fisheries
 
     constructor() {
         super();
+
     }
 
     private addMessage() {
@@ -137,7 +126,11 @@ export default class TripDetails extends Vue {
         }
 
     private get tripMessages() {
-        return this.trip.messages.reverse();
+        if (this.trip.messages) {
+            return this.trip.messages.reverse();
+        } else {
+            return [];
+        }
         }
 
     private filterFn(val: string, update: any) {
@@ -160,6 +153,7 @@ export default class TripDetails extends Vue {
     }
 
     private createTrip() {
+        console.log(this.$store.state.trips)
         this.$router.push({path: '/trips/'});
     }
 

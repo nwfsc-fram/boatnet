@@ -1,6 +1,8 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
-        <q-btn color="primary" @click="newUser">New User</q-btn>
+        <div style="text-align: center">
+            <q-btn color="primary" @click="newUser">New User</q-btn>
+        </div>
         <q-list bordered separator>
             <q-item v-for="(user, i) of filteredUsers" :key="i" @click="userDetails(user)">
                 <q-item-section>

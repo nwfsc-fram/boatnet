@@ -1,22 +1,23 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-    <div>
+    <div style="text-align: center">
       <q-btn v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
       <q-btn v-else color="blue-grey-2" @click="alert = true">New Trip</q-btn>
     </div>
-      <div v-if="openTrips.length > 0"  class="text-h6"><strong>Active Trips</strong></div>
+      <div v-if="openTrips.length > 0" style="text-align: center" class="text-h6"><strong>Active Trips</strong></div>
   <div class=" row items-start" >
       <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-primary text-white" v-if="trip.is_open"> -->
 
-      <q-card v-for="(trip, i) in openTrips" :key="trip.trip_num" class="my-card bg-primary text-white" style="margin: 10px">
+      <q-card v-for="(trip, i) in openTrips" :key="trip.tripNum" class="my-card bg-primary text-white" style="margin: 10px">
         <q-card-section>
-          <div class="text-h6">{{ trip.trip_num }} 
-            <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span>
-            <span v-if="trip.permits.length > 1">&nbsp;+</span></div>
-          <span v-if="trip.start_date">{{ trip.start_date.split(" ")[0] }}</span> - <span v-if="trip.end_date">{{ trip.end_date.split(" ")[0] }}</span>
+          <div class="text-h6">{{ trip.tripNum }} 
+            <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+          </div>
+          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> - 
+          <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
           <div style="float:right">
             <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
-            <q-icon v-if="trip.selected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
+            <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
           </div>
         </q-card-section>
         <q-card-actions>
@@ -25,20 +26,21 @@
         </q-card-actions>
     </q-card>
     </div>
-    <div v-if="closedTrips.length > 0"  class="text-h6"><strong>Closed Trips</strong></div>
+    <div v-if="closedTrips.length > 0" style="text-align: center" class="text-h6"><strong>Closed Trips</strong></div>
     <div class=" row items-start"> 
     <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
-    <q-card v-for="(trip, i) in closedTrips" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
+    <q-card v-for="(trip, i) in closedTrips" :key="trip.tripNum" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
       <q-card-section>
-        <div class="text-h6">{{ trip.trip_num }} 
-          <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span>
-          <span v-if="trip.permits.length > 1">&nbsp;+</span></div>
-          <span v-if="trip.start_date">{{ trip.start_date.split(" ")[0] }}</span> - <span v-if="trip.end_date">{{ trip.end_date.split(" ")[0] }}</span>
+        <div class="text-h6">{{ trip.tripNum }} 
+          <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+        </div>
+          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> - 
+          <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
         <div style="float:right">
           <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
-          <q-icon v-if="trip.selected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
+          <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
         </div>
       </q-card-section>
       <q-card-actions style="float:right">
@@ -105,12 +107,12 @@ export default class Trips extends Vue {
     }
 
     private closeTrip(trip: any) {
-        trip.is_open = false;
+        trip.tripStatus = false;
       }
 
     private reOpenTrip(trip: any) {
         if (this.openTrips.length < 2) {
-          trip.is_open = true;
+          trip.tripStatus = true;
         } else {
           this.alert = true;
         }
@@ -119,20 +121,23 @@ export default class Trips extends Vue {
     private getTripDetails(trip: any) {
         this.$store.dispatch('updateActiveTrip', trip);
         // this.$store.state.activeTrip = this.trips[i];
-        this.$router.push({path: '/trips/' + trip.trip_num});
+        this.$router.push({path: '/trips/' + trip.tripNum});
       }
 
     private newTrip() {
         const newTripNum = this.$store.state.trips.length + 1;
         this.$store.state.trips.push({
                                       type: 'trip',
-                                      trip_num: newTripNum,
-                                      is_open: true,
-                                      vessel: this.$store.state.activeVessel,
+                                      tripNum: newTripNum,
+                                      tripStatus: true,
+                                      vessel: {vesselName: this.$store.state.activeVessel},
                                       permits: [],
                                       messages: [],
-                                      start_port: this.$store.state.activeUser.homeport,
-                                      end_port: 'same as start'
+                                      departurePort: this.$store.state.activeUser.homeport,
+                                      returnPort: 'same as start',
+                                      isSelected: false,
+                                      fishery: {name: 'unknown'},
+                                      _id: 'blah'
                                       });
         this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length - 1]);
         this.$store.state.newTrip = true;

@@ -1,7 +1,9 @@
 <template>
-    <div class="q-pa-md  q-gutter-md">
-        <div class="text-h5">Active Targets</div>
-        <q-btn  color="primary" @click="newTarget">New Selection Target</q-btn>
+    <div >
+        <div style="text-align: center" class="q-pa-md q-gutter-md">
+        <q-btn color="primary" @click="newTarget">New Selection Target</q-btn>
+        </div>
+        <div style="text-align: center" class="text-h6"><strong>Active Targets</strong></div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of activeTargets" :key="i" @click="editTarget(target)">
                 <q-item-section avatar style="font-size:24px">
@@ -18,7 +20,7 @@
 
             </q-item>
         </q-list>
-        <div class="text-h5">Expired Targets</div>
+        <div style="text-align: center" class="text-h6"><strong>Expired Targets</strong></div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of expiredTargets" :key="i" @click="setActive(target)">
                 <q-item-section avatar style="font-size:24px">
