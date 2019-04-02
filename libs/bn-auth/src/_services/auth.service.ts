@@ -11,13 +11,14 @@ import pemjwk from 'pem-jwk';
 import { BoatnetUserToken, BoatnetUser } from '../models/auth.model';
 
 import dbConfig from '../config/dbConfig';
+import { CouchDBCredentials } from '@boatnet/bn-couchdb';
 
 class AuthService {
-
   private currentUser: BoatnetUser | null = null;
-  private currentCredentials: { username: string; password: string } | undefined;
+  private currentCredentials!: { username: string; password: string };
 
   constructor() {
+    console.log('[Auth Service] Initialized');
     this.currentUser = this.getCurrentUser();
   }
 
@@ -80,7 +81,7 @@ class AuthService {
   }
 
   public getCurrentUser(): BoatnetUser | null {
-    const isDevMode = (process.env.NODE_ENV === 'development');
+    const isDevMode = process.env.NODE_ENV === 'development';
 
     if (this.currentUser) {
       return this.currentUser;
@@ -104,9 +105,15 @@ class AuthService {
     return !!logged;
   }
 
-  public getCredentials(): any {
+  public getCouchDBCredentials(): CouchDBCredentials | undefined {
     // For CouchDB access (TODO cookie or JWT for couch)
-    return this.currentCredentials;
+    if (!this.currentUser) {
+      return undefined;
+    }
+    return {
+      dbInfo: this.currentUser.couchDBInfo,
+      userCredentials: this.currentCredentials
+    };
   }
 
   private setCurrentUser(user: BoatnetUser) {

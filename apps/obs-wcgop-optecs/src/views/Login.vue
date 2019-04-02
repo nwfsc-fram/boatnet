@@ -64,7 +64,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
 import router from '../router';
 import { AlertState } from '../_store/types/types';
-import { AuthState } from '@boatnet/bn-auth';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { CouchDBCredentials } from '@boatnet/bn-couch';
 
 @Component
 export default class Login extends Vue {
@@ -76,6 +77,8 @@ export default class Login extends Vue {
 
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
+
+  @Action('connect', { namespace: 'baseCouch' }) private connect: any;
 
   private username = '';
   private password = '';
@@ -126,6 +129,8 @@ export default class Login extends Vue {
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
         case 'auth/loginSuccess':
+          const creds = authService.getCouchDBCredentials();
+          this.connect(creds);
           router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
