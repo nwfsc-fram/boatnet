@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@boatnet/bn-models": "file:..\\bn-models",
+    "quasar": "1.0.0-beta.13",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0"
