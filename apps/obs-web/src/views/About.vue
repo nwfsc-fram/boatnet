@@ -26,6 +26,5 @@ export default class About extends Vue {
   constructor() {
     super();
   }
-  
 }
 </script>

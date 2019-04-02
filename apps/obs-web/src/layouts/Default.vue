@@ -16,7 +16,7 @@
         <q-toolbar-title>
           <span
             v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"
-          >{{ this.$store.state.activeVessel.name }}</span>
+          >{{ this.$store.state.activeVessel }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
@@ -56,6 +56,16 @@
             <q-item-label caption>take/upload logbook photo</q-item-label>
           </q-item-section>
         </q-item>
+
+        <q-item to="/ots-dashboard" exact>
+          <q-item-section avatar>
+            <q-icon name="waves"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>OTS Dashboard</q-item-label>
+            <q-item-label caption>Monitor OTS Performance</q-item-label>
+          </q-item-section>
+        </q-item>        
 
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
@@ -136,11 +146,24 @@ export default {
   },
   methods: {
     navigateBack() {
-        this.$router.back()
+        this.$router.back();
     }
   }
 };
 </script>
+
+<style>
+    .q-field__label {
+        color: #027be3 !important;
+    }
+
+    .q-field__native {
+      font-weight: bold !important;
+    }
+
+
+</style>
+
 
 <!-- 
 <script lang="ts">

@@ -1,48 +1,39 @@
 <template>
     <div class="q-pa-md  q-gutter-md">
-        <q-card>
+        <q-card class="my-card">
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-                <p><strong>Trip # {{ trip.trip_num }} - <span v-if="trip.permits.length > 0">{{ trip.permits[0].fishery }}</span></strong></p>
+                <p><strong>Trip # {{ trip.tripNum }} - <span v-if="trip.fishery">{{ trip.fishery.name }}</span></strong></p>
 
-                <q-input filled v-model="trip.start_date" mask="date" :rules="['date']" :dense="true" label="Start Date">
+                <q-input v-model="trip.departureDate" mask="date" :rules="['date']" :dense="true" label="Start Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.start_date" />
-                    </q-popup-proxy>
-                    </q-icon>
-                    <q-icon name="access_time" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-time v-model="trip.start_time" />
+                        <q-date v-model="trip.departureDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-input filled v-model="trip.end_date" mask="date" :rules="['date']" :dense="true" label="End Date">
+                <q-input v-model="trip.returnDate" mask="date" :rules="['date']" :dense="true" label="End Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.end_date" />
-                    </q-popup-proxy>
-                    </q-icon>
-                    <q-icon name="access_time" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-time v-model="trip.end_time" />
+                        <q-date v-model="trip.returnDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-select filled v-model="trip.start_port" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select filled v-model="trip.end_port" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.departurePort.name" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+
+                <q-select v-model="trip.fishery.name" :dense="true" label="Fishery" stack-label :options="fisheryOptions"></q-select>
  
                 <p><strong>Permits</strong></p>
 
                 <q-select
                 v-model="trip.permits"
-                filled
                 bg-color="white"
                 color="primary"
                 multiple
@@ -89,11 +80,11 @@
             </q-card-section>
 
             <q-card-actions v-if="newTrip" align="right" class="text-primary">
-                <q-btn flat label="Cancel" @click="deleteTrip"/>
-                <q-btn flat label="Create Trip" color="primary" @click="createTrip"/>
+                <q-btn label="Cancel" @click="deleteTrip"/>
+                <q-btn label="Create Trip" color="primary" @click="createTrip"/>
             </q-card-actions>
             <q-card-actions v-else align="right" class="text-primary">
-                <q-btn flat label="Done" color="primary" @click="goToTrips"></q-btn>
+                <q-btn label="Done" color="primary" @click="goToTrips"></q-btn>
             </q-card-actions>
         </q-card>
     </div>
@@ -110,19 +101,18 @@ import { date } from 'quasar';
 export default class TripDetails extends Vue {
 
     private trip =  this.$store.state.activeTrip;
-    private permits = [
-        {label: 'permit one', value: 42},
-        {label: 'permit two', value: 17},
-        {label: 'permit three', value: 7},
-        ];
+    private permits = this.$store.state.permits.map( (permit: any) =>
+        ({label: permit.permit_number, value: permit.vessel_name}) );
     private prompt = false;
     private newMessage: string = '';
     private ports = this.$store.state.ports.sort();
     private portOptions = this.ports;
     private newTrip = this.$store.state.newTrip;
+    private fisheryOptions = this.$store.state.fisheries
 
     constructor() {
         super();
+
     }
 
     private addMessage() {
@@ -136,39 +126,50 @@ export default class TripDetails extends Vue {
         }
 
     private get tripMessages() {
-                return this.trip.messages.reverse();
+        if (this.trip.messages) {
+            return this.trip.messages.reverse();
+        } else {
+            return [];
+        }
         }
 
     private filterFn(val: string, update: any) {
         if (val === '') {
-            update(() => {
-                    this.portOptions = this.ports;
+            update( () => {
+                this.portOptions = this.ports;
                 });
-                return;
+            return;
         }
-      update(() => {
-        const searchString = val.toLowerCase();
-        this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > -1);
-      });
-    }
+        update( () => {
+            const searchString = val.toLowerCase();
+            this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > -1);
+            });
+        }
 
     private deleteTrip() {
-        this.$store.state.trips.pop()
-        this.$store.state.activeTrip = null
+        this.$store.state.trips.pop();
+        this.$store.state.activeTrip = null;
         this.$router.push({path: '/trips/'});
     }
-    
+
     private createTrip() {
+        console.log(this.$store.state.trips)
         this.$router.push({path: '/trips/'});
     }
 
     private goToTrips() {
-        this.$router.push({path: '/trips/'})
+        this.$router.push({path: '/trips/'});
     }
 
 }
 
 </script>
+
+<style lang="stylus" scoped>
+.my-card
+    width 95%
+
+</style>
 
 <!--
 <script>
