@@ -1,6 +1,7 @@
 // Vuex CouchDB Module
 
 import { authService } from '@boatnet/bn-auth';
+import { couchService } from '../_services/couch.service';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
@@ -16,6 +17,7 @@ export const state: CouchDBState =  { credentials: null };
 const actions: ActionTree<CouchDBState, any> = {
   connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
     commit('connectRequest', credentials); // TODO connection
+    couchService.connect(credentials);
   },
   logout({ commit }: any) {
     // authService.logout();

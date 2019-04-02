@@ -1,11 +1,21 @@
 <template>
-  <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+  <span>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clear"/>
+      </template>
+    </q-banner>
+    <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+  </span>
 </template>
 
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
+import { State, Action } from 'vuex-class';
+import { AlertState } from '../_store/types/types';
 
 import { Point } from 'geojson';
 import {
@@ -17,7 +27,7 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-VesselTypeName
+  VesselTypeName
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -26,6 +36,10 @@ Vue.component(BoatnetTrips);
 
 @Component
 export default class Trips extends Vue {
+  @State('alert') private alert!: AlertState;
+
+  @Action('clear', { namespace: 'alert' }) private clear: any;
+
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 

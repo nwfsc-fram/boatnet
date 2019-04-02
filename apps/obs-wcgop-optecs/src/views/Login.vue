@@ -10,6 +10,7 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
+      <q-banner rounded v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
       <div class="q-pa-md" self-center style="max-width: 300px;">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md">
           <q-input
@@ -29,7 +30,7 @@
             autocomplete="boatnet password"
             :rules="[val => !!val || 'Password is required']"
           />
-          <q-banner rounded v-show="!!alert.message" class="bg-red text-white">{{alert.message}}</q-banner>
+
           <div>
             <q-btn color="primary" label="Login" type="submit" :disabled="isLoggingIn"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <q-spinner v-show="isLoggingIn" color="primary" size="3em" :thickness="2"/>
@@ -58,6 +59,7 @@
 </template>
 
 <script lang="ts">
+import * as Nano from 'nano';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
@@ -65,7 +67,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import router from '../router';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 
 @Component
 export default class Login extends Vue {
@@ -131,6 +133,7 @@ export default class Login extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connect(creds);
+
           router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':

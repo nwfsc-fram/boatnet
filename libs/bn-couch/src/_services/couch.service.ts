@@ -17,6 +17,10 @@ class CouchService {
   constructor() {
     console.log('[CouchDB Service] Instantiated.');
   }
+
+  public connect(credentials: CouchDBCredentials) {
+    console.log('Connecting via ', credentials);
+  }
 }
 
-export const dbService = new CouchService();
+export const couchService = new CouchService();
