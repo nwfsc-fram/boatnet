@@ -9,10 +9,14 @@ import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
 import { WcgopSightingEvent } from './wcgop-sighting-event';
+import { Base } from '../_base';
 
 declare type RockfishHandlingCode = string; // TODO
 
-export interface WcgopCatchSpecies {
+
+export const WcgopCatchSpeciesTypeName = 'wcgop-catch-species';
+
+export interface WcgopCatchSpecies extends Base {
   species: Species;
   discardReason?: WcgopDiscardReason;
   speciesWeight?: Measurement;
@@ -27,9 +31,13 @@ export interface WcgopCatchSpecies {
 
   sightingEventIds?: CouchID[];
 
+  speciesCompDataSource?: string;
+  speciesCompItemDataSource?: string;
+
   legacy?: {
     speciesCompId?: number;
     speciesCompItemId?: number;
+    biospecimenId?: number;
     catchId?: number;
     speciesWeightKp?: number;
     speciesWeightKpItq?: number;

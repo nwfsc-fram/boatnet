@@ -1,9 +1,9 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const VesselLogbookTypeName = 'vessel-logbook-type';
+export const VesselStatusTypeName = 'vessel-status';
 
-export interface VesselLogbookType extends Base {
+export interface VesselStatus extends Base { 
     description?: string;
     lookupVal?: number;
     programId?: number;
@@ -15,3 +15,4 @@ export interface VesselLogbookType extends Base {
         obsprodLoadDate?: BoatnetDate;
     }
 }
+

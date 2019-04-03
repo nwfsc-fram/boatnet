@@ -39,6 +39,7 @@ export interface AshopTrip extends BaseTrip {
   didFishingOccur?: boolean;
 
   sightingEvents?: AshopSightingEvent[];
+  ineractionEvents?: AshopInteractionEvent[]; //todo
 
   brd?: AshopBrd[];
   // TODO Possibly reuse WcgopBrd, include Bird Detternce

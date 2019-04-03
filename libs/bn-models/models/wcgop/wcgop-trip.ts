@@ -37,6 +37,7 @@ export interface WcgopTrip extends BaseTrip {
   debriefer?: Contact;
 
   sightingEvents?: WcgopSightingEvent[];
+  interactionEvents?: WcgopInteractionEvent[]; // todo
   brd?: WcgopBrd[];
   hlfc?: WcgopHlfc[];
 

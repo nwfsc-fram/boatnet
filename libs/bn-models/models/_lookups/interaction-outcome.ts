@@ -1,16 +1,16 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const VesselLogbookTypeName = 'vessel-logbook-type';
+export const InteractionOutcomeTypeName = 'interaction-outcome';
 
-export interface VesselLogbookType extends Base {
+export interface InteractionOutcome extends Base { 
     description?: string;
     lookupVal?: number;
-    programId?: number;
-    active?: boolean;
-    sortOrder?: number;
 
     legacy?: {
+        programId?: number;
+        active?: boolean;
+        sortOrder?: number;
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
     }

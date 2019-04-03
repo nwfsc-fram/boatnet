@@ -2,6 +2,7 @@ import { Species, Measurement, BoatnetDate, CouchID, LocationEvent } from '../_c
 
 export const WcgopSightingEventTypeName = 'wcgop-sighting-event';
 
+// possibly made obsolete by mmsbst models
 export interface WcgopSightingEvent extends LocationEvent {
   // Populate _id for use in references
   species?: Species;

@@ -1,17 +1,17 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const VesselLogbookTypeName = 'vessel-logbook-type';
+export const DeterrenceTypeTypeName = 'deterrence-type';
 
-export interface VesselLogbookType extends Base {
+export interface DeterrenceType extends Base { 
     description?: string;
     lookupVal?: number;
-    programId?: number;
-    active?: boolean;
-    sortOrder?: number;
 
     legacy?: {
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
+        programId?: number;
+        active?: boolean;
+        sortOrder?: number;
     }
 }

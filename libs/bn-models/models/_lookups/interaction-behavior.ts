@@ -1,9 +1,9 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const VesselLogbookTypeName = 'vessel-logbook-type';
+export const InteractionBehaviorTypeName = 'interaction-behavior';
 
-export interface VesselLogbookType extends Base {
+export interface InteractionBehavior extends Base { 
     description?: string;
     lookupVal?: number;
     programId?: number;

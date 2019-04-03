@@ -1,9 +1,9 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const VesselLogbookTypeName = 'vessel-logbook-type';
+export const RelationshipTypeName = 'relationship';
 
-export interface VesselLogbookType extends Base {
+export interface Relationship extends Base { 
     description?: string;
     lookupVal?: number;
     programId?: number;
