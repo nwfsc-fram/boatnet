@@ -84,7 +84,7 @@ export default class Login extends Vue {
 
   private username = '';
   private password = '';
-  private isPwd = 'password';
+  private isPwd = true;
   private submitted = false;
 
   private visible = false;
