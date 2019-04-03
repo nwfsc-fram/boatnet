@@ -5,6 +5,10 @@ import { RootState } from './types/types';
 import { alert } from './alert.module';
 import { auth } from './auth.module';
 import { trip } from './trip.module';
+import { permit } from './permit.module';
+import { user } from './user.module';
+import { vessel } from './vessel.module';
+import { general } from './general.module';
 
 Vue.use(Vuex);
 
@@ -24,6 +28,13 @@ const store: StoreOptions<RootState> = {
   modules: {
     alert,
     auth,
-    trip
+    trip,
+    permit,
+    user,
+    vessel,
+    general
+    // ots
   }
 };
+
+export default new Vuex.Store<RootState>(store);

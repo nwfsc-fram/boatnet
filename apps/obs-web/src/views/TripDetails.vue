@@ -3,37 +3,37 @@
         <q-card class="my-card">
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-                <p><strong>Trip # {{ trip.tripNum }} - <span v-if="trip.fishery">{{ trip.fishery.name }}</span></strong></p>
+                <p><strong>Trip # {{ trip.activeTrip.tripNum }} - <span v-if="trip.activeTrip.fishery">{{ trip.activeTrip.fishery.name }}</span></strong></p>
 
-                <q-input v-model="trip.departureDate" mask="date" :rules="['date']" :dense="true" label="Start Date">
+                <q-input v-model="trip.activeTrip.departureDate" mask="date" :rules="['date']" :dense="true" label="Start Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.departureDate" />
+                        <q-date v-model="trip.activeTrip.departureDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-input v-model="trip.returnDate" mask="date" :rules="['date']" :dense="true" label="End Date">
+                <q-input v-model="trip.activeTrip.returnDate" mask="date" :rules="['date']" :dense="true" label="End Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.returnDate" />
+                        <q-date v-model="trip.activeTrip.returnDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-select v-model="trip.departurePort.name" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select v-model="trip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.activeTrip.departurePort.name" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.activeTrip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
 
-                <q-select v-model="trip.fishery.name" :dense="true" label="Fishery" stack-label :options="fisheryOptions"></q-select>
+                <q-select v-model="trip.activeTrip.fishery.name" :dense="true" label="Fishery" stack-label :options="fisheryOptions"></q-select>
  
                 <p><strong>Permits</strong></p>
 
                 <q-select
-                v-model="trip.permits"
+                v-model="trip.activeTrip.permits"
                 bg-color="white"
                 color="primary"
                 multiple
@@ -53,7 +53,11 @@
                     <q-list bordered separator class="rounded-borders">
                         <q-item clickable :dense="true" v-for="message in tripMessages" :key="message.datetime">
                             <q-item-section>
-                                <q-item-label class="text-primary">{{ message.author }} <span style="float:right"> 5 minutes ago </span></q-item-label>
+                                <q-item-label class="text-primary">{{ message.author.name }} 
+                                    <span style="float:right">
+                                    {{ getTimeText(Math.floor((Date.now() - message.datetime) /1000 )) }}
+                                    </span>
+                                </q-item-label>
                                 <q-item-label><strong>{{ message.text }}</strong></q-item-label>
                             </q-item-section>
                         </q-item>
@@ -79,7 +83,7 @@
 
             </q-card-section>
 
-            <q-card-actions v-if="newTrip" align="right" class="text-primary">
+            <q-card-actions v-if="trip.activeTrip.newTrip" align="right" class="text-primary">
                 <q-btn label="Cancel" @click="deleteTrip"/>
                 <q-btn label="Create Trip" color="primary" @click="createTrip"/>
             </q-card-actions>
@@ -94,21 +98,41 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
+import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { date } from 'quasar';
+import { TripState, PermitState, UserState, GeneralState } from '../_store/types/types';
+
+import moment from 'moment';
 
 @Component
 export default class TripDetails extends Vue {
 
-    private trip =  this.$store.state.activeTrip;
-    private permits = this.$store.state.permits.map( (permit: any) =>
-        ({label: permit.permit_number, value: permit.vessel_name}) );
+    @State('trip') private trip!: TripState;
+    @State('permit') private permit!: PermitState;
+    @State('user') private user!: UserState;
+    @State('general') private general!: GeneralState;
+
+    // private trip = this.$store.state.activeTrip;
+    private get permits() {
+        return this.permit.permits.map( (permit: any) => ({label: permit.permit_number, value: permit.vessel_name})
+        );
+    }
+
     private prompt = false;
     private newMessage: string = '';
-    private ports = this.$store.state.ports.sort();
-    private portOptions = this.ports;
-    private newTrip = this.$store.state.newTrip;
-    private fisheryOptions = this.$store.state.fisheries
+
+    private get ports() {
+        return this.general.ports.sort();
+    }
+
+    private get portOptions() {
+        return this.general.ports;
+    }
+
+    private get fisheryOptions() {
+        return this.general.fisheries;
+    }
 
     constructor() {
         super();
@@ -116,8 +140,8 @@ export default class TripDetails extends Vue {
     }
 
     private addMessage() {
-            this.trip.messages.push({
-                                    author: this.$store.state.activeUser.name ,
+            this.trip.activeTrip.messages.push({
+                                    author: this.user.activeUser ,
                                     datetime: Date.now() ,
                                     text: this.newMessage
                                     });
@@ -126,8 +150,8 @@ export default class TripDetails extends Vue {
         }
 
     private get tripMessages() {
-        if (this.trip.messages) {
-            return this.trip.messages.reverse();
+        if (this.trip.activeTrip.messages) {
+            return this.trip.activeTrip.messages.reverse();
         } else {
             return [];
         }
@@ -147,18 +171,27 @@ export default class TripDetails extends Vue {
         }
 
     private deleteTrip() {
-        this.$store.state.trips.pop();
-        this.$store.state.activeTrip = null;
+        this.trip.trips.pop();
+        this.trip.activeTrip = null;
         this.$router.push({path: '/trips/'});
     }
 
     private createTrip() {
-        console.log(this.$store.state.trips)
         this.$router.push({path: '/trips/'});
     }
 
     private goToTrips() {
         this.$router.push({path: '/trips/'});
+    }
+
+    private getTimeText(time: number) {
+        if (time < 15) {
+            return 'just now';
+        } else if (time >= 15 && time < 60 ) {
+            return time + ' seconds ago';
+        } else {
+            return Math.floor(time / 60) + ' minutes ago';
+        }
     }
 
 }

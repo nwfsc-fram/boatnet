@@ -1,9 +1,9 @@
 <template>
     <div >
-        <div style="text-align: center" class="q-pa-md q-gutter-md">
+        <div class="q-pa-md q-gutter-md centered-page-item">
         <q-btn color="primary" @click="newTarget">New Selection Target</q-btn>
         </div>
-        <div style="text-align: center" class="text-h6"><strong>Active Targets</strong></div>
+        <div class="centered-page-item">Active Targets</div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of activeTargets" :key="i" @click="editTarget(target)">
                 <q-item-section avatar style="font-size:24px">
@@ -20,7 +20,7 @@
 
             </q-item>
         </q-list>
-        <div style="text-align: center" class="text-h6"><strong>Expired Targets</strong></div>
+        <div class="centered-page-item">Expired Targets</div>
         <q-list bordered separator>
             <q-item v-for="(target, i) of expiredTargets" :key="i" @click="setActive(target)">
                 <q-item-section avatar style="font-size:24px">
@@ -135,51 +135,62 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
+import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import moment from 'moment';
+import { GeneralState, PermitState } from '../_store/types/types';
 
 @Component
 export default class OTSManagement extends Vue {
 
-    private otsTargets = this.$store.state.otsTargets;
+    @State('general') private general!: GeneralState;
+    @State('permit') private permit!: PermitState;
+
     private target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null };
     private prompt = false;
     private edit = false;
     private reactivate = false;
-    private targetTypes = this.$store.state.targetTypes;
-    private fisheries = this.$store.state.fisheries;
+
+    private get otsTargets() {
+        return this.general.otsTargets;
+    }
+
+    private get targetTypes() {
+        return this.general.targetTypes;
+    }
+
+    private get fisheries() {
+        return this.general.fisheries;
+    }
+
     private curDate = moment().format();
     private options = [];
 
     private get targets() {
         if (this.target.targetType === 'Vessel') {
             const vessels = new Set();
-            const permits = this.$store.state.permits;
+            const permits = this.permit.permits;
             for (const permit of permits) {
                 vessels.add(permit.vessel_name);
             }
             return Array.from(vessels).sort();
         } else if (this.target.targetType === 'Port Group') {
-            return this.$store.state.portGroups;
+            return this.general.portGroups;
         } else {
             return ['fishery wide'];
         }
     }
 
     private get activeTargets() {
-        if (this.$store.getters.activeOTSTargets) {
-            return this.$store.getters.activeOTSTargets.reverse();
-        } else {
-            return [];
-        }
+        return this.general.otsTargets.filter(
+            (target) => moment(target.endDate) >= moment()
+        ).reverse();
     }
 
     private get expiredTargets() {
-        if (this.$store.getters.expiredOTSTargets) {
-            return this.$store.getters.expiredOTSTargets.reverse();
-        } else {
-            return [];
-        }
+        return this.general.otsTargets.filter(
+            (target) => moment(target.endDate) <= moment()
+        ).reverse();
     }
 
     constructor() {

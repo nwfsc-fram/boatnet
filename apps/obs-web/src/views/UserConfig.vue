@@ -1,14 +1,14 @@
 <template>
     <div>
     <div class="q-pa-md  q-gutter-md">
-                <div class="text-h6" style="text-align: center"><strong>User Settings</strong></div>
+                <div class="centered-page-item">User Settings</div>
         <q-card>
             <q-card-section>
-                <q-select dense v-model="activeVessel" :options="vessels" label="Active Vessel" ></q-select>
+                <q-select dense v-model="vessel.activeVessel" option-label="vesselName" :options="vessels" label="Active Vessel" ></q-select>
                 <br>
                 <q-select
                     dense
-                    v-model="activeUser.notification_prefs"
+                    v-model="user.activeUser.notification_prefs"
                     bg-color="white"
                     color="primary"
                     multiple
@@ -31,28 +31,23 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
+import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { GeneralState, UserState, VesselState } from '../_store/types/types';
 
 @Component
 export default class UserConfig extends Vue {
 
-    private vessels = ['Excalibur', 'Raven'];
-    private notificationOptions = ['email', 'sms/text', 'app'];
+    @State('user') private user!: UserState;
+    @State('general') private general!: GeneralState;
+    @State('vessel') private vessel!: VesselState;
 
-    private get activeVessel() {
-        return this.$store.getters.activeVessel;
+    private get vessels() {
+        return this.general.vessels;
     }
 
-    private set activeVessel(value) {
-        this.$store.dispatch('updateActiveVessel', value);
-    }
-
-    private get activeUser() {
-        return this.$store.getters.activeUser;
-    }
-
-    private set activeUser(value) {
-        this.$store.dispatch('updateActiveUser', value);
+    private get notificationOptions() {
+        return this.general.notificationOptions;
     }
 
     constructor() {

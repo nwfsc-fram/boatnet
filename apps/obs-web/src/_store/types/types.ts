@@ -1,5 +1,5 @@
 import { BoatnetUser } from '@boatnet/bn-auth';
-import { BoatnetDate, WcgopTrip, Base, Port } from '@boatnet/bn-models';
+import { BoatnetDate, WcgopTrip, Base, Port, Vessel } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -20,7 +20,37 @@ export interface AlertState {
 }
 
 export interface TripState {
-  activeTrip: OTSTrip;
+  activeTrip: OTSTrip | null;
+  trips: OTSTrip[];
+  newTrip: boolean;
+}
+
+export interface PermitState {
+  activePermit: Permit | null;
+  permits: Permit[];
+}
+
+export interface UserState {
+  activeUser: OTSUser;
+  users: OTSUser[];
+  newUser: boolean;
+}
+
+export interface VesselState {
+  activeVessel: Vessel;
+}
+
+export interface GeneralState {
+  ports: string[];
+  fisheries: string[];
+  targetTypes: string[];
+  roles: string[];
+  usStates: string[];
+  portGroups: string[];
+  portDecoder: any[];
+  otsTargets: OtsTarget[];
+  vessels: Vessel[];
+  notificationOptions: any[];
 }
 
 export interface Permit extends Base {
@@ -75,7 +105,7 @@ export interface OTSMessage extends Base {
 export interface OTSTrip extends WcgopTrip {
   isSelected: boolean;
   messages?: OTSMessage[];
-  permits?: Permit[] ;
+  permits?: string[] ;
 }
 
 export interface OTSUser {
