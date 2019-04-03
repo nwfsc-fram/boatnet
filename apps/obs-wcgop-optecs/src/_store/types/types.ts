@@ -1,4 +1,5 @@
 import { BoatnetUser } from '@boatnet/bn-auth';
+import { CouchDBCredentials } from '@boatnet/bn-couch';
 
 // Root state for app store
 export interface RootState {
