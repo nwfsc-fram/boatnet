@@ -3,7 +3,7 @@ import { BoatnetDate } from "../_common";
 
 export const DeterrenceTypeTypeName = 'deterrence-type';
 
-export interface DeterrenceType extends Base { 
+export interface DeterrentType extends Base {
     description?: string;
     lookupVal?: number;
 
