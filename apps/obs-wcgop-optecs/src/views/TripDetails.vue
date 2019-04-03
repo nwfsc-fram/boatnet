@@ -1,131 +1,145 @@
 <template>
-  <q-page padding>
-    <q-tab-panels v-model="tab" animated>
-      <q-tab-panel name="start">
-        <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
-        <div class="q-pa-md">
-          <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
-          <!-- so be sure to use q-col-gutter -->
-          <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-            <q-input outlined class="col-2" v-model="currentTrip.vessel.vesselName" label="Vessel Name"/>
-            <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
-            <q-input
-              outlined
-              class="col-2"
-              readonly
-              v-model="vesselReg"
-              label="USGS / State Reg #"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="captainName"
-              label="Skipper's Name"
-            />
-            <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
-            <q-input
-              outlined
-              class="col-2"
-              v-model="currentTrip.observerLogbookNum"
-              label="Observer Logbook #"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              :value="formatDate(currentTrip.departureDate)"
-              label="Departure Date/ Time"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="currentTrip.departurePort.name"
-              label="Departure Port"
-            />
+  <span>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clear"/>
+      </template>
+    </q-banner>
+    <q-page padding>
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="start">
+          <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
+          <div class="q-pa-md">
+            <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
+            <!-- so be sure to use q-col-gutter -->
+            <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
+              <q-btn @click="testCouch">Test CouchDB</q-btn>
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.vessel.vesselName"
+                label="Vessel Name"
+              />
+              <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
+              <q-input
+                outlined
+                class="col-2"
+                readonly
+                v-model="vesselReg"
+                label="USGS / State Reg #"
+              />
+              <q-input outlined class="col-2" v-model="captainName" label="Skipper's Name"/>
+              <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.observerLogbookNum"
+                label="Observer Logbook #"
+              />
+              <q-input
+                outlined
+                class="col-2"
+                :value="formatDate(currentTrip.departureDate)"
+                label="Departure Date/ Time"
+              />
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.departurePort.name"
+                label="Departure Port"
+              />
 
-            <div class="text-h6 col-2">Permit / License Numbers</div>
-            <!-- TODO this should be a component -->
-            <div class="row">
-              <q-input outlined class="col-12" v-model="ph" label="Permit/ License #"/>
+              <div class="text-h6 col-2">Permit / License Numbers</div>
+              <!-- TODO this should be a component -->
+              <div class="row">
+                <q-input outlined class="col-12" v-model="ph" label="Permit/ License #"/>
+              </div>
             </div>
           </div>
-        </div>
-      </q-tab-panel>
+        </q-tab-panel>
 
-      <q-tab-panel name="end">
-        <div class="text-h5 row justify-center">Trip #{{tripNum}} End</div>
-        <div class="q-pa-md">
-          <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-            <div class="col-2">
-              <div class="text-h8 col-3">Partial Trip</div>
-              <q-btn-toggle
-                class="col-auto"
-                v-model="currentTrip.isPartialTrip"
-                toggle-color="primary"
-                :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+        <q-tab-panel name="end">
+          <div class="text-h5 row justify-center">Trip #{{tripNum}} End</div>
+          <div class="q-pa-md">
+            <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
+              <div class="col-2">
+                <div class="text-h8 col-3">Partial Trip</div>
+                <q-btn-toggle
+                  class="col-auto"
+                  v-model="currentTrip.isPartialTrip"
+                  toggle-color="primary"
+                  :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+                />
+              </div>
+
+              <div class="col-2">
+                <div class="text-h8 col-3">Fish Processed During Trip</div>
+                <q-btn-toggle
+                  class="col-auto"
+                  v-model="currentTrip.isFishProcessed"
+                  toggle-color="primary"
+                  :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+                />
+              </div>
+
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.logbookType"
+                label="Vessel Logbook Name"
               />
-            </div>
-
-            <div class="col-2">
-              <div class="text-h8 col-3">Fish Processed During Trip</div>
-              <q-btn-toggle
-                class="col-auto"
-                v-model="currentTrip.isFishProcessed"
-                toggle-color="primary"
-                :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.logbookNum"
+                label="Vessel Logbook Page #"
               />
-            </div>
-
-            <q-input
-              outlined
-              class="col-2"
-              v-model="currentTrip.logbookType"
-              label="Vessel Logbook Name"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="currentTrip.logbookNum"
-              label="Vessel Logbook Page #"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              v-model="currentTrip.returnPort.name"
-              label="Return Port"
-            />
-            <q-input
-              outlined
-              class="col-2"
-              :value="formatDate(currentTrip.returnDate)"
-              label="Return Date/Time"
-            />
-            <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
-            <div class="text-h6 col-2">Fish Tickets</div>
-            <!-- TODO this should be a component -->
-            <div class="row">
-              <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.returnPort.name"
+                label="Return Port"
+              />
+              <q-input
+                outlined
+                class="col-2"
+                :value="formatDate(currentTrip.returnDate)"
+                label="Return Date/Time"
+              />
+              <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
+              <div class="text-h6 col-2">Fish Tickets</div>
+              <!-- TODO this should be a component -->
+              <div class="row">
+                <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
+              </div>
             </div>
           </div>
-        </div>
-      </q-tab-panel>
-    </q-tab-panels>
-    <div class="row justify-center">
-      <q-option-group
-        v-model="tab"
-        inline
-        :options="[
+        </q-tab-panel>
+      </q-tab-panels>
+      <div class="row justify-center">
+        <q-option-group
+          v-model="tab"
+          inline
+          :options="[
           { label: '', value: 'start' },
           { label: '', value: 'end' },
         ]"
-      />
-    </div>
-  </q-page>
+        />
+      </div>
+    </q-page>
+  </span>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-
 import { Point } from 'geojson';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import moment from 'moment';
+
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
+import { AlertState } from '../_store/types/types';
+
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -135,17 +149,21 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-Contact,
-ContactTypeName,
-VesselTypeName
+  Contact,
+  ContactTypeName,
+  VesselTypeName
 } from '@boatnet/bn-models';
 
-import moment from 'moment';
+import { couchService } from '@boatnet/bn-couch';
 
 @Component
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) private tripNum!: number; // Passed by router
+
+  @State('alert') private alert!: AlertState;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
 
   private tab: string; // Current tab (start or end)
 
@@ -226,7 +244,11 @@ export default class Trips extends Vue {
 
   get captainName(): string | undefined {
     if (this.currentTrip.captain) {
-      return this.currentTrip.captain.firstName + ' ' + this.currentTrip.captain.lastName;
+      return (
+        this.currentTrip.captain.firstName +
+        ' ' +
+        this.currentTrip.captain.lastName
+      );
     }
   }
 
@@ -249,6 +271,37 @@ export default class Trips extends Vue {
   // TODO move to shared util?
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('MM/DD/YY hh:mm');
+  }
+
+  private async testCouch() {
+    try {
+      // Lack of documentation, refer to options in code:
+      // https://github.com/nozzlegear/davenport/blob/master/index.ts
+
+      const userDB: Client<any> = couchService.userDB;
+      const roDB: Client<any> = couchService.readonlyDB;
+
+      // Example:
+      // const singleDoc = await userDB.get<MyDocType>('489337588b5ff50b96779b7151001b7c');
+      const userStuff = await userDB.listWithDocs();
+      console.log(userStuff);
+
+      const options: ListOptions = {
+        limit: 10,
+        start_key: 'f',
+        end_key: 'x'
+      };
+      const vessels = await roDB.view<any>(
+        'optecs_trawl',
+        'all_vessel_names',
+        options
+      );
+      for (const v of vessels.rows) {
+        console.log(v.value);
+      }
+    } catch (err) {
+      this.error(err);
+    }
   }
 }
 </script>

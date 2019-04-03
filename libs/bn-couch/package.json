@@ -12,6 +12,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.0",
     "crypto-js": "^3.1.9-1",
+    "davenport": "^2.8.2",
     "jsonwebtoken": "^8.5.1",
     "pem-jwk": "^2.0.0",
     "quasar": "1.0.0-beta.13",

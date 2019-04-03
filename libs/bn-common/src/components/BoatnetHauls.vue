@@ -1,43 +1,43 @@
 <template>
-  <q-page padding>
-    <div class="row justify-end">
-      <q-input
-        outlined
-        bottom-slots
-        v-model="searchText"
-        label="Search"
-        maxlength="12"
-        style="width: 200px;"
-      >
-        <template v-slot:append>
-          <q-icon
-            v-if="searchText !== ''"
-            name="close"
-            @click="searchText = ''"
-            class="cursor-pointer"
-          />
-          <q-icon name="search"/>
-        </template>
-      </q-input>
-    </div>
-    <q-table :data="haulsData" :columns="haulsSettings.columns" :selected.sync="selected"/>
+  <span>
+  <div class="row justify-end">
+    <q-input
+      outlined
+      bottom-slots
+      v-model="searchText"
+      label="Search"
+      maxlength="12"
+      style="width: 200px;"
+    >
+      <template v-slot:append>
+        <q-icon
+          v-if="searchText !== ''"
+          name="close"
+          @click="searchText = ''"
+          class="cursor-pointer"
+        />
+        <q-icon name="search"/>
+      </template>
+    </q-input>
+  </div>
+  <q-table :data="haulsData" :columns="haulsSettings.columns" :selected.sync="selected"/>
 
-    <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
-    <div class="row">
-      <q-btn color="primary" icon="playlist_add" label="Add Haul"/>
-      <q-btn icon="edit" label="Edit Haul" disabled="true"/>
-      <q-btn icon="done" label="End Haul" disabled="true"/>
-      <q-btn icon="delete_forever" label="Delete Haul" disabled="true"/>
-      <q-space/>
-      <q-btn icon="play_arrow" label="Go to Logbook Mode"/>
-      <q-btn icon="play_arrow" label="Go to Catch"/>
-    </div>
-  </q-page>
+  <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
+  <div class="row">
+    <q-btn color="primary" icon="playlist_add" label="Add Haul"/>
+    <q-btn icon="edit" label="Edit Haul" disabled="true"/>
+    <q-btn icon="done" label="End Haul" disabled="true"/>
+    <q-btn icon="delete_forever" label="Delete Haul" disabled="true"/>
+    <q-space/>
+    <q-btn icon="play_arrow" label="Go to Logbook Mode"/>
+    <q-btn icon="play_arrow" label="Go to Catch"/>
+  </div>
+  </span>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { BoatnetHaulsSettings } from '../models/BoatnetHaulsSettings';
+import { BoatnetHaulsSettings } from '@boatnet/bn-common';
 
 @Component
 export default class BoatnetHauls extends Vue {

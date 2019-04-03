@@ -6,18 +6,21 @@
         <q-btn flat label="Dismiss" @click="clear"/>
       </template>
     </q-banner>
-    <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+    <q-page>
+      <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+    </q-page>
   </span>
 </template>
 
 
 <script lang="ts">
+import { Point } from 'geojson';
+import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
-
-import { Point } from 'geojson';
+import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
+import { couchService } from '@boatnet/bn-couch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -37,8 +40,8 @@ Vue.component(BoatnetTrips);
 @Component
 export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
-
   @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
