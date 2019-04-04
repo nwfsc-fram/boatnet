@@ -14,21 +14,24 @@
             <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
             <!-- so be sure to use q-col-gutter -->
             <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-              <q-btn @click="testCouch">Test CouchDB</q-btn>
-              <q-input
+              <q-select
                 outlined
                 class="col-2"
                 v-model="currentTrip.vessel.vesselName"
-                label="Vessel Name"
-              />
+                label="Vessel Name/ Registration"
+                use-input
+                hide-selected
+                input-debounce="0"
+                :options="options"
+                @filter="filterFn"
+              >
+                <template v-slot:no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">No results</q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
               <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
-              <q-input
-                outlined
-                class="col-2"
-                readonly
-                v-model="vesselReg"
-                label="USGS / State Reg #"
-              />
               <q-input outlined class="col-2" v-model="captainName" label="Skipper's Name"/>
               <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
               <q-input
@@ -159,7 +162,9 @@ import { couchService } from '@boatnet/bn-couch';
 @Component
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
-  @Prop(Number) private tripNum!: number; // Passed by router
+  @Prop(Number) public tripNum!: number; // Passed by router
+
+  public model: any = null;
 
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
@@ -170,6 +175,9 @@ export default class Trips extends Vue {
   private currentTrip: WcgopTrip;
 
   private ph = ''; // TEMP
+
+  private stringOptions = ['Ruby', 'Samson', 'Shooster'];
+  private options: string[] = [];
 
   constructor() {
     super();
@@ -204,7 +212,7 @@ export default class Trips extends Vue {
       type: VesselTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      vesselName: 'Sadie K',
+      vesselName: 'Pickle Pelican (CF1890HT)',
       coastGuardNumber: 'ABC123'
     };
 
@@ -271,6 +279,37 @@ export default class Trips extends Vue {
   // TODO move to shared util?
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('MM/DD/YY hh:mm');
+  }
+
+  private async filterFn(val: string, update: any, abort: any) {
+    if (val.length < 2) {
+      abort();
+      return;
+    }
+
+    update(async () => {
+      try {
+        const roDB: Client<any> = couchService.readonlyDB;
+        const queryOptions: ListOptions = {
+          limit: 5,
+          start_key: val.toLowerCase(),
+          inclusive_end: true,
+          descending: false
+        };
+        const vessels = await roDB.view<any>(
+          'optecs_trawl',
+          'all_vessel_names',
+          queryOptions
+        );
+        this.options = vessels.rows.map((vessel) => vessel.value);
+      } catch (err) {
+        this.error(err);
+      }
+    });
+  }
+
+  private abortFilterFn() {
+    // console.log('delayed filter aborted');
   }
 
   private async testCouch() {
