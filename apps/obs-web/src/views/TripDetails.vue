@@ -104,6 +104,7 @@ import { date } from 'quasar';
 import { TripState, PermitState, UserState, GeneralState } from '../_store/types/types';
 
 import moment from 'moment';
+import { Port } from '../../../../libs/bn-models';
 
 @Component
 export default class TripDetails extends Vue {
@@ -126,9 +127,7 @@ export default class TripDetails extends Vue {
         return this.general.ports.sort();
     }
 
-    private get portOptions() {
-        return this.general.ports;
-    }
+    private portOptions: string[] = [];
 
     private get fisheryOptions() {
         return this.general.fisheries;
@@ -140,27 +139,33 @@ export default class TripDetails extends Vue {
     }
 
     private addMessage() {
+        if (this.trip.activeTrip) {
             this.trip.activeTrip.messages.push({
-                                    author: this.user.activeUser ,
-                                    datetime: Date.now() ,
-                                    text: this.newMessage
-                                    });
+                                author: this.user.activeUser ,
+                                datetime: moment().format() ,
+                                text: this.newMessage
+                                });
             this.newMessage = '';
             this.prompt = false;
         }
+        }
 
     private get tripMessages() {
-        if (this.trip.activeTrip.messages) {
-            return this.trip.activeTrip.messages.reverse();
-        } else {
-            return [];
-        }
+        if (this.trip.activeTrip) {
+            if (this.trip.activeTrip.messages) {
+                return this.trip.activeTrip.messages.reverse();
+            } else {
+                return [];
+                }
+            } else {
+                return [];
+            }
         }
 
     private filterFn(val: string, update: any) {
         if (val === '') {
             update( () => {
-                this.portOptions = this.ports;
+                this.portOptions = this.general.ports;
                 });
             return;
         }

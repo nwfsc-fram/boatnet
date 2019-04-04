@@ -80,8 +80,12 @@ export default class Trips extends Vue {
     private get openTrips() {
       return this.trip.trips.filter(
         (trip) => {
-          return trip.tripStatus &&
-          trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
+          if (trip.vessel) {
+            return trip.tripStatus &&
+            trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
+          } else {
+            return [];
+          }
           }
         );
     }
@@ -89,8 +93,12 @@ export default class Trips extends Vue {
     private get closedTrips() {
       return this.trip.trips.filter(
         (trip) => {
-          return !trip.tripStatus &&
-          trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
+          if (trip.vessel) {
+            return !trip.tripStatus &&
+            trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
+          } else {
+            return [];
+          }
         }
       );
     }

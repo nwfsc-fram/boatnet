@@ -89,22 +89,23 @@ export interface Permit extends Base {
 }
 
 export interface OtsTarget {
-  fishery: string;
-  targetType: string;
-  target: string;
-  rate: number;
+  fishery: string | null;
+  targetType: string | null;
+  target: string | null;
+  rate: number | null;
   startDate: BoatnetDate;
-  endDate?: BoatnetDate;
+  endDate?: BoatnetDate | null;
 }
 
 export interface OTSMessage extends Base {
-  author: BoatnetUser;
+  author: OTSUser;
   text: string;
+  datetime: BoatnetDate;
 }
 
 export interface OTSTrip extends WcgopTrip {
   isSelected: boolean;
-  messages?: OTSMessage[];
+  messages: OTSMessage[];
   permits?: string[] ;
 }
 

@@ -146,7 +146,15 @@ export default class OTSManagement extends Vue {
     @State('general') private general!: GeneralState;
     @State('permit') private permit!: PermitState;
 
-    private target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null };
+    private target = {
+        fishery: '',
+        targetType: null,
+        target: '',
+        rate: null,
+        startDate: moment().format(),
+        endDate: null
+        };
+
     private prompt = false;
     private edit = false;
     private reactivate = false;
@@ -183,13 +191,26 @@ export default class OTSManagement extends Vue {
 
     private get activeTargets() {
         return this.general.otsTargets.filter(
-            (target) => moment(target.endDate) >= moment()
+            (target) => {
+                if (target.endDate) {
+                    return moment(target.endDate) >= moment();
+                } else {
+                    return [];
+                }
+            }
         ).reverse();
     }
 
     private get expiredTargets() {
         return this.general.otsTargets.filter(
-            (target) => moment(target.endDate) <= moment()
+            (target) => {
+                if (target.endDate) {
+                    return moment(target.endDate) <= moment();
+                } else {
+                    return [];
+                }
+            }
+
         ).reverse();
     }
 
@@ -198,7 +219,14 @@ export default class OTSManagement extends Vue {
         }
 
     private newTarget() {
-        this.target = {fishery: '', targetType: null, target: '', rate: null, startDate: moment(), endDate: null};
+        this.target = {
+            fishery: '',
+            targetType: null,
+            target: '',
+            rate: null,
+            startDate: moment().format(),
+            endDate: null
+            };
         this.prompt = true;
     }
 

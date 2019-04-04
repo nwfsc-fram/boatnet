@@ -15,7 +15,7 @@
             </div>
 
             <q-input dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
-            <q-select dense v-model="user.activeUser.homeport" label="Home Port" @filter="filterPorts" use-input stack-label :options="portOptions"></q-select>
+            <q-select dense v-model="user.activeUser.homeport" label="Home Port" @filter="filterPorts" use-input stack-label :options="filterPorts"></q-select>
             </q-card-section>
             <q-card-section align="right" v-if="this.$route.name === 'User Details'">
                 <q-btn color="primary" @click="navigateBack" label="Done"/>
@@ -38,16 +38,11 @@ export default class UserDetails extends Vue {
     @State('general') private general!: GeneralState;
     @State('user') private user!: UserState;
 
+    private portOptions: any = [];
+    private usStateOptions: any = [];
+
     private get ports() {
         return this.general.ports.sort();
-    }
-
-    private get portOptions() {
-        return this.general.ports;
-    }
-
-    private get usStateOptions() {
-        return this.general.usStates;
     }
 
     private get usStates() {
@@ -62,31 +57,43 @@ export default class UserDetails extends Vue {
         super();
     }
 
-    private filterPorts(val: string, update: any) {
+    private filterPorts(val: string , update: any) {
         if (val === '') {
             update(() => {
-                this.portOptions = this.ports;
+                this.portOptions = this.general.ports;
                 });
             return;
         }
         update(() => {
             const searchString = val.toLowerCase();
-            this.portOptions = this.portOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+            this.usStateOptions = this.general.usStates.filter(
+                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
             });
-    }
+        }
 
     private filterStates(val: string , update: any) {
         if (val === '') {
             update(() => {
-                this.usStateOptions = this.usStates;
+                this.usStateOptions = this.general.usStates;
                 });
             return;
         }
         update(() => {
             const searchString = val.toLowerCase();
-            this.usStateOptions = this.usStateOptions.filter( (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+            this.usStateOptions = this.general.usStates.filter(
+                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
             });
         }
+
+    // private filterStates(val: string , update: any) {
+    //     if (val === '') {
+    //         return this.general.usStates;
+    //     } else {
+    //         return this.general.usStates.filter(
+    //             (v: any) => v.toLowerCase().indexOf( val.toLowerCase() )
+    //         );
+    //     }
+    // }
 
     private navigateBack() {
         this.$router.back();
