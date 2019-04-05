@@ -30,7 +30,8 @@ export const state: GeneralState = {
   portDecoder,
   otsTargets,
   vessels,
-  notificationOptions
+  notificationOptions,
+  activeTarget: otsTargets[0]
 };
 
 export const general: Module<GeneralState, RootState> = {

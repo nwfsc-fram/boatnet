@@ -28,6 +28,7 @@ export interface TripState {
 export interface PermitState {
   activePermit: Permit | null;
   permits: Permit[];
+  filterText: string;
 }
 
 export interface UserState {
@@ -51,6 +52,7 @@ export interface GeneralState {
   otsTargets: OtsTarget[];
   vessels: Vessel[];
   notificationOptions: any[];
+  activeTarget: OtsTarget;
 }
 
 export interface Permit extends Base {
@@ -88,7 +90,7 @@ export interface Permit extends Base {
   owner_on_board_exempt?: any;
 }
 
-export interface OtsTarget {
+export interface OtsTarget extends Base {
   fishery: string | null;
   targetType: string | null;
   target: string | null;

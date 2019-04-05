@@ -11,7 +11,8 @@ Vue.use(Vuex);
 
 export const state: PermitState = {
   activePermit: permits[0],
-  permits
+  permits,
+  filterText: ''
 };
 
 export const permit: Module<PermitState, RootState> = {

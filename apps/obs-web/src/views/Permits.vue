@@ -16,7 +16,11 @@
                 <!-- </router-link> -->
             </q-item>
             <div style="background-color: white" class="fixed-bottom q-pa-md q-gutter-sm centered-page-item">
-                <q-input v-model="filterText" label="Search"></q-input>
+                <q-input v-model="permit.filterText" label="Search" autofocus >
+                    <template v-if="permit.filterText">
+                        <q-avatar dense icon="clear" @click="permit.filterText = ''"></q-avatar>
+                    </template>
+                </q-input>
             </div>
         </q-list>
     </div>
@@ -37,7 +41,7 @@ export default class Permits extends Vue {
     @State('permit') private permit!: PermitState;
     @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
 
-    private filterText: string = '';
+    // private filterText: string = '';
     private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];
     // private permits = this.$store.state.permits;
     // private permitOptions = this.permit
@@ -61,10 +65,10 @@ export default class Permits extends Vue {
 
 
     private get filteredPermits() {
-        if (this.filterText.length > 0) {
+        if (this.permit.filterText.length > 0) {
             return this.permit.permits.filter( (permit: any) =>
-                permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) ||
-                permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) );
+                permit.vessel_name.toLowerCase().includes( this.permit.filterText.toLowerCase() ) ||
+                permit.permit_number.toLowerCase().includes( this.permit.filterText.toLowerCase() ) );
         } else {
             return this.permit.permits;
             }

@@ -127,19 +127,19 @@ export const permits: Permit[] = [
 
 export const otsTargets: OtsTarget[] = [
   {
-    fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'vfger34tgf', fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'dfd34rfre234', fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'f3ffferf42', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+    _id: 'wg32efrfsg', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
     startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'
   }
 ];
