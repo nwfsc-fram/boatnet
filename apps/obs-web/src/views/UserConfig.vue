@@ -9,16 +9,28 @@
                 <q-select
                     dense
                     v-model="user.activeUser.notification_prefs"
-                    bg-color="white"
-                    color="primary"
                     multiple
-                    use-chips
                     use-input
                     stack-label
                     :options="notificationOptions"
                     style="width: 100%"
                     label="Notification Preferences"
                     >
+
+                    <template v-slot:selected-item="scope">
+                        <q-chip
+                            removable
+                            dense
+                            @remove="scope.removeAtIndex(scope.index)"
+                            :tabindex="scope.tabindex"
+                            color="primary"
+                            text-color="white"
+                            class="q-ma-none"
+                            >
+                            <q-avatar color="primary" text-color="white" :icon="scope.opt.icon" />
+                            {{ scope.opt.label }}
+                        </q-chip>
+                    </template>
                 </q-select>
             </q-card-section>
         </q-card>

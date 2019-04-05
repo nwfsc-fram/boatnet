@@ -43,19 +43,33 @@
                 :options="permits"
                 style="width: 100%"
                 >
+                    <template v-slot:selected-item="scope">
+                        <q-chip
+                            removable
+                            dense
+                            @remove="scope.removeAtIndex(scope.index)"
+                            :tabindex="scope.tabindex"
+                            color="primary"
+                            text-color="white"
+                            class="q-ma-none"
+                            >
+                            <q-avatar color="primary" text-color="white" icon="local_offer" />
+                            {{ scope.opt.label }}
+                        </q-chip>
+                    </template>
                 </q-select>
 
-                <q-btn round color="primary" icon="message" size="sm" @click="prompt=true" style="float:right"/>
+                <q-btn round color="primary" icon="add" size="sm" @click="prompt=true" style="float:right"/>
 
                 <p><strong>Messages</strong></p>
                 <div v-if="tripMessages.length > 0">
                     <br>
                     <q-list bordered separator class="rounded-borders">
-                        <q-item clickable :dense="true" v-for="message in tripMessages" :key="message.datetime">
+                        <q-item clickable :dense="true" v-for="(message, i) in tripMessages" :key="message.datetime">
                             <q-item-section>
                                 <q-item-label class="text-primary">{{ message.author.name }} 
                                     <span style="float:right">
-                                    {{ getTimeText(Math.floor((Date.now() - message.datetime) /1000 )) }}
+                                    {{ getTimeText(message.datetime) }}
                                     </span>
                                 </q-item-label>
                                 <q-item-label><strong>{{ message.text }}</strong></q-item-label>
@@ -116,7 +130,7 @@ export default class TripDetails extends Vue {
 
     // private trip = this.$store.state.activeTrip;
     private get permits() {
-        return this.permit.permits.map( (permit: any) => ({label: permit.permit_number, value: permit.vessel_name})
+        return this.permit.permits.map( (permit: any) => ({label: permit.permit_number, value: permit.permit_number})
         );
     }
 
@@ -189,13 +203,14 @@ export default class TripDetails extends Vue {
         this.$router.push({path: '/trips/'});
     }
 
-    private getTimeText(time: number) {
-        if (time < 15) {
+    private getTimeText(time: any) {
+        const difference = moment.duration(moment().diff(moment(time))).asSeconds();
+        if (difference < 15) {
             return 'just now';
-        } else if (time >= 15 && time < 60 ) {
-            return time + ' seconds ago';
+        } else if (difference >= 15 && difference < 60 ) {
+            return Math.floor(difference) + ' seconds ago';
         } else {
-            return Math.floor(time / 60) + ' minutes ago';
+            return Math.floor(difference / 60) + ' minutes ago';
         }
     }
 

@@ -7,9 +7,9 @@
         </div>
         <div class="centered-page-item"><strong>Active Permits</strong></div>
         <q-list bordered separator>
-            <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(permit, i)">
+            <q-item v-for="(permit, i) of filteredPermits" :key="i">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
-                <q-item-section>
+                <q-item-section  @click="permitDetails(permit, i)">
                     <q-item-label ><strong>{{ permit.permit_number }}</strong> <span class="text-primary" style="position: relative; left: 20px">{{ permit.vessel_name }}</span></q-item-label>
                     <!-- <q-item-label caption>{{ permit.vessel_name }}</q-item-label> -->
                 </q-item-section>
@@ -50,12 +50,11 @@ export default class Permits extends Vue {
         axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
             .then( (response) => {
                 // this.$store.dispatch('updatePermits', response.data.items);
-                this.updatePermits(response.data.items);
+                this.permit.permits = response.data.items;
             });
     }
 
     private permitDetails(permit: any, i: number) {
-        // this.$store.state.activePermit = permit;
         this.permit.activePermit = permit;
         this.$router.push({path: '/permits/' + i});
     }

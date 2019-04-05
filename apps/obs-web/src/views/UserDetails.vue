@@ -4,7 +4,22 @@
         <q-card>
             <q-card-section>
             <q-input dense v-model="user.activeUser.name" label="Name"></q-input>
-            <q-select dense v-model="user.activeUser.roles" label="Roles" bg-color="white" color="primary" multiple use-chips :options="roles"></q-select>
+            <q-select dense v-model="user.activeUser.roles" label="Roles" multiple :options="roles">
+                <template v-slot:selected-item="scope">
+                    <q-chip
+                        removable
+                        dense
+                        @remove="scope.removeAtIndex(scope.index)"
+                        :tabindex="scope.tabindex"
+                        color="primary"
+                        text-color="white"
+                        class="q-ma-none"
+                        >
+                        <q-avatar color="primary" text-color="white" icon="person" />
+                        {{ scope.opt }}
+                    </q-chip>
+                </template>
+            </q-select>
             <q-input dense v-model="user.activeUser.email" label="Email Address" type="email"></q-input>
             <q-input dense v-model="user.activeUser.mobile" label="Mobile Number" type="tel"></q-input>
             <q-input dense v-model="user.activeUser.home" label="Home Number" type="tel"></q-input>
@@ -15,7 +30,7 @@
             </div>
 
             <q-input dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
-            <q-select dense v-model="user.activeUser.homeport" label="Home Port" @filter="filterPorts" use-input stack-label :options="filterPorts"></q-select>
+            <q-select dense v-model="user.activeUser.homeport" label="Home Port" @filter="filterPorts" use-input stack-label :options="portOptions"></q-select>
             </q-card-section>
             <q-card-section align="right" v-if="this.$route.name === 'User Details'">
                 <q-btn color="primary" @click="navigateBack" label="Done"/>
@@ -60,28 +75,28 @@ export default class UserDetails extends Vue {
     private filterPorts(val: string , update: any) {
         if (val === '') {
             update(() => {
-                this.portOptions = this.general.ports;
+                this.portOptions = this.general.ports.sort();
                 });
             return;
         }
         update(() => {
             const searchString = val.toLowerCase();
-            this.usStateOptions = this.general.usStates.filter(
-                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+            this.portOptions = this.general.ports.filter(
+                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 ).sort();
             });
         }
 
     private filterStates(val: string , update: any) {
         if (val === '') {
             update(() => {
-                this.usStateOptions = this.general.usStates;
+                this.usStateOptions = this.general.usStates.sort();
                 });
             return;
         }
         update(() => {
             const searchString = val.toLowerCase();
             this.usStateOptions = this.general.usStates.filter(
-                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 );
+                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 ).sort();
             });
         }
 

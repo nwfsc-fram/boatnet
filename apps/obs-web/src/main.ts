@@ -13,7 +13,7 @@ import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
   QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
-  QPopupProxy, QSlideItem, QDialog, QSlider
+  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -26,7 +26,8 @@ Vue.use(Quasar, {
     QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
     QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
-    QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider
+    QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
+    QChip, QAvatar
   },
   directives: {},
   plugins: {}

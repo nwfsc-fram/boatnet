@@ -4,8 +4,8 @@
             <q-btn color="primary" @click="newUser">New User</q-btn>
         </div>
         <q-list bordered separator>
-            <q-item v-for="(user, i) of filteredUsers" :key="i" @click="userDetails(user)">
-                <q-item-section>
+            <q-item v-for="(user, i) of filteredUsers" :key="i">
+                <q-item-section @click="userDetails(user)">
                     <q-item-label><strong>{{ user.name }}</strong> (
                         <span v-for="(role, i) in user.roles" :key="role">
                             {{ role }}

@@ -20,6 +20,20 @@
                         @filter="filterFn"
                         style="width: 100%; font-size: 16px"
                         >
+                        <template v-slot:selected-item="scope">
+                        <q-chip
+                            removable
+                            dense
+                            @remove="scope.removeAtIndex(scope.index)"
+                            :tabindex="scope.tabindex"
+                            color="primary"
+                            text-color="white"
+                            class="q-ma-none"
+                            >
+                            <q-avatar color="primary" text-color="white" icon="person" />
+                            {{ scope.opt.label }}
+                        </q-chip>
+                    </template>
                         </q-select>
                     </div>
                 </q-card-section>

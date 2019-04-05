@@ -106,7 +106,7 @@ export interface OTSMessage extends Base {
 export interface OTSTrip extends WcgopTrip {
   isSelected: boolean;
   messages: OTSMessage[];
-  permits?: string[] ;
+  permits?: any[] ;
 }
 
 export interface OTSUser {

@@ -30,7 +30,11 @@ export const fisheries: string[] =  [
   'Catch Shares - Shore Side Hake'
 ];
 
-export const notificationOptions: string[] = ['email', 'sms/text', 'app'];
+export const notificationOptions: any[] = [
+  {label: 'email', value: 'email', icon: 'mail'},
+  {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+  {label: 'app', value: 'app', icon: 'smartphone'}
+];
 
 export const vessels: Vessel[] = [
   {vesselName: 'Excalibur'},
@@ -146,7 +150,7 @@ export const trips: OTSTrip[] = [
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35'],
+    permits: [{label: 'A21rv35', value: 'A21rv35'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2,  tripStatus: false, isSelected: true,
@@ -154,7 +158,11 @@ export const trips: OTSTrip[] = [
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
@@ -162,7 +170,11 @@ export const trips: OTSTrip[] = [
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 5, tripStatus: true, isSelected: true,
@@ -170,7 +182,7 @@ export const trips: OTSTrip[] = [
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['N11es32'],
+    permits: [{label: 'N11es32', value: 'N11es32'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 4, tripStatus: true, isSelected: false,
@@ -178,7 +190,7 @@ export const trips: OTSTrip[] = [
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: ['A21rv35', 'W32be87'],
+    permits: [{label: 'A21rv35', value: 'A21rv35'}, {label: 'W32be87', value: 'W32be87'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: true,
@@ -186,7 +198,11 @@ export const trips: OTSTrip[] = [
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
@@ -194,7 +210,11 @@ export const trips: OTSTrip[] = [
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 3, tripStatus: true, isSelected: true,
@@ -202,7 +222,11 @@ export const trips: OTSTrip[] = [
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 4, tripStatus: true, isSelected: true,
@@ -210,7 +234,11 @@ export const trips: OTSTrip[] = [
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 3, tripStatus: true, isSelected: false,
@@ -218,7 +246,11 @@ export const trips: OTSTrip[] = [
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: false,
@@ -226,7 +258,11 @@ export const trips: OTSTrip[] = [
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: true,
@@ -234,7 +270,11 @@ export const trips: OTSTrip[] = [
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 4, tripStatus: false, isSelected: false,
@@ -242,7 +282,11 @@ export const trips: OTSTrip[] = [
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 5, tripStatus: true, isSelected: true,
@@ -250,7 +294,11 @@ export const trips: OTSTrip[] = [
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 3, tripStatus: false, isSelected: false,
@@ -258,7 +306,11 @@ export const trips: OTSTrip[] = [
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: true,
@@ -266,7 +318,11 @@ export const trips: OTSTrip[] = [
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
@@ -274,7 +330,11 @@ export const trips: OTSTrip[] = [
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: ['A21rv35', 'W32be87', 'N11es32'],
+    permits: [
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
 ];
