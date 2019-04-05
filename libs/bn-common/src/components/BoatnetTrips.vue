@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { BoatnetTripsSettings } from '../models/BoatnetTripsSettings';
+import { BoatnetTripsSettings } from '@boatnet/bn-common';
 
 @Component
 export default class Trips extends Vue {
