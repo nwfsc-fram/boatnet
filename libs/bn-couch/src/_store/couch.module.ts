@@ -1,6 +1,7 @@
 // Vuex CouchDB Module
 
 import { authService } from '@boatnet/bn-auth';
+import { couchService } from '../_services/couch.service';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
@@ -15,9 +16,10 @@ export const state: CouchDBState =  { credentials: null };
 
 const actions: ActionTree<CouchDBState, any> = {
   connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
-    commit('connectRequest', credentials); // TODO connection
+    commit('connectRequest', credentials);
+    couchService.connect(credentials);
   },
-  logout({ commit }: any) {
+  disconnect({ commit }: any) { // TODO
     // authService.logout();
     // commit('logout');
   }
@@ -27,15 +29,15 @@ const mutations: MutationTree<CouchDBState> = {
   connectRequest(newState: any, credentials: CouchDBCredentials) {
     newState.credentials = credentials;
   },
-  loginSuccess(newState: any, newUser: any) { // TODO
+  connectSuccess(newState: any, newUser: any) { // TODO
     // newState.status = { isLoggedIn: true };
     // newState.user = newUser;
   },
-  loginFailure(newState: any, errorMsg: string) { // TODO
+  connectFailure(newState: any, errorMsg: string) { // TODO
     // newState.status = { error: { message: errorMsg } };
     // newState.user = null;
   },
-  logout(newState: any) { // TODO
+  disconnect(newState: any) { // TODO
     // newState.status = {};
     // newState.user = null;
   }

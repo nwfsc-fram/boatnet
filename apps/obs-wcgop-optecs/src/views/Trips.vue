@@ -1,13 +1,26 @@
 <template>
-  <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+  <span>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clear"/>
+      </template>
+    </q-banner>
+    <q-page>
+      <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+    </q-page>
+  </span>
 </template>
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
-
 import { Point } from 'geojson';
+import { Client, CouchDoc } from 'davenport';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
+import { AlertState } from '../_store/types/types';
+import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
+import { couchService } from '@boatnet/bn-couch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -17,7 +30,7 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-VesselTypeName
+  VesselTypeName
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -26,6 +39,10 @@ Vue.component(BoatnetTrips);
 
 @Component
 export default class Trips extends Vue {
+  @State('alert') private alert!: AlertState;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
+
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 

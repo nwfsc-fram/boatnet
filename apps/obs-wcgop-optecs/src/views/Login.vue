@@ -1,62 +1,67 @@
 <template>
-    <q-layout view="lHh Lpr lFf">
-        <q-header elevated class="basic">
-            <q-toolbar>
-                <q-btn flat dense round />
+  <q-layout view="lHh Lpr lFf">
+    <q-header elevated class="basic">
+      <q-toolbar>
+        <q-btn flat dense round/>
 
-                <q-toolbar-title>Boatnet WCGOP OPTECS Login</q-toolbar-title>
+        <q-toolbar-title>Boatnet WCGOP OPTECS Login</q-toolbar-title>
 
-                <div>v0.0.0</div>
-            </q-toolbar>
-        </q-header>
-        <q-page-container>
-            <div class="q-pa-xl column justify-center items-center full-height">
-                <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
-                    <div v-show="!!alert.message">
-                        <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
-                    </div>
+        <div>v0.0.0</div>
+      </q-toolbar>
+    </q-header>
+    <q-page-container>
+      <div class="q-pa-xl column justify-center items-center full-height">
+        <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
+          <div v-show="!!alert.message">
+            <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
+          </div>
 
-                    <q-input outlined
-                             ref="username"
-                             v-model="username"
-                             label="Username" />
+          <q-input outlined ref="username" v-model="username" label="Username"/>
 
-                    <q-input outlined
-                             ref="password"
-                             :type="isPwd ? 'password' : 'text'"
-                             v-model="password"
-                             label="Password"
-                             autocomplete="boatnet password">
-                        <template v-slot:append>
-                            <q-icon :name="isPwd ? 'visibility_off' : 'visibility'"
-                                    class="cursor-pointer"
-                                    @click="isPwd = !isPwd" />
-                        </template>
-                    </q-input>
-                    <div style="text-align: center">
-                        <q-btn class="full-width"
-                               color="primary"
-                               :disable="!password || !username"
-                               :loading="auth.status.isLoggingIn"
-                               label="Login"
-                               type="submit"
-                               align="center" />
-                    </div>
-                </form>
-                <br>
-                <div class="column justify-center q-gutter-md" style="text-align: center">
-                    <router-link to="/" disabled="true">Forgot Password</router-link>
-                    <router-link to="/" disabled="true">Change Password</router-link>
-                </div>
-            </div>
-        </q-page-container>
-        <vue-touch-keyboard :options="options"
-                            v-if="visible"
-                            :layout="layout"
-                            :cancel="hide"
-                            :accept="accept"
-                            :input="input" />
-    </q-layout>
+          <q-input
+            outlined
+            ref="password"
+            :type="isPwd ? 'password' : 'text'"
+            v-model="password"
+            label="Password"
+            autocomplete="boatnet password"
+          >
+            <template v-slot:append>
+              <q-icon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </q-input>
+          <div style="text-align: center">
+            <q-btn
+              class="full-width"
+              color="primary"
+              :disable="!password || !username"
+              :loading="auth.status.isLoggingIn"
+              label="Login"
+              type="submit"
+              align="center"
+            />
+          </div>
+        </form>
+        <br>
+        <div class="column justify-center q-gutter-md" style="text-align: center">
+          <router-link to="/" disabled="true">Forgot Password</router-link>
+          <router-link to="/" disabled="true">Change Password</router-link>
+        </div>
+      </div>
+    </q-page-container>
+    <vue-touch-keyboard
+      :options="options"
+      v-if="visible"
+      :layout="layout"
+      :cancel="hide"
+      :accept="accept"
+      :input="input"
+    />
+  </q-layout>
 </template>
 
 <script lang="ts">
@@ -67,7 +72,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import router from '../router';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 
 @Component
 export default class Login extends Vue {
@@ -134,6 +139,7 @@ export default class Login extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connect(creds);
+
           router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
