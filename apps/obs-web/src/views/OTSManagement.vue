@@ -150,7 +150,7 @@ export default class OTSManagement extends Vue {
     private prompt = false;
     private edit = false;
     private reactivate = false;
-    private currentTarget;
+    private currentTarget: any;
 
     private get otsTargets() {
         return this.general.otsTargets;
