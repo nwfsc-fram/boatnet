@@ -8,6 +8,7 @@ import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import OTSManagement from './views/OTSManagement.vue';
+import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OTSDashboard from './views/OTSDashboard.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import UserDetails from './views/UserDetails.vue';
@@ -63,6 +64,7 @@ const router = new Router({
         { path: '/permits', name: 'Permits', component: Permits},
         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
+        // { path: '/ots-management/:id', name: 'OTS Management', component: OtsTargetDetail },
         { path: '/ots-dashboard', name: 'OTS Dashboard', component: OTSDashboard },
         { path: 'user-config', name: 'User Config', component: UserConfig },
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },

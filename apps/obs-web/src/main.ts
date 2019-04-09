@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store from './_store';
 // import VueResource from 'vue-resource'
 import './registerServiceWorker';
 
@@ -13,7 +13,7 @@ import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
   QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
-  QPopupProxy, QSlideItem, QDialog, QSlider
+  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -26,7 +26,8 @@ Vue.use(Quasar, {
     QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
     QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
-    QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider
+    QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
+    QChip, QAvatar, QBanner
   },
   directives: {},
   plugins: {}

@@ -1,11 +1,11 @@
 <template>
-    <div class="q-pa-md  q-gutter-md">
-        <div style="text-align: center">
+    <div class="">
+        <div class="q-pa-md  q-gutter-md centered-page-item">
             <q-btn color="primary" @click="newUser">New User</q-btn>
         </div>
         <q-list bordered separator>
-            <q-item v-for="(user, i) of filteredUsers" :key="i" @click="userDetails(user)">
-                <q-item-section>
+            <q-item v-for="(user, i) of filteredUsers" :key="i">
+                <q-item-section @click="userDetails(user)">
                     <q-item-label><strong>{{ user.name }}</strong> (
                         <span v-for="(role, i) in user.roles" :key="role">
                             {{ role }}
@@ -27,16 +27,17 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
+import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { TripState, PermitState, UserState, GeneralState } from '../_store/types/types';
 
 @Component
 export default class ManageUsers extends Vue {
+    @State('user') private user!: UserState;
 
     private filterText: string = '';
-    private userOptions = this.users;
-
-    private get users() {
-        return this.$store.getters.users;
+    private get userOptions() {
+        return this.user.users;
     }
 
     constructor() {
@@ -44,8 +45,8 @@ export default class ManageUsers extends Vue {
         }
 
     private userDetails(user: any) {
-            this.$store.state.activeUser = user;
-            const index = this.$store.state.users.indexOf(user);
+            this.user.activeUser = user;
+            const index = this.user.users.indexOf(user);
             this.$router.push({path: '/users/' + index});
         }
 
@@ -58,12 +59,12 @@ export default class ManageUsers extends Vue {
 
     private get filteredUsers() {
         if (this.filterText.length > 0) {
-            return this.userOptions.filter( (user: any) =>
+            return this.user.users.filter( (user: any) =>
                 user.name.toLowerCase().includes( this.filterText.toLowerCase() )
                 // || user.roles.toLowerCase().includes( this.filterText.toLowerCase() )
                 );
         } else {
-            return this.$store.state.users;
+            return this.user.users;
             }
     }
 

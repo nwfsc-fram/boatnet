@@ -1,22 +1,26 @@
 <template>
     <div>
-        <div style="text-align: center" class="q-pa-md q-gutter-sm">
+        <div class="q-pa-md q-gutter-sm centered-page-item">
             <q-btn color="primary" @click="getPermits">
                 get permits
             </q-btn>
         </div>
-        <div style="text-align: center" class="text-h6"><strong>Active Permits</strong></div>
+        <div class="centered-page-item"><strong>Active Permits</strong></div>
         <q-list bordered separator>
-            <q-item v-for="(permit, i) of filteredPermits" :key="i" @click="permitDetails(permit, i)">
+            <q-item v-for="(permit, i) of filteredPermits" :key="i">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
-                <q-item-section>
+                <q-item-section  @click="permitDetails(permit, i)">
                     <q-item-label ><strong>{{ permit.permit_number }}</strong> <span class="text-primary" style="position: relative; left: 20px">{{ permit.vessel_name }}</span></q-item-label>
                     <!-- <q-item-label caption>{{ permit.vessel_name }}</q-item-label> -->
                 </q-item-section>
                 <!-- </router-link> -->
             </q-item>
-            <div style="text-align: center; background-color: white" class="fixed-bottom q-pa-md q-gutter-sm">
-                <q-input v-model="filterText" label="Search"></q-input>
+            <div style="background-color: white" class="fixed-bottom q-pa-md q-gutter-sm centered-page-item">
+                <q-input v-model="permit.filterText" label="Search" autofocus >
+                    <template v-if="permit.filterText">
+                        <q-avatar dense icon="clear" @click="permit.filterText = ''"></q-avatar>
+                    </template>
+                </q-input>
             </div>
         </q-list>
     </div>
@@ -26,16 +30,21 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
+import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
+import { PermitState } from '../_store/types/types';
 
 @Component
 export default class Permits extends Vue {
 
-    private filterText: string = '';
+    @State('permit') private permit!: PermitState;
+    @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
+
+    // private filterText: string = '';
     private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];
-    private permits = this.$store.state.permits;
-    private permitOptions = this.permits;
+    // private permits = this.$store.state.permits;
+    // private permitOptions = this.permit
 
     constructor() {
         super();
@@ -44,23 +53,24 @@ export default class Permits extends Vue {
     private getPermits() {
         axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
             .then( (response) => {
-                this.$store.dispatch('updatePermits', response.data.items);
+                // this.$store.dispatch('updatePermits', response.data.items);
+                this.permit.permits = response.data.items;
             });
     }
 
     private permitDetails(permit: any, i: number) {
-        this.$store.state.activePermit = permit;
+        this.permit.activePermit = permit;
         this.$router.push({path: '/permits/' + i});
     }
 
 
     private get filteredPermits() {
-        if (this.filterText.length > 0) {
-            return this.permitOptions.filter( (permit: any) =>
-                permit.vessel_name.toLowerCase().includes( this.filterText.toLowerCase() ) ||
-                permit.permit_number.toLowerCase().includes( this.filterText.toLowerCase() ) );
+        if (this.permit.filterText.length > 0) {
+            return this.permit.permits.filter( (permit: any) =>
+                permit.vessel_name.toLowerCase().includes( this.permit.filterText.toLowerCase() ) ||
+                permit.permit_number.toLowerCase().includes( this.permit.filterText.toLowerCase() ) );
         } else {
-            return this.$store.state.permits;
+            return this.permit.permits;
             }
     }
 

@@ -6,29 +6,43 @@ import { alert } from '@/_store/alert.module';
 import { auth } from '@/_store/auth.module';
 import { Permit, OtsTarget } from '@/_store/types/types.ts';
 import { OTSTrip, OTSMessage, OTSUser } from '@/_store/types/types.ts';
+import { Vessel } from '@boatnet/bn-models/models/_common/vessel';
 
 import { RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
-const activeVessel = 'Excalibur';
-const activeTrip = '';
-const activeUser = {
-  name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '',
-  zipcode: '', homeport: '', notification_prefs: []
-};
-const activePermit: string = '';
-const newTrip: boolean =  false;
-const targetTypes: string[] = ['Fishery', 'Vessel', 'Port Group'];
+// const activeVessel = 'Excalibur';
+// const activeTrip = '';
+// const activeUser = {
+//   name: '', role: '', email: '', mobile: '', home: '', address: '', city: '', state: '',
+//   zipcode: '', homeport: '', notification_prefs: []
+// };
+// const activePermit: string = '';
+// const newTrip: boolean =  false;
 
-const fisheries: string[] =  [
+export const targetTypes: string[] = ['Fishery', 'Vessel', 'Port Group'];
+
+export const fisheries: string[] =  [
   'EM EFP',
   'Limited Entry - Catch Shares',
   'Trawl Gear - MOD EFP',
   'Catch Shares - Shore Side Hake'
 ];
 
-const permits: Permit[] = [
+export const notificationOptions: any[] = [
+  {label: 'email', value: 'email', icon: 'mail'},
+  {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+  {label: 'app', value: 'app', icon: 'smartphone'}
+];
+
+export const vessels: Vessel[] = [
+  {vesselName: 'Excalibur'},
+  {vesselName: 'Raven'},
+  {vesselName: 'Last Straw'}
+];
+
+export const permits: Permit[] = [
   { permit_number: 'GF0001', certificate_start_date: '2019-01-01T08:00:00Z',
     certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'F/V VIGOROUS INC',
     permit_owner_address: '6533 SEAVIEW AVE NW APT 607A', permit_owner_city: 'SEATTLE',
@@ -111,21 +125,21 @@ const permits: Permit[] = [
   }
 ];
 
-const otsTargets: OtsTarget[] = [
+export const otsTargets: OtsTarget[] = [
   {
-    fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'vfger34tgf', fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'dfd34rfre234', fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-    startDate: '2019-03-26T08:20:33-07:00'
+    _id: 'f3ffferf42', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+    startDate: '2019-03-26T08:20:33-07:00', endDate: null
   },
   {
-    fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+    _id: 'wg32efrfsg', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
     startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'
   }
 ];
@@ -136,8 +150,7 @@ export const trips: OTSTrip[] = [
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' }],
+    permits: [{label: 'A21rv35', value: 'A21rv35'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2,  tripStatus: false, isSelected: true,
@@ -146,9 +159,10 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' } ],
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
@@ -157,9 +171,10 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' } ],
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 5, tripStatus: true, isSelected: true,
@@ -167,8 +182,7 @@ export const trips: OTSTrip[] = [
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' } ],
+    permits: [{label: 'N11es32', value: 'N11es32'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 4, tripStatus: true, isSelected: false,
@@ -176,9 +190,7 @@ export const trips: OTSTrip[] = [
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' } ],
+    permits: [{label: 'A21rv35', value: 'A21rv35'}, {label: 'W32be87', value: 'W32be87'}],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: true,
@@ -187,9 +199,10 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' } ],
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
@@ -198,9 +211,10 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' } ],
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
+    ],
     messages: []
   },
   { _id: '123456', type: 'trip', tripNum: 3, tripStatus: true, isSelected: true,
@@ -209,9 +223,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -221,9 +235,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -233,9 +247,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -245,9 +259,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -257,9 +271,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -269,9 +283,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -281,9 +295,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -293,9 +307,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -305,9 +319,9 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
@@ -317,15 +331,15 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [
-      { permit_number: 'A21rv35', type: 'permit', vessel_registration_number: 'sdr234' },
-      { permit_number: 'W32be87', type: 'permit', vessel_registration_number: 'abc123' },
-      { permit_number: 'N11es32', type: 'permit', vessel_registration_number: '777qwe' }
+      {label: 'A21rv35', value: 'A21rv35'},
+      {label: 'W32be87', value: 'W32be87'},
+      {label: 'N11es32', value: 'N11es32'}
     ],
     messages: []
   },
 ];
 
-const users: OTSUser[] = [
+export const users: OTSUser[] = [
   {
     name: 'Seth Gerou', roles: ['Captain'], email: 'user@noaa.gov',
     mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
@@ -348,9 +362,9 @@ const users: OTSUser[] = [
   }
 ];
 
-const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
+export const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 
-const usStates = [
+export const usStates = [
   'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
   'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
   'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
@@ -358,7 +372,7 @@ const usStates = [
   'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-const portGroups = [
+export const portGroups = [
   'AT',
   'BB',
   'CB',
@@ -375,7 +389,7 @@ const portGroups = [
   'ZZ'
 ];
 
-const ports = [
+export const ports = [
   'COLUMBIA RIVER PORTS (OREGON)',
   'WESTPORT',
   'ASTORIA',
@@ -511,7 +525,7 @@ const ports = [
   'OTHER OR UNKNOWN WASHINGTON PORTS',
 ];
 
-const portDecoder = [
+export const portDecoder = [
   {
     AGID: 'O',
     PCGROUP: 'AOR',
