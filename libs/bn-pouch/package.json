@@ -1,5 +1,5 @@
 {
-  "name": "@boatnet/bn-couch",
+  "name": "@boatnet/bn-pouch",
   "version": "0.1.0",
   "private": true,
   "scripts": {
