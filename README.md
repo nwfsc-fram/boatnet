@@ -69,7 +69,7 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. See more [specific `lerna` instructions and development setup here.](./docs/dev-notes/README.md)
 
-## Troubleshooting build issues
+## Troubleshooting Build Issues
 Occasionally our lerna monorepo can get into a confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
 ```
 # get latest yarn, lerna, and typescript
