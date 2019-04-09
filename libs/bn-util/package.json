@@ -8,7 +8,7 @@
     "build": "tsc index.ts -d --module commonjs --outDir dist/"
   },
   "devDependencies": {
-    "typescript": "^3.4.1"
+    "typescript": "^3.4.2"
   },
   "license": "MIT",
   "dependencies": {

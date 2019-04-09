@@ -51,7 +51,7 @@
     "sass-loader": "^7.1.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
-    "typescript": "^3.0.0",
+    "typescript": "^3.4.2",
     "vue-class-component": "^7.0.1",
     "vue-cli-plugin-quasar": "^1.0.0-beta.0",
     "vue-property-decorator": "^8.0.0",
