@@ -3,7 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import moment from 'moment';
 
 import { alert } from '@/_store/alert.module';
-import { auth } from '@/_store/auth.module';
+
 import { Permit, OtsTarget } from '@/_store/types/types.ts';
 import { OTSTrip, OTSMessage, OTSUser } from '@/_store/types/types.ts';
 import { Vessel } from '@boatnet/bn-models/models/_common/vessel';
