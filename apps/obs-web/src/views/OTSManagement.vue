@@ -197,10 +197,9 @@ export default class OTSManagement extends Vue {
     private get expiredTargets() {
         return this.general.otsTargets.filter(
             (target) => {
-                console.log(target.rate, target.endDate)
                 if (target.endDate) {
                     return moment(target.endDate) <= moment();
-                } 
+                }
             }
 
         ).reverse();
@@ -247,14 +246,14 @@ export default class OTSManagement extends Vue {
   }
 
   private targetColor(target: OtsTarget) {
-      switch(target.targetType)  {
+      switch (target.targetType) {
           case 'Fishery':
             return 'primary';
           case 'Vessel':
             return 'positive';
           case 'Port Group':
             return 'negative';
-      } 
+      }
   }
 
     // @Watch('general.activeTarget')
@@ -263,10 +262,6 @@ export default class OTSManagement extends Vue {
 
   @Watch('general.activeTarget.targetType')
     private onChange(newVal: any, oldVal: any) {
-            console.log(newVal, oldVal)
-            console.log(this.currentTarget._id)
-            console.log(this.general.activeTarget._id)
-            console.log()
             if (newVal === 'Fishery') {
                 this.general.activeTarget.target = 'fishery wide';
             } else {

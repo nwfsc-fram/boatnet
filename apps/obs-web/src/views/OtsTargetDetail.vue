@@ -49,15 +49,15 @@ import { GeneralState, PermitState, OtsTarget } from '../_store/types/types';
 
 export default class OtsTargeteDetail extends Vue {
     @State('general') private general!: GeneralState;
-    
+
     @Watch('general.activeTarget.targetType')
     private onChange(newVal: any, oldVal: any) {
-        console.log(newVal, oldVal)
-            if (newVal === 'Fishery') {
-                this.general.activeTarget.target = 'fishery wide';
-            } else {
-                this.general.activeTarget.target = null;
-            }
+        if (newVal === 'Fishery') {
+            this.general.activeTarget.target = 'fishery wide';
+        } else {
+            this.general.activeTarget.target = null;
+        }
     }
-    }
+
+}
 </script>
