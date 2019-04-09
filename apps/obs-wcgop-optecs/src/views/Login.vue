@@ -10,6 +10,20 @@
       </q-toolbar>
     </q-header>
     <q-page-container>
+      <div class="q-pa-md">
+        <div>
+          <b>Last Software Update Date:</b>
+          {{lastSoftwareUpdateDate}}
+        </div>
+        <div>
+          <b>Last Data Sync:</b>
+          {{lastDataSyncDate}}
+        </div>
+        <div>
+          <b>Last Login Date:</b>
+          {{lastLoginDate}}
+        </div>
+      </div>
       <div class="q-pa-xl column justify-center items-center full-height">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
           <div v-show="!!alert.message">
@@ -91,6 +105,10 @@ export default class Login extends Vue {
   private password = '';
   private isPwd = true;
   private submitted = false;
+
+  private lastSoftwareUpdateDate = '10/1/2018 12:00:00';
+  private lastDataSyncDate = '10/1/2018 12:00:00';
+  private lastLoginDate = '10/1/2018 12:00:00';
 
   private visible = false;
   private layout = 'normal';

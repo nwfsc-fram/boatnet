@@ -10,8 +10,17 @@
           aria-label="Menu"
           icon="menu"
         />
-
-        <optecs-breadcrumbs />
+        <q-btn
+          flat
+          dense
+          round
+          @click="navigateBack"
+          aria-label="Back"
+          icon="chevron_left"
+          size="1.5em"
+        />
+        <optecs-breadcrumbs/>
+       <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -121,6 +130,10 @@ export default class DefaultLayout extends Vue {
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
+  }
+
+  private navigateBack() {
+    this.$router.back();
   }
 
 }
