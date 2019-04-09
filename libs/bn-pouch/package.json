@@ -1,5 +1,5 @@
 {
-  "name": "@boatnet/bn-couch",
+  "name": "@boatnet/bn-pouch",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "davenport": "^2.8.2",
     "jsonwebtoken": "^8.5.1",
     "pem-jwk": "^2.0.0",
-    "quasar": "^1.0.0-beta.16",
+    "quasar": "1.0.0-beta.13",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
