@@ -5,6 +5,7 @@ import {
   Biostructure,
   LocationEvent
 } from '../_common/index';
+import { Media } from '../_lookups/media';
 
 // TODO create lookups for these:
 declare type Sex = string;
@@ -32,4 +33,7 @@ export interface BaseSpecimen extends Base {
   protocol?: Protocol;
   specialProjects?: any[]; // TODO move to Protocol: arbitrary special project data
   frequency?: number; // = 1 if undefined (WCGOP only)
+
+  mediaData: Media[];
+
 }

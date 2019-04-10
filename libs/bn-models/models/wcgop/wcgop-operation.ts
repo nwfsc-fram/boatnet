@@ -33,7 +33,6 @@ export interface WcgopOperation extends BaseOperation {
   isGearLost?: boolean;
   isDataQualityPassing?: boolean;
 
-
   sightingEventIds?: CouchID[];
 
   // Set operation specific fields:
@@ -43,6 +42,7 @@ export interface WcgopOperation extends BaseOperation {
   totalHooksLost?: number;
   totalGearSegments?: number;
   gearSegmentsLost?: number;
+  hooksSampled?: number; // TODO Neil will confirm. Pull up from WcgopCatch records (should be the same number)
 
   beaufortValue?: number; // Possibly replaced with tides/currents data
   isDeterrentUsed?: boolean; // HLFC related (possibly legacy - stored at trip leve)

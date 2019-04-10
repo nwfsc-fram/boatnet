@@ -3,7 +3,6 @@ export * from './wcgop-operation';
 export * from './wcgop-catch';
 export * from './wcgop-catch-species';
 export * from './wcgop-fish-ticket';
-export * from './wcgop-sighting-event';
 export * from './wcgop-brd';
 export * from './wcgop-hlfc';
 export * from './wcgop-basket';

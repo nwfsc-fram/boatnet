@@ -12,28 +12,37 @@ import { Deterrent } from '../_lookups/deterrent';
 import { BoatnetDate } from './boatnet-date';
 import { Point } from 'geojson';
 import { Base } from '../_base';
-import { BirdBand } from '../_lookups/bird-band';
-import { InteractionOutcome } from '../_lookups/interaction-outcome';
-import { InteractionType } from '../_lookups/interaction-type';
+import { WcgopSpecimen } from '../wcgop'
+import { AshopSpecimen } from '../ashop'
 
 declare type Interaction = {
   type?: InteractionType;
   notes?: string;
   isLethal?: boolean;
-}; // if multiple interactions we need to keep track of descriptive notes for each
+}; // TODO lookup type
 
+declare type OutcomeType = {
+  description?: string;
+  isLethal?: boolean;
+}; // TODO lookup type
+
+declare type Weather = string; // TODO Lookup
+declare type VesselActivity = string; // TODO ASHOP Lookup: Fishing, Processing, etc
 
 export interface InteractionEvent extends Base {
   hauls?: CouchID[];
+  catchSpecies?: CouchID[]; // tied to Species Comp/ Specimen Record
+  // TODO: Verify behavior of syntax for specimens:
+  specimens?: WcgopSpecimen[] | AshopSpecimen[] | CouchID[];
   species?: Species;
-  catchSpecies?: CouchID[];
-  confidenceOfSpecies?: Confidence; // Y/N/?
+
   date?: BoatnetDate;
   location?: Point;
   beaufort?: Beaufort;
-  minNumSighted?: number;
-  maxNumSighted?: number;
-  bestNumSighted?: number;
+  confidenceOfSpecies?: Confidence; // Y/ N/ Unsure (TODO: Lookup)
+  minAnimalCountEstimate?: number; // Previously minNumSightings
+  maxAnimalCountEstimate?: number;
+  animalCount?: number; // "Best", in UI, allow 1 Mammal only if isLethal == true
 
   take?: {
     // determined after the fact
@@ -43,141 +52,76 @@ export interface InteractionEvent extends Base {
   };
   closestApproach?: Measurement;
 
+  deterrents?: Deterrent[];
   areAnimalsInjured?: boolean; // limit interaction choices in UI
   areAnimalsDead?: boolean; // limit interaction choices in UI
+  interactions?: InteractionType[]; // TODO important - review. Limit to single isLethal interaction
+  outcome?: OutcomeType; // Interaction uniquely defined by organism and outcome
 
-  deterrents?: Deterrent[];
-  interactions?: Interaction[]; // TODO important - review. Limit to single isLethal interaction
-  outcome?: InteractionOutcome; // Interaction uniquely defined by organism and outcome
-
-  // TODO: Review below
-  duration?: Measurement; // Is this a universal attribute?
-  sightingCondition?: string;
-  bodyLength?: string; // lookup gives a range as text.  many notes i found gave more specific body size info
-  mediaTaken?: boolean; // simple flag
+  bodyLength?: Measurement; // lookup gives a range as text.  many notes i found gave more specific body size info
+  mediaTaken?: boolean;
   mediaData: Media[];
-
-
-  // ashop bird
-  eventNumber?: number;
-  vesselActivity?: string;
-  observer?: BoatnetUser;
-  weatherCondition?: string;
-
-  birdLocation?: string;
-  numBirds?: number;
-  countType?: string;
-  goodLookAtBird?: boolean;
-
-  // if short tailed albatross, perhaps change to general endangered species flag
-  numAdults?: number;
-  numSubAdults?: number;
-  numImmatures?: number;
-  numJuveniles?: number;
-  identifyingCharacteristics?: string;
-  specimenTaken?: boolean;
-  specimensAndTags?: SpecimenTag[]; // specimenTag needs review
-
-  // ashop mammal 
-  numMammalsInInteraction?: number;
-  mammalCondition?: string;
-  specimens?: {
-    // will turn this into its own type
-    specimenNum?: number;
-    animalNum?: number;
-    specimenType?: string;
-    sex?: string;
-    value?: string;
-  }[];
+  weather?: Weather;
+  vesselActivity?: VesselActivity;
 
   // "comments" section split like this only temporarily
+  // extraComments: {
+  //   generalComments: {
+  //     wasSampledForSpeciesComp?: boolean;
+  //     speciesIdenficationDescription?: string;
+  //     wasMarineMammalObserved?: boolean;
+  //     observationDescription?: string; // if not observed, explain
+  //     interactionDescription?: string;
+  //     sexDeterminationMethod?: string; // unsure where this one belongs
+  //     conditionOfAnimal?: string;
+  //     injuries?: string;
+  //     uncertainties?: string;
+  //   };
 
+  //   feedingComments: {
+  //     proximity?: Measurement;
+  //     targetSpecies?: Species;
+  //     typeOfBait?: string;
+  //     evidenceOfFeeding?: string;
+  //     depredatedFish?: Species;
+  //     numFishWithDepredation?: number; // fish with evidence of depredation
+  //     numHooksWithFishPartsRemaining?: number;
+  //     sizeGashesOnFish?: Measurement;
+  //   };
 
-  // WCGOP possible notes (listed from form):
-  wcgopComments:{
-    // mammal
-    bodyFeatures: string;
-    associatedOrganisms: string[];   
-
-    bodyShape?: string;
-    headShape?: string;
-    dorsalFinShape?: string;
-    coloration?: string;
-    markings?: string; // scratches / scars / dents
-    orcaSaddlePatch?: string; // description of
-    blowDescription?: string;
-
-
-    // bird
-    headColor?: Measurement;
-    wingColor?: Measurement;
-
-    billSize?: string;
-    billShape?: string;
-    billColor?: Measurement;
-
-    bodySize?: string;
-    bodyShape?: string;
-    bodyColor?: Measurement;
-
-    feetSize?: string;
-    featShape?: string;
-    feetColor?: string;
-
-    footColor?: Measurement;
-    birdBands?: BirdBand[];
-
-    // Turtle 
-    shellType?: string; // hard / soft
-    numCostalScutes?: number;
-    numPairsPrefrontalScales?: number;
-    color?: Measurement;
-    
-  }
-
-
-
-  // A-SHOP possible notes (parsed from observer manual): 
-  ashopComments: {
-    mammalComments: {
-      wasMarineMammalObserved?: boolean;
-      observationDescription?: string; // if not observed, explain
-
-      distinguishingCharacteristics?: string; // how was species identified
-      markings?: string; // scars, marks, spotting, etc.
-      wasSampledForSpeciesComp?: boolean;
-      interactionDescription?: string;
-      sexDeterminationMethod?: string; // how sex was identified
-      conditionOfAnimal?: string; // general wellfare: healthy / injured / rotting, etc
-      injuriesDescription?: string; // unsure if this means previous injuries
-      uncertainties?: string; // general uncertainties of data
-    };
-
-
-    feedingComments: {
-      proximity?: Measurement;
-      targetSpecies?: Species;
-      typeOfBait?: string;
-      evidenceOfFeeding?: string;
-      depredatedFish?: Species;
-      numFishWithDepredation?: number; // fish with evidence of depredation
-      numHooksWithFishPartsRemaining?: number;
-      sizeGashesOnFish?: Measurement;
-    };
-
-    entanglementComments: {
-      componentsOfGear?: string;
-      animalFreeingMethod?: string;
-      partsOfAnimalWithGear?: string;
-      unseenPartsOfAnimal?: string;
-      lostGear?: string;
-      injuriesSustained?: string;
-      behaviorBefore?: string;
-      behaviorAfter?: string;
-    };
-  };
+  //   entanglementComments: {
+  //     componentsOfGear?: string;
+  //     animalFreeingMethod?: string;
+  //     partsOfAnimalWithGear?: string;
+  //     unseenPartsOfAnimal?: string;
+  //     lostGear?: string;
+  //     injuriesSustained?: string;
+  //     behaviorBefore?: string;
+  //     behaviorAfter?: string;
+  //   };
+  // };
 
   legacy?: {
     waterTemp?: Measurement;
+    sightingCondition?: string;
+    eventNumber?: number;
+    birdLocation?: string;
+    numBirds?: number;
+    countType?: string;
+    goodLookAtBird?: boolean;
+    duration?: Measurement; // Is this a universal attribute? TODO Possibly Delete
+
+    // if short tailed albatross
+    albatrossData?: { // consider non species specific
+      numAdults?: number;
+      numSubAdults?: number;
+      numImmatures?: number;
+      numJuveniles?: number;
+      identifyingCharacteristics?: string;
+      specimenTaken?: boolean;
+      specimensAndTags?: SpecimenTag[];
+    }
+    numMammalsInInteraction?: number;
+    mammalCondition?: string;
   };
 }
