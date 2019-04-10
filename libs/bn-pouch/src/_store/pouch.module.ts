@@ -18,7 +18,7 @@ export const state: PouchDBState =  { credentials: null };
 const actions: ActionTree<PouchDBState, any> = {
   connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
     commit('connectRequest', credentials);
-    // pouchService.connect(credentials);
+    pouchService.connect(credentials);
   },
   disconnect({ commit }: any) { // TODO
     // authService.logout();

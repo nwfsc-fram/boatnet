@@ -86,7 +86,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import router from '../router';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { pouchService } from '@boatnet/bn-pouch';
 
 @Component
 export default class Login extends Vue {
@@ -99,7 +100,7 @@ export default class Login extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
 
-  @Action('connect', { namespace: 'baseCouch' }) private connect: any;
+  @Action('connect', { namespace: 'basePouch' }) private connect: any;
 
   private username = '';
   private password = '';
@@ -131,7 +132,7 @@ export default class Login extends Vue {
   }
 
   @Watch('$route', { immediate: true, deep: true })
-  private onUrlChange(newVal: any) {
+  private onUrlChange(newVal: string, oldVal: string) {
     this.clear();
   }
 
