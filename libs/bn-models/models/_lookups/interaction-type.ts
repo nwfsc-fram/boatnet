@@ -1,9 +1,9 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const BeaufortTypeName = 'beaufort';
+export const InteractionTypeTypeName = 'interaction-type';
 
-export interface Beaufort extends Base { 
+export interface InteractionType extends Base { 
     description?: string;
     lookupVal?: number;
 

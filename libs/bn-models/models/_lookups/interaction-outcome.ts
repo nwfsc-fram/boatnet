@@ -13,5 +13,6 @@ export interface InteractionOutcome extends Base {
         sortOrder?: number;
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
+        lookupType?: string;
     }
 }

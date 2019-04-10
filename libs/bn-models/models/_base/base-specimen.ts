@@ -15,7 +15,6 @@ declare type Maturity = string;
 declare type Protocol = string; // TODO Protocol interface
 
 export interface BaseSpecimen extends Base {
-  species?: Species; // TODO needed?
   sex?: Sex; // TODO Lookup
   length?: Measurement;
   width?: Measurement;

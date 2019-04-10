@@ -9,7 +9,7 @@ import { BrdTrawlDoorModification } from './bd-traw-door-modification';
 import { BrdOther } from './brd-other';
 
 export interface BrdConfiguration extends Base {
-    hauls?: CouchID[];
+    operations?: CouchID[];
     trip?: CouchID;
     observer?: BoatnetUser;
 

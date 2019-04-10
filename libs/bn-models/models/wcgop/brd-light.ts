@@ -9,7 +9,6 @@ export interface BrdLight {
     numDoubleRiggedPort?: number;
     numDoubleRiggedStarboard?: number;
 
-    // vast majority of records use only one option for these four attributes
     colors?: string[]; 
     pattern?: string[]; 
     manufacturer?: string[];

@@ -12,13 +12,16 @@ import { Deterrent } from '../_lookups/deterrent';
 import { BoatnetDate } from './boatnet-date';
 import { Point } from 'geojson';
 import { Base } from '../_base';
+import { BirdBand } from '../_lookups/bird-band';
+import { InteractionOutcome } from '../_lookups/interaction-outcome';
+import { InteractionType } from '../_lookups/interaction-type';
 
-declare type InteractionType = {
-  description?: string;
+declare type Interaction = {
+  type?: InteractionType;
+  notes?: string;
   isLethal?: boolean;
-}; // TODO lookup
+}; // if multiple interactions we need to keep track of descriptive notes for each
 
-declare type OutcomeType = string; // TODO lookup
 
 export interface InteractionEvent extends Base {
   hauls?: CouchID[];
@@ -44,15 +47,16 @@ export interface InteractionEvent extends Base {
   areAnimalsDead?: boolean; // limit interaction choices in UI
 
   deterrents?: Deterrent[];
-  interactions?: InteractionType[]; // TODO important - review. Limit to single isLethal interaction
-  outcome?: OutcomeType; // Interaction uniquely defined by organism and outcome
+  interactions?: Interaction[]; // TODO important - review. Limit to single isLethal interaction
+  outcome?: InteractionOutcome; // Interaction uniquely defined by organism and outcome
 
   // TODO: Review below
   duration?: Measurement; // Is this a universal attribute?
   sightingCondition?: string;
   bodyLength?: string; // lookup gives a range as text.  many notes i found gave more specific body size info
-  mediaTaken?: boolean;
+  mediaTaken?: boolean; // simple flag
   mediaData: Media[];
+
 
   // ashop bird
   eventNumber?: number;
@@ -65,17 +69,16 @@ export interface InteractionEvent extends Base {
   countType?: string;
   goodLookAtBird?: boolean;
 
-  // if short tailed albatross
+  // if short tailed albatross, perhaps change to general endangered species flag
   numAdults?: number;
   numSubAdults?: number;
   numImmatures?: number;
   numJuveniles?: number;
   identifyingCharacteristics?: string;
   specimenTaken?: boolean;
-  specimensAndTags?: SpecimenTag[];
+  specimensAndTags?: SpecimenTag[]; // specimenTag needs review
 
-  // ashop mammal
-
+  // ashop mammal 
   numMammalsInInteraction?: number;
   mammalCondition?: string;
   specimens?: {
@@ -88,18 +91,68 @@ export interface InteractionEvent extends Base {
   }[];
 
   // "comments" section split like this only temporarily
-  extraComments: {
-    generalComments: {
-      wasSampledForSpeciesComp?: boolean;
-      speciesIdenficationDescription?: string;
+
+
+  // WCGOP possible notes (listed from form):
+  wcgopComments:{
+    // mammal
+    bodyFeatures: string;
+    associatedOrganisms: string[];   
+
+    bodyShape?: string;
+    headShape?: string;
+    dorsalFinShape?: string;
+    coloration?: string;
+    markings?: string; // scratches / scars / dents
+    orcaSaddlePatch?: string; // description of
+    blowDescription?: string;
+
+
+    // bird
+    headColor?: Measurement;
+    wingColor?: Measurement;
+
+    billSize?: string;
+    billShape?: string;
+    billColor?: Measurement;
+
+    bodySize?: string;
+    bodyShape?: string;
+    bodyColor?: Measurement;
+
+    feetSize?: string;
+    featShape?: string;
+    feetColor?: string;
+
+    footColor?: Measurement;
+    birdBands?: BirdBand[];
+
+    // Turtle 
+    shellType?: string; // hard / soft
+    numCostalScutes?: number;
+    numPairsPrefrontalScales?: number;
+    color?: Measurement;
+    
+  }
+
+
+
+  // A-SHOP possible notes (parsed from observer manual): 
+  ashopComments: {
+    mammalComments: {
       wasMarineMammalObserved?: boolean;
       observationDescription?: string; // if not observed, explain
+
+      distinguishingCharacteristics?: string; // how was species identified
+      markings?: string; // scars, marks, spotting, etc.
+      wasSampledForSpeciesComp?: boolean;
       interactionDescription?: string;
-      sexDeterminationMethod?: string; // unsure where this one belongs
-      conditionOfAnimal?: string;
-      injuries?: string;
-      uncertainties?: string;
+      sexDeterminationMethod?: string; // how sex was identified
+      conditionOfAnimal?: string; // general wellfare: healthy / injured / rotting, etc
+      injuriesDescription?: string; // unsure if this means previous injuries
+      uncertainties?: string; // general uncertainties of data
     };
+
 
     feedingComments: {
       proximity?: Measurement;

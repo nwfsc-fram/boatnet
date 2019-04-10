@@ -1,17 +1,18 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const InteractionBehaviorTypeName = 'interaction-behavior';
+export const WaiverTypeTypeName = 'waiver-type';
 
-export interface InteractionBehavior extends Base { 
+export interface WaiverType extends Base { 
     description?: string;
     lookupVal?: number;
-    programId?: number;
-    active?: boolean;
-    sortOrder?: number;
 
     legacy?: {
+        programId?: number;
+        active?: boolean;
+        sortOrder?: number;
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
+        lookupType?: string;
     }
 }

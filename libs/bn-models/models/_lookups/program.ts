@@ -8,7 +8,12 @@ export interface Program extends Base {
   description?: string;
 
   legacy?: {
+    lookupId?: number;
+    lookupVal?: number;
     programId?: number;
+    active?: boolean;
+    sortOrder?: number;
     obsprodLoadDate?: BoatnetDate;
+    lookupType?: string;
   };
 }

@@ -5,6 +5,6 @@ import { BrdTarget } from "../_common/brd-target";
 export interface BrdEscapement  {
     targets?: BrdTarget[];
     brdType?: BrdType;
-    location?: string[]; // may not need an array on this type
+    location?: string[]; 
     illuminated?: boolean;
 }

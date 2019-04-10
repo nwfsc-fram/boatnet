@@ -8,10 +8,11 @@ export interface DeterrentType extends Base {
     lookupVal?: number;
 
     legacy?: {
-        lookupId?: number
-        obsprodLoadDate?: BoatnetDate;
         programId?: number;
         active?: boolean;
         sortOrder?: number;
+        lookupId?: number
+        obsprodLoadDate?: BoatnetDate;
+        lookupType?: string;
     }
 }

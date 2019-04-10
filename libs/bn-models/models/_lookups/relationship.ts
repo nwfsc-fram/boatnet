@@ -6,12 +6,13 @@ export const RelationshipTypeName = 'relationship';
 export interface Relationship extends Base { 
     description?: string;
     lookupVal?: number;
-    programId?: number;
-    active?: boolean;
-    sortOrder?: number;
 
     legacy?: {
+        programId?: number;
+        active?: boolean;
+        sortOrder?: number;
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
+        lookupType?: string;
     }
 }

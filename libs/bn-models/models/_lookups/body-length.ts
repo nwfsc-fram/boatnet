@@ -1,17 +1,18 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
 
-export const WaiverTypeName = 'waiver';
+export const BodyLengthTypeName = 'body-length';
 
-export interface Waiver extends Base { 
+export interface BodyLength extends Base { 
     description?: string;
     lookupVal?: number;
-    programId?: number;
-    active?: boolean;
-    sortOrder?: number;
 
     legacy?: {
+        programId?: number;
+        active?: boolean;
+        sortOrder?: number;
         lookupId?: number
         obsprodLoadDate?: BoatnetDate;
+        lookupType?: string;
     }
 }
