@@ -16,8 +16,8 @@ const actions: ActionTree<AlertState, RootState> = {
   error({ commit }: any, message: string) {
     commit('error', message);
   },
-  clear({ commit }: any, message: string) {
-    commit('clear', message);
+  clear({ commit }: any) {
+    commit('clear');
   }
 };
 

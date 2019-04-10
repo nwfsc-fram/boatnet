@@ -1,17 +1,69 @@
 // Boatnet Pouch Service Routines
 
-/* tslint:disable:no-console */
+/* tslint:disable:no-console  */
+/* tslint:disable:no-var-requires  */
+import { Component, Vue } from 'vue-property-decorator';
+// @ts-ignore
+import PouchDB from 'pouchdb-browser';
+// @ts-ignore
+import lf from 'pouchdb-find';
+// @ts-ignore
+import plf from 'pouchdb-live-find';
+// @ts-ignore
+import pa from 'pouchdb-authentication';
+// @ts-ignore
+import PouchVue from 'pouch-vue';
 
-import { CouchDBCredentials } from '../_store/types/types';
-// import Client, { configureDatabase, ClientOptions } from 'davenport';
+// PouchDB plugins: pouchdb-find (included in the monorepo), LiveFind (external plugin), and couchdb auth
+PouchDB.plugin(lf);
+PouchDB.plugin(plf);
+PouchDB.plugin(pa);
 
-class PouchService {
+// https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
+declare module 'vue/types/vue' {
+  // Declare augmentation for Vue
+  interface Vue {
+    // @ts-ignore
+    $pouch: PouchDB; // optional if `PouchDB` is available on the global object
+    // @ts-ignore
+    // $pouchUser: PouchDB; // optional if `PouchDB` is available on the global object
+    $defaultDB: string; // the database to use if none is specified in the pouch setting of the vue component
+  }
+}
+
+declare module 'vue/types/options' {
+  interface ComponentOptions<V extends Vue> {
+    pouch?: any; // this is where the database will be reactive
+  }
+}
+
+Vue.use(PouchVue, {
+  pouch: PouchDB
+  // defaultDB: 'http://localhost:5984/wsmith-test'
+});
+
+import { CouchDBCredentials } from '@boatnet/bn-couch';
+
+// import PouchVue from 'pouch-vue';
+// const PouchVue = require('pouch-vue');
+
+// Vue.use(PouchVue, {
+//   pouch: PouchDB, // optional if `PouchDB` is available on the global object
+//   defaultDB: 'boatnet-dev-wsmith' // this is used as a default connect/disconnect database
+//   // debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings
+//   /// (will be a separate Plugin in PouchDB 7.0)
+// });
+
+class PouchService extends Vue {
   private currentCredentials: CouchDBCredentials | null = null;
+  // private $pouch = PouchDB;
   // private couchRO: any | null = null;
   // private couchUser: any | null = null;
 
   constructor() {
+    super();
     console.log('[PouchDB Service] Instantiated.');
+    // console.log(this.$pouchRO);
   }
 
   // get readonlyDB() {
@@ -30,27 +82,54 @@ class PouchService {
   //   return this.couchUser;
   // }
 
-  // public connect(credentials: CouchDBCredentials) {
-  //   console.log('[CouchDB Service] Connecting.');
+  public connect(credentials: CouchDBCredentials) {
+    console.log('[PouchDB Service] Connecting.');
 
-  //   this.currentCredentials = credentials;
+    this.currentCredentials = credentials;
 
-  //   const options: ClientOptions = {
-  //     username: credentials.userCredentials.username,
-  //     password: credentials.userCredentials.password
-  //   };
+    const roDBName = credentials.dbInfo.urlRoot + '/' + credentials.dbInfo.readonlyDB;
+    const userDBName = credentials.dbInfo.urlRoot + '/' + credentials.dbInfo.userDB;
 
-  //   this.couchRO = new Client(
-  //     credentials.dbInfo.urlRoot,
-  //     credentials.dbInfo.readonlyDB,
-  //     options
-  //   );
-  //   this.couchUser = new Client(
-  //     credentials.dbInfo.urlRoot,
-  //     credentials.dbInfo.userDB,
-  //     options
-  //   );
-  // }
+    console.log(userDBName);
+    const options = {
+      username: credentials.userCredentials.username,
+      password: credentials.userCredentials.password
+    };
+    this.$pouch
+      .connect(options.username, options.password, roDBName)
+      .then((res: any) => {
+        const isUnauthorized = res.error === 'unauthorized';
+        const isOffline = res.status === 0;
+
+        if (isOffline) {
+          console.log('[PouchDB Service] Offline Mode');
+          return;
+        }
+
+        if (isUnauthorized) {
+          console.log('[PouchDB Service]Unauthorized');
+          return;
+        }
+
+        console.log('[PouchDB Service] Online.', res);
+        // this.$router.push('/dashboard');
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+    // console.log(pouchdb);
+
+    // this.couchRO = new Client(
+    //   credentials.dbInfo.urlRoot,
+    //   credentials.dbInfo.readonlyDB,
+    //   options
+    // );
+    // this.couchUser = new Client(
+    //   credentials.dbInfo.urlRoot,
+    //   credentials.dbInfo.userDB,
+    //   options
+    // );
+  }
 }
 
 export const pouchService = new PouchService();
