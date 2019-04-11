@@ -22,7 +22,7 @@ or for intranet dev,
 ```
 - Launch the auth server by navigating to apps/dev-auth-server directory and run `yarn serve`. This will start an HTTPS (self-signed) dev auth server running on port 9000. 
 
-## Certificates
+## Generating Your Own Self-Signed Certificates (Optional)
 Note that bn-temp-cert.pem and temp-\*-key.pem are just temporary certificates/keys and are NOT intended for any production use!
 
 If you want to generate your own temporary keys for dev use,
@@ -33,7 +33,7 @@ openssl rsa -in temp-priv-key.pem -pubout > temp-pub-key.pem
 openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -subj //CN=localhost
 ```
 
-## Basic Testing
+## Basic RESTful Testing
 
 POST the following raw JSON to: https://localhost:9000/api/login using a utility such as Postman.
 
