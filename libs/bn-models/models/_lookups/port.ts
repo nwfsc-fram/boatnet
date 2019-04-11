@@ -1,5 +1,4 @@
 import { Base } from '../_base/base';
-import { Contact } from '../_lookups/contact';
 import { BoatnetDate } from '../_common/boatnet-date';
 
 export const PortTypeName = 'port';

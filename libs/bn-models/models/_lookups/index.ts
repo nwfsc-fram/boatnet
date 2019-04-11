@@ -1,5 +1,5 @@
 export * from './port';
-export * from './contact';
+export * from './person';
 export * from './confidence';
 export * from './first-receiver';
 export * from './fishery';

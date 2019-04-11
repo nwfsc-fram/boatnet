@@ -2,7 +2,7 @@
 import { Port } from './port';
 import { Base } from '../_base';
 import { VesselType } from './vessel-type';
-import { BoatnetDate, Measurement } from '../_common';
+import { BoatnetDate, Measurement, Person } from '../_common';
 
 export const VesselTypeName = 'vessel';
 
@@ -15,7 +15,12 @@ export interface Vessel extends Base {
   registeredLength?: Measurement;
   safetyDecalExpiration?: Date;
   vesselStatus?: string; // lookup value
-
+  captains?: { // Current contact info
+    person: Person[];
+    contactType: string; // Captain, etc
+    isActive?: boolean;
+  }[];
+  // TODO store crew at Vessel level?
   legacy?: {
     vesselId?: number;
     obsprodLoadDate?: BoatnetDate;
