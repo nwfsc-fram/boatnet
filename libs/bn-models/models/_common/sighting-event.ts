@@ -1,10 +1,7 @@
 import { Base } from '../_base/base';
-import { BoatnetDate, Measurement, Species } from '.';
+import { BoatnetDate, Measurement } from '.';
 import { Point } from 'geojson'; // GeoJSON https://tools.ietf.org/html/rfc7946
-import { Beaufort } from '../_lookups/beaufort';
-import { Confidence } from '../_lookups/confidence';
-import { Media } from '../_lookups/media';
-import { BirdBand } from '../_lookups/bird-band';
+import { Beaufort, Confidence, Media, BirdBand, Species } from '../_lookups/index';
 
 declare type SightingConditions = string; // TODO Review Good/ Fair/ Poor, same as confidence?
 declare type Behavior = string; // TODO

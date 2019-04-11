@@ -2,7 +2,8 @@
 import { Port } from './port';
 import { Base } from '../_base';
 import { VesselType } from './vessel-type';
-import { BoatnetDate, Measurement, Person } from '../_common';
+import { BoatnetDate, Measurement } from '../_common/index';
+import { Person } from './person';
 
 export const VesselTypeName = 'vessel';
 

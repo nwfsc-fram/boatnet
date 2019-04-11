@@ -2,11 +2,9 @@ import { Base } from './base';
 
 import {
   BoatnetDate,
-  Person,
   CouchID
 } from '../_common/index';
-import { Vessel } from '../_lookups/vessel';
-import { Port } from '../_lookups/port';
+import { Vessel, Port, Person } from '../_lookups/index';
 
 export interface BaseTrip extends Base {
   operationIDs?: CouchID[]; // Haul/ Set UUID's

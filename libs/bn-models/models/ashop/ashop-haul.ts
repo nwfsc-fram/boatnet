@@ -1,7 +1,8 @@
 // Ashop Haul
-import { BaseOperation } from '../_base/base-operation';
-import { LocationEvent, Measurement, GearType, CouchID } from '../_common/index';
-import { AshopBrd, AshopSightingEvent } from './index';
+import { LocationEvent, Measurement, CouchID } from '../_common/index';
+import { GearType } from '../_lookups/index';
+import { BaseOperation, BaseCatch } from '../_base/index';
+import { AshopSample } from './ashop-sample'
 
 export const AshopHaulTypeName = 'ashop-haul';
 
@@ -54,6 +55,8 @@ export interface AshopHaul extends BaseOperation {
 
   sightingEventIds?: CouchID[];
 
+  samples?: AshopSample[];
+
   legacy?: {
     haulSeq?: number;
     deliveryVesselAdfg?: string;
@@ -68,5 +71,4 @@ export interface AshopHaul extends BaseOperation {
     sampleUnit?: string;
   };
 
-  catches?: AshopCatch[];
 }

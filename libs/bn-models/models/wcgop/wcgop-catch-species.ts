@@ -4,12 +4,12 @@
 // SPECIES_COMPOSITION_ITEMS
 // BIO_SPECIMENS
 
-import { Species, Measurement, BoatnetDate, CouchID } from '../_common/index';
+import { Measurement, BoatnetDate, CouchID } from '../_common/index';
 import { WcgopBasket } from './wcgop-basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
-import { WcgopSightingEvent } from './wcgop-sighting-event';
-import { Base } from '../_base';
+import { Base } from '../_base/index';
+import { Species } from '../_lookups/index';
 
 declare type RockfishHandlingCode = string; // TODO
 

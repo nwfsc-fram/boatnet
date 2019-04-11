@@ -3,12 +3,11 @@ import { BaseOperation } from '../_base/base-operation';
 import {
   LocationEvent,
   Measurement,
-  GearType,
-  WeightMethod,
   BoatnetDate,
   CouchID
 } from '../_common/index';
 import { WcgopCatch } from './wcgop-catch';
+import { WeightMethod, GearType } from '../_lookups';
 
 export const WcgopOperationTypeName = 'wcgop-operation';
 
@@ -42,11 +41,11 @@ export interface WcgopOperation extends BaseOperation {
   totalHooksLost?: number;
   totalGearSegments?: number;
   gearSegmentsLost?: number;
-  hooksSampled?: number; // TODO Neil will confirm. Pull up from WcgopCatch records (should be the same number)
-
+  hooksSampled?: number; // Pull up from WcgopCatch records (should be the same number)
+  avgNumHooksPerSegment?: number; // new data field
   beaufortValue?: number; // Possibly replaced with tides/currents data
-  isDeterrentUsed?: boolean; // HLFC related (possibly legacy - stored at trip leve)
-  excluderType?: string; // BRD related (possibly legacy - stored at trip level)
+  // Combine BRD and HLFC into isDeterrentUsed
+  isDeterrentUsed?: boolean; // BRD/ HLFC related (prompt UI for details required)
 
   legacy?: {
     fishingActivityId: number;
@@ -56,5 +55,8 @@ export interface WcgopOperation extends BaseOperation {
     volume?: Measurement;
     density?: Measurement;
     obsprodLoadDate?: BoatnetDate;
+    excluderType?: string; // BRD related
+    isBrdPresent?: boolean; // combine into isDeterrentUsed
+    deterrentUsed?: string; // translate into mitigationTypes HLFC record (values translate to mitigation type)
   };
 }

@@ -1,11 +1,10 @@
 import { Base } from './base';
 import {
-  Species,
   Measurement,
   Biostructure,
   LocationEvent
 } from '../_common/index';
-import { Media } from '../_lookups/media';
+import { Media, Species } from '../_lookups/index';
 
 // TODO create lookups for these:
 declare type Sex = string;

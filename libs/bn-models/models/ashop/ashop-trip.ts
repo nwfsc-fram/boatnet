@@ -1,30 +1,14 @@
 // A-SHOP Trip
 import { BaseTrip } from '../_base/base-trip';
-import {
-  Program,
-  Fishery,
-  FirstReceiver,
-  TripStatus,
-  LogbookType,
-  Contact,
-  Certificate,
-  Waiver,
-  GearType,
-  CouchID,
-  BoatnetDate,
-  Port,
-  VesselType
-} from '../_common/index';
+import { BoatnetDate, SightingEvent, InteractionEvent } from '../_common/index';
 
-import {
-  AshopSightingEvent,
-  AshopBrd,
-} from './index';
+import { AshopBrd } from './index';
+import { Person, Fishery, VesselType } from '../_lookups/index';
 
 export const AshopTripTypeName = 'ashop-trip';
 
 // unique A-SHOP Observer/ Debriefer
-declare type AshopContact = Contact;
+declare type AshopContact = Person;
 
 export interface AshopTrip extends BaseTrip {
   tripNum?: number; // by Vessel sequence
@@ -38,8 +22,8 @@ export interface AshopTrip extends BaseTrip {
   crewSize?: number;
   didFishingOccur?: boolean;
 
-  sightingEvents?: AshopSightingEvent[];
-  ineractionEvents?: AshopInteractionEvent[]; //todo
+  sightingEvents?: SightingEvent[];
+  ineractionEvents?: InteractionEvent[]; //todo
 
   brd?: AshopBrd[];
   // TODO Possibly reuse WcgopBrd, include Bird Detternce

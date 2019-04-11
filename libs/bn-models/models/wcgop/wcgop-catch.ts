@@ -40,6 +40,6 @@ export interface WcgopCatch extends BaseCatch {
     basketWeightCountKp?: number;
 
     obsprodLoadDate?: BoatnetDate;
-    hooksSampled?: number;
+    hooksSampled?: number; // pulled up to Operation
   };
 }
