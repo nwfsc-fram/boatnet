@@ -29,7 +29,7 @@
                 <q-select v-model="trip.activeTrip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
 
                 <q-select v-model="trip.activeTrip.fishery.name" :dense="true" label="Fishery" stack-label :options="fisheryOptions"></q-select>
- 
+
                 <p><strong>Permits</strong></p>
 
                 <q-select
@@ -67,7 +67,7 @@
                     <q-list bordered separator class="rounded-borders">
                         <q-item clickable :dense="true" v-for="(message, i) in tripMessages" :key="message.datetime">
                             <q-item-section>
-                                <q-item-label class="text-primary">{{ message.author.name }} 
+                                <q-item-label class="text-primary">{{ message.author.name }}
                                     <span style="float:right">
                                     {{ getTimeText(message.datetime) }}
                                     </span>
@@ -118,7 +118,7 @@ import { date } from 'quasar';
 import { TripState, PermitState, UserState, GeneralState } from '../_store/types/types';
 
 import moment from 'moment';
-import { Port } from '../../../../libs/bn-models';
+import { Port } from '@boatnet/bn-models';
 
 @Component
 export default class TripDetails extends Vue {
