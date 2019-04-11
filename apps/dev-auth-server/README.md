@@ -49,7 +49,7 @@ POST the following raw JSON to: https://localhost:9000/api/login using a utility
 
 ## Development Application Configuration
 
-TODO Proxy configuration for Vue apps
+`obs-web` and `obs-wcgop-optecs` are configured to proxy automatically to this server, see `vue.config.js`
 
 # Development Notes
 
