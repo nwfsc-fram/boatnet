@@ -10,8 +10,17 @@
           aria-label="Menu"
           icon="menu"
         />
-
-        <optecs-breadcrumbs />
+        <q-btn
+          flat
+          dense
+          round
+          @click="navigateBack"
+          aria-label="Back"
+          icon="chevron_left"
+          size="1.5em"
+        />
+        <optecs-breadcrumbs/>
+       <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -103,6 +112,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
+
+import router from '../router';
+
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
 @Component({
@@ -119,5 +131,10 @@ export default class DefaultLayout extends Vue {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
   }
+
+  private navigateBack() {
+    this.$router.back();
+  }
+
 }
 </script>

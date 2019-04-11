@@ -40,7 +40,7 @@ export async function login(req: Request, res: Response) {
     res.cookie('XSRF-TOKEN', csrfToken);
 
     const result = {
-      user: validate_result.username,
+      username: validate_result.username,
       token: sessionToken // You can check this token at https://jwt.io/
     };
 
@@ -55,7 +55,7 @@ export async function login(req: Request, res: Response) {
   }
 }
 
-async function devValidateUserPw(user: string, pw: string) {
+async function devValidateUserPw(username: string, password: string) {
   /**
    * Simplified user/pw validation for Development use
    */
@@ -63,14 +63,14 @@ async function devValidateUserPw(user: string, pw: string) {
 
   let authedUser: any;
   const isAuthed = users.some((u: any) => {
-    if (u.username === user && u.password === pw) {
+    if (u.username === username && u.password === password) {
       authedUser = u;
       return true;
     }
   });
 
   if (isAuthed) {
-    console.log('User authorized: ', user);
+    console.log('User authorized: ', username);
     const hashedPW = await hashBoatnetPW(authedUser.password);
     return {
       username: authedUser.username,
@@ -82,7 +82,7 @@ async function devValidateUserPw(user: string, pw: string) {
       }
     };
   } else {
-    console.log('User not authorized: ', user);
+    console.log('User not authorized: ', username);
     return null;
   }
 }

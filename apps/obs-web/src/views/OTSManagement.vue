@@ -1,13 +1,16 @@
 <template>
-    <div class="q-pa-md  q-gutter-md">
-        <div class="text-h5">Active Targets</div>
-        <q-btn  color="primary" @click="newTarget">New Selection Target</q-btn>
-        <q-list bordered separator>
-            <q-item v-for="(target, i) of activeTargets" :key="i" @click="editTarget(target)">
-                <q-item-section avatar style="font-size:24px">
-                    {{ target.rate }}%
-                </q-item-section>
-                <q-item-section>
+    <div >
+        <div class="q-pa-md q-gutter-md centered-page-item">
+        <q-btn color="primary" @click="newTarget">New Selection Target</q-btn>
+        </div>
+        <div class="centered-page-item">Active Targets</div>
+        <q-list class="q-pa-md q-gutter-md" bordered separator>
+            <q-item clickable v-for="(target, i) of activeTargets" :key="i" @click="editTarget(target)">
+
+                    <q-avatar size="50px" font-size="20px" :color="targetColor(target)" text-color="white">
+                        {{ target.rate }}%
+                    </q-avatar>
+                <q-item-section style="padding-left: 10px">
                     <q-item-label>
                         <strong>
                         {{ target.fishery }} - {{ target.targetType }} - {{ target.target }}
@@ -18,9 +21,9 @@
 
             </q-item>
         </q-list>
-        <div class="text-h5">Expired Targets</div>
+        <div class="centered-page-item">Expired Targets</div>
         <q-list bordered separator>
-            <q-item v-for="(target, i) of expiredTargets" :key="i" @click="setActive(target)">
+            <q-item clickable v-for="(target, i) of expiredTargets" :key="i" @click="setActive(target)">
                 <q-item-section avatar style="font-size:24px">
                     {{ target.rate }}%
                 </q-item-section>
@@ -43,24 +46,34 @@
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                <q-select v-model="general.activeTarget.fishery" :options="fisheries" :rules="[val =>  !!val || 'Required']" label="Fishery"/>
+                <q-select v-model="general.activeTarget.targetType" :options="targetTypes" :rules="[val => !!val || 'Reqired']" label="Target Type"/>
+                <q-select v-model="general.activeTarget.target" :options="targetOptions" :rules="[val =>  !!val || 'Required']" label="Target" />
+                <q-input v-model="general.activeTarget.rate" :rules="[val => { return val <= 100 && val >= 0 && !!val || 'Rate is required, and must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
+                <q-input :value="formatDate(general.activeTarget.startDate)" mask="date" :rules="['date']" label="Effective Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="target.startDate" />
+                        <q-date v-model="general.activeTarget.startDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+                <q-input :value="formatDate(general.activeTarget.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                    <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="general.activeTarget.endDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
                 </q-card-section>
 
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Cancel" @click="prompt = false" />
-                <q-btn flat label="Create Target" @click="createTarget" />
-                </q-card-actions>
+                <q-card-section align="right" class="text-primary">
+                <q-btn label="Cancel" @click="prompt = false" />
+                <q-btn color="primary" label="Create Target" @click="createTarget" />
+                </q-card-section>
             </q-card>
         </q-dialog>
 
@@ -71,34 +84,35 @@
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="target.fishery" :options="fisheries" label="Fishery" filled/>
-                <q-select v-model="target.targetType" :options="targetTypes" label="Target Type" filled/>
-                <q-select v-model="target.target" :options="targets" label="Target" filled/>
+                <q-select v-model="general.activeTarget.fishery" :options="fisheries" label="Fishery"/>
+                <q-select v-model="general.activeTarget.targetType" :options="targetTypes" label="Target Type"/>
+                <q-select v-model="general.activeTarget.target" :options="targetOptions" label="Target" />
+                <q-input v-model="general.activeTarget.rate" :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
 
-                <q-input filled :value="formatDate(target.startDate)" mask="date" :rules="['date']" label="Effective Date">
+                <q-input :value="formatDate(general.activeTarget.startDate)" mask="date" :rules="['date']" label="Effective Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="target.startDate" />
+                        <q-date v-model="general.activeTarget.startDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
 
-                <q-input filled :value="formatDate(target.endDate)" mask="date" :rules="['date']" label="Exipration Date">
+                <q-input :value="formatDate(general.activeTarget.endDate)" mask="date" :rules="['date']" label="Exipration Date">
                     <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="target.endDate" />
+                        <q-date v-model="general.activeTarget.endDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
                 </q-input>
                 </q-card-section>
 
-                <q-card-actions align="right" class="text-primary">
-                <q-btn flat label="Close" @click="edit = false" />
-                </q-card-actions>
+                <q-card-section align="right" class="text-primary">
+                <q-btn color="primary" label="Close" @click="edit = false" />
+                </q-card-section>
             </q-card>
         </q-dialog>
 
@@ -122,88 +136,139 @@
 
 import { mapState } from 'vuex';
 import router from 'vue-router';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { State, Action, Getter } from 'vuex-class';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import moment from 'moment';
+import { GeneralState, PermitState, OtsTarget } from '../_store/types/types';
 
 @Component
 export default class OTSManagement extends Vue {
 
-    private otsTargets = this.$store.state.otsTargets;
-    private target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null };
+    @State('general') private general!: GeneralState;
+    @State('permit') private permit!: PermitState;
+
     private prompt = false;
     private edit = false;
     private reactivate = false;
-    private targetTypes = this.$store.state.targetTypes;
-    private fisheries = this.$store.state.fisheries;
-    private curDate = moment().format();
+    private currentTarget: any;
 
-    private get targets() {
-        if (this.target.targetType === 'vessel') {
-            const vessels = new Set()
-            const permits = this.$store.state.permits
+    private get otsTargets() {
+        return this.general.otsTargets;
+    }
+
+    private get targetTypes() {
+        return this.general.targetTypes;
+    }
+
+    private get fisheries() {
+        return this.general.fisheries;
+    }
+
+    private curDate = moment().format();
+    private options = [];
+
+    private get targetOptions() {
+        if (this.general.activeTarget.targetType === 'Vessel') {
+            const vessels = new Set();
+            const permits = this.permit.permits;
             for (const permit of permits) {
-                vessels.add(permit.vessel_name)
+                vessels.add(permit.vessel_name);
             }
-            return Array.from(vessels).sort()
-        } else if (this.target.targetType === 'port group') {
-            return this.$store.state.portGroups
+            return Array.from(vessels).sort();
+        } else if (this.general.activeTarget.targetType === 'Port Group') {
+            return this.general.portGroups;
         } else {
-            return ['fishery wide']
+            return ['fishery wide'];
         }
-    };
+    }
 
     private get activeTargets() {
-        if (this.$store.getters.activeOTSTargets) {
-            return this.$store.getters.activeOTSTargets.reverse()
-        } else {
-            return []
-        }
+        return this.general.otsTargets.filter(
+            (target) => {
+                if (target.endDate) {
+                    return moment(target.endDate) >= moment();
+                } else {
+                    return [];
+                }
+            }
+        ).reverse();
     }
 
     private get expiredTargets() {
-        if (this.$store.getters.expiredOTSTargets) {
-            return this.$store.getters.expiredOTSTargets.reverse()
-        } else {
-            return []
-        }
+        return this.general.otsTargets.filter(
+            (target) => {
+                if (target.endDate) {
+                    return moment(target.endDate) <= moment();
+                }
+            }
+
+        ).reverse();
     }
 
+    constructor() {
+        super();
+        }
+
     private newTarget() {
-        this.target = {fishery: '', targetType: 'all', target: '', rate: null, startDate: moment(), endDate: null};
+        this.general.activeTarget = {
+            fishery: '',
+            targetType: 'Fishery',
+            target: 'fishery wide',
+            rate: null,
+            startDate: moment().format(),
+            endDate: moment().format('YYYY') + '/12/31'
+            };
         this.prompt = true;
     }
 
     private createTarget() {
-        this.otsTargets.push(this.target);
+        this.otsTargets.push(this.general.activeTarget);
         this.prompt = false;
     }
 
     private editTarget(target: any) {
-        this.target = target;
+        this.general.activeTarget = target;
         this.edit = true;
     }
 
     private setActive(target: any ) {
-        this.target = target
+        this.general.activeTarget = target;
         this.reactivate = true;
     }
 
     private Activate() {
-        this.target.endDate = null;
-        // this.$store.state.otsTargets.push(this.target)
+        this.general.activeTarget.endDate = null;
         this.reactivate = false;
     }
 
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('YYYY/MM/DD');
-  }    
-
-  created() {
-      console.log(this.curDate)
   }
 
-    constructor() {
-        super();
-    }
+  private targetColor(target: OtsTarget) {
+      switch (target.targetType) {
+          case 'Fishery':
+            return 'primary';
+          case 'Vessel':
+            return 'positive';
+          case 'Port Group':
+            return 'negative';
+      }
+  }
+
+    // @Watch('general.activeTarget')
+    //     private onActiveTargetChange(newVal: any, oldVal: any) {
+    //     }
+
+  @Watch('general.activeTarget.targetType')
+    private onChange(newVal: any, oldVal: any) {
+            if (newVal === 'Fishery') {
+                this.general.activeTarget.target = 'fishery wide';
+            } else {
+                this.general.activeTarget.target = null;
+            }
+        }
+
 }
+
 </script>

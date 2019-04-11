@@ -3,11 +3,17 @@
 
 A dev-only auth server for use with developing boatnet apps without connecting to a live auth server.
 
-## Running server
+### Setup
+- Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file. 
+- Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials. 
+- Set up a CouchDB databse configuration for development, replace the dummy couch config with
 ```
-yarn serve
+"couchDBInfo": {
+  "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
+  "readonlyDB": "boatnet-dev-testing"
+}
 ```
-This will start an HTTPS (self-signed) dev auth server running on port 9000.
+- Launch the auth server by navigating to apps/dev-auth-server directory and run yarn serve. This will start an HTTPS (self-signed) dev auth server running on port 9000. 
 
 ## Certificates
 Note that bn-temp-cert.pem and temp-\*-key.pem are just temporary certificates/keys and are NOT intended for any production use!
@@ -19,17 +25,6 @@ openssl genrsa -out temp-priv-key.pem 2048
 openssl rsa -in temp-priv-key.pem -pubout > temp-pub-key.pem
 openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -subj //CN=localhost
 ```
-
-
-## Configuration file for Development Auth Proxy
-
-- You will want a real CouchDB database configured for your development. You can use your local machine, a VM, a db on a dev server, etc...
-
-  - Example: `http://localhost:5984/my-test-db`
-
-- Copy `server/config/authProxyConfig.sample.json` to `server/config/authProxyConfig.json` (`authProxyConfig.json` is in `.gitignore`)
-
-- Modify the file as desired. (Do not duplicate any actual credentials.)
 
 ## Basic Testing
 

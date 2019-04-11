@@ -112,6 +112,13 @@ lerna add --dev @types/pouchdb-browser --scope='example'
 lerna add @boatnet/bn-models   [this will install this dependency to all projects - use sparingly]
 (etc)
 ```
+* [OPTIONAL] If you use `yarn add` to add a dependency to your specific project, you will need to re-run lerna bootstrap for the build to function correctly.
+```
+cd apps/my-app/
+yarn add some-library
+lerna bootstrap
+```
+
 * Run your app:
 ```
 cd apps/obs-wcgop-optecs

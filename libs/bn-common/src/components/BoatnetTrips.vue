@@ -18,13 +18,13 @@
     <q-table :data="tripsData" :columns="tripsSettings.columns" :selected.sync="selected"/>
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
-    <div class="row">
-      <q-btn color="primary" icon="playlist_add" label="Add Trip"/>
-      <q-btn icon="edit" label="Edit Trip" disabled="true"/>
-      <q-btn icon="done" label="End Trip" disabled="true"/>
-      <q-btn icon="delete_forever" label="Delete Trip" disabled="true"/>
+    <div class="row q-gutter-sm q-pt-sm">
+      <q-btn color="primary" icon="add" label="Add Trip"/>
+      <q-btn color="primary" icon="edit" label="Edit Trip" disabled="true"/>
+      <q-btn color="primary" icon="done" label="End Trip" disabled="true"/>
+      <q-btn color="primary" icon="delete_forever" label="Delete Trip" disabled="true"/>
       <q-space/>
-      <q-btn icon="play_arrow" label="Go to Hauls"/>
+      <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
     </div>
   </q-page>
 </template>
@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { BoatnetTripsSettings } from '../models/BoatnetTripsSettings';
+import { BoatnetTripsSettings } from '@boatnet/bn-common';
 
 @Component
 export default class Trips extends Vue {

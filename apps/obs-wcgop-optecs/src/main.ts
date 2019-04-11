@@ -1,17 +1,22 @@
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
-import store from './store';
+import store from './_store';
 import './registerServiceWorker';
 
 // The quasar stylus imports are somewhat broken, so import css here
 // As described in https://alligator.io/vuejs/css-frameworks-vuejs/
 import 'quasar/dist/quasar.min.css';
+import '@/assets/directional-buttons.css';
 // Import what we can from the stylus files:
 import './styles/quasar.styl';
 
 import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
+import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
+
+
+import { VueTouchKeyboard} from 'vue-touch-keyboard';
 
 import {
   Quasar,
@@ -27,7 +32,9 @@ import {
   QOptionGroup,
   QPageContainer,
   QPage,
+  QSelect,
   QSeparator,
+  QSpinner,
   QSpace,
   QTab,
   QTabs,
@@ -59,7 +66,9 @@ Vue.use(Quasar, {
     QOptionGroup,
     QPageContainer,
     QPage,
+    QSelect,
     QSeparator,
+    QSpinner,
     QSpace,
     QTab,
     QTabs,
@@ -80,6 +89,8 @@ Vue.use(Quasar, {
 });
 
 Vue.config.productionTip = false;
+
+// Vue.use(VueTouchKeyboard);
 
 new Vue({
   router,
