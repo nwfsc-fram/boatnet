@@ -1,11 +1,19 @@
 // Ashop Haul
-import { BaseOperation } from '../_base/base-operation';
-import { LocationEvent, Measurement, GearType, CouchID } from '../_common/index';
-import { AshopBrd, AshopSightingEvent } from './index';
+import { LocationEvent, Measurement, CouchID } from '../_common/index';
+import { GearType } from '../_lookups/index';
+import { BaseOperation, BaseCatch } from '../_base/index';
+import { AshopSample } from './ashop-sample';
 
 export const AshopHaulTypeName = 'ashop-haul';
 
 declare type AshopGearPerformance = string; // TODO
+interface EstimatedDiscard {
+  measurement: Measurement; // kg
+  weightMethod: string; // TODO lookup AshopWeightMethod
+  source: string; // TODO source lookup
+  // Sources: Calculated (observer sample expanded), Visual,
+  // Catcher Vessel, Pre-sort (Not expanded- could be Calculated source in separate sample)
+}
 
 export interface AshopHaul extends BaseOperation {
   haulNum?: number;
@@ -33,13 +41,7 @@ export interface AshopHaul extends BaseOperation {
   // use observerEstimatedCatch if available,
   // otherwise vesselEstimatedCatch
 
-  observerEstimatedDiscards?: {
-    measurement: Measurement; // kg
-    weightMethod: string; // TODO lookup AshopWeightMethod
-    source: string; // TODO source lookup
-    // Sources: Calculated (observer sample expanded), Visual,
-    // Catcher Vessel, Pre-sort (Not expanded- could be Calculated source in separate sample)
-  }[];
+  observerEstimatedDiscards?: EstimatedDiscard[];
 
   // Calculated- sum of observerEstimatedDiscards
   totalEstimatedDiscard?: Measurement;
@@ -54,6 +56,8 @@ export interface AshopHaul extends BaseOperation {
 
   sightingEventIds?: CouchID[];
 
+  samples?: AshopSample[];
+
   legacy?: {
     haulSeq?: number;
     deliveryVesselAdfg?: string;
@@ -67,6 +71,4 @@ export interface AshopHaul extends BaseOperation {
     birdHaulbackCode?: string;
     sampleUnit?: string;
   };
-
-  catches?: AshopCatch[];
 }

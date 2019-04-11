@@ -14,7 +14,6 @@ export interface WcgopCatch extends BaseCatch {
   species?: WcgopCatchSpecies[];
   weight?: Measurement;
   count?: number;
-  hooksSampled?: number;
   sampleWeight?: Measurement;
   sampleCount?: number;
   gearSegmentsSampled?: number;
@@ -41,5 +40,6 @@ export interface WcgopCatch extends BaseCatch {
     basketWeightCountKp?: number;
 
     obsprodLoadDate?: BoatnetDate;
+    hooksSampled?: number; // pulled up to Operation
   };
 }

@@ -1,4 +1,5 @@
 import { Base } from '../_base/index';
+import { BoatnetDate } from '../_common';
 
 export const SpeciesTypeName = 'species';
 
@@ -17,5 +18,6 @@ export interface Species extends Base {
     prioritySpecies?: boolean; // Y or NULL
     bsSpecies?: boolean; // Y or NULL
     formRequired?: boolean; // Y or NULL
+    obsprodLoadDate: BoatnetDate
   };
 }

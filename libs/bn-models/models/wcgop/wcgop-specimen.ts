@@ -10,6 +10,8 @@ declare type WcgopBiosampleMethod = any;
 // LENGTH_FREQUENCIES
 // DISSECTIONS
 
+export const WcgopSpecimenTypeName = 'wcgop-specimen';
+
 export interface WcgopSpecimen extends BaseSpecimen {
   biosampleMethod?: WcgopBiosampleMethod; // TODO
   discardReason?: WcgopDiscardReason;
@@ -30,7 +32,7 @@ export interface WcgopSpecimen extends BaseSpecimen {
 
     lengthFrequencyId?: number; // from ETL import transform
 
-    // TODO Lab Analysis docstore for the following:
+    // TODO Lab Analysis docstore structure for the following:
     age?: number;
     ageReader?: string;
     ageDate?: string;

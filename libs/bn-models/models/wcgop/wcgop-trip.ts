@@ -1,28 +1,24 @@
 // Unique fields of WCGOP trips
 import { BaseTrip } from '../_base/base-trip';
 import {
-  Program,
-  Fishery,
-  FirstReceiver,
-  TripStatus,
-  LogbookType,
-  Contact,
   Certificate,
-  Waiver,
-  GearType,
-  CouchID,
-  BoatnetDate
+  BoatnetDate,
+  SightingEvent,
+  InteractionEvent,
+  Waiver
 } from '../_common/index';
 
-import { WcgopSightingEvent, WcgopFishTicket } from './index';
-import { WcgopBrd } from './wcgop-brd';
-import { WcgopHlfc } from './wcgop-hlfc';
+import { WcgopFishTicket } from './index';
+import { WcgopHlfcConfiguration } from './wcgop-hlfc-configuration';
+import { BrdConfiguration } from '../_common/brd-configuration';
+import { Program } from 'typescript';
+import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType } from '../_lookups/index';
 
 export const WcgopTripTypeName = 'wcgop-trip';
 
 export interface WcgopTrip extends BaseTrip {
   tripNum?: number; // For optecs internal use, sequential
-  observer?: Contact; // formerly User ID, TODO Specifics
+  observer?: Person; // formerly User ID, TODO Specifics
   program?: Program;
   isPartialTrip?: boolean;
   fishingDays?: number;
@@ -30,15 +26,16 @@ export interface WcgopTrip extends BaseTrip {
   crewSize?: number;
   firstReceivers?: FirstReceiver[]; // FR lookups are in Permits DB
   logbookNum?: number;
-  logbookType?: LogbookType;
+  logbookType?: VesselLogbookType;
   observerLogbookNum?: number;
   isFishProcessed?: boolean;
   tripStatus?: TripStatus;
-  debriefer?: Contact;
+  debriefer?: Person;
 
-  sightingEvents?: WcgopSightingEvent[];
-  brd?: WcgopBrd[];
-  hlfc?: WcgopHlfc[];
+  sightingEvents?: SightingEvent[];
+  interactionEvents?: InteractionEvent[]; // TODO
+  brd?: BrdConfiguration[];
+  hlfc?: WcgopHlfcConfiguration[];
 
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[]; // Permits and Licenses
