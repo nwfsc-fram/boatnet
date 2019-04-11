@@ -20,6 +20,17 @@ declare type ApplicationRole = string; // TODO Lookup - match Apex User Admin
 //    program manager, permit owner, lab analyst,
 //    reports user (PACFIN etc)
 
+interface EmergencyContact {
+  contact?: Person;
+  relationToObserver?: string; // Lookup value
+}
+
+interface OrganizationDateRange {
+  org: Organization;
+  startDate?: BoatnetDate;
+  endDate?: BoatnetDate;
+}
+
 // Originally CONTACTS
 export interface Person extends Base {
   // This is sensitive PII
@@ -37,18 +48,11 @@ export interface Person extends Base {
   workEmail?: string;
   homeEmail?: string;
   birthdate?: BoatnetDate;
-  emergencyContacts?: {
-    contact?: Person;
-    relationToObserver?: string; // Lookup value
-  }[];
+  emergencyContacts?: EmergencyContact[];
 
   applicationRoles?: ApplicationRole[];
 
-  organizations?: {
-    org: Organization;
-    startDate?: BoatnetDate;
-    endDate?: BoatnetDate;
-  }[];
+  organizations?: OrganizationDateRange[];
 
   epirbIdNum?: string;
   epirbIdNum_2?: string; // Uncertain why there's a second one, legacy?

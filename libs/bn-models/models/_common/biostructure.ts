@@ -1,6 +1,6 @@
-import { BiostructureType } from "../_lookups/biostructure-type";
-import { Base } from "../_base";
-import { BoatnetDate } from "./boatnet-date";
+import { BiostructureType } from '../_lookups/biostructure-type';
+import { Base } from '../_base';
+import { BoatnetDate } from './boatnet-date';
 
 // TODO Lookups:
 // cutting?: Biostructure; // for Corals / Sponges/ etc
@@ -31,11 +31,9 @@ export interface Biostructure extends Base {
     age?: number;
     ageReader?: string;
     ageDate?: string;
-    ageLocation: string,
-    ageMethod: string
+    ageLocation: string;
+    ageMethod: string;
 
     bandId?: string;
-
-
-  }
+  };
 }

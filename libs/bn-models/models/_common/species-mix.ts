@@ -1,4 +1,3 @@
-
 import { WcgopCatchSpecies } from '../wcgop/wcgop-catch-species';
 
 export interface SpeciesMix {

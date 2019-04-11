@@ -12,21 +12,21 @@ import { Deterrent } from '../_lookups/deterrent';
 import { BoatnetDate } from './boatnet-date';
 import { Point } from 'geojson';
 import { Base } from '../_base/index';
-import { WcgopSpecimen } from '../wcgop'
-import { AshopSpecimen } from '../ashop'
+import { WcgopSpecimen } from '../wcgop';
+import { AshopSpecimen } from '../ashop';
 
 declare type InteractionType = string; // TODO Lookup
 
-declare type Interaction = {
+interface Interaction {
   type?: InteractionType;
   notes?: string;
   isLethal?: boolean;
-}; // TODO lookup type
+} // TODO lookup type
 
-declare type OutcomeType = {
+interface OutcomeType {
   description?: string;
   isLethal?: boolean;
-}; // TODO lookup type
+} // TODO lookup type
 
 declare type Weather = string; // TODO Lookup
 declare type VesselActivity = string; // TODO ASHOP Lookup: Fishing, Processing, etc
@@ -77,7 +77,8 @@ export interface InteractionEvent extends Base {
     duration?: Measurement; // Is this a universal attribute? TODO Possibly Delete
 
     // if short tailed albatross
-    albatrossData?: { // consider non species specific
+    albatrossData?: {
+      // consider non species specific
       numAdults?: number;
       numSubAdults?: number;
       numImmatures?: number;
@@ -85,7 +86,7 @@ export interface InteractionEvent extends Base {
       identifyingCharacteristics?: string;
       specimenTaken?: boolean;
       specimensAndTags?: SpecimenTag[];
-    }
+    };
     numMammalsInInteraction?: number;
     mammalCondition?: string;
   };

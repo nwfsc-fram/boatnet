@@ -7,6 +7,13 @@ import { Person } from './person';
 
 export const VesselTypeName = 'vessel';
 
+interface VesselCaptain {
+  // Current contact info
+  person: Person[];
+  contactType: string; // Captain, etc
+  isActive?: boolean;
+}
+
 export interface Vessel extends Base {
   vesselName?: string;
   vesselType?: VesselType;
@@ -16,11 +23,7 @@ export interface Vessel extends Base {
   registeredLength?: Measurement;
   safetyDecalExpiration?: Date;
   vesselStatus?: string; // lookup value
-  captains?: { // Current contact info
-    person: Person[];
-    contactType: string; // Captain, etc
-    isActive?: boolean;
-  }[];
+  captains?: VesselCaptain[];
   // TODO store crew at Vessel level?
   legacy?: {
     vesselId?: number;

@@ -10,20 +10,27 @@ export const AshopTripTypeName = 'ashop-trip';
 // unique A-SHOP Observer/ Debriefer
 declare type AshopContact = Person;
 
+interface LostHours {
+  hours?: number;
+  code?: string;
+}
+
+interface ObserverRange {
+  observer?: AshopContact;
+  startDate?: BoatnetDate;
+  endDate?: BoatnetDate;
+}
+
 export interface AshopTrip extends BaseTrip {
   tripNum?: number; // by Vessel sequence
-  observers?: {
-    observer?: AshopContact;
-    startDate?: BoatnetDate;
-    endDate?: BoatnetDate;
-  }[];
+  observers?: ObserverRange[];
   fishingDays?: number; // calculated
   fishery?: Fishery; // default to A-SHOP
   crewSize?: number;
   didFishingOccur?: boolean;
 
   sightingEvents?: SightingEvent[];
-  ineractionEvents?: InteractionEvent[]; //todo
+  ineractionEvents?: InteractionEvent[]; // todo
 
   brd?: AshopBrd[];
   // TODO Possibly reuse WcgopBrd, include Bird Detternce
@@ -33,9 +40,6 @@ export interface AshopTrip extends BaseTrip {
     tripSeq?: number;
     cruiseVesselSeq?: number;
     portCode?: number;
-    fishingTimeLostHours?: {
-      hours?: number;
-      code?: string;
-    }[];
+    fishingTimeLostHours?: LostHours[];
   };
 }
