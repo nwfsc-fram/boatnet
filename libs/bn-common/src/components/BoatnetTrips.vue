@@ -23,10 +23,12 @@
     <q-table
       :data="tripsData"
       :columns="tripsSettings.columns"
-      row-key="name"
+      :row-key="tripsSettings.rowKey"
       selection="single"
       :selected.sync="selected"
     />
+    <!-- TODO: Figure out why row-key doesn't work with name -->
+    <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
     <div class="row q-gutter-sm q-pt-sm">
@@ -53,9 +55,12 @@ export default class Trips extends Vue {
 
   private searchText = '';
 
-  @Watch('selected', { immediate: true})
+  @Watch('selected', { immediate: true })
   private onSelectedChanged(newSelected: any) {
-    console.log('KLICK CLIC', JSON.stringify(newSelected[0]));
+    // TODO: Better way to handle this?
+    const trip = newSelected[0];
+    delete trip.__index; // remove weird __index field for converting to trip
+    this.$emit('selectedTrip', trip);
   }
 }
 </script>

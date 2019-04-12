@@ -7,7 +7,11 @@
       </template>
     </q-banner>
     <q-page>
-      <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+      <boatnet-trips
+        v-bind:tripsSettings="wcgopTripsSettings"
+        v-bind:tripsData="wcgopTripsData"
+        @selectedTrip="handleSelectTrip"
+      />
     </q-page>
   </span>
 </template>
@@ -44,7 +48,8 @@ export default class Trips extends Vue {
   @State('appState') private appState!: WcgopAppState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' }) private trip!: WcgopTrip;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
@@ -52,13 +57,14 @@ export default class Trips extends Vue {
   constructor() {
     super();
     this.wcgopTripsSettings = {
+      rowKey: '_id',
       columns: [
         {
-          name: 'tripId',
+          name: 'tripNum',
           required: true,
-          label: 'Trip Id',
+          label: 'Trip #',
           align: 'left',
-          field: '_id',
+          field: 'tripNum',
           sortable: true
         },
         {
@@ -140,6 +146,7 @@ export default class Trips extends Vue {
 
     const exampleTrip = {
       _id: '1',
+      tripNum: 1,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -158,7 +165,8 @@ export default class Trips extends Vue {
     };
 
     const exampleTrip2 = {
-      _id: 'asdf',
+      _id: '2',
+      tripNum: 2,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -174,6 +182,10 @@ export default class Trips extends Vue {
     };
 
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
+  }
+
+  private handleSelectTrip(trip: WcgopTrip) {
+    this.setCurrentTrip(trip);
   }
 }
 </script>

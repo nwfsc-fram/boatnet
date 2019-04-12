@@ -24,6 +24,11 @@ const actions: ActionTree<WcgopAppState, RootState> = {
 
 const mutations: MutationTree<WcgopAppState> = {
   setCurrentTrip(newState: any, trip: WcgopTrip) {
+    // if (trip) {
+    //   console.log('[AppState] Current trip:', trip.tripNum);
+    // } else {
+    //   console.log('[AppState] Cleared current trip');
+    // }
     newState.currentTrip = trip;
   },
   navigate(newState: any, uri: string) {
