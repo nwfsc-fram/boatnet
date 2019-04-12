@@ -59,7 +59,9 @@ export default class Trips extends Vue {
   private onSelectedChanged(newSelected: any) {
     // TODO: Better way to handle this?
     const trip = newSelected[0];
-    delete trip.__index; // remove weird __index field for converting to trip
+    if (trip) {
+      delete trip.__index; // remove weird __index field for converting to trip
+    }
     this.$emit('selectedTrip', trip);
   }
 }

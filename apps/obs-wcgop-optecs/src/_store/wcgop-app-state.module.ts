@@ -14,6 +14,9 @@ const actions: ActionTree<WcgopAppState, RootState> = {
   setCurrentTrip({ commit }: any, trip: WcgopTrip) {
     commit('setCurrentTrip', trip);
   },
+  clear({ commit }: any) {
+    commit('setCurrentTrip', undefined);
+  },
   navigate({ commit }: any, uri: string) {
     commit('navigate', uri);
   },
