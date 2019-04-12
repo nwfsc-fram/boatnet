@@ -21,3 +21,8 @@
 ## Vue.js and Typescript Video Tutorials
  * Audio isn't great on these, but covers Vue.js + TypeScript:
  * https://www.youtube.com/results?search_query=real+world+app+-+vue+js+and+typescript+
+
+## Vue.js, Typescript, and Quasar Reference
+These target the old version of Quasar (pre-v1) but have some useful code examples.
+* https://github.com/paoloar77/FreePlanet
+* https://github.com/kevinmarrec/quasar-typescript
