@@ -5,8 +5,7 @@
   - `git push --set-upstream origin FIELD-123_Add_xyz_component` track your new branch upstream, so git push works. (Or add this when you do your push)
   - Make code changes/ additions, `git add <files changed/ added>`, `git commit -m 'Observer FIELD-123: Add xyz Component'`
   - `git push`
-  - Go to Gitlab, login, create Merge Request on your branch, assign to coworker for review
-  - Check "Remove source branch when merged"
+  - Go to Gitlab, login, create Merge Request on your branch, and create a Code Review request to coworker for review/approval, if you feel it's useful
   - Review, reviewer then clicks "Merge" and branch should be merged and closed. If there are merge issues, follow gitlab instructions.
 - https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html
 
