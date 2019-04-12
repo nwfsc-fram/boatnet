@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
 import Home from './views/Home.vue';
 import About from './views/About.vue';
+import Debriefer from './views/Debriefer.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
@@ -60,7 +61,7 @@ const router = new Router({
         { path: '/about', name: 'About', component: About },
         { path: '/trips', name: 'Trips', component: Trips},
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-        { path: '/debriefer', redirect: '' },
+        { path: '/debriefer', name: 'Debriefer', component: Debriefer},
         { path: '/permits', name: 'Permits', component: Permits},
         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
