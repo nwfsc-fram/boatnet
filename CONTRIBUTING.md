@@ -6,8 +6,7 @@
   - Make code changes/ additions, `git add <files changed/ added>`, `git commit -m 'Observer FIELD-123: Add xyz Component'`
   - `git push`
   - Go to Gitlab, login, create Merge Request on your branch, and create a Code Review request to coworker for review/approval, if you feel it's useful
-  - Review, reviewer then clicks "Merge" and branch should be merged and closed. If there are merge issues, follow gitlab instructions.
-- https://docs.gitlab.com/ee/gitlab-basics/add-merge-request.html
+  - Clicks "Merge Branch" and branch should be merged, and the option to Delete Branch (usually you do want to do this.) If there are merge issues, follow github/gitlab instructions.
 
 ## Rebasing from master into your branch
 
