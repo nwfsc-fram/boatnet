@@ -7,7 +7,11 @@
       </template>
     </q-banner>
     <q-page>
-      <boatnet-trips v-bind:tripsSettings="wcgopTripsSettings" v-bind:tripsData="wcgopTripsData"/>
+      <boatnet-trips
+        v-bind:tripsSettings="wcgopTripsSettings"
+        v-bind:tripsData="wcgopTripsData"
+        @selectedTrip="handleSelectTrip"
+      />
     </q-page>
   </span>
 </template>
@@ -18,6 +22,7 @@ import { Point } from 'geojson';
 import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
+import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { couchService } from '@boatnet/bn-couch';
@@ -40,8 +45,11 @@ Vue.component(BoatnetTrips);
 @Component
 export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
+  @State('appState') private appState!: WcgopAppState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
@@ -49,20 +57,21 @@ export default class Trips extends Vue {
   constructor() {
     super();
     this.wcgopTripsSettings = {
+      rowKey: '_id',
       columns: [
         {
-          name: 'tripId',
+          name: 'tripNum',
           required: true,
-          label: 'Trip Id',
+          label: 'Trip #',
           align: 'left',
-          field: '_id',
+          field: 'tripNum',
           sortable: true
         },
         {
           name: 'vesselName',
           align: 'center',
           label: 'Vessel Name',
-          field: (row: any) => row.vessel.name,
+          field: (row: any) => row.vessel.vesselName,
           sortable: true
         },
         {
@@ -112,7 +121,7 @@ export default class Trips extends Vue {
     };
 
     const examplePort2: Port = {
-      _id: 'asdf',
+      _id: 'asdf2',
       type: PortTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -128,7 +137,7 @@ export default class Trips extends Vue {
     };
 
     const exampleVessel2: Vessel = {
-      _id: '1',
+      _id: '2',
       type: VesselTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -137,6 +146,7 @@ export default class Trips extends Vue {
 
     const exampleTrip = {
       _id: '1',
+      tripNum: 1,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -156,6 +166,7 @@ export default class Trips extends Vue {
 
     const exampleTrip2 = {
       _id: '2',
+      tripNum: 2,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
@@ -171,6 +182,10 @@ export default class Trips extends Vue {
     };
 
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
+  }
+
+  private handleSelectTrip(trip: WcgopTrip) {
+    this.setCurrentTrip(trip);
   }
 }
 </script>

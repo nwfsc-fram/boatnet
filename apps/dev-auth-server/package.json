@@ -32,6 +32,6 @@
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.0",
     "pem-jwk": "^2.0.0",
-    "quasar": "1.0.0-beta.13"
+    "quasar": "^1.0.0-beta.16"
   }
 }
