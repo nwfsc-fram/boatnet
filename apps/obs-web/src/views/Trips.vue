@@ -10,10 +10,10 @@
 
       <q-card v-for="(trip, i) in openTrips" :key="trip.tripNum" class="my-card bg-primary text-white" style="margin: 10px">
         <q-card-section>
-          <div class="text-h6">{{ trip.tripNum }} 
+          <div class="text-h6">{{ trip.tripNum }}
             <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
           </div>
-          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> - 
+          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> -
           <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
           <div style="float:right">
             <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
@@ -27,16 +27,16 @@
     </q-card>
     </div>
     <div v-if="closedTrips.length > 0" style="text-align: center" class="centered-page-item">Closed Trips</div>
-    <div class=" row items-start"> 
+    <div class=" row items-start">
     <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
     <q-card v-for="(trip, i) in closedTrips" :key="trip.tripNum" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
       <q-card-section>
-        <div class="text-h6">{{ trip.tripNum }} 
+        <div class="text-h6">{{ trip.tripNum }}
           <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
         </div>
-          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> - 
+          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> -
           <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
         <div style="float:right">
           <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
@@ -45,7 +45,7 @@
       </q-card-section>
       <q-card-actions style="float:right">
         <q-btn flat @click="reOpenTrip(trip)">Reopen</q-btn>
-      </q-card-actions>        
+      </q-card-actions>
 
     </q-card>
 
@@ -58,7 +58,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
- 
+
   </div>
   </div>
 </template>
@@ -162,7 +162,6 @@ export default class Trips extends Vue {
         this.trip.trips.push({
                               type: 'trip',
                               tripNum: newTripNum,
-                              tripStatus: true,
                               vessel: { vesselName: this.vessel.activeVessel.vesselName },
                               permits: [],
                               messages: [],
@@ -230,7 +229,7 @@ export default{
           },
           set(value) {
               this.$store.dispatch('updateTrips', value)
-          }          
+          }
         }
     },
     created() {

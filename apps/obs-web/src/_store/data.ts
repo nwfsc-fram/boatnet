@@ -6,7 +6,7 @@ import { alert } from '@/_store/alert.module';
 
 import { Permit, OtsTarget } from '@/_store/types/types.ts';
 import { OTSTrip, OTSMessage, OTSUser } from '@/_store/types/types.ts';
-import { Vessel } from '@boatnet/bn-models/models/_common/vessel';
+import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
 
 import { RootState } from '@/_store/types/types';
 
@@ -145,7 +145,7 @@ export const otsTargets: OtsTarget[] = [
 ];
 
 export const trips: OTSTrip[] = [
-  { _id: '123456', type: 'trip', tripNum: 3, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
@@ -153,7 +153,7 @@ export const trips: OTSTrip[] = [
     permits: [{label: 'A21rv35', value: 'A21rv35'}],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 2,  tripStatus: false, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -165,7 +165,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -177,7 +177,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 5, tripStatus: true, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -185,7 +185,7 @@ export const trips: OTSTrip[] = [
     permits: [{label: 'N11es32', value: 'N11es32'}],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 4, tripStatus: true, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -193,7 +193,7 @@ export const trips: OTSTrip[] = [
     permits: [{label: 'A21rv35', value: 'A21rv35'}, {label: 'W32be87', value: 'W32be87'}],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -205,7 +205,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -217,7 +217,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 3, tripStatus: true, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 3, isSelected: true,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -229,7 +229,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 4, tripStatus: true, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 4, isSelected: true,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -241,7 +241,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 3, tripStatus: true, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -253,7 +253,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 2, isSelected: false,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -265,7 +265,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 1, isSelected: true,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -277,7 +277,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 4, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -289,7 +289,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 5, tripStatus: true, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -301,7 +301,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 3, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -313,7 +313,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 2, tripStatus: false, isSelected: true,
+  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
@@ -325,7 +325,7 @@ export const trips: OTSTrip[] = [
     ],
     messages: []
   },
-  { _id: '123456', type: 'trip', tripNum: 1, tripStatus: false, isSelected: false,
+  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},

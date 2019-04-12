@@ -1,6 +1,5 @@
 import { Base } from '../_base/base';
-import { Contact } from './contact';
-import { BoatnetDate } from './boatnet-date';
+import { BoatnetDate } from '../_common/boatnet-date';
 
 export const PortTypeName = 'port';
 

@@ -1,10 +1,10 @@
 import { Base } from './base';
 import {
-  Species,
   Measurement,
   Biostructure,
   LocationEvent
 } from '../_common/index';
+import { Media, Species } from '../_lookups/index';
 
 // TODO create lookups for these:
 declare type Sex = string;
@@ -15,7 +15,6 @@ declare type Maturity = string;
 declare type Protocol = string; // TODO Protocol interface
 
 export interface BaseSpecimen extends Base {
-  species?: Species; // TODO needed?
   sex?: Sex; // TODO Lookup
   length?: Measurement;
   width?: Measurement;
@@ -33,4 +32,7 @@ export interface BaseSpecimen extends Base {
   protocol?: Protocol;
   specialProjects?: any[]; // TODO move to Protocol: arbitrary special project data
   frequency?: number; // = 1 if undefined (WCGOP only)
+
+  mediaData: Media[];
+
 }

@@ -7,7 +7,7 @@ import './registerServiceWorker';
 // The quasar stylus imports are somewhat broken, so import css here
 // As described in https://alligator.io/vuejs/css-frameworks-vuejs/
 import 'quasar/dist/quasar.min.css';
-import '@/assets/bootstrap-directional-buttons.css';
+import '@/assets/directional-buttons.css';
 // Import what we can from the stylus files:
 import './styles/quasar.styl';
 

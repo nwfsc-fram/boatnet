@@ -152,8 +152,8 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-  Contact,
-  ContactTypeName,
+  Person,
+  PersonTypeName,
   VesselTypeName
 } from '@boatnet/bn-models';
 
@@ -198,9 +198,9 @@ export default class Trips extends Vue {
       name: 'Port Townsend'
     };
 
-    const exampleContact: Contact = {
+    const exampleContact: Person = {
       _id: 'asdf',
-      type: ContactTypeName,
+      type: PersonTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
       firstName: 'Seadog',
@@ -223,9 +223,6 @@ export default class Trips extends Vue {
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      program: {
-        name: 'Catch Shares'
-      },
       fishery: { name: 'Catch Shares' },
       captain: exampleContact,
       crewSize: 25,

@@ -1,0 +1,18 @@
+import { Base } from '../_base';
+import { BoatnetDate } from '../_common';
+
+export const InteractionOutcomeTypeName = 'interaction-outcome';
+
+export interface InteractionOutcome extends Base {
+  description?: string;
+  lookupVal?: number;
+
+  legacy?: {
+    programId?: number;
+    active?: boolean;
+    sortOrder?: number;
+    lookupId?: number;
+    obsprodLoadDate?: BoatnetDate;
+    lookupType?: string;
+  };
+}

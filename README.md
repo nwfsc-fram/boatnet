@@ -63,7 +63,7 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Run `lerna run build` (builds all apps and libraries. This is optional, but should be performed prior to pushing changes, to ensure all projects still build correctly.)
 
-1. When running the app locally, you'll need to run the dev-auth-server running in order to login. Do this by following the instructions [here](https://github.com/nwfsc-fram/boatnet/blob/master/apps/dev-auth-server/README.md#setup)
+1. <b>When running the app locally, you'll need to run the dev-auth-server running in order to login. </b> Do this by following the instructions [here](https://github.com/nwfsc-fram/boatnet/blob/master/apps/dev-auth-server/README.md#setup)
 
 1. Navigate to the project you need, e.g. `cd apps/example` and `yarn serve`
 

@@ -1,11 +1,11 @@
 // A-SHOP Trip
 import { Base } from '../_base';
 import { AshopTrip } from './ashop-trip';
-import { Vessel, Contact, BoatnetDate } from '../_common';
+import { Person, Vessel } from '../_lookups/index';
 
 export const AshopCruiseTypeName = 'ashop-cruise';
 
-declare type AshopContact = Contact;
+declare type AshopContact = Person;
 
 export interface AshopCruise extends Base {
   cruiseNum?: string; // in addition to _id
