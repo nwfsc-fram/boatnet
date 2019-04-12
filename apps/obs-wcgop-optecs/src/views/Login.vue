@@ -84,7 +84,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 
 import router from '../router';
-import { AlertState } from '../_store/types/types';
+import { AlertState, WcgopAppState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { pouchService } from '@boatnet/bn-pouch';
@@ -93,14 +93,17 @@ import { pouchService } from '@boatnet/bn-pouch';
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
+  @State('appState') private appState!: WcgopAppState;
 
   @Action('login', { namespace: 'auth' }) private login: any;
   @Action('logout', { namespace: 'auth' }) private logout: any;
 
-  @Action('clear', { namespace: 'alert' }) private clear: any;
-  @Action('error', { namespace: 'alert' }) private error: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   @Action('connect', { namespace: 'basePouch' }) private connect: any;
+
+  @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 
   private username = '';
   private password = '';
@@ -132,8 +135,8 @@ export default class Login extends Vue {
   }
 
   @Watch('$route', { immediate: true, deep: true })
-  private onUrlChange(newVal: string, oldVal: string) {
-    this.clear();
+  private onUrlChange(newVal: any) {
+    this.clearAlert();
   }
 
   private show(e: any) {
@@ -151,7 +154,8 @@ export default class Login extends Vue {
 
   private mounted() {
     this.logout(); // reset login status
-    this.clear(); // clear errors
+    this.clearAlert(); // clear errors
+    this.clearAppState(); // clear trips etc
 
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
@@ -162,7 +166,7 @@ export default class Login extends Vue {
           router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
-          this.error(state.auth.status.error.message);
+          this.errorAlert(state.auth.status.error.message);
           break;
       }
     });
@@ -173,7 +177,7 @@ export default class Login extends Vue {
   }
 
   private handleSubmit(e: any) {
-    this.clear();
+    this.clearAlert();
     this.submitted = true;
     const { username, password } = this;
     if (username && password) {

@@ -3,7 +3,7 @@
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
     <q-page padding>
@@ -167,8 +167,8 @@ export default class Trips extends Vue {
   public model: any = null;
 
   @State('alert') private alert!: AlertState;
-  @Action('clear', { namespace: 'alert' }) private clear: any;
-  @Action('error', { namespace: 'alert' }) private error: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   private tab: string; // Current tab (start or end)
 
@@ -300,7 +300,7 @@ export default class Trips extends Vue {
         );
         this.options = vessels.rows.map((vessel) => vessel.value);
       } catch (err) {
-        this.error(err);
+        this.errorAlert(err);
       }
     });
   }
@@ -336,7 +336,7 @@ export default class Trips extends Vue {
         console.log(v.value);
       }
     } catch (err) {
-      this.error(err);
+      this.errorAlert(err);
     }
   }
 }
