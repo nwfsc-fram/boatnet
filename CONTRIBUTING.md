@@ -12,7 +12,7 @@
 ## Rebasing from master into your branch
 
 - To update to newest code, or before you submit your branch for a merge request,
-- commit or git stash your changes, then
+- `commit` or `git stash` your changes, then
 
 `git checkout master`
 
@@ -20,9 +20,15 @@
 
 `git checkout your-branch`
 
+- You can either merge:
+`git merge master`
+  - This is the only option if you've already push your changes to github.
+
+- Or, rebase, which will fast-forward your changes as if they were made on top of the current code. This reduces the number of your commits:
 `git rebase master`
 
-- Follow prompts if there are merge conflicts. If you don't want to merge/ don't care about your version of a file:
+- Follow prompts if there are merge conflicts. Visual studio code has a good UI which will help you perform merge conflict resolution.
+If you don't want to merge/ don't care about your version of a file:
   `git checkout --theirs whatever_file.ts`
   - which will wipe out your changes
     `git checkout --ours whatever_file.ts`
@@ -30,6 +36,7 @@
 - For each manually merged file:
   `git add merged_by_me_file.xyz`
   `git rebase --continue`
+  
 - Then if you stashed your changes,
   `git stash pop`
 
@@ -40,10 +47,11 @@ After your pull request is merged, you can safely delete your branch and pull th
 - Delete the remote branch on GitHub either through the GitHub web UI or locally
   `git push origin --delete my-branch`
 - Check out the master branch:
-  `git checkout master -f`
-
-- Delete the local branch:
-  `git branch -D my-fix-branch`
-
+  `git checkout master`
 - Update your master with the latest upstream version:
-  `git pull --ff upstream master`
+  `git pull`
+- Delete the local branch:
+  `git branch -D my-fix-branch`  
+- Stop tracking the remote branch:
+  `git branch -d -r origin/my-fix-branch`
+
