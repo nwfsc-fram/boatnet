@@ -17,7 +17,7 @@ import {
 
 @Component
 export default class Debriefer extends Vue {
-  private columns: any[] = [
+  public columns: any[] = [
     {
       name: 'name',
       required: true,
@@ -53,7 +53,7 @@ export default class Debriefer extends Vue {
       sort: (a: string, b: string) => parseInt(a, 10) - parseInt(b, 10)
     }
   ];
-  private data: any[] = [
+  public data: any[] = [
     {
       name: 'Frozen Yogurt',
       calories: 159,
