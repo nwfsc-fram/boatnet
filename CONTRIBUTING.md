@@ -4,6 +4,7 @@
   - `git checkout -b FIELD-123_Add_xyz_component` Create new branch and check it out
   - `git push --set-upstream origin FIELD-123_Add_xyz_component` track your new branch upstream, so git push works. (Or add this when you do your push)
   - Make code changes/ additions, `git add <files changed/ added>`, `git commit -m 'Observer FIELD-123: Add xyz Component'`
+  - Make sure your code passes lint checks and everything else builds correctly: `lerna run build`
   - `git push`
   - Go to Gitlab, login, create Merge Request on your branch, and create a Code Review request to coworker for review/approval, if you feel it's useful
   - Clicks "Merge Branch" and branch should be merged, and the option to Delete Branch (usually you do want to do this.) If there are merge issues, follow github/gitlab instructions.
