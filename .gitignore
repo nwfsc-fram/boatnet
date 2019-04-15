@@ -47,3 +47,4 @@ observer/.idea/
 # user-config
 **/authProxyConfig.json
 **/dbConfig.json
+temp-pub-key.pem
