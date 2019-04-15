@@ -10,12 +10,25 @@
         style="width: 200px;"
       >
         <template v-slot:append>
-          <q-icon v-if="searchText !== ''" name="close" @click="searchText = ''" class="cursor-pointer"/>
+          <q-icon
+            v-if="searchText !== ''"
+            name="close"
+            @click="searchText = ''"
+            class="cursor-pointer"
+          />
           <q-icon name="search"/>
         </template>
       </q-input>
     </div>
-    <q-table :data="tripsData" :columns="tripsSettings.columns" :selected.sync="selected"/>
+    <q-table
+      :data="tripsData"
+      :columns="tripsSettings.columns"
+      :row-key="tripsSettings.rowKey"
+      selection="single"
+      :selected.sync="selected"
+    />
+    <!-- TODO: Figure out why row-key doesn't work with name -->
+    <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
     <div class="row q-gutter-sm q-pt-sm">
@@ -31,15 +44,26 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
 
 @Component
 export default class Trips extends Vue {
   @Prop() public tripsSettings!: BoatnetTripsSettings;
   @Prop() public tripsData!: any[];
-  @Prop() public selected: any;
+  public selected: any[] = [];
+
   private searchText = '';
+
+  @Watch('selected', { immediate: true })
+  private onSelectedChanged(newSelected: any) {
+    // TODO: Better way to handle this?
+    const trip = newSelected ? newSelected[0] : undefined;
+    if (trip) {
+      delete trip.__index; // remove weird __index field for converting to trip
+    }
+    this.$emit('selectedTrip', trip);
+  }
 }
 </script>
 

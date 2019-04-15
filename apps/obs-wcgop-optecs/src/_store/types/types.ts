@@ -1,5 +1,4 @@
-import { BoatnetUser } from '@boatnet/bn-auth';
-import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { WcgopTrip, BoatnetUser } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -9,4 +8,15 @@ export interface RootState {
 export interface AlertState {
   type: string | null;
   message: string | null;
+}
+
+export interface BreadcrumbNavigation {
+  // TODO - figure out how to store our locations
+  currentRouterLocation?: string;
+  prevRouterLocation?: any;
+}
+
+export interface WcgopAppState {
+  currentNavigation?: BreadcrumbNavigation;
+  currentTrip?: WcgopTrip;
 }

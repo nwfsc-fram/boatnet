@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 
+import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from '@/_store/alert.module';
 import { auth } from '@boatnet/bn-auth';
 import { baseCouch } from '@boatnet/bn-couch';
@@ -18,6 +19,7 @@ const store: StoreOptions<RootState> = {
     version: '1.0.0'
   },
   modules: {
+    appState,
     alert,
     auth,
     baseCouch

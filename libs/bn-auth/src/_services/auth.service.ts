@@ -11,7 +11,7 @@ import pemjwk from 'pem-jwk';
 import { BoatnetUserToken, BoatnetUser } from '../models/auth.model';
 
 import dbConfig from '../config/dbConfig';
-import { CouchDBCredentials } from '@boatnet/bn-couchdb';
+import { CouchDBCredentials } from '@boatnet/bn-couch';
 
 class AuthService {
   private currentUser: BoatnetUser | null = null;
