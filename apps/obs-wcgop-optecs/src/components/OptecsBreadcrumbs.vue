@@ -15,7 +15,7 @@
         class="btn-arrow-right"
         :color="i != breadcrumbs.length-1 ? 'white' : 'secondary'"
         :text-color="i != breadcrumbs.length-1 ? 'primary' : 'white'"
-        :to="i != breadcrumbs.length-1 ? 'crumb.link' : ''"
+        :to="i != breadcrumbs.length-1 ? crumb.link : ''"
       >{{crumb.name}}</q-btn>
     </span>
   </q-btn-group>
@@ -37,7 +37,7 @@ export default class OptecsBreadcrumbs extends Vue {
       if (crumb.name.match('tripIdPlaceholder')) {
         const tripNum = this.appState.currentTrip ? this.appState.currentTrip.tripNum : 0;
         crumb.name = tripNum;
-        crumb.link = crumb.link + tripNum;
+        crumb.link += tripNum;
       }
       // TODO read state and populate haulId and species
     }
