@@ -38,8 +38,8 @@ declare module 'vue/types/options' {
 }
 
 Vue.use(PouchVue, {
-  pouch: PouchDB
-  // defaultDB: 'http://localhost:5984/wsmith-test'
+  pouch: PouchDB,
+  defaultDB: 'todos'
 });
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
@@ -95,29 +95,30 @@ class PouchService extends Vue {
       username: credentials.userCredentials.username,
       password: credentials.userCredentials.password
     };
-    this.$pouch
-      .connect(options.username, options.password, roDBName)
-      .then((res: any) => {
-        const isUnauthorized = res.error === 'unauthorized';
-        const isOffline = res.status === 0;
 
-        if (isOffline) {
-          console.log('[PouchDB Service] Offline Mode');
-          return;
-        }
 
-        if (isUnauthorized) {
-          console.log('[PouchDB Service]Unauthorized');
-          return;
-        }
+    // this.$pouch
+    //   .connect(options.username, options.password, roDBName)
+    //   .then((res: any) => {
+    //     const isUnauthorized = res.error === 'unauthorized';
+    //     const isOffline = res.status === 0;
 
-        console.log('[PouchDB Service] Online.', res);
-        // this.$router.push('/dashboard');
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-    // console.log(pouchdb);
+    //     if (isOffline) {
+    //       console.log('[PouchDB Service] Offline Mode');
+    //       return;
+    //     }
+
+    //     if (isUnauthorized) {
+    //       console.log('[PouchDB Service]Unauthorized');
+    //       return;
+    //     }
+
+    //     console.log('[PouchDB Service] Online.', res);
+    //     // this.$router.push('/dashboard');
+    //   })
+    //   .catch((error: any) => {
+    //     console.error(error);
+    //   });
 
     // this.couchRO = new Client(
     //   credentials.dbInfo.urlRoot,
@@ -129,6 +130,16 @@ class PouchService extends Vue {
     //   credentials.dbInfo.userDB,
     //   options
     // );
+  }
+
+  public addTestRow(data: {message: string}) {
+    // Testing
+    console.log('[PouchDB] Add', data);
+    this.$pouch.post('todos', data);
+  }
+
+  public get pouchDB() {
+    return PouchDB;
   }
 }
 

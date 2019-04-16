@@ -23,7 +23,13 @@ const actions: ActionTree<PouchDBState, any> = {
   disconnect({ commit }: any) { // TODO
     // authService.logout();
     // commit('logout');
+  },
+  addTest({ commit }: any, todoMsg: {message: string}) {
+    commit('addTest', todoMsg);
+        // authService.logout();
+    // commit('logout');
   }
+
 };
 
 const mutations: MutationTree<PouchDBState> = {
@@ -41,6 +47,9 @@ const mutations: MutationTree<PouchDBState> = {
   disconnect(newState: any) { // TODO
     // newState.status = {};
     // newState.user = null;
+  },
+  addTest(newState: any, testMsg: {message: string}) {
+    pouchService.addTestRow(testMsg);
   }
 };
 

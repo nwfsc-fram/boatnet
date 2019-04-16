@@ -7,10 +7,19 @@
       </template>
     </q-banner>
     <q-page>
+      <div>
+        <input v-model="message" placeholder="New Test String">
+        <button @click="$pouch.post('todos', {message: message});message=''">Save</button>
+        <div v-for="todo in todos" :key="todo._id">
+          <input v-model="todo.message" @change="$pouch.put('todos', todo)">
+          <button @click="$pouch.remove('todos', todo)">Remove</button>
+        </div>
+      </div>
       <boatnet-trips
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
         @selectedTrip="handleSelectTrip"
+        @addTrip="handleAddTrip"
       />
     </q-page>
   </span>
@@ -25,7 +34,7 @@ import { State, Action } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
-import { couchService } from '@boatnet/bn-couch';
+import { basePouch, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -42,14 +51,21 @@ import moment from 'moment';
 
 Vue.component(BoatnetTrips);
 
-@Component
+@Component({
+  pouch: {
+      todos: {}
+  }
+})
 export default class Trips extends Vue {
+  public message = '';
+
   @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
+  @State('basePouch') private basePouch!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
+  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
+  @Action('addTest', { namespace: 'basePouch' }) private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
@@ -186,6 +202,11 @@ export default class Trips extends Vue {
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+  }
+
+  private handleAddTrip(tmp: any) {
+    this.addTest(tmp);
+    // this.setCurrentTrip(trip);
   }
 }
 </script>

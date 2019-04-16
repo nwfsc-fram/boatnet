@@ -32,7 +32,7 @@
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
     <div class="row q-gutter-sm q-pt-sm">
-      <q-btn color="primary" icon="add" label="Add Trip"/>
+      <q-btn color="primary" icon="add" label="Add Trip" @click="onAddTrip"/>
       <q-btn color="primary" icon="edit" label="Edit Trip" disabled="true"/>
       <q-btn color="primary" icon="done" label="End Trip" disabled="true"/>
       <q-btn color="primary" icon="delete_forever" label="Delete Trip" disabled="true"/>
@@ -63,6 +63,10 @@ export default class Trips extends Vue {
       delete trip.__index; // remove weird __index field for converting to trip
     }
     this.$emit('selectedTrip', trip);
+  }
+
+  private onAddTrip() {
+    this.$emit('addTrip', { message: 'This is a test' });
   }
 }
 </script>
