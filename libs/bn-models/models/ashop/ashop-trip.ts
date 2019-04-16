@@ -1,8 +1,12 @@
 // A-SHOP Trip
 import { BaseTrip } from '../_base/base-trip';
-import { BoatnetDate, SightingEvent, InteractionEvent } from '../_common/index';
+import {
+  BoatnetDate,
+  SightingEvent,
+  InteractionEvent,
+  BrdConfiguration
+} from '../_common/index';
 
-import { AshopBrd } from './index';
 import { Person, Fishery, VesselType } from '../_lookups/index';
 
 export const AshopTripTypeName = 'ashop-trip';
@@ -32,8 +36,8 @@ export interface AshopTrip extends BaseTrip {
   sightingEvents?: SightingEvent[];
   ineractionEvents?: InteractionEvent[]; // todo
 
-  brd?: AshopBrd[];
-  // TODO Possibly reuse WcgopBrd, include Bird Detternce
+  brd?: BrdConfiguration[];
+  // TODO include Bird Detterence?
 
   vesselType?: VesselType;
   legacy?: {
