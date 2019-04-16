@@ -12,7 +12,7 @@ import plf from 'pouchdb-live-find';
 // @ts-ignore
 import pa from 'pouchdb-authentication';
 // @ts-ignore
-import PouchVue from 'pouch-vue';
+import PouchVue, { PublicPouchVueMethods } from 'pouch-vue';
 
 // PouchDB plugins: pouchdb-find (included in the monorepo), LiveFind (external plugin), and couchdb auth
 PouchDB.plugin(lf);
@@ -24,7 +24,7 @@ declare module 'vue/types/vue' {
   // Declare augmentation for Vue
   interface Vue {
     // @ts-ignore
-    $pouch: PouchDB; // optional if `PouchDB` is available on the global object
+    $pouch: PublicPouchVueMethods; // optional if `PouchDB` is available on the global object
     // @ts-ignore
     // $pouchUser: PouchDB; // optional if `PouchDB` is available on the global object
     $defaultDB: string; // the database to use if none is specified in the pouch setting of the vue component
@@ -44,26 +44,28 @@ Vue.use(PouchVue, {
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 
-// import PouchVue from 'pouch-vue';
-// const PouchVue = require('pouch-vue');
-
-// Vue.use(PouchVue, {
-//   pouch: PouchDB, // optional if `PouchDB` is available on the global object
-//   defaultDB: 'boatnet-dev-wsmith' // this is used as a default connect/disconnect database
-//   // debug: '*' // optional - See `https://pouchdb.com/api.html#debug_mode` for valid settings
-//   /// (will be a separate Plugin in PouchDB 7.0)
-// });
-
 class PouchService extends Vue {
   private currentCredentials: CouchDBCredentials | null = null;
-  // private $pouch = PouchDB;
-  // private couchRO: any | null = null;
-  // private couchUser: any | null = null;
 
   constructor() {
     super();
-    console.log('[PouchDB Service] Instantiated.');
     // console.log(this.$pouchRO);
+    this.$on('pouchdb-sync-active', (dbInfo: any) => {
+      console.log('Sync Active!', dbInfo);
+    });
+    this.$on('pouchdb-sync-complete', (dbInfo: any) => {
+      console.log('Sync Complete!', dbInfo);
+    });
+    this.$on('pouchdb-sync-change', (dbInfo: any) => {
+      console.log('Sync Change update', dbInfo);
+    });
+    this.$on('pouchdb-sync-denied', (dbInfo: any) => {
+      console.log('Sync Denied!', dbInfo);
+    });
+    this.$on('pouchdb-sync-error', (errorInfo: any) => {
+      console.log('Sync Error!', errorInfo.error.message);
+    });
+    console.log('[PouchDB Service] Instantiated.');
   }
 
   // get readonlyDB() {
@@ -82,57 +84,63 @@ class PouchService extends Vue {
   //   return this.couchUser;
   // }
 
-  public connect(credentials: CouchDBCredentials) {
+  public async connect(credentials: CouchDBCredentials) {
     console.log('[PouchDB Service] Connecting.');
 
     this.currentCredentials = credentials;
 
-    const roDBName = credentials.dbInfo.urlRoot + '/' + credentials.dbInfo.readonlyDB;
-    const userDBName = credentials.dbInfo.urlRoot + '/' + credentials.dbInfo.userDB;
+    // Insert credentials into login
+    // TODO pouch-vue connect() doesn't seem to work for us
+    const credsRoot = credentials.dbInfo.urlRoot.replace(
+      /https?:\/\//gi,
+      (base) => {
+        return (
+          base +
+          credentials.userCredentials.username +
+          ':' +
+          credentials.userCredentials.password +
+          '@'
+        );
+      }
+    );
+    const lookupsReadOnlyDBName = credsRoot + '/' + credentials.dbInfo.readonlyDB;
+    const userDBName = credsRoot + '/' + credentials.dbInfo.userDB;
 
-    console.log(userDBName);
-    const options = {
-      username: credentials.userCredentials.username,
-      password: credentials.userCredentials.password
+    const syncOptsInitial = {
+      live: false,
+      retry: true,
+      back_off_function: (delay: number) => {
+        if (delay === 0) {
+          return 1000;
+        }
+        return delay * 3;
+      }
+    };
+    const syncOptsLive = {
+      live: true,
+      retry: true,
+      back_off_function: (delay: number) => {
+        if (delay === 0) {
+          return 1000;
+        }
+        return delay * 3;
+      }
     };
 
-
-    // this.$pouch
-    //   .connect(options.username, options.password, roDBName)
-    //   .then((res: any) => {
-    //     const isUnauthorized = res.error === 'unauthorized';
-    //     const isOffline = res.status === 0;
-
-    //     if (isOffline) {
-    //       console.log('[PouchDB Service] Offline Mode');
-    //       return;
-    //     }
-
-    //     if (isUnauthorized) {
-    //       console.log('[PouchDB Service]Unauthorized');
-    //       return;
-    //     }
-
-    //     console.log('[PouchDB Service] Online.', res);
-    //     // this.$router.push('/dashboard');
-    //   })
-    //   .catch((error: any) => {
-    //     console.error(error);
-    //   });
-
-    // this.couchRO = new Client(
-    //   credentials.dbInfo.urlRoot,
-    //   credentials.dbInfo.readonlyDB,
-    //   options
-    // );
-    // this.couchUser = new Client(
-    //   credentials.dbInfo.urlRoot,
-    //   credentials.dbInfo.userDB,
-    //   options
-    // );
+    const initialSync = await this.$pouch.sync(
+      'localLookups',
+      lookupsReadOnlyDBName,
+      syncOptsInitial
+    );
+    console.log(
+      '[PouchDB] Initial sync completed.',
+      initialSync.pull.start_time
+    );
+    this.$pouch.sync('localLookups', lookupsReadOnlyDBName, syncOptsLive);
+    console.log('[PouchDB] Lookups live sync active.');
   }
 
-  public addTestRow(data: {message: string}) {
+  public addTestRow(data: { message: string }) {
     // Testing
     console.log('[PouchDB] Add', data);
     this.$pouch.post('todos', data);

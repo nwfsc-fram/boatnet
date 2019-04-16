@@ -53,7 +53,7 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-      todos: {}
+    todos: {}
   }
 })
 export default class Trips extends Vue {
@@ -64,7 +64,8 @@ export default class Trips extends Vue {
   @State('basePouch') private basePouch!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
   @Action('addTest', { namespace: 'basePouch' }) private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
@@ -72,6 +73,7 @@ export default class Trips extends Vue {
 
   constructor() {
     super();
+
     this.wcgopTripsSettings = {
       rowKey: '_id',
       columns: [

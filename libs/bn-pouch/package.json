@@ -20,6 +20,7 @@
     "pouchdb-browser": "^7.0.0",
     "pouchdb-find": "^7.0.0",
     "pouchdb-live-find": "^0.4.0",
+    "pouchdb-utils": "^7.0.0",
     "quasar": "1.0.0-beta.13",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
