@@ -56,6 +56,9 @@ class PouchService extends Vue {
     this.$on('pouchdb-sync-complete', (dbInfo: any) => {
       console.log('Sync Complete!', dbInfo);
     });
+    this.$on('pouchdb-sync-paused', (dbInfo: any) => {
+      console.log('Sync Paused!', dbInfo);
+    });
     this.$on('pouchdb-sync-change', (dbInfo: any) => {
       console.log('Sync Change update', dbInfo);
     });
@@ -103,8 +106,8 @@ class PouchService extends Vue {
         );
       }
     );
-    const lookupsReadOnlyDBName = credsRoot + '/' + credentials.dbInfo.readonlyDB;
-    const userDBName = credsRoot + '/' + credentials.dbInfo.userDB;
+    const credentialedReadOnlyDB = credsRoot + '/' + credentials.dbInfo.readonlyDB;
+    const credentialedUserDB = credsRoot + '/' + credentials.dbInfo.userDB;
 
     const syncOptsInitial = {
       live: false,
@@ -127,17 +130,30 @@ class PouchService extends Vue {
       }
     };
 
-    const initialSync = await this.$pouch.sync(
-      'localLookups',
-      lookupsReadOnlyDBName,
+    const initialSyncUser = await this.$pouch.sync(
+      credentials.dbInfo.userDB,
+      credentialedUserDB,
       syncOptsInitial
     );
     console.log(
-      '[PouchDB] Initial sync completed.',
-      initialSync.pull.start_time
+      '[PouchDB] Initial UserDB sync completed.',
+      initialSyncUser.pull.start_time
     );
-    this.$pouch.sync('localLookups', lookupsReadOnlyDBName, syncOptsLive);
-    console.log('[PouchDB] Lookups live sync active.');
+
+    const initialSyncRO = await this.$pouch.sync(
+      credentials.dbInfo.readonlyDB,
+      credentialedReadOnlyDB,
+      syncOptsInitial
+    );
+    console.log(
+      '[PouchDB] Initial lookups sync completed.',
+      initialSyncRO.pull.start_time
+    );
+
+    this.$pouch.sync(credentials.dbInfo.userDB, credentialedUserDB, syncOptsLive);
+    this.$pouch.sync(credentials.dbInfo.readonlyDB, credentialedReadOnlyDB, syncOptsLive);
+
+    console.log('[PouchDB] Live sync active.');
   }
 
   public addTestRow(data: { message: string }) {
