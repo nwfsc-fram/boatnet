@@ -1,5 +1,4 @@
 export * from './ashop-basket';
-export * from './ashop-brd';
 export * from './ashop-sample';
 export * from './ashop-cruise';
 export * from './ashop-discard-reason';

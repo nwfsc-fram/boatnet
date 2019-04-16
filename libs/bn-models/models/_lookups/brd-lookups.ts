@@ -1,40 +1,51 @@
 import { BoatnetDate } from '../_common';
 import { Base } from '../_base';
 
-export type BrdType = string;
-
 export const BrdTargetTypeName = 'brd-target-type';
 
-declare type BrdColor = string; // TODO lookup
-declare type BrdPattern = string; // TODO lookup
-declare type BrdManufacturer = string; // TODO lookup
-declare type BrdLocation = string; // TODO lookup
-declare type BrdMeshType = string; // TODO lookup
+export type BrdColor = string; // TODO lookup
+export type BrdPattern = string; // TODO lookup
+export type BrdManufacturer = string; // TODO lookup
+export type BrdLocation = string; // TODO lookup
+export type BrdMeshType = string; // TODO lookup
+
+// TODO maybe make generic types
+// export type BrdComponentTypes = [
+//   'light',
+//   'escapement',
+//   'sortingGrate',
+//   'modifiedCodendMeshConfig',
+//   'trawlDoorModConfig',
+//   'otherConfig'
+//   // ...
+// ];
 
 export interface BrdLight {
   targets?: BrdTarget[];
-  // TODO: Ryan to review rigging #'s
+  // TODO: Ryan to review
   numLightsSingleRigged?: number;
   numLightsDoubleRiggedPort?: number;
   numLightsDoubleRiggedStarboard?: number;
 
   colors?: BrdColor[]; // Usually Green
   pattern?: BrdPattern[];
-  manufacturer?: BrdManufacturer[];
-  location?: BrdLocation[];
+  manufacturer?: BrdManufacturer[]; // TODO remove? Legacy?
+  locations?: BrdLocation[];
 }
 
 export interface BrdEscapement {
   targets?: BrdTarget[];
-  location?: BrdLocation[];
+  locations?: BrdLocation[];
   isIlluminated?: boolean;
 }
 
 export interface BrdSortingGrateGrid {
+  // TODO May be required to collect
   targets?: BrdTarget[];
-  location?: BrdLocation[];
+  locations?: BrdLocation[];
   isIlluminated?: boolean;
 }
+
 export interface BrdModifiedCodendMesh {
   targets?: BrdTarget[];
   meshType?: BrdMeshType[];
@@ -46,7 +57,7 @@ export interface BrdTrawlDoorModification {
 
 export interface BrdOther {
   targets?: BrdTarget[];
-  location?: string[];
+  locations?: BrdLocation[];
   comment?: string;
 }
 
