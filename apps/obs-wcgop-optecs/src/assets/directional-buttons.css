@@ -1,18 +1,20 @@
-/* styling from https://codepen.io/dannydns/pen/JYoYEQ/ 
+/* styling from https://codepen.io/dannydns/pen/JYoYEQ/
    https://github.com/westonganger/bootstrap-directional-buttons */
 .btn-arrow-right,
-.btn-arrow-left {
+.btn-arrow-left,
+.btn-arrow-right-only {
    position: relative;
    padding-left: 18px;
    padding-right: 18px;
 }
  
-.btn-arrow-right {
-   padding-left: 36px;
+.btn-arrow-right,
+.btn-arrow-right-only {
+   padding-left: 24px;
 }
  
 .btn-arrow-left {
-   padding-right: 36px;
+   padding-right: 25px;
 }
 
  /* There's a default setting, so overriding it */
@@ -24,7 +26,8 @@
 .btn-arrow-right:before,
 .btn-arrow-right:after,
 .btn-arrow-left:before,
-.btn-arrow-left:after {
+.btn-arrow-left:after,
+.btn-arrow-right-only:after {
    /* make two squares (before and after), looking similar to the button */
 
    content: "";
@@ -58,7 +61,8 @@
 }
  
 .btn-arrow-right:before,
-.btn-arrow-right:after {
+.btn-arrow-right:after,
+.btn-arrow-right-only:after {
    transform: rotate(45deg);
    /* rotate right arrow squares 45 deg to point right */
     
@@ -86,14 +90,16 @@
  }
  
 .btn-arrow-right:after,
-.btn-arrow-left:after {
+.btn-arrow-left:after,
+.btn-arrow-right-only:after {
    /* align the "after" square to the right */
     
    right: -12px;
 }
  
 .btn-arrow-right:after,
-.btn-arrow-left:before {
+.btn-arrow-left:before,
+.btn-arrow-right-only:after {
    /* bring arrow pointers to front */
     
    z-index: 1;
@@ -105,3 +111,9 @@
     
    background-color: #027be3;
 }
+
+/* Button Groups */
+.btn-group > .btn-arrow-left:hover, .btn-group > .btn-arrow-left:focus,
+.btn-group > .btn-arrow-right:hover,
+.btn-group > .btn-arrow-right:focus {
+  z-index: initial; }
