@@ -10,6 +10,7 @@
           aria-label="Menu"
           icon="menu"
         />
+        <q-spinner-bars v-if="isSyncing" color="green" size="3em"/>
         <q-btn
           flat
           dense
@@ -20,7 +21,7 @@
           size="1.5em"
         />
         <optecs-breadcrumbs/>
-       <!-- <q-icon name="save" />-->
+        <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -121,10 +122,9 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
   components: {
     'optecs-breadcrumbs': OptecsBreadcrumbs
   }
-}
-
-)
+})
 export default class DefaultLayout extends Vue {
+  public isSyncing = false;
   private leftDrawerOpen: boolean;
 
   constructor() {
@@ -135,6 +135,5 @@ export default class DefaultLayout extends Vue {
   private navigateBack() {
     this.$router.back();
   }
-
 }
 </script>
