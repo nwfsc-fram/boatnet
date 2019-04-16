@@ -26,13 +26,24 @@ const router = new Router({
         {
           path: '',
           name: 'trips',
-          component: Trips
+          component: Trips,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip'}
+            ]
+          }
         },
         {
           path: '/tripdetails/:tripNum',
           name: 'tripdetails',
           component: TripDetails,
-          props: (route) => ({ tripNum: Number(route.params.tripNum) })
+          props: (route) => ({ tripNum: Number(route.params.tripNum) }),
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: ''}
+            ]
+          }
         },
         {
           path: '/settings',
@@ -42,13 +53,28 @@ const router = new Router({
         {
           path: '/hauls',
           name: 'hauls',
-          component: Hauls
+          component: Hauls,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '/tripdetails/'},
+              { name: 'Hauls', link: ''}
+            ]
+          }
         },
         {
           path: '/hauldetails/:haulNum',
           name: 'hauldetails',
           component: HaulDetails,
-          props: (route) => ({ haulNum: Number(route.params.haulNum) })
+          props: (route) => ({ haulNum: Number(route.params.haulNum) }),
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '/tripdetails/'},
+              { name: 'Hauls', link: '/hauls'},
+              { name: 'haulIdPlaceholder', link: ''}
+            ]
+          }
         }
       ]
     }, // otherwise redirect to home

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
+import VuexPersist from 'vuex-persist';
 
 import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from '@/_store/alert.module';
@@ -14,6 +15,12 @@ import { RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
+// Preserves state between page refreshes.
+const vuexLocalStorage = new VuexPersist({
+  key: 'vuex',
+  storage: window.localStorage
+});
+
 const store: StoreOptions<RootState> = {
   state: {
     version: '1.0.0'
@@ -23,7 +30,8 @@ const store: StoreOptions<RootState> = {
     alert,
     auth,
     baseCouch
-  }
+  },
+  plugins: [vuexLocalStorage.plugin]
 };
 
 export default new Vuex.Store<RootState>(store);
