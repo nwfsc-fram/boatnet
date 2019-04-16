@@ -191,8 +191,9 @@ class AuthService {
     const salt = pwVals[0];
     const hashedPW = pwVals[1];
 
-    const hashedPwSHA = cryptoJS.SHA512(salt + password).toString();
+    const hashedPwSHA = cryptoJS.SHA3(salt + password).toString();
     const verified = hashedPW === hashedPwSHA;
+
     return verified;
   }
 }
