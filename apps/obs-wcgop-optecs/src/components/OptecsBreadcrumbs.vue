@@ -41,9 +41,11 @@ export default class OptecsBreadcrumbs extends Vue {
     }
 
     // if navigating up, remove additional children
-    if (this.breadcrumbs.find((crumb) => crumb['name'] === pageName)) {
-      while (!this.breadcrumbs[index].name.match(pageName) &&
-        this.breadcrumbs[index].name !== 'trips') {
+    if (this.breadcrumbs.find((crumb) => crumb.name === pageName)) {
+      while (
+        !this.breadcrumbs[index].name.match(pageName) &&
+        this.breadcrumbs[index].name !== 'trips'
+      ) {
         this.breadcrumbs.pop();
         index--;
       }
@@ -52,7 +54,7 @@ export default class OptecsBreadcrumbs extends Vue {
     if (!pageName.match('trips')) {
       this.breadcrumbs.push({
         name: pageName,
-        path: path,
+        path,
         value: this.getId(path)
       });
     }
