@@ -5,7 +5,7 @@ import VuexPersist from 'vuex-persist';
 import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from '@/_store/alert.module';
 import { auth } from '@boatnet/bn-auth';
-import { basePouch } from '@boatnet/bn-pouch';
+import { pouchState } from '@boatnet/bn-pouch';
 
 import { RootState } from '@/_store/types/types';
 
@@ -29,7 +29,7 @@ const store: StoreOptions<RootState> = {
     appState,
     alert,
     auth,
-    basePouch
+    pouchState
   },
   plugins: [vuexLocalStorage.plugin]
 };

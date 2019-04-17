@@ -10,8 +10,6 @@ import { CouchDBState, CouchDBCredentials } from './types/types';
 
 Vue.use(Vuex);
 
-const user = authService.getCurrentUser();
-
 export const state: CouchDBState =  { credentials: null };
 
 const actions: ActionTree<CouchDBState, any> = {

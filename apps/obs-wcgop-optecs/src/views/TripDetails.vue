@@ -157,7 +157,7 @@ import {
   VesselTypeName
 } from '@boatnet/bn-models';
 
-import { couchService } from '@boatnet/bn-couch';
+import { couchService } from '@boatnet/bn-couch'; // TODO Pouch
 
 @Component
 export default class Trips extends Vue {

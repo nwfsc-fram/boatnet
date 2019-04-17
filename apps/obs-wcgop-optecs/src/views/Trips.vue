@@ -34,7 +34,7 @@ import { State, Action } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
-import { basePouch, PouchDBState } from '@boatnet/bn-pouch';
+import { pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -61,12 +61,12 @@ export default class Trips extends Vue {
 
   @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
-  @State('basePouch') private basePouch!: PouchDBState;
+  @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
-  @Action('addTest', { namespace: 'basePouch' }) private addTest: any;
+  @Action('addTest', { namespace: 'pouchState' }) private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];

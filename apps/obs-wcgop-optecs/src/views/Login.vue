@@ -101,7 +101,7 @@ export default class Login extends Vue {
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
-  @Action('connect', { namespace: 'basePouch' }) private connect: any;
+  @Action('connect', { namespace: 'pouchState' }) private connect: any;
 
   @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 

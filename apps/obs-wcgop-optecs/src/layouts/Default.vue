@@ -10,7 +10,6 @@
           aria-label="Menu"
           icon="menu"
         />
-        <q-spinner-bars v-if="isSyncing" color="green" size="3em"/>
         <q-btn
           flat
           dense
@@ -20,8 +19,10 @@
           icon="chevron_left"
           size="1.5em"
         />
-        <optecs-breadcrumbs/>
-        <!-- <q-icon name="save" />-->
+        <q-toolbar-title>
+          <optecs-breadcrumbs/>
+        </q-toolbar-title>
+        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
       </q-toolbar>
     </q-header>
 
@@ -111,12 +112,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
 
 import router from '../router';
 
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
+import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
+import { State, Action } from 'vuex-class';
 
 @Component({
   components: {
@@ -124,12 +127,16 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
   }
 })
 export default class DefaultLayout extends Vue {
-  public isSyncing = false;
+  @State('pouchState') private pouchState!: PouchDBState;
   private leftDrawerOpen: boolean;
 
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
+  }
+
+  public get isSyncing(): boolean {
+    return this.pouchState.syncStatus.syncActive;
   }
 
   private navigateBack() {
