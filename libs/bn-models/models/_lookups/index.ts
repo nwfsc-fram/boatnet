@@ -9,6 +9,7 @@ export * from './contact-type';
 export * from './deterrent-type';
 export * from './deterrent';
 export * from './discard-reason';
+export * from './efp-type';
 export * from './first-receiver';
 export * from './fishery';
 export * from './gear-type';

@@ -67,6 +67,16 @@
           </q-item-section>
         </q-item>        
 
+        <q-item to="/em-efp-management" exact>
+          <q-item-section avatar>
+            <q-icon name="videocam"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>EM EFP Management</q-item-label>
+            <q-item-label caption>Manage EM EFP Roster</q-item-label>
+          </q-item-section>
+        </q-item>  
+
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
             <q-icon name="beenhere"/>
