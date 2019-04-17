@@ -1,0 +1,28 @@
+{
+    "_id": "_design/MainDocs",
+    "_rev": "1-d97d91b672f83fad7198a01bb52eca83",
+    "views": {
+      "all-operations": {
+        "map": "function (doc) {\r\n  if (doc.type == 'wcgop-operation') { \r\n    emit(doc.legacy.fishingActivityId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-trips": {
+        "map": "function (doc) {\r\n  if (doc.type == 'wcgop-trip') { \r\n    emit(doc.legacy.tripId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-vessels": {
+        "map": "function (doc) {\r\n  if (doc.type == 'vessel') { \r\n    emit(doc.legacy.vesselId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-contacts": {
+        "map": "function (doc) {\r\n  if (doc.type == 'contact') { \r\n    emit(doc.legacy.contactId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-ports": {
+        "map": "function (doc) {\r\n  if (doc.type == 'port') { \r\n    emit(doc.legacy.portId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-programs": {
+        "map": "function (doc) {\r\n  if (doc.type == 'program') { \r\n    emit(doc.legacy.programId, doc._rev);\r\n  }\r\n}"
+      },
+      "all-species": {
+        "map": "function (doc) {\r\n  if (doc.type == 'species') { \r\n    emit(doc.legacy.speciesId, doc._rev);\r\n  }\r\n}"
+      }
+    },
+    "language": "javascript"
+  }

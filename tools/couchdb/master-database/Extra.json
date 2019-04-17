@@ -1,0 +1,10 @@
+{
+    "_id": "_design/Extra",
+    "_rev": "1-8482fcb0350b3554cefa38171cf60aba",
+    "views": {
+      "hauls-with-catch-species": {
+        "map": "function (doc) {\r\n  if (doc.type == 'wcgop-operation') { \r\n    for(i = 0; i < doc.catches.length ; i++){\r\n      if(doc.catches[i].species.length > 0){\r\n        emit(doc.legacy.fishingActivityId, doc._rev);\r\n      }\r\n    }\r\n    \r\n  }\r\n}"
+      }
+    },
+    "language": "javascript"
+  }
