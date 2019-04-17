@@ -87,12 +87,15 @@ import router from '../router';
 import { AlertState, WcgopAppState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
-import { pouchService } from '@boatnet/bn-pouch';
+import { PouchDBState } from '@boatnet/bn-pouch';
+import { formatDate } from '@boatnet/bn-util';
+
 
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
+  @State('pouchState') private pouchState!: PouchDBState;
   @State('appState') private appState!: WcgopAppState;
 
   @Action('login', { namespace: 'auth' }) private login: any;
@@ -101,7 +104,8 @@ export default class Login extends Vue {
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
-  @Action('connect', { namespace: 'pouchState' }) private connect: any;
+  @Action('connect', { namespace: 'pouchState' }) private connectPouch: any;
+  @Action('disconnect', { namespace: 'pouchState' }) private disconnectPouch: any;
 
   @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 
@@ -110,9 +114,8 @@ export default class Login extends Vue {
   private isPwd = true;
   private submitted = false;
 
-  private lastSoftwareUpdateDate = '10/1/2018 12:00:00';
-  private lastDataSyncDate = '10/1/2018 12:00:00';
-  private lastLoginDate = '10/1/2018 12:00:00';
+  private lastSoftwareUpdateDate = '-';
+  private lastLoginDate = '-';
 
   private visible = false;
   private layout = 'normal';
@@ -123,6 +126,8 @@ export default class Login extends Vue {
   };
 
   private unsubscribe: any;
+
+
 
   public get isLoggingIn(): boolean {
     const isLoggingIn = !!this.auth.status.isLoggingIn;
@@ -154,6 +159,7 @@ export default class Login extends Vue {
 
   private mounted() {
     this.logout(); // reset login status
+    this.disconnectPouch();
     this.clearAlert(); // clear errors
     this.clearAppState(); // clear trips etc
 
@@ -161,7 +167,7 @@ export default class Login extends Vue {
       switch (mutation.type) {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
-          this.connect(creds);
+          this.connectPouch(creds);
 
           router.push('/'); // On successful login, navigate to home
           break;
@@ -182,6 +188,14 @@ export default class Login extends Vue {
     const { username, password } = this;
     if (username && password) {
       this.login({ username, password });
+    }
+  }
+
+  private get lastDataSyncDate() {
+    if (this.pouchState.lastSyncDate) {
+      return formatDate(this.pouchState.lastSyncDate);
+    } else {
+      return 'Never';
     }
   }
 }

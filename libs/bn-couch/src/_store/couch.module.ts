@@ -16,10 +16,6 @@ const actions: ActionTree<CouchDBState, any> = {
   connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
     commit('connectRequest', credentials);
     couchService.connect(credentials);
-  },
-  disconnect({ commit }: any) { // TODO
-    // authService.logout();
-    // commit('logout');
   }
 };
 
