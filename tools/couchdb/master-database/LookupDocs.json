@@ -1,0 +1,52 @@
+{
+    "_id": "_design/LookupDocs",
+    "_rev": "3-71be2c8e1a406410224e0ea10b655e31",
+    "views": {
+      "beaufort-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'beaufort') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "biostructure-type-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'biostructure-type') { \r\n    emit(doc.lookupVal, doc._rev);\r\n  }\r\n}"
+      },
+      "discard-reason-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'discard-reason') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "confidence-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'confidence') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "body-length-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'body-length') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "contact-type-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'contact-type') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "interaction-type-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'interaction-type') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "contact-category-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'contact-category') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "interaction-outcome-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'interaction-outcome') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "relationship-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'relationship') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "trip-status-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'trip-status') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "vessel-status-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'vessel-status') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "vessel-type-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'vessel-type') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "waiver-type-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'waiver-type') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      },
+      "weight-method-lookup": {
+        "map": "function (doc) {\r\n  if (doc.type == 'weight-method') { \r\n    emit(doc.legacy.lookupId, doc._rev);\r\n  }\r\n}"
+      }
+    },
+    "language": "javascript"
+  }
