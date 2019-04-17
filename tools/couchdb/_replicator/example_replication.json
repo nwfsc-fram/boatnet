@@ -1,0 +1,26 @@
+{
+    "_id": "userdb-646174612d726561647772697465-replicate",
+    "user_ctx": {
+      "name": "admin-username",
+      "roles": [
+        "_admin",
+        "_reader",
+        "_writer"
+      ]
+    },
+    "source": {
+      "url": "https://<user database>",
+      "headers": {
+        "Authorization": "Basic ####"
+      }
+    },
+    "target": {
+      "url": "https://<master database>",
+      "headers": {
+        "Authorization": "Basic ###"
+      }
+    },
+    "create_target": false,
+    "continuous": true,
+    "owner": "admin-username"
+  }

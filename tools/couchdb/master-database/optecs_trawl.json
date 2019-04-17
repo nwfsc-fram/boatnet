@@ -1,0 +1,13 @@
+{
+    "_id": "_design/optecs_trawl",
+    "_rev": "6-83293d8b06bf1c04f1920f2ed4d30051",
+    "views": {
+      "all_vessel_names": {
+        "map": "function(doc) {\n    if (doc.type == 'vessel') { \n      var regNum = (doc.coastGuardNumber ? doc.coastGuardNumber : doc.stateRegulationNumber);\n      emit(doc.vesselName.toLowerCase(), doc.vesselName + ' (' + regNum + ')');\n    }\n}"
+      },
+      "all_port_names": {
+        "map": "function(doc) {\n    if (doc.type == 'port') { \n     const portNameInfo = (doc.code? doc.code + ': ': '') + doc.name + ' (' + doc.state + ')';\n     emit(doc.name.toLowerCase(), portNameInfo);\n    }\n}"
+      }
+    },
+    "language": "javascript"
+  }
