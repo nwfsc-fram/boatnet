@@ -43,7 +43,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="formatDate(currentTrip.departureDate)"
+                :value="shortFormatDate(currentTrip.departureDate)"
                 label="Departure Date/ Time"
               />
               <q-input
@@ -107,7 +107,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="formatDate(currentTrip.returnDate)"
+                :value="shortFormatDate(currentTrip.returnDate)"
                 label="Return Date/Time"
               />
               <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
@@ -142,6 +142,7 @@ import moment from 'moment';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
+import { shortFormatDate } from '@boatnet/bn-util';
 
 import {
   WcgopTrip,
@@ -271,11 +272,6 @@ export default class Trips extends Vue {
         ? this.currentTrip.vessel.coastGuardNumber
         : this.currentTrip.vessel.stateRegulationNumber;
     }
-  }
-
-  // TODO move to shared util?
-  private formatDate(dateStr: string): string {
-    return moment(dateStr).format('MM/DD/YY hh:mm');
   }
 
   private async filterFn(val: string, update: any, abort: any) {

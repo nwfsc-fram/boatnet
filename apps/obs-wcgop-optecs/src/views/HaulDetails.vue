@@ -60,12 +60,8 @@ export default class Trips extends Vue {
   constructor() {
     super();
     this.tab = this.startTab;
-}
-
-  // TODO move to shared util?
-  private formatDate(dateStr: string): string {
-    return moment(dateStr).format('MM/DD/YY hh:mm');
   }
+
 }
 </script>
 
