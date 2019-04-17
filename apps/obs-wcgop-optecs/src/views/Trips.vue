@@ -1,12 +1,13 @@
 <template>
   <span>
-    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-      {{alert.message}}
-      <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
-      </template>
-    </q-banner>
-    <q-page>
+    <q-page padding>
+      <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+        {{alert.message}}
+        <template v-slot:action>
+          <q-btn flat label="Dismiss" @click="clear"/>
+        </template>
+      </q-banner>
+
       <div>
         <input v-model="message" placeholder="New Test String">
         <button @click="$pouch.post('todos', {message: message});message=''">Save</button>
@@ -19,7 +20,7 @@
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
         @selectedTrip="handleSelectTrip"
-        @addTrip="handleAddTrip"
+        @addAFakeTrip="handleAddTrip"
       />
     </q-page>
   </span>

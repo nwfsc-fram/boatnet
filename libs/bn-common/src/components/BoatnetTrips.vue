@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <span>
     <div class="row justify-end">
       <q-input
         outlined
@@ -39,7 +39,7 @@
       <q-space/>
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
     </div>
-  </q-page>
+  </span>
 </template>
 
 
@@ -66,7 +66,7 @@ export default class Trips extends Vue {
   }
 
   private onAddTrip() {
-    this.$emit('addTrip', { message: 'This is a test' });
+    this.$emit('addAFakeTrip', { message: 'This is a test' });
   }
 }
 </script>
