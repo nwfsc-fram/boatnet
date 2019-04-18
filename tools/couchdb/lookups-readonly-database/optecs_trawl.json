@@ -1,13 +1,16 @@
 {
-    "_id": "_design/optecs_trawl",
-    "_rev": "13-e0f3d977c124e031d6ee72abe8651e9f",
-    "views": {
-      "all_vessel_names": {
-        "map": "function(doc) {\n    if (doc.type == 'vessel') { \n      var regNum = (doc.coastGuardNumber ? doc.coastGuardNumber : doc.stateRegulationNumber);\n      emit(doc.vesselName.toLowerCase(), doc.vesselName + ' (' + regNum + ')');\n    }\n}"
-      },
-      "all_port_names": {
-        "map": "function(doc) {\n    if (doc.type == 'port') { \n     const portNameInfo = (doc.code? doc.code + ': ': '') + doc.name + ' (' + doc.state + ')';\n     emit(doc.name.toLowerCase(), portNameInfo);\n    }\n}"
-      }
+  "_id": "_design/optecs_trawl",
+  "_rev": "3-6a416cb535966fa8bb6778d43d915d07",
+  "views": {
+    "all_vessel_names": {
+      "map": "function(doc) {\n    if (doc.type == 'vessel') { \n      var regNum = (doc.coastGuardNumber ? doc.coastGuardNumber : doc.stateRegulationNumber);\n      emit(doc.vesselName.toLowerCase(), doc.vesselName + ' (' + regNum + ')');\n    }\n}"
     },
-    "language": "javascript"
-  }
+    "all_port_names": {
+      "map": "function(doc) {\n    if (doc.type == 'port') { \n     const portNameInfo = (doc.code? doc.code + ': ': '') + doc.name + ' (' + doc.state + ')';\n     emit(doc.name.toLowerCase(), portNameInfo);\n    }\n}"
+    },
+    "all_program_names": {
+      "map": "function (doc) {\n  if (doc.type === 'program') {\n    emit(doc.name, doc.description);\n  }\n}"
+    }
+  },
+  "language": "javascript"
+}
