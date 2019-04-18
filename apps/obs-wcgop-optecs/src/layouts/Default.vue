@@ -119,7 +119,7 @@ import router from '../router';
 
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
-import { State, Action } from 'vuex-class';
+import { State, Getter } from 'vuex-class';
 
 @Component({
   components: {
@@ -128,15 +128,12 @@ import { State, Action } from 'vuex-class';
 })
 export default class DefaultLayout extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
+  @Getter('isSyncing', {namespace: 'pouchState'}) private isSyncing: any;
   private leftDrawerOpen: boolean;
 
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
-  }
-
-  public get isSyncing(): boolean {
-    return this.pouchState.syncStatus.syncActive;
   }
 
   private navigateBack() {
