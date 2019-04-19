@@ -126,6 +126,8 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
     'optecs-breadcrumbs': OptecsBreadcrumbs
   }
 })
+
+
 export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
   @State('appState') private appState!: WcgopAppState;
@@ -136,6 +138,7 @@ export default class DefaultLayout extends Vue {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
   }
+
   private navigateBack() {
     this.$router.back();
   }

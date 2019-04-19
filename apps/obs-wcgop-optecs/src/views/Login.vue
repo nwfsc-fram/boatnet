@@ -87,6 +87,7 @@ import router from '../router';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
@@ -96,6 +97,7 @@ export default class Login extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('connect', { namespace: 'baseCouch' }) private connect: any;
+
   private username = '';
   private password = '';
   private isPwd = true;
@@ -103,23 +105,28 @@ export default class Login extends Vue {
   private lastSoftwareUpdateDate = '10/1/2018 12:00:00';
   private lastDataSyncDate = '10/1/2018 12:00:00';
   private lastLoginDate = '10/1/2018 12:00:00';
+
   private options = {
     useKbEvents: false,
     preventClickEvent: false
   };
+
   private unsubscribe: any;
   public get isLoggingIn(): boolean {
     const isLoggingIn = !!this.auth.status.isLoggingIn;
     return isLoggingIn;
   }
+
   public get isLoggedIn(): boolean {
     const isLoggedIn = !!this.auth.status.isLoggedIn;
     return false;
   }
+
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     this.clear();
   }
+
   private mounted() {
     this.logout(); // reset login status
     this.clear(); // clear errors
@@ -136,9 +143,11 @@ export default class Login extends Vue {
       }
     });
   }
+
   private beforeDestroy() {
     this.unsubscribe();
   }
+
   private handleSubmit(e: any) {
     this.clear();
     this.submitted = true;
@@ -147,6 +156,7 @@ export default class Login extends Vue {
       this.login({ username, password });
     }
   }
+
   private displayKeyboard(e: any) {
     this.$emit('displayKeyboard', e.target);
   }

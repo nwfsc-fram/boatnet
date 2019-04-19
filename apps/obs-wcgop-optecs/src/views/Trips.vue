@@ -39,7 +39,9 @@ import {
   VesselTypeName
 } from '@boatnet/bn-models';
 import moment from 'moment';
+
 Vue.component(BoatnetTrips);
+
 @Component
 export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
@@ -47,9 +49,11 @@ export default class Trips extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
+
   private setCurrentTrip: any;
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
+
   constructor() {
     super();
     this.wcgopTripsSettings = {
@@ -172,9 +176,11 @@ export default class Trips extends Vue {
     };
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
   }
+
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
   }
+
   private displayKeyboard(e: any) {
     this.$emit('displayKeyboard', e);
   }
