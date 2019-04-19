@@ -3,7 +3,7 @@ import crypto = require('crypto');
 
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
-import SHA512 = require('crypto-js/sha512');
+import SHA3 = require('crypto-js/sha3');
 
 export const randomBytes = promisify(crypto.randomBytes);
 
@@ -44,7 +44,7 @@ export async function createCsrfToken() {
 export async function hashBoatnetPW(password: string): Promise<string> {
   const hash = crypto.randomBytes(20).toString('hex');
   const hashedPW = hash + password;
-  const hashedPW_SHA = await SHA512(hashedPW).toString(); // For FIPS compliance, need SHA-512 layer
+  const hashedPW_SHA = await SHA3(hashedPW).toString(); // For FIPS compliance, need SHA-3 layer
   const hashedPW_Final = hash + '|' + hashedPW_SHA.toString();
   return hashedPW_Final;
 }
