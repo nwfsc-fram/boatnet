@@ -95,10 +95,10 @@ private EM_EFP: EmEfpPermit[] = [];
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
     {name: 'emEfpNumber', label: 'EM EFP #', field: 'emEfpNumber', required: true, align: 'left', sortable: true },
-    {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left', sortable: true },
+    {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left' },
     {name: 'vesselCGNumber', label: 'CG Number', field: 'vesselCGNumber', required: true, sortable: true },
     {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
-    {name: 'gear', label: 'Gear', field: 'gear', required: true, align: 'left', sortable: true },
+    {name: 'gear', label: 'Gear', field: 'gear', required: true, align: 'left' },
     {name: 'sector', label: 'Sector', field: 'sector', required: true, align: 'left', sortable: true },
     {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true},
 ];

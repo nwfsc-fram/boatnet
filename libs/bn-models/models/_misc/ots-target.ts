@@ -3,7 +3,7 @@ import { Fishery } from '../_lookups';
 import { BoatnetDate, CouchID } from '../_common';
 
 export interface OtsTarget extends Base {
-    fishery: Fishery;
+    fishery: string;
     targetType: string;
     targetVesselID?: CouchID;
     targetVesselName?: string;
