@@ -38,8 +38,7 @@ declare module 'vue/types/options' {
 }
 
 Vue.use(PouchVue, {
-  pouch: PouchDB,
-  defaultDB: 'todos'
+  pouch: PouchDB
 });
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
@@ -76,6 +75,11 @@ class PouchService extends Vue {
 
   //   return this.couchUser;
   // }
+
+  public getDB(name: string) {
+    // console.log(this.$pouch);
+    return null;
+  }
 
   public async connect(credentials: CouchDBCredentials) {
     console.log('[PouchDB Service] Connecting.');

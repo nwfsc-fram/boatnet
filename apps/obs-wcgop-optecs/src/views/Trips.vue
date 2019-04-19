@@ -9,11 +9,12 @@
       </q-banner>
 
       <div>
-        <input v-model="message" placeholder="New Test String">
-        <button @click="$pouch.post('todos', {message: message});message=''">Save</button>
-        <div v-for="todo in todos" :key="todo._id">
-          <input v-model="todo.message" @change="$pouch.put('todos', todo)">
-          <button @click="$pouch.remove('todos', todo)">Remove</button>
+        <!-- <input v-model="message" placeholder="New Test String"> -->
+        <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
+        <div v-for="v in vessels" :key="v._id">
+          <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
+          <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
+          <input v-model="v.vessel_name">
         </div>
       </div>
       <boatnet-trips
@@ -35,7 +36,7 @@ import { State, Action } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
-import { pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -52,14 +53,34 @@ import moment from 'moment';
 
 Vue.component(BoatnetTrips);
 
+//   vesselsInLookups() {
+//       return {
+//         database: this.selectedDatabase, // you can pass a database string or a pouchdb instance
+//         // selector: {type: "person"},
+//         // sort: [{name: "asc"}],
+//         // limit: this.resultsPerPage,
+//         // skip: this.resultsPerPage * (this.currentPage - 1)
+//       }
+//     }
+
+// {
+//   pouch: {
+//     selectedDB: {}
+//   }
+// })
 @Component({
   pouch: {
-    todos: {}
+    vessels() {
+      return {
+        database: 'wsmith-testing',
+        selector: { type: 'vessel' },
+        limit: 5
+      };
+    }
   }
 })
 export default class Trips extends Vue {
   public message = '';
-
   @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
   @State('pouchState') private pouchState!: PouchDBState;
@@ -69,12 +90,16 @@ export default class Trips extends Vue {
   private setCurrentTrip: any;
   @Action('addTest', { namespace: 'pouchState' }) private addTest: any;
 
+  private selectedDBName = 'wsmith-testing';
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 
+  private myStuff: any = {};
+  private myPouchDB: any;
   constructor() {
     super();
 
+    this.myPouchDB = pouchService.getDB(this.selectedDBName);
     this.wcgopTripsSettings = {
       rowKey: '_id',
       columns: [
@@ -166,7 +191,7 @@ export default class Trips extends Vue {
     const exampleTrip = {
       _id: '1',
       tripNum: 1,
-      type: WcgopTripTypeName,
+      type: 'test', // WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
       program: 'Catch Shares',
@@ -208,9 +233,41 @@ export default class Trips extends Vue {
   }
 
   private handleAddTrip(tmp: any) {
-    this.addTest(tmp);
+    // @ts-ignore
+    console.log(this.selectedDB);
+    // this.selectedDatabase = this.currentReadonlyDB;
+    // console.log('ADD', this.selectedDatabase);
+    // this.addTest(tmp);
     // this.setCurrentTrip(trip);
   }
+
+  private get currentReadonlyDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current RO db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.readonlyDB;
+    }
+  }
+
+  private get currentUserDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current User db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.readonlyDB;
+    }
+  }
+
+  private get lookupsDB() {
+    // @ts-ignore
+    return this[this.selectedDBName];
+  }
+  // private async myFatPouch() {
+  //   const haha = await this.$pouch.allDocs(this.selectedDBName);
+  //   console.log(haha.rows);
+  //   return haha.rows;
+  // }
 }
 </script>
 

@@ -1,6 +1,5 @@
 // Vuex CouchDB Module
 
-import { authService } from '@boatnet/bn-auth';
 import { pouchService } from '../_services/pouch.service';
 import moment from 'moment';
 import Vue from 'vue';
