@@ -14,7 +14,7 @@
         <div v-for="v in vessels" :key="v._id">
           <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
           <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
-          <input v-model="v.vessel_name">
+          <input v-model="v.vesselName">
         </div>
       </div>
       <boatnet-trips
@@ -72,7 +72,7 @@ Vue.component(BoatnetTrips);
   pouch: {
     vessels() {
       return {
-        database: 'wsmith-testing',
+        database: 'lookups-dev',
         selector: { type: 'vessel' },
         limit: 5
       };
@@ -90,7 +90,7 @@ export default class Trips extends Vue {
   private setCurrentTrip: any;
   @Action('addTest', { namespace: 'pouchState' }) private addTest: any;
 
-  private selectedDBName = 'wsmith-testing';
+  private selectedDBName = 'lookups-dev';
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 
@@ -230,11 +230,15 @@ export default class Trips extends Vue {
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+    console.log('TODO: handleSelectTrip', trip); // TODO
+    if (trip) {
+      this.$router.push({ path: '/tripdetails/' + 1 });
+    }
   }
 
   private handleAddTrip(tmp: any) {
-    // @ts-ignore
-    console.log(this.selectedDB);
+    console.log('TODO: Create trip', tmp); // TODO
+    this.$router.push({ path: '/tripdetails/' + 1 });
     // this.selectedDatabase = this.currentReadonlyDB;
     // console.log('ADD', this.selectedDatabase);
     // this.addTest(tmp);

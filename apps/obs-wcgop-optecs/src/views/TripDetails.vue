@@ -43,7 +43,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="shortFormatDate(currentTrip.departureDate)"
+                :value="shortFormat(currentTrip.departureDate)"
                 label="Departure Date/ Time"
               />
               <q-input
@@ -107,7 +107,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="shortFormatDate(currentTrip.returnDate)"
+                :value="shortFormat(currentTrip.returnDate)"
                 label="Return Date/Time"
               />
               <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
@@ -143,7 +143,7 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
 import { shortFormatDate } from '@boatnet/bn-util';
-
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -160,7 +160,17 @@ import {
 
 import { couchService } from '@boatnet/bn-couch'; // TODO Pouch
 
-@Component
+@Component({
+  pouch: {
+    vessels() {
+      return {
+        database: 'lookups-dev',
+        selector: { type: 'vessel' },
+        limit: 5
+      };
+    }
+  }
+})
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) public tripNum!: number; // Passed by router
@@ -170,6 +180,7 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  private shortFormat = shortFormatDate;
 
   private tab: string; // Current tab (start or end)
 
@@ -177,7 +188,6 @@ export default class Trips extends Vue {
 
   private ph = ''; // TEMP
 
-  private stringOptions = ['Ruby', 'Samson', 'Shooster'];
   private options: string[] = [];
 
   constructor() {
@@ -273,6 +283,7 @@ export default class Trips extends Vue {
         : this.currentTrip.vessel.stateRegulationNumber;
     }
   }
+
 
   private async filterFn(val: string, update: any, abort: any) {
     if (val.length < 2) {
