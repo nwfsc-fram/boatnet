@@ -47,3 +47,6 @@ observer/.idea/
 # user-config
 **/authProxyConfig.json
 **/dbConfig.json
+temp-pub-key.pem
+apps/obs-web/misc/index.js
+apps/obs-web/misc/upload_em_efp_permits.ts

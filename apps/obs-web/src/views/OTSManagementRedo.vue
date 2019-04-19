@@ -1,0 +1,310 @@
+<template>
+    <div class='q-pa-md  q-gutter-md'>
+        <q-btn color='primary' @click='newOtsTarget'>New Target</q-btn>
+
+        <q-table
+        title='Fishery Targets'
+        :data='fisheryTargets'
+        :columns='fisheryColumns'
+        dense
+        row-key='_id'
+        :pagination.sync='pagination'
+        hide-bottom
+        >
+        <template v-slot:body='props'>
+            <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
+                <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
+                <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
+                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
+                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+            </q-tr>
+        </template>
+
+        </q-table>
+
+        <q-table
+        title='Vessel Targets'
+        :data='vesselTargets'
+        :columns='vesselColumns'
+        dense
+        row-key='_id'
+        :pagination.sync='pagination'
+        hide-bottom
+        >
+        <template v-slot:body='props'>
+            <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
+                <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='targetVesselName' style='width: 200px' :props='props'>{{ props.row.targetVesselName }} ( {{ props.row.targetVesselCGNumber }} )</q-td>
+                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA'}}%</q-td>
+                <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
+                <!-- <q-td key='targetVesselCGNumber' style='width: 100px' :props='props'>{{ props.row.targetVesselCGNumber }}</q-td> -->
+                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
+                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+            </q-tr>
+        </template>
+        </q-table>
+
+        <q-table
+        title='Port Group Targets'
+        :data='portGroupTargets'
+        :columns='portGroupColumns'
+        dense
+        row-key='_id'
+        :pagination.sync='pagination'
+        hide-bottom
+        >
+        <template v-slot:body='props'>
+            <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
+                <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='targetPortGroupDescription' style='width: 200px' :props='props'>{{ props.row.targetPortGroupDescription }}</q-td>
+                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
+                <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
+                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
+                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+            </q-tr>
+        </template>
+        </q-table>
+    </div>
+</template>
+
+<script lang='ts'>
+import { State, Action, Getter, Mutation } from 'vuex-class';
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+// https://github.com/kaorun343/vue-property-decorator
+
+import router from '../router';
+import { AlertState, EmefpState, GeneralState } from '../_store/types/types';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { EmEfpPermit, OtsTarget } from '@boatnet/bn-models';
+
+import { Client, CouchDoc, ListOptions } from 'davenport';
+
+import moment from 'moment';
+
+@Component
+export default class OtsMangement extends Vue {
+    @State('general') private general!: GeneralState;
+
+    private pagination = {rowsPerPage: 0};
+
+    private fisheryColumns: any[] = [
+        {name: 'fishery', label: 'Fishery', field: 'fishery',
+        required: true, align: 'left', sortable: true },
+        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
+        // required: true, align: 'left', sortable: true},
+        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
+        required: true, align: 'left', sortable: true },
+        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
+        required: true, align: 'left', sortable: true },
+        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
+        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
+        // required: false, align: 'left', sortable: true },
+        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered',
+        // required: false, align: 'left' },
+        // {name: 'percentDifference', label: '% Difference', field: 'percentDifference',
+        // required: true, align: 'left', sortable: true },
+        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
+        required: true, align: 'left', sortable: true},
+        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
+        required: true, align: 'left', sortable: true},
+    ];
+
+    private vesselColumns: any[] = [
+        {name: 'fishery', label: 'Fishery', field: 'fishery', required: true,
+        align: 'left', sortable: true },
+        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
+        // required: true, align: 'left', sortable: true},
+        {name: 'targetVesselName', label: 'Vessel', field: 'targetVesselName',
+        required: true, align: 'left', sortable: true },
+        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
+        required: true, align: 'left', sortable: true },
+        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
+        required: true, align: 'left', sortable: true },
+        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
+        // {name: 'targetVesselId', label: 'Target Vessel ID', field: 'targetVesselId',
+        // required: true, align: 'left', sortable: true },
+        // {name: 'targetVesselCGNumber', label: 'Target Vessel CG Number', field: 'targetVesselCGNumber',
+        // required: true, align: 'left', sortable: true },
+        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
+        // required: false, align: 'left', sortable: true },
+        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered',
+        // required: false, align: 'left' },
+        // {name: 'percentDifference', label: '% Difference', field:
+        // 'percentDifference', required: true, align: 'left', sortable: true },
+        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
+        required: true, align: 'left', sortable: true},
+        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
+        required: true, align: 'left', sortable: true},
+    ];
+
+    private portGroupColumns: any[] = [
+        {name: 'fishery', label: 'Fishery', field: 'fishery', required: true,
+        align: 'left', sortable: true },
+        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
+        // required: true, align: 'left', sortable: true},
+        {name: 'targetPortGroupDescription', label: 'Port Group', field: 'targetPortGroupDescription',
+        required: true, align: 'left', sortable: true },
+        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
+        required: true, align: 'left', sortable: true },
+        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
+        required: true, align: 'left', sortable: true },
+        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
+        // {name: 'targetPortGroupId', label: 'Target Port Group ID', field:
+        // 'targetPortGroupId', required: true, align: 'left', sortable: true },
+        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
+        // required: false, align: 'left', sortable: true },
+        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered', required: false, align: 'left' },
+        // {name: 'percentDifference', label: '% Difference', field:
+        // 'percentDifference', required: true, align: 'left', sortable: true },
+        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
+        required: true, align: 'left', sortable: true},
+        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
+        required: true, align: 'left', sortable: true},
+    ];
+
+    private otsTargets: any[] = [
+        {
+            _id: 'weaefaq3ar34rwefgsdfq',
+            fishery: 'EM EFP',
+            targetType: 'Fishery',
+            coverageGoal: 27,
+            setRate: 33,
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 28
+        },
+        {
+            _id: 'gsdffweer34rwgrthg34er34',
+            fishery: 'Limited Entry - Catch Shares',
+            targetType: 'Fishery',
+            coverageGoal: 32,
+            setRate: 37,
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 30
+        },
+        {
+            _id: 'weaefaq3ar34rwefgsdfq',
+            fishery: 'Trawl Gear - Mod EFP',
+            targetType: 'Fishery',
+            coverageGoal: 33,
+            setRate: 33,
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 10
+        },
+        {
+            _id: 'vsdffew34r34rfsdffd3r3',
+            fishery: 'EM EFP',
+            targetType: 'Vessel',
+            coverageGoal: 23,
+            setRate: 29,
+            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetVesselName: 'Excalibur',
+            targetVesselCGNumber: '5346605',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 27
+        },
+        {
+            _id: 'fdsfweqrawfsdfsefafsdfqwe',
+            fishery: 'EM EFP',
+            targetType: 'Vessel',
+            coverageGoal: 35,
+            setRate: 40,
+            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetVesselName: 'Raven',
+            targetVesselCGNumber: '55432343',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 22
+        },
+        {
+            _id: 'fesfgg54gsr5bsr5h45ats4s',
+            fishery: 'EM EFP',
+            targetType: 'Vessel',
+            coverageGoal: 40,
+            setRate: 55,
+            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetVesselName: 'Last Straw',
+            targetVesselCGNumber: '3456463',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 35
+        },
+        {
+            _id: 'vsdfv3434rervsdfbq3a3rwfffdvsdf',
+            fishery: 'EM EFP',
+            targetType: 'Port Group',
+            coverageGoal: 22,
+            setRate: 27,
+            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetPortGroupDescription: 'SPS (Seattle Area)',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 20
+        },
+        {
+            _id: 'f34wrsersgwerf34wfsgq34',
+            fishery: 'EM EFP',
+            targetType: 'Port Group',
+            coverageGoal: 30,
+            setRate: 35,
+            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetPortGroupDescription: 'ACA (Los Angeles Area)',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31'
+        },
+        {
+            _id: 'sfdvw43st4t45g56h6ehtyjrty',
+            fishery: 'EM EFP',
+            targetType: 'Port Group',
+            coverageGoal: 33,
+            setRate: 33,
+            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
+            targetPortGroupDescription: 'AOR (Northern Oregon)',
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31',
+            actualObserved: 33
+        },
+    ];
+
+    private get fisheryTargets() {
+        return this.otsTargets.filter((target) => target.targetType === 'Fishery');
+    }
+
+    private get vesselTargets() {
+        return this.otsTargets.filter((target) => target.targetType === 'Vessel');
+    }
+
+    private get portGroupTargets() {
+        return this.otsTargets.filter((target) => target.targetType === 'Port Group');
+    }
+
+    private OtsTargetDetail(row: any) {
+        console.log(row);
+        this.general.activeTarget = row;
+        this.$router.push({path: '/ots-target-detail/' + this.otsTargets.indexOf(row)});
+    }
+
+    private newOtsTarget() {
+        this.$router.push({path: '/ots-target-detail'});
+    }
+
+}
+</script>
+
+<style>
+.q-table__title {
+    color: #1675d1;
+    font-weight: bold;
+}
+</style>

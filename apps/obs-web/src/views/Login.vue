@@ -61,7 +61,21 @@
       :input="input"
     />
 
-            <div style="text-align: center;" class="absolute-bottom">v0.0.0</div>
+            <div style="text-align: center;" 
+            class="absolute-bottom">
+                    <div>
+          <b>Last Software Update Date:</b>
+          {{lastSoftwareUpdateDate}}
+        </div>
+        <div>
+          <b>Last Data Sync:</b>
+          {{lastDataSyncDate}}
+        </div>
+        <div>
+          <b>Last Login Date:</b>
+          {{lastLoginDate}}
+        </div>
+        v0.0.0</div>
   </q-layout>
 </template>
 
@@ -92,6 +106,10 @@ export default class Login extends Vue {
   private password = '';
   private isPwd = true;
   private submitted = false;
+
+  private lastSoftwareUpdateDate = '10/1/2018 12:00:00';
+  private lastDataSyncDate = '10/1/2018 12:00:00';
+  private lastLoginDate = '10/1/2018 12:00:00';
 
   private visible = false;
   private layout = 'normal';
