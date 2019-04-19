@@ -1,11 +1,9 @@
 // Vuex CouchDB Module
 
-import { authService } from '@boatnet/bn-auth';
 import { couchService } from '../_services/couch.service';
 
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { AuthState } from '@boatnet/bn-auth';
 import { CouchDBState, CouchDBCredentials } from './types/types';
 
 Vue.use(Vuex);
@@ -13,15 +11,24 @@ Vue.use(Vuex);
 export const state: CouchDBState =  { credentials: null };
 
 const actions: ActionTree<CouchDBState, any> = {
-  connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
+  async connect({ dispatch, commit }: any, credentials: CouchDBCredentials) {
     commit('connectRequest', credentials);
     couchService.connect(credentials);
-  }
+  },
+  async reconnect({ commit }: any) {
+    // will fail if credentials not already set
+    commit('reconnectRequest');
+  },
 };
 
 const mutations: MutationTree<CouchDBState> = {
   connectRequest(newState: any, credentials: CouchDBCredentials) {
     newState.credentials = credentials;
+  },
+  reconnectRequest(newState: CouchDBState) {
+    if (!newState.credentials) {
+      throw new Error('Please log out and back in for DB connection.');
+    }
   },
   connectSuccess(newState: any, newUser: any) { // TODO
     // newState.status = { isLoggedIn: true };
