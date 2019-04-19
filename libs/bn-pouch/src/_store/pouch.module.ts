@@ -17,35 +17,31 @@ export const state: PouchDBState = {
   lastSyncDate: lastSync ? lastSync : undefined
 };
 
+function activateSyncListener(commit: any) {
+  pouchService.$off('sync');
+  pouchService.$off('initialSync');
+  pouchService.$on('sync', (sync: PouchDBSyncStatus) => {
+    commit('syncChanged', sync);
+  });
+  pouchService.$on('initialsync', (sync: PouchDBSyncStatus) => {
+    commit('syncCompleted', sync);
+  });
+}
 const actions: ActionTree<PouchDBState, any> = {
   // Mutations are asynchronous
   async connect({ commit }: any, credentials: CouchDBCredentials) {
+    activateSyncListener( commit );
     commit('connectRequest', credentials);
-    pouchService.$off('sync');
-    pouchService.$off('initialSync');
-    pouchService.$on('sync', (sync: PouchDBSyncStatus) => {
-      commit('syncChanged', sync);
-    });
-    pouchService.$on('initialsync', (sync: PouchDBSyncStatus) => {
-      commit('syncCompleted', sync);
-    });
   },
   async reconnect({ commit }: any) {
     // will fail if credentials not already set
-    // commit('reconnectRequest'); // TODO
-    pouchService.$off('sync');
-    pouchService.$off('initialSync');
-    pouchService.$on('sync', (sync: PouchDBSyncStatus) => {
-      commit('syncChanged', sync);
-    });
-    pouchService.$on('initialsync', (sync: PouchDBSyncStatus) => {
-      commit('syncCompleted', sync);
-    });
+    commit('reconnectRequest');
+    activateSyncListener( commit );
   },
   async disconnect({ commit }: any) {
-    commit('disconnect');
     pouchService.$off('sync');
     pouchService.$off('initialSync');
+    commit('disconnect');
   },
   async addTest({ commit }: any, todoMsg: { message: string }) {
     commit('addTest', todoMsg);
@@ -59,10 +55,16 @@ const mutations: MutationTree<PouchDBState> = {
     pouchService.connect(credentials);
     newState.credentials = credentials;
   },
+  reconnectRequest(newState: PouchDBState) {
+    if (!newState.credentials) {
+      throw new Error('Please log out and back in for DB connection.');
+    } else {
+      pouchService.connect(newState.credentials);
+    }
+  },
   disconnect(newState: PouchDBState) {
     newState.syncStatus = { syncActive: false};
     pouchService.disconnect();
-    pouchService.$off('sync');
   },
   syncCompleted(newState: PouchDBState, status: PouchDBSyncStatus) {
     const date = moment().format();

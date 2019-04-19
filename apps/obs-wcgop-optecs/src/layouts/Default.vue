@@ -119,7 +119,8 @@ import router from '../router';
 
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
-import { State, Getter } from 'vuex-class';
+import { AlertState } from '../_store/index';
+import { Action, Getter, State } from 'vuex-class';
 
 @Component({
   components: {
@@ -127,13 +128,22 @@ import { State, Getter } from 'vuex-class';
   }
 })
 export default class DefaultLayout extends Vue {
-  @State('pouchState') private pouchState!: PouchDBState;
-  @Getter('isSyncing', {namespace: 'pouchState'}) private isSyncing: any;
+  @State('alert') private alert!: AlertState;
+  @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
+  @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
   private leftDrawerOpen: boolean;
 
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
+    if (!pouchService.isConnected) {
+      // Reconnect PouchDB if page refreshed but still logged in
+      this.reconnect().catch((err: any) => {
+        this.errorAlert(err);
+      });
+    }
   }
 
   private navigateBack() {

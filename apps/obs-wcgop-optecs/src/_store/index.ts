@@ -35,3 +35,4 @@ const store: StoreOptions<RootState> = {
 };
 
 export default new Vuex.Store<RootState>(store);
+export * from './types/types';
