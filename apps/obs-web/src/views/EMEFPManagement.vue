@@ -1,27 +1,65 @@
 <template>
     <div>
 
+        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+        {{alert.message}}
+        <template v-slot:action>
+            <q-btn flat label="Dismiss" @click="clear"/>
+        </template>
+        </q-banner>
+
+        <div class="centered-page-item">
+            <q-btn class="bg-primary text-white q-ma-md" @click="emefpDetails(0)">New EM EFP</q-btn>
+        </div>
+
+        <q-list bordered separator>
+            <q-item v-for="(permit, i) of EM_EFP" :key="permit.id"  @click.native="emefpDetails(permit)">
+                <q-item-section>
+                    <q-item-label>{{permit.vesselName}}</q-item-label>
+                    <q-item-label caption>{{ permit.vesselCGNumber }}</q-item-label>
+                </q-item-section>
+                <q-item-section style="text-align: center">
+                    <q-item-label>{{ permit.emEfpNumber }}</q-item-label>
+                    <q-item-label caption>{{ permit.lePermit }}</q-item-label>
+                </q-item-section>
+                <q-item-section style="text-align: right">
+                    <q-item-label>
+                        <span v-for="(type, i) in permit.efpTypes" :key="i">{{ type.description }}
+                        <span v-if="permit.efpTypes.length > 1 && i + 1 < permit.efpTypes.length">-</span>
+                        </span>
+                    </q-item-label>
+                    <q-item-label caption>
+                        {{ getArrayValues(permit.gear) }}
+                    </q-item-label>
+                </q-item-section>
+            </q-item>
+        </q-list>
+
         <q-table
             :data="EM_EFP"
             :columns="columns"
             dense
-            row-key="vessel_name"
+            row-key="id"
             selection="single"
             :selected.sync="selected"
+            :pagination.sync="pagination"
             >
             
-        <!-- <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td key="vessel_name" :props="props">{{ props.row.vessel_name }}</q-td>
-          <q-td key="USCG" :props="props">{{ props.row.USCG }}</q-td>
-          <q-td key="LEP" :props="props">{{ props.row.LEP }}</q-td>
-          <q-td key="EFP_Type" :props="props">{{ props.row.EFP_Type }}</q-td>
-          <q-td key="Gear" :props="props">{{ props.row.Gear }}</q-td>
-          <q-td key="Sector" :props="props">{{ props.row.Sector }}</q-td>
-          <q-td key="EM_EFP_Number" :props="props">{{ props.row.EM_EFP_Number }}</q-td>
-          <q-td key="Notes" :props="props">{{ props.row.Notes }}</q-td>
+        <template v-slot:body="props">
+        <q-tr :props="props" @click.native="emefpDetails(props.row)">
+          <q-td key="id"></q-td>
+          <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
+          <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
+          <q-td key="efpTypes" :props="props">
+              {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
+          <q-td key="vesselCGNumber" :props="props">{{ props.row.vesselCGNumber }}</q-td>
+          <q-td key="lePermit" :props="props">{{ props.row.lePermit }}</q-td>
+          <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear) }}</q-td>
+          <q-td key="sector" :props="props">{{ props.row.sector }}</q-td>
+          <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
         </q-tr>
-        </template> -->
+        </template>
+
         </q-table>
 
         <div v-if="selected.length > 0">{{ selected }}</div>
@@ -34,35 +72,93 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 
 import router from '../router';
-import { AlertState } from '../_store/types/types';
+import { AlertState, EmefpState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { EmEfpPermit } from '@boatnet/bn-models';
 
+import { Client, CouchDoc, ListOptions } from 'davenport';
+
 @Component
 export default class EMEFPManagement extends Vue {
- 
-private selected = []
+    @State('alert') private alert!: AlertState;
+    @State('emefp') private emefp!: EmefpState;
 
-private EM_EFP: EmEfpPermit[] = [
-    {type: 'EmEfpPermit', vesselName: 'Alex', vesselCGNumber: '580568', lePermit: 'GF0084', 
-    efpTypes: [{'description':'Leipzig'}], gear: ['Bottom trawl, midwater'], emEfpNumber: 'EM-34'},
-    {type: 'EmEfpPermit', vesselName: 'Alyssa Ann', vesselCGNumber: '976374', lePermit: 'GF0875',
-    efpTypes: [{'description':'Eder'}], gear: ['Pot'], emEfpNumber: 'EM-04'},
-    {type: 'EmEfpPermit', vesselName: 'Arctic Fury', vesselCGNumber: '996920', lePermit: 'GF0675', efpTypes: [{'description':'Whiting'}], gear: ['Midwater trawl'], 
-    sector: 'Both', emEfpNumber: 'EM-38', notes: 'Here is a long note that you would expect would change column widths and make text wrap to the next line'},    
-  ] 
+    @Action('clear', { namespace: 'alert' }) private clear: any;
+    @Action('error', { namespace: 'alert' }) private error: any;
+
+private selected = [];
+private pagination = {rowsPerPage: 50};
+
+private EM_EFP: EmEfpPermit[] = [];
 
 private columns = [
-    {name: 'vessel_name', label: 'Vessel Name', field: 'vessel_name', required: true, align: 'left', sortable: true },
-    {name: 'USCG', label: 'Coast Guard Number', field: 'USCG', required: true, align: 'left', sortable: true },
-    {name: 'LEP', label: 'LE Permit', field: 'LEP', required: true, align: 'left', sortable: true },
-    {name: 'EFP_Type', label: 'EFP Type', field: 'EFP_TYPE', required: true, align: 'left', sortable: true },
-    {name: 'Gear', label: 'Gear', field: 'Gear', required: true, align: 'left', sortable: true },
-    {name: 'Sector', label: 'Sector', field: 'Sector', required: true, align: 'left', sortable: true },
-    {name: 'EM_EFP_Number', label: 'EM EFP #', field: 'EM_EFP_Number', required: true, align: 'left', sortable: true },
-    {name: 'Notes', label: 'Notes', field: 'Notes', required: true, align: 'left', sortable: true, style: 'width: 100px' },    
-]
+    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
+    {name: 'emEfpNumber', label: 'EM EFP #', field: 'emEfpNumber', required: true, align: 'left', sortable: true },
+    {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left', sortable: true },
+    {name: 'vesselCGNumber', label: 'CG Number', field: 'vesselCGNumber', required: true, sortable: true },
+    {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
+    {name: 'gear', label: 'Gear', field: 'gear', required: true, align: 'left', sortable: true },
+    {name: 'sector', label: 'Sector', field: 'sector', required: true, align: 'left', sortable: true },
+    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true},
+];
+
+private async getEmEfpPermits() {
+    const roDB: Client<any> = couchService.readonlyDB;
+    try {
+        // const vessels = await roDB.view<any>(
+        //   'optecs_trawl',
+        //   'all_vessel_names',
+        //   queryOptions
+        // );
+
+        // this.options = vessels.rows.map((vessel) => vessel.value);
+
+        const emefpPermits = await roDB.view<any>(
+            'sethtest',
+            'all_em_efp_permits',
+            );
+
+        console.log(emefpPermits.rows);
+
+        for (const row of emefpPermits.rows) {
+            const permit = row.value;
+            permit.id = row.id;
+            const types = [];
+            for (const type of permit.efpTypes) {
+                types.push(permit.type.description);
+            }
+            permit.eftTypes = types;
+            this.EM_EFP.push(permit);
+        }
+        console.log(this.EM_EFP);
+
+    } catch (err) {
+        this.error(err);
+    }
+  }
+
+  private created() {
+    this.getEmEfpPermits();
+  }
+
+private getArrayValues(array: any[]) {
+    let returnString  = '';
+    for (const item of array) {
+        returnString += item;
+        if (array.indexOf(item) + 1 < array.length && array.length > 1) {
+            returnString += ' , ';
+        }
+    }
+    return returnString;
+}
+
+private emefpDetails(permit: EmEfpPermit) {
+    console.log(permit.vesselName);
+    this.emefp.activeEmefpPermit = permit;
+    console.log(this.emefp.activeEmefpPermit);
+    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(permit) });
+}
 
 }
 </script>

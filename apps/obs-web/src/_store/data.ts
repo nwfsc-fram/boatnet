@@ -1447,14 +1447,19 @@ export const portDecoder = [
     WCGOP_GROUP: 'ZZ'
   }];
 
-  export const EM_EFP = [
-    {vessel_name: 'Alex', USCG: '580568', LEP: 'GF0084', 
-    EFP_Type: 'Leipzig', Gear: ['Bottom trawl, midwater'], 
-    Sector: null, EM_EFP_Number: 'EM-34', Notes: null},
-    {vessel_name: 'Alyssa Ann', USCG: '976374', LEP: 'GF0875', 
-    EFP_Type: 'Eder', Gear: ['Pot'], 
-    Sector: null, EM_EFP_Number: 'EM-04', Notes: null},
-    {vessel_name: 'Arctic Fury', USCG: '996920', LEP: 'GF0675', 
-    EFP_Type: 'Whiting', Gear: ['Midwater trawl'], 
-    Sector: 'Both', EM_EFP_Number: 'EM-38', Notes: null},    
-  ]
+export const EM_EFP = [
+  {
+    vessel_name: 'Alex', USCG: '580568', LEP: 'GF0084',
+    EFP_Type: 'Leipzig', Gear: ['Bottom trawl, midwater'],
+    Sector: null, EM_EFP_Number: 'EM-34', Notes: null
+  },
+  {
+    vessel_name: 'Alyssa Ann', USCG: '976374', LEP: 'GF0875',
+    EFP_Type: 'Eder', Gear: ['Pot'],
+    Sector: null, EM_EFP_Number: 'EM-04', Notes: null
+  },
+  {
+    vessel_name: 'Arctic Fury', USCG: '996920', LEP: 'GF0675',
+    EFP_Type: 'Whiting', Gear: ['Midwater trawl'],
+    Sector: 'Both', EM_EFP_Number: 'EM-38', Notes: null
+  }];

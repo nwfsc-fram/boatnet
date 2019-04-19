@@ -99,14 +99,6 @@ export default class Home extends Vue {
 
   private async couch() {
     const roDB: Client<any> = couchService.readonlyDB;
-    const boatnetDB: Client<any> = new Client(
-      "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
-      "boatnet-dev-testing",
-      {
-      username: "sgerou-test",
-      password: "test123"
-    })
-    
     // const queryOptions: ListOptions = {
     //       limit: 100,
     //       start_key: 'a',
@@ -124,14 +116,12 @@ export default class Home extends Vue {
 
         // this.options = vessels.rows.map((vessel) => vessel.value);
 
-    const vessels = await boatnetDB.view<any>(
+    const vessels = await roDB.view<any>(
           'optecs_trawl',
           'all_vessel_names',
         );
 
-    console.log(vessels)
-
-
+    console.log(vessels);
 
     } catch (err) {
       this.error(err);

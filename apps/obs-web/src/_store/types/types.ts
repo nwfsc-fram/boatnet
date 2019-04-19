@@ -1,5 +1,5 @@
 import { BoatnetUser } from '@boatnet/bn-auth';
-import { BoatnetDate, WcgopTrip, Base, Port, Vessel } from '@boatnet/bn-models';
+import { BoatnetDate, WcgopTrip, Base, Port, Vessel, EmEfpPermit } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -20,6 +20,11 @@ export interface TripState {
 export interface PermitState {
   activePermit: Permit | null;
   permits: Permit[];
+  filterText: string;
+}
+
+export interface EmefpState {
+  activeEmefpPermit: EmEfpPermit | null;
   filterText: string;
 }
 
