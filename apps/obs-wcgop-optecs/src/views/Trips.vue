@@ -11,6 +11,7 @@
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
         @selectedTrip="handleSelectTrip"
+        @displayKeyboard="displayKeyboard"
       />
     </q-page>
   </span>
@@ -186,6 +187,10 @@ export default class Trips extends Vue {
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e);
   }
 }
 </script>
