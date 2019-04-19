@@ -24,8 +24,6 @@
                 input-debounce="0"
                 :options="options"
                 @filter="filterFn"
-                @focus="displayKeyboard"
-                data-layout="compact"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -33,33 +31,14 @@
                   </q-item>
                 </template>
               </q-select>
-              <q-input
-                outlined
-                class="col-2"
-                v-model="captainName"
-                label="Skipper's Name"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-
-              <!-- <boatnet-input layout='numeric' label="# of Crew" :val="currentTrip.crewSize"/>
-              <boatnet-input layout='numeric' label="Observer Logbook #" :val="currentTrip.observerLogbookNum"/>
-              -->
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.crewSize"
-                label="# of Crew"
-                @focus="displayKeyboard"
-                data-layout="numeric"
-              />
+              <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
+              <q-input outlined class="col-2" v-model="captainName" label="Skipper's Name"/>
+              <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.observerLogbookNum"
                 label="Observer Logbook #"
-                @focus="displayKeyboard"
-                data-layout="numeric"
               />
               <q-input
                 outlined
@@ -72,21 +51,12 @@
                 class="col-2"
                 v-model="currentTrip.departurePort.name"
                 label="Departure Port"
-                @focus="displayKeyboard"
-                data-layout="normal"
               />
 
               <div class="text-h6 col-2">Permit / License Numbers</div>
               <!-- TODO this should be a component -->
               <div class="row">
-                <q-input
-                  outlined
-                  class="col-12"
-                  v-model="ph"
-                  label="Permit/ License #"
-                  @focus="displayKeyboard"
-                  data-layout="normal"
-                />
+                <q-input outlined class="col-12" v-model="ph" label="Permit/ License #"/>
               </div>
             </div>
           </div>
@@ -301,10 +271,6 @@ export default class Trips extends Vue {
         ? this.currentTrip.vessel.coastGuardNumber
         : this.currentTrip.vessel.stateRegulationNumber;
     }
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
   }
 
   // TODO move to shared util?

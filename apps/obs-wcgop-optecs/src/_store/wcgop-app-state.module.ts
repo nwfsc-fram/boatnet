@@ -7,8 +7,7 @@ Vue.use(Vuex);
 
 export const state: WcgopAppState = {
   currentNavigation: undefined, // TODO could set this to current router location?
-  currentTrip: undefined,
-  isKeyboardEnabled: true
+  currentTrip: undefined
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
@@ -20,9 +19,6 @@ const actions: ActionTree<WcgopAppState, RootState> = {
   },
   navigateBack({ commit }: any) {
     commit('navigateBack');
-  },
-  setKeyboardStatus({ commit }: any, isEnabled: boolean) {
-    commit('setKeyboardStatus', isEnabled);
   }
 };
 
@@ -40,9 +36,6 @@ const mutations: MutationTree<WcgopAppState> = {
   },
   navigateBack(newState: any, uri: string) {
     console.log('[AppState] TODO Navigate to', uri);
-  },
-  setKeyboardStatus(newState: any, isEnabled: boolean) {
-    newState.isKeyboardEnabled = isEnabled;
   }
 };
 

@@ -30,14 +30,7 @@
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
 
-          <q-input
-            outlined
-            ref="username"
-            v-model="username"
-            label="Username"
-            @focus="displayKeyboard"
-            data-layout="normal"
-          />
+          <q-input outlined ref="username" v-model="username" label="Username"/>
 
           <q-input
             outlined
@@ -46,8 +39,6 @@
             v-model="password"
             label="Password"
             autocomplete="boatnet password"
-            @focus="displayKeyboard"
-            data-layout="normal"
           >
             <template v-slot:append>
               <q-icon
@@ -76,6 +67,14 @@
         </div>
       </div>
     </q-page-container>
+    <vue-touch-keyboard
+      :options="options"
+      v-if="visible"
+      :layout="layout"
+      :cancel="hide"
+      :accept="accept"
+      :input="input"
+    />
   </q-layout>
 </template>
 
@@ -111,6 +110,9 @@ export default class Login extends Vue {
   private lastDataSyncDate = '10/1/2018 12:00:00';
   private lastLoginDate = '10/1/2018 12:00:00';
 
+  private visible = false;
+  private layout = 'normal';
+  private input = null;
   private options = {
     useKbEvents: false,
     preventClickEvent: false
@@ -131,6 +133,19 @@ export default class Login extends Vue {
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     this.clear();
+  }
+
+  private show(e: any) {
+    this.input = e.target;
+    this.layout = e.target.dataset.layout;
+
+    if (!this.visible) {
+      this.visible = true;
+    }
+  }
+
+  private hide() {
+    this.visible = false;
   }
 
   private mounted() {
@@ -163,10 +178,6 @@ export default class Login extends Vue {
     if (username && password) {
       this.login({ username, password });
     }
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>

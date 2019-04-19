@@ -8,8 +8,6 @@
         label="Search"
         maxlength="12"
         style="width: 200px;"
-        @focus="displayKeyboard"
-        data-layout="normal"
       >
         <template v-slot:append>
           <q-icon
@@ -65,10 +63,6 @@ export default class Trips extends Vue {
       delete trip.__index; // remove weird __index field for converting to trip
     }
     this.$emit('selectedTrip', trip);
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>

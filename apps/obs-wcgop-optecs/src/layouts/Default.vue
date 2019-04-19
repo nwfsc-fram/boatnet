@@ -20,7 +20,7 @@
           size="1.5em"
         />
         <optecs-breadcrumbs/>
-        <!-- <q-icon name="save" />-->
+       <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -104,12 +104,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view @displayKeyboard="displayKeyboard"/>
-      <boatnet-keyboard
-        :visible.sync="isKeyboardVisible"
-        :layout="keyboardType"
-        :input="keyboardInputTarget"
-      />
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>
@@ -117,8 +112,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
-import { WcgopAppState } from '../_store/types/types';
-import { State, Action } from 'vuex-class';
 
 import router from '../router';
 
@@ -128,13 +121,11 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
   components: {
     'optecs-breadcrumbs': OptecsBreadcrumbs
   }
-})
+}
+
+)
 export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
-  @State('appState') private appState!: WcgopAppState;
-  private isKeyboardVisible: boolean = false;
-  private keyboardType: string = 'normal';
-  private keyboardInputTarget = null;
 
   constructor() {
     super();
@@ -145,11 +136,5 @@ export default class DefaultLayout extends Vue {
     this.$router.back();
   }
 
-  private displayKeyboard(event: any) {
-    console.log('s ' + this.appState.isKeyboardEnabled + ' ' + this.isKeyboardVisible);
-    this.isKeyboardVisible = this.appState.isKeyboardEnabled ? true : false;
-    this.keyboardType = event.dataset.layout;
-    this.keyboardInputTarget = event;
-  }
 }
 </script>
