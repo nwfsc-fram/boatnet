@@ -41,10 +41,6 @@
                 @focus="displayKeyboard"
                 data-layout="normal"
               />
-
-              <!-- <boatnet-input layout='numeric' label="# of Crew" :val="currentTrip.crewSize"/>
-              <boatnet-input layout='numeric' label="Observer Logbook #" :val="currentTrip.observerLogbookNum"/>
-              -->
               <q-input
                 outlined
                 class="col-2"
@@ -185,6 +181,7 @@ import {
   VesselTypeName
 } from '@boatnet/bn-models';
 import { couchService } from '@boatnet/bn-couch';
+
 @Component
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
@@ -193,11 +190,13 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
+
   private tab: string; // Current tab (start or end)
   private currentTrip: WcgopTrip;
   private ph = ''; // TEMP
   private stringOptions = ['Ruby', 'Samson', 'Shooster'];
   private options: string[] = [];
+
   constructor() {
     super();
     this.tab = this.startTab;
@@ -278,6 +277,7 @@ export default class Trips extends Vue {
       return this.currentTrip.firstReceivers[0].name;
     }
   }
+
   get vesselReg() {
     if (this.currentTrip.vessel) {
       return this.currentTrip.vessel.coastGuardNumber
@@ -285,9 +285,11 @@ export default class Trips extends Vue {
         : this.currentTrip.vessel.stateRegulationNumber;
     }
   }
+
   private displayKeyboard(e: any) {
     this.$emit('displayKeyboard', e.target);
   }
+
   // TODO move to shared util?
   private formatDate(dateStr: string): string {
     return moment(dateStr).format('MM/DD/YY hh:mm');

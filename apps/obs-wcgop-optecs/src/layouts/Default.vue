@@ -109,6 +109,7 @@
         :visible.sync="isKeyboardVisible"
         :layout="keyboardType"
         :input="keyboardInputTarget"
+        @next="next"
       />
     </q-page-container>
   </q-layout>
@@ -127,13 +128,13 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
   }
 })
 
-
 export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
   @State('appState') private appState!: WcgopAppState;
   private isKeyboardVisible: boolean = false;
   private keyboardType: string = 'normal';
   private keyboardInputTarget = null;
+
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
@@ -142,11 +143,27 @@ export default class DefaultLayout extends Vue {
   private navigateBack() {
     this.$router.back();
   }
+
   private displayKeyboard(event: any) {
-    console.log('s ' + this.appState.isKeyboardEnabled + ' ' + this.isKeyboardVisible);
     this.isKeyboardVisible = this.appState.isKeyboardEnabled ? true : false;
     this.keyboardType = event.dataset.layout;
     this.keyboardInputTarget = event;
+  }
+
+  private next() {
+    const inputs = document.querySelectorAll('input');
+    let found = false;
+    for (let i = 0; i < inputs.length; i++) {
+      if (!found && inputs[i] === this.keyboardInputTarget && i < inputs.length - 1) {
+        found = true;
+        this.$nextTick(() => {
+          inputs[i + 1].focus();
+        });
+      }
+    }
+    if (!found) {
+      this.isKeyboardVisible = false;
+    }
   }
 }
 </script>
