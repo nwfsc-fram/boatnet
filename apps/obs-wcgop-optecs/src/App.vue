@@ -12,15 +12,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
+import { WcgopAppState } from '@/_store/types/types';
 
 @Component
 export default class App extends Vue {
+  @State('appState') private appState!: WcgopAppState;
   private isKeyboardVisible: boolean = false;
   private keyboardType: string = 'normal';
   private keyboardInputTarget = null;
 
   private displayKeyboard(event: any) {
-    this.isKeyboardVisible = true;
+    this.isKeyboardVisible = this.appState.isKeyboardEnabled ? true : false;
     this.keyboardType = event.dataset.layout;
     this.keyboardInputTarget = event;
   }

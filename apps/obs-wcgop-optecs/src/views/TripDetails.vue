@@ -25,7 +25,7 @@
                 :options="options"
                 @filter="filterFn"
                 @focus="displayKeyboard"
-                data-layout="compact"
+                data-layout="normal"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -117,18 +117,24 @@
                 class="col-2"
                 v-model="currentTrip.logbookType"
                 label="Vessel Logbook Name"
+                @focus="displayKeyboard"
+                data-layout="normal"
               />
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
+                @focus="displayKeyboard"
+                data-layout="numeric"
               />
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.returnPort.name"
                 label="Return Port"
+                @focus="displayKeyboard"
+                data-layout="normal"
               />
               <q-input
                 outlined
@@ -136,11 +142,25 @@
                 :value="formatDate(currentTrip.returnDate)"
                 label="Return Date/Time"
               />
-              <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
+              <q-input
+                outlined
+                class="col-2"
+                :value="firstReceiverName"
+                label="First Receiver"
+                @focus="displayKeyboard"
+                data-layout="normal"
+              />
               <div class="text-h6 col-2">Fish Tickets</div>
               <!-- TODO this should be a component -->
               <div class="row">
-                <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
+                <q-input
+                  outlined
+                  class="col-12"
+                  v-model="ph"
+                  label="Fish Ticket"
+                  @focus="displayKeyboard"
+                  data-layout="numeric"
+                />
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 <template>
   <div>
     <vue-touch-keyboard
+      :class="{ keyboard: true }"
       :options="keyboardOptions"
       v-if="visible"
       :layout="layout"
@@ -39,3 +40,19 @@ export default class BoatnetKeyboard extends Vue {
   }
 }
 </script>
+
+<style scoped>
+.keyboard {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 1000;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+
+  padding: 1em;
+}
+</style>
