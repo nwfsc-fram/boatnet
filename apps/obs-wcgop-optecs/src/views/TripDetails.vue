@@ -160,17 +160,7 @@ import {
 
 import { couchService } from '@boatnet/bn-couch'; // TODO Pouch
 
-@Component({
-  pouch: {
-    vessels() {
-      return {
-        database: 'lookups-dev',
-        selector: { type: 'vessel' },
-        limit: 5
-      };
-    }
-  }
-})
+@Component
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) public tripNum!: number; // Passed by router
@@ -284,28 +274,25 @@ export default class Trips extends Vue {
     }
   }
 
-
   private async filterFn(val: string, update: any, abort: any) {
-    if (val.length < 2) {
-      abort();
-      return;
-    }
+    // Had this length check for speed before, but unneeded with pouchDB.
+    // if (val.length < 2) {
+    //   abort();
+    //   return;
+    // }
 
     update(async () => {
       try {
-        const roDB: Client<any> = couchService.readonlyDB;
+        const roDBp = pouchService.getDB();
         const queryOptions: ListOptions = {
           limit: 5,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false
         };
-        const vessels = await roDB.view<any>(
-          'optecs_trawl',
-          'all_vessel_names',
-          queryOptions
-        );
-        this.options = vessels.rows.map((vessel) => vessel.value);
+
+        const vessels = await roDBp.query('lookups-dev', 'optecs_trawl/all_vessel_names', queryOptions);
+        this.options = vessels.rows.map((vessel: any) => vessel.value);
       } catch (err) {
         this.errorAlert(err);
       }

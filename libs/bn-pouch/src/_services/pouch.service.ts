@@ -76,9 +76,9 @@ class PouchService extends Vue {
   //   return this.couchUser;
   // }
 
-  public getDB(name: string) {
+  public getDB() {
     // console.log(this.$pouch);
-    return null;
+    return this.$pouch;
   }
 
   public async connect(credentials: CouchDBCredentials) {

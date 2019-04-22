@@ -8,15 +8,22 @@
         </template>
       </q-banner>
 
-      <div>
+
+        <!-- <button @click="vesselViewUpdate()">Update</button> -->
         <!-- <input v-model="message" placeholder="New Test String"> -->
         <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
-        <div v-for="v in vessels" :key="v._id">
+        <!-- <div v-for="v in vessels" :key="v._id"> -->
           <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
           <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
-          <input v-model="v.vesselName">
-        </div>
-      </div>
+          <!-- <input v-model="v.vesselName"> -->
+
+        <!-- <div>{{vesselView}}</div>
+        <div v-for="ves in vesselView" :key="ves._id">
+          <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
+          <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>
+          <div class="text-caption">{{ves}}</div>
+        </div> -->
+
       <boatnet-trips
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
@@ -53,32 +60,7 @@ import moment from 'moment';
 
 Vue.component(BoatnetTrips);
 
-//   vesselsInLookups() {
-//       return {
-//         database: this.selectedDatabase, // you can pass a database string or a pouchdb instance
-//         // selector: {type: "person"},
-//         // sort: [{name: "asc"}],
-//         // limit: this.resultsPerPage,
-//         // skip: this.resultsPerPage * (this.currentPage - 1)
-//       }
-//     }
-
-// {
-//   pouch: {
-//     selectedDB: {}
-//   }
-// })
-@Component({
-  pouch: {
-    vessels() {
-      return {
-        database: 'lookups-dev',
-        selector: { type: 'vessel' },
-        limit: 5
-      };
-    }
-  }
-})
+@Component
 export default class Trips extends Vue {
   public message = '';
   @State('alert') private alert!: AlertState;
@@ -96,10 +78,12 @@ export default class Trips extends Vue {
 
   private myStuff: any = {};
   private myPouchDB: any;
+  private vesselViewData: any;
+
   constructor() {
     super();
 
-    this.myPouchDB = pouchService.getDB(this.selectedDBName);
+    // this.myPouchDB = pouchService.getDB(this.selectedDBName);
     this.wcgopTripsSettings = {
       rowKey: '_id',
       columns: [
@@ -267,11 +251,21 @@ export default class Trips extends Vue {
     // @ts-ignore
     return this[this.selectedDBName];
   }
-  // private async myFatPouch() {
-  //   const haha = await this.$pouch.allDocs(this.selectedDBName);
-  //   console.log(haha.rows);
-  //   return haha.rows;
-  // }
+
+  private async vesselViewUpdate() {
+    const data = await this.$pouch.query(
+      this.selectedDBName,
+      'optecs_trawl/all_vessel_names'
+    );
+    this.vesselViewData = data.rows.map((d: any) => d.value);
+    console.log(this.vesselViewData);
+    this.vesselView();
+  }
+
+  private get vesselView() {
+    // console.log('vessel view checked');
+    return this.vesselViewData;
+  }
 }
 </script>
 
