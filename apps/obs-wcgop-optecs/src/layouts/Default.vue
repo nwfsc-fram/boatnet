@@ -20,7 +20,7 @@
           size="1.5em"
         />
         <optecs-breadcrumbs/>
-       <!-- <q-icon name="save" />-->
+        <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -104,7 +104,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view/>
+      <router-view @displayKeyboard="displayKeyboard"/>
     </q-page-container>
   </q-layout>
 </template>
@@ -112,18 +112,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
-
 import router from '../router';
-
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
 @Component({
   components: {
     'optecs-breadcrumbs': OptecsBreadcrumbs
   }
-}
+})
 
-)
 export default class DefaultLayout extends Vue {
   private leftDrawerOpen: boolean;
 
@@ -136,5 +133,8 @@ export default class DefaultLayout extends Vue {
     this.$router.back();
   }
 
+  private displayKeyboard(event: any) {
+    this.$emit('displayKeyboard', event);
+  }
 }
 </script>

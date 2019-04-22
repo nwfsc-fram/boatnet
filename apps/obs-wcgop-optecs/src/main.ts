@@ -15,8 +15,8 @@ import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 
-
-import { VueTouchKeyboard} from 'vue-touch-keyboard';
+import VueTouchKeyboard from 'vue-touch-keyboard';
+import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
 
 import {
   Quasar,
@@ -54,6 +54,8 @@ import {
   QItemSection,
   QItemLabel
 } from 'quasar';
+
+Vue.use(VueTouchKeyboard);
 
 Vue.use(Quasar, {
   config: {},
@@ -105,3 +107,4 @@ new Vue({
   store,
   render: (h) => h(App)
 }).$mount('#app');
+

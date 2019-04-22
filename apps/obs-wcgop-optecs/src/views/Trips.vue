@@ -11,6 +11,7 @@
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
         @selectedTrip="handleSelectTrip"
+        @displayKeyboard="displayKeyboard"
       />
     </q-page>
   </span>
@@ -37,7 +38,6 @@ import {
   Vessel,
   VesselTypeName
 } from '@boatnet/bn-models';
-
 import moment from 'moment';
 
 Vue.component(BoatnetTrips);
@@ -49,8 +49,8 @@ export default class Trips extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
 
+  private setCurrentTrip: any;
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 
@@ -111,7 +111,6 @@ export default class Trips extends Vue {
         }
       ]
     };
-
     const examplePort: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -119,7 +118,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Oxnard'
     };
-
     const examplePort2: Port = {
       _id: 'asdf2',
       type: PortTypeName,
@@ -127,7 +125,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Port Townsend'
     };
-
     const exampleVessel: Vessel = {
       _id: '1',
       type: VesselTypeName,
@@ -135,7 +132,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Sadie K'
     };
-
     const exampleVessel2: Vessel = {
       _id: '2',
       type: VesselTypeName,
@@ -143,7 +139,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Pickle Pelican'
     };
-
     const exampleTrip = {
       _id: '1',
       tripNum: 1,
@@ -163,7 +158,6 @@ export default class Trips extends Vue {
         tripId: 123
       }
     };
-
     const exampleTrip2 = {
       _id: '2',
       tripNum: 2,
@@ -180,12 +174,15 @@ export default class Trips extends Vue {
       vessel: exampleVessel2
       // ... other data
     };
-
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e);
   }
 }
 </script>
