@@ -8,6 +8,7 @@ import { user } from './user.module';
 import { vessel } from './vessel.module';
 import { general } from './general.module';
 import { emefp } from './emefp.module';
+import { ots } from './ots.module';
 
 import { RootState } from './types/types';
 
@@ -42,8 +43,8 @@ const store: StoreOptions<RootState> = {
     user,
     vessel,
     general,
-    emefp
-    // ots
+    emefp,
+    ots
   }
 };
 
