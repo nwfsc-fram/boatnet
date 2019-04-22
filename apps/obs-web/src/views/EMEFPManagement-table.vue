@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class='q-pa-md  q-gutter-md'>
 
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
         {{alert.message}}
@@ -11,29 +11,6 @@
         <div class="centered-page-item">
             <q-btn class="bg-primary text-white q-ma-md" @click="emefpDetails(0)">New EM EFP</q-btn>
         </div>
-
-        <q-list bordered separator>
-            <q-item v-for="(permit, i) of EM_EFP" :key="permit.id"  @click.native="emefpDetails(permit)">
-                <q-item-section>
-                    <q-item-label>{{permit.vesselName}}</q-item-label>
-                    <q-item-label caption>{{ permit.vesselCGNumber }}</q-item-label>
-                </q-item-section>
-                <q-item-section style="text-align: center">
-                    <q-item-label>{{ permit.emEfpNumber }}</q-item-label>
-                    <q-item-label caption>{{ permit.lePermit }}</q-item-label>
-                </q-item-section>
-                <q-item-section style="text-align: right">
-                    <q-item-label>
-                        <span v-for="(type, i) in permit.efpTypes" :key="i">{{ type.description }}
-                        <span v-if="permit.efpTypes.length > 1 && i + 1 < permit.efpTypes.length">-</span>
-                        </span>
-                    </q-item-label>
-                    <q-item-label caption>
-                        {{ getArrayValues(permit.gear) }}
-                    </q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
 
         <q-table
             :data="EM_EFP"
@@ -80,7 +57,7 @@ import { EmEfpPermit } from '@boatnet/bn-models';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 @Component
-export default class EMEFPManagement extends Vue {
+export default class EMEFPManagementTable extends Vue {
     @State('alert') private alert!: AlertState;
     @State('emefp') private emefp!: EmefpState;
 

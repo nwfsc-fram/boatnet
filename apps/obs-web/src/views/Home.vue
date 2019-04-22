@@ -31,8 +31,6 @@
 
     </div>
 
-    <q-btn color="primary" icon="mdi-anchor"></q-btn>
-
   </q-page>
 </template>
 

@@ -1,40 +1,83 @@
 <template>
     <div>
-            <q-card style="minWidth:400px;minHeight:400px">
-                <!-- <q-card-section>
-                    <div class="text-h6">Edit OTS Target</div>
+            <q-card>
+
+                <q-card-section>
+                    <q-card 
+                    bordered
+                    style="margin: 20px; padding: 20px; max-width: 400px"
+                    >
+                    <div class="text-h6 text-primary"> 
+                        <strong>
+                            {{ ots.activeOTSTarget.fishery }} : 
+                            {{ ots.activeOTSTarget.targetType }}
+                            <span v-if="ots.activeOTSTarget.targetType === 'Vessel'">
+                            : {{ ots.activeOTSTarget.targetVesselName }}
+                            </span>
+                            <span v-if="ots.activeOTSTarget.targetType === 'Port Group'">
+                            : {{ ots.activeOTSTarget.targetPortGroupDescription }}
+                            </span>
+                        </strong>
+                    </div>
+
+                    <q-input
+                    v-model="ots.activeOTSTarget.coverageGoal"
+                    label="Coverage Goal"
+                    dense
+                    :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]">
+                        <template v-slot:append>%</template>
+                    </q-input>
+
+                    <q-input
+                    v-model="ots.activeOTSTarget.setRate"
+                    dense
+                    :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]"
+                    label="Set Rate">
+                        <template v-slot:append>%</template>                    
+                    </q-input>
+    
+                <q-input v-model="ots.activeOTSTarget.effectiveDate" mask="date" :rules="['date']" label="Effective Date" style="padding-bottom: 0">
+                <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="ots.activeOTSTarget.effectiveDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+
+                <q-input v-model="ots.activeOTSTarget.expirationDate" mask="date" :rules="['date']" label="Expiration Date"  style="padding-bottom: 0">
+                <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy>
+                        <q-date v-model="ots.activeOTSTarget.expirationDate" />
+                    </q-popup-proxy>
+                    </q-icon>
+                </template>
+                </q-input>
+                    </q-card>
                 </q-card-section>
 
                 <q-card-section>
-                <q-select v-model="general.activeTarget.fishery" :options="fisheries" label="Fishery"/>
-                <q-select v-model="general.activeTarget.targetType" :options="targetTypes" label="Target Type"/>
-                <q-select v-model="general.activeTarget.target" :options="targetOptions" label="Target" />
-                <q-input v-model="general.activeTarget.rate" :rules="[val => { return val <= 100 && val >= 0  || 'rate must be between 0 and 100 %'}]" label="Selection Rate (%)"></q-input>
-
-                <q-input :value="formatDate(general.activeTarget.startDate)" mask="date" :rules="['date']" label="Effective Date">
-                    <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-date v-model="general.activeTarget.startDate" />
-                    </q-popup-proxy>
-                    </q-icon>
+                <q-table
+                title="Target History"
+                :data="data"
+                :columns= "columns"
+                dense
+                row_key="_id"
+                hide-bottom
+                >
+                <template v-slot:body='props'>
+                    <q-tr :props='props'>
+                        <q-td key='coverageGoal' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                        <q-td key='setRate' :props='props'>{{ props.row.setRate }}%</q-td>
+                        <q-td key='effectiveDate' :props='props'>{{ props.row.effectiveDate }}</q-td>
+                        <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+                    </q-tr>
                 </template>
-                </q-input>
-
-                <q-input :value="formatDate(general.activeTarget.endDate)" mask="date" :rules="['date']" label="Exipration Date">
-                    <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy>
-                        <q-date v-model="general.activeTarget.endDate" />
-                    </q-popup-proxy>
-                    </q-icon>
-                </template>
-                </q-input>
+                </q-table>                
                 </q-card-section>
 
-                <q-card-section align="right" class="text-primary">
-                <q-btn color="primary" label="Close" @click="edit = false" />
-                </q-card-section> -->
             </q-card>
     </div>
 </template>
@@ -45,17 +88,63 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import moment from 'moment';
-import { GeneralState, PermitState, OtsTarget } from '../_store/types/types';
+import date from 'quasar';
+import { GeneralState, PermitState, OtsTarget, OTSState } from '../_store/types/types';
 
+@Component
 export default class OtsTargeteDetail extends Vue {
-    @State('general') private general!: GeneralState;
+    @State('ots') private ots!: OTSState;
 
-    @Watch('general.activeTarget.targetType')
+    private columns = [
+        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
+        required: true, align: 'left', sortable: true},
+        {name: 'setRate', label: 'Set Rate', field: 'setRate',
+        required: true, align: 'left', sortable: true},
+        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
+        required: true, align: 'left', sortable: true},
+        {name: 'expirationDate', label: 'Expiration Date', field: 'expirationDate',
+        required: true, align: 'left', sortable: true},
+    ];
+
+    private data = [
+        {
+            _id: 'dfe24rgsdfg34rwersg',
+            coverageGoal: 35,
+            setRate: 37,
+            effectiveDate: moment().format(),
+            expirationDate: moment().format('YYYY') + '/12/31'
+        },
+        {
+            _id: 'gergse545yehtdfg',
+            coverageGoal: 25,
+            setRate: 29,
+            effectiveDate: moment().format(),
+            expirationDate: '2017' + '/12/31'
+        },
+        {
+            _id: 'gdhe45e45ydthnytesrfgb',
+            coverageGoal: 17,
+            setRate: 27,
+            effectiveDate: moment().format(),
+            expirationDate: '2018' + '/12/31'
+        },
+        {
+            _id: 'wtsdgdhrt5dure7yh',
+            coverageGoal: 43,
+            setRate: 43,
+            effectiveDate: moment().format(),
+            expirationDate: '2016' + '/12/31'
+        },
+    ];
+
+    @Watch('ots.activeOTSTarget.targetType')
     private onChange(newVal: any, oldVal: any) {
-        if (newVal === 'Fishery') {
-            this.general.activeTarget.target = 'fishery wide';
+        if (newVal === 'Fishery' && this.ots.activeOTSTarget) {
+            this.ots.activeOTSTarget.target = 'fishery wide';
         } else {
-            this.general.activeTarget.target = null;
+            if (this.ots.activeOTSTarget) {
+                this.ots.activeOTSTarget.target = null;
+            }
         }
     }
 

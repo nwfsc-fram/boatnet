@@ -151,7 +151,7 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [{label: 'A21rv35', value: 'A21rv35'}],
-    messages: []
+    messages: [], tripStatus: {description: 'Open'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
@@ -163,7 +163,7 @@ export const trips: OTSTrip[] = [
       {label: 'W32be87', value: 'W32be87'},
       {label: 'N11es32', value: 'N11es32'}
     ],
-    messages: []
+    messages: [], tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},

@@ -38,6 +38,10 @@ export interface VesselState {
   activeVessel: Vessel;
 }
 
+export interface OTSState {
+  activeOTSTarget: OtsTarget | null;
+}
+
 export interface GeneralState {
   ports: string[];
   fisheries: string[];

@@ -8,7 +8,7 @@
             </template>
         </q-banner>
 
-        <q-card class="my-card">
+        <q-card style="padding: 20px; max-width: 400px">
 
             <div class="text-h6">{{ emefp.activeEmefpPermit.emEfpNumber }}</div>
 
@@ -54,10 +54,12 @@
             label="Limited Entry Permit"
             :options="permitOptions">
             </q-select>
-            <q-card-actions style="float:right">
+            <br>
+            <q-card-actions>
                 <q-btn color="red" label="Cancel" icon="warning" to="/em-efp-management" exact/>
                 <q-btn color="primary">Save</q-btn>
             </q-card-actions>
+
         </q-card>
     </div>
 </template>
@@ -209,3 +211,4 @@ export default class EMEFPDetails extends Vue {
 }
 
 </script>
+
