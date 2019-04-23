@@ -12,20 +12,21 @@ const LS_LAST_SYNC_DATE = 'lastSyncDate';
 const lastSync = localStorage.getItem(LS_LAST_SYNC_DATE);
 export const state: PouchDBState = {
   credentials: null,
-  syncStatus: { syncActive: false},
+  syncStatus: { syncActive: false },
   lastSyncDate: lastSync ? lastSync : undefined
 };
 
 function activateSyncListener(commit: any) {
-  pouchService.$off('sync');
-  pouchService.$off('initialSync');
-  pouchService.$on('sync', (sync: PouchDBSyncStatus) => {
+  pouchService.$off('syncChanged');
+  pouchService.$off('syncCompleted');
+  pouchService.$on('syncChanged', (sync: PouchDBSyncStatus) => {
     commit('syncChanged', sync);
   });
-  pouchService.$on('initialsync', (sync: PouchDBSyncStatus) => {
+  pouchService.$on('syncCompleted', (sync: PouchDBSyncStatus) => {
     commit('syncCompleted', sync);
   });
 }
+
 const actions: ActionTree<PouchDBState, any> = {
   // Mutations are asynchronous
   async connect({ commit }: any, credentials: CouchDBCredentials) {
@@ -34,12 +35,12 @@ const actions: ActionTree<PouchDBState, any> = {
   },
   async reconnect({ commit }: any) {
     // will fail if credentials not already set
-    commit('reconnectRequest');
     activateSyncListener( commit );
+    commit('reconnectRequest');
   },
   async disconnect({ commit }: any) {
-    pouchService.$off('sync');
-    pouchService.$off('initialSync');
+    pouchService.$off('syncChanged');
+    pouchService.$off('syncCompleted');
     commit('disconnect');
   },
   async addTest({ commit }: any, todoMsg: { message: string }) {
@@ -72,9 +73,6 @@ const mutations: MutationTree<PouchDBState> = {
   },
   syncChanged(newState: PouchDBState, status: PouchDBSyncStatus) {
     newState.syncStatus = status;
-  },
-  addTest(newState: PouchDBState, testMsg: { message: string }) {
-    pouchService.addTestRow(testMsg);
   }
 };
 
