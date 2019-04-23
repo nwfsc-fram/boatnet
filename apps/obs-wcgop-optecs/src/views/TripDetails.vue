@@ -326,7 +326,7 @@ export default class Trips extends Vue {
     // }
     update(async () => {
       try {
-        const roDBp = pouchService.getDB();
+        const db = pouchService.db;
         const queryOptions: ListOptions = {
           limit: 5,
           start_key: val.toLowerCase(),
@@ -334,7 +334,7 @@ export default class Trips extends Vue {
           descending: false
         };
 
-        const vessels = await roDBp.query('lookups-dev', 'optecs_trawl/all_vessel_names', queryOptions);
+        const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
         this.options = vessels.rows.map((vessel: any) => vessel.value);
       } catch (err) {
         this.errorAlert(err);
@@ -345,6 +345,7 @@ export default class Trips extends Vue {
     // console.log('delayed filter aborted');
   }
   private async testCouch() {
+    // This function is not called. Left here for example purposes.
     try {
       // Lack of documentation, refer to options in code:
       // https://github.com/nozzlegear/davenport/blob/master/index.ts

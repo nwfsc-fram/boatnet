@@ -11,9 +11,11 @@
       <!-- <button @click="vesselViewUpdate()">Update</button> -->
       <!-- <input v-model="message" placeholder="New Test String"> -->
       <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
-      <!-- <div v-for="v in vessels" :key="v._id"> -->
-      <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
-      <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
+      <div v-for="v in vessels" :key="v._id">
+        <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)"> -->
+        <input v-model="v.vesselName">
+      </div>
+      <!-- <button @click="$pouch.remove(selectedDBName, todo)">Remove</button> -->
       <!-- <input v-model="v.vesselName"> -->
 
       <!-- <div>{{vesselView}}</div>
@@ -59,7 +61,18 @@ import moment from 'moment';
 
 Vue.component(BoatnetTrips);
 
-@Component
+@Component({
+  pouch: {
+    vessels() {
+      return {
+        database: pouchService.lookupsDBName, // you can pass a database string or a pouchdb instance
+        selector: { type: 'vessel' },
+        sort: [{ vesselName: 'asc' }],
+        limit: 5 // this.resultsPerPage,
+      };
+    }
+  }
+})
 export default class Trips extends Vue {
   public message = '';
   @State('alert') private alert!: AlertState;
@@ -67,11 +80,10 @@ export default class Trips extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
   @Action('addTest', { namespace: 'pouchState' })
   private addTest: any;
-
-  private selectedDBName = 'lookups-dev';
 
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];

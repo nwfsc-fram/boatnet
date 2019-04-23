@@ -60,25 +60,22 @@ class PouchService extends Vue {
     console.log('[PouchDB Service] Instantiated.');
   }
 
-  // get readonlyDB() {
-  //   if (!this.currentCredentials || !this.couchRO) {
-  //     throw new Error('Please log out and back in again.');
-  //   }
-
-  //   return this.couchRO;
-  // }
-
-  // get userDB() {
-  //   if (!this.currentCredentials || !this.couchUser) {
-  //     throw new Error('Please log out and back in again.');
-  //   }
-
-  //   return this.couchUser;
-  // }
-
-  public getDB() {
-    // console.log(this.$pouch);
+  public get db() {
     return this.$pouch;
+  }
+
+  public get lookupsDBName() {
+    if (!this.currentCredentials ) {
+      throw new Error('Please log out and back in again.');
+    }
+    return this.currentCredentials.dbInfo.readonlyDB;
+  }
+
+  public get userDBName() {
+    if (!this.currentCredentials ) {
+      throw new Error('Please log out and back in again.');
+    }
+    return this.currentCredentials.dbInfo.userDB;
   }
 
   public async connect(credentials: CouchDBCredentials) {
