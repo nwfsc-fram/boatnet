@@ -121,6 +121,8 @@ class PouchService extends Vue {
       }
     };
 
+
+    this.syncActive(credentials.dbInfo);
     const initialSyncUser = await this.$pouch.sync(
       credentials.dbInfo.userDB,
       credentialedUserDB,
@@ -169,18 +171,12 @@ class PouchService extends Vue {
     this.detachListeners();
   }
 
-  public addTestRow(data: { message: string }) {
-    // Testing
-    console.log('[PouchDB Service] Add Test', data);
-    this.$pouch.post('todos', data);
-  }
-
   private syncActive(dbInfo: any) {
     this.currentActiveSyncs++;
     if (!this.isSyncActive) {
       this.isSyncActive = true;
       const syncStatusOn: PouchDBSyncStatus = { syncActive: true, dbInfo };
-      this.$emit('sync', syncStatusOn);
+      this.$emit('syncChanged', syncStatusOn);
       // console.log('[PouchDB Service] Active:', this.currentActiveSyncs);
     }
   }
@@ -200,8 +196,8 @@ class PouchService extends Vue {
 
       if (this.currentActiveSyncs === 0) {
         this.isSyncActive = false;
-        // console.log('[PouchDB Service] Deactivated');
-        this.$emit('sync', syncStatusOff);
+        // console.log('[PouchDB Service] Paused');
+        this.$emit('syncChanged', syncStatusOff);
       }
     }
   }
@@ -238,11 +234,11 @@ class PouchService extends Vue {
       );
     });
     this.$on('pouchdb-sync-denied', (dbInfo: any) => {
-      // console.log('[PouchDB Service]Sync Denied!', dbInfo);
+      console.log('[PouchDB Service]Sync Denied!', dbInfo);
       this.syncDeactive(dbInfo);
     });
     this.$on('pouchdb-sync-error', (dbInfo: any) => {
-      // console.log('[PouchDB Service] Sync Error!', dbInfo.error.message);
+      console.log('[PouchDB Service] Sync Error!', dbInfo.error.message);
       this.syncDeactive(dbInfo);
     });
   }

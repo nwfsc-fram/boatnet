@@ -50,15 +50,14 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-    vessels() {
-      // Example
+    vessels() { // Example - Also declared in class
       return {
         database: pouchService.lookupsDBName,
         selector: { type: 'vessel' },
         sort: [{ vesselName: 'asc' }]
       };
     },
-    userTrips() {
+    userTrips() { // Also declared in class
       return {
         database: pouchService.userDBName,
         selector: { type: 'wcgop-trip' },
@@ -224,12 +223,13 @@ export default class Trips extends Vue {
   }
 
   private handleDeleteTrip(trip: WcgopTrip) {
-    console.log('TODO Prompt User to Delete');
     pouchService.db.remove(pouchService.userDBName, trip);
     this.setCurrentTrip(undefined);
   }
 
   public get userDBTrips() {
+    // TODO: This seems to block the UI - handle asyn
+    // console.log('Called userDBTrips');
     if (this.userTrips) {
       return this.userTrips;
     } else {
@@ -260,7 +260,6 @@ export default class Trips extends Vue {
   }
 
   private get vesselView() {
-    // console.log('vessel view checked');
     return this.vesselViewData;
   }
 
