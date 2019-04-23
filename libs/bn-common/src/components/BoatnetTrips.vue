@@ -35,9 +35,9 @@
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
     <div class="row q-gutter-sm q-pt-sm">
       <q-btn color="primary" icon="add" label="Add Trip" @click="onAddTrip"/>
-      <q-btn color="primary" icon="edit" label="Edit Trip" :disabled="!currentTrip"/>
-      <q-btn color="primary" icon="done" label="End Trip" :disabled="!currentTrip"/>
-      <q-btn color="primary" icon="delete_forever" label="Delete Trip" :disabled="!currentTrip"/>
+      <q-btn color="primary" icon="edit" label="Edit Trip" @click="onEditTrip" :disabled="!currentTrip"/>
+      <q-btn color="primary" icon="done" label="End Trip" @click="onEndTrip" :disabled="!currentTrip"/>
+      <q-btn color="primary" icon="delete_forever" label="Delete Trip" @click="onDeleteTrip" :disabled="!currentTrip"/>
       <q-space/>
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
     </div>
@@ -67,8 +67,22 @@ export default class Trips extends Vue {
     this.$emit('selectedTrip', trip);
   }
 
+  // Button click emitters
   private onAddTrip() {
-    this.$emit('addAFakeTrip', { message: 'This is a test' });
+    this.$emit('addTrip');
+  }
+
+  private onEditTrip() {
+    this.$emit('editTrip', this.currentTrip);
+
+  }
+
+  private onEndTrip() {
+    this.$emit('endTrip', this.currentTrip);
+  }
+
+  private onDeleteTrip() {
+    this.$emit('deleteTrip', this.currentTrip);
   }
 
   private displayKeyboard(e: any) {

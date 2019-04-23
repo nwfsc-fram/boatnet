@@ -25,8 +25,6 @@ declare module 'vue/types/vue' {
   interface Vue {
     // @ts-ignore
     $pouch: PublicPouchVueMethods; // optional if `PouchDB` is available on the global object
-    // @ts-ignore
-    // $pouchUser: PouchDB; // optional if `PouchDB` is available on the global object
     $defaultDB: string; // the database to use if none is specified in the pouch setting of the vue component
   }
 }
@@ -54,8 +52,8 @@ class PouchService extends Vue {
     super();
 
     // If pouchdb sync events listeners are set, remove them
-    this.detachHandlers();
-    this.attachHandlers();
+    this.detachListeners();
+    this.attachListeners();
 
     console.log('[PouchDB Service] Instantiated.');
   }
@@ -168,9 +166,9 @@ class PouchService extends Vue {
   }
   public async disconnect() {
     // console.log('TODO Disconnect from PouchDB');
+    this.detachListeners();
   }
 
-  // private initialSync(dbInfo)
   public addTestRow(data: { message: string }) {
     // Testing
     console.log('[PouchDB Service] Add Test', data);
@@ -208,7 +206,7 @@ class PouchService extends Vue {
     }
   }
 
-  private detachHandlers() {
+  private detachListeners() {
     this.$off('pouchdb-sync-active');
     this.$off('pouchdb-sync-complete');
     this.$off('pouchdb-sync-paused');
@@ -216,7 +214,7 @@ class PouchService extends Vue {
     this.$off('pouchdb-sync-denied');
     this.$off('pouchdb-sync-error');
   }
-  private attachHandlers() {
+  private attachListeners() {
     // Hook up pouchdb sync events
     this.$on('pouchdb-sync-active', (dbInfo: any) => {
       // console.log('[PouchDB Service] Sync Active!', dbInfo);

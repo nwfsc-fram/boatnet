@@ -13,7 +13,10 @@
         :tripsData="userDBTrips"
         :currentTrip="currentTrip"
         @selectedTrip="handleSelectTrip"
-        @addAFakeTrip="handleAddTrip"
+        @addTrip="handleAddTrip"
+        @editTrip="handleEditTrip"
+        @endTrip="handleEndTrip"
+        @deleteTrip="handleDeleteTrip"
         @displayKeyboard="displayKeyboard"
       />
     </q-page>
@@ -47,7 +50,8 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-    vessels() { // Example
+    vessels() {
+      // Example
       return {
         database: pouchService.lookupsDBName,
         selector: { type: 'vessel' },
@@ -61,7 +65,7 @@ Vue.component(BoatnetTrips);
         sort: [{ tripNum: 'desc' }]
         // limit: 5 // this.resultsPerPage,
       };
-    },
+    }
   }
 })
 export default class Trips extends Vue {
@@ -71,8 +75,10 @@ export default class Trips extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
-  @Getter('currentTrip', { namespace: 'appState' }) private currentTrip!: WcgopTrip;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
+  @Getter('currentTrip', { namespace: 'appState' })
+  private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
   private addTest: any;
 
@@ -194,19 +200,32 @@ export default class Trips extends Vue {
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
-    // if (trip) {
-    //   this.$router.push({ path: '/tripdetails/' + 1 });
-    // }
   }
 
-  private handleAddTrip(tmp: any) {
-    console.log('TODO: Create trip logic'); // TODO
-    const trip: WcgopTrip = {...this.testingTrip}; // Clone
+  private handleAddTrip() {
+    console.log('TODO: Create trip logic'); // TODO Temporary Add Logic
+    const trip: WcgopTrip = { ...this.testingTrip }; // Clone
     if (this.userDBTrips[0]) {
       trip.tripNum = this.userDBTrips[0].tripNum + 1;
     }
     pouchService.db.post(pouchService.userDBName, trip);
     // this.$router.push({ path: '/tripdetails/' + 1 });
+  }
+
+  private handleEditTrip(trip: WcgopTrip) {
+    if (trip) {
+      console.log('[TODO Vuex] Edit', trip.tripNum);
+      this.$router.push({ path: '/tripdetails/' + trip.tripNum });
+    }
+  }
+
+  private handleEndTrip(trip: WcgopTrip) {
+    console.log('TODO End', trip.tripNum);
+  }
+
+  private handleDeleteTrip(trip: WcgopTrip) {
+    console.log('TODO Prompt User to Delete');
+    pouchService.db.remove(pouchService.userDBName, trip);
   }
 
   public get userDBTrips() {
