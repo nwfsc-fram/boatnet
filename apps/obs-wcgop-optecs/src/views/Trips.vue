@@ -8,23 +8,6 @@
         </template>
       </q-banner>
 
-      <!-- <button @click="vesselViewUpdate()">Update</button> -->
-      <!-- <input v-model="message" placeholder="New Test String"> -->
-      <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
-      <div v-for="v in vessels" :key="v._id">
-        <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)"> -->
-        <input v-model="v.vesselName">
-      </div>
-      <!-- <button @click="$pouch.remove(selectedDBName, todo)">Remove</button> -->
-      <!-- <input v-model="v.vesselName"> -->
-
-      <!-- <div>{{vesselView}}</div>
-        <div v-for="ves in vesselView" :key="ves._id">
-          <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
-          <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>
-          <div class="text-caption">{{ves}}</div>
-      </div>-->
-
       <boatnet-trips
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
@@ -63,14 +46,21 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-    vessels() {
+    vessels() { // Example
       return {
-        database: pouchService.lookupsDBName, // you can pass a database string or a pouchdb instance
+        database: pouchService.lookupsDBName,
         selector: { type: 'vessel' },
-        sort: [{ vesselName: 'asc' }],
-        limit: 5 // this.resultsPerPage,
+        sort: [{ vesselName: 'asc' }]
       };
-    }
+    },
+    userTrips() {
+      return {
+        database: pouchService.userDBName,
+        selector: { type: 'wcgop-trip' },
+        sort: [{ tripNum: 'desc' }]
+        // limit: 5 // this.resultsPerPage,
+      };
+    },
   }
 })
 export default class Trips extends Vue {
@@ -92,6 +82,7 @@ export default class Trips extends Vue {
   private myPouchDB: any;
   private vesselViewData: any;
 
+  private userTrips!: any;
   constructor() {
     super();
 
@@ -180,9 +171,8 @@ export default class Trips extends Vue {
       vesselName: 'Pickle Pelican'
     };
     const exampleTrip = {
-      _id: '1',
       tripNum: 1,
-      type: 'test', // WcgopTripTypeName,
+      type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
       program: 'Catch Shares',
@@ -199,7 +189,6 @@ export default class Trips extends Vue {
       }
     };
     const exampleTrip2 = {
-      _id: '2',
       tripNum: 2,
       type: WcgopTripTypeName,
       createdBy: 'test',
@@ -215,6 +204,7 @@ export default class Trips extends Vue {
       // ... other data
     };
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
+    console.log(this.userTrips);
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
@@ -226,8 +216,13 @@ export default class Trips extends Vue {
   }
 
   private handleAddTrip(tmp: any) {
-    console.log('TODO: Create trip', tmp); // TODO
-    this.$router.push({ path: '/tripdetails/' + 1 });
+    console.log('TODO: Create trip', this.wcgopTripsData[0]); // TODO
+    const trip = this.wcgopTripsData[0];
+    if (trip) {
+      delete trip.__index; // remove weird __index field for converting to trip
+    }
+    pouchService.db.post(pouchService.userDBName, this.wcgopTripsData[0]);
+//    this.$router.push({ path: '/tripdetails/' + 1 });
     // this.selectedDatabase = this.currentReadonlyDB;
     // console.log('ADD', this.selectedDatabase);
     // this.addTest(tmp);
