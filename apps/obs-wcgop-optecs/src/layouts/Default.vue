@@ -19,7 +19,10 @@
           icon="chevron_left"
           size="1.5em"
         />
-        <optecs-breadcrumbs/>
+        <q-toolbar-title>
+          <optecs-breadcrumbs/>
+        </q-toolbar-title>
+        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
@@ -110,10 +113,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
 import router from '../router';
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
+import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
+import { AlertState } from '../_store/index';
+import { Action, Getter, State } from 'vuex-class';
 
 @Component({
   components: {
@@ -122,11 +128,22 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 })
 
 export default class DefaultLayout extends Vue {
+  @State('alert') private alert!: AlertState;
+  @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
+  @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
   private leftDrawerOpen: boolean;
 
   constructor() {
     super();
     this.leftDrawerOpen = Platform.is.desktop;
+    if (!pouchService.isConnected) {
+      // Reconnect PouchDB if page refreshed but still logged in
+      this.reconnect().catch((err: any) => {
+        this.errorAlert(err);
+      });
+    }
   }
 
   private navigateBack() {

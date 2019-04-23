@@ -5,7 +5,7 @@
   "types": "index.d.ts",
   "private": true,
   "scripts": {
-    "build": "tsc index.ts -d --module commonjs --outDir dist/"
+    "build": "tsc -d --module commonjs --outDir dist/"
   },
   "devDependencies": {
     "typescript": "^3.4.2"

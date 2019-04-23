@@ -7,6 +7,7 @@ import {
 import { Vessel, Port, Person } from '../_lookups/index';
 
 export interface BaseTrip extends Base {
+  tripNum?: number; // For internal use, sequential
   operationIDs?: CouchID[]; // Haul/ Set UUID's
   captain?: Person;
   vessel?: Vessel;

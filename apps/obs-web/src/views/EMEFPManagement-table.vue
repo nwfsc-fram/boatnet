@@ -21,7 +21,7 @@
             :selected.sync="selected"
             :pagination.sync="pagination"
             >
-            
+
         <template v-slot:body="props">
         <q-tr :props="props" @click.native="emefpDetails(props.row)">
           <q-td key="id"></q-td>
@@ -145,5 +145,3 @@ private emefpDetails(permit: EmEfpPermit) {
     width: 100px;
 }
 </style>
-
-

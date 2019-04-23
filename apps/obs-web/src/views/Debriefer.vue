@@ -157,4 +157,3 @@ export default class Debriefer extends Vue {
   ];
 }
 </script>
-

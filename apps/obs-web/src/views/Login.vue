@@ -61,7 +61,7 @@
       :input="input"
     />
 
-            <div style="text-align: center;" 
+            <div style="text-align: center;"
             class="absolute-bottom">
                     <div>
           <b>Last Software Update Date:</b>
@@ -132,7 +132,8 @@ export default class Login extends Vue {
   }
 
   @Watch('$route', { immediate: true, deep: true })
-  private onUrlChange(newVal: any) {
+  private onUrlChange(newVal: string, oldVal: string) {
+    console.log('URL CHANGED', newVal, oldVal);
     this.clear();
   }
 

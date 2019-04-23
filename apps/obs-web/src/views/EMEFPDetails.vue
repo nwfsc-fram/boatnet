@@ -211,4 +211,3 @@ export default class EMEFPDetails extends Vue {
 }
 
 </script>
-

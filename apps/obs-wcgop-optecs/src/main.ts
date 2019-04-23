@@ -20,23 +20,32 @@ import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
 
 import {
   Quasar,
+  ClosePopup,
+  QAvatar,
   QBanner,
   QBreadcrumbs,
   QBreadcrumbsEl,
   QBtn,
   QBtnGroup,
   QBtnToggle,
+  QCard,
+  QCardSection,
+  QCardActions,
   QCheckbox,
+  QDialog,
+  QDrawer,
   QLayout,
   QHeader,
   QInput,
-  QDrawer,
   QOptionGroup,
   QPageContainer,
   QPage,
   QSelect,
   QSeparator,
   QSpinner,
+  QSpinnerBars,
+  QSpinnerHourglass,
+  QSpinnerRadio,
   QSpace,
   QTab,
   QTabs,
@@ -60,16 +69,21 @@ Vue.use(VueTouchKeyboard);
 Vue.use(Quasar, {
   config: {},
   components: {
+    QAvatar,
     QBanner,
     QBreadcrumbs,
     QBreadcrumbsEl,
     QBtn,
     QBtnGroup,
     QBtnToggle,
+    QCard,
+    QCardSection,
+    QCardActions,
     QCheckbox,
     QLayout,
     QHeader,
     QInput,
+    QDialog,
     QDrawer,
     QOptionGroup,
     QPageContainer,
@@ -77,6 +91,9 @@ Vue.use(Quasar, {
     QSelect,
     QSeparator,
     QSpinner,
+    QSpinnerBars,
+    QSpinnerHourglass,
+    QSpinnerRadio,
     QSpace,
     QTd,
     QTr,
@@ -94,7 +111,9 @@ Vue.use(Quasar, {
     QItemSection,
     QItemLabel
   },
-  directives: {},
+  directives: {
+    ClosePopup
+  },
   plugins: {}
 });
 
@@ -107,4 +126,3 @@ new Vue({
   store,
   render: (h) => h(App)
 }).$mount('#app');
-

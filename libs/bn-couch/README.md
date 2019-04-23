@@ -1,2 +1,2 @@
-# bn-couchdb
-Common Boatnet Pouch/CouchDB Routines
+# bn-couch
+Common Boatnet CouchDB Routines

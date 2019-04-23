@@ -143,5 +143,3 @@ private emefpDetails(permit: EmEfpPermit) {
     width: 100px;
 }
 </style>
-
-

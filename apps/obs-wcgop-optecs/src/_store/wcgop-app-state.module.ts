@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { WcgopAppState, RootState } from '@/_store/types/types';
 import { WcgopTrip, BoatnetUser } from '@boatnet/bn-models';
 
@@ -14,6 +14,9 @@ export const state: WcgopAppState = {
 const actions: ActionTree<WcgopAppState, RootState> = {
   setCurrentTrip({ commit }: any, trip: WcgopTrip) {
     commit('setCurrentTrip', trip);
+  },
+  clear({ commit }: any) {
+    commit('setCurrentTrip', undefined);
   },
   navigate({ commit }: any, uri: string) {
     commit('navigate', uri);
@@ -46,9 +49,16 @@ const mutations: MutationTree<WcgopAppState> = {
   }
 };
 
+const getters: GetterTree<WcgopAppState, RootState> = {
+  currentTrip(getState: WcgopAppState) {
+    return getState.currentTrip;
+  }
+};
+
 export const appState: Module<WcgopAppState, RootState> = {
   namespaced: true,
   state,
   actions,
-  mutations
+  mutations,
+  getters
 };

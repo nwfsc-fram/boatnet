@@ -3,7 +3,7 @@
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
     <q-page padding>
@@ -60,7 +60,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="formatDate(currentTrip.departureDate)"
+                :value="shortFormat(currentTrip.departureDate)"
                 label="Departure Date/ Time"
               />
               <q-input
@@ -139,7 +139,7 @@
               <q-input
                 outlined
                 class="col-2"
-                :value="formatDate(currentTrip.returnDate)"
+                :value="shortFormat(currentTrip.returnDate)"
                 label="Return Date/Time"
               />
               <q-input
@@ -187,6 +187,8 @@ import moment from 'moment';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
+import { shortFormatDate } from '@boatnet/bn-util';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -200,6 +202,7 @@ import {
   PersonTypeName,
   VesselTypeName
 } from '@boatnet/bn-models';
+
 import { couchService } from '@boatnet/bn-couch';
 
 @Component
@@ -208,13 +211,14 @@ export default class Trips extends Vue {
   @Prop(Number) public tripNum!: number; // Passed by router
   public model: any = null;
   @State('alert') private alert!: AlertState;
-  @Action('clear', { namespace: 'alert' }) private clear: any;
-  @Action('error', { namespace: 'alert' }) private error: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  private shortFormat = shortFormatDate;
 
   private tab: string; // Current tab (start or end)
   private currentTrip: WcgopTrip;
   private ph = ''; // TEMP
-  private stringOptions = ['Ruby', 'Samson', 'Shooster'];
+
   private options: string[] = [];
 
   constructor() {
@@ -306,6 +310,7 @@ export default class Trips extends Vue {
     }
   }
 
+
   private displayKeyboard(e: any) {
     this.$emit('displayKeyboard', e.target);
   }
@@ -315,27 +320,24 @@ export default class Trips extends Vue {
     return moment(dateStr).format('MM/DD/YY hh:mm');
   }
   private async filterFn(val: string, update: any, abort: any) {
-    if (val.length < 2) {
-      abort();
-      return;
-    }
+    // if (val.length < 2) {
+    //   abort();
+    //   return;
+    // }
     update(async () => {
       try {
-        const roDB: Client<any> = couchService.readonlyDB;
+        const db = pouchService.db;
         const queryOptions: ListOptions = {
           limit: 5,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false
         };
-        const vessels = await roDB.view<any>(
-          'optecs_trawl',
-          'all_vessel_names',
-          queryOptions
-        );
-        this.options = vessels.rows.map((vessel) => vessel.value);
+
+        const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
+        this.options = vessels.rows.map((vessel: any) => vessel.value);
       } catch (err) {
-        this.error(err);
+        this.errorAlert(err);
       }
     });
   }
@@ -343,6 +345,7 @@ export default class Trips extends Vue {
     // console.log('delayed filter aborted');
   }
   private async testCouch() {
+    // This function is not called. Left here for example purposes.
     try {
       // Lack of documentation, refer to options in code:
       // https://github.com/nozzlegear/davenport/blob/master/index.ts
@@ -366,7 +369,7 @@ export default class Trips extends Vue {
         console.log(v.value);
       }
     } catch (err) {
-      this.error(err);
+      this.errorAlert(err);
     }
   }
 }
