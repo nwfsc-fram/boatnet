@@ -1,11 +1,6 @@
 <template>
     <div>
-        <div class="q-pa-md q-gutter-sm centered-page-item">
-            <q-btn color="primary" @click="getPermits">
-                get permits
-            </q-btn>
-        </div>
-        <div class="centered-page-item"><strong>Active Permits</strong></div>
+        <div class="centered-page-item" style="margin: 10px"><strong>Active Permits</strong></div>
         <q-list bordered separator>
             <q-item v-for="(permit, i) of filteredPermits" :key="i">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
@@ -55,6 +50,7 @@ export default class Permits extends Vue {
             .then( (response) => {
                 // this.$store.dispatch('updatePermits', response.data.items);
                 this.permit.permits = response.data.items;
+                console.log(this.permit.permits);
             });
     }
 
@@ -74,6 +70,9 @@ export default class Permits extends Vue {
             }
     }
 
+    private created() {
+        this.getPermits();
+    }
 
 }
 </script>

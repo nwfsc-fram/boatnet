@@ -1,17 +1,9 @@
 import { BoatnetUser } from '@boatnet/bn-auth';
-import { BoatnetDate, WcgopTrip, Base, Port, Vessel } from '@boatnet/bn-models';
+import { BoatnetDate, WcgopTrip, Base, Port, Vessel, EmEfpPermit } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
   version: string;
-}
-
-export interface AuthState {
-  status: {
-    isLoggingIn?: boolean;
-    isLoggedIn?: boolean;
-  };
-  user: BoatnetUser | null;
 }
 
 export interface AlertState {
@@ -31,6 +23,11 @@ export interface PermitState {
   filterText: string;
 }
 
+export interface EmefpState {
+  activeEmefpPermit: EmEfpPermit | null;
+  filterText: string;
+}
+
 export interface UserState {
   activeUser: OTSUser;
   users: OTSUser[];
@@ -39,6 +36,10 @@ export interface UserState {
 
 export interface VesselState {
   activeVessel: Vessel;
+}
+
+export interface OTSState {
+  activeOTSTarget: OtsTarget | null;
 }
 
 export interface GeneralState {

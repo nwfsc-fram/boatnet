@@ -8,6 +8,8 @@
         label="Search"
         maxlength="12"
         style="width: 200px;"
+        @focus="displayKeyboard"
+        data-layout="normal"
       >
         <template v-slot:append>
           <q-icon
@@ -45,6 +47,10 @@ export default class BoatnetHauls extends Vue {
   @Prop() public haulsData!: any[];
   @Prop() public selected: any;
   private searchText = '';
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e.target);
+  }
 }
 </script>
 

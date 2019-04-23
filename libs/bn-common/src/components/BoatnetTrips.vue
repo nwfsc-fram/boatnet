@@ -8,6 +8,8 @@
         label="Search"
         maxlength="12"
         style="width: 200px;"
+        @focus="displayKeyboard"
+        data-layout="normal"
       >
         <template v-slot:append>
           <q-icon
@@ -46,15 +48,12 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
-
 @Component
 export default class Trips extends Vue {
   @Prop() public tripsSettings!: BoatnetTripsSettings;
   @Prop() public tripsData!: any[];
   public selected: any[] = [];
-
   private searchText = '';
-
   @Watch('selected', { immediate: true })
   private onSelectedChanged(newSelected: any) {
     // TODO: Better way to handle this?
@@ -67,6 +66,10 @@ export default class Trips extends Vue {
 
   private onAddTrip() {
     this.$emit('addAFakeTrip', { message: 'This is a test' });
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>
@@ -87,7 +90,6 @@ li {
 a {
   color: #42b983;
 }
-
 .q-btn {
   height: 75px;
 }

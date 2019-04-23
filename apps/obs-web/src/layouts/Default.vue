@@ -57,15 +57,35 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/ots-dashboard" exact>
+        <q-item to="/em-efp-management-responsive" exact>
+          <q-item-section avatar>
+            <q-icon name="videocam"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>EM EFP Management Responsive</q-item-label>
+            <q-item-label caption>Manage EM EFP Roster</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item to="/em-efp-management-table" exact>
+          <q-item-section avatar>
+            <q-icon name="videocam"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>EM EFP Management Table</q-item-label>
+            <q-item-label caption>Manage EM EFP Roster</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item to="/ots-management" exact>
           <q-item-section avatar>
             <q-icon name="waves"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>OTS Dashboard</q-item-label>
-            <q-item-label caption>Monitor OTS Performance</q-item-label>
+            <q-item-label>OTS Management</q-item-label>
+            <q-item-label caption>Manage Selection Targets</q-item-label>
           </q-item-section>
-        </q-item>        
+        </q-item>
 
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
@@ -86,16 +106,6 @@
           <q-item-section>
             <q-item-label>Permits</q-item-label>
             <q-item-label caption>Associate captains to permits/vessels</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item to="/ots-management" exact>
-          <q-item-section avatar>
-            <q-icon name="waves"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>OTS Management</q-item-label>
-            <q-item-label caption>Manage Selection Targets</q-item-label>
           </q-item-section>
         </q-item>
 

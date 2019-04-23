@@ -23,6 +23,7 @@
           <optecs-breadcrumbs/>
         </q-toolbar-title>
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
+        <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
@@ -106,7 +107,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view/>
+      <router-view @displayKeyboard="displayKeyboard"/>
     </q-page-container>
   </q-layout>
 </template>
@@ -114,9 +115,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Platform } from 'quasar';
-
 import router from '../router';
-
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
@@ -127,6 +126,7 @@ import { Action, Getter, State } from 'vuex-class';
     'optecs-breadcrumbs': OptecsBreadcrumbs
   }
 })
+
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
@@ -148,6 +148,10 @@ export default class DefaultLayout extends Vue {
 
   private navigateBack() {
     this.$router.back();
+  }
+
+  private displayKeyboard(event: any) {
+    this.$emit('displayKeyboard', event);
   }
 }
 </script>

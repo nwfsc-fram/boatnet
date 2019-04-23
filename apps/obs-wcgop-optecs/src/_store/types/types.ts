@@ -19,4 +19,5 @@ export interface BreadcrumbNavigation {
 export interface WcgopAppState {
   currentNavigation?: BreadcrumbNavigation;
   currentTrip?: WcgopTrip;
+  isKeyboardEnabled?: boolean;
 }

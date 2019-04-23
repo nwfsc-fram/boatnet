@@ -151,7 +151,7 @@ export const trips: OTSTrip[] = [
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [{label: 'A21rv35', value: 'A21rv35'}],
-    messages: []
+    messages: [], tripStatus: {description: 'Open'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
@@ -163,7 +163,7 @@ export const trips: OTSTrip[] = [
       {label: 'W32be87', value: 'W32be87'},
       {label: 'N11es32', value: 'N11es32'}
     ],
-    messages: []
+    messages: [], tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
@@ -1445,4 +1445,21 @@ export const portDecoder = [
     PCID: 'OWA',
     NAME: 'OTHER OR UNKNOWN WASHINGTON PORTS',
     WCGOP_GROUP: 'ZZ'
+  }];
+
+export const EM_EFP = [
+  {
+    vessel_name: 'Alex', USCG: '580568', LEP: 'GF0084',
+    EFP_Type: 'Leipzig', Gear: ['Bottom trawl, midwater'],
+    Sector: null, EM_EFP_Number: 'EM-34', Notes: null
+  },
+  {
+    vessel_name: 'Alyssa Ann', USCG: '976374', LEP: 'GF0875',
+    EFP_Type: 'Eder', Gear: ['Pot'],
+    Sector: null, EM_EFP_Number: 'EM-04', Notes: null
+  },
+  {
+    vessel_name: 'Arctic Fury', USCG: '996920', LEP: 'GF0675',
+    EFP_Type: 'Whiting', Gear: ['Midwater trawl'],
+    Sector: 'Both', EM_EFP_Number: 'EM-38', Notes: null
   }];

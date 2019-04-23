@@ -24,6 +24,8 @@
                 input-debounce="0"
                 :options="options"
                 @filter="filterFn"
+                @focus="displayKeyboard"
+                data-layout="normal"
               >
                 <template v-slot:no-option>
                   <q-item>
@@ -31,14 +33,29 @@
                   </q-item>
                 </template>
               </q-select>
-              <q-input outlined class="col-2" v-model="currentTrip.fishery.name" label="Fishery"/>
-              <q-input outlined class="col-2" v-model="captainName" label="Skipper's Name"/>
-              <q-input outlined class="col-2" v-model="currentTrip.crewSize" label="# of Crew"/>
+              <q-input
+                outlined
+                class="col-2"
+                v-model="captainName"
+                label="Skipper's Name"
+                @focus="displayKeyboard"
+                data-layout="normal"
+              />
+              <q-input
+                outlined
+                class="col-2"
+                v-model="currentTrip.crewSize"
+                label="# of Crew"
+                @focus="displayKeyboard"
+                data-layout="numeric"
+              />
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.observerLogbookNum"
                 label="Observer Logbook #"
+                @focus="displayKeyboard"
+                data-layout="numeric"
               />
               <q-input
                 outlined
@@ -51,12 +68,21 @@
                 class="col-2"
                 v-model="currentTrip.departurePort.name"
                 label="Departure Port"
+                @focus="displayKeyboard"
+                data-layout="normal"
               />
 
               <div class="text-h6 col-2">Permit / License Numbers</div>
               <!-- TODO this should be a component -->
               <div class="row">
-                <q-input outlined class="col-12" v-model="ph" label="Permit/ License #"/>
+                <q-input
+                  outlined
+                  class="col-12"
+                  v-model="ph"
+                  label="Permit/ License #"
+                  @focus="displayKeyboard"
+                  data-layout="normal"
+                />
               </div>
             </div>
           </div>
@@ -91,18 +117,24 @@
                 class="col-2"
                 v-model="currentTrip.logbookType"
                 label="Vessel Logbook Name"
+                @focus="displayKeyboard"
+                data-layout="normal"
               />
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
+                @focus="displayKeyboard"
+                data-layout="numeric"
               />
               <q-input
                 outlined
                 class="col-2"
                 v-model="currentTrip.returnPort.name"
                 label="Return Port"
+                @focus="displayKeyboard"
+                data-layout="normal"
               />
               <q-input
                 outlined
@@ -110,11 +142,25 @@
                 :value="shortFormat(currentTrip.returnDate)"
                 label="Return Date/Time"
               />
-              <q-input outlined class="col-2" :value="firstReceiverName" label="First Receiver"/>
+              <q-input
+                outlined
+                class="col-2"
+                :value="firstReceiverName"
+                label="First Receiver"
+                @focus="displayKeyboard"
+                data-layout="normal"
+              />
               <div class="text-h6 col-2">Fish Tickets</div>
               <!-- TODO this should be a component -->
               <div class="row">
-                <q-input outlined class="col-12" v-model="ph" label="Fish Ticket"/>
+                <q-input
+                  outlined
+                  class="col-12"
+                  v-model="ph"
+                  label="Fish Ticket"
+                  @focus="displayKeyboard"
+                  data-layout="numeric"
+                />
               </div>
             </div>
           </div>
@@ -138,7 +184,6 @@
 import { Point } from 'geojson';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
@@ -158,24 +203,20 @@ import {
   VesselTypeName
 } from '@boatnet/bn-models';
 
-import { couchService } from '@boatnet/bn-couch'; // TODO Pouch
+import { couchService } from '@boatnet/bn-couch';
 
 @Component
 export default class Trips extends Vue {
   @Prop({ default: 'start' }) public startTab!: string;
   @Prop(Number) public tripNum!: number; // Passed by router
-
   public model: any = null;
-
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   private shortFormat = shortFormatDate;
 
   private tab: string; // Current tab (start or end)
-
   private currentTrip: WcgopTrip;
-
   private ph = ''; // TEMP
 
   private options: string[] = [];
@@ -190,7 +231,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Oxnard'
     };
-
     const examplePort2: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -198,7 +238,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Port Townsend'
     };
-
     const exampleContact: Person = {
       _id: 'asdf',
       type: PersonTypeName,
@@ -207,7 +246,6 @@ export default class Trips extends Vue {
       firstName: 'Seadog',
       lastName: 'McGillicutty'
     };
-
     const exampleVessel: Vessel = {
       _id: 'asdf',
       type: VesselTypeName,
@@ -216,7 +254,6 @@ export default class Trips extends Vue {
       vesselName: 'Pickle Pelican (CF1890HT)',
       coastGuardNumber: 'ABC123'
     };
-
     // TODO This is just an example trip
     this.currentTrip = {
       _id: '1',
@@ -247,7 +284,6 @@ export default class Trips extends Vue {
       }
     };
   }
-
   get captainName(): string | undefined {
     if (this.currentTrip.captain) {
       return (
@@ -257,7 +293,6 @@ export default class Trips extends Vue {
       );
     }
   }
-
   get firstReceiverName(): string | undefined {
     if (
       this.currentTrip.firstReceivers &&
@@ -266,6 +301,7 @@ export default class Trips extends Vue {
       return this.currentTrip.firstReceivers[0].name;
     }
   }
+
   get vesselReg() {
     if (this.currentTrip.vessel) {
       return this.currentTrip.vessel.coastGuardNumber
@@ -274,13 +310,20 @@ export default class Trips extends Vue {
     }
   }
 
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e.target);
+  }
+
+  // TODO move to shared util?
+  private formatDate(dateStr: string): string {
+    return moment(dateStr).format('MM/DD/YY hh:mm');
+  }
   private async filterFn(val: string, update: any, abort: any) {
-    // Had this length check for speed before, but unneeded with pouchDB.
     // if (val.length < 2) {
     //   abort();
     //   return;
     // }
-
     update(async () => {
       try {
         const roDBp = pouchService.getDB();
@@ -298,24 +341,19 @@ export default class Trips extends Vue {
       }
     });
   }
-
   private abortFilterFn() {
     // console.log('delayed filter aborted');
   }
-
   private async testCouch() {
     try {
       // Lack of documentation, refer to options in code:
       // https://github.com/nozzlegear/davenport/blob/master/index.ts
-
       const userDB: Client<any> = couchService.userDB;
       const roDB: Client<any> = couchService.readonlyDB;
-
       // Example:
       // const singleDoc = await userDB.get<MyDocType>('489337588b5ff50b96779b7151001b7c');
       const userStuff = await userDB.listWithDocs();
       console.log(userStuff);
-
       const options: ListOptions = {
         limit: 10,
         start_key: 'f',

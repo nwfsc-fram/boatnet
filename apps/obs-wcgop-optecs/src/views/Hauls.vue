@@ -1,5 +1,9 @@
 <template>
-  <boatnet-hauls v-bind:haulsSettings="wcgopHaulsSettings" v-bind:haulsData="wcgopHaulsData"/>
+  <boatnet-hauls
+    v-bind:haulsSettings="wcgopHaulsSettings"
+    v-bind:haulsData="wcgopHaulsData"
+    @displayKeyboard="displayKeyboard"
+  />
 </template>
 
 
@@ -140,9 +144,11 @@ export default class Hauls extends Vue {
       targetStrategy: 'BANK'
     };
 
-
-
     this.wcgopHaulsData = [exampleHaul, exampleHaul2];
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e);
   }
 }
 </script>

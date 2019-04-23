@@ -8,27 +8,27 @@
         </template>
       </q-banner>
 
+      <!-- <button @click="vesselViewUpdate()">Update</button> -->
+      <!-- <input v-model="message" placeholder="New Test String"> -->
+      <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
+      <!-- <div v-for="v in vessels" :key="v._id"> -->
+      <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
+      <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
+      <!-- <input v-model="v.vesselName"> -->
 
-        <!-- <button @click="vesselViewUpdate()">Update</button> -->
-        <!-- <input v-model="message" placeholder="New Test String"> -->
-        <!-- <button @click="$pouch.post(selectedDBName, {type: 'test', message: message});message=''">Save</button> -->
-        <!-- <div v-for="v in vessels" :key="v._id"> -->
-          <!-- <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
-          <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>-->
-          <!-- <input v-model="v.vesselName"> -->
-
-        <!-- <div>{{vesselView}}</div>
+      <!-- <div>{{vesselView}}</div>
         <div v-for="ves in vesselView" :key="ves._id">
           <input v-model="todo.vessel_name" @change="$pouch.put(selectedDBName, todo)">
           <button @click="$pouch.remove(selectedDBName, todo)">Remove</button>
           <div class="text-caption">{{ves}}</div>
-        </div> -->
+      </div>-->
 
       <boatnet-trips
         v-bind:tripsSettings="wcgopTripsSettings"
         v-bind:tripsData="wcgopTripsData"
         @selectedTrip="handleSelectTrip"
         @addAFakeTrip="handleAddTrip"
+        @displayKeyboard="displayKeyboard"
       />
     </q-page>
   </span>
@@ -55,7 +55,6 @@ import {
   Vessel,
   VesselTypeName
 } from '@boatnet/bn-models';
-
 import moment from 'moment';
 
 Vue.component(BoatnetTrips);
@@ -68,11 +67,12 @@ export default class Trips extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
-  @Action('addTest', { namespace: 'pouchState' }) private addTest: any;
+  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
+  @Action('addTest', { namespace: 'pouchState' })
+  private addTest: any;
 
   private selectedDBName = 'lookups-dev';
+
   private wcgopTripsSettings: BoatnetTripsSettings;
   private wcgopTripsData: any[];
 
@@ -139,7 +139,6 @@ export default class Trips extends Vue {
         }
       ]
     };
-
     const examplePort: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -147,7 +146,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Oxnard'
     };
-
     const examplePort2: Port = {
       _id: 'asdf2',
       type: PortTypeName,
@@ -155,7 +153,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Port Townsend'
     };
-
     const exampleVessel: Vessel = {
       _id: '1',
       type: VesselTypeName,
@@ -163,7 +160,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Sadie K'
     };
-
     const exampleVessel2: Vessel = {
       _id: '2',
       type: VesselTypeName,
@@ -171,7 +167,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Pickle Pelican'
     };
-
     const exampleTrip = {
       _id: '1',
       tripNum: 1,
@@ -191,7 +186,6 @@ export default class Trips extends Vue {
         tripId: 123
       }
     };
-
     const exampleTrip2 = {
       _id: '2',
       tripNum: 2,
@@ -208,7 +202,6 @@ export default class Trips extends Vue {
       vessel: exampleVessel2
       // ... other data
     };
-
     this.wcgopTripsData = [exampleTrip, exampleTrip2];
   }
 
@@ -252,19 +245,13 @@ export default class Trips extends Vue {
     return this[this.selectedDBName];
   }
 
-  private async vesselViewUpdate() {
-    const data = await this.$pouch.query(
-      this.selectedDBName,
-      'optecs_trawl/all_vessel_names'
-    );
-    this.vesselViewData = data.rows.map((d: any) => d.value);
-    console.log(this.vesselViewData);
-    this.vesselView();
-  }
-
   private get vesselView() {
     // console.log('vessel view checked');
     return this.vesselViewData;
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e);
   }
 }
 </script>

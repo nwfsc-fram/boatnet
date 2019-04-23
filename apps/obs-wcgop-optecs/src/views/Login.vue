@@ -30,7 +30,14 @@
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
 
-          <q-input outlined ref="username" v-model="username" label="Username"/>
+          <q-input
+            outlined
+            ref="username"
+            v-model="username"
+            label="Username"
+            @focus="displayKeyboard"
+            data-layout="normal"
+          />
 
           <q-input
             outlined
@@ -39,6 +46,8 @@
             v-model="password"
             label="Password"
             autocomplete="boatnet password"
+            @focus="displayKeyboard"
+            data-layout="normal"
           >
             <template v-slot:append>
               <q-icon
@@ -67,14 +76,6 @@
         </div>
       </div>
     </q-page-container>
-    <vue-touch-keyboard
-      :options="options"
-      v-if="visible"
-      :layout="layout"
-      :cancel="hide"
-      :accept="accept"
-      :input="input"
-    />
   </q-layout>
 </template>
 
@@ -82,14 +83,12 @@
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-
 import router from '../router';
 import { AlertState, WcgopAppState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
-
 
 @Component
 export default class Login extends Vue {
@@ -105,7 +104,8 @@ export default class Login extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   @Action('connect', { namespace: 'pouchState' }) private connectPouch: any;
-  @Action('disconnect', { namespace: 'pouchState' }) private disconnectPouch: any;
+  @Action('disconnect', { namespace: 'pouchState' })
+  private disconnectPouch: any;
 
   @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 
@@ -117,17 +117,12 @@ export default class Login extends Vue {
   private lastSoftwareUpdateDate = '-';
   private lastLoginDate = '-';
 
-  private visible = false;
-  private layout = 'normal';
-  private input = null;
   private options = {
     useKbEvents: false,
     preventClickEvent: false
   };
 
   private unsubscribe: any;
-
-
 
   public get isLoggingIn(): boolean {
     const isLoggingIn = !!this.auth.status.isLoggingIn;
@@ -144,19 +139,6 @@ export default class Login extends Vue {
     this.clearAlert();
   }
 
-  private show(e: any) {
-    this.input = e.target;
-    this.layout = e.target.dataset.layout;
-
-    if (!this.visible) {
-      this.visible = true;
-    }
-  }
-
-  private hide() {
-    this.visible = false;
-  }
-
   private mounted() {
     this.logout(); // reset login status
     this.disconnectPouch();
@@ -168,7 +150,6 @@ export default class Login extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connectPouch(creds);
-
           router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
@@ -197,6 +178,10 @@ export default class Login extends Vue {
     } else {
       return 'Never';
     }
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>
