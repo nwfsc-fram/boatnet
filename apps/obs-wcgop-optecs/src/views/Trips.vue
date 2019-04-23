@@ -226,6 +226,7 @@ export default class Trips extends Vue {
   private handleDeleteTrip(trip: WcgopTrip) {
     console.log('TODO Prompt User to Delete');
     pouchService.db.remove(pouchService.userDBName, trip);
+    this.setCurrentTrip(undefined);
   }
 
   public get userDBTrips() {

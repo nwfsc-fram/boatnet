@@ -33,11 +33,42 @@
     <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
+    <q-dialog v-model="confirm" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="red" text-color="white" />
+          <span class="q-ml-sm">Are you sure you want to delete trip #{{tripNum}}?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup/>
+          <q-btn flat label="Delete Trip" color="primary" @click="onDeleteTrip" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     <div class="row q-gutter-sm q-pt-sm">
       <q-btn color="primary" icon="add" label="Add Trip" @click="onAddTrip"/>
-      <q-btn color="primary" icon="edit" label="Edit Trip" @click="onEditTrip" :disabled="!currentTrip"/>
-      <q-btn color="primary" icon="done" label="End Trip" @click="onEndTrip" :disabled="!currentTrip"/>
-      <q-btn color="primary" icon="delete_forever" label="Delete Trip" @click="onDeleteTrip" :disabled="!currentTrip"/>
+      <q-btn
+        color="primary"
+        icon="edit"
+        label="Edit Trip"
+        @click="onEditTrip"
+        :disabled="!currentTrip"
+      />
+      <q-btn
+        color="primary"
+        icon="done"
+        label="End Trip"
+        @click="onEndTrip"
+        :disabled="!currentTrip"
+      />
+      <q-btn
+        color="primary"
+        icon="delete_forever"
+        label="Delete Trip"
+        @click="confirm = true"
+        :disabled="!currentTrip"
+      />
       <q-space/>
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
     </div>
@@ -54,9 +85,10 @@ import { BaseTrip } from '@boatnet/bn-models';
 export default class Trips extends Vue {
   @Prop() public tripsSettings!: BoatnetTripsSettings;
   @Prop() public tripsData!: any[];
-  @Prop() public currentTrip!: BaseTrip[];
+  @Prop() public currentTrip!: BaseTrip;
   public selected: any[] = [];
   private searchText = '';
+  private confirm = false;
   @Watch('selected', { immediate: true })
   private onSelectedChanged(newSelected: any) {
     // TODO: Better way to handle this?
@@ -67,6 +99,11 @@ export default class Trips extends Vue {
     this.$emit('selectedTrip', trip);
   }
 
+  private get tripNum() {
+    if (this.currentTrip) {
+      return this.currentTrip.tripNum;
+    }
+  }
   // Button click emitters
   private onAddTrip() {
     this.$emit('addTrip');
@@ -74,7 +111,6 @@ export default class Trips extends Vue {
 
   private onEditTrip() {
     this.$emit('editTrip', this.currentTrip);
-
   }
 
   private onEndTrip() {
