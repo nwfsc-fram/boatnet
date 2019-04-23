@@ -35,9 +35,9 @@
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
     <div class="row q-gutter-sm q-pt-sm">
       <q-btn color="primary" icon="add" label="Add Trip" @click="onAddTrip"/>
-      <q-btn color="primary" icon="edit" label="Edit Trip" disabled="true"/>
-      <q-btn color="primary" icon="done" label="End Trip" disabled="true"/>
-      <q-btn color="primary" icon="delete_forever" label="Delete Trip" disabled="true"/>
+      <q-btn color="primary" icon="edit" label="Edit Trip" :disabled="!currentTrip"/>
+      <q-btn color="primary" icon="done" label="End Trip" :disabled="!currentTrip"/>
+      <q-btn color="primary" icon="delete_forever" label="Delete Trip" :disabled="!currentTrip"/>
       <q-space/>
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
     </div>
@@ -48,10 +48,13 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
+import { BaseTrip } from '@boatnet/bn-models';
+
 @Component
 export default class Trips extends Vue {
   @Prop() public tripsSettings!: BoatnetTripsSettings;
   @Prop() public tripsData!: any[];
+  @Prop() public currentTrip!: BaseTrip[];
   public selected: any[] = [];
   private searchText = '';
   @Watch('selected', { immediate: true })

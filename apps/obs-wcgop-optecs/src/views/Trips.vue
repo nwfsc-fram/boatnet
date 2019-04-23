@@ -7,10 +7,11 @@
           <q-btn flat label="Dismiss" @click="clear"/>
         </template>
       </q-banner>
-
+      <!-- <div v-if="currentTrip">{{currentTrip}}</div> -->
       <boatnet-trips
-        v-bind:tripsSettings="wcgopTripsSettings"
-        v-bind:tripsData="wcgopTripsData"
+        :tripsSettings="wcgopTripsSettings"
+        :tripsData="userDBTrips"
+        :currentTrip="currentTrip"
         @selectedTrip="handleSelectTrip"
         @addAFakeTrip="handleAddTrip"
         @displayKeyboard="displayKeyboard"
@@ -24,7 +25,7 @@
 import { Point } from 'geojson';
 import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
@@ -70,13 +71,13 @@ export default class Trips extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
+  @Action('setCurrentTrip', { namespace: 'appState' }) private setCurrentTrip: any;
+  @Getter('currentTrip', { namespace: 'appState' }) private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
   private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
-  private wcgopTripsData: any[];
+  private testingTrip: WcgopTrip;
 
   private myStuff: any = {};
   private myPouchDB: any;
@@ -175,7 +176,7 @@ export default class Trips extends Vue {
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      program: 'Catch Shares',
+      // program: 'Catch Shares',
       departurePort: examplePort,
       departureDate: moment().format(),
       returnPort: examplePort2,
@@ -188,47 +189,33 @@ export default class Trips extends Vue {
         tripId: 123
       }
     };
-    const exampleTrip2 = {
-      tripNum: 2,
-      type: WcgopTripTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      program: 'Catch Shares',
-      departurePort: examplePort2,
-      departureDate: moment()
-        .subtract(1, 'days')
-        .format(),
-      returnPort: examplePort,
-      returnDate: moment().format(),
-      vessel: exampleVessel2
-      // ... other data
-    };
-    this.wcgopTripsData = [exampleTrip, exampleTrip2];
-    console.log(this.userTrips);
+    this.testingTrip = exampleTrip;
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
-    console.log('TODO: handleSelectTrip', trip); // TODO
-    if (trip) {
-      this.$router.push({ path: '/tripdetails/' + 1 });
-    }
+    // if (trip) {
+    //   this.$router.push({ path: '/tripdetails/' + 1 });
+    // }
   }
 
   private handleAddTrip(tmp: any) {
-    console.log('TODO: Create trip', this.wcgopTripsData[0]); // TODO
-    const trip = this.wcgopTripsData[0];
-    if (trip) {
-      delete trip.__index; // remove weird __index field for converting to trip
+    console.log('TODO: Create trip logic'); // TODO
+    const trip: WcgopTrip = {...this.testingTrip}; // Clone
+    if (this.userDBTrips[0]) {
+      trip.tripNum = this.userDBTrips[0].tripNum + 1;
     }
-    pouchService.db.post(pouchService.userDBName, this.wcgopTripsData[0]);
-//    this.$router.push({ path: '/tripdetails/' + 1 });
-    // this.selectedDatabase = this.currentReadonlyDB;
-    // console.log('ADD', this.selectedDatabase);
-    // this.addTest(tmp);
-    // this.setCurrentTrip(trip);
+    pouchService.db.post(pouchService.userDBName, trip);
+    // this.$router.push({ path: '/tripdetails/' + 1 });
   }
 
+  public get userDBTrips() {
+    if (this.userTrips) {
+      return this.userTrips;
+    } else {
+      return [];
+    }
+  }
   private get currentReadonlyDB(): string {
     if (!this.pouchState.credentials) {
       console.warn('WARNING: current RO db is undefined');
