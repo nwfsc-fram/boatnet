@@ -78,4 +78,7 @@ Vue.component(BoatnetLogin);
   * Preferences -> settings, User settings.json, added
 "javascript.implicitProjectConfig.experimentalDecorators": true
   * Restarted VSCode
-## Some Exam
+
+## Making a generic code-only library
+
+* See `bn-util`
