@@ -96,7 +96,7 @@ export default class EMEFPDetails extends Vue {
 
     private async getOptions() {
         try {
-        const roDB: Client<any> = couchService.lookups;
+        const roDB: Client<any> = couchService.lookupsDB;
         const queryOptions: ListOptions = {
           limit: 100,
           start_key: 'a',
