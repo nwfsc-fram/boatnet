@@ -76,12 +76,12 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/sampling" exact>
+        <q-item to="/tally" exact>
           <q-item-section avatar>
             <q-icon name="dialpad"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>Sampling Assistant</q-item-label>
+            <q-item-label>Tally</q-item-label>
           </q-item-section>
         </q-item>
 
