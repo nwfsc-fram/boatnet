@@ -1,6 +1,5 @@
 <template>
   <q-page class="flex flex-center">
-
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
@@ -11,8 +10,7 @@
     <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
 
     <div>
-    
-    <!-- <q-select
+      <!-- <q-select
       outlined
       class="col-2"
       v-model="myvessel"
@@ -27,15 +25,12 @@
           <q-item-section class="text-grey">No results</q-item-section>
         </q-item>
       </template>
-    </q-select> -->
-
+      </q-select>-->
     </div>
-
   </q-page>
 </template>
 
 <script lang="ts">
-
 import { mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
@@ -50,7 +45,6 @@ import moment from 'moment';
 
 @Component
 export default class Home extends Vue {
-
   @State('alert') private alert!: AlertState;
   @State('vessel') private vessel!: VesselState;
   @State('auth') private auth!: AuthState;
@@ -63,7 +57,6 @@ export default class Home extends Vue {
 
   constructor() {
     super();
-
   }
 
   // private async filterFn(val: string, update: any, abort: any) {
@@ -73,7 +66,7 @@ export default class Home extends Vue {
   //   }
   //   update(async () => {
   //     try {
-  //       const roDB: Client<any> = couchService.readonlyDB;
+  //       const roDB: Client<any> = couchService.masterDB;
 
   //       const queryOptions: ListOptions = {
   //         limit: 5,
@@ -96,7 +89,7 @@ export default class Home extends Vue {
   // }
 
   private async couch() {
-    const roDB: Client<any> = couchService.readonlyDB;
+    const roDB: Client<any> = couchService.masterDB;
     // const queryOptions: ListOptions = {
     //       limit: 100,
     //       start_key: 'a',
@@ -104,23 +97,18 @@ export default class Home extends Vue {
     //       descending: false
     //     };
 
-
     try {
-        // const vessels = await roDB.view<any>(
-        //   'optecs_trawl',
-        //   'all_vessel_names',
-        //   queryOptions
-        // );
+      // const vessels = await roDB.view<any>(
+      //   'optecs_trawl',
+      //   'all_vessel_names',
+      //   queryOptions
+      // );
 
-        // this.options = vessels.rows.map((vessel) => vessel.value);
+      // this.options = vessels.rows.map((vessel) => vessel.value);
 
-    const vessels = await roDB.view<any>(
-          'optecs_trawl',
-          'all_vessel_names',
-        );
+      const vessels = await roDB.view<any>('optecs_trawl', 'all_vessel_names');
 
-    console.log(vessels);
-
+      console.log(vessels);
     } catch (err) {
       this.error(err);
     }
@@ -129,20 +117,17 @@ export default class Home extends Vue {
   private created() {
     this.couch();
   }
-
 }
 </script>
 
 <style>
-
 .hero-logo {
-  width: 40%
+  width: 40%;
 }
 
 @media screen and (orientation: portrait) {
   .hero-logo {
-    width: 80%
+    width: 80%;
   }
 }
-
 </style>

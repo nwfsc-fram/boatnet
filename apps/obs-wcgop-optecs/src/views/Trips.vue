@@ -1,16 +1,23 @@
 <template>
   <span>
-    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-      {{alert.message}}
-      <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
-      </template>
-    </q-banner>
-    <q-page>
+    <q-page padding>
+      <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+        {{alert.message}}
+        <template v-slot:action>
+          <q-btn flat label="Dismiss" @click="clear"/>
+        </template>
+      </q-banner>
+      <!-- <div v-if="currentTrip">{{currentTrip}}</div> -->
       <boatnet-trips
-        v-bind:tripsSettings="wcgopTripsSettings"
-        v-bind:tripsData="wcgopTripsData"
+        :tripsSettings="wcgopTripsSettings"
+        :tripsData="userDBTrips"
+        :currentTrip="currentTrip"
         @selectedTrip="handleSelectTrip"
+        @addTrip="handleAddTrip"
+        @editTrip="handleEditTrip"
+        @endTrip="handleEndTrip"
+        @deleteTrip="handleDeleteTrip"
+        @displayKeyboard="displayKeyboard"
       />
     </q-page>
   </span>
@@ -21,11 +28,11 @@
 import { Point } from 'geojson';
 import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
 import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
-import { couchService } from '@boatnet/bn-couch';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -37,25 +44,55 @@ import {
   Vessel,
   VesselTypeName
 } from '@boatnet/bn-models';
-
 import moment from 'moment';
 
 Vue.component(BoatnetTrips);
 
-@Component
+@Component({
+  pouch: {
+    vessels() { // Example - Also declared in class
+      return {
+        database: pouchService.lookupsDBName,
+        selector: { type: 'vessel' },
+        sort: [{ vesselName: 'asc' }]
+      };
+    },
+    userTrips() { // Also declared in class
+      return {
+        database: pouchService.userDBName,
+        selector: { type: 'wcgop-trip' },
+        sort: [{ tripNum: 'desc' }]
+        // limit: 5 // this.resultsPerPage,
+      };
+    }
+  }
+})
 export default class Trips extends Vue {
+  public message = '';
   @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
+  @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
+  @Getter('currentTrip', { namespace: 'appState' })
+  private currentTrip!: WcgopTrip;
+  @Action('addTest', { namespace: 'pouchState' })
+  private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
-  private wcgopTripsData: any[];
+  private testingTrip: WcgopTrip;
 
+  private myStuff: any = {};
+  private myPouchDB: any;
+  private vesselViewData: any;
+
+  private userTrips!: any;
   constructor() {
     super();
+
+    // this.myPouchDB = pouchService.getDB(this.selectedDBName);
     this.wcgopTripsSettings = {
       rowKey: '_id',
       columns: [
@@ -111,7 +148,6 @@ export default class Trips extends Vue {
         }
       ]
     };
-
     const examplePort: Port = {
       _id: 'asdf',
       type: PortTypeName,
@@ -119,7 +155,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Oxnard'
     };
-
     const examplePort2: Port = {
       _id: 'asdf2',
       type: PortTypeName,
@@ -127,7 +162,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       name: 'Port Townsend'
     };
-
     const exampleVessel: Vessel = {
       _id: '1',
       type: VesselTypeName,
@@ -135,7 +169,6 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Sadie K'
     };
-
     const exampleVessel2: Vessel = {
       _id: '2',
       type: VesselTypeName,
@@ -143,14 +176,12 @@ export default class Trips extends Vue {
       createdDate: moment().format(),
       vesselName: 'Pickle Pelican'
     };
-
     const exampleTrip = {
-      _id: '1',
       tripNum: 1,
       type: WcgopTripTypeName,
       createdBy: 'test',
       createdDate: moment().format(),
-      program: 'Catch Shares',
+      // program: 'Catch Shares',
       departurePort: examplePort,
       departureDate: moment().format(),
       returnPort: examplePort2,
@@ -163,29 +194,77 @@ export default class Trips extends Vue {
         tripId: 123
       }
     };
-
-    const exampleTrip2 = {
-      _id: '2',
-      tripNum: 2,
-      type: WcgopTripTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      program: 'Catch Shares',
-      departurePort: examplePort2,
-      departureDate: moment()
-        .subtract(1, 'days')
-        .format(),
-      returnPort: examplePort,
-      returnDate: moment().format(),
-      vessel: exampleVessel2
-      // ... other data
-    };
-
-    this.wcgopTripsData = [exampleTrip, exampleTrip2];
+    this.testingTrip = exampleTrip;
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+  }
+
+  private handleAddTrip() {
+    console.log('TODO: Create trip logic'); // TODO Temporary Add Logic
+    const trip: WcgopTrip = { ...this.testingTrip }; // Clone
+    if (this.userDBTrips[0]) {
+      trip.tripNum = this.userDBTrips[0].tripNum + 1;
+    }
+    pouchService.db.post(pouchService.userDBName, trip);
+    // this.$router.push({ path: '/tripdetails/' + 1 });
+  }
+
+  private handleEditTrip(trip: WcgopTrip) {
+    if (trip) {
+      console.log('[TODO Vuex] Edit', trip.tripNum);
+      this.$router.push({ path: '/tripdetails/' + trip.tripNum });
+    }
+  }
+
+  private handleEndTrip(trip: WcgopTrip) {
+    console.log('TODO End', trip.tripNum);
+  }
+
+  private handleDeleteTrip(trip: WcgopTrip) {
+    pouchService.db.remove(pouchService.userDBName, trip);
+    this.setCurrentTrip(undefined);
+  }
+
+  public get userDBTrips() {
+    // TODO: This seems to block the UI - handle asyn
+    // console.log('Called userDBTrips');
+    if (this.userTrips) {
+      return this.userTrips;
+    } else {
+      return [];
+    }
+  }
+  private get currentReadonlyDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current RO db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.lookupsDB;
+    }
+  }
+
+  private get currentUserDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current User db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.userDB;
+    }
+  }
+
+  private get lookupsDB() {
+    // @ts-ignore
+    return this[this.selectedDBName];
+  }
+
+  private get vesselView() {
+    return this.vesselViewData;
+  }
+
+  private displayKeyboard(e: any) {
+    this.$emit('displayKeyboard', e);
   }
 }
 </script>

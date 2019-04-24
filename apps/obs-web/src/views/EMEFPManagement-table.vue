@@ -21,7 +21,7 @@
             :selected.sync="selected"
             :pagination.sync="pagination"
             >
-            
+
         <template v-slot:body="props">
         <q-tr :props="props" @click.native="emefpDetails(props.row)">
           <q-td key="id"></q-td>
@@ -81,7 +81,7 @@ private columns = [
 ];
 
 private async getEmEfpPermits() {
-    const roDB: Client<any> = couchService.readonlyDB;
+    const roDB: Client<any> = couchService.masterDB;
     try {
         // const vessels = await roDB.view<any>(
         //   'optecs_trawl',
@@ -145,5 +145,3 @@ private emefpDetails(permit: EmEfpPermit) {
     width: 100px;
 }
 </style>
-
-

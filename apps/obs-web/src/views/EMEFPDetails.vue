@@ -96,7 +96,7 @@ export default class EMEFPDetails extends Vue {
 
     private async getOptions() {
         try {
-        const roDB: Client<any> = couchService.readonlyDB;
+        const roDB: Client<any> = couchService.lookupsDB;
         const queryOptions: ListOptions = {
           limit: 100,
           start_key: 'a',
@@ -139,7 +139,7 @@ export default class EMEFPDetails extends Vue {
 
     update(async () => {
       try {
-        const roDB: Client<any> = couchService.readonlyDB;
+        const roDB: Client<any> = couchService.masterDB;
         const queryOptions: ListOptions = {
           limit: 10,
           start_key: val.toLowerCase(),
@@ -180,7 +180,7 @@ export default class EMEFPDetails extends Vue {
   private async updateVessel(vesselName: string) {
 
       try {
-        const roDB: Client<any> = couchService.readonlyDB;
+        const roDB: Client<any> = couchService.masterDB;
 
         const vessels = await roDB.view<any>(
           'sethtest',
@@ -211,4 +211,3 @@ export default class EMEFPDetails extends Vue {
 }
 
 </script>
-

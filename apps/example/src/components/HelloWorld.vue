@@ -93,13 +93,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TESTING_123, BoatnetExample } from '@boatnet/bn-util';
-
-const thing: BoatnetExample = { test: TESTING_123 };
 
 @Component
 export default class HelloWorld extends Vue {
-  @Prop() private msg = thing.test;
+  @Prop() private msg = 'Test';
 }
 </script>
 

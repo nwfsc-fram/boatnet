@@ -1,5 +1,5 @@
 {
-  "name": "@boatnet/bn-couchdb",
+  "name": "@boatnet/bn-couch",
   "version": "0.1.0",
   "private": true,
   "scripts": {

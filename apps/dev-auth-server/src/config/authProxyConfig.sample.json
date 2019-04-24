@@ -7,7 +7,8 @@
         "roles": ["admin", "observer"],
         "couchDBInfo": {
           "urlRoot": "http://<your server>:5984",
-          "readonlyDB": "your-readonly-testdb"
+          "lookupsDB": "lookups-dev",
+          "masterDB": "master-dev"
         }
       }
     }

@@ -17,7 +17,6 @@ import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType
 export const WcgopTripTypeName = 'wcgop-trip';
 
 export interface WcgopTrip extends BaseTrip {
-  tripNum?: number; // For optecs internal use, sequential
   observer?: Person; // formerly User ID, TODO Specifics
   program?: Program;
   isPartialTrip?: boolean;
