@@ -1,7 +1,14 @@
 <template>
   <span>
     <span v-if="!data.blank">
-      <q-btn class="q-px-lg q-py-xs" :color="data.color" :size="size" :disabled="disabled" :data="data" @click="handleClick">
+      <q-btn
+        class="q-px-lg q-py-xs"
+        :color="data.color"
+        :size="size"
+        :disabled="disabled"
+        :data="data"
+        @click="handleClick"
+      >
         {{data.code}}
         <br>
         {{data.reason}}
@@ -37,10 +44,9 @@ export default class TallyBtn extends Vue {
   // @Prop({ default: undefined }) public count!: boolean;
 
   public handleClick() {
-    if(this.data.count !== undefined) {
+    if (this.data.count !== undefined) {
       this.data.count++;
     }
   }
-
 }
 </script>

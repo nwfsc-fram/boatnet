@@ -27,12 +27,14 @@ export default class Tally extends Vue {
     super();
     for (let r = 0; r < this.vertButtonCount; r++) {
       for (let c = 0; c < this.horizButtonCount; c++) {
-        if (c === 3) {
+        if (c === 6) {
           this.buttonData.push({ color: 'red', code: 'CORN', reason: 'PRED', count: r });
-        } else if (c === 4) {
+        } else if (c === 7) {
+          this.buttonData.push({ color: 'green-9', code: 'SABL', reason: 'RET', count: 0 });
+        } else if (c === 5) {
           this.buttonData.push({ blank: true });
         } else {
-          this.buttonData.push({ color: 'green', code: 'PHLB', reason: 'MKT', count: 0 });
+          this.buttonData.push({ color: 'light-blue', code: 'PHLB', reason: 'MKT', count: 0 });
         }
       }
     }

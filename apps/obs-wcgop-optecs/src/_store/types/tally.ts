@@ -1,4 +1,5 @@
 export interface TallyButtonData {
+  _id: string; // DB ID
   // Styling
   color?: string;
   blank?: boolean;
