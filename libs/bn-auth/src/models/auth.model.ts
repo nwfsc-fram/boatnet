@@ -7,7 +7,8 @@ export interface BoatnetUserToken {
 export interface CouchDBInfo {
   urlRoot: string;
   userDB: string;
-  readonlyDB: string;
+  masterDB: string;
+  lookupsDB: string;
 }
 
 export interface BoatnetUser {

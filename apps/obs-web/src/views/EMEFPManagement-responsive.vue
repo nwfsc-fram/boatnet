@@ -79,7 +79,7 @@ private columns = [
 ];
 
 private async getEmEfpPermits() {
-    const roDB: Client<any> = couchService.readonlyDB;
+    const roDB: Client<any> = couchService.masterDB;
     try {
         // const vessels = await roDB.view<any>(
         //   'optecs_trawl',

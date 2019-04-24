@@ -66,7 +66,7 @@ class PouchService extends Vue {
     if (!this.currentCredentials ) {
       throw new Error('Please log out and back in again.');
     }
-    return this.currentCredentials.dbInfo.readonlyDB;
+    return this.currentCredentials.dbInfo.lookupsDB;
   }
 
   public get userDBName() {
@@ -97,7 +97,7 @@ class PouchService extends Vue {
       }
     );
     const credentialedReadOnlyDB =
-      credsRoot + '/' + credentials.dbInfo.readonlyDB;
+      credsRoot + '/' + credentials.dbInfo.lookupsDB;
     const credentialedUserDB = credsRoot + '/' + credentials.dbInfo.userDB;
 
     const syncOptsInitial = {
@@ -135,14 +135,15 @@ class PouchService extends Vue {
       initialSyncUser.pull.start_time
     );
 
+    console.log(credentials.dbInfo.lookupsDB);
     const initialSyncRO = await this.$pouch.sync(
-      credentials.dbInfo.readonlyDB,
+      credentials.dbInfo.lookupsDB,
       credentialedReadOnlyDB,
       syncOptsInitial
     );
     console.log(
       '[PouchDB Service] Initial',
-      credentials.dbInfo.readonlyDB,
+      credentials.dbInfo.lookupsDB,
       'sync completed.',
       initialSyncRO.pull.start_time
     );
@@ -154,7 +155,7 @@ class PouchService extends Vue {
         this.syncDeactive({});
       });
     this.$pouch
-      .sync(credentials.dbInfo.readonlyDB, credentialedReadOnlyDB, syncOptsLive)
+      .sync(credentials.dbInfo.lookupsDB, credentialedReadOnlyDB, syncOptsLive)
       .on('paused', (err: any) => {
         // weird logic in pouch-vue, so handling this here
         this.syncDeactive({});
