@@ -86,7 +86,7 @@ export default class Trips extends Vue {
 
   private myStuff: any = {};
   private myPouchDB: any;
-  private vesselViewData: any;
+  private tempEmptyData: any[] = [];
 
   private userTrips!: any;
   constructor() {
@@ -257,10 +257,6 @@ export default class Trips extends Vue {
   private get lookupsDB() {
     // @ts-ignore
     return this[this.selectedDBName];
-  }
-
-  private get vesselView() {
-    return this.vesselViewData;
   }
 
   private displayKeyboard(e: any) {
