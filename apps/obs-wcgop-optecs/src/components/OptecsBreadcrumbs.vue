@@ -33,6 +33,9 @@ export default class OptecsBreadcrumbs extends Vue {
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
+    if (!this.$route.meta.breadcrumb) {
+      return;
+    }
     for (const crumb of this.$route.meta.breadcrumb) {
       if (crumb.name === 'tripIdPlaceholder') {
         const tripNum = this.appState.currentTrip ? this.appState.currentTrip.tripNum : 0;
