@@ -350,7 +350,8 @@ export default class Trips extends Vue {
       // Lack of documentation, refer to options in code:
       // https://github.com/nozzlegear/davenport/blob/master/index.ts
       const userDB: Client<any> = couchService.userDB;
-      const roDB: Client<any> = couchService.readonlyDB;
+      const roDB: Client<any> = couchService.lookupsDB;
+      const masterDB: Client<any> = couchService.masterDB;
       // Example:
       // const singleDoc = await userDB.get<MyDocType>('489337588b5ff50b96779b7151001b7c');
       const userStuff = await userDB.listWithDocs();

@@ -4,23 +4,26 @@
 A dev-only auth server for use with developing boatnet apps without connecting to a live auth server.
 
 ### Getting Started
-- Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file. 
-- Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials. 
+- Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file.
+- Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials.
 - You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g.
 ```
 "couchDBInfo": {
   "urlRoot": "http://localhost:5984",
-  "readonlyDB": "my-fancy-db"
+  "lookupsDB": "my-lookups-db",
+  "masterDB": "my-big-db",
+
 }
 ```
 or for intranet dev,
 ```
 "couchDBInfo": {
   "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
-  "readonlyDB": "boatnet-dev-testing"
+  "lookupsDB": "lookups-dev",
+  "masterDB": "master-dev"
 }
 ```
-- Launch the auth server by navigating to apps/dev-auth-server directory and run `yarn serve`. This will start an HTTPS (self-signed) dev auth server running on port 9000. 
+- Launch the auth server by navigating to apps/dev-auth-server directory and run `yarn serve`. This will start an HTTPS (self-signed) dev auth server running on port 9000.
 
 ## Generating Your Own Self-Signed Certificates (Optional)
 Note that bn-temp-cert.pem and temp-\*-key.pem are just temporary certificates/keys and are NOT intended for any production use!

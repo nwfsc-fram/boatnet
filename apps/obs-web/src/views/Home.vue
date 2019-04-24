@@ -66,7 +66,7 @@ export default class Home extends Vue {
   //   }
   //   update(async () => {
   //     try {
-  //       const roDB: Client<any> = couchService.readonlyDB;
+  //       const roDB: Client<any> = couchService.masterDB;
 
   //       const queryOptions: ListOptions = {
   //         limit: 5,
@@ -89,7 +89,7 @@ export default class Home extends Vue {
   // }
 
   private async couch() {
-    const roDB: Client<any> = couchService.readonlyDB;
+    const roDB: Client<any> = couchService.masterDB;
     // const queryOptions: ListOptions = {
     //       limit: 100,
     //       start_key: 'a',
