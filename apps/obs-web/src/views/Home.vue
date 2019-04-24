@@ -66,7 +66,7 @@ export default class Home extends Vue {
   //   }
   //   update(async () => {
   //     try {
-  //       const roDB: Client<any> = couchService.masterDB;
+  //       const masterDB: Client<any> = couchService.masterDB;
 
   //       const queryOptions: ListOptions = {
   //         limit: 5,
@@ -75,7 +75,7 @@ export default class Home extends Vue {
   //         descending: false
   //       };
 
-  //       const vessels = await roDB.view<any>(
+  //       const vessels = await masterDB.view<any>(
   //         'optecs_trawl',
   //         'all_vessel_names',
   //         queryOptions
@@ -89,7 +89,7 @@ export default class Home extends Vue {
   // }
 
   private async couch() {
-    const roDB: Client<any> = couchService.masterDB;
+    const masterDB: Client<any> = couchService.masterDB;
     // const queryOptions: ListOptions = {
     //       limit: 100,
     //       start_key: 'a',
@@ -98,7 +98,7 @@ export default class Home extends Vue {
     //     };
 
     try {
-      // const vessels = await roDB.view<any>(
+      // const vessels = await masterDB.view<any>(
       //   'optecs_trawl',
       //   'all_vessel_names',
       //   queryOptions
@@ -106,7 +106,7 @@ export default class Home extends Vue {
 
       // this.options = vessels.rows.map((vessel) => vessel.value);
 
-      const vessels = await roDB.view<any>('optecs_trawl', 'all_vessel_names');
+      const vessels = await masterDB.view<any>('optecs_trawl', 'all_vessel_names');
 
       console.log(vessels);
     } catch (err) {

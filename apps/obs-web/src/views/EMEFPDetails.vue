@@ -96,7 +96,7 @@ export default class EMEFPDetails extends Vue {
 
     private async getOptions() {
         try {
-        const roDB: Client<any> = couchService.lookupsDB;
+        const masterDB: Client<any> = couchService.masterDB;
         const queryOptions: ListOptions = {
           limit: 100,
           start_key: 'a',
@@ -104,21 +104,21 @@ export default class EMEFPDetails extends Vue {
           descending: false
         };
 
-        const efptypes = await roDB.view<any>(
+        const efptypes = await masterDB.view<any>(
           'sethtest',
           'efp-type-options',
           queryOptions
         );
         this.efpTypeOptions = efptypes.rows.map((efp) => efp.key);
 
-        const geartypes = await roDB.view<any>(
+        const geartypes = await masterDB.view<any>(
           'sethtest',
           'gear-type-options',
           queryOptions
         );
         this.gearTypeOptions = geartypes.rows.map((gear) => gear.key);
 
-        const sectortypes = await roDB.view<any>(
+        const sectortypes = await masterDB.view<any>(
           'sethtest',
           'sector-options',
           queryOptions
@@ -139,14 +139,14 @@ export default class EMEFPDetails extends Vue {
 
     update(async () => {
       try {
-        const roDB: Client<any> = couchService.masterDB;
+        const masterDB: Client<any> = couchService.masterDB;
         const queryOptions: ListOptions = {
           limit: 10,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false
         };
-        const vessels = await roDB.view<any>(
+        const vessels = await masterDB.view<any>(
           'sethtest',
           'all_vessels',
           queryOptions
@@ -180,9 +180,9 @@ export default class EMEFPDetails extends Vue {
   private async updateVessel(vesselName: string) {
 
       try {
-        const roDB: Client<any> = couchService.masterDB;
+        const masterDB: Client<any> = couchService.masterDB;
 
-        const vessels = await roDB.view<any>(
+        const vessels = await masterDB.view<any>(
           'sethtest',
           'all_vessels',
         );
