@@ -7,19 +7,28 @@ import Client, { configureDatabase, ClientOptions } from 'davenport';
 
 class CouchService {
   private currentCredentials: CouchDBCredentials | null = null;
-  private couchRO: any | null = null;
+  private couchMaster: any | null = null;
+  private couchLookups: any | null = null;
   private couchUser: any | null = null;
 
   constructor() {
     console.log('[CouchDB Service] Instantiated.');
   }
 
-  get readonlyDB() {
-    if (!this.currentCredentials || !this.couchRO) {
+  get lookupsDB() {
+    if (!this.currentCredentials || !this.couchLookups ) {
       throw new Error('Please log out and back in again.');
     }
 
-    return this.couchRO;
+    return this.couchLookups;
+  }
+
+  get masterDB() {
+    if (!this.currentCredentials || !this.couchMaster ) {
+      throw new Error('Please log out and back in again.');
+    }
+
+    return this.couchMaster;
   }
 
   get userDB() {
@@ -40,9 +49,14 @@ class CouchService {
       password: credentials.userCredentials.password
     };
 
-    this.couchRO = new Client(
+    this.couchLookups = new Client(
       credentials.dbInfo.urlRoot,
-      credentials.dbInfo.readonlyDB,
+      credentials.dbInfo.lookupsDB,
+      options
+    );
+    this.couchMaster = new Client(
+      credentials.dbInfo.urlRoot,
+      credentials.dbInfo.masterDB,
       options
     );
     this.couchUser = new Client(

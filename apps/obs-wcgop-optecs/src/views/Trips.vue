@@ -241,7 +241,7 @@ export default class Trips extends Vue {
       console.warn('WARNING: current RO db is undefined');
       return '';
     } else {
-      return this.pouchState.credentials.dbInfo.readonlyDB;
+      return this.pouchState.credentials.dbInfo.lookupsDB;
     }
   }
 
@@ -250,7 +250,7 @@ export default class Trips extends Vue {
       console.warn('WARNING: current User db is undefined');
       return '';
     } else {
-      return this.pouchState.credentials.dbInfo.readonlyDB;
+      return this.pouchState.credentials.dbInfo.userDB;
     }
   }
 
