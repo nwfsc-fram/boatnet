@@ -135,7 +135,6 @@ class PouchService extends Vue {
       initialSyncUser.pull.start_time
     );
 
-    console.log(credentials.dbInfo.lookupsDB);
     const initialSyncRO = await this.$pouch.sync(
       credentials.dbInfo.lookupsDB,
       credentialedReadOnlyDB,
