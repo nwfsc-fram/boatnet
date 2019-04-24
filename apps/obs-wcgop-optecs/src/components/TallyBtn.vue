@@ -10,7 +10,7 @@ import { QBtn } from 'quasar';
 
 @Component
 export default class TallyBtn extends Vue {
-  @Prop({default: undefined}) public color!: string;
-  @Prop({default: undefined}) public label!: string;
+  @Prop({ default: undefined }) public color!: string;
+  @Prop({ default: undefined }) public label!: string;
 }
 </script>

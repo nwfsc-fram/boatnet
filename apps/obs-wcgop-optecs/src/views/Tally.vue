@@ -1,8 +1,12 @@
 <template>
   <q-page padding>
     <div class="q-gutter-md">
-      <tally-btn color="accent" label="Button" v-for="n in 40" :key="`md-${n}`"/>
+    <div v-for="n in 4" class="row" :key="`md-r-${n}`">
+      <div v-for="n in 8" class="col" :key="`md-c-${n}`">
+        <tally-btn color="accent" label="Button"/>
+      </div>
     </div>
+  </div>
   </q-page>
 </template>
 
@@ -19,13 +23,13 @@ export default class Tally extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" scoped>
-.row > div {
-  padding: 10px 15px;
-  background: rgba(86, 61, 124, 0.15);
-  border: 1px solid rgba(86, 61, 124, 0.2);
-}
+// .row > div {
+//   padding: 10px 15px;
+//   background: rgba(86, 61, 124, 0.15);
+//   border: 1px solid rgba(86, 61, 124, 0.2);
+// }
 
-.row + .row {
-  margin-top: 1rem;
-}
+// .row + .row {
+//   margin-top: 1rem;
+// }
 </style>
