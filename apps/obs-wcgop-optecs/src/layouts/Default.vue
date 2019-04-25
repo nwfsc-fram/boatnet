@@ -100,7 +100,7 @@
 
         <q-item to="/" exact>
           <q-item-section>
-            <q-item-label>Last Sync: 3/8/2019 12:00</q-item-label>
+            <q-item-label>Last Sync: {{syncDate}}</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -114,12 +114,13 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
 import { Platform } from 'quasar';
 import router from '../router';
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
-import { Action, Getter, State } from 'vuex-class';
+import { formatDate } from '@boatnet/bn-util';
 
 @Component({
   components: {
@@ -129,6 +130,7 @@ import { Action, Getter, State } from 'vuex-class';
 
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
+  @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
@@ -146,6 +148,13 @@ export default class DefaultLayout extends Vue {
     }
   }
 
+  public get syncDate() {
+    if (this.pouchState.lastSyncDate) {
+      return formatDate(this.pouchState.lastSyncDate);
+    } else {
+      return 'Never';
+    }
+  }
   private navigateBack() {
     this.$router.back();
   }
