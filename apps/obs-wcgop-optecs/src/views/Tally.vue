@@ -10,7 +10,6 @@
   </q-page>
 </template>
 
-
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TallyButtonData } from '../_store/types';
