@@ -17,8 +17,9 @@ export const state: PouchDBState = {
 };
 
 function activateSyncListener(commit: any) {
-  pouchService.$off('syncChanged');
-  pouchService.$off('syncCompleted');
+  // console.log('[PouchDB Module] Activate Sync Listener');
+  // pouchService.$off('syncChanged');
+  // pouchService.$off('syncCompleted');
   pouchService.$on('syncChanged', (sync: PouchDBSyncStatus) => {
     commit('syncChanged', sync);
   });
@@ -70,8 +71,12 @@ const mutations: MutationTree<PouchDBState> = {
     const date = moment().format();
     localStorage.setItem(LS_LAST_SYNC_DATE, date);
     newState.lastSyncDate = date;
+    newState.syncStatus = status;
   },
   syncChanged(newState: PouchDBState, status: PouchDBSyncStatus) {
+    const date = moment().format();
+    localStorage.setItem(LS_LAST_SYNC_DATE, date);
+    newState.lastSyncDate = date;
     newState.syncStatus = status;
   }
 };

@@ -108,9 +108,10 @@ export class AuthService {
       })
       .pipe(
         map(result => {
-          const verified = jsonwebtoken.verify(result.token, pubKey);
-          this.authedUserToken = verified;
-          this.authedUserToken.sub = JSON.parse(verified.sub); // decode sub
+          const verified: any = jsonwebtoken.verify(result.token, pubKey);
+          const subToken = JSON.parse(verified.sub);  // decode sub
+          this.authedUserToken = verified as BoatnetUserToken;
+          this.authedUserToken.sub = subToken;
           this.storeUserToken(this.authedUserToken);
           return this.authedUserToken;
         }),

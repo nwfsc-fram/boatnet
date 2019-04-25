@@ -24,7 +24,7 @@ The Angular Console application https://angularconsole.com/ has a UI for running
 
 ## Development server
 
-Run `ng serve myapp` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Example: run `ng serve obs-electron` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
