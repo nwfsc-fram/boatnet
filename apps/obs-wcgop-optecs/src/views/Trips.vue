@@ -50,13 +50,6 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-    vessels() { // Example - Also declared in class
-      return {
-        database: pouchService.lookupsDBName,
-        selector: { type: 'vessel' },
-        sort: [{ vesselName: 'asc' }]
-      };
-    },
     userTrips() { // Also declared in class
       return {
         database: pouchService.userDBName,

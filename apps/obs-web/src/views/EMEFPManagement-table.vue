@@ -81,9 +81,9 @@ private columns = [
 ];
 
 private async getEmEfpPermits() {
-    const roDB: Client<any> = couchService.masterDB;
+    const masterDB: Client<any> = couchService.masterDB;
     try {
-        // const vessels = await roDB.view<any>(
+        // const vessels = await masterDB.view<any>(
         //   'optecs_trawl',
         //   'all_vessel_names',
         //   queryOptions
@@ -91,7 +91,7 @@ private async getEmEfpPermits() {
 
         // this.options = vessels.rows.map((vessel) => vessel.value);
 
-        const emefpPermits = await roDB.view<any>(
+        const emefpPermits = await masterDB.view<any>(
             'sethtest',
             'all_em_efp_permits',
             );
