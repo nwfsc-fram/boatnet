@@ -29,6 +29,20 @@ import { State, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
 import { TallyButtonData } from '../_store/types';
 
+/* tslint:disable:no-var-requires  */
+const lowClickFile = require('../assets/audio/click3.wav');
+const highClickFile = require('../assets/audio/clack.wav');
+const funnyFile = require('../assets/audio/funnyclick.wav');
+
+const lowClickAudio = new Audio(lowClickFile);
+const highClickAudio = new Audio(highClickFile);
+const funnyAudio = new Audio(funnyFile);
+// TODO more audio
+
+// const lowClickAudio = new Audio(require('../assets/audio/click3.wav'));
+// const highClickAudio = new Audio(require('../assets/audio/clack.wav'));
+// const pingAudio = new Audio(require('../assets/audio/ping.wav'));
+
 @Component
 export default class TallyBtn extends Vue {
   // Inherited properties:
@@ -45,7 +59,22 @@ export default class TallyBtn extends Vue {
 
   public handleClick() {
     if (this.data.count !== undefined) {
+      this.playSound('inc');
       this.data.count++;
+    }
+  }
+
+  private playSound(soundName: string) {
+    switch (soundName) {
+      case 'inc':
+        highClickAudio.play();
+        break;
+      case 'dec':
+        lowClickAudio.play();
+        break;
+      default:
+        funnyAudio.play();
+        break;
     }
   }
 }
