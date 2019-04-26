@@ -3,39 +3,13 @@
     <div class="q-gutter-md">
       <div v-for="r in 4" class="row" :key="`md-r-${r}`">
         <div v-for="c in 8" class="col" :key="`md-c-${c}`">
-          <tally-btn :data="getData(r,c)"/>
+          <!-- TODO: this should be in a TallyState -->
+          <tally-btn :data="getData(r,c)" />
         </div>
       </div>
     </div>
     <div class="q-pa-md">
-      <q-btn-group spread>
-        <tally-control-btn color="light-blue-2" text-color="black">History</tally-control-btn>
-        <tally-control-btn disabled>
-          Switch
-          <br>Page
-          <br>&gt;
-        </tally-control-btn>
-        <q-separator vertical/>
-        <tally-control-btn color="grey-4" text-color="black">
-          Modify
-          <br>Layout
-        </tally-control-btn>
-        <tally-control-btn color="light-blue-2" text-color="black">
-          Tally
-          <br>Mode
-          <br>+1
-        </tally-control-btn>
-        <q-separator vertical/>
-        <tally-control-btn color="grey-4" text-color="black">
-          Weights
-          <br>For...
-        </tally-control-btn>
-        <tally-control-btn color="grey-4" text-color="black">
-          All
-          <br>Tallies
-          <br>For...
-        </tally-control-btn>
-      </q-btn-group>
+      <component v-bind:is="currentControlComponent" @controlevent="handleControlEvent"></component>
     </div>
   </q-page>
 </template>
@@ -43,11 +17,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TallyButtonData } from '../_store/types';
-import TallyBtn from '../components/TallyBtn.vue';
-import TallyControlBtn from '../components/TallyControlBtn.vue';
+import TallyBtn from '../components/tally/TallyBtn.vue';
+import TallyControls from '../components/tally/TallyControls.vue';
+import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 
 Vue.component('tally-btn', TallyBtn);
-Vue.component('tally-control-btn', TallyControlBtn);
+Vue.component('tally-controls', TallyControls);
+Vue.component('tally-layout-controls', TallyLayoutControls);
 
 @Component
 export default class Tally extends Vue {
@@ -57,6 +33,7 @@ export default class Tally extends Vue {
   public btnSize = '18px';
   public buttonData: TallyButtonData[] = [];
 
+  private currentControlComponent = 'tally-controls';
   constructor() {
     super();
     for (let r = 0; r < this.vertButtonCount; r++) {
@@ -102,10 +79,19 @@ export default class Tally extends Vue {
     return this.getData(row, column).count;
   }
 
-  public handleClick(row: number, column: number) {
-    console.log('Incroised');
-    const idx = this.getBtnIndex(row, column);
-    // this.buttonData[idx].count++;
+  public handleControlEvent(controlName: string) {
+    switch (controlName) {
+      case 'modify-layout':
+        this.currentControlComponent = 'tally-layout-controls';
+        break;
+      case 'modify-layout-done':
+        this.currentControlComponent = 'tally-controls';
+        break;
+      default:
+        console.log('Unhandled tally control event:', controlName);
+        break;
+
+    }
   }
 
   private getBtnIndex(row: number, column: number) {
@@ -121,83 +107,5 @@ export default class Tally extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" scoped>
-
-
-
-
-
-
-
-// .row > div {
-
-
-
-
-
-
-
-//   padding: 10px 15px;
-
-
-
-
-
-
-
-//   background: rgba(86, 61, 124, 0.15);
-
-
-
-
-
-
-
-//   border: 1px solid rgba(86, 61, 124, 0.2);
-
-
-
-
-
-
-
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// .row + .row {
-
-
-
-
-
-
-
-//   margin-top: 1rem;
-
-
-
-
-
-
-
-// }
-
-
-
-
-
-
 
 </style>
