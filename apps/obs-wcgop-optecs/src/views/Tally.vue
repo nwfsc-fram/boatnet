@@ -7,6 +7,36 @@
         </div>
       </div>
     </div>
+    <div class="q-pa-md">
+      <q-btn-group spread>
+        <tally-control-btn color="light-blue-2" text-color="black">History</tally-control-btn>
+        <tally-control-btn disabled>
+          Switch
+          <br>Page
+          <br>&gt;
+        </tally-control-btn>
+        <q-separator vertical/>
+        <tally-control-btn color="grey-4" text-color="black">
+          Modify
+          <br>Layout
+        </tally-control-btn>
+        <tally-control-btn color="light-blue-2" text-color="black">
+          Tally
+          <br>Mode
+          <br>+1
+        </tally-control-btn>
+        <q-separator vertical/>
+        <tally-control-btn color="grey-4" text-color="black">
+          Weights
+          <br>For...
+        </tally-control-btn>
+        <tally-control-btn color="grey-4" text-color="black">
+          All
+          <br>Tallies
+          <br>For...
+        </tally-control-btn>
+      </q-btn-group>
+    </div>
   </q-page>
 </template>
 
@@ -14,8 +44,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/TallyBtn.vue';
+import TallyControlBtn from '../components/TallyControlBtn.vue';
 
-Vue.component('tally-btn', TallyBtn); // Broken in PWA without this.
+Vue.component('tally-btn', TallyBtn);
+Vue.component('tally-control-btn', TallyControlBtn);
 
 @Component
 export default class Tally extends Vue {
@@ -30,13 +62,29 @@ export default class Tally extends Vue {
     for (let r = 0; r < this.vertButtonCount; r++) {
       for (let c = 0; c < this.horizButtonCount; c++) {
         if (c === 6) {
-          this.buttonData.push({ color: 'red', code: 'CORN', reason: 'PRED', count: r });
+          this.buttonData.push({
+            color: 'red',
+            code: 'CORN',
+            reason: 'PRED',
+            count: r
+          });
         } else if (c === 7) {
-          this.buttonData.push({ color: 'green-9', code: 'SABL', reason: 'RET', count: 0 });
+          this.buttonData.push({
+            color: 'green-9',
+            code: 'SABL',
+            reason: 'RET',
+            count: 0
+          });
         } else if (c === 5) {
           this.buttonData.push({ blank: true });
         } else {
-          this.buttonData.push({ color: 'light-blue', code: 'PHLB', reason: 'MKT', count: 0 });
+          this.buttonData.push({
+            'color': 'green-3',
+            'text-color': 'black',
+            'code': 'PHLB',
+            'reason': 'MKT',
+            'count': 0
+          });
         }
       }
     }
@@ -74,22 +122,82 @@ export default class Tally extends Vue {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" scoped>
 
+
+
+
+
+
+
 // .row > div {
+
+
+
+
+
+
 
 //   padding: 10px 15px;
 
+
+
+
+
+
+
 //   background: rgba(86, 61, 124, 0.15);
+
+
+
+
+
+
 
 //   border: 1px solid rgba(86, 61, 124, 0.2);
 
+
+
+
+
+
+
 // }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 // .row + .row {
 
+
+
+
+
+
+
 //   margin-top: 1rem;
 
+
+
+
+
+
+
 // }
+
+
+
+
+
+
 
 </style>

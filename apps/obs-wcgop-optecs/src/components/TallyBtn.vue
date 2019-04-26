@@ -4,6 +4,7 @@
       <q-btn
         class="q-px-lg q-py-xs"
         :color="data.color"
+        :text-color="data['text-color']"
         :size="size"
         :disabled="disabled"
         :data="data"
