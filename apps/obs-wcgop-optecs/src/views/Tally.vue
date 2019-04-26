@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="q-pa-md">
-      <component v-bind:is="currentControlComponent" @controlevent="handleControlEvent"></component>
+      <component v-bind:is="currentControlComponent" @controlevent="handleControlEvent" species="CORN"></component>
     </div>
   </q-page>
 </template>
@@ -20,10 +20,12 @@ import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
+import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
 Vue.component('tally-layout-controls', TallyLayoutControls);
+Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 
 @Component
 export default class Tally extends Vue {
@@ -85,10 +87,14 @@ export default class Tally extends Vue {
         this.currentControlComponent = 'tally-layout-controls';
         break;
       case 'modify-layout-done':
+      case 'all-tallies-done':
         this.currentControlComponent = 'tally-controls';
         break;
+      case 'all-tallies-for':
+        this.currentControlComponent = 'tally-alltallies-controls';
+        break;
       default:
-        console.log('Unhandled tally control event:', controlName);
+        // console.log('Unhandled tally control event:', controlName);
         break;
 
     }

@@ -33,7 +33,6 @@
       Add
       <br>Existing
       <br>Species
-      <br>Tally
     </tally-control-btn>
     <tally-control-btn color="red-5" control-name="modify-layout-done" @controlclick="handleControlClick" >Done</tally-control-btn>
   </q-btn-group>
