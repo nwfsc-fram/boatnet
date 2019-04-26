@@ -82,7 +82,7 @@ import { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { BaseTrip } from '@boatnet/bn-models';
 
 @Component
-export default class Trips extends Vue {
+export default class BoatnetTrips extends Vue {
   @Prop() public tripsSettings!: BoatnetTripsSettings;
   @Prop() public tripsData!: any[];
   @Prop() public currentTrip!: BaseTrip;
