@@ -1,6 +1,9 @@
 <template>
   <q-btn-group spread>
-    <tally-control-btn color="light-blue-2">Tally<br>Mode<br>+1</tally-control-btn>
+    <tally-control-btn control-name="tally-mode" @controlclick="handleControlClick" :color="tallyMode.color" :textcolor="tallyMode['textcolor']">Tally
+      <br>Mode
+      <br>{{tallyMode.incdecText}}
+    </tally-control-btn>
     <template v-for="reason in reasons">
     <tally-control-btn :control-name="reason" color="grey-4" :key="`${reason}`" @controlclick="handleControlClick">
       {{species}}
@@ -8,7 +11,7 @@
       <br>{{counts[reason]}}
     </tally-control-btn>
     </template>
-    <tally-control-btn color="red-5" control-name="all-tallies-done" @controlclick="handleControlClick" >Done<br>with<br>{{species}}</tally-control-btn>
+    <tally-control-btn color="red-5" textcolor="white" control-name="all-tallies-done" @controlclick="handleControlClick" >Done<br>with<br>{{species}}</tally-control-btn>
   </q-btn-group>
 </template>
 
@@ -47,15 +50,47 @@ export default class TallyAllTalliesControls extends Vue {
     RET: 0
   };
 
+  private tallyModeInc: any = {
+    value: 1,
+    color: 'light-blue-2',
+    textcolor: 'black',
+    incdecText: '+1'
+  };
+
+  private tallyModeDec: any = {
+    value: -1,
+    color: 'red',
+    textcolor: 'white',
+    incdecText: '-1'
+  };
+
+  private tallyMode = this.tallyModeInc;
+
   public incCount(reason: string) {
    this.counts[reason]++;
   }
 
+  public setTallyMode(incMode: boolean) {
+    if (incMode) {
+      this.tallyMode = this.tallyModeInc;
+      this.$emit('controlevent', 'tally-inc');
+    } else {
+      this.tallyMode = this.tallyModeDec;
+      this.$emit('controlevent', 'tally-dec');
+    }
+  }
+
   public handleControlClick(controlName: string): void {
-    if (controlName !== 'all-tallies-done') {
-      this.incCount(controlName);
-    } else { // Pass along button event to Tally parent component
-      this.$emit('controlevent', controlName);
+    switch (controlName) {
+     case 'tally-mode':
+        // switch mode
+        const isInc = this.tallyMode.value > 0;
+        this.setTallyMode(!isInc);
+        break;
+      case 'all-tallies-done':
+        this.$emit('controlevent', controlName);
+      default:
+        this.incCount(controlName);
     }
   }
 }

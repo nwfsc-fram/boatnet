@@ -2,7 +2,7 @@
   <q-btn
     class="q-px-lg q-py-xs"
     :color="color"
-    :text-color="'text-color'"
+    :text-color="textcolor"
     :size="size"
     :disabled="disabled"
     :control-name="controlName"
@@ -30,6 +30,7 @@ const lowClickAudio = new Audio(lowClickFile);
 export default class TallyControlBtn extends Vue {
   // Inherited properties:
   @Prop({ default: undefined }) public color!: string;
+  @Prop({ default: 'black' }) public textcolor!: string;
   @Prop({ default: undefined }) public label!: string;
   @Prop({ default: undefined }) public size!: string;
   @Prop({ default: undefined }) public round!: boolean;
