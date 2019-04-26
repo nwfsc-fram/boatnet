@@ -18,8 +18,6 @@ import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 import VueTouchKeyboard from 'vue-touch-keyboard';
 import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
 
-import TallyBtn from '@/components/TallyBtn.vue';
-
 import {
   Quasar,
   ClosePopup,
@@ -76,7 +74,6 @@ Vue.use(Quasar, {
     QBreadcrumbs,
     QBreadcrumbsEl,
     QBtn,
-    TallyBtn,
     QBtnGroup,
     QBtnToggle,
     QCard,

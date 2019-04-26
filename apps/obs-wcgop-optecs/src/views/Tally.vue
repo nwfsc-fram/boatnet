@@ -13,6 +13,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TallyButtonData } from '../_store/types';
+import TallyBtn from '../components/TallyBtn.vue';
+
+Vue.component('tally-btn', TallyBtn); // Broken in PWA without this.
 
 @Component
 export default class Tally extends Vue {
