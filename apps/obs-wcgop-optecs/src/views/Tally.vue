@@ -93,7 +93,6 @@ export default class Tally extends Vue {
   private mounted() {
 
     if (!this.tallyState.buttonData) {
-      console.log('Create Default Tally Button Data');
       this.initDefaultTemplate();
     }
   }
