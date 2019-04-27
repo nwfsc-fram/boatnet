@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-if="!data.blank">
+    <span v-if="data && !data.blank">
       <q-btn
         class="q-px-lg q-py-xs"
         :color="data.color"
@@ -17,7 +17,7 @@
         {{data.count}}
       </q-btn>
     </span>
-    <span v-if="data.blank">
+    <span v-if="data && data.blank">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
     </span>
   </span>

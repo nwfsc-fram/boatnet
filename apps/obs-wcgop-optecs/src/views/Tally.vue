@@ -1,8 +1,8 @@
 <template>
   <q-page padding>
     <div class="q-gutter-md">
-      <div v-for="r in 4" class="row" :key="`md-r-${r}`">
-        <div v-for="c in 8" class="col" :key="`md-c-${c}`">
+      <div v-for="r in tallyState.vertButtonCount" class="row" :key="`md-r-${r}`">
+        <div v-for="c in tallyState.horizButtonCount" class="col" :key="`md-c-${c}`">
           <!-- TODO: this should be in a TallyState -->
           <tally-btn :data="getData(r,c)" />
         </div>
@@ -16,11 +16,16 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
+
 import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
+
+import { WcgopAppState } from '@/_store/types';
+import { TallyState } from '@/_store/types';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -29,44 +34,17 @@ Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 
 @Component
 export default class Tally extends Vue {
-  public horizButtonCount = 8;
-  public vertButtonCount = 4;
-  public btnLabel = '';
-  public btnSize = '18px';
-  public buttonData: TallyButtonData[] = [];
+
+  @State('appState') private appState!: WcgopAppState;
+  @State('tallyState') private tallyState!: TallyState;
+
+  @Action('initDefaultTemplate', { namespace: 'tallyState'}) private initDefaultTemplate: any;
+  private btnLabel = '';
+  private btnSize = '18px';
 
   private currentControlComponent = 'tally-controls';
   constructor() {
     super();
-    for (let r = 0; r < this.vertButtonCount; r++) {
-      for (let c = 0; c < this.horizButtonCount; c++) {
-        if (c === 6) {
-          this.buttonData.push({
-            color: 'red',
-            code: 'CORN',
-            reason: 'PRED',
-            count: r
-          });
-        } else if (c === 7) {
-          this.buttonData.push({
-            color: 'green-9',
-            code: 'SABL',
-            reason: 'RET',
-            count: 0
-          });
-        } else if (c === 5) {
-          this.buttonData.push({ blank: true });
-        } else {
-          this.buttonData.push({
-            'color': 'green-3',
-            'text-color': 'black',
-            'code': 'PHLB',
-            'reason': 'MKT',
-            'count': 0
-          });
-        }
-      }
-    }
   }
 
   public getCode(row: number, column: number) {
@@ -102,12 +80,24 @@ export default class Tally extends Vue {
 
   private getBtnIndex(row: number, column: number) {
     // Fixes weird 1-based v-for loops
-    return column + (row - 1) * this.horizButtonCount - 1;
+    return column + (row - 1) * this.tallyState.horizButtonCount - 1;
   }
   private getData(row: number, column: number) {
+    if (!this.tallyState.buttonData) {
+      return {code: '-', reason: '-', count: 0}; // temp fake data
+    }
     const idx = this.getBtnIndex(row, column);
-    return this.buttonData[idx];
+    return this.tallyState.buttonData[idx];
   }
+
+  private mounted() {
+
+    if (!this.tallyState.buttonData) {
+      console.log('Create Default Tally Button Data');
+      this.initDefaultTemplate();
+    }
+  }
+
 }
 </script>
 

@@ -10,3 +10,9 @@ export interface TallyButtonData {
   reason?: string;
   count?: number;
 }
+
+export interface TallyState {
+  buttonData: TallyButtonData[];
+  vertButtonCount: number;
+  horizButtonCount: number;
+}
