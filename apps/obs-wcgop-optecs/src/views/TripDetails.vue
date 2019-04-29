@@ -24,7 +24,6 @@
                 input-debounce="0"
                 :options="options"
                 @filter="filterFn"
-                @focus="displayKeyboard"
                 data-layout="normal"
               >
                 <template v-slot:no-option>
@@ -38,7 +37,6 @@
                 class="col-2"
                 v-model="captainName"
                 label="Skipper's Name"
-                @focus="displayKeyboard"
                 data-layout="normal"
               />
               <q-input
@@ -46,7 +44,6 @@
                 class="col-2"
                 v-model="currentTrip.crewSize"
                 label="# of Crew"
-                @focus="displayKeyboard"
                 data-layout="numeric"
               />
               <q-input
@@ -54,7 +51,6 @@
                 class="col-2"
                 v-model="currentTrip.observerLogbookNum"
                 label="Observer Logbook #"
-                @focus="displayKeyboard"
                 data-layout="numeric"
               />
               <q-input
@@ -68,7 +64,6 @@
                 class="col-2"
                 v-model="currentTrip.departurePort.name"
                 label="Departure Port"
-                @focus="displayKeyboard"
                 data-layout="normal"
               />
 
@@ -80,7 +75,6 @@
                   class="col-12"
                   v-model="ph"
                   label="Permit/ License #"
-                  @focus="displayKeyboard"
                   data-layout="normal"
                 />
               </div>
@@ -117,7 +111,6 @@
                 class="col-2"
                 v-model="currentTrip.logbookType"
                 label="Vessel Logbook Name"
-                @focus="displayKeyboard"
                 data-layout="normal"
               />
               <q-input
@@ -125,7 +118,6 @@
                 class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
-                @focus="displayKeyboard"
                 data-layout="numeric"
               />
               <q-input
@@ -133,7 +125,6 @@
                 class="col-2"
                 v-model="currentTrip.returnPort.name"
                 label="Return Port"
-                @focus="displayKeyboard"
                 data-layout="normal"
               />
               <q-input
@@ -147,7 +138,6 @@
                 class="col-2"
                 :value="firstReceiverName"
                 label="First Receiver"
-                @focus="displayKeyboard"
                 data-layout="normal"
               />
               <div class="text-h6 col-2">Fish Tickets</div>
@@ -158,7 +148,6 @@
                   class="col-12"
                   v-model="ph"
                   label="Fish Ticket"
-                  @focus="displayKeyboard"
                   data-layout="numeric"
                 />
               </div>
@@ -311,9 +300,10 @@ export default class Trips extends Vue {
   }
 
 
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
-  }
+  // WS - Temporarily Disabled this until we fix autocorrect integration
+  // private displayKeyboard(e: any) {
+  //   this.$emit('displayKeyboard', e.target);
+  // }
 
   // TODO move to shared util?
   private formatDate(dateStr: string): string {

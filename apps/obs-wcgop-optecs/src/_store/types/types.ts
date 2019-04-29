@@ -1,4 +1,4 @@
-import { WcgopTrip, BoatnetUser } from '@boatnet/bn-models';
+import { WcgopTrip} from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {

@@ -7,6 +7,7 @@ import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Hauls from './views/Hauls.vue';
 import HaulDetails from './views/HaulDetails.vue';
+import Tally from './views/Tally.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -73,6 +74,21 @@ const router = new Router({
               { name: 'tripIdPlaceholder', link: '/tripdetails/'},
               { name: 'Hauls', link: '/hauls'},
               { name: 'haulIdPlaceholder', link: ''}
+            ]
+          }
+        },
+        {
+          path: '/tally',
+          name: 'tally',
+          component: Tally,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: '#x', link: '/tripdetails/'},
+              { name: 'Hauls', link: '/hauls'},
+              { name: '#y', link: ''},
+              { name: 'Catch', link: '/hauls'},
+              { name: '#z', link: ''}
             ]
           }
         }

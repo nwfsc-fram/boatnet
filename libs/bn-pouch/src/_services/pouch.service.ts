@@ -51,8 +51,6 @@ class PouchService extends Vue {
   constructor() {
     super();
 
-    // If pouchdb sync events listeners are set, remove them
-    this.detachListeners();
     this.attachListeners();
 
     console.log('[PouchDB Service] Instantiated.');
@@ -135,7 +133,6 @@ class PouchService extends Vue {
       initialSyncUser.pull.start_time
     );
 
-    console.log(credentials.dbInfo.lookupsDB);
     const initialSyncRO = await this.$pouch.sync(
       credentials.dbInfo.lookupsDB,
       credentialedReadOnlyDB,
@@ -147,6 +144,8 @@ class PouchService extends Vue {
       'sync completed.',
       initialSyncRO.pull.start_time
     );
+
+    this.$emit('syncCompleted', initialSyncRO);
 
     this.$pouch
       .sync(credentials.dbInfo.userDB, credentialedUserDB, syncOptsLive)
@@ -168,8 +167,7 @@ class PouchService extends Vue {
     return this.isConnectCalled;
   }
   public async disconnect() {
-    // console.log('TODO Disconnect from PouchDB');
-    this.detachListeners();
+    console.log('TODO Disconnect from PouchDB');
   }
 
   private syncActive(dbInfo: any) {
@@ -203,15 +201,9 @@ class PouchService extends Vue {
     }
   }
 
-  private detachListeners() {
-    this.$off('pouchdb-sync-active');
-    this.$off('pouchdb-sync-complete');
-    this.$off('pouchdb-sync-paused');
-    this.$off('pouchdb-sync-change');
-    this.$off('pouchdb-sync-denied');
-    this.$off('pouchdb-sync-error');
-  }
   private attachListeners() {
+    console.log('[PouchDB Service] Activate Sync Listener');
+
     // Hook up pouchdb sync events
     this.$on('pouchdb-sync-active', (dbInfo: any) => {
       // console.log('[PouchDB Service] Sync Active!', dbInfo);
