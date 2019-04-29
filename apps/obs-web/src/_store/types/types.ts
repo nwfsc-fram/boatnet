@@ -1,5 +1,5 @@
 import { BoatnetUser } from '@boatnet/bn-auth';
-import { BoatnetDate, WcgopTrip, Base, Port, Vessel, EmEfpPermit } from '@boatnet/bn-models';
+import { BoatnetDate, WcgopTrip, Base, Port, Vessel, EmEfp, otsTarget, OTSTrip, OTSUser } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -24,7 +24,7 @@ export interface PermitState {
 }
 
 export interface EmefpState {
-  activeEmefpPermit: EmEfpPermit | null;
+  activeEmefp: EmEfp | null;
   filterText: string;
 }
 
@@ -39,7 +39,7 @@ export interface VesselState {
 }
 
 export interface OTSState {
-  activeOTSTarget: OtsTarget | null;
+  activeOTSTarget: otsTarget | null;
 }
 
 export interface GeneralState {
@@ -50,10 +50,10 @@ export interface GeneralState {
   usStates: string[];
   portGroups: string[];
   portDecoder: any[];
-  otsTargets: OtsTarget[];
+  otsTargets: otsTarget[];
   vessels: Vessel[];
   notificationOptions: any[];
-  activeTarget: OtsTarget;
+  activeTarget: otsTarget;
 }
 
 export interface Permit extends Base {
@@ -91,32 +91,3 @@ export interface Permit extends Base {
   owner_on_board_exempt?: any;
 }
 
-export interface OtsTarget extends Base {
-  fishery: string | null;
-  targetType: string | null;
-  target: string | null;
-  rate: number | null;
-  startDate: BoatnetDate;
-  endDate?: BoatnetDate | null;
-}
-
-export interface OTSMessage extends Base {
-  author: OTSUser;
-  text: string;
-  datetime: BoatnetDate;
-}
-
-export interface OTSTrip extends WcgopTrip {
-  isSelected: boolean;
-  messages: OTSMessage[];
-  permits?: any[] ;
-}
-
-export interface OTSUser {
-  name: string;
-  roles: string[];
-  email: string;
-  mobile: number;
-  home: number;
-  homeport: Port;
-}

@@ -30,3 +30,4 @@ export * from './vessel-type';
 export * from './vessel';
 export * from './waiver-type';
 export * from './weight-method';
+export * from './em-efp';

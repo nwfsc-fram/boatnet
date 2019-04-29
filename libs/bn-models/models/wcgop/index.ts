@@ -7,3 +7,4 @@ export * from './wcgop-hlfc-configuration';
 export * from './wcgop-basket';
 export * from './wcgop-specimen';
 export * from './wcgop-discard-reason';
+export * from './ots-target';
