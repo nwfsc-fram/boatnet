@@ -6,6 +6,7 @@ import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from '@/_store/alert.module';
 import { auth } from '@boatnet/bn-auth';
 import { pouchState } from '@boatnet/bn-pouch';
+import { tallyState } from '@/_store/tally.module';
 
 import { RootState } from '@/_store/types/types';
 
@@ -29,7 +30,8 @@ const store: StoreOptions<RootState> = {
     appState,
     alert,
     auth,
-    pouchState
+    pouchState,
+    tallyState
   },
   plugins: [vuexLocalStorage.plugin]
 };

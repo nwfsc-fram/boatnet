@@ -1,9 +1,10 @@
 <template>
   <span>
-    <span v-if="!data.blank">
+    <span v-if="data && !data.blank">
       <q-btn
         class="q-px-lg q-py-xs"
         :color="data.color"
+        :text-color="data['text-color']"
         :size="size"
         :disabled="disabled"
         :data="data"
@@ -16,7 +17,7 @@
         {{data.count}}
       </q-btn>
     </span>
-    <span v-if="data.blank">
+    <span v-if="data && data.blank">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
     </span>
   </span>
@@ -24,15 +25,15 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../_store/types';
+import { WcgopAppState } from '../../_store/types';
 import { State, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
-import { TallyButtonData } from '../_store/types';
+import { TallyButtonData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
-const lowClickFile = require('../assets/audio/click3.wav');
-const highClickFile = require('../assets/audio/clack.wav');
-const funnyFile = require('../assets/audio/funnyclick.wav');
+const lowClickFile = require('../../assets/audio/click3.wav');
+const highClickFile = require('../../assets/audio/clack.wav');
+const funnyFile = require('../../assets/audio/funnyclick.wav');
 
 const lowClickAudio = new Audio(lowClickFile);
 const highClickAudio = new Audio(highClickFile);

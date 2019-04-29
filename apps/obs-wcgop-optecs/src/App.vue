@@ -13,7 +13,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
-import { WcgopAppState } from '@/_store/types/types';
+import { WcgopAppState } from '@/_store/types';
 
 @Component
 export default class App extends Vue {
