@@ -14,26 +14,15 @@ const actions: ActionTree<TallyState, RootState> = {
   initDefaultTemplate({commit }: any) {
     commit('initDefault');
   }
+  // TODO: Button Data changes (increment, assign discard reasons, etc)
   // setCurrentTrip({ commit }: any, trip: WcgopTrip) {
   //   commit('setCurrentTrip', trip);
   // },
-  // clear({ commit }: any) {
-  //   commit('setCurrentTrip', undefined);
-  // },
-  // navigate({ commit }: any, uri: string) {
-  //   commit('navigate', uri);
-  // },
-  // navigateBack({ commit }: any) {
-  //   commit('navigateBack');
-  // },
-  // setKeyboardStatus({ commit }: any, isEnabled: boolean) {
-  //   commit('setKeyboardStatus', isEnabled);
-  // }
 };
 
 const mutations: MutationTree<TallyState> = {
   initDefault(newState: any) {
-    console.log('*********************************************************');
+    console.log('[Tally Module] Creating Default Tally Button Data');
     const tmpBtnData = [];
     for (let r = 0; r < newState.vertButtonCount; r++) {
       for (let c = 0; c < newState.horizButtonCount; c++) {
@@ -66,26 +55,11 @@ const mutations: MutationTree<TallyState> = {
     }
     newState.buttonData = tmpBtnData;
   }
-  // setCurrentTrip(newState: any, trip: WcgopTrip) {
-  //   // if (trip) {
-  //   //   console.log('[AppState] Current trip:', trip.tripNum);
-  //   // } else {
-  //   //   console.log('[AppState] Cleared current trip');
-  //   // }
-  //   newState.currentTrip = trip;
-  // },
-  // navigate(newState: any, uri: string) {
-  //   console.log('[AppState] TODO Navigate to', uri);
-  // },
-  // navigateBack(newState: any, uri: string) {
-  //   console.log('[AppState] TODO Navigate to', uri);
-  // },
-  // setKeyboardStatus(newState: any, isEnabled: boolean) {
-  //   newState.isKeyboardEnabled = isEnabled;
-  // }
+
 };
 
 const getters: GetterTree<TallyState, RootState> = {
+  // TODO: get button data
   // currentTrip(getState: WcgopAppState) {
   //   return getState.currentTrip;
   // }
