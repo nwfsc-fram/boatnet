@@ -84,8 +84,10 @@ const mutations: MutationTree<PouchDBState> = {
 const getters: GetterTree<PouchDBState, any> = {
   isSyncing(getState: PouchDBState) {
     return getState.syncStatus.syncActive;
+  },
+  allVessels(getState: PouchDBState) {
+    return pouchService.$pouch.allDocs('lookups-dev');
   }
-
 };
 
 export const pouchState: Module<PouchDBState, any> = {
