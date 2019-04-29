@@ -199,12 +199,8 @@ export default class OtsTargeteDetail extends Vue {
   @Watch('ots.activeOTSTarget.targetType')
   private onChange(newVal: any, oldVal: any) {
     if (newVal === 'Fishery' && this.ots.activeOTSTarget) {
-      this.ots.activeOTSTarget.target = 'fishery wide';
-    } else {
-      if (this.ots.activeOTSTarget) {
-        this.ots.activeOTSTarget.target = null;
-      }
-    }
+      this.ots.activeOTSTarget.targetType = 'fishery wide';
+    } 
   }
 }
 </script>

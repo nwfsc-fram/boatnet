@@ -50,10 +50,10 @@ export interface GeneralState {
   usStates: string[];
   portGroups: string[];
   portDecoder: any[];
-  otsTargets: otsTarget[];
+  // otsTargets: otsTarget[];
   vessels: Vessel[];
   notificationOptions: any[];
-  activeTarget: otsTarget;
+  // activeTarget: otsTarget;
 }
 
 export interface Permit extends Base {

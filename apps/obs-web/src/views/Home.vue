@@ -40,7 +40,7 @@ import { AuthState } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
-import { EmEfpPermit } from '@boatnet/bn-models';
+import { EmEfp } from '@boatnet/bn-models';
 import moment from 'moment';
 
 @Component

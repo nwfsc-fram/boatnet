@@ -7,4 +7,3 @@ export interface OTSTrip extends WcgopTrip {
     messages: OTSMessage[];
     permits?: any[] ;
   }
-  
