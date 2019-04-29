@@ -26,13 +26,12 @@
         <q-tr :props="props" @click.native="emefpDetails(props.row)">
           <q-td key="id"></q-td>
           <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
+          <q-td key="vesselCGNumber" :props="props">{{ props.row.vesselCGNumber }}</q-td>
+          <q-td key="lePermit" :props="props">{{ props.row.lePermit }}</q-td>
           <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
           <q-td key="efpTypes" :props="props">
               {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
-          <q-td key="vesselCGNumber" :props="props">{{ props.row.vesselCGNumber }}</q-td>
-          <q-td key="lePermit" :props="props">{{ props.row.lePermit }}</q-td>
           <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear) }}</q-td>
-          <q-td key="sector" :props="props">{{ props.row.sector }}</q-td>
           <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
         </q-tr>
         </template>
@@ -52,7 +51,7 @@ import router from '../router';
 import { AlertState, EmefpState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfpPermit } from '@boatnet/bn-models';
+import { EmEfp } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -67,20 +66,19 @@ export default class EMEFPManagementTable extends Vue {
 private selected = [];
 private pagination = {rowsPerPage: 50};
 
-private EM_EFP: EmEfpPermit[] = [];
+private EM_EFP: EmEfp[] = [];
 
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
+    {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true, sortable: true, align: 'left' },
+    {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
     {name: 'emEfpNumber', label: 'EM EFP #', field: 'emEfpNumber', required: true, align: 'left', sortable: true },
     {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left' },
-    {name: 'vesselCGNumber', label: 'CG Number', field: 'vesselCGNumber', required: true, sortable: true },
-    {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
     {name: 'gear', label: 'Gear', field: 'gear', required: true, align: 'left' },
-    {name: 'sector', label: 'Sector', field: 'sector', required: true, align: 'left', sortable: true },
     {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true},
 ];
 
-private async getEmEfpPermits() {
+private async getEmEfp() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
         // const vessels = await masterDB.view<any>(
@@ -91,22 +89,17 @@ private async getEmEfpPermits() {
 
         // this.options = vessels.rows.map((vessel) => vessel.value);
 
-        const emefpPermits = await masterDB.view<any>(
+        const emefp = await masterDB.view<any>(
             'sethtest',
             'all_em_efp_permits',
             );
 
-        console.log(emefpPermits.rows);
+        console.log(emefp.rows);
 
-        for (const row of emefpPermits.rows) {
-            const permit = row.value;
-            permit.id = row.id;
-            const types = [];
-            for (const type of permit.efpTypes) {
-                types.push(permit.type.description);
-            }
-            permit.eftTypes = types;
-            this.EM_EFP.push(permit);
+        for (const row of emefp.rows) {
+            const efp = row.value;
+            efp.id = row.id;
+            this.EM_EFP.push(efp);
         }
         console.log(this.EM_EFP);
 
@@ -116,7 +109,7 @@ private async getEmEfpPermits() {
   }
 
   private created() {
-    this.getEmEfpPermits();
+    this.getEmEfp();
   }
 
 private getArrayValues(array: any[]) {
@@ -130,11 +123,11 @@ private getArrayValues(array: any[]) {
     return returnString;
 }
 
-private emefpDetails(permit: EmEfpPermit) {
-    console.log(permit.vesselName);
-    this.emefp.activeEmefpPermit = permit;
-    console.log(this.emefp.activeEmefpPermit);
-    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(permit) });
+private emefpDetails(efp: EmEfp) {
+    console.log(efp.vesselName);
+    this.emefp.activeEmefp = efp;
+    console.log(this.emefp.activeEmefp);
+    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(efp) });
 }
 
 }

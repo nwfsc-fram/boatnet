@@ -4,9 +4,10 @@ import moment from 'moment';
 
 import { alert } from '@/_store/alert.module';
 
-import { Permit, OtsTarget } from '@/_store/types/types.ts';
-import { OTSTrip, OTSMessage, OTSUser } from '@/_store/types/types.ts';
+import { Permit } from '@/_store/types/types.ts';
+
 import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
+import { OTSTrip, OTSMessage, OTSUser, otsTarget } from '@boatnet/bn-models';
 
 import { RootState } from '@/_store/types/types';
 
@@ -125,24 +126,24 @@ export const permits: Permit[] = [
   }
 ];
 
-export const otsTargets: OtsTarget[] = [
-  {
-    _id: 'vfger34tgf', fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
-    startDate: '2019-03-26T08:20:33-07:00', endDate: null
-  },
-  {
-    _id: 'dfd34rfre234', fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
-    startDate: '2019-03-26T08:20:33-07:00', endDate: null
-  },
-  {
-    _id: 'f3ffferf42', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-    startDate: '2019-03-26T08:20:33-07:00', endDate: null
-  },
-  {
-    _id: 'wg32efrfsg', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
-    startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'
-  }
-];
+// export const otsTargets: otsTarget[] = [
+//   {
+//     _id: 'vfger34tgf', fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
+//     startDate: '2019-03-26T08:20:33-07:00', endDate: null
+//   },
+//   {
+//     _id: 'dfd34rfre234', fishery: 'EM EFP', targetType: 'Vessel', target: 'Excalibur', rate: 37,
+//     startDate: '2019-03-26T08:20:33-07:00', endDate: null
+//   },
+//   {
+//     _id: 'f3ffferf42', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+//     startDate: '2019-03-26T08:20:33-07:00', endDate: null
+//   },
+//   {
+//     _id: 'wg32efrfsg', fishery: 'EM EFP', targetType: 'Port Group', target: 'AT', rate: 25,
+//     startDate: '2019-03-26T08:20:33-07:00', endDate: '2019-03-29T08:20:33-07:00'
+//   }
+// ];
 
 export const trips: OTSTrip[] = [
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,

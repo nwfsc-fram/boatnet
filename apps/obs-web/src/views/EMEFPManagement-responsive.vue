@@ -13,23 +13,23 @@
         </div>
 
         <q-list bordered separator>
-            <q-item v-for="(permit, i) of EM_EFP" :key="permit.id"  @click.native="emefpDetails(permit)">
+            <q-item v-for="(efp, i) of EM_EFP" :key="efp.id"  @click.native="emefpDetails(efp)">
                 <q-item-section>
-                    <q-item-label class="text-primary"><strong>{{permit.vesselName}}</strong> </q-item-label>
-                    <q-item-label caption>{{ permit.vesselCGNumber }}</q-item-label>
+                    <q-item-label class="text-primary"><strong>{{efp.vesselName}}</strong> </q-item-label>
+                    <q-item-label caption>{{ efp.vesselCGNumber }}</q-item-label>
                 </q-item-section>
                 <q-item-section style="text-align: center">
-                    <q-item-label class="text-primary text-weight-bold">{{ permit.emEfpNumber }}</q-item-label>
-                    <q-item-label caption>{{ permit.lePermit }}</q-item-label>
+                    <q-item-label class="text-primary text-weight-bold">{{ efp.emEfpNumber }}</q-item-label>
+                    <q-item-label caption>{{ efp.lePermit }}</q-item-label>
                 </q-item-section>
                 <q-item-section style="text-align: right">
                     <q-item-label class="text-primary text-weight-bold">
-                        <span v-for="(type, i) in permit.efpTypes" :key="i">{{ type.description }}
-                        <span v-if="permit.efpTypes.length > 1 && i + 1 < permit.efpTypes.length">-</span>
+                        <span v-for="(type, i) in efp.efpTypes" :key="i">{{ type.description }}
+                        <span v-if="efp.efpTypes.length > 1 && i + 1 < efp.efpTypes.length">-</span>
                         </span>
                     </q-item-label>
                     <q-item-label caption>
-                        {{ getArrayValues(permit.gear) }}
+                        {{ getArrayValues(efp.gear) }}
                     </q-item-label>
                 </q-item-section>
             </q-item>
@@ -50,7 +50,7 @@ import router from '../router';
 import { AlertState, EmefpState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfpPermit } from '@boatnet/bn-models';
+import { EmEfp } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -65,7 +65,7 @@ export default class EMEFPManagementResponsive extends Vue {
 private selected = [];
 private pagination = {rowsPerPage: 50};
 
-private EM_EFP: EmEfpPermit[] = [];
+private EM_EFP: EmEfp[] = [];
 
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
@@ -78,7 +78,7 @@ private columns = [
     {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true},
 ];
 
-private async getEmEfpPermits() {
+private async getEmEfp() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
         // const vessels = await masterDB.view<any>(
@@ -89,22 +89,22 @@ private async getEmEfpPermits() {
 
         // this.options = vessels.rows.map((vessel) => vessel.value);
 
-        const emefpPermits = await masterDB.view<any>(
+        const emefp = await masterDB.view<any>(
             'sethtest',
             'all_em_efp_permits',
             );
 
-        console.log(emefpPermits.rows);
+        console.log(emefp.rows);
 
-        for (const row of emefpPermits.rows) {
-            const permit = row.value;
-            permit.id = row.id;
+        for (const row of emefp.rows) {
+            const efp = row.value;
+            efp.id = row.id;
             const types = [];
-            for (const type of permit.efpTypes) {
-                types.push(permit.type.description);
+            for (const type of efp.efpTypes) {
+                types.push(efp.type.description);
             }
-            permit.eftTypes = types;
-            this.EM_EFP.push(permit);
+            efp.eftTypes = types;
+            this.EM_EFP.push(efp);
         }
         console.log(this.EM_EFP);
 
@@ -114,7 +114,7 @@ private async getEmEfpPermits() {
   }
 
   private created() {
-    this.getEmEfpPermits();
+    this.getEmEfp();
   }
 
 private getArrayValues(array: any[]) {
@@ -128,11 +128,11 @@ private getArrayValues(array: any[]) {
     return returnString;
 }
 
-private emefpDetails(permit: EmEfpPermit) {
-    console.log(permit.vesselName);
-    this.emefp.activeEmefpPermit = permit;
-    console.log(this.emefp.activeEmefpPermit);
-    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(permit) });
+private emefpDetails(efp: EmEfp) {
+    console.log(efp.vesselName);
+    this.emefp.activeEmefp = efp;
+    console.log(this.emefp.activeEmefp);
+    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(efp) });
 }
 
 }

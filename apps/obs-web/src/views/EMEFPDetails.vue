@@ -10,18 +10,23 @@
 
         <q-card style="padding: 20px; max-width: 400px">
 
-            <div class="text-h6">{{ emefp.activeEmefpPermit.emEfpNumber }}</div>
+            <div class="text-h6">{{ emefp.activeEmefp.emEfpNumber }}</div>
 
-            <q-select
-            v-model="emefp.activeEmefpPermit.vesselName"
+            <div style="diplay: flex">
+              <div>Vessel: {{ emefp.activeEmefp.vesselName }}</div>
+              <div>Vessel ID: {{ emefp.activeEmefp.vesselCGNumber }}</div>
+              <div>LE Permit: {{ emefp.activeEmefp.lePermit }}</div>
+            </div>
+            <!-- <q-select
+            v-model="emefp.activeEmefp.vesselName"
             label="Vessel Name"
             use-input
             hide-selected
             :options="options"
             @filter="filterFn"
-            @input="updateVessel(emefp.activeEmefpPermit.vesselName)">
-            <template>{{ emefp.activeEmefpPermit.vesselCGNumber }} </template>
-            </q-select>
+            @input="updateVessel(emefp.activeEmefp.vesselName)">
+            <template>{{ emefp.activeEmefp.vesselCGNumber }} </template>
+            </q-select> -->
 
             <q-select
             v-model="getEfpTypes"
@@ -30,11 +35,12 @@
             color="primary"
             multiple
             use-chips
-            :options="efpTypeOptions">
+            :options="efpTypeOptions"
+            >
             </q-select>
 
             <q-select
-            v-model="emefp.activeEmefpPermit.gear"
+            v-model="emefp.activeEmefp.gear"
             label="Gear"
             bg-color="white"
             color="primary"
@@ -43,17 +49,11 @@
             :options="gearTypeOptions">
             </q-select>
 
-            <q-select
-            v-model="emefp.activeEmefpPermit.sector"
-            label="Sector"
-            :options="sectorOptions">
-            </q-select>
-
-            <q-select
-            v-model="emefp.activeEmefpPermit.lePermit"
+            <!-- <q-select
+            v-model="emefp.activeEmefp.lePermit"
             label="Limited Entry Permit"
             :options="permitOptions">
-            </q-select>
+            </q-select> -->
             <br>
             <q-card-actions>
                 <q-btn color="red" label="Cancel" icon="warning" to="/em-efp-management" exact/>
@@ -118,14 +118,6 @@ export default class EMEFPDetails extends Vue {
         );
         this.gearTypeOptions = geartypes.rows.map((gear) => gear.key);
 
-        const sectortypes = await masterDB.view<any>(
-          'sethtest',
-          'sector-options',
-          queryOptions
-        );
-        this.sectorOptions = sectortypes.rows.map((sector) => sector.key);
-        this.sectorOptions.unshift('');
-
         } catch (err) {
             this.error(err);
         }
@@ -168,14 +160,12 @@ export default class EMEFPDetails extends Vue {
   }
 
   private get getEfpTypes() {
-    if (this.emefp.activeEmefpPermit && this.emefp.activeEmefpPermit.efpTypes) {
-      return this.emefp.activeEmefpPermit.efpTypes.map((type) => type.description);
+    if (this.emefp.activeEmefp && this.emefp.activeEmefp.efpTypes) {
+      return this.emefp.activeEmefp.efpTypes.map((type) => type.description);
     } else {
       return [];
     }
   }
-
-
 
   private async updateVessel(vesselName: string) {
 
@@ -194,13 +184,13 @@ export default class EMEFPDetails extends Vue {
 
         const vessel = formattedVessels.find((formattedVessel) => formattedVessel.vesselName === vesselName );
         console.log(vessel);
-        if (this.emefp.activeEmefpPermit) {
+        if (this.emefp.activeEmefp) {
           if (vessel.coastGuardNumber) {
-            this.emefp.activeEmefpPermit.vesselCGNumber = vessel.coastGuardNumber;
+            this.emefp.activeEmefp.vesselCGNumber = vessel.coastGuardNumber;
           } else {
-            this.emefp.activeEmefpPermit.vesselCGNumber = vessel.stateRegulationNumber;
+            this.emefp.activeEmefp.vesselCGNumber = vessel.stateRegulationNumber;
           }
-          this.emefp.activeEmefpPermit.vesselId = vessel._id;
+          this.emefp.activeEmefp.vesselId = vessel._id;
         }
 
       } catch (err) {

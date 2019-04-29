@@ -13,7 +13,7 @@ import {
   usStates,
   portGroups,
   portDecoder,
-  otsTargets,
+  // otsTargets,
   vessels,
   notificationOptions } from '@/_store/data';
 // import Vessel from '@boatnet/bn-models/models/_common';
@@ -28,10 +28,10 @@ export const state: GeneralState = {
   usStates,
   portGroups,
   portDecoder,
-  otsTargets,
+  // otsTargets,
   vessels,
   notificationOptions,
-  activeTarget: otsTargets[0]
+  // activeTarget: otsTargets[0]
 };
 
 export const general: Module<GeneralState, RootState> = {

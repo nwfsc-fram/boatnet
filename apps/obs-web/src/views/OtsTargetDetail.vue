@@ -3,6 +3,7 @@
     <q-card>
       <q-card-section>
         <q-card bordered style="margin: 20px; padding: 20px; max-width: 400px">
+          <q-card-section>
           <div class="text-h6 text-primary">
             <strong>
               {{ ots.activeOTSTarget.fishery }} :
@@ -65,7 +66,14 @@
               </q-icon>
             </template>
           </q-input>
+      </q-card-section>
+      <q-card-actions>
+          <q-btn color="red" label="Cancel" icon="warning" to="/ots-management" exact/>
+          <q-btn color="primary">Save</q-btn>
+      </q-card-actions>
+
         </q-card>
+
       </q-card-section>
 
       <q-card-section>
@@ -83,6 +91,7 @@
               <q-td key="setRate" :props="props">{{ props.row.setRate }}%</q-td>
               <q-td key="effectiveDate" :props="props">{{ props.row.effectiveDate }}</q-td>
               <q-td key="expirationDate" :props="props">{{ props.row.expirationDate }}</q-td>
+              <q-td key="changedBy" :props="props">{{ props.row.changedBy }}</q-td>
             </q-tr>
           </template>
         </q-table>
@@ -101,9 +110,9 @@ import date from 'quasar';
 import {
   GeneralState,
   PermitState,
-  OtsTarget,
   OTSState
 } from '../_store/types/types';
+import { otsTarget } from '@boatnet/bn-models';
 
 @Component
 export default class OtsTargeteDetail extends Vue {
@@ -141,6 +150,14 @@ export default class OtsTargeteDetail extends Vue {
       required: true,
       align: 'left',
       sortable: true
+    },
+    {
+      name: 'changedBy',
+      label: 'Changed By',
+      field: 'changedBy',
+      required: true,
+      align: 'left',
+      sortable: true
     }
   ];
 
@@ -149,41 +166,41 @@ export default class OtsTargeteDetail extends Vue {
       _id: 'dfe24rgsdfg34rwersg',
       coverageGoal: 35,
       setRate: 37,
-      effectiveDate: moment().format(),
-      expirationDate: moment().format('YYYY') + '/12/31'
+      effectiveDate: moment().format('MM/DD/YYYY'),
+      expirationDate: '12/31/' + moment().format('YYYY'),
+      changedBy: 'Scott Leach'
     },
     {
       _id: 'gergse545yehtdfg',
       coverageGoal: 25,
       setRate: 29,
-      effectiveDate: moment().format(),
-      expirationDate: '2017' + '/12/31'
+      effectiveDate: moment().format('MM/DD/YYYY'),
+      expirationDate: '12/31/' + moment().format('YYYY'),
+      changedBy: 'John La Fargue'
     },
     {
       _id: 'gdhe45e45ydthnytesrfgb',
       coverageGoal: 17,
       setRate: 27,
-      effectiveDate: moment().format(),
-      expirationDate: '2018' + '/12/31'
+      effectiveDate: moment().format('MM/DD/YYYY'),
+      expirationDate: '12/31/' + moment().format('YYYY'),
+      changedBy: 'Scott Leach'
     },
     {
       _id: 'wtsdgdhrt5dure7yh',
       coverageGoal: 43,
       setRate: 43,
-      effectiveDate: moment().format(),
-      expirationDate: '2016' + '/12/31'
+      effectiveDate: moment().format('MM/DD/YYYY'),
+      expirationDate: '12/31/' + moment().format('YYYY'),
+      changedBy: 'John La Fargue'
     }
   ];
 
   @Watch('ots.activeOTSTarget.targetType')
   private onChange(newVal: any, oldVal: any) {
     if (newVal === 'Fishery' && this.ots.activeOTSTarget) {
-      this.ots.activeOTSTarget.target = 'fishery wide';
-    } else {
-      if (this.ots.activeOTSTarget) {
-        this.ots.activeOTSTarget.target = null;
-      }
-    }
+      this.ots.activeOTSTarget.targetType = 'fishery wide';
+    } 
   }
 }
 </script>

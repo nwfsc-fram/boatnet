@@ -10,7 +10,7 @@ import { permits } from '@/_store/data';
 Vue.use(Vuex);
 
 export const state: EmefpState = {
-    activeEmefpPermit: null,
+    activeEmefp: null,
     filterText: ''
 };
 

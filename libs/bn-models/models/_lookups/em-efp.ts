@@ -1,10 +1,10 @@
 import { Base } from '../_base';
 import { CouchID } from '../_common';
-import { GearType } from '../_lookups';
-import { Vessel } from '../_lookups';
-import { EfpType } from '../_lookups';
+import { GearType } from '.';
+import { Vessel } from '.';
+import { EfpType } from '.';
 
-export interface EmEfpPermit extends Base {
+export interface EmEfp extends Base {
   emEfpNumber: string;
   efpTypes?: EfpType[];
   gear?: GearType[];

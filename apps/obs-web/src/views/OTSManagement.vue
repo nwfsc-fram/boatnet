@@ -12,6 +12,19 @@
             <q-btn color='primary text-white q-ma-md' @click='newOtsTarget'>New Target</q-btn>
         </div>
 
+        <div >
+            <q-toggle
+            v-model="showInactive"
+            label="Show Inactive"
+            left-label
+            />
+            <q-toggle
+            v-model="showPrevious"
+            label="Show Previous"
+            left-label
+            />
+        </div>
+
         <q-table
         title='Fishery Targets'
         :data='fisheryTargets'
@@ -29,7 +42,8 @@
                 <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
             </q-tr>
         </template>
 
@@ -54,7 +68,8 @@
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <!-- <q-td key='targetVesselCGNumber' style='width: 100px' :props='props'>{{ props.row.targetVesselCGNumber }}</q-td> -->
                 <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
             </q-tr>
         </template>
         </q-table>
@@ -77,7 +92,8 @@
                 <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
+                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
             </q-tr>
         </template>
         </q-table>
@@ -93,7 +109,7 @@ import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfpPermit, OtsTarget } from '@boatnet/bn-models';
+import { EmEfp, otsTarget } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -106,6 +122,9 @@ export default class OtsMangement extends Vue {
 
     @Action('clear', { namespace: 'alert' }) private clear: any;
     @Action('error', { namespace: 'alert' }) private error: any;
+
+    private showInactive: boolean = false;
+    private showPrevious: boolean = false;
 
     private pagination = {rowsPerPage: 0};
 
@@ -129,6 +148,8 @@ export default class OtsMangement extends Vue {
         required: true, align: 'left', sortable: true},
         {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
         required: true, align: 'left', sortable: true},
+        {name: 'status', label: 'Status', field: 'status',
+        required: true, align: 'left', sortable: true}
     ];
 
     private vesselColumns: any[] = [
@@ -157,6 +178,8 @@ export default class OtsMangement extends Vue {
         required: true, align: 'left', sortable: true},
         {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
         required: true, align: 'left', sortable: true},
+        {name: 'status', label: 'Status', field: 'status',
+        required: true, align: 'left', sortable: true}
     ];
 
     private portGroupColumns: any[] = [
@@ -182,6 +205,8 @@ export default class OtsMangement extends Vue {
         required: true, align: 'left', sortable: true},
         {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
         required: true, align: 'left', sortable: true},
+        {name: 'status', label: 'Status', field: 'status',
+        required: true, align: 'left', sortable: true}
     ];
 
     private otsTargets: any[] = [
@@ -191,9 +216,10 @@ export default class OtsMangement extends Vue {
             targetType: 'Fishery',
             coverageGoal: 27,
             setRate: 33,
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 28
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 28,
+            status: 'Active'
         },
         {
             _id: 'gsdffweer34rwgrthg34er34',
@@ -201,9 +227,10 @@ export default class OtsMangement extends Vue {
             targetType: 'Fishery',
             coverageGoal: 32,
             setRate: 37,
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 30
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 30,
+            status: 'Active'
         },
         {
             _id: 'weaefaq3ar34rwefgsdfq',
@@ -211,9 +238,10 @@ export default class OtsMangement extends Vue {
             targetType: 'Fishery',
             coverageGoal: 33,
             setRate: 33,
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 10
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 10,
+            status: 'Active'
         },
         {
             _id: 'vsdffew34r34rfsdffd3r3',
@@ -224,9 +252,10 @@ export default class OtsMangement extends Vue {
             targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetVesselName: 'Excalibur',
             targetVesselCGNumber: '5346605',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 27
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 27,
+            status: 'Active'
         },
         {
             _id: 'fdsfweqrawfsdfsefafsdfqwe',
@@ -237,9 +266,10 @@ export default class OtsMangement extends Vue {
             targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetVesselName: 'Raven',
             targetVesselCGNumber: '55432343',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 22
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 22,
+            status: 'Active'
         },
         {
             _id: 'fesfgg54gsr5bsr5h45ats4s',
@@ -250,9 +280,10 @@ export default class OtsMangement extends Vue {
             targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetVesselName: 'Last Straw',
             targetVesselCGNumber: '3456463',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 35
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 35,
+            status: 'Active'
         },
         {
             _id: 'vsdfv3434rervsdfbq3a3rwfffdvsdf',
@@ -262,9 +293,10 @@ export default class OtsMangement extends Vue {
             setRate: 27,
             targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetPortGroupDescription: 'SPS (Seattle Area)',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 20
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 20,
+            status: 'Active'
         },
         {
             _id: 'f34wrsersgwerf34wfsgq34',
@@ -274,8 +306,9 @@ export default class OtsMangement extends Vue {
             setRate: 35,
             targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetPortGroupDescription: 'ACA (Los Angeles Area)',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31'
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            status: 'Active'
         },
         {
             _id: 'sfdvw43st4t45g56h6ehtyjrty',
@@ -285,9 +318,10 @@ export default class OtsMangement extends Vue {
             setRate: 33,
             targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
             targetPortGroupDescription: 'AOR (Northern Oregon)',
-            effectiveDate: moment().format(),
-            expirationDate: moment().format('YYYY') + '/12/31',
-            actualObserved: 33
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+            actualObserved: 33,
+            status: 'Active'
         },
     ];
 
