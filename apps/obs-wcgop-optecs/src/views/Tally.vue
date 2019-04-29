@@ -91,8 +91,7 @@ export default class Tally extends Vue {
   }
 
   private mounted() {
-
-    if (!this.tallyState.buttonData) {
+    if (!this.tallyState.buttonData.length) {
       this.initDefaultTemplate();
     }
   }
