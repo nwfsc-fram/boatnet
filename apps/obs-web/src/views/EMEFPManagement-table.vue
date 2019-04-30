@@ -70,7 +70,8 @@ private EM_EFP: EmEfp[] = [];
 
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
-    {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true, sortable: true, align: 'left' },
+    {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
+    sortable: true, align: 'left' },
     {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
     {name: 'emEfpNumber', label: 'EM EFP #', field: 'emEfpNumber', required: true, align: 'left', sortable: true },
     {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left' },

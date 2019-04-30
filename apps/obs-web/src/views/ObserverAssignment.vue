@@ -37,7 +37,7 @@ export default class Trips extends Vue {
     @State('user') private user!: UserState;
 
 private get unassignedTrips() {
-    return this.trip.trips
+    return this.trip.trips;
 }
 
 private columns = [
@@ -48,7 +48,7 @@ private columns = [
     {name: 'startDate', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true},
     {name: 'endPort', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true},
     {name: 'endDate', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true},
-]
+];
 
 
 }

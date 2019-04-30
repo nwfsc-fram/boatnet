@@ -109,7 +109,7 @@ import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfp, otsTarget } from '@boatnet/bn-models';
+import { EmEfp, OtsTarget } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
