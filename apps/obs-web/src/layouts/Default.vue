@@ -87,6 +87,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/observer-assignment" exact>
+          <q-item-section avatar>
+            <q-icon name="fa fa-binoculars"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Observer Assignment</q-item-label>
+            <q-item-label caption>Assign Observers to Selected Trips</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
             <q-icon name="beenhere"/>

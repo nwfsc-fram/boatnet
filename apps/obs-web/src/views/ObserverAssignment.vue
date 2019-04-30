@@ -3,7 +3,7 @@
         <q-card>
             <q-card-section>
                 <q-table
-                title='Unassigned Trips'
+                title='Un-Assigned Trips'
                 :data='unassignedTrips'
                 :columns='columns'
                 dense
