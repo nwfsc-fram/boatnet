@@ -57,22 +57,12 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management-responsive" exact>
-          <q-item-section avatar>
-            <q-icon name="videocam"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>EM EFP Management Responsive</q-item-label>
-            <q-item-label caption>Manage EM EFP Roster</q-item-label>
-          </q-item-section>
-        </q-item>
-
         <q-item to="/em-efp-management-table" exact>
           <q-item-section avatar>
             <q-icon name="videocam"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label>EM EFP Management Table</q-item-label>
+            <q-item-label>EM EFP Management</q-item-label>
             <q-item-label caption>Manage EM EFP Roster</q-item-label>
           </q-item-section>
         </q-item>
