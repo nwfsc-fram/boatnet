@@ -112,7 +112,7 @@ import {
   PermitState,
   OTSState
 } from '../_store/types/types';
-import { otsTarget } from '@boatnet/bn-models';
+import { OtsTarget } from '@boatnet/bn-models';
 
 @Component
 export default class OtsTargeteDetail extends Vue {
@@ -200,7 +200,7 @@ export default class OtsTargeteDetail extends Vue {
   private onChange(newVal: any, oldVal: any) {
     if (newVal === 'Fishery' && this.ots.activeOTSTarget) {
       this.ots.activeOTSTarget.targetType = 'fishery wide';
-    } 
+    }
   }
 }
 </script>
