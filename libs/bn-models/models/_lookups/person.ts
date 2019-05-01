@@ -55,12 +55,12 @@ export interface Person extends Base {
   homeEmail?: string[];
   birthdate?: BoatnetDate;
   emergencyContacts?: EmergencyContact[];
-  applicationRoles?: ApplicationRole[]; 
+  applicationRoles?: ApplicationRole[];
   organizations?: OrganizationDateRange[];
   plbNum?: string;
-  epirbNum?: string[]; // NOAA database that keeps track of these, perhaps 
-      // we can query these
-      // Populate via OBSLOG (epirbNum1 / epirbNum2)
+  epirbNum?: string[]; // NOAA database that keeps track of these, perhaps
+  // we can query these
+  // Populate via OBSLOG (epirbNum1 / epirbNum2)
   port?: Port;
   notificationPreferences?: notificationPreferences[];
   media?: Media[];

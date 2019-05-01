@@ -1,4 +1,4 @@
-import { MeasurementDevice } from "../_lookups";
+import { MeasurementDevice } from '../_lookups';
 
 export interface Measurement {
   measurementDevice?: MeasurementDevice; // Lookup

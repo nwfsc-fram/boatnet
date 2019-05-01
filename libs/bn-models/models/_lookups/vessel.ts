@@ -11,8 +11,8 @@ export const VesselTypeName = 'vessel';
 
 interface SafetyMeasure extends Base {
   safetyType: string; // - lookup - CPR, Wheel watch, Equipment, Emergency Instructions
-  equipmentDescription: string; 
-    // lookup - liferaft, EPIRB, Flare, Fire Extinguisher, PFD Type 4, Decal
+  equipmentDescription: string;
+  // lookup - liferaft, EPIRB, Flare, Fire Extinguisher, PFD Type 4, Decal
   count?: number;
   location?: string; //
   expirationDate?: BoatnetDate;
@@ -34,6 +34,6 @@ export interface Vessel extends Base {
   legacy?: {
     vesselId?: number;
     obsprodLoadDate?: BoatnetDate;
-    safetyDecalExpiration?: BoatnetDate;  // replace by the Safety Checklist
+    safetyDecalExpiration?: BoatnetDate; // replace by the Safety Checklist
   };
 }
