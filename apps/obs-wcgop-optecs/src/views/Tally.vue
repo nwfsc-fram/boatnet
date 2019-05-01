@@ -15,12 +15,15 @@
         species="CORN"
       ></component>
     </div>
+    <div>Last Sync: {{syncDate}}</div>
   </q-page>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
+
+import { pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
@@ -39,12 +42,14 @@ Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 @Component
 export default class Tally extends Vue {
   @State('appState') private appState!: WcgopAppState;
+  @State('pouchState') private pouchState!: PouchDBState;
   @State('tallyState') private tallyState!: TallyState;
 
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButton', { namespace: 'tallyState' })
   private updateButton: any;
 
+  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Getter('vertButtonCount', { namespace: 'tallyState' }) private vertButtonCount!: number;
   @Getter('horizButtonCount', { namespace: 'tallyState' }) private horizButtonCount!: number;
 
@@ -69,7 +74,7 @@ export default class Tally extends Vue {
   }
 
   public handleButtonData(button: TallyButtonData) {
-    // console.log('GOT BUTTON DATA', buttonData);
+    // console.log('GOT BUTTON DATA', button);
     this.updateButton(button);
   }
 

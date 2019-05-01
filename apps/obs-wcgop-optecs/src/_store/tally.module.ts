@@ -76,20 +76,38 @@ const mutations: MutationTree<TallyState> = {
     newState.tallyRecord.buttonData = tmpBtnData;
     // TODO keep track of current ID?
     pouchService.db.post(pouchService.userDBName, newState.tallyRecord).then( (result: any) => {
-      console.log('POSTED NEW DATA!', result);
+      console.log('Created new tally record.', result);
       newState.tallyRecord._id = result.id;
+      newState.tallyRecord._rev = result.rev;
     });
   },
   connectDB(newState: any) {
     console.log('TODO Connect Database to Tally');
 
   },
-  updateButton(newState: any, button: TallyButtonData) {
+  async updateButton(newState: any, button: TallyButtonData) {
     if (button.index === undefined) {
       console.log('[Tally Module] Button has no index, cannot update.', button);
       return;
     }
-    newState.buttonData[button.index] = button;
+    newState.tallyRecord.buttonData[button.index] = button;
+    try {
+      const result = await pouchService.db.put(pouchService.userDBName, newState.tallyRecord);
+      newState.tallyRecord._rev = result.rev;
+    } catch (err) {
+      if (err.status === 409) {
+        const newerDoc = await pouchService.db.get(pouchService.userDBName, newState.tallyRecord._id);
+        newState.tallyRecord._rev = newerDoc._rev;
+        const result = await pouchService.db.put(pouchService.userDBName, newState.tallyRecord);
+        console.log('[Tally Module] Handled doc conflict, updated tally', result);
+        newState.tallyRecord._rev = result.rev;
+      } else {
+        // TODO Alert Module
+        console.log('ERROR!', err);
+      }
+
+    }
+
   }
 };
 
