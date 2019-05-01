@@ -2,11 +2,14 @@ import { Base } from '../_base';
 import { Port } from './port';
 import { BoatnetDate } from '../_common/boatnet-date';
 import { CouchID } from '../_common';
+import { Vessel } from './vessel';
+import { Media } from './media';
+import { Permit } from '../_misc/permit';
 
 // TODO Full implementation
 export const PersonTypeName = 'person';
+export const VesselCaptainTypeName = 'vessel-captain';
 
-declare type Organization = string; // TODO Lookup
 declare type ApplicationRole = string; // TODO Lookup - match Apex User Admin
 // Existing roles:
 // OBSERVER
@@ -31,6 +34,9 @@ interface OrganizationDateRange {
   endDate?: BoatnetDate;
 }
 
+declare type notificationPreferences = string;
+export type Organization = Person;
+
 // Originally CONTACTS
 export interface Person extends Base {
   // This is sensitive PII
@@ -46,23 +52,28 @@ export interface Person extends Base {
   homePhone?: string;
   cellPhone?: string;
   workEmail?: string;
-  homeEmail?: string;
+  homeEmail?: string[];
   birthdate?: BoatnetDate;
   emergencyContacts?: EmergencyContact[];
-
   applicationRoles?: ApplicationRole[];
-
   organizations?: OrganizationDateRange[];
-
-  epirbIdNum?: string;
-  epirbIdNum_2?: string; // Uncertain why there's a second one, legacy?
-  epirbSerialNum?: number;
-  portId?: Port;
-  license?: string;
+  plbNum?: string;
+  epirbNum?: string[]; // NOAA database that keeps track of these, perhaps
+  // we can query these
+  // Populate via OBSLOG (epirbNum1 / epirbNum2)
+  port?: Port;
+  notificationPreferences?: notificationPreferences[];
+  media?: Media[];
 
   legacy?: {
     PersonId?: number;
     userId?: number;
     obsprodLoadDate?: BoatnetDate;
   };
+}
+
+export interface VesselCaptain extends Person {
+  isCaptainActive?: boolean;
+  activeVessel?: CouchID;
+  license?: string; // alphanumeric - goal in 2020 to remove this
 }

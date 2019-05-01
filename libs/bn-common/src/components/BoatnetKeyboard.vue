@@ -24,7 +24,7 @@ export default class BoatnetKeyboard extends Vue {
 
   private keyboardOptions = {
     useKbEvents: false,
-    preventClickEvent: false
+    preventClickEvent: true
   };
 
   private accept(text: string) {

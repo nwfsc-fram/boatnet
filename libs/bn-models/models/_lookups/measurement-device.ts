@@ -1,4 +1,5 @@
 // TODO other properties
 export interface MeasurementDevice {
-  name?: string;
+  manufacturer?: string;
+  model?: string;
 }

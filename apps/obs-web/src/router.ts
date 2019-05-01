@@ -19,6 +19,7 @@ import Login from './views/Login.vue';
 import EMEFPManagementResponsive from './views/EMEFPManagement-responsive.vue';
 import EMEFPManagementTable from './views/EMEFPManagement-table.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
+import ObserverAssignment from './views/ObserverAssignment.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -78,7 +79,8 @@ const router = new Router({
         { path: '/em-efp-management-responsive', name: 'EM EFP Management Responsive',
         component: EMEFPManagementResponsive },
         { path: '/em-efp-management-table', name: 'EM EFP Management Table', component: EMEFPManagementTable },
-        { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails }
+        { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails },
+        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }
