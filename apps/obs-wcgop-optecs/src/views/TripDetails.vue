@@ -176,9 +176,6 @@
         ]"
         />
       </div>
-      <div>{{currentTrip.vessel.vesselName}}</div>
-      <div>{{currentTrip.crewSize}}</div>
-      <div>hello</div>
     </q-page>
   </span>
 </template>
