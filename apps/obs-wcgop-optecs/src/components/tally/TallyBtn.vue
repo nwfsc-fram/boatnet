@@ -58,10 +58,12 @@ export default class TallyBtn extends Vue {
   // @Prop({ default: undefined }) public reason!: boolean;
   // @Prop({ default: undefined }) public count!: boolean;
 
+
   public handleClick() {
     if (this.data.count !== undefined) {
       this.playSound('inc');
       this.data.count++;
+      this.$emit('dataChanged', this.data);
     }
   }
 

@@ -1,5 +1,7 @@
+import { Base } from '@boatnet/bn-models';
+
 export interface TallyButtonData {
-  _id?: string; // DB ID
+  index: number; // screen location
   // Styling
   color?: string;
   'text-color'?: string;
@@ -11,8 +13,14 @@ export interface TallyButtonData {
   count?: number;
 }
 
-export interface TallyState {
+export const TallyRecordTypeName = 'tally-record';
+
+export interface TallyRecord extends Base {
   buttonData: TallyButtonData[];
   vertButtonCount: number;
   horizButtonCount: number;
+}
+
+export interface TallyState {
+  tallyRecord: TallyRecord;
 }

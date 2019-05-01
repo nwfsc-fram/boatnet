@@ -1,22 +1,26 @@
 <template>
   <q-page padding>
     <div class="q-gutter-md">
-      <div v-for="r in tallyState.vertButtonCount" class="row" :key="`md-r-${r}`">
-        <div v-for="c in tallyState.horizButtonCount" class="col" :key="`md-c-${c}`">
+      <div v-for="r in vertButtonCount" class="row" :key="`md-r-${r}`">
+        <div v-for="c in horizButtonCount" class="col" :key="`md-c-${c}`">
           <!-- TODO: this should be in a TallyState -->
-          <tally-btn :data="getData(r,c)" />
+          <tally-btn :data="getButton(r,c)" @dataChanged="handleButtonData"/>
         </div>
       </div>
     </div>
     <div class="q-pa-md">
-      <component v-bind:is="currentControlComponent" @controlevent="handleControlEvent" species="CORN"></component>
+      <component
+        v-bind:is="currentControlComponent"
+        @controlevent="handleControlEvent"
+        species="CORN"
+      ></component>
     </div>
   </q-page>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 
 import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
@@ -34,11 +38,16 @@ Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 
 @Component
 export default class Tally extends Vue {
-
   @State('appState') private appState!: WcgopAppState;
   @State('tallyState') private tallyState!: TallyState;
 
-  @Action('initDefaultTemplate', { namespace: 'tallyState'}) private initDefaultTemplate: any;
+  @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
+  @Action('updateButton', { namespace: 'tallyState' })
+  private updateButton: any;
+
+  @Getter('vertButtonCount', { namespace: 'tallyState' }) private vertButtonCount!: number;
+  @Getter('horizButtonCount', { namespace: 'tallyState' }) private horizButtonCount!: number;
+
   private btnLabel = '';
   private btnSize = '18px';
 
@@ -48,15 +57,20 @@ export default class Tally extends Vue {
   }
 
   public getCode(row: number, column: number) {
-    return this.getData(row, column).code;
+    return this.getButton(row, column).code;
   }
 
   public getReason(row: number, column: number) {
-    return this.getData(row, column).reason;
+    return this.getButton(row, column).reason;
   }
 
   public getCount(row: number, column: number) {
-    return this.getData(row, column).count;
+    return this.getButton(row, column).count;
+  }
+
+  public handleButtonData(button: TallyButtonData) {
+    // console.log('GOT BUTTON DATA', buttonData);
+    this.updateButton(button);
   }
 
   public handleControlEvent(controlName: string) {
@@ -74,32 +88,26 @@ export default class Tally extends Vue {
       default:
         // console.log('Unhandled tally control event:', controlName);
         break;
-
     }
   }
 
   private getBtnIndex(row: number, column: number) {
     // Fixes weird 1-based v-for loops
-    return column + (row - 1) * this.tallyState.horizButtonCount - 1;
+    return column + (row - 1) * this.horizButtonCount - 1;
   }
-  private getData(row: number, column: number) {
-    if (!this.tallyState.buttonData) {
-      return {code: '-', reason: '-', count: 0}; // temp fake data
+  private getButton(row: number, column: number) {
+    if (!this.tallyState.tallyRecord.buttonData) {
+      return { code: '-', reason: '-', count: 0 }; // temp fake data
     }
     const idx = this.getBtnIndex(row, column);
-    return this.tallyState.buttonData[idx];
+    return this.tallyState.tallyRecord.buttonData[idx];
   }
 
   private mounted() {
-    if (!this.tallyState.buttonData.length) {
-      this.initDefaultTemplate();
-    }
+    this.connectDB();
   }
-
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="stylus" scoped>
-
-</style>
+<style lang="stylus" scoped></style>
