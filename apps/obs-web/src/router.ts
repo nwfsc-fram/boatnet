@@ -20,6 +20,7 @@ import EMEFPManagementResponsive from './views/EMEFPManagement-responsive.vue';
 import EMEFPManagementTable from './views/EMEFPManagement-table.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
+import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -80,7 +81,9 @@ const router = new Router({
         component: EMEFPManagementResponsive },
         { path: '/em-efp-management-table', name: 'EM EFP Management Table', component: EMEFPManagementTable },
         { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails },
-        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment }
+        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment },
+        {path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
+        component: ObserverAssignmentDetail }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

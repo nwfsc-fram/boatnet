@@ -5,11 +5,16 @@
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
                 <p><strong>Trip # {{ trip.activeTrip.tripNum }} - <span v-if="trip.activeTrip.fishery">{{ trip.activeTrip.fishery.name }}</span></strong></p>
 
-                <q-input v-model="trip.activeTrip.departureDate" mask="date" :rules="['date']" :dense="true" label="Start Date">
+                <q-input
+                v-model="departureDate"
+                mask="date"
+                :rules="['date']"
+                :dense="true"
+                label="Start Date">
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.activeTrip.departureDate" />
+                        <q-date v-model="departureDate"/>
                     </q-popup-proxy>
                     </q-icon>
                 </template>
@@ -19,7 +24,7 @@
                 <template v-slot:append>
                     <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy>
-                        <q-date v-model="trip.activeTrip.returnDate" />
+                        <q-date v-model="returnDate" />
                     </q-popup-proxy>
                     </q-icon>
                 </template>
@@ -211,6 +216,30 @@ export default class TripDetails extends Vue {
             return Math.floor(difference) + ' seconds ago';
         } else {
             return Math.floor(difference / 60) + ' minutes ago';
+        }
+    }
+
+    get departureDate(): string | undefined {
+        if (this.trip.activeTrip) {
+            return moment(this.trip.activeTrip.departureDate).format('YYYY/MM/DD')
+        }
+    }
+
+    set departureDate(value) {
+        if (this.trip.activeTrip) {
+            this.trip.activeTrip.departureDate = value
+        }
+    }
+
+    get returnDate(): string | undefined {
+        if (this.trip.activeTrip) {
+            return moment(this.trip.activeTrip.returnDate).format('YYYY/MM/DD')
+        }
+    }
+
+    set returnDate(value) {
+        if (this.trip.activeTrip) {
+            this.trip.activeTrip.returnDate = value
         }
     }
 

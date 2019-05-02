@@ -10,6 +10,20 @@
                 row-key='_id'
                 :pagination.sync='unassignedPagination'
                 >
+                <template v-slot:body='props'>
+                <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >
+                    <q-td key='vesselName' style='width: 200px; white-space: normal !important;' :props='props' >{{ props.row.vesselName }}</q-td>
+                    <q-td key='captain' style='width: 100px' :props='props'>{{ props.row.captain || 'NA' }}</q-td>
+                    <q-td key='captainPhone' style='width: 100px' :props='props'>{{ formatTel(props.row.captainPhone) || 'NA' }}</q-td>
+                    <q-td key='tripStartDate' style='width: 200px' :props='props'>{{ props.row.tripStartDate }}</q-td>
+                    <q-td key='tripEndDate' style='width: 200px' :props='props'>{{ props.row.tripEndDate }}</q-td>
+                    <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                    <q-td key='departurePort' style='width: 200px' :props='props'>{{ props.row.departurePort }}</q-td>
+                    <q-td key='observerName' style='width: 200px' :props='props'>{{ props.row.observerName }}</q-td>
+                    <q-td key='observerPhone' style='width: 200px' :props='props'>{{ props.row.observerPhone }}</q-td>
+                    <q-td key='selectionStatus' :props='props'>{{ props.row.selectionStatus }}</q-td>
+                </q-tr>
+                </template>
                 </q-table>
             </q-card-section>
 
@@ -23,6 +37,20 @@
                 :pagination.sync='assignedPagination'
                 hide-bottom
                 >
+                <template v-slot:body='props'>
+                <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >
+                    <q-td key='vesselName' style='width: 200px; white-space: normal !important;' :props='props' >{{ props.row.vesselName }}</q-td>
+                    <q-td key='captain' style='width: 100px' :props='props'>{{ props.row.captain || 'NA' }}</q-td>
+                    <q-td key='captainPhone' style='width: 100px' :props='props'>{{ formatTel(props.row.captainPhone) || 'NA' }}</q-td>
+                    <q-td key='tripStartDate' style='width: 200px' :props='props'>{{ props.row.tripStartDate }}</q-td>
+                    <q-td key='tripEndDate' style='width: 200px' :props='props'>{{ props.row.tripEndDate }}</q-td>
+                    <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                    <q-td key='departurePort' style='width: 200px' :props='props'>{{ props.row.departurePort }}</q-td>
+                    <q-td key='observerName' style='width: 200px' :props='props'>{{ props.row.observerName }}</q-td>
+                    <q-td key='observerPhone' style='width: 200px' :props='props'>{{ formatTel(props.row.observerPhone) || 'N/A'}}</q-td>
+                    <q-td key='selectionStatus' :props='props'>{{ props.row.selectionStatus }}</q-td>
+                </q-tr>
+                </template>
                 </q-table>
             </q-card-section>
         </q-card>
@@ -35,7 +63,7 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TripState, VesselState, UserState } from '../_store/types/types';
+import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_store/types/types';
 import moment from 'moment';
 
 @Component
@@ -43,6 +71,7 @@ export default class ObserverAssignment extends Vue {
     @State('trip') private trip!: TripState;
     @State('vessel') private vessel!: VesselState;
     @State('user') private user!: UserState;
+    @State('oa') private oa!: ObserverAssignmentState;
 
 private unassignedPagination = {rowsPerPage: 10};
 private assignedPagination = {rowsPerPage: 0};
@@ -95,8 +124,8 @@ private trips =  [
         vesselName: 'Excalibur',
         captain: 'Todd Hay',
         captainPhone: 2225551212,
-        tripStartDate: moment().format('MM/DD/YYYYY'),
-        tripEndDate: moment().format('MM/DD/YYYYY'),
+        tripStartDate: moment().format('MM/DD/YYYY'),
+        tripEndDate: moment().format('MM/DD/YYYY'),
         fishery: 'EM EFP',
         departurePort: 'Newport',
         observerName: 'Will Smith',
@@ -107,8 +136,8 @@ private trips =  [
         vesselName: 'Raven',
         captain: 'Seth Gerou',
         captainPhone: 2225551212,
-        tripStartDate: moment().format('MM/DD/YYYYY'),
-        tripEndDate: moment().format('MM/DD/YYYYY'),
+        tripStartDate: moment().format('MM/DD/YYYY'),
+        tripEndDate: moment().format('MM/DD/YYYY'),
         fishery: 'EM EFP',
         departurePort: 'Newport',
         observerName: null,
@@ -119,8 +148,8 @@ private trips =  [
         vesselName: 'Last Straw',
         captain: 'Melina Shak',
         captainPhone: 2225551212,
-        tripStartDate: moment().format('MM/DD/YYYYY'),
-        tripEndDate: moment().format('MM/DD/YYYYY'),
+        tripStartDate: moment().format('MM/DD/YYYY'),
+        tripEndDate: moment().format('MM/DD/YYYY'),
         fishery: 'EM EFP',
         departurePort: 'Newport',
         observerName: 'Nick Schaffer',
@@ -128,6 +157,17 @@ private trips =  [
         selectionStatus: 'Selected'
     },
 ];
+
+private ObserverAssignmentDetail(row: any) {
+    console.log(row);
+    this.oa.activeTrip = row;
+    this.$router.push({path: '/observer-assignment-detail/' + this.trips.indexOf(row)});
+}
+
+private formatTel(telNum: any) {
+    telNum = telNum.toString()
+    return '(' + telNum.substring(0,3) + ') ' + telNum.substring(3,6) + '-' + telNum.substring(6, 10);
+}
 
 }
 </script>

@@ -148,7 +148,7 @@ export const permits: Permit[] = [
 export const trips: OTSTrip[] = [
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
+    departureDate: '2018/08/03 10:01 AM', returnDate: '2018/08/20 3:33 PM',
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
     permits: [{label: 'A21rv35', value: 'A21rv35'}],

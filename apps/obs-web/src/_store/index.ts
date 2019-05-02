@@ -9,6 +9,7 @@ import { vessel } from './vessel.module';
 import { general } from './general.module';
 import { emefp } from './emefp.module';
 import { ots } from './ots.module';
+import { oa } from './observer-assignment.module';
 
 import { RootState } from './types/types';
 
@@ -44,7 +45,8 @@ const store: StoreOptions<RootState> = {
     vessel,
     general,
     emefp,
-    ots
+    ots,
+    oa
   }
 };
 
