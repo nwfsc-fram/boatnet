@@ -221,25 +221,25 @@ export default class TripDetails extends Vue {
 
     get departureDate(): string | undefined {
         if (this.trip.activeTrip) {
-            return moment(this.trip.activeTrip.departureDate).format('YYYY/MM/DD')
+            return moment(this.trip.activeTrip.departureDate).format('YYYY/MM/DD');
         }
     }
 
     set departureDate(value) {
         if (this.trip.activeTrip) {
-            this.trip.activeTrip.departureDate = value
+            this.trip.activeTrip.departureDate = value;
         }
     }
 
     get returnDate(): string | undefined {
         if (this.trip.activeTrip) {
-            return moment(this.trip.activeTrip.returnDate).format('YYYY/MM/DD')
+            return moment(this.trip.activeTrip.returnDate).format('YYYY/MM/DD');
         }
     }
 
     set returnDate(value) {
         if (this.trip.activeTrip) {
-            this.trip.activeTrip.returnDate = value
+            this.trip.activeTrip.returnDate = value;
         }
     }
 

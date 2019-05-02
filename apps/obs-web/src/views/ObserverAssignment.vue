@@ -165,8 +165,8 @@ private ObserverAssignmentDetail(row: any) {
 }
 
 private formatTel(telNum: any) {
-    telNum = telNum.toString()
-    return '(' + telNum.substring(0,3) + ') ' + telNum.substring(3,6) + '-' + telNum.substring(6, 10);
+    telNum = telNum.toString();
+    return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
 }
 
 }

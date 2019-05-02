@@ -102,18 +102,22 @@ private observerAvailability = [
     {observerName: 'Melina Shak', status: 'Not Available For Dates',
     observerPhone: 2125551212, lastScheduledDate: '2019/05/01',
     nextScheduledDate: '2019/06/14'},
-]
+];
 
 private columns = [
-        {name: 'observerName', label: 'Observer', field: 'observerName', required: true, align: 'left', sortable: true },
-        {name: 'observerPhone', label: 'Phone #', field: 'observerPhone', required: true, align: 'left', sortable: true },
+        {name: 'observerName', label: 'Observer', field: 'observerName', required: true,
+        align: 'left', sortable: true },
+        {name: 'observerPhone', label: 'Phone #', field: 'observerPhone', required: true,
+        align: 'left', sortable: true },
         {name: 'status', label: 'Status', field: 'status', required: true, align: 'left', sortable: true },
-        {name: 'lastScheduledDate', label: 'Last Scheduled', field: 'lastScheduledDate', required: true, align: 'left', sortable: true },
-        {name: 'nextScheduledDate', label: 'Next Scheduled', field: 'nextScheduledDate', required: true, align: 'left', sortable: true },
-]
+        {name: 'lastScheduledDate', label: 'Last Scheduled', field: 'lastScheduledDate', required: true,
+        align: 'left', sortable: true },
+        {name: 'nextScheduledDate', label: 'Next Scheduled', field: 'nextScheduledDate', required: true,
+        align: 'left', sortable: true },
+];
 
 private setObserver(row: any) {
-    if (row.status == 'Available For Dates') {
+    if (row.status === 'Available For Dates') {
         this.oa.activeTrip.observerName = row.observerName;
     } else {
         this.selectedObserver = row.observerName;
@@ -122,8 +126,8 @@ private setObserver(row: any) {
 }
 
 private formatTel(telNum: any) {
-    telNum = telNum.toString()
-    return '(' + telNum.substring(0,3) + ') ' + telNum.substring(3,6) + '-' + telNum.substring(6, 10);
+    telNum = telNum.toString();
+    return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
 }
 
 }
