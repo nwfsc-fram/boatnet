@@ -15,7 +15,6 @@
         species="CORN"
       ></component>
     </div>
-    <div>Last Sync: {{syncDate}}</div>
   </q-page>
 </template>
 
@@ -23,7 +22,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 
-import { pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 import { TallyButtonData } from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
@@ -39,7 +38,17 @@ Vue.component('tally-controls', TallyControls);
 Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 
-@Component
+@Component({
+  pouch: {
+    tallyTemplates() {
+      return {
+        database: pouchService.userDBName,
+        selector: { type: 'tally-record' },
+        sort: [{ createdDate: 'desc' }]
+      };
+    }
+  }
+})
 export default class Tally extends Vue {
   @State('appState') private appState!: WcgopAppState;
   @State('pouchState') private pouchState!: PouchDBState;
@@ -48,15 +57,21 @@ export default class Tally extends Vue {
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButton', { namespace: 'tallyState' })
   private updateButton: any;
+  @Action('reset', { namespace: 'tallyState' })
+  private reset: any;
 
-  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
-  @Getter('vertButtonCount', { namespace: 'tallyState' }) private vertButtonCount!: number;
-  @Getter('horizButtonCount', { namespace: 'tallyState' }) private horizButtonCount!: number;
+  @Getter('vertButtonCount', { namespace: 'tallyState' })
+  private vertButtonCount!: number;
+  @Getter('horizButtonCount', { namespace: 'tallyState' })
+  private horizButtonCount!: number;
 
   private btnLabel = '';
   private btnSize = '18px';
 
   private currentControlComponent = 'tally-controls';
+
+  private tallyTemplates!: any;
+
   constructor() {
     super();
   }
@@ -90,8 +105,11 @@ export default class Tally extends Vue {
       case 'all-tallies-for':
         this.currentControlComponent = 'tally-alltallies-controls';
         break;
+      case 'reset-data':
+        this.reset(); // TODO Prompt user to confirm
+        break;
       default:
-        // console.log('Unhandled tally control event:', controlName);
+        console.log('Unhandled tally control event:', controlName);
         break;
     }
   }
@@ -101,7 +119,7 @@ export default class Tally extends Vue {
     return column + (row - 1) * this.horizButtonCount - 1;
   }
   private getButton(row: number, column: number) {
-    if (!this.tallyState.tallyRecord.buttonData) {
+    if (!this.tallyState.tallyRecord || !this.tallyState.tallyRecord.buttonData) {
       return { code: '-', reason: '-', count: 0 }; // temp fake data
     }
     const idx = this.getBtnIndex(row, column);

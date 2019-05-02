@@ -94,7 +94,7 @@ const getters: GetterTree<PouchDBState, any> = {
     }
   },
   allVessels(getState: PouchDBState) {
-    return pouchService.$pouch.allDocs('lookups-dev');
+    // return pouchService.db.allDocs('lookups-dev');
   }
 };
 

@@ -16,7 +16,9 @@ export interface TallyButtonData {
 export const TallyRecordTypeName = 'tally-record';
 
 export interface TallyRecord extends Base {
-  buttonData: TallyButtonData[];
+  recordName: string; // friendly name
+  isTemplate?: boolean; // is a template for new catches?
+  buttonData?: TallyButtonData[];
   vertButtonCount: number;
   horizButtonCount: number;
 }
