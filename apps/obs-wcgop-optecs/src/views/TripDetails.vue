@@ -57,22 +57,18 @@
                     @focus="displayKeyboard"
                     data-layout="numeric"
                   />
-                  <!-- <q-input
-                    outlined
-                    class="col-2"
-                    :value="shortFormat(currentTrip.departureDate)"
-                    label="Departure Date/ Time"
-                  />-->
                   <q-input
                     outlined
                     label="Departure Date"
-                    v-model="displayDate"
+                    v-model="departureDateDisplay"
                     mask="date"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
                   >
                     <template v-slot:append>
                       <q-icon name="event" class="cursor-pointer">
                         <q-popup-proxy>
-                          <q-date v-model="displayDate"/>
+                          <q-date v-model="departureDateDisplay"/>
                         </q-popup-proxy>
                       </q-icon>
                     </template>
@@ -80,8 +76,8 @@
                   <q-input
                     outlined
                     class="col-2"
-                    label="Time"
-                    v-model="time"
+                    label="Departure Time"
+                    v-model="departureTime"
                     mask="##:##"
                     fill-mask
                     @focus="displayKeyboard"
@@ -159,9 +155,29 @@
                   />
                   <q-input
                     outlined
+                    label="Return Date"
+                    v-model="returnDateDisplay"
+                    mask="date"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy>
+                          <q-date v-model="returnDateDisplay"/>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                  <q-input
+                    outlined
                     class="col-2"
-                    :value="shortFormat(currentTrip.returnDate)"
-                    label="Return Date/Time"
+                    label="Return Time"
+                    v-model="returnTime"
+                    mask="##:##"
+                    fill-mask
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
                   />
                 </div>
               </div>
@@ -254,9 +270,13 @@ export default class Trips extends Vue {
 
   // TODO modify this to load from DB
   private certificate: string[] = [''];
-  private date = Date.now();
-  private displayDate = date.formatDate(this.date, 'YYYY/MM/DD');
-  private time = '';
+  private departureDate = Date.now();
+  private departureDateDisplay = date.formatDate(this.departureDate, 'YYYY/MM/DD');
+  private departureTime = '';
+
+  private returnDate = Date.now();
+  private returnDateDisplay = date.formatDate(this.returnDate, 'YYYY/MM/DD');
+  private returnTime = '';
 
   constructor() {
     super();
