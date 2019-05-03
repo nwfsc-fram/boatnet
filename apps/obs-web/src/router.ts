@@ -17,9 +17,10 @@ import UserConfig from './views/UserConfig.vue';
 import LogBookCapture from './views/LogBookCapture.vue';
 import Login from './views/Login.vue';
 import EMEFPManagementResponsive from './views/EMEFPManagement-responsive.vue';
-import EMEFPManagementTable from './views/EMEFPManagement-table.vue';
+import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
+import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -76,11 +77,11 @@ const router = new Router({
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
         { path: '/users/:id', name: 'User Details', component: UserDetails},
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
-        { path: '/em-efp-management-responsive', name: 'EM EFP Management Responsive',
-        component: EMEFPManagementResponsive },
-        { path: '/em-efp-management-table', name: 'EM EFP Management Table', component: EMEFPManagementTable },
+        { path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement },
         { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails },
-        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment }
+        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment },
+        {path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
+        component: ObserverAssignmentDetail }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

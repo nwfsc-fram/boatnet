@@ -9,7 +9,7 @@
         </q-banner>
 
         <div class="centered-page-item">
-            <q-btn class="bg-primary text-white q-ma-md" @click="emefpDetails(0)">New EM EFP</q-btn>
+            <q-btn class="bg-primary text-white q-ma-md" @click="emefpDetails(null)">New EM EFP</q-btn>
         </div>
 
         <q-table
@@ -56,7 +56,7 @@ import { EmEfp } from '@boatnet/bn-models';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 @Component
-export default class EMEFPManagementTable extends Vue {
+export default class EMEFPManagement extends Vue {
     @State('alert') private alert!: AlertState;
     @State('emefp') private emefp!: EmefpState;
 
@@ -125,10 +125,23 @@ private getArrayValues(array: any[]) {
 }
 
 private emefpDetails(efp: EmEfp) {
-    console.log(efp.vesselName);
-    this.emefp.activeEmefp = efp;
-    console.log(this.emefp.activeEmefp);
-    this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(efp) });
+    // console.log(efp.vesselName);
+    if (efp === null) {
+        efp = {
+          vesselName: '',
+          vesselCGNumber: '',
+          emEfpNumber: 'EM-??',
+          efpTypes: [],
+        };
+        this.emefp.activeEmefp = efp;
+        console.log(this.emefp.activeEmefp);
+        this.$router.push({path: '/em-efp-details/' + 'new' });
+    } else {
+        this.emefp.activeEmefp = efp;
+        console.log(this.emefp.activeEmefp);
+        this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(efp) });
+    }
+
 }
 
 }

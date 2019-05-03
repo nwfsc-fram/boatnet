@@ -16,7 +16,7 @@ import {
   QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
   QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable,
-  QTh, QTr, QTd, QToggle
+  QTh, QTr, QTd, QToggle, ClosePopup
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -32,7 +32,9 @@ Vue.use(Quasar, {
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
     QChip, QAvatar, QBanner, QTable, QTh, QTr, QTd, QToggle
   },
-  directives: {},
+  directives: {
+    ClosePopup
+  },
   plugins: {}
 });
 

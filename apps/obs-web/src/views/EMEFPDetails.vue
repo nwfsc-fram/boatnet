@@ -9,14 +9,19 @@
         </q-banner>
 
         <q-card style="padding: 20px; max-width: 400px">
-
-            <div class="text-h6">{{ emefp.activeEmefp.emEfpNumber }}</div>
-
+          <div v-if="this.$route.params.id === 'new'">
+            <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
+            <q-select v-model="emefp.activeEmefp.vesselName" label="Vessel" :options="options" @filter="filterFn" use-input stack-label ></q-select>
+          </div>
+          <div v-else>
+            <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>
             <div style="diplay: flex">
               <div>Vessel: {{ emefp.activeEmefp.vesselName }}</div>
               <div>Vessel ID: {{ emefp.activeEmefp.vesselCGNumber }}</div>
               <div>LE Permit: {{ emefp.activeEmefp.lePermit }}</div>
             </div>
+          </div>
+
             <!-- <q-select
             v-model="emefp.activeEmefp.vesselName"
             label="Vessel Name"
@@ -29,7 +34,7 @@
             </q-select> -->
 
             <q-select
-            v-model="getEfpTypes"
+            v-model="efpTypes"
             label="EFP Types"
             bg-color="white"
             color="primary"
@@ -57,7 +62,7 @@
             <br>
             <q-card-actions>
                 <q-btn color="red" label="Cancel" icon="warning" to="/em-efp-management" exact/>
-                <q-btn color="primary">Save</q-btn>
+                <q-btn color="primary" to="/em-efp-management" exact>Save</q-btn>
             </q-card-actions>
 
         </q-card>
@@ -124,10 +129,10 @@ export default class EMEFPDetails extends Vue {
     }
 
   private async filterFn(val: string, update: any, abort: any) {
-    if (val.length < 2) {
-      abort();
-      return;
-    }
+    // if (val.length < 2) {
+    //   abort();
+    //   return;
+    // }
 
     update(async () => {
       try {
@@ -159,11 +164,22 @@ export default class EMEFPDetails extends Vue {
       return this.permit.permits.map((permit) => permit.permit_number);
   }
 
-  private get getEfpTypes() {
+  get efpTypes(): string[] {
     if (this.emefp.activeEmefp && this.emefp.activeEmefp.efpTypes) {
-      return this.emefp.activeEmefp.efpTypes.map((type) => type.description);
+      return this.emefp.activeEmefp.efpTypes.map((efpType) => efpType.description);
     } else {
       return [];
+    }
+  }
+
+  set efpTypes(value: string[]) {
+    if (this.emefp.activeEmefp) {
+      this.emefp.activeEmefp.efpTypes = [];
+      for (const item of value) {
+        this.emefp.activeEmefp.efpTypes.push(
+          {description: item}
+        );
+      }
     }
   }
 
