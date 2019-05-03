@@ -2,11 +2,13 @@ import Vue from 'vue';
 import BoatnetHauls from './components/BoatnetHauls.vue';
 import BoatnetTrips from './components/BoatnetTrips.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
+import BoatnetLicenses from './components/BoatnetLicenses.vue';
 
 const Components: any = {
   BoatnetHauls,
   BoatnetTrips,
-  BoatnetKeyboard
+  BoatnetKeyboard,
+  BoatnetLicenses
 };
 
 Object.keys(Components).forEach((name) => {
