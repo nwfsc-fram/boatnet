@@ -8,8 +8,8 @@ export interface TallyButtonData {
   blank?: boolean;
 
   // Data
-  code?: string;
-  reason?: string;
+  code?: string; // e.g. SABL
+  reason?: string; // e.g. PRED
   count?: number;
 }
 

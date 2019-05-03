@@ -12,6 +12,9 @@ import { pouchService } from '@boatnet/bn-pouch';
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 
+/* tslint:disable:no-var-requires  */
+const defaultTemplate = require('../assets/tally-templates/default.json');
+
 Vue.use(Vuex);
 
 export const state: TallyState = {
@@ -40,6 +43,27 @@ const actions: ActionTree<TallyState, RootState> = {
   // },
 };
 
+function getBtnColor(reason: string): { bg?: string; text?: string } {
+  switch (reason) {
+    case 'INVIS':
+      return {};
+      break;
+    case 'PRED':
+      return { bg: 'red-5', text: 'white' };
+      break;
+    case 'RET':
+      return { bg: 'green-9', text: 'white' };
+      break;
+    case 'MKT':
+      return { bg: 'light-green', text: 'black' };
+      break;
+
+    default:
+      return { bg: 'blue-5', text: 'black' };
+      break;
+  }
+}
+
 function createDefaultRecord(): TallyRecord {
   const newRecord: TallyRecord = {
     recordName: 'Default',
@@ -49,40 +73,58 @@ function createDefaultRecord(): TallyRecord {
     horizButtonCount: 8
   };
   const tmpBtnData: TallyButtonData[] = [];
-  let index = 0;
-  for (let r = 0; r < newRecord.vertButtonCount; r++) {
-    for (let c = 0; c < newRecord.horizButtonCount; c++) {
-      if (c === 6) {
-        tmpBtnData.push({
-          index,
-          color: 'red',
-          code: 'KORN',
-          reason: 'PRED',
-          count: r
-        });
-      } else if (c === 7) {
-        tmpBtnData.push({
-          index,
-          color: 'green-9',
-          code: 'SABL',
-          reason: 'RET',
-          count: 0
-        });
-      } else if (c === 5) {
-        tmpBtnData.push({ index, blank: true });
-      } else {
-        tmpBtnData.push({
-          index,
-          color: 'green-3',
-          'text-color': 'black',
-          code: 'PHLB',
-          reason: 'MKT',
-          count: 0
-        });
-      }
-      index++;
+  const template = defaultTemplate.templateData;
+  template.forEach((item: TallyButtonData, index: number) => {
+    if (item.reason === 'INVIS') {
+      tmpBtnData.push({
+        index,
+        blank: true
+      });
+    } else {
+      tmpBtnData.push({
+        index,
+        color: getBtnColor(item.reason!).bg,
+        'text-color': getBtnColor(item.reason!).text,
+        code: item.code,
+        reason: item.reason,
+        count: 0
+      });
     }
-  }
+
+  });
+  // for (let r = 0; r < newRecord.vertButtonCount; r++) {
+  //   for (let c = 0; c < newRecord.horizButtonCount; c++) {
+  //     if (c === 6) {
+  //       tmpBtnData.push({
+  //         index,
+  //         color: 'red',
+  //         code: 'KORN',
+  //         reason: 'PRED',
+  //         count: r
+  //       });
+  //     } else if (c === 7) {
+  //       tmpBtnData.push({
+  //         index,
+  //         color: 'green-9',
+  //         code: 'SABL',
+  //         reason: 'RET',
+  //         count: 0
+  //       });
+  //     } else if (c === 5) {
+  //       tmpBtnData.push({ index, blank: true });
+  //     } else {
+  //       tmpBtnData.push({
+  //         index,
+  //         color: 'green-3',
+  //         'text-color': 'black',
+  //         code: 'PHLB',
+  //         reason: 'MKT',
+  //         count: 0
+  //       });
+  //     }
+  //     index++;
+  //   }
+  // }
   newRecord.buttonData = tmpBtnData;
   newRecord.createdDate = moment().format();
   newRecord.createdBy = authService.getCurrentUser()!.username;
@@ -94,7 +136,10 @@ const mutations: MutationTree<TallyState> = {
     /**
      * Initialize tally data. If tallyRecord is set, do nothing, otherwise create new TallyRecord.
      */
-    if (!newState.tallyRecord._id || newState.tallyRecord.buttonData.length === 0) {
+    if (
+      !newState.tallyRecord._id ||
+      newState.tallyRecord.buttonData.length === 0
+    ) {
       newState.tallyRecord = createDefaultRecord();
       const result = await updateRecord(newState.tallyRecord);
       newState.tallyRecord._id = result.id;
@@ -140,31 +185,25 @@ const mutations: MutationTree<TallyState> = {
 async function updateRecord(record: TallyRecord) {
   try {
     if (record._id) {
-      const result = await pouchService.db.put(
-        pouchService.userDBName,
-        record
-      );
+      const result = await pouchService.db.put(pouchService.userDBName, record);
       console.log('Updated tally record.', result);
       return result;
     } else {
-      const result = await pouchService.db
-      .post(pouchService.userDBName, record);
+      const result = await pouchService.db.post(
+        pouchService.userDBName,
+        record
+      );
       console.log('Created new tally record.', result);
       return result;
     }
-
   } catch (err) {
     if (err.status === 409) {
-
       const newerDoc = await pouchService.db.get(
         pouchService.userDBName,
         record._id
       );
       record._rev = newerDoc._rev;
-      const result = await pouchService.db.put(
-        pouchService.userDBName,
-        record
-      );
+      const result = await pouchService.db.put(pouchService.userDBName, record);
       console.log(
         '[Tally Module] Handled doc conflict, updated record',
         result

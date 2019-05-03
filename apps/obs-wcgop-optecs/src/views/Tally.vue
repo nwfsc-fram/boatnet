@@ -18,7 +18,7 @@
     <q-dialog v-model="confirmReset" persistent>
       <q-card>
         <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="red" text-color="white" />
+          <q-avatar icon="warning" color="red" text-color="white"/>
           <span class="q-ml-sm">Are you sure you want to reset tally data?</span>
         </q-card-section>
 
@@ -43,8 +43,8 @@ import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
 
-import { WcgopAppState } from '@/_store/types';
-import { TallyState } from '@/_store/types';
+import { WcgopAppState } from '../_store/types';
+import { TallyState } from '../_store/types';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -133,16 +133,22 @@ export default class Tally extends Vue {
     return column + (row - 1) * this.horizButtonCount - 1;
   }
   private getButton(row: number, column: number) {
-    if (!this.tallyState.tallyRecord || !this.tallyState.tallyRecord.buttonData) {
+    if (
+      !this.tallyState.tallyRecord ||
+      !this.tallyState.tallyRecord.buttonData
+    ) {
       return { code: '-', reason: '-', count: 0 }; // temp fake data
     }
     const idx = this.getBtnIndex(row, column);
     return this.tallyState.tallyRecord.buttonData[idx];
   }
 
+  // --- Private Methods ---
+
   private mounted() {
     this.connectDB();
   }
+
 }
 </script>
 
