@@ -57,7 +57,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management-table" exact>
+        <q-item to="/em-efp-management" exact>
           <q-item-section avatar>
             <q-icon name="videocam"/>
           </q-item-section>

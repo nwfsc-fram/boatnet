@@ -31,3 +31,5 @@ export * from './vessel';
 export * from './waiver-type';
 export * from './weight-method';
 export * from './em-efp';
+export * from './debris';
+export * from './catch-grouping';

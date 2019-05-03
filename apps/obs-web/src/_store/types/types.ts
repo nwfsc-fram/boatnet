@@ -42,6 +42,10 @@ export interface OTSState {
   activeOTSTarget: OTSTarget | null;
 }
 
+export interface ObserverAssignmentState {
+  activeTrip: any | null;
+}
+
 export interface GeneralState {
   ports: string[];
   fisheries: string[];

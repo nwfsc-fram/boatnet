@@ -28,7 +28,7 @@
         </q-card-actions>
     </q-card>
     </div>
-    <div v-if="closedTrips.length > 0" style="text-align: center" class="centered-page-item">Closed Trips</div>
+    <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
     <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
