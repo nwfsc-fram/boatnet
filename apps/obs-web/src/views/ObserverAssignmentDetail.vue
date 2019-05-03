@@ -4,20 +4,27 @@
             <q-card-section>
                 <q-card>
                     <q-card-section>
-                        <div class="text-h6">{{ oa.activeTrip.vesselName }} - {{ oa.activeTrip.fishery }}</div>
+                        <div class="text-h6">{{ oa.activeTrip.vesselName }} - {{ oa.activeTrip.fishery }} - {{ oa.activeTrip.departurePort }} </div>
                         <sup class="text-primary">Skipper: {{ oa.activeTrip.captain }}</sup>
-                        <p><strong>Trip Departing: {{ oa.activeTrip.departurePort }} on {{ oa.activeTrip.tripStartDate }} - Returning: {{ oa.activeTrip.tripEndDate }} </strong></p>
+                        <p><strong>Trip Departing: {{ oa.activeTrip.tripStartDate }} - Returning: {{ oa.activeTrip.tripEndDate }} </strong></p>
 
                         <q-select
                         v-model="oa.activeTrip.observerName"
                         :options="getObserverNames"
                         label="Observer"
                         dense
+                        v-if="!observerAssigned"
                         />
+                        <div class="text-h6" v-else>
+                            {{ oa.activeTrip.observerName }}
+                        </div>
                     </q-card-section>
-                    <q-card-actions>
-                        <q-btn label="Cancel" color="red" icon="warning" to="/observer-assignment" exact/>
-                        <q-btn label="Assign Observer" color="primary" to="/observer-assignment" exact/>
+                    <q-card-actions v-if="!observerAssigned">
+                        <q-btn label="Cancel" color="red" icon="warning" to="/observer-assignment" exact />
+                        <q-btn label="Assign Observer" color="primary" to="/observer-assignment" exact :disabled="!oa.activeTrip.observerName"/>
+                    </q-card-actions>
+                    <q-card-actions v-else>
+                        <q-btn label="Re-assign Trip" color="primary" icon="fa fa-redo-alt" @click="observerAssigned = false"/>
                     </q-card-actions>
                 </q-card>
             </q-card-section>
@@ -77,6 +84,7 @@ export default class ObserverAssignment extends Vue {
 private pagination = {rowsPerPage: 0};
 private alert = false;
 private selectedObserver: string = '';
+private observerAssigned: boolean = false;
 
 private observers = [
     {observerName: 'Seth Gerou'},
@@ -117,17 +125,25 @@ private columns = [
 ];
 
 private setObserver(row: any) {
-    if (row.status === 'Available For Dates') {
-        this.oa.activeTrip.observerName = row.observerName;
-    } else {
-        this.selectedObserver = row.observerName;
-        this.alert = true;
+    if (!this.observerAssigned) {
+        if (row.status === 'Available For Dates') {
+            this.oa.activeTrip.observerName = row.observerName;
+        } else {
+            this.selectedObserver = row.observerName;
+            this.alert = true;
+        }
     }
 }
 
 private formatTel(telNum: any) {
     telNum = telNum.toString();
     return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
+}
+
+private created() {
+    if (this.oa.activeTrip.observerName) {
+        this.observerAssigned = true;
+    }
 }
 
 }
