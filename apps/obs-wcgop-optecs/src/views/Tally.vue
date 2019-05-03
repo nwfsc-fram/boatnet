@@ -15,6 +15,19 @@
         species="CORN"
       ></component>
     </div>
+    <q-dialog v-model="confirmReset" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="red" text-color="white" />
+          <span class="q-ml-sm">Are you sure you want to reset tally data?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup/>
+          <q-btn flat label="Reset Data" color="primary" @click="reset" v-close-popup/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -71,6 +84,7 @@ export default class Tally extends Vue {
   private currentControlComponent = 'tally-controls';
 
   private tallyTemplates!: any;
+  private confirmReset = false;
 
   constructor() {
     super();
@@ -106,7 +120,7 @@ export default class Tally extends Vue {
         this.currentControlComponent = 'tally-alltallies-controls';
         break;
       case 'reset-data':
-        this.reset(); // TODO Prompt user to confirm
+        this.confirmReset = true;
         break;
       default:
         console.log('Unhandled tally control event:', controlName);

@@ -33,7 +33,7 @@
     <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
-    <q-dialog v-model="confirm" persistent>
+    <q-dialog v-model="confirmDelete" persistent>
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="warning" color="red" text-color="white" />
@@ -66,7 +66,7 @@
         color="primary"
         icon="delete_forever"
         label="Delete Trip"
-        @click="confirm = true"
+        @click="confirmDelete = true"
         :disabled="!currentTrip"
       />
       <q-space/>
@@ -88,7 +88,7 @@ export default class BoatnetTrips extends Vue {
   @Prop() public currentTrip!: BaseTrip;
   public selected: any[] = [];
   private searchText = '';
-  private confirm = false;
+  private confirmDelete = false;
   @Watch('selected', { immediate: true })
   private onSelectedChanged(newSelected: any) {
     // TODO: Better way to handle this?
