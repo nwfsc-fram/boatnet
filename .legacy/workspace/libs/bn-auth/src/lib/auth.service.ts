@@ -52,7 +52,7 @@ export class AuthService {
     /**
      * Returns PEM key for JWT signature verification
      */
-    return this.http.get<any>(this.authUrl + '/api/pubkey').pipe(
+    return this.http.get<any>(this.authUrl + '/api/v1/pubkey').pipe(
       map(result => {
         const jwkKeyLoaded = result.keys[0]; // assuming our key is first
         // TODO If we add multiple keys, we would use 'kid' property for matching
@@ -102,7 +102,7 @@ export class AuthService {
     pubKey: string
   ): Observable<BoatnetUserToken> {
     return this.http
-      .post<any>(this.authUrl + '/api/login', {
+      .post<any>(this.authUrl + '/api/v1/login', {
         username: username,
         password: password
       })
