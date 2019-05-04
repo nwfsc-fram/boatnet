@@ -72,6 +72,8 @@ export default class Tally extends Vue {
   private updateButton: any;
   @Action('reset', { namespace: 'tallyState' })
   private reset: any;
+  @Action('setTallyIncDec', { namespace: 'tallyState' })
+  private setTallyIncDec: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -121,6 +123,12 @@ export default class Tally extends Vue {
         break;
       case 'reset-data':
         this.confirmReset = true;
+        break;
+      case 'tally-inc':
+        this.setTallyIncDec(1);
+        break;
+      case 'tally-dec':
+        this.setTallyIncDec(-1);
         break;
       default:
         console.log('Unhandled tally control event:', controlName);

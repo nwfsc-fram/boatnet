@@ -25,4 +25,5 @@ export interface TallyRecord extends Base {
 
 export interface TallyState {
   tallyRecord: TallyRecord;
+  incDecValue?: number; // +1 or -1
 }

@@ -9,6 +9,7 @@ import {
 } from '@/_store/types';
 
 import { pouchService } from '@boatnet/bn-pouch';
+
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 
@@ -24,7 +25,8 @@ export const state: TallyState = {
     buttonData: [],
     vertButtonCount: 4,
     horizButtonCount: 8
-  }
+  },
+  incDecValue: 1
 };
 
 const actions: ActionTree<TallyState, RootState> = {
@@ -36,6 +38,9 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   updateButton({ commit }: any, button: TallyButtonData) {
     commit('updateButton', button);
+  },
+  setTallyIncDec({ commit }: any, value: number) {
+    commit('setTallyIncDec', value);
   }
   // TODO: Button Data changes (increment, assign discard reasons, etc)
   // setCurrentTrip({ commit }: any, trip: WcgopTrip) {
@@ -90,41 +95,7 @@ function createDefaultRecord(): TallyRecord {
         count: 0
       });
     }
-
   });
-  // for (let r = 0; r < newRecord.vertButtonCount; r++) {
-  //   for (let c = 0; c < newRecord.horizButtonCount; c++) {
-  //     if (c === 6) {
-  //       tmpBtnData.push({
-  //         index,
-  //         color: 'red',
-  //         code: 'KORN',
-  //         reason: 'PRED',
-  //         count: r
-  //       });
-  //     } else if (c === 7) {
-  //       tmpBtnData.push({
-  //         index,
-  //         color: 'green-9',
-  //         code: 'SABL',
-  //         reason: 'RET',
-  //         count: 0
-  //       });
-  //     } else if (c === 5) {
-  //       tmpBtnData.push({ index, blank: true });
-  //     } else {
-  //       tmpBtnData.push({
-  //         index,
-  //         color: 'green-3',
-  //         'text-color': 'black',
-  //         code: 'PHLB',
-  //         reason: 'MKT',
-  //         count: 0
-  //       });
-  //     }
-  //     index++;
-  //   }
-  // }
   newRecord.buttonData = tmpBtnData;
   newRecord.createdDate = moment().format();
   newRecord.createdBy = authService.getCurrentUser()!.username;
@@ -179,6 +150,9 @@ const mutations: MutationTree<TallyState> = {
       newState.tallyRecord.modifiedDate = moment().format();
       newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
     }
+  },
+  setTallyIncDec(newState: any, value: number) {
+    newState.incDecValue = value;
   }
 };
 
@@ -186,32 +160,55 @@ async function updateRecord(record: TallyRecord) {
   try {
     if (record._id) {
       const result = await pouchService.db.put(pouchService.userDBName, record);
-      console.log('Updated tally record.', result);
+      console.log('[Tally Module] Updated tally record.', result);
       return result;
     } else {
       const result = await pouchService.db.post(
         pouchService.userDBName,
         record
       );
-      console.log('Created new tally record.', result);
+      console.log('[Tally Module] Created new tally record.', result);
       return result;
     }
   } catch (err) {
     if (err.status === 409) {
-      const newerDoc = await pouchService.db.get(
-        pouchService.userDBName,
-        record._id
-      );
-      record._rev = newerDoc._rev;
-      const result = await pouchService.db.put(pouchService.userDBName, record);
-      console.log(
-        '[Tally Module] Handled doc conflict, updated record',
-        result
-      );
-      return result;
+      try {
+        const newerDoc = await pouchService.db.get(
+          pouchService.userDBName,
+          record._id
+        );
+        record._rev = newerDoc._rev;
+        const result = await pouchService.db.put(
+          pouchService.userDBName,
+          record
+        );
+        console.log(
+          '[Tally Module] Handled doc conflict, updated record',
+          result
+        );
+        return result;
+      } catch (errRetry) {
+        if (errRetry.status === 404) {
+          delete record._id;
+          delete record._rev;
+          const result = await pouchService.db.put(
+            pouchService.userDBName,
+            record
+          );
+          console.log(
+            '[Tally Module] Handled doc deletion, created record',
+            result
+          );
+          return result;
+        } else {
+          // TODO Alert Module
+          throw errRetry;
+        }
+      }
     } else {
       // TODO Alert Module
-      console.log('ERROR!', err);
+      // console.log('ERROR!', err);
+      throw err;
     }
   }
 }
@@ -222,6 +219,9 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   vertButtonCount(getState: TallyState) {
     return getState.tallyRecord.vertButtonCount;
+  },
+  incDecValue(getState: TallyState) {
+    return getState.incDecValue;
   }
 };
 

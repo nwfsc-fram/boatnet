@@ -26,23 +26,18 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { WcgopAppState } from '../../_store/types';
-import { State, Action } from 'vuex-class';
+import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
 import { TallyButtonData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
-const lowClickFile = require('../../assets/audio/click3.wav');
+const lowClickFile = require('../../assets/audio/click4.wav');
 const highClickFile = require('../../assets/audio/clack.wav');
 const funnyFile = require('../../assets/audio/funnyclick.wav');
 
 const lowClickAudio = new Audio(lowClickFile);
 const highClickAudio = new Audio(highClickFile);
 const funnyAudio = new Audio(funnyFile);
-// TODO more audio
-
-// const lowClickAudio = new Audio(require('../assets/audio/click3.wav'));
-// const highClickAudio = new Audio(require('../assets/audio/clack.wav'));
-// const pingAudio = new Audio(require('../assets/audio/ping.wav'));
 
 @Component
 export default class TallyBtn extends Vue {
@@ -57,12 +52,26 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public blank!: boolean;
   // @Prop({ default: undefined }) public reason!: boolean;
   // @Prop({ default: undefined }) public count!: boolean;
+  @Getter('incDecValue', { namespace: 'tallyState' })
+  private incDecValue!: number;
 
 
   public handleClick() {
     if (this.data.count !== undefined) {
-      this.playSound('inc');
-      this.data.count++;
+      const newVal = this.data.count + this.incDecValue;
+      if (this.incDecValue > 0) {
+        this.playSound('inc');
+        this.data.count = newVal;
+      } else if (this.data.count === 0) {
+        this.playSound('bad');
+      } else {
+        this.playSound('dec');
+        this.data.count = newVal;
+        if (this.data.count < 0 ) {
+          this.data.count = 0;
+        }
+      }
+
       this.$emit('dataChanged', this.data);
     }
   }
