@@ -11,35 +11,11 @@
 git clone git@github.com:nwfsc-fram/boatnet.git
 ```
 
-    #### Precommit hooks
+### Precommit hooks
+* This will catch trailing whitespace errors before commit, which throws typescript warnings
 
-- Install the [git-secrets plugin](https://github.com/awslabs/git-secrets) on your PC to prevent accidental commit of secure tokens to Git.
-
-  - Windows
-
-            $ git clone https://github.com/awslabs/git-secrets
-
-            # With administrator assistance:
-            Create dir C:\Program Files\Git\usr\local\bin
-            Copy git-secrets/git-secrets script to C:\Program Files\Git\usr\local\bin\git-secrets
-
-            Create dir C:\Program Files\Git\usr\local\share\man\man1
-            Copy git-secrets/git-secrets.1 help file to C:\Program Files\Git\usr\local\share\man\man1\git-secrets.1
-
-            # For Visual Studio Code Integration
-            Copy git-secrets/git-secrets script to C:\Program Files\Git\cmd\git-secrets
-
-  - MacOS & Linux
-
-            $ git clone https://github.com/awslabs/git-secrets
-            $ cd git-secrets
-
-            # then run:  brew install git-secrets  (on Linux run: make install)
-
-- Activate plugin (repeat this activation step, whenever you git clone a new working copy)
-
-        $ git secrets --install --force   #install hooks, in this working copy
-        $ git secrets --register-aws      #add additional AWS credential protection for this working copy
+1. Go to your `boatnet/.git/hooks` folder
+2. Copy and rename `pre-commit.sample` to `pre-commit`
 
 ## Contributing Guidelines
 
