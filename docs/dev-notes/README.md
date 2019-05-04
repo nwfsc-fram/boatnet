@@ -4,7 +4,8 @@
 
   - https://github.com/settings/keys
 
-- If you are using Sourcetree, you need to import this key in PuttyGen (as described in their docs) and save the private key in .ppk format. Then, open Pageant from systray and Add Key using the file. Git Desktop seems to work better than SourceTree if you want a UI other than Visual Studio Code.
+- If you are using Sourcetree, you need to import this key in PuttyGen (as described in their docs) and save the private key in .ppk format. Then, open Pageant from systray and Add Key using the file.
+  * Git Desktop seems to work better than SourceTree if you want a UI other than Visual Studio Code.
 - Use ssh for git clone, otherwise you'll be prompted for HTTPS authentication upon `git push`
 
 ```
