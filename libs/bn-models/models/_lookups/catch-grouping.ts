@@ -10,7 +10,7 @@ export interface CatchGrouping extends Base {
   name: string;
   code?: number;
   members?: MemberType[]; 
-  isInactive?: boolean;
+  isInactive?: boolean;   
 
   legacy?: {
     // ETL Note - Only for multi-species catch categories
