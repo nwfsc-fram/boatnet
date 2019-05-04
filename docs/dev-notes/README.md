@@ -20,7 +20,7 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 ## Contributing Guidelines
 
 1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
-2. Verify your formatting is correct using Prettify: (`npm run format`)
+2. Verify everything builds under lerna (`lerna run build`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
@@ -32,7 +32,8 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
   * `lerna clean` (Run AFTER bootstrap)
-  * `lerna add whatever-package --scope="my-project"` (Add a single dependency to matched scope, e.g. obs-wcgop-optecs)
+  * `lerna run  build` (Builds everything. Usually you only do this before merging to master, as a check.)
+  * `lerna add whatever-package --scope="my-project"` (Add a single dependency to matched scope, e.g. obs-wcgop-optecs) You can also `yarn add xyz` from your project directory, to keep it in scope.
 
 * For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
   * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
