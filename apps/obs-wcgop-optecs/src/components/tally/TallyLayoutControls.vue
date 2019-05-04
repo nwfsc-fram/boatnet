@@ -1,6 +1,6 @@
 <template>
   <q-btn-group spread>
-    <tally-control-btn color="red">Reset<br>Data</tally-control-btn>
+    <tally-control-btn control-name="reset-data" @controlclick="handleControlClick" color="red">Reset<br>Data</tally-control-btn>
     <tally-control-btn color="grey-4">
       Add
       <br>Named
@@ -48,7 +48,11 @@ Vue.component('tally-control-btn', TallyControlBtn);
 export default class TallyLayoutControls extends Vue {
   public handleControlClick(controlName: string): void {
     // Pass along button event to Tally parent component
-    this.$emit('controlevent', controlName);
+    if (controlName) {
+      this.$emit('controlevent', controlName);
+    } else {
+      console.log('[Tally Controls] Control button has no assigned name, skipping.');
+    }
   }
 }
 </script>

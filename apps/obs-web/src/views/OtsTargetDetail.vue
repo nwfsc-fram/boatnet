@@ -112,7 +112,7 @@ import {
   PermitState,
   OTSState
 } from '../_store/types/types';
-import { OtsTarget } from '@boatnet/bn-models';
+import { OTSTarget } from '@boatnet/bn-models';
 
 @Component
 export default class OtsTargeteDetail extends Vue {
