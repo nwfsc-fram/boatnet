@@ -331,6 +331,7 @@ export default class Trips extends Vue {
         const queryOptions: ListOptions = {
           limit: 5,
           start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '{}',
           inclusive_end: true,
           descending: false
         };
