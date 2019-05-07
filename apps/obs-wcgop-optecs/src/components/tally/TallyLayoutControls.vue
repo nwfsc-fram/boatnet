@@ -1,7 +1,7 @@
 <template>
   <q-btn-group spread>
     <tally-control-btn control-name="reset-data" @controlclick="handleControlClick" color="red">Reset<br>Data</tally-control-btn>
-    <tally-control-btn color="grey-4">
+    <tally-control-btn control-name="add-named-species" @controlclick="handleControlClick" color="grey-4">
       Add
       <br>Named
       <br>Species

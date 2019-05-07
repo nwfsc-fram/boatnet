@@ -28,6 +28,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+    <tally-addnamedspecies-dialog ref="addNamedSpeciesModal"/>
   </q-page>
 </template>
 
@@ -42,6 +43,7 @@ import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
+import TallyAddNamedSpeciesDialog from '../components/tally/TallyAddNamedSpeciesDialog.vue';
 
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
@@ -50,6 +52,7 @@ Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
 Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
+Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
 
 @Component({
   pouch: {
@@ -88,8 +91,29 @@ export default class Tally extends Vue {
   private tallyTemplates!: any;
   private confirmReset = false;
 
+  private speciesList = [];
   constructor() {
     super();
+
+    this.populateSpecies();
+  }
+
+  public async populateSpecies() {
+    const db = pouchService.db;
+    const queryOptions = {
+      // start_key: val.toUpperCase(),
+      // end_key: val.toUpperCase() + '{}',
+      inclusive_end: true,
+      descending: false
+    };
+
+    const species = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/all_tally_species',
+      queryOptions
+    );
+
+    this.speciesList = species.rows.map((s: any) => s.key + ': ' + s.value.commonName);
   }
 
   public getCode(row: number, column: number) {
@@ -130,6 +154,9 @@ export default class Tally extends Vue {
       case 'tally-dec':
         this.setTallyIncDec(-1);
         break;
+      case 'add-named-species':
+        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
+        break;
       default:
         console.log('Unhandled tally control event:', controlName);
         break;
@@ -156,7 +183,6 @@ export default class Tally extends Vue {
   private mounted() {
     this.connectDB();
   }
-
 }
 </script>
 
