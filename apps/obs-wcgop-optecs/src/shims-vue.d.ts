@@ -5,3 +5,4 @@ declare module '*.vue' {
 // https://github.com/quasarframework/vue-cli-plugin-quasar/issues/4
 declare module 'quasar';
 declare module 'vue-touch-keyboard';
+declare module 'pouchdb-utils';

@@ -1,6 +1,6 @@
 {
-  "name": "obs-wcgop-optecs",
-  "short_name": "obs-wcgop-optecs",
+  "name": "WCGOP Trips",
+  "short_name": "WCGOP Trips",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

@@ -7,7 +7,7 @@ import { alert } from '@/_store/alert.module';
 import { Permit } from '@/_store/types/types.ts';
 
 import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
-import { OTSTrip, OTSMessage, OTSUser, OtsTarget } from '@boatnet/bn-models';
+import { OTSTrip, OTSMessage, OTSUser, OTSTarget } from '@boatnet/bn-models';
 
 import { RootState } from '@/_store/types/types';
 
@@ -126,7 +126,7 @@ export const permits: Permit[] = [
   }
 ];
 
-// export const otsTargets: otsTarget[] = [
+// export const otsTargets: OTSTarget[] = [
 //   {
 //     _id: 'vfger34tgf', fishery: 'EM EFP', targetType: 'Fishery', target: 'Fishery Wide', rate: 40,
 //     startDate: '2019-03-26T08:20:33-07:00', endDate: null

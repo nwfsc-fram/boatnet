@@ -120,7 +120,6 @@ import router from '../router';
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
-import { formatDate } from '@boatnet/bn-util';
 
 @Component({
   components: {
@@ -133,6 +132,7 @@ export default class DefaultLayout extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   private leftDrawerOpen: boolean;
@@ -148,13 +148,6 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  public get syncDate() {
-    if (this.pouchState.lastSyncDate) {
-      return formatDate(this.pouchState.lastSyncDate);
-    } else {
-      return 'Never';
-    }
-  }
   private navigateBack() {
     this.$router.back();
   }

@@ -1,6 +1,5 @@
 import { Base } from '../_base/index';
 import { BoatnetDate } from '../_common';
 
-export interface Debris extends Base {
-
-}
+/* tslint:disable:no-empty-interface */
+export interface Debris extends Base {}

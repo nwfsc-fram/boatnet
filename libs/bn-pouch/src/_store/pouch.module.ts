@@ -5,6 +5,7 @@ import moment from 'moment';
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { formatDate } from '@boatnet/bn-util';
 import { PouchDBState, PouchDBSyncStatus } from './types/types';
 
 Vue.use(Vuex);
@@ -84,8 +85,17 @@ const mutations: MutationTree<PouchDBState> = {
 const getters: GetterTree<PouchDBState, any> = {
   isSyncing(getState: PouchDBState) {
     return getState.syncStatus.syncActive;
+  },
+  syncDateFormatted(getState: PouchDBState) {
+    if (getState.lastSyncDate) {
+      return formatDate(getState.lastSyncDate);
+    } else {
+      return 'Never';
+    }
+  },
+  allVessels(getState: PouchDBState) {
+    // return pouchService.db.allDocs('lookups-dev');
   }
-
 };
 
 export const pouchState: Module<PouchDBState, any> = {

@@ -9,11 +9,11 @@ declare type MemberType = Taxonomy | Debris;
 export interface CatchGrouping extends Base {
   name: string;
   code?: number;
-  members?: MemberType[]; 
+  members?: MemberType[];
   isInactive?: boolean;
 
   legacy?: {
     // ETL Note - Only for multi-species catch categories
-    wcgopCatchCategoryCode?: string; 
-  };  
+    wcgopCatchCategoryCode?: string;
+  };
 }
