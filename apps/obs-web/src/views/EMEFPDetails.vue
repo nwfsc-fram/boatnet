@@ -80,6 +80,7 @@ import { EfpType } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 @Component
 export default class EMEFPDetails extends Vue {
@@ -101,7 +102,8 @@ export default class EMEFPDetails extends Vue {
 
     private async getOptions() {
         try {
-        const masterDB: Client<any> = couchService.masterDB;
+        // const masterDB: Client<any> = couchService.masterDB;
+        const pouchDB = pouchService.db;
         const queryOptions: ListOptions = {
           limit: 100,
           start_key: 'a',
@@ -109,19 +111,19 @@ export default class EMEFPDetails extends Vue {
           descending: false
         };
 
-        const efptypes = await masterDB.view<any>(
-          'sethtest',
+        const efptypes = await pouchDB.lookupsDBName.view<any>(
+          'obs_web',
           'efp-type-options',
           queryOptions
         );
-        this.efpTypeOptions = efptypes.rows.map((efp) => efp.key);
+        this.efpTypeOptions = efptypes.rows.map((efp: any) => efp.key);
 
-        const geartypes = await masterDB.view<any>(
-          'sethtest',
+        const geartypes = await pouchDB.lookupsDBName.view<any>(
+          'obs_web',
           'gear-type-options',
           queryOptions
         );
-        this.gearTypeOptions = geartypes.rows.map((gear) => gear.key);
+        this.gearTypeOptions = geartypes.rows.map((gear: any) => gear.key);
 
         } catch (err) {
             this.error(err);

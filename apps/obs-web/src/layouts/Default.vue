@@ -16,7 +16,7 @@
         <q-toolbar-title>
           <span
             v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"
-          >{{ this.$store.state.activeVessel }}</span>
+          >{{ this.vessel.activeVessel }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
@@ -155,21 +155,46 @@
   </q-layout>
 </template>
 
-<script>
-export default {
-  name: 'LayoutDefault',
-  data() {
-    return {
-      leftDrawerOpen: this.$q.platform.is.desktop,
-      currentTrip: this.$store.state.currentTrip
-    };
-  },
-  methods: {
-    navigateBack() {
-        this.$router.back();
+<script lang="ts">
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+import { Action, Getter, State } from 'vuex-class';
+import { Platform } from 'quasar';
+import router from '../router';
+import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
+import { AlertState } from '../_store/index';
+import { TripState, VesselState, UserState } from '../_store/types/types';
+
+@Component
+export default class DefaultLayout extends Vue {
+  @State('alert') private alert!: AlertState;
+  @State('pouchState') private pouchState!: PouchDBState;
+  @State('trip') private trip!: TripState;
+  @State('vessel') private vessel!: VesselState;
+  @State('user') private user!: UserState;
+  @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
+  @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clear: any;
+  private leftDrawerOpen: boolean;
+
+  constructor() {
+    super();
+    this.leftDrawerOpen = Platform.is.desktop;
+    if (!pouchService.isConnected) {
+      // Reconnect PouchDB if page refreshed but still logged in
+      this.reconnect().catch((err: any) => {
+        this.errorAlert(err);
+      });
     }
   }
-};
+
+  private navigateBack() {
+    this.$router.back();
+  }
+
+
+}
 </script>
 
 <style>
@@ -183,30 +208,3 @@ export default {
 
 
 </style>
-
-
-<!-- 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Platform } from 'quasar';
-import { mapState } from 'vuex';
-import router from 'vue-router';
-
-@Component
-export default class DefaultLayout extends Vue {
-
-  public leftDrawerOpen: boolean;
-  name = 'LayoutDefault';
-  currentTrip = this.$store.state.currentTrip;
-
-  navigateBack() {
-    this.$router.back();
-  }
-
-  constructor() {
-    super();
-    this.leftDrawerOpen = Platform.is.desktop;
-  }
-}
-</script>
--->
