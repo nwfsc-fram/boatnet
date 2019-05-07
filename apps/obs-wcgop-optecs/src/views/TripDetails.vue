@@ -94,7 +94,8 @@
                 </div>
               </div>
               <div class="col-5">
-                <boatnet-licenses :certificates="certificate" @displayKeyboard="displayKeyboard"/>
+                <boatnet-licenses :certificates="certificate" @displayKeyboard="displayKeyboard"
+                @error="handleError"/>
               </div>
               <div class="col-1 self-center">
                 <q-btn flat dense round @click="changeTab('end')" icon="chevron_right" size="4em"/>
@@ -369,6 +370,10 @@ export default class Trips extends Vue {
         ? this.currentTrip.vessel.coastGuardNumber
         : this.currentTrip.vessel.stateRegulationNumber;
     }
+  }
+
+  private handleError(message: string) {
+    this.errorAlert(message);
   }
 
   private changeTab(tabName: string) {
