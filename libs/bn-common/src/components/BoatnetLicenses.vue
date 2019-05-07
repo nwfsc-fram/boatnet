@@ -10,9 +10,13 @@
         data-layout="numeric"
       >
         <template v-slot:append>
-          <q-btn round dense flat 
+          <q-btn
+            round
+            dense
+            flat
             :icon="i != 0 ? 'clear' : 'add'"
-            @click="i != 0 ? remove(i) : add()"/>
+            @click="i != 0 ? remove(i) : add()"
+          />
         </template>
       </q-input>
     </span>
@@ -21,13 +25,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
-import { AlertState } from 'c:/Users/Melina.Shak/Documents/src/boatnet/apps/obs-wcgop-optecs/src/_store/types/types';
 
 @Component
 export default class BoatnetLicenses extends Vue {
   @Prop() private certificates!: string[];
-  @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   private displayKeyboard(event: any) {
     this.$emit('displayKeyboard', event);
@@ -41,7 +42,7 @@ export default class BoatnetLicenses extends Vue {
     if (this.certificates.length < 7) {
       this.certificates.unshift('');
     } else {
-      this.errorAlert('Cannot add more than 7 licenses');
+       this.$emit('error', 'Cannot add more than 7 licenses'); 
     }
   }
 }
