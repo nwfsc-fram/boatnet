@@ -11,21 +11,25 @@
                 :rules="['date']"
                 :dense="true"
                 label="Start Date">
-                <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
+                <template>
                     <q-popup-proxy>
                         <q-date v-model="departureDate"/>
                     </q-popup-proxy>
+                </template>
+                <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
                     </q-icon>
                 </template>
                 </q-input>
 
                 <q-input v-model="trip.activeTrip.returnDate" mask="date" :rules="['date']" :dense="true" label="End Date">
-                <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
+                <template>
                     <q-popup-proxy>
                         <q-date v-model="returnDate" />
                     </q-popup-proxy>
+                </template>
+                <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
                     </q-icon>
                 </template>
                 </q-input>

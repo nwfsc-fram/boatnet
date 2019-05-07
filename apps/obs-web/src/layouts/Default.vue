@@ -87,6 +87,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/observer-availability" exact>
+          <q-item-section avatar>
+            <q-icon name="fa fa-calendar-alt"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Observer Availability</q-item-label>
+            <q-item-label caption>Manage My Availability (Observer Role)</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/debriefer" exact>
           <q-item-section avatar>
             <q-icon name="beenhere"/>

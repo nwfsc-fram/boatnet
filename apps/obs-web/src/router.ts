@@ -21,6 +21,8 @@ import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
+import ObserverAvailability from './views/ObserverAvailability.vue';
+import NewActivity from './views/NewActivity.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -81,7 +83,9 @@ const router = new Router({
         { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails },
         {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment },
         {path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
-        component: ObserverAssignmentDetail }
+        component: ObserverAssignmentDetail },
+        {path: '/observer-availability', name: 'Observer Availability', component: ObserverAvailability},
+        {path: '/new-activity', name: 'New Activity', component: NewActivity }
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

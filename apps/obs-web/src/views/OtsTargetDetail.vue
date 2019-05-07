@@ -42,11 +42,13 @@
             label="Effective Date"
             style="padding-bottom: 0"
           >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
+            <template>
                 <q-popup-proxy>
                   <q-date v-model="ots.activeOTSTarget.effectiveDate"/>
                 </q-popup-proxy>
+            </template>
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
               </q-icon>
             </template>
           </q-input>
@@ -58,11 +60,13 @@
             label="Expiration Date"
             style="padding-bottom: 0"
           >
+          <template>
+            <q-popup-proxy>
+              <q-date v-model="ots.activeOTSTarget.expirationDate"/>
+            </q-popup-proxy>
+          </template>
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy>
-                  <q-date v-model="ots.activeOTSTarget.expirationDate"/>
-                </q-popup-proxy>
               </q-icon>
             </template>
           </q-input>
