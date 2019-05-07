@@ -65,12 +65,13 @@
                     @focus="displayKeyboard"
                     data-layout="numeric"
                   >
+                    <template>
+                      <q-popup-proxy>
+                        <q-date v-model="departureDateDisplay"/>
+                      </q-popup-proxy>
+                    </template>
                     <template v-slot:append>
-                      <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy>
-                          <q-date v-model="departureDateDisplay"/>
-                        </q-popup-proxy>
-                      </q-icon>
+                      <q-icon name="event" class="cursor-pointer"></q-icon>
                     </template>
                   </q-input>
                   <q-input
@@ -271,7 +272,10 @@ export default class Trips extends Vue {
   // TODO modify this to load from DB
   private certificate: string[] = [''];
   private departureDate = Date.now();
-  private departureDateDisplay = date.formatDate(this.departureDate, 'YYYY/MM/DD');
+  private departureDateDisplay = date.formatDate(
+    this.departureDate,
+    'YYYY/MM/DD'
+  );
   private departureTime = '';
 
   private returnDate = Date.now();
