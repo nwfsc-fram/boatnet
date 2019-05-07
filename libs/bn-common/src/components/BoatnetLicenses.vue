@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { Action } from 'vuex-class';
-import { AlertState } from '../../../../apps/obs-wcgop-optecs/src/_store/types/types';
+import { AlertState } from 'c:/Users/Melina.Shak/Documents/src/boatnet/apps/obs-wcgop-optecs/src/_store/types/types';
 
 @Component
 export default class BoatnetLicenses extends Vue {
