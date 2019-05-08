@@ -228,41 +228,35 @@ export default class Trips extends Vue {
       }
 
     private newTrip() {
-        const newTripNum = this.userDBTrips[0].tripNum + 1;
-        const newTrip: WcgopTrip = {
-                              type: 'wcgop-trip',
-                              tripNum: newTripNum,
-                              vessel: this.vessel.activeVessel,
-                              // permits: [],
-                              // messages: [],
-                              departureDate: moment().format(),
-                              departurePort: this.user.activeUser.homeport,
-                              returnDate: moment().format(),
-                              returnPort: {name: 'same as start'},
-                              isSelected: false,
-                              fishery: {name: 'unknown'},
-                              tripStatus: {
-                                description: 'open'
-                              }
-                              };
-        // this.$store.state.trips.push({
-        //                               type: 'trip',
-        //                               tripNum: newTripNum,
-        //                               tripStatus: true,
-        //                               vessel: {vesselName: this.$store.state.activeVessel},
-        //                               permits: [],
-        //                               messages: [],
-        //                               departurePort: this.$store.state.activeUser.homeport,
-        //                               returnPort: 'same as start',
-        //                               isSelected: false,
-        //                               fishery: {name: 'unknown'},
-        //                               _id: 'blah'
-        //                               });
-        this.trip.activeTrip = newTrip;
-        // this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length - 1]);
-        this.trip.newTrip = true;
-        // this.$store.state.newTrip = true;
-        this.$router.push({path: '/trips/' + newTripNum});
+      let newTripNum = 1;
+
+      try {
+        newTripNum = this.userDBTrips[0].tripNum + 1;
+
+      } catch (err) {
+        newTripNum = 1;
+      }
+
+      const newTrip: WcgopTrip = {
+                            type: 'wcgop-trip',
+                            tripNum: newTripNum,
+                            vessel: this.vessel.activeVessel,
+                            // permits: [],
+                            // messages: [],
+                            departureDate: moment().format(),
+                            departurePort: this.user.activeUser.homeport,
+                            returnDate: moment().format(),
+                            returnPort: {name: 'same as start'},
+                            isSelected: false,
+                            fishery: {name: 'unknown'},
+                            tripStatus: {
+                              description: 'open'
+                            }
+                            };
+      this.trip.activeTrip = newTrip;
+
+      this.trip.newTrip = true;
+      this.$router.push({path: '/trips/' + newTripNum});
       }
 
   private formatDate(date: any) {
