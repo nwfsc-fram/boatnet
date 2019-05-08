@@ -1,6 +1,11 @@
 <template>
   <q-page padding>
-    <q-toggle v-model="appState.isKeyboardEnabled" label="Show Keyboard" @input="enableKeyboard"/>
+    <div>
+      <q-toggle v-model="isKeyboardEnabled" label="Show Keyboard" @input="enableKeyboard"/>
+    </div>
+    <div>
+      <q-toggle v-model="isSoundEnabled" label="Enable Sound" @input="enableSound"/>
+    </div>
   </q-page>
 </template>
 
@@ -11,11 +16,27 @@ import { State, Action } from 'vuex-class';
 
 @Component
 export default class PageSettings extends Vue {
-  @State('appState') private appState!: WcgopAppState;
-  @Action('setKeyboardStatus', { namespace: 'appState' }) private setKeyboardStatus: any;
+  public isKeyboardEnabled?: boolean = false;
+  public isSoundEnabled?: boolean = false;
 
-  private enableKeyboard() {
-    this.setKeyboardStatus(this.appState.isKeyboardEnabled);
+  @State('appState') private appState!: WcgopAppState;
+  @Action('setKeyboardStatus', { namespace: 'appState' })
+  private setKeyboardStatus: any;
+  @Action('setSoundEnabled', { namespace: 'appState' })
+  private setSoundEnabled: any;
+
+
+  private mounted() {
+    this.isKeyboardEnabled = this.appState.isKeyboardEnabled;
+    this.isSoundEnabled = this.appState.isSoundEnabled;
+  }
+
+  private enableKeyboard(input: boolean) {
+    this.setKeyboardStatus(this.isKeyboardEnabled);
+  }
+
+  private enableSound() {
+    this.setSoundEnabled(this.isSoundEnabled);
   }
 }
 </script>
