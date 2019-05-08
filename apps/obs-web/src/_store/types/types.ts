@@ -12,8 +12,8 @@ export interface AlertState {
 }
 
 export interface TripState {
-  activeTrip: OTSTrip | null;
-  trips: OTSTrip[];
+  activeTrip: WcgopTrip | null;
+  trips: WcgopTrip[];
   newTrip: boolean;
 }
 
@@ -95,3 +95,14 @@ export interface Permit extends Base {
   owner_on_board_exempt?: any;
 }
 
+export interface BreadcrumbNavigation {
+  // TODO - figure out how to store our locations
+  currentRouterLocation?: string;
+  prevRouterLocation?: any;
+}
+
+export interface WcgopAppState {
+  currentNavigation?: BreadcrumbNavigation;
+  currentTrip?: WcgopTrip;
+  isKeyboardEnabled?: boolean;
+}

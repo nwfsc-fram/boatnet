@@ -6,7 +6,7 @@
                     <q-card-section>
                         <div class="text-h6">{{ oa.activeTrip.vesselName }} - {{ oa.activeTrip.fishery }} - {{ oa.activeTrip.departurePort }} </div>
                         <sup class="text-primary">Skipper: {{ oa.activeTrip.captain }}</sup>
-                        <p><strong>Trip Departing: {{ oa.activeTrip.tripStartDate }} - Returning: {{ oa.activeTrip.tripEndDate }} </strong></p>
+                        <p><strong>Departure Date: {{ oa.activeTrip.tripStartDate }} / Return Date: {{ oa.activeTrip.tripEndDate }} </strong></p>
 
                         <q-select
                         v-model="oa.activeTrip.observerName"

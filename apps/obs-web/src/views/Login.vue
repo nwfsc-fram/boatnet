@@ -85,14 +85,18 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 
 import router from '../router';
-import { AlertState } from '../_store/types/types';
+import { AlertState, WcgopAppState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { PouchDBState } from '@boatnet/bn-pouch';
+import { formatDate } from '@boatnet/bn-util';
 
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
+  @State('pouchState') private pouchState!: PouchDBState;
+  @State('appState') private appState!: WcgopAppState;
 
   @Action('login', { namespace: 'auth' }) private login: any;
   @Action('logout', { namespace: 'auth' }) private logout: any;
@@ -101,15 +105,19 @@ export default class Login extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
 
   @Action('connect', { namespace: 'baseCouch' }) private connect: any;
+  @Action('connect', { namespace: 'pouchState' }) private connectPouch: any;
+  @Action('disconnect', { namespace: 'pouchState' })
+  private disconnectPouch: any;
+
+  @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 
   private username = '';
   private password = '';
   private isPwd = true;
   private submitted = false;
 
-  private lastSoftwareUpdateDate = '10/1/2018 12:00:00';
-  private lastDataSyncDate = '10/1/2018 12:00:00';
-  private lastLoginDate = '10/1/2018 12:00:00';
+  private lastSoftwareUpdateDate = '-';
+  private lastLoginDate = '-';
 
   private visible = false;
   private layout = 'normal';
@@ -152,13 +160,16 @@ export default class Login extends Vue {
 
   private mounted() {
     this.logout(); // reset login status
+    this.disconnectPouch();
     this.clear(); // clear errors
+    this.clearAppState(); // clear trips etc
 
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connect(creds);
+          this.connectPouch(creds);
 
           router.push('/'); // On successful login, navigate to home
           break;
@@ -181,5 +192,14 @@ export default class Login extends Vue {
       this.login({ username, password });
     }
   }
+
+  private get lastDataSyncDate() {
+    if (this.pouchState.lastSyncDate) {
+      return formatDate(this.pouchState.lastSyncDate);
+    } else {
+      return 'Never';
+    }
+  }
+
 }
 </script>

@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
+import VuexPersist from 'vuex-persist';
 
+import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from './alert.module';
 import { trip } from './trip.module';
 import { permit } from './permit.module';
@@ -11,6 +13,7 @@ import { emefp } from './emefp.module';
 import { ots } from './ots.module';
 import { oa } from './observer-assignment.module';
 
+import { pouchState } from '@boatnet/bn-pouch';
 import { RootState } from './types/types';
 
 import { auth } from '@boatnet/bn-auth';
@@ -22,14 +25,11 @@ import { baseCouch } from '@boatnet/bn-couch';
 
 Vue.use(Vuex);
 
-// export const store = new Vuex.Store({
-//   modules: {
-//     alert,
-//     auth
-//   }
-// });
-
-// export default store;
+// Preserves state between page refreshes.
+const vuexLocalStorage = new VuexPersist({
+  key: 'vuex',
+  storage: window.localStorage
+});
 
 const store: StoreOptions<RootState> = {
   state: {
@@ -46,8 +46,12 @@ const store: StoreOptions<RootState> = {
     general,
     emefp,
     ots,
-    oa
-  }
+    oa,
+    pouchState,
+    appState
+  },
+  plugins: [vuexLocalStorage.plugin]
 };
 
 export default new Vuex.Store<RootState>(store);
+export * from './types/types';

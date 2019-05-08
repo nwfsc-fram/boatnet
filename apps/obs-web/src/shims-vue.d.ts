@@ -4,3 +4,4 @@ declare module '*.vue' {
 }
 // WS - Declare Quasar Module for typescript build
 declare module 'quasar';
+declare module 'pouchdb-utils';

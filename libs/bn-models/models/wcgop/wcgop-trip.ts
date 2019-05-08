@@ -30,6 +30,7 @@ export interface WcgopTrip extends BaseTrip {
   isFishProcessed?: boolean;
   tripStatus?: TripStatus;
   debriefer?: Person;
+  isSelected?: boolean;
 
   sightingEvents?: SightingEvent[];
   interactionEvents?: InteractionEvent[]; // TODO
