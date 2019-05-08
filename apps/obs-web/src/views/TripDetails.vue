@@ -214,7 +214,7 @@ export default class TripDetails extends Vue {
           queryOptions
         );
         this.portOptions = ports.rows.map((port: any) => port.value);
-        this.portOptions.push("SAME AS START")
+        this.portOptions.push('SAME AS START');
       } catch (err) {
         this.errorAlert(err);
       }

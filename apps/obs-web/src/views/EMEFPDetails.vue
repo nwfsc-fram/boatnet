@@ -116,7 +116,6 @@ export default class EMEFPDetails extends Vue {
           'obs_web/efp-type-options',
           queryOptions
         );
-        console.log(efptypes)
         this.efpTypeOptions = efptypes.rows.map((efp: any) => efp.key);
 
         const geartypes = await pouchDB.query(
@@ -124,7 +123,6 @@ export default class EMEFPDetails extends Vue {
           'obs_web/gear-type-options',
           queryOptions
         );
-        console.log(geartypes)
         this.gearTypeOptions = geartypes.rows.map((gear: any) => gear.key);
 
         } catch (err) {

@@ -206,14 +206,13 @@ export default class Trips extends Vue {
     }
 
     private closeTrip(trip: any) {
-      trip.tripStatus.description = "closed";
-      console.log(trip)
-        pouchService.db.put(pouchService.userDBName, trip);
+      trip.tripStatus.description = 'closed';
+      pouchService.db.put(pouchService.userDBName, trip);
       }
 
     private reOpenTrip(trip: any) {
         if (this.openTrips.length < 2) {
-          trip.tripStatus.description = "open";
+          trip.tripStatus.description = 'open';
           pouchService.db.put(pouchService.userDBName, trip);
         } else {
           this.alert = true;
@@ -267,7 +266,7 @@ export default class Trips extends Vue {
       }
 
   private formatDate(date: any) {
-    return moment(date).format('MMM Do')
+    return moment(date).format('MMM Do');
   }
 
 }
