@@ -28,7 +28,7 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <tally-addnamedspecies-dialog ref="addNamedSpeciesModal"/>
+    <tally-addnamedspecies-dialog ref="addNamedSpeciesModal" @addNewSpecies="handleAddNamedSpecies" :speciesList="speciesList"/>
   </q-page>
 </template>
 
@@ -101,10 +101,7 @@ export default class Tally extends Vue {
   public async populateSpecies() {
     const db = pouchService.db;
     const queryOptions = {
-      // start_key: val.toUpperCase(),
-      // end_key: val.toUpperCase() + '{}',
-      inclusive_end: true,
-      descending: false
+      include_docs: true
     };
 
     const species = await db.query(
@@ -113,7 +110,7 @@ export default class Tally extends Vue {
       queryOptions
     );
 
-    this.speciesList = species.rows.map((s: any) => s.key + ': ' + s.value.commonName);
+    this.speciesList = species.rows;
   }
 
   public getCode(row: number, column: number) {
@@ -131,6 +128,11 @@ export default class Tally extends Vue {
   public handleButtonData(button: TallyButtonData) {
     // console.log('GOT BUTTON DATA', button);
     this.updateButton(button);
+  }
+
+  public handleAddNamedSpecies(species: any) {
+    console.log('TODO Handle add', species);
+    (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
   }
 
   public handleControlEvent(controlName: string) {

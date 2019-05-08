@@ -21,7 +21,7 @@
                 label="Vessel Name/ Registration"
                 use-input
                 hide-selected
-                input-debounce="0"
+                input-debounce="50"
                 :options="options"
                 @filter="filterFn"
                 @focus="displayKeyboard"
@@ -316,10 +316,6 @@ export default class Trips extends Vue {
     }
   }
 
-  // TODO move to shared util?
-  private formatDate(dateStr: string): string {
-    return moment(dateStr).format('MM/DD/YY hh:mm');
-  }
   private async filterFn(val: string, update: any, abort: any) {
     // if (val.length < 2) {
     //   abort();
@@ -347,6 +343,7 @@ export default class Trips extends Vue {
       }
     });
   }
+
   private abortFilterFn() {
     // console.log('delayed filter aborted');
   }
