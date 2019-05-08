@@ -131,8 +131,9 @@ export default class Tally extends Vue {
   }
 
   public handleAddNamedSpecies(species: any) {
-    console.log('TODO Handle add', species);
+    console.log('TODO Handle add', species.shortCode);
     (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
+    this.handleControlEvent('all-tallies-for');
   }
 
   public handleControlEvent(controlName: string) {

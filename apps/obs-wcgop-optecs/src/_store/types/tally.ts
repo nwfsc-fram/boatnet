@@ -1,5 +1,13 @@
 import { Base } from '@boatnet/bn-models';
 
+export enum TallyOperationMode {
+  Tally,
+  AddNamedSpeciesSelectSpecies,
+  AddNamedSpeciesSelectType,
+  AddNamedSpeciesSelectLocation,
+  Unknown
+}
+
 export interface TallyButtonData {
   index: number; // screen location
   // Styling
@@ -26,4 +34,8 @@ export interface TallyRecord extends Base {
 export interface TallyState {
   tallyRecord: TallyRecord;
   incDecValue?: number; // +1 or -1
+
+  // State Machine
+  operationMode?: TallyOperationMode;
+
 }

@@ -5,7 +5,8 @@ import {
   RootState,
   TallyButtonData,
   TallyRecordTypeName,
-  TallyRecord
+  TallyRecord,
+  TallyOperationMode
 } from '@/_store/types';
 
 import { pouchService } from '@boatnet/bn-pouch';
@@ -26,7 +27,8 @@ export const state: TallyState = {
     vertButtonCount: 4,
     horizButtonCount: 8
   },
-  incDecValue: 1
+  incDecValue: 1,
+  operationMode: TallyOperationMode.Tally
 };
 
 const actions: ActionTree<TallyState, RootState> = {
@@ -222,6 +224,9 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   incDecValue(getState: TallyState) {
     return getState.incDecValue;
+  },
+  currentOperation(getState: TallyState) {
+    return getState.operationMode;
   }
 };
 
