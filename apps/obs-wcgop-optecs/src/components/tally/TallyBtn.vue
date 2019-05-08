@@ -31,6 +31,7 @@ import { QBtn } from 'quasar';
 import { TallyButtonData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
+// TODO Move audio to a separate service
 const lowClickFile = require('../../assets/audio/click4.wav');
 const highClickFile = require('../../assets/audio/clack.wav');
 const funnyFile = require('../../assets/audio/funnyclick.wav');
@@ -54,6 +55,8 @@ export default class TallyBtn extends Vue {
   // @Prop({ default: undefined }) public count!: boolean;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
+  @Getter('isSoundEnabled', { namespace: 'appState' })
+  private isSoundEnabled!: boolean;
 
 
   public handleClick() {
@@ -77,6 +80,9 @@ export default class TallyBtn extends Vue {
   }
 
   private playSound(soundName: string) {
+    if (!this.isSoundEnabled) {
+      return;
+    }
     switch (soundName) {
       case 'inc':
         highClickAudio.play();

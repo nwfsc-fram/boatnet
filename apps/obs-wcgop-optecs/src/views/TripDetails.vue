@@ -386,10 +386,6 @@ export default class Trips extends Vue {
     }
   }
 
-  // TODO move to shared util?
-  private formatDate(dateStr: string): string {
-    return moment(dateStr).format('MM/DD/YY hh:mm');
-  }
   private async filterFn(val: string, update: any, abort: any) {
     // if (val.length < 2) {
     //   abort();
@@ -401,6 +397,7 @@ export default class Trips extends Vue {
         const queryOptions: ListOptions = {
           limit: 5,
           start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '{}',
           inclusive_end: true,
           descending: false
         };
@@ -416,6 +413,7 @@ export default class Trips extends Vue {
       }
     });
   }
+
   private abortFilterFn() {
     // console.log('delayed filter aborted');
   }

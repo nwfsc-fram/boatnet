@@ -42,11 +42,8 @@ export default class BoatnetLicenses extends Vue {
     if (this.certificates.length < 7) {
       this.certificates.unshift('');
     } else {
-       this.$emit('error', 'Cannot add more than 7 licenses'); 
+      this.$emit('error', 'Cannot add more than 7 licenses');
     }
   }
 }
 </script>
-
-
-   
