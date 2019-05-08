@@ -8,7 +8,8 @@ Vue.use(Vuex);
 export const state: WcgopAppState = {
   currentNavigation: undefined, // TODO could set this to current router location?
   currentTrip: undefined,
-  isKeyboardEnabled: true
+  isKeyboardEnabled: true,
+  isSoundEnabled: true
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
@@ -26,6 +27,9 @@ const actions: ActionTree<WcgopAppState, RootState> = {
   },
   setKeyboardStatus({ commit }: any, isEnabled: boolean) {
     commit('setKeyboardStatus', isEnabled);
+  },
+  setSoundEnabled({ commit }: any, isEnabled: boolean) {
+    commit('setSoundEnabled', isEnabled);
   }
 };
 
@@ -46,12 +50,18 @@ const mutations: MutationTree<WcgopAppState> = {
   },
   setKeyboardStatus(newState: any, isEnabled: boolean) {
     newState.isKeyboardEnabled = isEnabled;
+  },
+  setSoundEnabled(newState: any, isEnabled: boolean) {
+    newState.isSoundEnabled = isEnabled;
   }
 };
 
 const getters: GetterTree<WcgopAppState, RootState> = {
   currentTrip(getState: WcgopAppState) {
     return getState.currentTrip;
+  },
+  isSoundEnabled(getState: WcgopAppState) {
+    return getState.isSoundEnabled;
   }
 };
 

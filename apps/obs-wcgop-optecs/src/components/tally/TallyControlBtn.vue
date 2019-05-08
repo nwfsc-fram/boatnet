@@ -15,7 +15,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { WcgopAppState } from '../../_store/types';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { QBtn } from 'quasar';
 import { TallyButtonData } from '../../_store/types';
 
@@ -39,6 +39,9 @@ export default class TallyControlBtn extends Vue {
   // Data:
   @Prop({ default: undefined }) public data!: TallyButtonData;
   @Prop({ default: undefined }) public blank!: boolean;
+  @Getter('isSoundEnabled', { namespace: 'appState' })
+  private isSoundEnabled!: boolean;
+
 
   public handleClick() {
     this.playSound(this.controlName);
@@ -46,6 +49,10 @@ export default class TallyControlBtn extends Vue {
   }
 
   private playSound(soundName: string) {
+    if (!this.isSoundEnabled) {
+      return;
+    }
+
     switch (soundName) {
       case 'modify-layout-done':
         funnyAudio.play();
