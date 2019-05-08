@@ -32,6 +32,7 @@ import {
   QCardSection,
   QCardActions,
   QCheckbox,
+  QDate,
   QDialog,
   QDrawer,
   QLayout,
@@ -40,6 +41,7 @@ import {
   QOptionGroup,
   QPageContainer,
   QPage,
+  QPopupProxy,
   QSelect,
   QSeparator,
   QSpinner,
@@ -80,6 +82,7 @@ Vue.use(Quasar, {
     QCardSection,
     QCardActions,
     QCheckbox,
+    QDate,
     QLayout,
     QHeader,
     QInput,
@@ -88,6 +91,7 @@ Vue.use(Quasar, {
     QOptionGroup,
     QPageContainer,
     QPage,
+    QPopupProxy,
     QSelect,
     QSeparator,
     QSpinner,
@@ -109,7 +113,7 @@ Vue.use(Quasar, {
     QList,
     QItem,
     QItemSection,
-    QItemLabel
+    QItemLabel,
   },
   directives: {
     ClosePopup
@@ -118,8 +122,6 @@ Vue.use(Quasar, {
 });
 
 Vue.config.productionTip = false;
-
-// Vue.use(VueTouchKeyboard);
 
 new Vue({
   router,

@@ -11,156 +11,201 @@
         <q-tab-panel name="start">
           <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
           <div class="q-pa-md">
-            <!-- WS Note: if you use q-gutter here, it'll make flexbox wrap before col adds up to 12 -->
-            <!-- so be sure to use q-col-gutter -->
-            <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-              <q-select
-                outlined
-                class="col-2"
-                v-model="currentTrip.vessel.vesselName"
-                label="Vessel Name/ Registration"
-                use-input
-                hide-selected
-                input-debounce="50"
-                :options="options"
-                @filter="filterFn"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">No results</q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-              <q-input
-                outlined
-                class="col-2"
-                v-model="captainName"
-                label="Skipper's Name"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.crewSize"
-                label="# of Crew"
-                @focus="displayKeyboard"
-                data-layout="numeric"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.observerLogbookNum"
-                label="Observer Logbook #"
-                @focus="displayKeyboard"
-                data-layout="numeric"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                :value="shortFormat(currentTrip.departureDate)"
-                label="Departure Date/ Time"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.departurePort.name"
-                label="Departure Port"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-
-              <div class="text-h6 col-2">Permit / License Numbers</div>
-              <!-- TODO this should be a component -->
-              <div class="row">
-                <q-input
-                  outlined
-                  class="col-12"
-                  v-model="ph"
-                  label="Permit/ License #"
-                  @focus="displayKeyboard"
-                  data-layout="normal"
-                />
+            <div class="row q-col-gutter-md">
+              <div class="col-5">
+                <div class="column q-col-gutter-md">
+                  <q-select
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.vessel.vesselName"
+                    label="Vessel Name/ Registration"
+                    use-input
+                    hide-selected
+                    input-debounce="0"
+                    :options="options"
+                    @filter="filterFn"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">No results</q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="captainName"
+                    label="Skipper's Name"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  />
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.crewSize"
+                    label="# of Crew"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  />
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.observerLogbookNum"
+                    label="Observer Logbook #"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  />
+                  <q-input
+                    outlined
+                    label="Departure Date"
+                    v-model="departureDateDisplay"
+                    mask="date"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  >
+                    <template>
+                      <q-popup-proxy>
+                        <q-date v-model="departureDateDisplay"/>
+                      </q-popup-proxy>
+                    </template>
+                    <template v-slot:append>
+                      <q-icon name="event" class="cursor-pointer"></q-icon>
+                    </template>
+                  </q-input>
+                  <q-input
+                    outlined
+                    class="col-2"
+                    label="Departure Time"
+                    v-model="departureTime"
+                    mask="##:##"
+                    fill-mask
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  />
+                  <q-input
+                    outlined
+                    v-model="currentTrip.departurePort.name"
+                    label="Departure Port"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  />
+                </div>
+              </div>
+              <div class="col-5">
+                <boatnet-licenses :certificates="certificate" @displayKeyboard="displayKeyboard"
+                @error="handleError"/>
+              </div>
+              <div class="col-1 self-center">
+                <q-btn flat dense round @click="changeTab('end')" icon="chevron_right" size="4em"/>
               </div>
             </div>
           </div>
         </q-tab-panel>
 
         <q-tab-panel name="end">
-          <div class="text-h5 row justify-center">Trip #{{tripNum}} End</div>
+          <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} End</div>
           <div class="q-pa-md">
-            <div class="q-col-gutter-md column" style="height:400px; max-height: 100%;">
-              <div class="col-2">
-                <div class="text-h8 col-3">Partial Trip</div>
-                <q-btn-toggle
-                  class="col-auto"
-                  v-model="currentTrip.isPartialTrip"
-                  toggle-color="primary"
-                  :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
-                />
+            <div class="row q-col-gutter-md">
+              <div class="col-1 self-center">
+                <q-btn flat dense round @click="changeTab('start')" icon="chevron_left" size="3em"/>
               </div>
-
-              <div class="col-2">
-                <div class="text-h8 col-3">Fish Processed During Trip</div>
-                <q-btn-toggle
-                  class="col-auto"
-                  v-model="currentTrip.isFishProcessed"
-                  toggle-color="primary"
-                  :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
-                />
+              <div class="col-5">
+                <div class="column q-col-gutter-md">
+                  <div class="col-2">
+                    <div class="text-h8 col-3">Partial Trip</div>
+                    <q-btn-toggle
+                      class="col-auto"
+                      v-model="currentTrip.isPartialTrip"
+                      toggle-color="primary"
+                      :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+                    />
+                  </div>
+                  <div class="col-2">
+                    <div class="text-h8 col-3">Fish Processed During Trip</div>
+                    <q-btn-toggle
+                      class="col-auto"
+                      v-model="currentTrip.isFishProcessed"
+                      toggle-color="primary"
+                      :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
+                    />
+                  </div>
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.logbookType"
+                    label="Vessel Logbook Name"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  />
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.logbookNum"
+                    label="Vessel Logbook Page #"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  />
+                  <q-input
+                    outlined
+                    class="col-2"
+                    v-model="currentTrip.returnPort.name"
+                    label="Return Port"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  />
+                  <q-input
+                    outlined
+                    label="Return Date"
+                    v-model="returnDateDisplay"
+                    mask="date"
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  >
+                    <template v-slot:append>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy>
+                          <q-date v-model="returnDateDisplay"/>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                  <q-input
+                    outlined
+                    class="col-2"
+                    label="Return Time"
+                    v-model="returnTime"
+                    mask="##:##"
+                    fill-mask
+                    @focus="displayKeyboard"
+                    data-layout="numeric"
+                  />
+                </div>
               </div>
-
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.logbookType"
-                label="Vessel Logbook Name"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.logbookNum"
-                label="Vessel Logbook Page #"
-                @focus="displayKeyboard"
-                data-layout="numeric"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                v-model="currentTrip.returnPort.name"
-                label="Return Port"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                :value="shortFormat(currentTrip.returnDate)"
-                label="Return Date/Time"
-              />
-              <q-input
-                outlined
-                class="col-2"
-                :value="firstReceiverName"
-                label="First Receiver"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              />
-              <div class="text-h6 col-2">Fish Tickets</div>
-              <!-- TODO this should be a component -->
-              <div class="row">
-                <q-input
-                  outlined
-                  class="col-12"
-                  v-model="ph"
-                  label="Fish Ticket"
-                  @focus="displayKeyboard"
-                  data-layout="numeric"
-                />
+              <div class="col-5">
+                <div class="column q-col-gutter-md">
+                  <q-input
+                    outlined
+                    class="col-2"
+                    :value="firstReceiverName"
+                    label="First Receiver"
+                    @focus="displayKeyboard"
+                    data-layout="normal"
+                  />
+                  <div class="text-h6 col-2">Fish Tickets</div>
+                  <!-- TODO this should be a component -->
+                  <div class="row">
+                    <q-input
+                      outlined
+                      class="col-12"
+                      v-model="ph"
+                      label="Fish Ticket"
+                      @focus="displayKeyboard"
+                      data-layout="numeric"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -184,6 +229,7 @@
 import { Point } from 'geojson';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
+import { date } from 'quasar';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
@@ -204,6 +250,9 @@ import {
 } from '@boatnet/bn-models';
 
 import { couchService } from '@boatnet/bn-couch';
+import BoatnetLicenses from '@boatnet/bn-common';
+
+Vue.component(BoatnetLicenses);
 
 @Component
 export default class Trips extends Vue {
@@ -220,6 +269,19 @@ export default class Trips extends Vue {
   private ph = ''; // TEMP
 
   private options: string[] = [];
+
+  // TODO modify this to load from DB
+  private certificate: string[] = [''];
+  private departureDate = Date.now();
+  private departureDateDisplay = date.formatDate(
+    this.departureDate,
+    'YYYY/MM/DD'
+  );
+  private departureTime = '';
+
+  private returnDate = Date.now();
+  private returnDateDisplay = date.formatDate(this.returnDate, 'YYYY/MM/DD');
+  private returnTime = '';
 
   constructor() {
     super();
@@ -308,6 +370,14 @@ export default class Trips extends Vue {
         ? this.currentTrip.vessel.coastGuardNumber
         : this.currentTrip.vessel.stateRegulationNumber;
     }
+  }
+
+  private handleError(message: string) {
+    this.errorAlert(message);
+  }
+
+  private changeTab(tabName: string) {
+    this.tab = tabName;
   }
 
   private displayKeyboard(event: any) {

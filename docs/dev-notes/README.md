@@ -5,46 +5,23 @@
   - https://github.com/settings/keys
 
 - If you are using Sourcetree, you need to import this key in PuttyGen (as described in their docs) and save the private key in .ppk format. Then, open Pageant from systray and Add Key using the file.
+  * Git Desktop seems to work better than SourceTree if you want a UI other than Visual Studio Code.
 - Use ssh for git clone, otherwise you'll be prompted for HTTPS authentication upon `git push`
 
 ```
 git clone git@github.com:nwfsc-fram/boatnet.git
 ```
 
-    #### Precommit hooks
+### Precommit hooks
+* This will catch trailing whitespace errors before commit, which throws typescript warnings
 
-- Install the [git-secrets plugin](https://github.com/awslabs/git-secrets) on your PC to prevent accidental commit of secure tokens to Git.
-
-  - Windows
-
-            $ git clone https://github.com/awslabs/git-secrets
-
-            # With administrator assistance:
-            Create dir C:\Program Files\Git\usr\local\bin
-            Copy git-secrets/git-secrets script to C:\Program Files\Git\usr\local\bin\git-secrets
-
-            Create dir C:\Program Files\Git\usr\local\share\man\man1
-            Copy git-secrets/git-secrets.1 help file to C:\Program Files\Git\usr\local\share\man\man1\git-secrets.1
-
-            # For Visual Studio Code Integration
-            Copy git-secrets/git-secrets script to C:\Program Files\Git\cmd\git-secrets
-
-  - MacOS & Linux
-
-            $ git clone https://github.com/awslabs/git-secrets
-            $ cd git-secrets
-
-            # then run:  brew install git-secrets  (on Linux run: make install)
-
-- Activate plugin (repeat this activation step, whenever you git clone a new working copy)
-
-        $ git secrets --install --force   #install hooks, in this working copy
-        $ git secrets --register-aws      #add additional AWS credential protection for this working copy
+1. Go to your `boatnet/.git/hooks` folder
+2. Copy and rename `pre-commit.sample` to `pre-commit`
 
 ## Contributing Guidelines
 
 1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
-2. Verify your formatting is correct using Prettify: (`npm run format`)
+2. Verify everything builds under lerna (`lerna run build`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
@@ -56,7 +33,8 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
   * `lerna clean` (Run AFTER bootstrap)
-  * `lerna add whatever-package --scope="my-project"` (Add a single dependency to matched scope, e.g. obs-wcgop-optecs)
+  * `lerna run  build` (Builds everything. Usually you only do this before merging to master, as a check.)
+  * `lerna add whatever-package --scope="my-project"` (Add a single dependency to matched scope, e.g. obs-wcgop-optecs) You can also `yarn add xyz` from your project directory, to keep it in scope.
 
 * For boatnet, we are using the Lerna and Yarn Workspaces monorepo pattern. This will minimize node_packages redundancy.
   * Note that each app/library/etc can be standalone, however, we want to use lerna/yarn to make development easy.
