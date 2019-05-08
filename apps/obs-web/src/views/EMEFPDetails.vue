@@ -106,7 +106,7 @@ export default class EMEFPDetails extends Vue {
         const pouchDB = pouchService.db;
         const queryOptions: ListOptions = {
           limit: 100,
-          start_key: 'a',
+          start_key: '',
           inclusive_end: true,
           descending: false
         };

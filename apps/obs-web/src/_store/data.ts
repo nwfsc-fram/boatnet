@@ -7,7 +7,7 @@ import { alert } from '@/_store/alert.module';
 import { Permit } from '@/_store/types/types.ts';
 
 import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
-import { OTSTrip, OTSMessage, OTSUser, OTSTarget } from '@boatnet/bn-models';
+import { OTSTrip, OTSMessage, OTSUser, OTSTarget, WcgopTrip } from '@boatnet/bn-models';
 
 import { RootState } from '@/_store/types/types';
 
@@ -145,198 +145,125 @@ export const permits: Permit[] = [
 //   }
 // ];
 
-export const trips: OTSTrip[] = [
+export const trips: WcgopTrip[] = [
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '2018/08/03 10:01 AM', returnDate: '2018/08/20 3:33 PM',
+    departureDate: '2018/08/03 10:01 AM', returnDate: '2019/05/16',
     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [{label: 'A21rv35', value: 'A21rv35'}],
-    messages: [], tripStatus: {description: 'Open'}
+    tripStatus: {description: 'Open'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: [], tripStatus: {description: 'Closed'}
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Open'}
   },
   { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [{label: 'N11es32', value: 'N11es32'}],
-    messages: []
+    tripStatus: {description: 'Open'}
   },
   { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: [{label: 'A21rv35', value: 'A21rv35'}, {label: 'W32be87', value: 'W32be87'}],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: true,
     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 4, isSelected: true,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: false,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: true,
     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Catch Shares - Shore Side Hake'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Trawl Gear - MOD EFP'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
     fishery: {name: 'Limited Entry - Catch Shares'},
-    permits: [
-      {label: 'A21rv35', value: 'A21rv35'},
-      {label: 'W32be87', value: 'W32be87'},
-      {label: 'N11es32', value: 'N11es32'}
-    ],
-    messages: []
+    tripStatus: {description: 'Closed'}
   },
 ];
 

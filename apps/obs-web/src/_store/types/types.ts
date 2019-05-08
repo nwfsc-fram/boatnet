@@ -12,8 +12,8 @@ export interface AlertState {
 }
 
 export interface TripState {
-  activeTrip: OTSTrip | null;
-  trips: OTSTrip[];
+  activeTrip: WcgopTrip | null;
+  trips: WcgopTrip[];
   newTrip: boolean;
 }
 
