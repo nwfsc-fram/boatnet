@@ -111,18 +111,20 @@ export default class EMEFPDetails extends Vue {
           descending: false
         };
 
-        const efptypes = await pouchDB.lookupsDBName.view<any>(
-          'obs_web',
-          'efp-type-options',
+        const efptypes = await pouchDB.query(
+          pouchService.lookupsDBName,
+          'obs_web/efp-type-options',
           queryOptions
         );
+        console.log(efptypes)
         this.efpTypeOptions = efptypes.rows.map((efp: any) => efp.key);
 
-        const geartypes = await pouchDB.lookupsDBName.view<any>(
-          'obs_web',
-          'gear-type-options',
+        const geartypes = await pouchDB.query(
+          pouchService.lookupsDBName,
+          'obs_web/gear-type-options',
           queryOptions
         );
+        console.log(geartypes)
         this.gearTypeOptions = geartypes.rows.map((gear: any) => gear.key);
 
         } catch (err) {
