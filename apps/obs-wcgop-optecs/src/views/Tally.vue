@@ -160,7 +160,7 @@ export default class Tally extends Vue {
         'to #',
         button.index
       );
-      this.setTallyOpMode(TallyOperationMode.Tally);
+      this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
     }
     // this.updateButton({button});
   }

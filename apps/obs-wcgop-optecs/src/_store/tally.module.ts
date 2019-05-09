@@ -31,6 +31,20 @@ export const state: TallyState = {
   operationMode: TallyOperationMode.Tally
 };
 
+// TODO: Other Color Schemes
+const reasonButtonColors: any[] = [
+  { name: 'SFTY', color: { bg: 'blue-2', text: 'black' } },
+  { name: 'DOCK', color: { bg: 'blue-3', text: 'black' } },
+  { name: 'ACCI', color: { bg: 'blue-4', text: 'black' } },
+  { name: 'USED', color: { bg: 'blue-5', text: 'black' } },
+  { name: 'OTHR', color: { bg: 'blue-6', text: 'white' } },
+  { name: 'REG', color: { bg: 'blue-7', text: 'white' } },
+  { name: 'DROP', color: { bg: 'blue-8', text: 'white' } },
+  { name: 'PRED', color: { bg: 'red-5', text: 'white' } },
+  { name: 'MKT', color: { bg: 'light-green', text: 'black' } },
+  { name: 'RET', color: { bg: 'green-9', text: 'white' } }
+];
+
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
     commit('reset');
@@ -38,7 +52,10 @@ const actions: ActionTree<TallyState, RootState> = {
   connectDB({ commit }: any) {
     commit('initialize');
   },
-  updateButton({ commit }: any, params: {button: TallyButtonData, skipDBUpdate: boolean}) {
+  updateButton(
+    { commit }: any,
+    params: { button: TallyButtonData; skipDBUpdate: boolean }
+  ) {
     commit('updateButton', params);
   },
   setTallyIncDec({ commit }: any, value: number) {
@@ -53,23 +70,13 @@ const actions: ActionTree<TallyState, RootState> = {
 };
 
 function getBtnColor(reason: string): { bg?: string; text?: string } {
-  switch (reason) {
-    case 'INVIS':
-      return {};
-      break;
-    case 'PRED':
-      return { bg: 'red-5', text: 'white' };
-      break;
-    case 'RET':
-      return { bg: 'green-9', text: 'white' };
-      break;
-    case 'MKT':
-      return { bg: 'light-green', text: 'black' };
-      break;
-
-    default:
-      return { bg: 'blue-5', text: 'black' };
-      break;
+  const rbcVal: any = reasonButtonColors.filter( (rbc: any) => {
+    return rbc.name === reason;
+  });
+  if (rbcVal[0]) {
+    return rbcVal[0].color;
+  } else {
+    console.log('WARNING: no button color for', reason);
   }
 }
 
@@ -142,9 +149,15 @@ const mutations: MutationTree<TallyState> = {
     newState.tallyRecord._id = result.id;
     newState.tallyRecord._rev = result.rev;
   },
-  async updateButton(newState: any, params: {button: TallyButtonData, skipDBUpdate?: boolean}) {
+  async updateButton(
+    newState: any,
+    params: { button: TallyButtonData; skipDBUpdate?: boolean }
+  ) {
     if (params.button.index === undefined) {
-      console.log('[Tally Module] Button has no index, cannot update.', params.button);
+      console.log(
+        '[Tally Module] Button has no index, cannot update.',
+        params.button
+      );
       return;
     }
     newState.tallyRecord.buttonData[params.button.index] = params.button;
@@ -177,7 +190,7 @@ const mutations: MutationTree<TallyState> = {
     //     newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
     //   }
     // }
-  },
+  }
 };
 
 async function updateRecord(record: TallyRecord) {
@@ -249,6 +262,9 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   tallyMode(getState: TallyState) {
     return getState.operationMode;
+  },
+  reasonButtonColors() {
+    return reasonButtonColors;
   }
 };
 

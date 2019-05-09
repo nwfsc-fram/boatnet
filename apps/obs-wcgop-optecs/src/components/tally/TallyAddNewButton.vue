@@ -1,15 +1,16 @@
 <template>
   <q-btn-group spread>
-    <template v-for="reason in reasons">
+    <template v-for="reason in reasonButtonColors">
       <tally-control-btn
-        :control-name="reason"
-        color="grey-4"
-        :key="`${reason}`"
+        :control-name="reason.name"
+        :color="reason.color.bg"
+        :text-color="reason.color.text"
+        :key="`${reason.name}`"
         @controlclick="handleControlClick"
       >
         {{species.shortCode}}
         <br>
-        {{reason}}
+        {{reason.name}}
       </tally-control-btn>
     </template>
     <tally-control-btn
@@ -17,13 +18,13 @@
       textcolor="white"
       control-name="cancel"
       @controlclick="handleControlClick"
-    >Cancel</tally-control-btn>
+    >Done</tally-control-btn>
   </q-btn-group>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Action } from 'vuex-class';
+import { Action, Getter } from 'vuex-class';
 
 import { TallyOperationMode } from '../../_store/types';
 import TallyControlBtn from './TallyControlBtn.vue';
@@ -36,19 +37,8 @@ export default class TallyAddNewButton extends Vue {
   private highlightEmptyButtons: any;
   @Action('setTallyOpMode', { namespace: 'tallyState' })
   private setTallyOpMode: any;
-
-  private reasons: string[] = [
-    'SFTY',
-    'DOCK',
-    'ACCI',
-    'USED',
-    'OTHR',
-    'REG',
-    'DROP',
-    'PRED',
-    'MKT',
-    'RET'
-  ];
+  @Getter('reasonButtonColors', { namespace: 'tallyState' })
+  private reasonButtonColors!: any[];
 
   public handleControlClick(controlName: string): void {
     switch (controlName) {

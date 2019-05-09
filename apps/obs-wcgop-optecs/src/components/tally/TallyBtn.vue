@@ -45,6 +45,7 @@
           class="q-px-lg q-py-md"
           align="around"
           color="black"
+          :size="size"
           @click="handleBlankClicked"
         >
           {{data.code}}
