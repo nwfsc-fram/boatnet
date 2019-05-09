@@ -137,7 +137,7 @@ export default class Tally extends Vue {
 
   public handleButtonData(button: TallyButtonData) {
     // console.log('GOT BUTTON DATA', button);
-    this.updateButton(button);
+    this.updateButton({button});
   }
 
   public handleAddNamedSpecies(species: any) {

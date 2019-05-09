@@ -38,8 +38,8 @@ const actions: ActionTree<TallyState, RootState> = {
   connectDB({ commit }: any) {
     commit('initialize');
   },
-  updateButton({ commit }: any, button: TallyButtonData) {
-    commit('updateButton', button);
+  updateButton({ commit }: any, params: {button: TallyButtonData, skipDBUpdate: boolean}) {
+    commit('updateButton', params);
   },
   setTallyIncDec({ commit }: any, value: number) {
     commit('setTallyIncDec', value);
@@ -143,17 +143,20 @@ const mutations: MutationTree<TallyState> = {
     newState.tallyRecord._id = result.id;
     newState.tallyRecord._rev = result.rev;
   },
-  async updateButton(newState: any, button: TallyButtonData) {
-    if (button.index === undefined) {
-      console.log('[Tally Module] Button has no index, cannot update.', button);
+  async updateButton(newState: any, params: {button: TallyButtonData, skipDBUpdate?: boolean}) {
+    if (params.button.index === undefined) {
+      console.log('[Tally Module] Button has no index, cannot update.', params.button);
       return;
     }
-    newState.tallyRecord.buttonData[button.index] = button;
-    const result = await updateRecord(newState.tallyRecord);
-    if (result) {
-      newState.tallyRecord._rev = result.rev;
-      newState.tallyRecord.modifiedDate = moment().format();
-      newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+    newState.tallyRecord.buttonData[params.button.index] = params.button;
+
+    if (!params.skipDBUpdate) {
+      const result = await updateRecord(newState.tallyRecord);
+      if (result) {
+        newState.tallyRecord._rev = result.rev;
+        newState.tallyRecord.modifiedDate = moment().format();
+        newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+      }
     }
   },
   setTallyIncDec(newState: any, value: number) {
