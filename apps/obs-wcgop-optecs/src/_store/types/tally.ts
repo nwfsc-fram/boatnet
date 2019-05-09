@@ -1,11 +1,15 @@
 import { Base } from '@boatnet/bn-models';
 
+export enum TallyButtonMode {
+  MovingButton,
+  TargetButton
+}
 export enum TallyOperationMode {
-  Tally,
-  AddNamedSpeciesSelectSpecies,
-  AddNamedSpeciesSelectType,
-  AddNamedSpeciesSelectLocation,
-  Unknown
+  Tally = 'Tally Mode',
+  AddNamedSpeciesSelectSpecies = 'Select Species',
+  AddNamedSpeciesSelectType = 'Select Type',
+  AddNamedSpeciesSelectLocation = 'Select Location',
+  Unknown = 'Unknown'
 }
 
 export interface TallyButtonData {
@@ -14,6 +18,7 @@ export interface TallyButtonData {
   color?: string;
   'text-color'?: string;
   blank?: boolean;
+  tempState?: TallyButtonMode;
 
   // Data
   code?: string; // e.g. SABL

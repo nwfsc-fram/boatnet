@@ -54,6 +54,7 @@ export default class TallyAddNamedSpeciesDialog extends Vue {
   }
 
   public close() {
+    this.$emit('cancel');
     this.isOpen = false;
   }
 

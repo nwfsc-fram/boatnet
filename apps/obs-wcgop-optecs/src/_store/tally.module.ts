@@ -43,6 +43,9 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   setTallyIncDec({ commit }: any, value: number) {
     commit('setTallyIncDec', value);
+  },
+  setTallyOpMode({ commit }: any, value: TallyOperationMode) {
+    commit('setTallyOpMode', value);
   }
   // TODO: Button Data changes (increment, assign discard reasons, etc)
   // setCurrentTrip({ commit }: any, trip: WcgopTrip) {
@@ -155,6 +158,10 @@ const mutations: MutationTree<TallyState> = {
   },
   setTallyIncDec(newState: any, value: number) {
     newState.incDecValue = value;
+  },
+  setTallyOpMode(newState: any, value: TallyOperationMode) {
+    newState.operationMode = value;
+    // TODO: Set/Reset all button.tempState if "Tally"?
   }
 };
 
@@ -225,7 +232,7 @@ const getters: GetterTree<TallyState, RootState> = {
   incDecValue(getState: TallyState) {
     return getState.incDecValue;
   },
-  currentOperation(getState: TallyState) {
+  tallyMode(getState: TallyState) {
     return getState.operationMode;
   }
 };
