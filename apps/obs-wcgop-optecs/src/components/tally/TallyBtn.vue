@@ -45,7 +45,12 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState, TallyOperationMode, TallyButtonData, TallyButtonMode } from '../../_store/types';
+import {
+  WcgopAppState,
+  TallyOperationMode,
+  TallyButtonData,
+  TallyButtonMode
+} from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
 
@@ -79,9 +84,12 @@ export default class TallyBtn extends Vue {
   @Getter('isSoundEnabled', { namespace: 'appState' })
   private isSoundEnabled!: boolean;
 
-
-
   public handleClick() {
+    if (this.tallyMode !== TallyOperationMode.Tally) {
+      console.log('Not in Tally mode, no data change.');
+      this.playSound('bad');
+      return;
+    }
     if (this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
       if (this.incDecValue > 0) {
@@ -97,11 +105,11 @@ export default class TallyBtn extends Vue {
         }
       }
       // TEMP - Test
-      if (this.data.tempState === undefined) {
-        this.data.tempState = TallyButtonMode.MovingButton;
-      } else {
-        delete this.data.tempState;
-      }
+      // if (this.data.tempState === undefined) {
+      //   this.data.tempState = TallyButtonMode.MovingButton;
+      // } else {
+      //   delete this.data.tempState;
+      // }
 
       this.$emit('dataChanged', this.data);
     }

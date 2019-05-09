@@ -101,7 +101,7 @@ export default class Tally extends Vue {
   private confirmReset = false;
 
 
-  private currentSelectedSpecies: any = {shortCode: 'UNK'}; // TODO actual species type
+  private currentSelectedSpecies: any = {}; // TODO actual species type
 
   private speciesList = [];
   constructor() {
@@ -159,6 +159,7 @@ export default class Tally extends Vue {
   public handleCancel() {
     // Generic Cancel - return to tally mode
     // TODO refactor into setTallyMode
+    this.currentSelectedSpecies = {};
     this.setTallyOpMode(TallyOperationMode.Tally);
     this.handleControlEvent('tally-mode');
   }
