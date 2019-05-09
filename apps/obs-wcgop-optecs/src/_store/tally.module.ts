@@ -46,11 +46,10 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   setTallyOpMode({ commit }: any, value: TallyOperationMode) {
     commit('setTallyOpMode', value);
+  },
+  highlightEmptyButtons({ commit }: any) {
+    commit('highlightEmptyButtons');
   }
-  // TODO: Button Data changes (increment, assign discard reasons, etc)
-  // setCurrentTrip({ commit }: any, trip: WcgopTrip) {
-  //   commit('setCurrentTrip', trip);
-  // },
 };
 
 function getBtnColor(reason: string): { bg?: string; text?: string } {
@@ -165,7 +164,20 @@ const mutations: MutationTree<TallyState> = {
   setTallyOpMode(newState: any, value: TallyOperationMode) {
     newState.operationMode = value;
     // TODO: Set/Reset all button.tempState if "Tally"?
-  }
+  },
+  highlightEmptyButtons(newState: any) {
+    console.log('TODO HIGHLIGHT ALL EMPTY BUTTON LOCATIONS');
+    // newState.tallyRecord.buttonData[params.button.index] = params.button;
+
+    // if (!params.skipDBUpdate) {
+    //   const result = await updateRecord(newState.tallyRecord);
+    //   if (result) {
+    //     newState.tallyRecord._rev = result.rev;
+    //     newState.tallyRecord.modifiedDate = moment().format();
+    //     newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+    //   }
+    // }
+  },
 };
 
 async function updateRecord(record: TallyRecord) {

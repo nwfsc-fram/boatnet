@@ -96,6 +96,7 @@ export default class TallyBtn extends Vue {
           this.data.count = 0;
         }
       }
+      // TEMP - Test
       if (this.data.tempState === undefined) {
         this.data.tempState = TallyButtonMode.MovingButton;
       } else {

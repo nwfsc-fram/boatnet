@@ -13,7 +13,7 @@
         v-bind:is="currentControlComponent"
         @controlevent="handleControlEvent"
         @cancel="handleCancel"
-        species="KORN"
+        :species="currentSelectedSpecies"
       ></component>
     </div>
     <q-dialog v-model="confirmReset" persistent>
@@ -100,6 +100,9 @@ export default class Tally extends Vue {
   private tallyTemplates!: any;
   private confirmReset = false;
 
+
+  private currentSelectedSpecies: any = {shortCode: 'UNK'}; // TODO actual species type
+
   private speciesList = [];
   constructor() {
     super();
@@ -141,7 +144,7 @@ export default class Tally extends Vue {
   }
 
   public handleAddNamedSpecies(species: any) {
-    console.log('TODO Handle add', species.shortCode);
+    this.currentSelectedSpecies = species;
     (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
     this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
     this.handleControlEvent('tally-addnew-controls');
