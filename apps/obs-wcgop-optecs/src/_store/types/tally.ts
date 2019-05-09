@@ -42,5 +42,4 @@ export interface TallyState {
 
   // State Machine
   operationMode?: TallyOperationMode;
-
 }

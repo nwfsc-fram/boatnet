@@ -109,7 +109,8 @@ export default class TallyBtn extends Vue {
 
   public handleClick() {
     if (this.tallyMode !== TallyOperationMode.Tally) {
-      console.log('Not in Tally mode, no data change.');
+      console.log('Not in Tally mode, no data change.', this.incDecValue);
+
       this.playSound('bad');
       return;
     }
@@ -127,14 +128,6 @@ export default class TallyBtn extends Vue {
           this.data.count = 0;
         }
       }
-
-      // TEMP - Test
-      // if (this.data.tempState === undefined) {
-      //   this.data.tempState = TallyButtonMode.MovingButton;
-      // } else {
-      //   delete this.data.tempState;
-      // }
-
       this.$emit('dataChanged', this.data);
     }
   }

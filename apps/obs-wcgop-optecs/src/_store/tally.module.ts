@@ -64,19 +64,27 @@ const actions: ActionTree<TallyState, RootState> = {
   setTallyOpMode({ commit }: any, value: TallyOperationMode) {
     commit('setTallyOpMode', value);
   },
-  highlightEmptyButtons({ commit }: any) {
-    commit('highlightEmptyButtons');
+  assignNewButton(
+    { commit }: any,
+    value: {
+      species: any;
+      reason: string;
+      index: number;
+    }
+  ) {
+    commit('assignNewButton', value);
   }
 };
 
 function getBtnColor(reason: string): { bg?: string; text?: string } {
-  const rbcVal: any = reasonButtonColors.filter( (rbc: any) => {
+  const rbcVal: any = reasonButtonColors.filter((rbc: any) => {
     return rbc.name === reason;
   });
   if (rbcVal[0]) {
     return rbcVal[0].color;
   } else {
     console.log('WARNING: no button color for', reason);
+    return { bg: 'gray-4', text: 'black' };
   }
 }
 
@@ -178,18 +186,29 @@ const mutations: MutationTree<TallyState> = {
     newState.operationMode = value;
     // TODO: Set/Reset all button.tempState if "Tally"?
   },
-  highlightEmptyButtons(newState: any) {
-    console.log('TODO HIGHLIGHT ALL EMPTY BUTTON LOCATIONS - REMOVE THIS');
-    // newState.tallyRecord.buttonData[params.button.index] = params.button;
+  async assignNewButton(
+    newState: any,
+    value: { species: any; reason: string; index: number }
+  ) {
+    const newColor = getBtnColor(value.reason);
+    const newButton: TallyButtonData = {
+      index: value.index,
+      color: newColor.bg,
+      'text-color': newColor.text,
+      // tempState?: TallyButtonMode;
+      code: value.species.shortCode,
+      reason: value.reason,
+      count: 0 // TODO Load from data?
+    };
+    // TODO refactor DB portion out of this
 
-    // if (!params.skipDBUpdate) {
-    //   const result = await updateRecord(newState.tallyRecord);
-    //   if (result) {
-    //     newState.tallyRecord._rev = result.rev;
-    //     newState.tallyRecord.modifiedDate = moment().format();
-    //     newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
-    //   }
-    // }
+    newState.tallyRecord.buttonData[value.index] = newButton;
+    const result = await updateRecord(newState.tallyRecord);
+    if (result) {
+      newState.tallyRecord._rev = result.rev;
+      newState.tallyRecord.modifiedDate = moment().format();
+      newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+    }
   }
 };
 

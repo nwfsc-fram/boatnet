@@ -93,6 +93,8 @@ export default class Tally extends Vue {
   private setTallyIncDec: any;
   @Action('setTallyOpMode', { namespace: 'tallyState' })
   private setTallyOpMode: any;
+  @Action('assignNewButton', { namespace: 'tallyState' })
+  private assignNewButton: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -134,33 +136,18 @@ export default class Tally extends Vue {
     this.speciesList = species.rows;
   }
 
-  public getCode(row: number, column: number) {
-    return this.getButton(row, column).code;
-  }
-
-  public getReason(row: number, column: number) {
-    return this.getButton(row, column).reason;
-  }
-
-  public getCount(row: number, column: number) {
-    return this.getButton(row, column).count;
-  }
-
   public handleButtonData(button: TallyButtonData) {
     this.updateButton({ button });
   }
 
   public handleBlankClicked(button: TallyButtonData) {
     if (this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation) {
-      console.log(
-        'TODO assign',
-        this.currentSelectedSpecies.shortCode,
-
-        this.currentSelectedReason,
-        'to #',
-        button.index
-      );
       this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
+      this.assignNewButton({
+        species: this.currentSelectedSpecies,
+        reason: this.currentSelectedReason,
+        index: button.index
+      });
     }
     // this.updateButton({button});
   }
