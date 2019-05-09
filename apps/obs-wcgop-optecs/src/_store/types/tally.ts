@@ -5,10 +5,10 @@ export enum TallyButtonMode {
   TargetButton
 }
 export enum TallyOperationMode {
-  Tally = 'Tally Mode',
-  AddNamedSpeciesSelectSpecies = 'Select Species',
-  AddNamedSpeciesSelectType = 'Select Type',
-  AddNamedSpeciesSelectLocation = 'Select Location',
+  Tally = 'TALLY_MODE',
+  AddNamedSpeciesSelectSpecies = 'ADD_NAMED_SPECIES_SELECT_SPECIES',
+  AddNamedSpeciesSelectType = 'SELECT_TYPE',
+  AddNamedSpeciesSelectLocation = 'SELECT_LOCATION',
   Unknown = 'Unknown'
 }
 

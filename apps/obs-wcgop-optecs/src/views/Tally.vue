@@ -2,9 +2,13 @@
   <q-page padding>
     <div class="q-gutter-md">
       <div v-for="r in vertButtonCount" class="row" :key="`md-r-${r}`">
-        <div v-for="c in horizButtonCount" class="col" :key="`md-c-${c}`">
+        <div v-for="c in horizButtonCount" class="col self-center" :key="`md-c-${c}`">
           <!-- TODO: this should be in a TallyState -->
-          <tally-btn :data="getButton(r,c)" @dataChanged="handleButtonData"/>
+          <tally-btn
+            :data="getButton(r,c)"
+            @dataChanged="handleButtonData"
+            @blankClicked="handleBlankClicked"
+          />
         </div>
       </div>
     </div>
@@ -13,6 +17,7 @@
         v-bind:is="currentControlComponent"
         @controlevent="handleControlEvent"
         @cancel="handleCancel"
+        @selectedReason="handleSelectedReason"
         :species="currentSelectedSpecies"
       ></component>
     </div>
@@ -29,7 +34,12 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <tally-addnamedspecies-dialog ref="addNamedSpeciesModal" @addNewSpecies="handleAddNamedSpecies" :speciesList="speciesList" @cancel="handleCancelAddNamedSpecies" />
+    <tally-addnamedspecies-dialog
+      ref="addNamedSpeciesModal"
+      @addNewSpecies="handleAddNamedSpecies"
+      :speciesList="speciesList"
+      @cancel="handleCancelAddNamedSpecies"
+    />
     <div>{{tallyMode}}</div>
   </q-page>
 </template>
@@ -57,7 +67,6 @@ Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
-
 
 @Component({
   pouch: {
@@ -93,15 +102,14 @@ export default class Tally extends Vue {
   private tallyMode!: TallyOperationMode;
 
   private btnLabel = '';
-  private btnSize = '18px';
 
   private currentControlComponent = 'tally-controls';
 
   private tallyTemplates!: any;
   private confirmReset = false;
 
-
   private currentSelectedSpecies: any = {}; // TODO actual species type
+  private currentSelectedReason: string = '';
 
   private speciesList = [];
   constructor() {
@@ -139,8 +147,26 @@ export default class Tally extends Vue {
   }
 
   public handleButtonData(button: TallyButtonData) {
-    // console.log('GOT BUTTON DATA', button);
-    this.updateButton({button});
+    this.updateButton({ button });
+  }
+
+  public handleBlankClicked(button: TallyButtonData) {
+    if (this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation) {
+      console.log(
+        'TODO assign',
+        this.currentSelectedSpecies.shortCode,
+
+        this.currentSelectedReason,
+        'to #',
+        button.index
+      );
+      this.setTallyOpMode(TallyOperationMode.Tally);
+    }
+    // this.updateButton({button});
+  }
+
+  public handleSelectedReason(reason: string) {
+    this.currentSelectedReason = reason;
   }
 
   public handleAddNamedSpecies(species: any) {
@@ -160,6 +186,7 @@ export default class Tally extends Vue {
     // Generic Cancel - return to tally mode
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
+    this.currentSelectedReason = '';
     this.setTallyOpMode(TallyOperationMode.Tally);
     this.handleControlEvent('tally-mode');
   }

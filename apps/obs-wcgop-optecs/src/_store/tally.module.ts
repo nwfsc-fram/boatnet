@@ -166,7 +166,7 @@ const mutations: MutationTree<TallyState> = {
     // TODO: Set/Reset all button.tempState if "Tally"?
   },
   highlightEmptyButtons(newState: any) {
-    console.log('TODO HIGHLIGHT ALL EMPTY BUTTON LOCATIONS');
+    console.log('TODO HIGHLIGHT ALL EMPTY BUTTON LOCATIONS - REMOVE THIS');
     // newState.tallyRecord.buttonData[params.button.index] = params.button;
 
     // if (!params.skipDBUpdate) {
