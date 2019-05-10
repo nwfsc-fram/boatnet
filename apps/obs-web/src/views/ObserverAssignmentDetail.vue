@@ -148,9 +148,6 @@ private setObserver(row: any) {
     if (!this.observerAssigned) {
         if (row.status === 'Available For Dates') {
             // this.oa.activeTrip.observer = row;
-            delete row.status;
-            delete row.lastScheduledDate;
-            delete row.nextScheduledDate;
             Vue.set(this.oa.activeTrip, 'observer', row);
         } else {
             this.selectedObserver = row.firstName + ' ' + row.lastName;
@@ -170,6 +167,9 @@ private formatDate(date: any) {
 
 private async updateTrip() {
     try {
+        delete this.oa.activeTrip.observer.status;
+        delete this.oa.activeTrip.observer.lastScheduledDate;
+        delete this.oa.activeTrip.observer.nextScheduledDate;
         delete this.oa.activeTrip.__index;
         delete this.oa.activeTrip.observer.__index;
 
