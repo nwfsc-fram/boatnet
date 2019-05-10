@@ -8,8 +8,10 @@
             >
 
         <template v-slot:body="props">
+          <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >
           <q-td key="id"></q-td>
-          <q-td key="fishery" :props="props">{{ props.row.doc.fishery }}</q-td>
+          <q-td key="fishery" :props="props">{{ props.row.fishery }}</q-td>
+          </q-tr>
         </template>
 
         </q-table>
@@ -33,51 +35,50 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 
 @Component
 export default class Debriefer extends Vue {
-    @Action('error', { namespace: 'alert' }) private error: any;
-    
+  @Action('error', { namespace: 'alert' }) private error: any;
+
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
-  private async getTrips() {
 
-    const masterDB: Client<any> = couchService.masterDB;
-    try {
-     
-     
-     const options: ListOptions = {
+private columns = [
+    {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true }
+];
+
+private async getTrips() {
+
+
+  const masterDB: Client<any> = couchService.masterDB;
+  try {
+
+
+      const options: ListOptions = {
         limit: 20
       };
 
-      console.log("calling masterDB.view");
-        const trips = await masterDB.viewWithDocs<any>(
-            'MainDocs',
-            'all-trips',
-            options
-            );
-console.log("post masterDB.view");
-        console.log(trips.rows);
+      console.log('calling masterDB.view');
+      const trips = await masterDB.viewWithDocs<any>(
+          'MainDocs',
+          'all-trips',
+          options
+          );
+      console.log('post masterDB.view');
+      console.log(trips.rows);
 
-        for (const row of trips.rows) {
-            const trip = row.value;
-            trip.id = row.id;
-            this.WcgopTrips.push(trip);
-        }
-            console.log(this.WcgopTrips);
+      for (const row of trips.rows) {
+          const trip = row.doc;
+          // trip.id = row.id;
+          this.WcgopTrips.push(trip);
+      }
+      console.log(this.WcgopTrips);
 
-    } catch (err) {
-        this.error(err);
-    }
+  } catch (err) {
+      this.error(err);
   }
+}
 
-  private created() {
+private created() {
     this.getTrips();
-  }
+}
 
-private columns = [
-    {name: 'doc.fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true }
-];
-
-
-  
-  
 }
 </script>
