@@ -244,7 +244,6 @@ import moment from 'moment';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
-import { WcgopAppState } from '../_store/types/types';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
@@ -273,7 +272,6 @@ export default class Trips extends Vue {
   @Prop(Number) public tripNum!: number; // Passed by router
   public model: any = null;
   @State('alert') private alert!: AlertState;
-  @State('appState') private appState!: WcgopAppState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('saveTrip', { namespace: 'appState' })
