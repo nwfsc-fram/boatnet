@@ -203,6 +203,11 @@ const mutations: MutationTree<TallyState> = {
     // TODO refactor DB portion out of this
 
     newState.tallyRecord.buttonData[value.index] = newButton;
+
+    // TODO Hack? This is currently required to maintain reactivity at the count level
+    // Research deep object watch, or refactor to flatten this data
+    newState.tallyRecord.buttonData = Object.assign({}, newState.tallyRecord.buttonData);
+
     const result = await updateRecord(newState.tallyRecord);
     if (result) {
       newState.tallyRecord._rev = result.rev;
