@@ -161,9 +161,11 @@ const mutations: MutationTree<TallyState> = {
      * TODO refactor to combine with reset
      */
 
+
     if (!newState.tallyLayout._id) {
       newState.tallyLayout = createDefaultLayoutRecord();
-      updateLayoutDB(newState.tallyLayout);
+      console.warn('[Tally Module] NEW LAYOUT INITIALIZATION');
+      await updateLayoutDB(newState.tallyLayout); // ignore retval for now
     } else {
       console.log(
         '[Tally Module] Already have tally layout, skip template init. DB ID=',
@@ -174,7 +176,8 @@ const mutations: MutationTree<TallyState> = {
 
     if (!newState.tallyDataRec._id) {
       newState.tallyDataRec = createDefaultButtonData();
-      updateTallyDataDB(newState.tallyDataRec);
+      console.warn('[Tally Module] NEW TALLY DATA INITIALIZATION');
+      await updateTallyDataDB(newState.tallyDataRec); // ignore retval for now
     } else {
       console.log(
         '[Tally Module] Already have tally data, skip template init. DB ID=',
@@ -281,7 +284,6 @@ const mutations: MutationTree<TallyState> = {
       index: value.index,
       color: newColor.bg,
       'text-color': newColor.text,
-      // tempState?: TallyButtonMode;
       labels: {
         shortCode: value.species.shortCode,
         reason: value.reason
@@ -315,26 +317,35 @@ const mutations: MutationTree<TallyState> = {
     updateLayoutDB(newState.tallyLayout);
   },
   async deleteButton(newState: any, button: TallyButtonLayoutData) {
-    console.log('TODO DELETE', button);
+    const blankRecord: TallyButtonLayoutData = {
+      index: button.index,
+      blank: true
+    };
+    newState.tallyLayout.layoutData.splice(button.index, 1, blankRecord);
+    updateLayoutDB(newState.tallyLayout);
   }
 };
 
-async function updateLayoutDB(layout: TallyLayoutRecord) {
+async function updateLayoutDB(layout: TallyLayoutRecord): Promise<TallyLayoutRecord> {
   const result = await updateDB(layout);
   if (result) {
+    layout._id = result.id;
     layout._rev = result.rev;
     layout.updatedDate = moment().format();
     layout.updatedBy = authService.getCurrentUser()!.username;
   }
+  return layout;
 }
 
-async function updateTallyDataDB(tallyData: TallyDataRecord) {
+async function updateTallyDataDB(tallyData: TallyDataRecord): Promise<TallyDataRecord> {
   const result = await updateDB(tallyData);
   if (result) {
+    tallyData._id = result.id;
     tallyData._rev = result.rev;
     tallyData.updatedDate = moment().format();
     tallyData.updatedBy = authService.getCurrentUser()!.username;
   }
+  return tallyData;
 }
 
 /**

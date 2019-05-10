@@ -21,7 +21,6 @@ export interface TallyButtonLayoutData {
   color?: string;
   'text-color'?: string;
   blank?: boolean;
-  tempState?: TallyButtonMode;
 
   // Data
   labels?: {

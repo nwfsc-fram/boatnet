@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-if="layout && !layout.blank">
+    <span v-if="layout && layout.labels && !layout.blank">
       <q-btn
         class="q-px-lg q-py-md"
         :color="layout.color"
@@ -13,7 +13,7 @@
         <br>
         {{layout.labels.reason}}
         <br>
-        {{data.count}}
+        {{data ? data.count : ''}}
       </q-btn>
     </span>
     <span v-if="layout && layout.blank && tallyMode === selectLocationMode">
@@ -65,8 +65,6 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
   @Prop({ default: undefined }) public data!: TallyCountData;
   @Prop({ default: undefined }) public blank!: boolean;
-  // @Prop({ default: undefined }) public reason!: boolean;
-  // @Prop({ default: undefined }) public count!: boolean;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
   @Getter('tallyMode', { namespace: 'tallyState' })
@@ -91,7 +89,7 @@ export default class TallyBtn extends Vue {
       this.playSound('bad');
       return;
     }
-    if (this.data.count !== undefined) {
+    if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
       if (this.incDecValue > 0) {
         this.playSound('inc');

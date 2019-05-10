@@ -274,14 +274,15 @@ export default class Tally extends Vue {
     // return this.tallyState.tallyLayout.layoutData[idx];
 
     const targetButton = this.tallyState.tallyLayout.layoutData[idx];
+
     if (
+      !targetButton ||
       !targetButton.labels ||
       !targetButton.labels.shortCode ||
       !this.tallyState.tallyDataRec
     ) {
-      return {};
+      return {count: -1 };
     }
-
     const targetData = this.tallyState.tallyDataRec.data!.filter(
       (rec: TallyCountData) => {
         return (
@@ -293,7 +294,7 @@ export default class Tally extends Vue {
     if (targetData) {
       return targetData[0];
     } else {
-      return {};
+      return { count: -1 };
     }
   }
 
