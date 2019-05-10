@@ -15,10 +15,9 @@
           <div class="text-h6">{{ trip.tripNum }}
             <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
           </div>
-          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> -
-          <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
+          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate.split(" ")[0]) }}</span> -
+          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate.split(" ")[0]) }}</span>
           <div style="float:right">
-            <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
             <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
           </div>
         </q-card-section>
@@ -38,10 +37,9 @@
         <div class="text-h6">{{ trip.tripNum }}
           <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
         </div>
-          <span v-if="trip.departureDate">{{ trip.departureDate.split(" ")[0] }}</span> -
-          <span v-if="trip.returnDate">{{ trip.returnDate.split(" ")[0] }}</span>
+          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate.split(" ")[0]) }}</span> -
+          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate.split(" ")[0]) }}</span>
         <div style="float:right">
-          <q-icon v-if="trip.messages.length > 0" name="chat" class="text-white" style="font-size: 32px"></q-icon>&nbsp;
           <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
         </div>
       </q-card-section>
@@ -71,19 +69,87 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TripState, VesselState, UserState } from '../_store/types/types';
+import { TripState, VesselState, UserState, WcgopAppState } from '../_store/types/types';
 
-@Component
+import moment from 'moment';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import { couchService } from '@boatnet/bn-couch';
+
+import {
+  WcgopTrip,
+  WcgopTripTypeName,
+  Port,
+  PortTypeName,
+  WcgopOperation,
+  WcgopOperationTypeName,
+  LocationEvent,
+  Vessel,
+  VesselTypeName
+} from '@boatnet/bn-models';
+
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+
+@Component({
+  pouch: {
+    userTrips() { // Also declared in class
+      return {
+        database: pouchService.userDBName,
+        selector: { type: 'wcgop-trip' },
+        sort: [{ tripNum: 'desc' }]
+        // limit: 5 // this.resultsPerPage,
+      };
+    }
+  }
+})
 export default class Trips extends Vue {
     @State('trip') private trip!: TripState;
     @State('vessel') private vessel!: VesselState;
     @State('user') private user!: UserState;
+    @State('appState') private appState!: WcgopAppState;
+    @State('pouchState') private pouchState!: PouchDBState;
+
+    @Action('clear', { namespace: 'alert' }) private clear: any;
+    @Action('error', { namespace: 'alert' }) private error: any;
+
+  private userTrips!: any;
+
+  public get userDBTrips() {
+    // TODO: This seems to block the UI - handle asyn
+    // console.log('Called userDBTrips');
+    if (this.userTrips) {
+      return this.userTrips;
+    } else {
+      return [];
+    }
+  }
+  private get currentReadonlyDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current RO db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.lookupsDB;
+    }
+  }
+
+  private get currentUserDB(): string {
+    if (!this.pouchState.credentials) {
+      console.warn('WARNING: current User db is undefined');
+      return '';
+    } else {
+      return this.pouchState.credentials.dbInfo.userDB;
+    }
+  }
+
+  private get lookupsDB() {
+    // @ts-ignore
+    return this[this.selectedDBName];
+  }
 
     private get openTrips() {
-      return this.trip.trips.filter(
-        (trip) => {
+      return this.userDBTrips.filter(
+        (trip: any) => {
           if (trip.vessel) {
-            return trip.tripStatus &&
+            return trip.tripStatus.description === 'open' &&
             trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
           } else {
             return [];
@@ -93,10 +159,10 @@ export default class Trips extends Vue {
     }
 
     private get closedTrips() {
-      return this.trip.trips.filter(
-        (trip) => {
+      return this.userDBTrips.filter(
+        (trip: any) => {
           if (trip.vessel) {
-            return !trip.tripStatus &&
+            return trip.tripStatus.description !== 'open' &&
             trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
           } else {
             return [];
@@ -137,16 +203,17 @@ export default class Trips extends Vue {
 
     private created() {
       // this.$store.dispatch('updateActiveTrip', '');
-
     }
 
     private closeTrip(trip: any) {
-        trip.tripStatus = false;
+      trip.tripStatus.description = 'closed';
+      pouchService.db.put(pouchService.userDBName, trip);
       }
 
     private reOpenTrip(trip: any) {
         if (this.openTrips.length < 2) {
-          trip.tripStatus = true;
+          trip.tripStatus.description = 'open';
+          pouchService.db.put(pouchService.userDBName, trip);
         } else {
           this.alert = true;
         }
@@ -156,42 +223,45 @@ export default class Trips extends Vue {
         // this.$store.dispatch('updateActiveTrip', trip);
         // this.$store.state.activeTrip = this.trips[i];
         this.trip.activeTrip = trip;
+        this.trip.newTrip = false;
         this.$router.push({path: '/trips/' + trip.tripNum});
       }
 
     private newTrip() {
-        const newTripNum = this.trip.trips.length + 1;
-        this.trip.trips.push({
-                              type: 'trip',
-                              tripNum: newTripNum,
-                              vessel: { vesselName: this.vessel.activeVessel.vesselName },
-                              permits: [],
-                              messages: [],
-                              departurePort: this.user.activeUser.homeport,
-                              returnPort: {name: 'same as start'},
-                              isSelected: false,
-                              fishery: {name: 'unknown'},
-                              _id: 'blah'
-                              });
-        // this.$store.state.trips.push({
-        //                               type: 'trip',
-        //                               tripNum: newTripNum,
-        //                               tripStatus: true,
-        //                               vessel: {vesselName: this.$store.state.activeVessel},
-        //                               permits: [],
-        //                               messages: [],
-        //                               departurePort: this.$store.state.activeUser.homeport,
-        //                               returnPort: 'same as start',
-        //                               isSelected: false,
-        //                               fishery: {name: 'unknown'},
-        //                               _id: 'blah'
-        //                               });
-        this.trip.activeTrip = this.trip.trips[this.trip.trips.length - 1];
-        // this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length - 1]);
-        this.trip.newTrip = true;
-        // this.$store.state.newTrip = true;
-        this.$router.push({path: '/trips/' + newTripNum});
+      let newTripNum = 1;
+
+      try {
+        newTripNum = this.userDBTrips[0].tripNum + 1;
+
+      } catch (err) {
+        newTripNum = 1;
       }
+
+      const newTrip: WcgopTrip = {
+                            type: 'wcgop-trip',
+                            tripNum: newTripNum,
+                            vessel: this.vessel.activeVessel,
+                            // permits: [],
+                            // messages: [],
+                            departureDate: moment().format(),
+                            departurePort: this.user.activeUser.homeport,
+                            returnDate: moment().format(),
+                            returnPort: {name: 'same as start'},
+                            isSelected: false,
+                            fishery: {name: 'unknown'},
+                            tripStatus: {
+                              description: 'open'
+                            }
+                            };
+      this.trip.activeTrip = newTrip;
+
+      this.trip.newTrip = true;
+      this.$router.push({path: '/trips/' + newTripNum});
+      }
+
+  private formatDate(date: any) {
+    return moment(date).format('MMM Do');
+  }
 
 }
 </script>

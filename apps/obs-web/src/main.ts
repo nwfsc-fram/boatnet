@@ -16,7 +16,7 @@ import {
   QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
   QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable,
-  QTh, QTr, QTd, QToggle, ClosePopup
+  QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels, QTabPanel
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -30,7 +30,7 @@ Vue.use(Quasar, {
     QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
-    QChip, QAvatar, QBanner, QTable, QTh, QTr, QTd, QToggle
+    QChip, QAvatar, QBanner, QTable, QTh, QTr, QTd, QToggle, QSplitter, QTabPanels, QTabPanel
   },
   directives: {
     ClosePopup
