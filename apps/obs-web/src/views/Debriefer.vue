@@ -32,6 +32,7 @@ import {
 import { WcgopTrip } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+
 @Component
 export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
@@ -46,6 +47,7 @@ private async getTrips() {
       const options: ListOptions = {
         limit: 20
       };
+
       console.log('calling masterDB.view');
       const trips = await masterDB.viewWithDocs<any>(
           'MainDocs',
@@ -54,18 +56,22 @@ private async getTrips() {
           );
       console.log('post masterDB.view');
       console.log(trips.rows);
+
       for (const row of trips.rows) {
           const trip = row.doc;
           // trip.id = row.id;
           this.WcgopTrips.push(trip);
       }
       console.log(this.WcgopTrips);
+
   } catch (err) {
       this.error(err);
   }
 }
+
 private created() {
     this.getTrips();
 }
+
 }
 </script>
