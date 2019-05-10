@@ -81,6 +81,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_store/types/types';
 import moment from 'moment';
 
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+
 @Component
 export default class ObserverAssignment extends Vue {
     @State('trip') private trip!: TripState;
@@ -143,6 +145,9 @@ private setObserver(row: any) {
     if (!this.observerAssigned) {
         if (row.status === 'Available For Dates') {
             // this.oa.activeTrip.observer = row;
+            delete row.status;
+            delete row.lastScheduledDate;
+            delete row.nextScheduledDate;
             Vue.set(this.oa.activeTrip, 'observer', row);
         } else {
             this.selectedObserver = row.firstName + ' ' + row.lastName;
@@ -158,6 +163,16 @@ private formatTel(telNum: any) {
 
 private formatDate(date: any) {
     return moment(date).format('MMM Do');
+}
+
+private updateTrip() {
+    delete this.oa.activeTrip.__index;
+    delete this.oa.activeTrip.observer.__index;
+
+    console.log(this.oa.activeTrip);
+
+    couchService.masterDB.put(couchService.masterDB, this.oa.activeTrip);
+    this.$router.push({path: '/observer-assignment'});
 }
 
 private created() {

@@ -244,7 +244,7 @@ private getCaptainPhone(row: any) {
 
 private getObserverName(row: any) {
     if (row.observer) {
-        return row.observer.firstName + row.observer.lastName;
+        return row.observer.firstName + ' ' + row.observer.lastName;
     } else {
         return '';
     }
