@@ -18,6 +18,7 @@
         @endTrip="handleEndTrip"
         @deleteTrip="handleDeleteTrip"
         @displayKeyboard="displayKeyboard"
+        @goToHauls="handleGoToHauls"
       />
     </q-page>
   </span>
@@ -50,7 +51,8 @@ Vue.component(BoatnetTrips);
 
 @Component({
   pouch: {
-    userTrips() { // Also declared in class
+    userTrips() {
+      // Also declared in class
       return {
         database: pouchService.userDBName,
         selector: { type: 'wcgop-trip' },
@@ -75,7 +77,6 @@ export default class Trips extends Vue {
   private addTest: any;
 
   private wcgopTripsSettings: BoatnetTripsSettings;
-  private testingTrip: WcgopTrip;
 
   private myStuff: any = {};
   private myPouchDB: any;
@@ -85,7 +86,6 @@ export default class Trips extends Vue {
   constructor() {
     super();
 
-    // this.myPouchDB = pouchService.getDB(this.selectedDBName);
     this.wcgopTripsSettings = {
       rowKey: '_id',
       columns: [
@@ -141,53 +141,10 @@ export default class Trips extends Vue {
         }
       ]
     };
-    const examplePort: Port = {
-      _id: 'asdf',
-      type: PortTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      name: 'Oxnard'
-    };
-    const examplePort2: Port = {
-      _id: 'asdf2',
-      type: PortTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      name: 'Port Townsend'
-    };
-    const exampleVessel: Vessel = {
-      _id: '1',
-      type: VesselTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      vesselName: 'Sadie K'
-    };
-    const exampleVessel2: Vessel = {
-      _id: '2',
-      type: VesselTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      vesselName: 'Pickle Pelican'
-    };
-    const exampleTrip = {
-      tripNum: 1,
-      type: WcgopTripTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      // program: 'Catch Shares',
-      departurePort: examplePort,
-      departureDate: moment().format(),
-      returnPort: examplePort2,
-      returnDate: moment()
-        .add(1, 'days')
-        .format(),
-      vessel: exampleVessel,
-      // ... other data
-      legacy: {
-        tripId: 123
-      }
-    };
-    this.testingTrip = exampleTrip;
+  }
+
+  private handleGoToHauls() {
+    this.$router.push({ path: '/hauls/' });
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
@@ -195,28 +152,29 @@ export default class Trips extends Vue {
   }
 
   private handleAddTrip() {
-    console.log('TODO: Create trip logic'); // TODO Temporary Add Logic
-    const trip: WcgopTrip = { ...this.testingTrip }; // Clone
+    const trip: WcgopTrip = {
+      type: WcgopTripTypeName,
+      vessel: {},
+      departurePort: {},
+      returnPort: {}
+    };
     if (this.userDBTrips[0]) {
       trip.tripNum = this.userDBTrips[0].tripNum + 1;
     }
-    pouchService.db.post(pouchService.userDBName, trip);
-    // this.$router.push({ path: '/tripdetails/' + 1 });
+    this.setCurrentTrip(trip);
+    this.$router.push({ path: '/tripdetails/' + trip.tripNum });
   }
 
-  private handleEditTrip(trip: WcgopTrip) {
-    if (trip) {
-      console.log('[TODO Vuex] Edit', trip.tripNum);
-      this.$router.push({ path: '/tripdetails/' + trip.tripNum });
-    }
+  private handleEditTrip() {
+    this.$router.push({ path: '/tripdetails/' + this.currentTrip.tripNum });
   }
 
-  private handleEndTrip(trip: WcgopTrip) {
-    console.log('TODO End', trip.tripNum);
+  private handleEndTrip() {
+    console.log('TODO End', this.currentTrip.tripNum);
   }
 
-  private handleDeleteTrip(trip: WcgopTrip) {
-    pouchService.db.remove(pouchService.userDBName, trip);
+  private handleDeleteTrip() {
+    pouchService.db.remove(pouchService.userDBName, this.currentTrip);
     this.setCurrentTrip(undefined);
   }
 
