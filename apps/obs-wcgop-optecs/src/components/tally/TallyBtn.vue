@@ -78,6 +78,7 @@ export default class TallyBtn extends Vue {
   private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;
 
   public handleBlankClicked() {
+    console.log('HANDLE BLANK CLICKED', this.layout);
     this.$emit('blankClicked', this.layout);
   }
 
@@ -102,11 +103,7 @@ export default class TallyBtn extends Vue {
           this.data.count = 0;
         }
       }
-      // const dataChange: TallyCountData = {
-      //   shortCode: this.data.count.shortCode,
-      //   reason: this.data.count.reason,
-      //   count: this.layout.labels!.countTmp
-      // };
+
       this.$emit('dataChanged', { button: this.layout, data: this.data });
     }
   }

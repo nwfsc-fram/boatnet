@@ -53,6 +53,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 import {
   TallyLayoutRecordTypeName,
+  TallyDataRecordTypeName,
   TallyButtonLayoutData,
   TallyOperationMode,
   TallyCountData
@@ -80,6 +81,13 @@ Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
       return {
         database: pouchService.userDBName,
         selector: { type: TallyLayoutRecordTypeName },
+        sort: [{ createdDate: 'desc' }]
+      };
+    },
+    tallyData() {
+      return {
+        database: pouchService.userDBName,
+        selector: { type: TallyDataRecordTypeName },
         sort: [{ createdDate: 'desc' }]
       };
     }
@@ -144,6 +152,10 @@ export default class Tally extends Vue {
 
   public handleDataChanged(data: any) {
     console.log('Passing', data);
+    data = {
+      ...data,
+      skipLayoutUpdate: true
+    }
     this.updateButtonData(data);
   }
 
@@ -235,7 +247,7 @@ export default class Tally extends Vue {
     ) {
       return {
         index: idx,
-        labels: { shortCode: '??', reason: '??', countTmp: 0 }
+        labels: { shortCode: '??', reason: '??' }
       };
       // temp fake data - indication that something is broken
     }
@@ -266,25 +278,10 @@ export default class Tally extends Vue {
     );
     if (targetData) {
       return targetData[0];
-      // console.log('TODO getData from', targetData);
-    }
-    if (targetButton.labels && targetButton.labels.reason !== 'INVIS') {
-      return {
-        shortCode: targetButton.labels.shortCode,
-        reason: targetButton.labels.reason,
-        count: targetButton.labels.countTmp
-      };
     } else {
       return {};
     }
   }
-
-  // private getDataVals(shortCode: string, reason: string): TallyCountData {
-  //   // if (this.)
-  //   return {
-
-  //   }
-  // }
 
   // --- Private Methods ---
 

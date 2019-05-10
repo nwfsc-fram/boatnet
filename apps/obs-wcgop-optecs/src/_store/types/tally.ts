@@ -26,7 +26,6 @@ export interface TallyButtonLayoutData {
   labels?: {
     shortCode?: string; // e.g. SABL
     reason?: string; // e.g. PRED or RET(ained)
-    countTmp?: number; // TODO REMOVE!!!!!
   };
 }
 

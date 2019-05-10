@@ -62,8 +62,9 @@ const actions: ActionTree<TallyState, RootState> = {
     { commit }: any,
     params: {
       button: TallyButtonLayoutData;
+      skipLayoutUpdate: boolean;
       data: TallyCountData;
-      skipDBUpdate: boolean;
+      skipDataUpdate: boolean;
     }
   ) {
     commit('updateButtonData', params);
@@ -141,7 +142,6 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
         labels: {
           shortCode: item.code,
           reason: item.reason
-          // ,          countTmp: 0
         }
       });
     }
@@ -168,6 +168,7 @@ const mutations: MutationTree<TallyState> = {
         '[Tally Module] Already have tally layout, skip template init. DB ID=',
         newState.tallyLayout._id
       );
+      console.log('TODO verify pouchdb vs vuex data');
     }
 
     if (!newState.tallyDataRec._id) {
@@ -180,6 +181,7 @@ const mutations: MutationTree<TallyState> = {
         '[Tally Module] Already have tally data, skip template init. DB ID=',
         newState.tallyDataRec._id
       );
+      console.log('TODO verify pouchdb vs vuex data');
     }
   },
   async reset(newState: any, createNewRecord = false) {
@@ -213,8 +215,9 @@ const mutations: MutationTree<TallyState> = {
     newState: any,
     params: {
       button: TallyButtonLayoutData;
+      skipLayoutUpdate?: boolean;
       data: TallyCountData;
-      skipDBUpdate?: boolean;
+      skipDataUpdate?: boolean;
     }
   ) {
     if (params.data.shortCode) {
@@ -252,20 +255,35 @@ const mutations: MutationTree<TallyState> = {
       params.button
     );
 
-    if (!params.skipDBUpdate) {
+    if (!params.skipLayoutUpdate) {
       // TODO tally data record
-      const result = await updateDB(newState.tallyLayout);
-      if (result) {
-        newState.tallyLayout._rev = result.rev;
-        newState.tallyLayout.modifiedDate = moment().format();
-        newState.tallyLayout.modifiedBy = authService.getCurrentUser()!.username;
+      try {
+        const result = await updateDB(newState.tallyLayout);
+        if (result) {
+          newState.tallyLayout._rev = result.rev;
+          newState.tallyLayout.modifiedDate = moment().format();
+          newState.tallyLayout.modifiedBy = authService.getCurrentUser()!.username;
+        }
+      } catch (err) {
+        console.log('TODO Fix Layout', err);
       }
-      const resultData = await updateDB(newState.tallyDataRec);
-      if (resultData) {
-        newState.tallyDataRec._rev = resultData.rev;
-        newState.tallyDataRec.modifiedDate = moment().format();
-        newState.tallyDataRec.modifiedBy = authService.getCurrentUser()!.username;
+    } else {
+      // console.log('[Tally Module] Skipped Layout DB Update');
+    }
+
+    if (!params.skipDataUpdate) {
+      try {
+        const resultData = await updateDB(newState.tallyDataRec);
+        if (resultData) {
+          newState.tallyDataRec._rev = resultData.rev;
+          newState.tallyDataRec.modifiedDate = moment().format();
+          newState.tallyDataRec.modifiedBy = authService.getCurrentUser()!.username;
+        }
+      } catch (err) {
+        console.log('TODO Fix Data', err);
       }
+    } else {
+      console.log('[Tally Module] Warning: Skipped Tally Data DB Update');
     }
   },
   setTallyIncDec(newState: any, value: number) {
@@ -287,12 +305,38 @@ const mutations: MutationTree<TallyState> = {
       // tempState?: TallyButtonMode;
       labels: {
         shortCode: value.species.shortCode,
-        reason: value.reason,
-        countTmp: 0
+        reason: value.reason
       }
     };
 
     newState.tallyLayout.layoutData.splice(value.index, 1, newButton);
+    // Add to tallyDataRec
+    const targetRecIdx = newState.tallyDataRec.data.findIndex(
+      (rec: TallyCountData) => {
+        return (
+          rec.shortCode === newButton.labels!.shortCode &&
+          rec.reason === newButton.labels!.reason
+        );
+      }
+    );
+    if (targetRecIdx >= 0) {
+      console.log('TODO DATA ALREADY EXISTS');
+    } else {
+      const newData: TallyCountData = {
+        species: value.species,
+        shortCode: value.species.shortCode,
+        reason: value.reason,
+        count: 0
+      };
+      console.log('Created new data for', newData);
+      newState.tallyDataRec.data.push(newData);
+      const resultData = await updateDB(newState.tallyDataRec);
+      if (resultData) {
+        newState.tallyDataRec._rev = resultData.rev;
+        newState.tallyDataRec.modifiedDate = moment().format();
+        newState.tallyDataRec.modifiedBy = authService.getCurrentUser()!.username;
+      }
+    }
 
     // TODO refactor DB portion out of this
     // TODO update tallyDataRec
