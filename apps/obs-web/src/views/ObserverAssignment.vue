@@ -192,14 +192,13 @@ private get unassignedTrips() {
 private async getEMEFPTrips() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
-
-        const emefpTrips = await masterDB.view<any>(
+        const emefpTrips = await masterDB.viewWithDocs<any>(
             'sethtest',
             'em-efp-trips',
             );
-
+        console.log(emefpTrips);
         for (const row of emefpTrips.rows) {
-            const trip = row.value;
+            const trip = row.doc;
             this.trips.push(trip);
         }
 
@@ -244,7 +243,7 @@ private getCaptainPhone(row: any) {
 
 private getObserverName(row: any) {
     if (row.observer) {
-        return row.observer.firstName + row.observer.lastName;
+        return row.observer.firstName + ' ' + row.observer.lastName;
     } else {
         return '';
     }

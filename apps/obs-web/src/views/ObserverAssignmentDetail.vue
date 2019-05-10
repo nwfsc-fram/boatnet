@@ -17,9 +17,10 @@
 
                         <div class="text-subtitle2">
                             Assigned Observer:
-                            <span v-if="oa.activeTrip.observer" class="text-white bg-primary q-pa-sm" style="border-radius: 10px">
-                                {{ oa.activeTrip.observer.firstName }} {{ oa.activeTrip.observer.lastName }}
-                            </span>
+                                <span v-if="oa.activeTrip.observer" class="text-white bg-primary q-pa-sm" style="border-radius: 10px">
+                                    {{ oa.activeTrip.observer.firstName }} {{ oa.activeTrip.observer.lastName }}
+                                </span>
+
                             <span v-else class="text-white bg-red q-pa-sm" style="border-radius: 10px">
                                 No Observer Assigned
                             </span>
@@ -28,7 +29,7 @@
                     </q-card-section>
                     <q-card-actions v-if="!observerAssigned">
                         <q-btn label="Cancel" color="red" icon="warning" to="/observer-assignment" exact />
-                        <q-btn label="Assign Observer" color="primary" to="/observer-assignment" exact :disabled="!oa.activeTrip.observer"/>
+                        <q-btn label="Assign Observer" color="primary" @click="updateTrip" :disabled="!oa.activeTrip.observer"/>
                     </q-card-actions>
                     <q-card-actions v-else>
                         <q-btn label="Re-assign Trip" color="primary" icon="fa fa-redo-alt" @click="observerAssigned = false"/>
@@ -80,6 +81,10 @@ import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_store/types/types';
 import moment from 'moment';
+
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 
 @Component
 export default class ObserverAssignment extends Vue {
@@ -158,6 +163,27 @@ private formatTel(telNum: any) {
 
 private formatDate(date: any) {
     return moment(date).format('MMM Do');
+}
+
+private async updateTrip() {
+    try {
+        delete this.oa.activeTrip.observer.status;
+        delete this.oa.activeTrip.observer.lastScheduledDate;
+        delete this.oa.activeTrip.observer.nextScheduledDate;
+        delete this.oa.activeTrip.__index;
+        delete this.oa.activeTrip.observer.__index;
+
+
+        const masterDB: Client<any> = couchService.masterDB;
+
+        masterDB.put(this.oa.activeTrip._id, this.oa.activeTrip, this.oa.activeTrip._rev).then( () => {
+            this.$router.push({path: '/observer-assignment'});
+        });
+        // pouchService.db.put(pouchService.userDBName, this.oa.activeTrip);
+    } catch (err) {
+        console.log(err);
+    }
+
 }
 
 private created() {
