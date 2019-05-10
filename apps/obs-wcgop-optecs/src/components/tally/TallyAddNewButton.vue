@@ -4,7 +4,7 @@
       <tally-control-btn
         :control-name="reason.name"
         :color="reason.color.bg"
-        :text-color="reason.color.text"
+        :textcolor="reason.color.text"
         :key="`${reason.name}`"
         @controlclick="handleControlClick"
       >
