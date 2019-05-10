@@ -4,24 +4,31 @@
             <q-card-section>
                 <q-card>
                     <q-card-section>
-                        <div class="text-h6">{{ oa.activeTrip.vesselName }} - {{ oa.activeTrip.fishery }} - {{ oa.activeTrip.departurePort }} </div>
-                        <sup class="text-primary">Skipper: {{ oa.activeTrip.captain }}</sup>
-                        <p><strong>Departure Date: {{ oa.activeTrip.tripStartDate }} / Return Date: {{ oa.activeTrip.tripEndDate }} </strong></p>
-
-                        <q-select
-                        v-model="oa.activeTrip.observerName"
-                        :options="getObserverNames"
-                        label="Observer"
-                        dense
-                        v-if="!observerAssigned"
-                        />
-                        <div class="text-h6" v-else>
-                            {{ oa.activeTrip.observerName }}
+                        <div class="text-h6">{{ oa.activeTrip.vessel.vesselName }} - {{ oa.activeTrip.fishery.name }} - {{ oa.activeTrip.departurePort.name }} </div>
+                        <sup v-if="oa.activeTrip.vessel.captain" class="text-primary">Skipper: {{ oa.activeTrip.vessel.captain.name }}</sup>
+                        <div class="row items-start">
+                        <div class="text-subtitle2 q-pa-md">
+                            Depart: {{ formatDate(oa.activeTrip.departureDate) }}
                         </div>
+                        <div class="text-subtitle2 q-pa-md">
+                            Return: {{ formatDate(oa.activeTrip.returnDate) }}
+                        </div>
+                        </div>
+
+                        <div class="text-subtitle2">
+                            Assigned Observer:
+                            <span v-if="oa.activeTrip.observer" class="text-white bg-primary q-pa-sm" style="border-radius: 10px">
+                                {{ oa.activeTrip.observer.firstName }} {{ oa.activeTrip.observer.lastName }}
+                            </span>
+                            <span v-else class="text-white bg-red q-pa-sm" style="border-radius: 10px">
+                                No Observer Assigned
+                            </span>
+                        </div>
+
                     </q-card-section>
                     <q-card-actions v-if="!observerAssigned">
                         <q-btn label="Cancel" color="red" icon="warning" to="/observer-assignment" exact />
-                        <q-btn label="Assign Observer" color="primary" to="/observer-assignment" exact :disabled="!oa.activeTrip.observerName"/>
+                        <q-btn label="Assign Observer" color="primary" to="/observer-assignment" exact :disabled="!oa.activeTrip.observer"/>
                     </q-card-actions>
                     <q-card-actions v-else>
                         <q-btn label="Re-assign Trip" color="primary" icon="fa fa-redo-alt" @click="observerAssigned = false"/>
@@ -30,7 +37,7 @@
             </q-card-section>
             <q-card-section>
                         <q-table
-                        :data="observerAvailability"
+                        :data="observers"
                         :columns="columns"
                         dense
                         row-key="id"
@@ -42,8 +49,8 @@
                         <template v-slot:body="props">
                             <q-tr :props="props" @click.native="setObserver(props.row)">
                             <q-td key="id"></q-td>
-                            <q-td key="observerName" :props="props">{{ props.row.observerName }}</q-td>
-                            <q-td key="observerPhone" :props="props">{{ formatTel(props.row.observerPhone) }}</q-td>
+                            <q-td key="observerName" :props="props">{{ props.row.firstName }} {{ props.row.lastName }}</q-td>
+                            <q-td key="observerPhone" :props="props">{{ formatTel(props.row.cellPhone) }}</q-td>
                             <q-td key="status" :props="props">{{ props.row.status }}</q-td>
                             <q-td key="lastScheduledDate" :props="props">{{ props.row.lastScheduledDate }}</q-td>
                             <q-td key="nextScheduledDate" :props="props">{{ props.row.nextScheduledDate }}</q-td>
@@ -87,35 +94,43 @@ private selectedObserver: string = '';
 private observerAssigned: boolean = false;
 
 private observers = [
-    {observerName: 'Seth Gerou'},
-    {observerName: 'Will Smith'},
-    {observerName: 'Nick Schaffer'},
-    {observerName: 'Melina Shak'}
+    {firstName: 'Seth', lastName: 'Gerou', cellPhone: '2225551212',
+    status: 'Available For Dates', lastScheduledDate: '2019/03/04',
+    nextScheduledDate: '2019/05/25'},
+    {firstName: 'Will', lastName: 'Smith', cellPhone: '2225551212',
+    status: 'Available For Dates', lastScheduledDate: '2019/04/04',
+    nextScheduledDate: '2019/05/15'},
+    {firstName: 'Nick', lastName: 'Schaffer', cellPhone: '2225551212',
+    status: 'Available For Dates', lastScheduledDate: '2019/04/12',
+    nextScheduledDate: '2019/05/10'},
+    {firstName: 'Melina', lastName: 'Shak', cellPhone: '2225551212',
+    status: 'Not Available For Dates', lastScheduledDate: '2019/05/01',
+    nextScheduledDate: '2019/06/14'}
 ];
 
 private get getObserverNames() {
-    return this.observers.map((observer) => observer.observerName );
+    return this.observers.map((observer) => observer.firstName + ' ' + observer.lastName );
     }
 
-private observerAvailability = [
-    {observerName: 'Seth Gerou', status: 'Available For Dates',
-    observerPhone: 2125551212, lastScheduledDate: '2019/03/04',
-    nextScheduledDate: '2019/05/25'},
-    {observerName: 'Will Smith', status: 'Available For Dates',
-    observerPhone: 2125551212, lastScheduledDate: '2019/04/04',
-    nextScheduledDate: '2019/05/15'},
-    {observerName: 'Nick Schaffer', status: 'Available For Dates',
-    observerPhone: 2125551212, lastScheduledDate: '2019/04/12',
-    nextScheduledDate: '2019/05/10'},
-    {observerName: 'Melina Shak', status: 'Not Available For Dates',
-    observerPhone: 2125551212, lastScheduledDate: '2019/05/01',
-    nextScheduledDate: '2019/06/14'},
-];
+// private observerAvailability = [
+//     {observerName: 'Seth Gerou', status: 'Available For Dates',
+//     observerPhone: 2125551212, lastScheduledDate: '2019/03/04',
+//     nextScheduledDate: '2019/05/25'},
+//     {observerName: 'Will Smith', status: 'Available For Dates',
+//     observerPhone: 2125551212, lastScheduledDate: '2019/04/04',
+//     nextScheduledDate: '2019/05/15'},
+//     {observerName: 'Nick Schaffer', status: 'Available For Dates',
+//     observerPhone: 2125551212, lastScheduledDate: '2019/04/12',
+//     nextScheduledDate: '2019/05/10'},
+//     {observerName: 'Melina Shak', status: 'Not Available For Dates',
+//     observerPhone: 2125551212, lastScheduledDate: '2019/05/01',
+//     nextScheduledDate: '2019/06/14'},
+// ];
 
 private columns = [
-        {name: 'observerName', label: 'Observer', field: 'observerName', required: true,
+        {name: 'observerName', label: 'Observer', field: 'observer', required: true,
         align: 'left', sortable: true },
-        {name: 'observerPhone', label: 'Phone #', field: 'observerPhone', required: true,
+        {name: 'observerPhone', label: 'Phone #', field: 'observer', required: true,
         align: 'left', sortable: true },
         {name: 'status', label: 'Status', field: 'status', required: true, align: 'left', sortable: true },
         {name: 'lastScheduledDate', label: 'Last Scheduled', field: 'lastScheduledDate', required: true,
@@ -127,9 +142,10 @@ private columns = [
 private setObserver(row: any) {
     if (!this.observerAssigned) {
         if (row.status === 'Available For Dates') {
-            this.oa.activeTrip.observerName = row.observerName;
+            // this.oa.activeTrip.observer = row;
+            Vue.set(this.oa.activeTrip, 'observer', row);
         } else {
-            this.selectedObserver = row.observerName;
+            this.selectedObserver = row.firstName + ' ' + row.lastName;
             this.alert = true;
         }
     }
@@ -140,8 +156,12 @@ private formatTel(telNum: any) {
     return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
 }
 
+private formatDate(date: any) {
+    return moment(date).format('MMM Do');
+}
+
 private created() {
-    if (this.oa.activeTrip.observerName) {
+    if (this.oa.activeTrip.observer) {
         this.observerAssigned = true;
     }
 }

@@ -20,6 +20,7 @@
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
+        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
       </q-toolbar>
     </q-header>
 
@@ -176,17 +177,20 @@ export default class DefaultLayout extends Vue {
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
-  private leftDrawerOpen: boolean;
+  private leftDrawerOpen: boolean = false;
 
   constructor() {
     super();
-    this.leftDrawerOpen = Platform.is.desktop;
     if (!pouchService.isConnected) {
       // Reconnect PouchDB if page refreshed but still logged in
       this.reconnect().catch((err: any) => {
         this.errorAlert(err);
       });
     }
+  }
+
+  private created() {
+    this.leftDrawerOpen = Platform.is.desktop;
   }
 
   private navigateBack() {
