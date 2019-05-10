@@ -23,6 +23,7 @@ import {
   ClosePopup,
   QAvatar,
   QBanner,
+  QBadge,
   QBreadcrumbs,
   QBreadcrumbsEl,
   QBtn,
@@ -73,6 +74,7 @@ Vue.use(Quasar, {
   components: {
     QAvatar,
     QBanner,
+    QBadge,
     QBreadcrumbs,
     QBreadcrumbsEl,
     QBtn,

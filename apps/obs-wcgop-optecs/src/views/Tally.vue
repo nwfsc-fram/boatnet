@@ -2,9 +2,14 @@
   <q-page padding>
     <div class="q-gutter-md">
       <div v-for="r in vertButtonCount" class="row" :key="`md-r-${r}`">
-        <div v-for="c in horizButtonCount" class="col" :key="`md-c-${c}`">
+        <div v-for="c in horizButtonCount" class="col self-center" :key="`md-c-${c}`">
           <!-- TODO: this should be in a TallyState -->
-          <tally-btn :data="getButton(r,c)" @dataChanged="handleButtonData"/>
+          <tally-btn
+            :layout="getButton(r,c)"
+            :data="getData(r,c)"
+            @dataChanged="handleDataChanged"
+            @blankClicked="handleBlankClicked"
+          />
         </div>
       </div>
     </div>
@@ -12,7 +17,9 @@
       <component
         v-bind:is="currentControlComponent"
         @controlevent="handleControlEvent"
-        species="CORN"
+        @cancel="handleCancel"
+        @selectedReason="handleSelectedReason"
+        :species="currentSelectedSpecies"
       ></component>
     </div>
     <q-dialog v-model="confirmReset" persistent>
@@ -28,7 +35,13 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <tally-addnamedspecies-dialog ref="addNamedSpeciesModal" @addNewSpecies="handleAddNamedSpecies" :speciesList="speciesList"/>
+    <tally-addnamedspecies-dialog
+      ref="addNamedSpeciesModal"
+      @addNewSpecies="handleAddNamedSpecies"
+      :speciesList="speciesList"
+      @cancel="handleCancelAddNamedSpecies"
+    />
+    <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
 
@@ -38,12 +51,19 @@ import { State, Action, Getter } from 'vuex-class';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
-import { TallyButtonData } from '../_store/types';
+import {
+  TallyLayoutRecordTypeName,
+  TallyDataRecordTypeName,
+  TallyButtonLayoutData,
+  TallyOperationMode,
+  TallyCountData
+} from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
 import TallyAddNamedSpeciesDialog from '../components/tally/TallyAddNamedSpeciesDialog.vue';
+import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
@@ -52,6 +72,7 @@ Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
 Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
+Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
 
 @Component({
@@ -59,7 +80,14 @@ Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
     tallyTemplates() {
       return {
         database: pouchService.userDBName,
-        selector: { type: 'tally-record' },
+        selector: { type: TallyLayoutRecordTypeName },
+        sort: [{ createdDate: 'desc' }]
+      };
+    },
+    tallyData() {
+      return {
+        database: pouchService.userDBName,
+        selector: { type: TallyDataRecordTypeName },
         sort: [{ createdDate: 'desc' }]
       };
     }
@@ -71,31 +99,46 @@ export default class Tally extends Vue {
   @State('tallyState') private tallyState!: TallyState;
 
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
-  @Action('updateButton', { namespace: 'tallyState' })
-  private updateButton: any;
+  @Action('updateButtonData', { namespace: 'tallyState' })
+  private updateButtonData: any;
   @Action('reset', { namespace: 'tallyState' })
   private reset: any;
   @Action('setTallyIncDec', { namespace: 'tallyState' })
   private setTallyIncDec: any;
+  @Action('setTallyOpMode', { namespace: 'tallyState' })
+  private setTallyOpMode: any;
+  @Action('assignNewButton', { namespace: 'tallyState' })
+  private assignNewButton: any;
+  @Action('deleteButton', { namespace: 'tallyState' })
+  private deleteButton: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
   @Getter('horizButtonCount', { namespace: 'tallyState' })
   private horizButtonCount!: number;
+  @Getter('tallyMode', { namespace: 'tallyState' })
+  private tallyMode!: TallyOperationMode;
 
   private btnLabel = '';
-  private btnSize = '18px';
 
   private currentControlComponent = 'tally-controls';
 
-  private tallyTemplates!: any;
   private confirmReset = false;
 
+  private currentSelectedSpecies: any = {}; // TODO actual species type
+  private currentSelectedReason: string = '';
+
   private speciesList = [];
+
+  // Reactive
+  private tallyTemplates!: any;
+  private tallyData!: any;
+
   constructor() {
     super();
 
-    this.populateSpecies();
+    this.setTallyOpMode(TallyOperationMode.Tally);
+    this.populateSpecies(); // TODO use live view
   }
 
   public async populateSpecies() {
@@ -113,26 +156,57 @@ export default class Tally extends Vue {
     this.speciesList = species.rows;
   }
 
-  public getCode(row: number, column: number) {
-    return this.getButton(row, column).code;
+  public handleDataChanged(data: any) {
+    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
+      this.setTallyOpMode(TallyOperationMode.Tally);
+      this.deleteButton(data.button);
+      return;
+    }
+    data = {
+      ...data,
+      skipLayoutUpdate: true
+    };
+    this.updateButtonData(data);
   }
 
-  public getReason(row: number, column: number) {
-    return this.getButton(row, column).reason;
+  /**
+   * handleBlankClicked: depending on state, assign or move a button
+   */
+  public handleBlankClicked(button: TallyButtonLayoutData) {
+    if (this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation) {
+      this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
+      this.assignNewButton({
+        species: this.currentSelectedSpecies,
+        reason: this.currentSelectedReason,
+        index: button.index
+      });
+    }
   }
 
-  public getCount(row: number, column: number) {
-    return this.getButton(row, column).count;
-  }
-
-  public handleButtonData(button: TallyButtonData) {
-    // console.log('GOT BUTTON DATA', button);
-    this.updateButton(button);
+  public handleSelectedReason(reason: string) {
+    this.currentSelectedReason = reason;
   }
 
   public handleAddNamedSpecies(species: any) {
-    console.log('TODO Handle add', species);
+    this.currentSelectedSpecies = species;
     (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
+    this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
+    this.handleControlEvent('tally-addnew-controls');
+  }
+
+  public handleCancelAddNamedSpecies() {
+    // TODO same as handleCancel?
+    this.setTallyOpMode(TallyOperationMode.Tally);
+    this.handleControlEvent('tally-mode');
+  }
+
+  public handleCancel() {
+    // Generic Cancel - return to tally mode
+    // TODO refactor into setTallyMode
+    this.currentSelectedSpecies = {};
+    this.currentSelectedReason = '';
+    this.setTallyOpMode(TallyOperationMode.Tally);
+    this.handleControlEvent('tally-mode');
   }
 
   public handleControlEvent(controlName: string) {
@@ -142,10 +216,18 @@ export default class Tally extends Vue {
         break;
       case 'modify-layout-done':
       case 'all-tallies-done':
+      case 'tally-mode':
+        this.setTallyOpMode(TallyOperationMode.Tally);
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
         this.currentControlComponent = 'tally-alltallies-controls';
+        break;
+      case 'tally-addnew-controls':
+        this.currentControlComponent = 'tally-addnew-controls';
+        break;
+      case 'delete-button':
+        this.setTallyOpMode(TallyOperationMode.DeleteButtonSelect);
         break;
       case 'reset-data':
         this.confirmReset = true;
@@ -157,10 +239,12 @@ export default class Tally extends Vue {
         this.setTallyIncDec(-1);
         break;
       case 'add-named-species':
+        this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectSpecies);
         (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
         break;
       default:
         console.log('Unhandled tally control event:', controlName);
+        this.currentControlComponent = 'tally-controls';
         break;
     }
   }
@@ -169,15 +253,49 @@ export default class Tally extends Vue {
     // Fixes weird 1-based v-for loops
     return column + (row - 1) * this.horizButtonCount - 1;
   }
-  private getButton(row: number, column: number) {
-    if (
-      !this.tallyState.tallyRecord ||
-      !this.tallyState.tallyRecord.buttonData
-    ) {
-      return { code: '-', reason: '-', count: 0 }; // temp fake data
-    }
+  private getButton(row: number, column: number): TallyButtonLayoutData {
     const idx = this.getBtnIndex(row, column);
-    return this.tallyState.tallyRecord.buttonData[idx];
+    if (
+      !this.tallyState.tallyLayout
+      //  TODO || !this.tallyState.tallyDataRec
+    ) {
+      return {
+        index: idx,
+        labels: { shortCode: '??', reason: '??' }
+      };
+      // temp fake data - indication that something is broken
+    }
+
+    return this.tallyState.tallyLayout.layoutData[idx];
+  }
+
+  private getData(row: number, column: number): TallyCountData {
+    const idx = this.getBtnIndex(row, column);
+    // return this.tallyState.tallyLayout.layoutData[idx];
+
+    const targetButton = this.tallyState.tallyLayout.layoutData[idx];
+
+    if (
+      !targetButton ||
+      !targetButton.labels ||
+      !targetButton.labels.shortCode ||
+      !this.tallyState.tallyDataRec
+    ) {
+      return {count: -1 };
+    }
+    const targetData = this.tallyState.tallyDataRec.data!.filter(
+      (rec: TallyCountData) => {
+        return (
+          rec.shortCode === targetButton.labels!.shortCode &&
+          rec.reason === targetButton.labels!.reason
+        );
+      }
+    );
+    if (targetData) {
+      return targetData[0];
+    } else {
+      return { count: -1 };
+    }
   }
 
   // --- Private Methods ---
