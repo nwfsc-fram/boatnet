@@ -83,7 +83,10 @@ export default class TallyBtn extends Vue {
   }
 
   public handleClick() {
-    if (this.tallyMode !== TallyOperationMode.Tally) {
+    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
+      this.$emit('dataChanged', { button: this.layout, data: this.data });
+      return;
+    } else if (this.tallyMode !== TallyOperationMode.Tally) {
       console.log('Not in Tally mode, no data change.', this.incDecValue);
 
       this.playSound('bad');
@@ -127,7 +130,5 @@ export default class TallyBtn extends Vue {
         break;
     }
   }
-
-  get
 }
 </script>

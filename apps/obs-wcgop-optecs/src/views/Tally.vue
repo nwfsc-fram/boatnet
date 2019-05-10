@@ -109,6 +109,8 @@ export default class Tally extends Vue {
   private setTallyOpMode: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
+  @Action('deleteButton', { namespace: 'tallyState' })
+  private deleteButton: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -120,7 +122,6 @@ export default class Tally extends Vue {
   private btnLabel = '';
 
   private currentControlComponent = 'tally-controls';
-
 
   private confirmReset = false;
 
@@ -156,11 +157,15 @@ export default class Tally extends Vue {
   }
 
   public handleDataChanged(data: any) {
-    console.log('Passing', data);
+    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
+      this.setTallyOpMode(TallyOperationMode.Tally);
+      this.deleteButton(data.button);
+      return;
+    }
     data = {
       ...data,
       skipLayoutUpdate: true
-    }
+    };
     this.updateButtonData(data);
   }
 
