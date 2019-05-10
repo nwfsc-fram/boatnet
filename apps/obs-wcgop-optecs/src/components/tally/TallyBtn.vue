@@ -78,7 +78,6 @@ export default class TallyBtn extends Vue {
   private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
 
   public handleBlankClicked() {
-    console.log('HANDLE BLANK CLICKED', this.layout);
     this.$emit('blankClicked', this.layout);
   }
 

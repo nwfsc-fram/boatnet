@@ -19,7 +19,6 @@ import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 import { stringify } from 'querystring';
 
-
 /* tslint:disable:no-var-requires  */
 const defaultTemplate = require('../assets/tally-templates/default.json');
 
@@ -86,10 +85,7 @@ const actions: ActionTree<TallyState, RootState> = {
   ) {
     commit('assignNewButton', value);
   },
-  deleteButton(
-    { commit }: any,
-    button: TallyButtonLayoutData
-  ) {
+  deleteButton({ commit }: any, button: TallyButtonLayoutData) {
     commit('deleteButton', button);
   }
 };
@@ -157,7 +153,6 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
   newLayout.createdBy = authService.getCurrentUser()!.username;
   return newLayout;
 }
-
 
 const mutations: MutationTree<TallyState> = {
   async initialize(newState: any) {
@@ -229,15 +224,11 @@ const mutations: MutationTree<TallyState> = {
         }
       );
       if (targetRecIdx >= 0) {
-        console.log('UPDATE', params.data, targetRecIdx);
         newState.tallyDataRec.data.splice(targetRecIdx, 1, params.data);
+        console.log('[Tally Module] Updated', params.data, targetRecIdx);
       } else {
-        console.log(
-          'TODO INSERT',
-          params.data,
-          'into',
-          newState.tallyDataRec.data
-        );
+        newState.tallyDataRec.data.push(params.data);
+        console.warn('[Tally Module] WARN: Unexpectedly inserted new tally data', params.data);
       }
     }
 
@@ -271,7 +262,7 @@ const mutations: MutationTree<TallyState> = {
         console.log('TODO Fix Data', err);
       }
     } else {
-      console.log('[Tally Module] Warning: Skipped Tally Data DB Update');
+      console.warn('[Tally Module] Warning: Skipped Tally Data DB Update');
     }
   },
   setTallyIncDec(newState: any, value: number) {
@@ -308,7 +299,7 @@ const mutations: MutationTree<TallyState> = {
       }
     );
     if (targetRecIdx >= 0) {
-      console.log('TODO DATA ALREADY EXISTS');
+      console.log('[Tally Module] Data already exists in record.');
     } else {
       const newData: TallyCountData = {
         species: value.species,
@@ -316,21 +307,17 @@ const mutations: MutationTree<TallyState> = {
         reason: value.reason,
         count: 0
       };
-      console.log('Created new data for', newData);
+      console.log('[Tally Module] Inserted new tally data', newData);
       newState.tallyDataRec.data.push(newData);
       updateTallyDataDB(newState.tallyDataRec);
     }
 
     updateLayoutDB(newState.tallyLayout);
   },
-  async deleteButton(
-    newState: any,
-    button: TallyButtonLayoutData
-  ) {
-    console.log('TODO DELETE', button)
+  async deleteButton(newState: any, button: TallyButtonLayoutData) {
+    console.log('TODO DELETE', button);
   }
 };
-
 
 async function updateLayoutDB(layout: TallyLayoutRecord) {
   const result = await updateDB(layout);
