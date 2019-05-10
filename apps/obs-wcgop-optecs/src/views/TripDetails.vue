@@ -142,6 +142,7 @@
                     class="col-2"
                     v-model="currentTrip.logbookType"
                     label="Vessel Logbook Name"
+                    debounce="500"
                     @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="normal"
@@ -151,6 +152,7 @@
                     class="col-2"
                     v-model="currentTrip.logbookNum"
                     label="Vessel Logbook Page #"
+                    debounce="500"
                     @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="numeric"
@@ -172,6 +174,7 @@
                     hide-selected
                     input-debounce="0"
                     :options="options"
+                    debounce="500"
                     @input="saveOnUpdate"
                     @filter="getPorts"
                     @focus="displayKeyboard"
@@ -192,6 +195,7 @@
                     class="col-2"
                     :value="firstReceiverName"
                     label="First Receiver"
+                    debounce="500"
                     @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="normal"
@@ -204,6 +208,7 @@
                       class="col-12"
                       v-model="ph"
                       label="Fish Ticket"
+                      debounce="500"
                       @input="saveOnUpdate"
                       @focus="displayKeyboard"
                       data-layout="numeric"
@@ -275,8 +280,6 @@ export default class Trips extends Vue {
   private saveTrip: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
-
-  private defaultYearMonth: string = moment().format('YYYY/MM');
 
   private tab: string; // Current tab (start or end)
   private ph = ''; // TEMP
