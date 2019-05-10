@@ -35,9 +35,9 @@
           <q-td key="tripNum" :props="props">{{ props.row.tripNum }}</q-td>
           <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
           <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
-          <q-td key="departureDate" :props="props">{{ props.row.departureDate }}</q-td>
+          <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
           <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
-          <q-td key="returnDate" :props="props">{{ props.row.returnDate }}</q-td>
+          <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
           <q-td key="errors" :props="props">{{ props.row.errors }}</q-td>
         </q-tr>
       </template>
@@ -94,6 +94,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { BaseTrip } from '@boatnet/bn-models';
+import moment from 'moment';
 
 @Component
 export default class BoatnetTrips extends Vue {
@@ -109,6 +110,11 @@ export default class BoatnetTrips extends Vue {
       return this.currentTrip.tripNum;
     }
   }
+
+  private formatDate(date: string) {
+    return moment(date).format('MM/DD/YY');
+  }
+
   // Button click emitters
   private onAddTrip() {
     this.$emit('addTrip');
