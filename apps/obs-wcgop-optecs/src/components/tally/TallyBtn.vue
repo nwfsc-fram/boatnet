@@ -1,59 +1,39 @@
 <template>
   <span>
     <span v-if="data && !data.blank">
-      <span v-if="data.tempState !== undefined">
-        <q-btn
-          outline
-          class="q-px-lg q-py-md"
-          :color="data.color"
-          text-color="black"
-          :size="size"
-          :disabled="disabled"
-          :data="data"
-          @click="handleClick"
-        >
-          {{data.code}}
-          <br>
-          {{data.reason}}
-          <br>
-          {{data.count}}
-        </q-btn>
-      </span>
-      <span v-if="data.tempState === undefined">
-        <q-btn
-          class="q-px-lg q-py-md"
-          :color="data.color"
-          :text-color="data['text-color']"
-          :size="size"
-          :disabled="disabled"
-          :data="data"
-          @click="handleClick"
-        >
-          {{data.code}}
-          <br>
-          {{data.reason}}
-          <br>
-          {{data.count}}
-        </q-btn>
-      </span>
+      <q-btn
+        class="q-px-lg q-py-lg"
+        :color="data.color"
+        :text-color="data['text-color']"
+        :size="size"
+        :disabled="disabled"
+        :data="data"
+        @click="handleClick"
+      >
+        {{data.code}}
+        <br>
+        {{data.reason}}
+        <br>
+        {{data.count}}
+      </q-btn>
     </span>
     <span v-if="data && data.blank && tallyMode === selectLocationMode">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
-          outline
-          round
-          class="q-px-lg q-py-md"
-          align="around"
-          color="black"
-          :size="size"
-          @click="handleBlankClicked"
-        >
-          {{data.code}}
-          <br>
-          {{data.reason}}
-          <br>
-          {{data.count}}
-        </q-btn>
+        outline
+        round
+        class="q-px-lg q-py-lg q-ml-md"
+        align="around"
+        color="black"
+        :size="size"
+        @click="handleBlankClicked"
+      >
+        {{data.code}}
+        <br>
+        {{data.reason}}
+        <br>
+        {{data.count}}
+      </q-btn>
     </span>
   </span>
 </template>
