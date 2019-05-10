@@ -17,7 +17,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { WcgopAppState } from '../../_store/types';
 import { State, Action, Getter } from 'vuex-class';
 import { QBtn } from 'quasar';
-import { TallyButtonData } from '../../_store/types';
+import { TallyButtonLayoutData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
 const funnyFile = require('../../assets/audio/funnyclick.wav');
@@ -37,7 +37,7 @@ export default class TallyControlBtn extends Vue {
   @Prop({ default: undefined }) public disabled!: boolean;
   @Prop({ default: undefined }) public controlName!: string; // History, Tally Mode etc
   // Data:
-  @Prop({ default: undefined }) public data!: TallyButtonData;
+  @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
   @Prop({ default: undefined }) public blank!: boolean;
   @Getter('isSoundEnabled', { namespace: 'appState' })
   private isSoundEnabled!: boolean;

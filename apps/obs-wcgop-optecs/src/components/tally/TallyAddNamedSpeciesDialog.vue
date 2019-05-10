@@ -37,7 +37,6 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { WcgopAppState } from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
-import { TallyButtonData } from '../../_store/types';
 
 import { pouchService } from '@boatnet/bn-pouch';
 

@@ -1,39 +1,32 @@
 <template>
   <span>
-    <span v-if="data && !data.blank">
+    <span v-if="layout && !layout.blank">
       <q-btn
-        class="q-px-lg q-py-lg"
-        :color="data.color"
-        :text-color="data['text-color']"
+        class="q-px-lg q-py-md"
+        :color="layout.color"
+        :text-color="layout['text-color']"
         :size="size"
         :disabled="disabled"
-        :data="data"
         @click="handleClick"
       >
-        {{data.code}}
+        {{layout.labels.shortCode}}
         <br>
-        {{data.reason}}
+        {{layout.labels.reason}}
         <br>
         {{data.count}}
       </q-btn>
     </span>
-    <span v-if="data && data.blank && tallyMode === selectLocationMode">
+    <span v-if="layout && layout.blank && tallyMode === selectLocationMode">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
         outline
         round
-        class="q-px-lg q-py-lg q-ml-md"
+        class="q-px-md q-py-md q-ml-md"
         align="around"
         color="black"
         :size="size"
         @click="handleBlankClicked"
-      >
-        {{data.code}}
-        <br>
-        {{data.reason}}
-        <br>
-        {{data.count}}
-      </q-btn>
+      />
     </span>
   </span>
 </template>
@@ -43,7 +36,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import {
   WcgopAppState,
   TallyOperationMode,
-  TallyButtonData,
+  TallyButtonLayoutData,
+  TallyCountData,
   TallyButtonMode
 } from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
@@ -69,8 +63,8 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public size!: string;
   @Prop({ default: undefined }) public round!: boolean;
   @Prop({ default: undefined }) public disabled!: boolean;
-  // Data:
-  @Prop({ default: undefined }) public data!: TallyButtonData;
+  @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
+  @Prop({ default: undefined }) public data!: TallyCountData;
   @Prop({ default: undefined }) public blank!: boolean;
   // @Prop({ default: undefined }) public reason!: boolean;
   // @Prop({ default: undefined }) public count!: boolean;
@@ -84,7 +78,7 @@ export default class TallyBtn extends Vue {
   private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;
 
   public handleBlankClicked() {
-    this.$emit('blankClicked', this.data);
+    this.$emit('blankClicked', this.layout);
   }
 
   public handleClick() {
@@ -108,7 +102,12 @@ export default class TallyBtn extends Vue {
           this.data.count = 0;
         }
       }
-      this.$emit('dataChanged', this.data);
+      // const dataChange: TallyCountData = {
+      //   shortCode: this.data.count.shortCode,
+      //   reason: this.data.count.reason,
+      //   count: this.layout.labels!.countTmp
+      // };
+      this.$emit('dataChanged', { button: this.layout, data: this.data });
     }
   }
 

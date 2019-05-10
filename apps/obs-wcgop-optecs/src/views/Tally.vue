@@ -5,8 +5,9 @@
         <div v-for="c in horizButtonCount" class="col self-center" :key="`md-c-${c}`">
           <!-- TODO: this should be in a TallyState -->
           <tally-btn
-            :data="getButton(r,c)"
-            @dataChanged="handleButtonData"
+            :layout="getButton(r,c)"
+            :data="getData(r,c)"
+            @dataChanged="handleDataChanged"
             @blankClicked="handleBlankClicked"
           />
         </div>
@@ -50,7 +51,12 @@ import { State, Action, Getter } from 'vuex-class';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
-import { TallyButtonData, TallyOperationMode } from '../_store/types';
+import {
+  TallyLayoutRecordTypeName,
+  TallyButtonLayoutData,
+  TallyOperationMode,
+  TallyCountData
+} from '../_store/types';
 import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
@@ -73,7 +79,7 @@ Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
     tallyTemplates() {
       return {
         database: pouchService.userDBName,
-        selector: { type: 'tally-record' },
+        selector: { type: TallyLayoutRecordTypeName },
         sort: [{ createdDate: 'desc' }]
       };
     }
@@ -85,8 +91,8 @@ export default class Tally extends Vue {
   @State('tallyState') private tallyState!: TallyState;
 
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
-  @Action('updateButton', { namespace: 'tallyState' })
-  private updateButton: any;
+  @Action('updateButtonData', { namespace: 'tallyState' })
+  private updateButtonData: any;
   @Action('reset', { namespace: 'tallyState' })
   private reset: any;
   @Action('setTallyIncDec', { namespace: 'tallyState' })
@@ -136,11 +142,15 @@ export default class Tally extends Vue {
     this.speciesList = species.rows;
   }
 
-  public handleButtonData(button: TallyButtonData) {
-    this.updateButton({ button });
+  public handleDataChanged(data: any) {
+    console.log('Passing', data);
+    this.updateButtonData(data);
   }
 
-  public handleBlankClicked(button: TallyButtonData) {
+  /**
+   * handleBlankClicked: depending on state, assign or move a button
+   */
+  public handleBlankClicked(button: TallyButtonLayoutData) {
     if (this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation) {
       this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
       this.assignNewButton({
@@ -149,7 +159,6 @@ export default class Tally extends Vue {
         index: button.index
       });
     }
-    // this.updateButton({button});
   }
 
   public handleSelectedReason(reason: string) {
@@ -218,16 +227,64 @@ export default class Tally extends Vue {
     // Fixes weird 1-based v-for loops
     return column + (row - 1) * this.horizButtonCount - 1;
   }
-  private getButton(row: number, column: number) {
-    if (
-      !this.tallyState.tallyRecord ||
-      !this.tallyState.tallyRecord.buttonData
-    ) {
-      return { code: '-', reason: '-', count: 0 }; // temp fake data
-    }
+  private getButton(row: number, column: number): TallyButtonLayoutData {
     const idx = this.getBtnIndex(row, column);
-    return this.tallyState.tallyRecord.buttonData[idx];
+    if (
+      !this.tallyState.tallyLayout
+      //  TODO || !this.tallyState.tallyDataRec
+    ) {
+      return {
+        index: idx,
+        labels: { shortCode: '??', reason: '??', countTmp: 0 }
+      };
+      // temp fake data - indication that something is broken
+    }
+
+    return this.tallyState.tallyLayout.layoutData[idx];
   }
+
+  private getData(row: number, column: number): TallyCountData {
+    const idx = this.getBtnIndex(row, column);
+    // return this.tallyState.tallyLayout.layoutData[idx];
+
+    const targetButton = this.tallyState.tallyLayout.layoutData[idx];
+    if (
+      !targetButton.labels ||
+      !targetButton.labels.shortCode ||
+      !this.tallyState.tallyDataRec
+    ) {
+      return {};
+    }
+
+    const targetData = this.tallyState.tallyDataRec.data!.filter(
+      (rec: TallyCountData) => {
+        return (
+          rec.shortCode === targetButton.labels!.shortCode &&
+          rec.reason === targetButton.labels!.reason
+        );
+      }
+    );
+    if (targetData) {
+      return targetData[0];
+      // console.log('TODO getData from', targetData);
+    }
+    if (targetButton.labels && targetButton.labels.reason !== 'INVIS') {
+      return {
+        shortCode: targetButton.labels.shortCode,
+        reason: targetButton.labels.reason,
+        count: targetButton.labels.countTmp
+      };
+    } else {
+      return {};
+    }
+  }
+
+  // private getDataVals(shortCode: string, reason: string): TallyCountData {
+  //   // if (this.)
+  //   return {
+
+  //   }
+  // }
 
   // --- Private Methods ---
 

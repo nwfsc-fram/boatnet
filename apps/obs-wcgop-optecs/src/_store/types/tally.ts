@@ -12,7 +12,9 @@ export enum TallyOperationMode {
   Unknown = 'Unknown'
 }
 
-export interface TallyButtonData {
+// -- Layout Related Interfaces --
+export interface TallyButtonLayoutData {
+  // Pure code and reason layout info. No count data
   index: number; // screen location
   // Styling
   color?: string;
@@ -21,25 +23,43 @@ export interface TallyButtonData {
   tempState?: TallyButtonMode;
 
   // Data
-  code?: string; // e.g. SABL
-  reason?: string; // e.g. PRED
-  count?: number;
+  labels?: {
+    shortCode?: string; // e.g. SABL
+    reason?: string; // e.g. PRED or RET(ained)
+    countTmp?: number; // TODO REMOVE!!!!!
+  };
 }
 
-export const TallyRecordTypeName = 'tally-record';
+export const TallyLayoutRecordTypeName = 'tally-layout';
 
-export interface TallyRecord extends Base {
+export interface TallyLayoutRecord extends Base {
   recordName: string; // friendly name
   isTemplate?: boolean; // is a template for new catches?
-  buttonData?: TallyButtonData[];
+  layoutData: TallyButtonLayoutData[];
   vertButtonCount: number;
   horizButtonCount: number;
 }
 
-export interface TallyState {
-  tallyRecord: TallyRecord;
-  incDecValue?: number; // +1 or -1
+// -- Data Related Interfaces --
+export const TallyDataRecordTypeName = 'tally-data';
 
-  // State Machine
+export interface TallyCountData extends Base {
+  species?: any; // TODO actual Species data
+  shortCode?: string; // TODO redundant with species, refactor
+  reason?: string;
+  count?: number;
+}
+
+export interface TallyDataRecord extends Base {
+  data?: TallyCountData[];
+}
+
+// -- TallyState Interface --
+export interface TallyState {
+  tallyLayout: TallyLayoutRecord;
+  tallyDataRec?: TallyDataRecord;
+
+  // State
+  incDecValue?: number; // +1 or -1
   operationMode?: TallyOperationMode;
 }

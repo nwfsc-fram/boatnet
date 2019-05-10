@@ -3,9 +3,12 @@ import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import {
   TallyState,
   RootState,
-  TallyButtonData,
-  TallyRecordTypeName,
-  TallyRecord,
+  TallyButtonLayoutData,
+  TallyLayoutRecordTypeName,
+  TallyLayoutRecord,
+  TallyCountData,
+  TallyDataRecordTypeName,
+  TallyDataRecord,
   TallyOperationMode
 } from '@/_store/types';
 
@@ -13,6 +16,8 @@ import { pouchService } from '@boatnet/bn-pouch';
 
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
+import { stringify } from 'querystring';
+import { Base } from '@boatnet/bn-models';
 
 /* tslint:disable:no-var-requires  */
 const defaultTemplate = require('../assets/tally-templates/default.json');
@@ -20,13 +25,14 @@ const defaultTemplate = require('../assets/tally-templates/default.json');
 Vue.use(Vuex);
 
 export const state: TallyState = {
-  tallyRecord: {
+  tallyLayout: {
     recordName: 'Default',
-    type: TallyRecordTypeName,
-    buttonData: [],
+    type: TallyLayoutRecordTypeName,
+    layoutData: [],
     vertButtonCount: 4,
     horizButtonCount: 8
   },
+  tallyDataRec: { type: TallyDataRecordTypeName, data: [] },
   incDecValue: 1,
   operationMode: TallyOperationMode.Tally
 };
@@ -52,11 +58,15 @@ const actions: ActionTree<TallyState, RootState> = {
   connectDB({ commit }: any) {
     commit('initialize');
   },
-  updateButton(
+  updateButtonData(
     { commit }: any,
-    params: { button: TallyButtonData; skipDBUpdate: boolean }
+    params: {
+      button: TallyButtonLayoutData;
+      data: TallyCountData;
+      skipDBUpdate: boolean;
+    }
   ) {
-    commit('updateButton', params);
+    commit('updateButtonData', params);
   },
   setTallyIncDec({ commit }: any, value: number) {
     commit('setTallyIncDec', value);
@@ -88,56 +98,87 @@ function getBtnColor(reason: string): { bg?: string; text?: string } {
   }
 }
 
-function createDefaultRecord(): TallyRecord {
-  const newRecord: TallyRecord = {
+function createDefaultButtonData(): TallyDataRecord {
+  const newData: TallyDataRecord = {
+    type: TallyDataRecordTypeName,
+    data: []
+  };
+  const template = defaultTemplate.templateData;
+  template.forEach((item: { code?: string; reason: string }, index: number) => {
+    if (item.code) {
+      const data = {
+        // species:  //TODO look up full species record?
+        shortCode: item.code,
+        reason: item.reason,
+        count: 0
+      };
+      newData.data!.push(data);
+    }
+  });
+  return newData;
+}
+
+function createDefaultLayoutRecord(): TallyLayoutRecord {
+  const newLayout: TallyLayoutRecord = {
     recordName: 'Default',
-    type: TallyRecordTypeName,
-    buttonData: [],
+    type: TallyLayoutRecordTypeName,
+    layoutData: [],
     vertButtonCount: 4,
     horizButtonCount: 8
   };
-  const tmpBtnData: TallyButtonData[] = [];
   const template = defaultTemplate.templateData;
-  template.forEach((item: TallyButtonData, index: number) => {
+  template.forEach((item: { code?: string; reason: string }, index: number) => {
     if (item.reason === 'INVIS') {
-      tmpBtnData.push({
+      newLayout.layoutData.push({
         index,
         blank: true
       });
     } else {
-      tmpBtnData.push({
+      newLayout.layoutData.push({
         index,
         color: getBtnColor(item.reason!).bg,
         'text-color': getBtnColor(item.reason!).text,
-        code: item.code,
-        reason: item.reason,
-        count: 0
+        labels: {
+          shortCode: item.code,
+          reason: item.reason
+          // ,          countTmp: 0
+        }
       });
     }
   });
-  newRecord.buttonData = tmpBtnData;
-  newRecord.createdDate = moment().format();
-  newRecord.createdBy = authService.getCurrentUser()!.username;
-  return newRecord;
+  newLayout.createdDate = moment().format();
+  newLayout.createdBy = authService.getCurrentUser()!.username;
+  return newLayout;
 }
 
 const mutations: MutationTree<TallyState> = {
   async initialize(newState: any) {
     /**
-     * Initialize tally data. If tallyRecord is set, do nothing, otherwise create new TallyRecord.
+     * Initialize tally data if none exists
+     * TODO refactor to combine with reset
      */
-    if (
-      !newState.tallyRecord._id ||
-      newState.tallyRecord.buttonData.length === 0
-    ) {
-      newState.tallyRecord = createDefaultRecord();
-      const result = await updateRecord(newState.tallyRecord);
-      newState.tallyRecord._id = result.id;
-      newState.tallyRecord._rev = result.rev;
+
+    if (!newState.tallyLayout._id) {
+      newState.tallyLayout = createDefaultLayoutRecord();
+      const resultLayout = await updateDB(newState.tallyLayout);
+      newState.tallyLayout._id = resultLayout.id;
+      newState.tallyLayout._rev = resultLayout.rev;
+    } else {
+      console.log(
+        '[Tally Module] Already have tally layout, skip template init. DB ID=',
+        newState.tallyLayout._id
+      );
+    }
+
+    if (!newState.tallyDataRec._id) {
+      newState.tallyDataRec = createDefaultButtonData();
+      const resultData = await updateDB(newState.tallyDataRec);
+      newState.tallyDataRec._id = resultData.id;
+      newState.tallyDataRec._rev = resultData.rev;
     } else {
       console.log(
         '[Tally Module] Already have tally data, skip template init. DB ID=',
-        newState.tallyRecord._id
+        newState.tallyDataRec._id
       );
     }
   },
@@ -146,21 +187,58 @@ const mutations: MutationTree<TallyState> = {
      * Reset data for tally to default template.
      * @param createNewRecord Create a new CouchDB record, otherwise overwrite existing _id
      */
-    console.log('[Tally Module] Reset Tally Button Data', newState);
-    // Keep old ID
-    const oldId = newState.tallyRecord._id;
-    newState.tallyRecord = createDefaultRecord();
-    if (!createNewRecord && oldId) {
-      newState.tallyRecord._id = oldId;
+    console.log('[Tally Module] Reset Tally Button Data');
+    // Keep old IDs
+    const oldIdLayout = newState.tallyLayout._id;
+    newState.tallyLayout = createDefaultLayoutRecord();
+    if (!createNewRecord && oldIdLayout) {
+      newState.tallyLayout._id = oldIdLayout;
     }
-    const result = await updateRecord(newState.tallyRecord);
-    newState.tallyRecord._id = result.id;
-    newState.tallyRecord._rev = result.rev;
+
+    newState.tallyDataRec = createDefaultButtonData();
+    const oldIdData = newState.tallyDataRec._id;
+    if (!createNewRecord && oldIdData) {
+      newState.tallyDataRec._id = oldIdData;
+    }
+
+    // TODO refactor
+    const resultLayout = await updateDB(newState.tallyLayout);
+    newState.tallyLayout._id = resultLayout.id;
+    newState.tallyLayout._rev = resultLayout.rev;
+    const resultData = await updateDB(newState.tallyDataRec);
+    newState.tallyDataRec._id = resultData.id;
+    newState.tallyDataRec._rev = resultData.rev;
   },
-  async updateButton(
+  async updateButtonData(
     newState: any,
-    params: { button: TallyButtonData; skipDBUpdate?: boolean }
+    params: {
+      button: TallyButtonLayoutData;
+      data: TallyCountData;
+      skipDBUpdate?: boolean;
+    }
   ) {
+    if (params.data.shortCode) {
+      const targetRecIdx = newState.tallyDataRec.data.findIndex(
+        (rec: TallyCountData) => {
+          return (
+            rec.shortCode === params.data.shortCode &&
+            rec.reason === params.data.reason
+          );
+        }
+      );
+      if (targetRecIdx >= 0) {
+        console.log('UPDATE', params.data, targetRecIdx);
+        newState.tallyDataRec.data.splice(targetRecIdx, 1, params.data);
+      } else {
+        console.log(
+          'TODO INSERT',
+          params.data,
+          'into',
+          newState.tallyDataRec.data
+        );
+      }
+    }
+
     if (params.button.index === undefined) {
       console.log(
         '[Tally Module] Button has no index, cannot update.',
@@ -168,14 +246,25 @@ const mutations: MutationTree<TallyState> = {
       );
       return;
     }
-    newState.tallyRecord.buttonData[params.button.index] = params.button;
+    newState.tallyLayout.layoutData.splice(
+      params.button.index,
+      1,
+      params.button
+    );
 
     if (!params.skipDBUpdate) {
-      const result = await updateRecord(newState.tallyRecord);
+      // TODO tally data record
+      const result = await updateDB(newState.tallyLayout);
       if (result) {
-        newState.tallyRecord._rev = result.rev;
-        newState.tallyRecord.modifiedDate = moment().format();
-        newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+        newState.tallyLayout._rev = result.rev;
+        newState.tallyLayout.modifiedDate = moment().format();
+        newState.tallyLayout.modifiedBy = authService.getCurrentUser()!.username;
+      }
+      const resultData = await updateDB(newState.tallyDataRec);
+      if (resultData) {
+        newState.tallyDataRec._rev = resultData.rev;
+        newState.tallyDataRec.modifiedDate = moment().format();
+        newState.tallyDataRec.modifiedBy = authService.getCurrentUser()!.username;
       }
     }
   },
@@ -191,41 +280,47 @@ const mutations: MutationTree<TallyState> = {
     value: { species: any; reason: string; index: number }
   ) {
     const newColor = getBtnColor(value.reason);
-    const newButton: TallyButtonData = {
+    const newButton: TallyButtonLayoutData = {
       index: value.index,
       color: newColor.bg,
       'text-color': newColor.text,
       // tempState?: TallyButtonMode;
-      code: value.species.shortCode,
-      reason: value.reason,
-      count: 0 // TODO Load from data?
+      labels: {
+        shortCode: value.species.shortCode,
+        reason: value.reason,
+        countTmp: 0
+      }
     };
 
-
-    newState.tallyRecord.buttonData.splice(value.index, 1, newButton);
+    newState.tallyLayout.layoutData.splice(value.index, 1, newButton);
 
     // TODO refactor DB portion out of this
-    const result = await updateRecord(newState.tallyRecord);
+    // TODO update tallyDataRec
+    const result = await updateDB(newState.tallyLayout);
     if (result) {
-      newState.tallyRecord._rev = result.rev;
-      newState.tallyRecord.modifiedDate = moment().format();
-      newState.tallyRecord.modifiedBy = authService.getCurrentUser()!.username;
+      newState.tallyLayout._rev = result.rev;
+      newState.tallyLayout.modifiedDate = moment().format();
+      newState.tallyLayout.modifiedBy = authService.getCurrentUser()!.username;
     }
   }
 };
 
-async function updateRecord(record: TallyRecord) {
+/**
+ * updateLayout standalone helper function
+ * @param record Record to update in Database
+ */
+async function updateDB(record: Base) {
   try {
     if (record._id) {
       const result = await pouchService.db.put(pouchService.userDBName, record);
-      console.log('[Tally Module] Updated tally record.', result);
+      console.log('[Tally Module] Updated record.', record.type, result);
       return result;
     } else {
       const result = await pouchService.db.post(
         pouchService.userDBName,
         record
       );
-      console.log('[Tally Module] Created new tally record.', result);
+      console.log('[Tally Module] Created new record.', record.type, result);
       return result;
     }
   } catch (err) {
@@ -242,6 +337,7 @@ async function updateRecord(record: TallyRecord) {
         );
         console.log(
           '[Tally Module] Handled doc conflict, updated record',
+          record.type,
           result
         );
         return result;
@@ -255,6 +351,7 @@ async function updateRecord(record: TallyRecord) {
           );
           console.log(
             '[Tally Module] Handled doc deletion, created record',
+            record.type,
             result
           );
           return result;
@@ -273,10 +370,10 @@ async function updateRecord(record: TallyRecord) {
 
 const getters: GetterTree<TallyState, RootState> = {
   horizButtonCount(getState: TallyState) {
-    return getState.tallyRecord.horizButtonCount;
+    return getState.tallyLayout.horizButtonCount;
   },
   vertButtonCount(getState: TallyState) {
-    return getState.tallyRecord.vertButtonCount;
+    return getState.tallyLayout.vertButtonCount;
   },
   incDecValue(getState: TallyState) {
     return getState.incDecValue;
