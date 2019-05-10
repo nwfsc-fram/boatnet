@@ -36,21 +36,14 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 @Component
 export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
-
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
-
 private columns = [
     {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true }
 ];
-
 private async getTrips() {
-
-
   const masterDB: Client<any> = couchService.masterDB;
   try {
-
-
       const options: ListOptions = {
         limit: 20
       };
