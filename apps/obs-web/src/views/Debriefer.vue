@@ -8,7 +8,7 @@
             >
 
         <template v-slot:body="props">
-          <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >
+          <q-tr :props='props'>
           <q-td key="id"></q-td>
           <q-td key="fishery" :props="props">{{ props.row.fishery }}</q-td>
           </q-tr>
