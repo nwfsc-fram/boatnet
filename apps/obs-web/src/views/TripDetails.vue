@@ -3,7 +3,18 @@
         <q-card class="my-card">
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-                <div class="text-h6" style="margin-bottom: 10px;">{{ vessel.activeVessel.vesselName }} Trip # {{ trip.activeTrip.tripNum }} <br><span v-if="trip.activeTrip.fishery">{{ trip.activeTrip.fishery.name }}</span></div>
+                <div class="text-h6" style="margin-bottom: 10px;">
+                    {{ vessel.activeVessel.vesselName }} Trip # {{ trip.activeTrip.tripNum }}
+                <q-icon
+                    v-if="trip.activeTrip.isSelected"
+                    name="check_circle"
+                    class="text-primary"
+                    style="font-size: 32px; float: right"
+                    title="Trip is Selected">
+                </q-icon>
+                <br>
+                <span v-if="trip.activeTrip.fishery">{{ trip.activeTrip.fishery.name }}</span>
+                </div>
 
                 <div class="row items-start">
 
@@ -229,6 +240,10 @@ export default class TripDetails extends Vue {
 
     private createTrip() {
         // this is where the pouch code to save the trip goes
+        const randomNum = Math.random();
+        if (randomNum > .5 && this.trip.activeTrip) {
+                this.trip.activeTrip.isSelected = true;
+        }
         pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
         this.$router.push({path: '/trips/'});
     }

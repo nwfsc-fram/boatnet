@@ -88,34 +88,34 @@ export default class Home extends Vue {
   //   });
   // }
 
-  private async couch() {
-    const masterDB: Client<any> = couchService.masterDB;
-    // const queryOptions: ListOptions = {
-    //       limit: 100,
-    //       start_key: 'a',
-    //       inclusive_end: true,
-    //       descending: false
-    //     };
+  // private async couch() {
+  //   const masterDB: Client<any> = couchService.masterDB;
+  //   // const queryOptions: ListOptions = {
+  //   //       limit: 100,
+  //   //       start_key: 'a',
+  //   //       inclusive_end: true,
+  //   //       descending: false
+  //   //     };
 
-    try {
-      // const vessels = await masterDB.view<any>(
-      //   'optecs_trawl',
-      //   'all_vessel_names',
-      //   queryOptions
-      // );
+  //   try {
+  //     // const vessels = await masterDB.view<any>(
+  //     //   'optecs_trawl',
+  //     //   'all_vessel_names',
+  //     //   queryOptions
+  //     // );
 
-      // this.options = vessels.rows.map((vessel) => vessel.value);
+  //     // this.options = vessels.rows.map((vessel) => vessel.value);
 
-      const vessels = await masterDB.view<any>('optecs_trawl', 'all_vessel_names');
+  //     const vessels = await masterDB.view<any>('optecs_trawl', 'all_vessel_names');
 
-      console.log(vessels);
-    } catch (err) {
-      this.error(err);
-    }
-  }
+  //     console.log(vessels);
+  //   } catch (err) {
+  //     this.error(err);
+  //   }
+  // }
 
   private created() {
-    this.couch();
+    // this.couch();
   }
 }
 </script>
