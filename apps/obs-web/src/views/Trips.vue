@@ -14,11 +14,15 @@
         <q-card-section>
           <div class="text-h6">{{ trip.tripNum }}
             <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+            <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected"></q-icon>
           </div>
-          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate.split(" ")[0]) }}</span> -
-          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate.split(" ")[0]) }}</span>
-          <div style="float:right">
-            <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
+          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+          <div v-if="trip.observer">
+            <sup class="text-white" style="float: right; text-align: right">
+              observer: {{ trip.observer.firstName }} {{ trip.observer.lastName }}<br>
+              mobile: {{ formatTel(trip.observer.cellPhone) }}
+              </sup>
           </div>
         </q-card-section>
         <q-card-actions>
@@ -36,12 +40,10 @@
       <q-card-section>
         <div class="text-h6">{{ trip.tripNum }}
           <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+          <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px; float: right"></q-icon>
         </div>
-          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate.split(" ")[0]) }}</span> -
-          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate.split(" ")[0]) }}</span>
-        <div style="float:right">
-          <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px"></q-icon>
-        </div>
+          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
       </q-card-section>
       <q-card-actions style="float:right">
         <q-btn flat @click="reOpenTrip(trip)">Reopen</q-btn>
@@ -148,7 +150,7 @@ export default class Trips extends Vue {
     private get openTrips() {
       return this.userDBTrips.filter(
         (trip: any) => {
-          if (trip.vessel) {
+          if (trip.vessel && trip.tripStatus) {
             return trip.tripStatus.description === 'open' &&
             trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
           } else {
@@ -161,7 +163,7 @@ export default class Trips extends Vue {
     private get closedTrips() {
       return this.userDBTrips.filter(
         (trip: any) => {
-          if (trip.vessel) {
+          if (trip.vessel && trip.tripStatus) {
             return trip.tripStatus.description !== 'open' &&
             trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
           } else {
@@ -262,6 +264,11 @@ export default class Trips extends Vue {
   private formatDate(date: any) {
     return moment(date).format('MMM Do');
   }
+
+  private formatTel(telNum: any) {
+    telNum = telNum.toString();
+    return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
+}
 
 }
 </script>
