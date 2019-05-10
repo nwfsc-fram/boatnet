@@ -9,6 +9,7 @@ export enum TallyOperationMode {
   AddNamedSpeciesSelectSpecies = 'ADD_NAMED_SPECIES_SELECT_SPECIES',
   AddNamedSpeciesSelectType = 'SELECT_TYPE',
   AddNamedSpeciesSelectLocation = 'SELECT_LOCATION',
+  DeleteButtonSelect = 'SELECT_BUTTON_DELETE',
   Unknown = 'Unknown'
 }
 

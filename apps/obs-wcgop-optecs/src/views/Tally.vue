@@ -41,7 +41,7 @@
       :speciesList="speciesList"
       @cancel="handleCancelAddNamedSpecies"
     />
-    <!-- <div>Mode: {{tallyMode}}</div> -->
+    <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
 
@@ -121,18 +121,23 @@ export default class Tally extends Vue {
 
   private currentControlComponent = 'tally-controls';
 
-  private tallyTemplates!: any;
+
   private confirmReset = false;
 
   private currentSelectedSpecies: any = {}; // TODO actual species type
   private currentSelectedReason: string = '';
 
   private speciesList = [];
+
+  // Reactive
+  private tallyTemplates!: any;
+  private tallyData!: any;
+
   constructor() {
     super();
 
     this.setTallyOpMode(TallyOperationMode.Tally);
-    this.populateSpecies();
+    this.populateSpecies(); // TODO use live view
   }
 
   public async populateSpecies() {
@@ -207,6 +212,7 @@ export default class Tally extends Vue {
       case 'modify-layout-done':
       case 'all-tallies-done':
       case 'tally-mode':
+        this.setTallyOpMode(TallyOperationMode.Tally);
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
@@ -214,6 +220,9 @@ export default class Tally extends Vue {
         break;
       case 'tally-addnew-controls':
         this.currentControlComponent = 'tally-addnew-controls';
+        break;
+      case 'delete-button':
+        this.setTallyOpMode(TallyOperationMode.DeleteButtonSelect);
         break;
       case 'reset-data':
         this.confirmReset = true;

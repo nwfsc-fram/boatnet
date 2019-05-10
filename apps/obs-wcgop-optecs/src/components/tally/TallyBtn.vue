@@ -5,10 +5,10 @@
         class="q-px-lg q-py-md"
         :color="layout.color"
         :text-color="layout['text-color']"
-        :size="size"
         :disabled="disabled"
         @click="handleClick"
       >
+        <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
         {{layout.labels.shortCode}}
         <br>
         {{layout.labels.reason}}
@@ -24,7 +24,6 @@
         class="q-px-md q-py-md q-ml-md"
         align="around"
         color="black"
-        :size="size"
         @click="handleBlankClicked"
       />
     </span>
@@ -76,6 +75,7 @@ export default class TallyBtn extends Vue {
   private isSoundEnabled!: boolean;
 
   private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;
+  private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
 
   public handleBlankClicked() {
     console.log('HANDLE BLANK CLICKED', this.layout);
@@ -127,5 +127,7 @@ export default class TallyBtn extends Vue {
         break;
     }
   }
+
+  get
 }
 </script>
