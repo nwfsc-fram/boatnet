@@ -30,7 +30,7 @@
       :selected.sync="selected"
     >
       <template v-slot:body="props">
-        <q-tr :props="props" @click.native="selectTrip(props.row)">
+        <q-tr :props="props" @click.native="selectTrip(props.row)" class="cursor-pointer">
           <q-td/>
           <q-td key="tripNum" :props="props">{{ props.row.tripNum }}</q-td>
           <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
