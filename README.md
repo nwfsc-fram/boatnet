@@ -9,11 +9,12 @@ Boatnet provides a suite of tools for collecting fisheries scientific survey and
 
 For those only interested in running the project follow the [How to build and run](https://github.com/nwfsc-fram/boatnet#how-to-build-and-run) section and ignore the rest. The remaining sections are for development purposes only. Note: We are currently working on simplifying the process and in the future you can just download an executable and run the application.
 
-Note that without a CouchDB, large sections of the application will not function correctly. We are working on releasing a test version of the CouchDB data. All of the projects are currently a work in progress!
+Note that without a CouchDB, large sections of the application will not function correctly. We are working on releasing a test version of the CouchDB data.
 
 ## Projects
 
 Boatnet contains multiple projects located in different directories. The different projects are listed below.
+ All of the projects are currently a work in progress!
 
 ### OPTECS (Observer Program Technology Enhanced Collection System)
 
