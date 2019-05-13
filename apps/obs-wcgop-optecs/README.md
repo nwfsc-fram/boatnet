@@ -14,5 +14,7 @@ yarn build
 http-server -S -K ../dev-auth-server/src/keys/temp-priv-key.pem -C ../dev-auth-server/src/keys/temp-
 cert.pem dist/.
 ```
+
 * I recommend you use an incognito window for PWA testing, otherwise the service worker portion can get confusing.
+  * Navigate to `https://localhost:8080` (note httpS. self-signed cert is allowed for localhost only, so the PWA will work.)
 * Also, in the dev tools in Chrome, enable the Application/ Service Workers/ Update on reload checkbox.
