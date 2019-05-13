@@ -9,7 +9,17 @@
 
         <template v-slot:body="props">
           <q-tr :props='props'>
-          <q-td key="id"></q-td>
+          <q-td key="key" :props="props">{{ props.row.key }}</q-td>
+          <q-td key="tripStatus" :props="props">{{ props.row.tripStatus.description }}</q-td>
+          <q-td key="vessel" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+          <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
+          <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
+          <q-td key="departureDate" :props="props">{{ props.row.departureDate }}</q-td>
+          <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
+          <q-td key="returnDate" :props="props">{{ props.row.returnDate }}</q-td>
+          <q-td key="skipper" :props="props">{{ props.row.skipper }}</q-td>
+          <q-td key="isPartialTrip" :props="props">{{ props.row.isPartialTrip }}</q-td>
+          <q-td key="fishingDays" :props="props">{{ props.row.fishingDays }}</q-td>
           <q-td key="fishery" :props="props">{{ props.row.fishery }}</q-td>
           </q-tr>
         </template>
@@ -39,6 +49,17 @@ export default class Debriefer extends Vue {
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
 private columns = [
+    {name: 'key', label: 'Trip ID', field: 'key', required: true, align: 'left', sortable: true },
+    {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', required: true, align: 'left', sortable: true },
+    {name: 'vessel', label: 'Vessel', field: 'vessel', required: true, align: 'left', sortable: true },
+    {name: 'program', label: 'Program', field: 'program', required: true, align: 'left', sortable: true },
+    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: true, align: 'left', sortable: true },
+    {name: 'departureDate', label: 'Departure Date', field: 'departureDate', required: true, align: 'left', sortable: true },
+    {name: 'returnPort', label: 'Return Port', field: 'returnPort', required: true, align: 'left', sortable: true },
+    {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: true, align: 'left', sortable: true },
+    {name: 'skipper', label: 'Skipper', field: 'skipper', required: true, align: 'left', sortable: true },
+    {name: 'isPartialTrip', label: 'Partial Trip', field: 'isPartialTrip', required: true, align: 'left', sortable: true },
+    {name: 'fishingDays', label: 'Fishing Days', field: 'fishingDays', required: true, align: 'left', sortable: true },
     {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true }
 ];
 private async getTrips() {
@@ -59,7 +80,7 @@ private async getTrips() {
 
       for (const row of trips.rows) {
           const trip = row.doc;
-          // trip.id = row.id;
+          trip.key = row.key;
           this.WcgopTrips.push(trip);
       }
       console.log(this.WcgopTrips);
