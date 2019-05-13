@@ -4,6 +4,7 @@
 // FRAM Data Team 2019
 
 import express from 'express';
+import cors from 'cors';
 import { Application } from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
@@ -24,6 +25,7 @@ const optionDefinitions = [{ name: 'secure', type: Boolean }];
 const options = commandLineArgs(optionDefinitions);
 
 app.use(bodyParser.json()); // for parsing application/json
+app.use(cors());
 
 const API_VERSION = 'v1';
 // REST API

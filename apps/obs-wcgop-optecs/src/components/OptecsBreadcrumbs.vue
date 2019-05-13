@@ -15,7 +15,7 @@
         class="btn-arrow-right"
         :color="i != breadcrumbs.length-1 ? 'white' : 'secondary'"
         :text-color="i != breadcrumbs.length-1 ? 'primary' : 'white'"
-        :to="i != breadcrumbs.length-1 ? crumb.link : ''"
+        :to="crumb.link"
       >{{crumb.name}}</q-btn>
     </span>
   </q-btn-group>
@@ -23,28 +23,33 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../_store/types/types';
-import { State, Action } from 'vuex-class';
+import { Getter } from 'vuex-class';
+import { WcgopTrip } from '@boatnet/bn-models';
 
 @Component
 export default class OptecsBreadcrumbs extends Vue {
-  private breadcrumbs = [];
-  @State('appState') private appState!: WcgopAppState;
+  private breadcrumbs: any[] = [];
+  @Getter('currentTrip', { namespace: 'appState' })
+  private currentTrip!: WcgopTrip;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     if (!this.$route.meta.breadcrumb) {
       return;
     }
-    for (const crumb of this.$route.meta.breadcrumb) {
-      if (crumb.name === 'tripIdPlaceholder') {
-        const tripNum = this.appState.currentTrip ? this.appState.currentTrip.tripNum : 0;
-        crumb.name = tripNum;
-        crumb.link += tripNum;
+    const temp = JSON.stringify(this.$route.meta.breadcrumb);
+    this.breadcrumbs = JSON.parse(temp);
+
+    for (let i = 0; i < this.$route.meta.breadcrumb.length; i++) {
+      if (this.$route.meta.breadcrumb[i].name === 'tripIdPlaceholder') {
+        const tripNum = this.currentTrip ? this.currentTrip.tripNum : 0;
+        this.breadcrumbs[i].name = String(tripNum);
+        this.breadcrumbs[i].link = 'tripdetails/' + String(tripNum);
+      } else {
+        this.breadcrumbs[i] = this.$route.meta.breadcrumb[i];
       }
       // TODO read state and populate haulId and species
     }
-    this.breadcrumbs = this.$route.meta.breadcrumb;
   }
 }
 </script>

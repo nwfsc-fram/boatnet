@@ -23,7 +23,9 @@
                     hide-selected
                     input-debounce="0"
                     :options="options"
-                    @filter="filterFn"
+                    debounce="500"
+                    @input="saveOnUpdate"
+                    @filter="getVesselNames"
                     @focus="displayKeyboard"
                     data-layout="normal"
                   >
@@ -36,8 +38,10 @@
                   <q-input
                     outlined
                     class="col-2"
-                    v-model="captainName"
+                    v-model="currentTrip.captainName"
                     label="Skipper's Name"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="normal"
                   />
@@ -46,56 +50,58 @@
                     class="col-2"
                     v-model="currentTrip.crewSize"
                     label="# of Crew"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="numeric"
                   />
                   <q-input
                     outlined
                     class="col-2"
-                    v-model="currentTrip.observerLogbookNum"
+                    v-model="currentTrip.logbookNum"
                     label="Observer Logbook #"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="numeric"
                   />
-                  <q-input
-                    outlined
-                    label="Departure Date"
-                    v-model="departureDateDisplay"
-                    mask="date"
-                    @focus="displayKeyboard"
-                    data-layout="numeric"
-                  >
-                    <template>
-                      <q-popup-proxy>
-                        <q-date v-model="departureDateDisplay"/>
-                      </q-popup-proxy>
-                    </template>
-                    <template v-slot:append>
-                      <q-icon name="event" class="cursor-pointer"></q-icon>
-                    </template>
-                  </q-input>
-                  <q-input
+                  <boatnet-datetime
+                    dateLabel="Departure Date"
+                    timeLabel="Departure Time"
+                    :value="currentTrip.departureDate"
+                    @save="updateDepartureDate"
+                    @error="handleError"
+                    @displayKeyboard="displayKeyboard"
+                  />
+                  <q-select
                     outlined
                     class="col-2"
-                    label="Departure Time"
-                    v-model="departureTime"
-                    mask="##:##"
-                    fill-mask
-                    @focus="displayKeyboard"
-                    data-layout="numeric"
-                  />
-                  <q-input
-                    outlined
                     v-model="currentTrip.departurePort.name"
                     label="Departure Port"
+                    use-input
+                    hide-selected
+                    input-debounce="0"
+                    :options="options"
+                    debounce="500"
+                    @input="saveOnUpdate"
+                    @filter="getPorts"
                     @focus="displayKeyboard"
                     data-layout="normal"
-                  />
+                  >
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">No results</q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                 </div>
               </div>
               <div class="col-5">
-                <boatnet-licenses :certificates="certificate" @displayKeyboard="displayKeyboard"
-                @error="handleError"/>
+                <boatnet-licenses
+                  :certificates="certificate"
+                  @displayKeyboard="displayKeyboard"
+                  @error="handleError"
+                />
               </div>
               <div class="col-1 self-center">
                 <q-btn flat dense round @click="changeTab('end')" icon="chevron_right" size="4em"/>
@@ -136,6 +142,8 @@
                     class="col-2"
                     v-model="currentTrip.logbookType"
                     label="Vessel Logbook Name"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="normal"
                   />
@@ -144,43 +152,40 @@
                     class="col-2"
                     v-model="currentTrip.logbookNum"
                     label="Vessel Logbook Page #"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="numeric"
                   />
-                  <q-input
+                  <boatnet-datetime
+                    dateLabel="Return Date"
+                    timeLabel="Return Time"
+                    :value="currentTrip.returnDate"
+                    @save="updateReturnDate"
+                    @error="handleError"
+                    @displayKeyboard="displayKeyboard"
+                  />
+                  <q-select
                     outlined
                     class="col-2"
                     v-model="currentTrip.returnPort.name"
                     label="Return Port"
+                    use-input
+                    hide-selected
+                    input-debounce="0"
+                    :options="options"
+                    debounce="500"
+                    @input="saveOnUpdate"
+                    @filter="getPorts"
                     @focus="displayKeyboard"
                     data-layout="normal"
-                  />
-                  <q-input
-                    outlined
-                    label="Return Date"
-                    v-model="returnDateDisplay"
-                    mask="date"
-                    @focus="displayKeyboard"
-                    data-layout="numeric"
                   >
-                    <template v-slot:append>
-                      <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy>
-                          <q-date v-model="returnDateDisplay"/>
-                        </q-popup-proxy>
-                      </q-icon>
+                    <template v-slot:no-option>
+                      <q-item>
+                        <q-item-section class="text-grey">No results</q-item-section>
+                      </q-item>
                     </template>
-                  </q-input>
-                  <q-input
-                    outlined
-                    class="col-2"
-                    label="Return Time"
-                    v-model="returnTime"
-                    mask="##:##"
-                    fill-mask
-                    @focus="displayKeyboard"
-                    data-layout="numeric"
-                  />
+                  </q-select>
                 </div>
               </div>
               <div class="col-5">
@@ -190,6 +195,8 @@
                     class="col-2"
                     :value="firstReceiverName"
                     label="First Receiver"
+                    debounce="500"
+                    @input="saveOnUpdate"
                     @focus="displayKeyboard"
                     data-layout="normal"
                   />
@@ -201,6 +208,8 @@
                       class="col-12"
                       v-model="ph"
                       label="Fish Ticket"
+                      debounce="500"
+                      @input="saveOnUpdate"
                       @focus="displayKeyboard"
                       data-layout="numeric"
                     />
@@ -221,6 +230,9 @@
         ]"
         />
       </div>
+      <div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
+        <q-btn color="primary" icon="play_arrow" label="Go to Hauls" @click="goToHauls"/>
+      </div>
     </q-page>
   </span>
 </template>
@@ -229,11 +241,9 @@
 import { Point } from 'geojson';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import { date } from 'quasar';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
-import { shortFormatDate } from '@boatnet/bn-util';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
@@ -251,8 +261,10 @@ import {
 
 import { couchService } from '@boatnet/bn-couch';
 import BoatnetLicenses from '@boatnet/bn-common';
+import BoatnetDatetime from '@boatnet/bn-common';
 
 Vue.component(BoatnetLicenses);
+Vue.component(BoatnetDatetime);
 
 @Component
 export default class Trips extends Vue {
@@ -262,99 +274,24 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
-  private shortFormat = shortFormatDate;
+  @Action('saveTrip', { namespace: 'appState' })
+  private saveTrip: any;
+  @Getter('currentTrip', { namespace: 'appState' })
+  private currentTrip!: WcgopTrip;
 
   private tab: string; // Current tab (start or end)
-  private currentTrip: WcgopTrip;
   private ph = ''; // TEMP
 
   private options: string[] = [];
 
   // TODO modify this to load from DB
   private certificate: string[] = [''];
-  private departureDate = Date.now();
-  private departureDateDisplay = date.formatDate(
-    this.departureDate,
-    'YYYY/MM/DD'
-  );
-  private departureTime = '';
-
-  private returnDate = Date.now();
-  private returnDateDisplay = date.formatDate(this.returnDate, 'YYYY/MM/DD');
-  private returnTime = '';
 
   constructor() {
     super();
     this.tab = this.startTab;
-    const examplePort: Port = {
-      _id: 'asdf',
-      type: PortTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      name: 'Oxnard'
-    };
-    const examplePort2: Port = {
-      _id: 'asdf',
-      type: PortTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      name: 'Port Townsend'
-    };
-    const exampleContact: Person = {
-      _id: 'asdf',
-      type: PersonTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      firstName: 'Seadog',
-      lastName: 'McGillicutty'
-    };
-    const exampleVessel: Vessel = {
-      _id: 'asdf',
-      type: VesselTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      vesselName: 'Pickle Pelican (CF1890HT)',
-      coastGuardNumber: 'ABC123'
-    };
-    // TODO This is just an example trip
-    this.currentTrip = {
-      _id: '1',
-      tripNum: this.tripNum,
-      type: WcgopTripTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      fishery: { name: 'Catch Shares' },
-      captain: exampleContact,
-      crewSize: 25,
-      isPartialTrip: false,
-      observerLogbookNum: 123,
-      departurePort: examplePort,
-      departureDate: moment().format(),
-      returnPort: examplePort2,
-      returnDate: moment()
-        .add(1, 'days')
-        .format(),
-      vessel: exampleVessel,
-      firstReceivers: [
-        {
-          name: 'Crangon Seafoods'
-        }
-      ],
-      // ... other data
-      legacy: {
-        tripId: 123
-      }
-    };
   }
-  get captainName(): string | undefined {
-    if (this.currentTrip.captain) {
-      return (
-        this.currentTrip.captain.firstName +
-        ' ' +
-        this.currentTrip.captain.lastName
-      );
-    }
-  }
+
   get firstReceiverName(): string | undefined {
     if (
       this.currentTrip.firstReceivers &&
@@ -372,8 +309,34 @@ export default class Trips extends Vue {
     }
   }
 
-  private handleError(message: string) {
-    this.errorAlert(message);
+  private handleError(errorMsg: string) {
+    this.errorAlert(errorMsg);
+  }
+
+  private updateDepartureDate(datetime: string) {
+    if (this.currentTrip.returnDate && moment(datetime).isAfter(moment(this.currentTrip.returnDate))) {
+      this.errorAlert('Departure date must be before return date');
+    } else {
+      this.currentTrip.departureDate = datetime;
+      this.saveOnUpdate();
+    }
+  }
+
+  private updateReturnDate(datetime: string) {
+    if (this.currentTrip.departureDate && moment(datetime).isBefore(moment(this.currentTrip.departureDate))) {
+      this.errorAlert('Return date must be after departure date');
+    } else {
+      this.currentTrip.returnDate = datetime;
+      this.saveOnUpdate();
+    }
+  }
+
+  private saveOnUpdate() {
+    this.saveTrip(this.currentTrip);
+  }
+
+  private goToHauls() {
+    this.$router.push({ path: '/hauls/' });
   }
 
   private changeTab(tabName: string) {
@@ -386,7 +349,15 @@ export default class Trips extends Vue {
     }
   }
 
-  private async filterFn(val: string, update: any, abort: any) {
+  private async getPorts(val: string, update: any, abort: any) {
+    this.getLookupVals(val, update, abort, 'optecs_trawl/all_port_names');
+  }
+
+  private async getVesselNames(val: string, update: any, abort: any) {
+    this.getLookupVals(val, update, abort, 'optecs_trawl/all_vessel_names');
+  }
+
+  private async getLookupVals(val: string, update: any, abort: any, lookupTable: string) {
     // if (val.length < 2) {
     //   abort();
     //   return;
@@ -404,7 +375,7 @@ export default class Trips extends Vue {
 
         const vessels = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_vessel_names',
+          lookupTable,
           queryOptions
         );
         this.options = vessels.rows.map((vessel: any) => vessel.value);

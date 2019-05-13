@@ -1,44 +1,58 @@
 <template>
   <span>
-    <span v-if="data && !data.blank">
+    <span v-if="layout && layout.labels && !layout.blank">
       <q-btn
-        class="q-px-lg q-py-xs"
-        :color="data.color"
-        :text-color="data['text-color']"
-        :size="size"
+        class="q-px-lg q-py-md"
+        :color="layout.color"
+        :text-color="layout['text-color']"
         :disabled="disabled"
-        :data="data"
         @click="handleClick"
       >
-        {{data.code}}
+        <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
+        {{layout.labels.shortCode}}
         <br>
-        {{data.reason}}
+        {{layout.labels.reason}}
         <br>
-        {{data.count}}
+        {{data ? data.count : ''}}
       </q-btn>
     </span>
-    <span v-if="data && data.blank">
+    <span v-if="layout && layout.blank && tallyMode === selectLocationMode">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
+      <q-btn
+        outline
+        round
+        class="q-px-md q-py-md q-ml-md"
+        align="around"
+        color="black"
+        @click="handleBlankClicked"
+      />
     </span>
   </span>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../../_store/types';
+import {
+  WcgopAppState,
+  TallyOperationMode,
+  TallyButtonLayoutData,
+  TallyCountData,
+  TallyButtonMode
+} from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
-import { TallyButtonData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
 // TODO Move audio to a separate service
 const lowClickFile = require('../../assets/audio/click4.wav');
 const highClickFile = require('../../assets/audio/clack.wav');
 const funnyFile = require('../../assets/audio/funnyclick.wav');
+const spaceyFile = require('../../assets/audio/spaceyclick.wav');
 
 const lowClickAudio = new Audio(lowClickFile);
 const highClickAudio = new Audio(highClickFile);
 const funnyAudio = new Audio(funnyFile);
+const spaceyAudio = new Audio(spaceyFile);
 
 @Component
 export default class TallyBtn extends Vue {
@@ -48,19 +62,34 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public size!: string;
   @Prop({ default: undefined }) public round!: boolean;
   @Prop({ default: undefined }) public disabled!: boolean;
-  // Data:
-  @Prop({ default: undefined }) public data!: TallyButtonData;
+  @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
+  @Prop({ default: undefined }) public data!: TallyCountData;
   @Prop({ default: undefined }) public blank!: boolean;
-  // @Prop({ default: undefined }) public reason!: boolean;
-  // @Prop({ default: undefined }) public count!: boolean;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
+  @Getter('tallyMode', { namespace: 'tallyState' })
+  private tallyMode!: TallyOperationMode;
   @Getter('isSoundEnabled', { namespace: 'appState' })
   private isSoundEnabled!: boolean;
 
+  private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;
+  private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
+
+  public handleBlankClicked() {
+    this.$emit('blankClicked', this.layout);
+  }
 
   public handleClick() {
-    if (this.data.count !== undefined) {
+    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
+      this.$emit('dataChanged', { button: this.layout, data: this.data });
+      return;
+    } else if (this.tallyMode !== TallyOperationMode.Tally) {
+      console.log('Not in Tally mode, no data change.', this.incDecValue);
+
+      this.playSound('bad');
+      return;
+    }
+    if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
       if (this.incDecValue > 0) {
         this.playSound('inc');
@@ -70,12 +99,12 @@ export default class TallyBtn extends Vue {
       } else {
         this.playSound('dec');
         this.data.count = newVal;
-        if (this.data.count < 0 ) {
+        if (this.data.count < 0) {
           this.data.count = 0;
         }
       }
 
-      this.$emit('dataChanged', this.data);
+      this.$emit('dataChanged', { button: this.layout, data: this.data });
     }
   }
 
@@ -89,6 +118,9 @@ export default class TallyBtn extends Vue {
         break;
       case 'dec':
         lowClickAudio.play();
+        break;
+      case 'bad':
+        spaceyAudio.play();
         break;
       default:
         funnyAudio.play();

@@ -1,22 +1,48 @@
 <template>
   <q-btn-group spread>
-    <tally-control-btn control-name="tally-mode" @controlclick="handleControlClick" :color="tallyMode.color" :textcolor="tallyMode['textcolor']">Tally
+    <tally-control-btn
+      control-name="tally-mode"
+      @controlclick="handleControlClick"
+      :color="tallyMode.color"
+      :textcolor="tallyMode['textcolor']"
+    >
+      Tally
       <br>Mode
-      <br>{{tallyMode.incdecText}}
+      <br>
+      {{tallyMode.incdecText}}
     </tally-control-btn>
-    <template v-for="reason in reasons">
-    <tally-control-btn :control-name="reason" color="grey-4" :key="`${reason}`" @controlclick="handleControlClick">
-      {{species}}
-      <br>{{reason}}
-      <br>{{counts[reason]}}
-    </tally-control-btn>
+    <template v-for="reason in reasonButtonColors">
+      <tally-control-btn
+        :control-name="reason.name"
+        :color="reason.color.bg"
+        :text-color="reason.color.text"
+        :key="`${reason.name}`"
+        @controlclick="handleControlClick"
+      >
+        {{species}}
+        <br>
+        {{reason.name}}
+        <br>
+        {{counts[reason.name]}}
+      </tally-control-btn>
     </template>
-    <tally-control-btn color="red-5" textcolor="white" control-name="all-tallies-done" @controlclick="handleControlClick" >Done<br>with<br>{{species}}</tally-control-btn>
+    <tally-control-btn
+      color="red-5"
+      textcolor="white"
+      control-name="all-tallies-done"
+      @controlclick="handleControlClick"
+    >
+      Done
+      <br>with
+      <br>
+      {{species}}
+    </tally-control-btn>
   </q-btn-group>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 
 import TallyControlBtn from './TallyControlBtn.vue';
 Vue.component('tally-control-btn', TallyControlBtn);
@@ -24,20 +50,11 @@ Vue.component('tally-control-btn', TallyControlBtn);
 @Component
 export default class TallyAllTalliesControls extends Vue {
   @Prop({ default: undefined }) public species!: string; // TODO probably pass actual record
-  public reasons: string[] = [
-  'SFTY',
-  'DOCK',
-  'ACCI',
-  'USED',
-  'OTHR',
-  'REG',
-  'DROP',
-  'PRED',
-  'MKT',
-  'RET'
-  ];
+  @Getter('reasonButtonColors', { namespace: 'tallyState' })
+  private reasonButtonColors!: any[];
 
-  private counts: any = { // Map/ Set is not reactive, so came up with this workaround
+  private counts: any = {
+    // Map/ Set is not reactive, so came up with this workaround
     SFTY: 0,
     DOCK: 0,
     ACCI: 0,
@@ -67,7 +84,7 @@ export default class TallyAllTalliesControls extends Vue {
   private tallyMode = this.tallyModeInc;
 
   public incCount(reason: string) {
-   this.counts[reason]++;
+    this.counts[reason]++;
   }
 
   public setTallyMode(incMode: boolean) {
@@ -82,7 +99,7 @@ export default class TallyAllTalliesControls extends Vue {
 
   public handleControlClick(controlName: string): void {
     switch (controlName) {
-     case 'tally-mode':
+      case 'tally-mode':
         // switch mode
         const isInc = this.tallyMode.value > 0;
         this.setTallyMode(!isInc);

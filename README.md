@@ -14,6 +14,7 @@ Note that without a CouchDB, large sections of the application will not function
 ## Projects
 
 Boatnet contains multiple projects located in different directories. The different projects are listed below.
+ All of the projects are currently a work in progress!
 
 ### OPTECS (Observer Program Technology Enhanced Collection System)
 

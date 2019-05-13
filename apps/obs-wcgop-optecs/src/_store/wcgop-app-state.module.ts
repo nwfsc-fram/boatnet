@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { WcgopAppState, RootState } from '@/_store/types/types';
 import { WcgopTrip, BoatnetUser } from '@boatnet/bn-models';
+import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
 
@@ -13,6 +14,9 @@ export const state: WcgopAppState = {
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
+  saveTrip({ commit }: any, trip: WcgopTrip) {
+    commit('saveTrip', trip);
+  },
   setCurrentTrip({ commit }: any, trip: WcgopTrip) {
     commit('setCurrentTrip', trip);
   },
@@ -34,12 +38,27 @@ const actions: ActionTree<WcgopAppState, RootState> = {
 };
 
 const mutations: MutationTree<WcgopAppState> = {
+  saveTrip(newState: any, trip: WcgopTrip) {
+    try {
+      if (trip._id) {
+        pouchService.db
+          .put(pouchService.userDBName, trip)
+          .then((response: any) => {
+            trip._rev = response.rev;
+          });
+      } else {
+        pouchService.db
+          .post(pouchService.userDBName, trip)
+          .then((response: any) => {
+            trip._id = response.id;
+            trip._rev = response.rev;
+          });
+      }
+    } catch (err) {
+      console.log('not properly save to the database');
+    }
+  },
   setCurrentTrip(newState: any, trip: WcgopTrip) {
-    // if (trip) {
-    //   console.log('[AppState] Current trip:', trip.tripNum);
-    // } else {
-    //   console.log('[AppState] Cleared current trip');
-    // }
     newState.currentTrip = trip;
   },
   navigate(newState: any, uri: string) {

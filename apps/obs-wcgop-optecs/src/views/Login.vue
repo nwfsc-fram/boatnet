@@ -23,6 +23,10 @@
           <b>Last Login Date:</b>
           {{lastLoginDate}}
         </div>
+        <div>
+          <b>Quasar version:</b>
+          {{quasarVersion}}
+        </div>
       </div>
       <div class="q-pa-xl column justify-center items-center full-height">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
@@ -90,6 +94,8 @@ import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 
+import { Quasar } from 'quasar';
+
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
@@ -116,6 +122,8 @@ export default class Login extends Vue {
 
   private lastSoftwareUpdateDate = '-';
   private lastLoginDate = '-';
+
+  private quasarVersion = Quasar.version;
 
   private options = {
     useKbEvents: false,

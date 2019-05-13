@@ -37,7 +37,6 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { WcgopAppState } from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
-import { TallyButtonData } from '../../_store/types';
 
 import { pouchService } from '@boatnet/bn-pouch';
 
@@ -54,6 +53,7 @@ export default class TallyAddNamedSpeciesDialog extends Vue {
   }
 
   public close() {
+    this.$emit('cancel');
     this.isOpen = false;
   }
 

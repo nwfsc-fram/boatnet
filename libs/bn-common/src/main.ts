@@ -1,10 +1,12 @@
 import Vue from 'vue';
+import BoatnetDatetime from './components/BoatnetDatetime.vue';
 import BoatnetHauls from './components/BoatnetHauls.vue';
 import BoatnetTrips from './components/BoatnetTrips.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
 
 const Components: any = {
+  BoatnetDatetime,
   BoatnetHauls,
   BoatnetTrips,
   BoatnetKeyboard,
