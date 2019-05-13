@@ -58,8 +58,8 @@ const router = new Router({
           meta: {
             breadcrumb: [
               { name: 'Trip', link: '' },
-              { name: 'tripIdPlaceholder', link: '/tripdetails/'},
-              { name: 'Hauls', link: ''}
+              { name: 'tripIdPlaceholder', link: ''},
+              { name: 'Hauls', link: '/hauls'}
             ]
           }
         },

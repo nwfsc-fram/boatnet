@@ -28,7 +28,21 @@
       :row-key="tripsSettings.rowKey"
       selection="single"
       :selected.sync="selected"
-    />
+    >
+      <template v-slot:body="props">
+        <q-tr :props="props" @click.native="selectTrip(props.row)" class="cursor-pointer">
+          <q-td/>
+          <q-td key="tripNum" :props="props">{{ props.row.tripNum }}</q-td>
+          <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+          <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
+          <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
+          <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
+          <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
+          <q-td key="errors" :props="props">{{ props.row.errors }}</q-td>
+        </q-tr>
+      </template>
+    </q-table>
+
     <!-- TODO: Figure out why row-key doesn't work with name -->
     <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
@@ -36,7 +50,7 @@
     <q-dialog v-model="confirmDelete" persistent>
       <q-card>
         <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="red" text-color="white" />
+          <q-avatar icon="warning" color="red" text-color="white"/>
           <span class="q-ml-sm">Are you sure you want to delete trip #{{tripNum}}?</span>
         </q-card-section>
 
@@ -70,7 +84,7 @@
         :disabled="!currentTrip"
       />
       <q-space/>
-      <q-btn color="primary" icon="play_arrow" label="Go to Hauls"/>
+      <q-btn color="primary" icon="play_arrow" label="Go to Hauls" @click="goToHauls"/>
     </div>
   </span>
 </template>
@@ -80,6 +94,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { BaseTrip } from '@boatnet/bn-models';
+import moment from 'moment';
 
 @Component
 export default class BoatnetTrips extends Vue {
@@ -89,36 +104,47 @@ export default class BoatnetTrips extends Vue {
   public selected: any[] = [];
   private searchText = '';
   private confirmDelete = false;
-  @Watch('selected', { immediate: true })
-  private onSelectedChanged(newSelected: any) {
-    // TODO: Better way to handle this?
-    const trip = newSelected ? newSelected[0] : undefined;
-    if (trip) {
-      delete trip.__index; // remove weird __index field for converting to trip
-    }
-    this.$emit('selectedTrip', trip);
-  }
 
   private get tripNum() {
     if (this.currentTrip) {
       return this.currentTrip.tripNum;
     }
   }
+
+  private formatDate(date: string) {
+    return moment(date).format('MM/DD/YY');
+  }
+
   // Button click emitters
   private onAddTrip() {
     this.$emit('addTrip');
   }
 
+  private goToHauls() {
+    this.$emit('goToHauls');
+  }
+
+  private selectTrip(row: any) {
+    if (this.selected.length > 0 && this.selected[0].tripNum === row.tripNum) {
+      this.selected = [];
+      this.$emit('selectedTrip', undefined);
+    } else {
+      this.selected = [row];
+      delete row.__index;
+      this.$emit('selectedTrip', row);
+    }
+  }
+
   private onEditTrip() {
-    this.$emit('editTrip', this.currentTrip);
+    this.$emit('editTrip');
   }
 
   private onEndTrip() {
-    this.$emit('endTrip', this.currentTrip);
+    this.$emit('endTrip');
   }
 
   private onDeleteTrip() {
-    this.$emit('deleteTrip', this.currentTrip);
+    this.$emit('deleteTrip');
   }
 
   private displayKeyboard(e: any) {
