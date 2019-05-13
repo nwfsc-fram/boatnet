@@ -124,7 +124,7 @@ private getArrayValues(array: any[]) {
 private emefpDetails(efp: EmEfp) {
     // console.log(efp.vesselName);
     if (efp === null) {
-        const newEmNum = parseInt(this.EM_EFP[0].emEfpNumber.substring(3)) + 1
+        const newEmNum = parseInt(this.EM_EFP[0].emEfpNumber.substring(3), 10) + 1;
         efp = {
             type: 'em-efp',
             emEfpNumber: 'EM-' + newEmNum.toString(),

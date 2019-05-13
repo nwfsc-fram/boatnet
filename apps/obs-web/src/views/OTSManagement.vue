@@ -236,9 +236,9 @@ export default class OtsMangement extends Vue {
 
     private getStatus(row: any) {
         if ( moment(row.efffectiveDate) <= moment() && moment() <= moment(row.expirationDate) ) {
-            return 'Active'
+            return 'Active';
         } else {
-            return 'Inactive'
+            return 'Inactive';
         }
     }
 
