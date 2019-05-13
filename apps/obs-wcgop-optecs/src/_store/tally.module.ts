@@ -164,7 +164,7 @@ const mutations: MutationTree<TallyState> = {
 
     if (!newState.tallyLayout._id) {
       newState.tallyLayout = createDefaultLayoutRecord();
-      console.warn('[Tally Module] NEW LAYOUT INITIALIZATION');
+      console.log('[Tally Module] New layout initialized.');
       await updateLayoutDB(newState.tallyLayout); // ignore retval for now
     } else {
       console.log(
@@ -176,7 +176,7 @@ const mutations: MutationTree<TallyState> = {
 
     if (!newState.tallyDataRec._id) {
       newState.tallyDataRec = createDefaultButtonData();
-      console.warn('[Tally Module] NEW TALLY DATA INITIALIZATION');
+      console.log('[Tally Module] New tally dataset initialized.');
       await updateTallyDataDB(newState.tallyDataRec); // ignore retval for now
     } else {
       console.log(
