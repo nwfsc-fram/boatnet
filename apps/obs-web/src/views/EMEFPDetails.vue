@@ -166,7 +166,7 @@ export default class EMEFPDetails extends Vue {
       return this.permit.permits.map((permit) => permit.permit_number);
   }
 
-  get efpTypes(): string[] {
+  get efpTypes() {
     if (this.emefp.activeEmefp && this.emefp.activeEmefp.efpTypes) {
       return this.emefp.activeEmefp.efpTypes.map((efpType) => efpType.description);
     } else {
@@ -174,7 +174,7 @@ export default class EMEFPDetails extends Vue {
     }
   }
 
-  set efpTypes(value: string[]) {
+  set efpTypes(value) {
     if (this.emefp.activeEmefp) {
       this.emefp.activeEmefp.efpTypes = [];
       for (const item of value) {

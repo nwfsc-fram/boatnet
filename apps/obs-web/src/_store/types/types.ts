@@ -39,7 +39,8 @@ export interface VesselState {
 }
 
 export interface OTSState {
-  activeOTSTarget: OTSTarget | null;
+  activeOTSTarget: any | null;
+  newTarget: boolean;
 }
 
 export interface ObserverAssignmentState {

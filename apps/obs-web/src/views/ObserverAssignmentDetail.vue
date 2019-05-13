@@ -46,6 +46,7 @@
                         :pagination.sync="pagination"
                         title="Port Group Observer Availability"
                         hide-bottom
+                        class="bg-blue-grey-1"
                         >
                         <template v-slot:body="props">
                             <q-tr :props="props" @click.native="setObserver(props.row)">

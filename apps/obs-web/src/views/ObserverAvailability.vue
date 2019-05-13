@@ -20,6 +20,7 @@
                 row-key='_id'
                 :pagination.sync = 'pagination'
                 hide-bottom
+                class="bg-blue-grey-1"
                 ></q-table>
 
             </q-card-section>
