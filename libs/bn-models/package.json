@@ -13,6 +13,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "quasar": "^1.0.0-beta.16"
+    "quasar": "1.0.0-beta.16"
   }
 }
