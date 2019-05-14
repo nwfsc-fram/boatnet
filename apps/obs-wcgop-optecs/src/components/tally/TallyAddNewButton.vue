@@ -8,7 +8,7 @@
         :key="`${reason.name}`"
         @controlclick="handleControlClick"
       >
-        {{species.shortCode}}
+        {{speciesCode}}
         <br>
         {{reason.name}}
       </tally-control-btn>
@@ -32,7 +32,7 @@ Vue.component('tally-control-btn', TallyControlBtn);
 
 @Component
 export default class TallyAddNewButton extends Vue {
-  @Prop({ default: undefined }) private species!: any; // TODO Species type here?
+  @Prop({ default: undefined }) private speciesCode!: string;
   @Action('highlightEmptyButtons', { namespace: 'tallyState' })
   private highlightEmptyButtons: any;
   @Action('setTallyOpMode', { namespace: 'tallyState' })
