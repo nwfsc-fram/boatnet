@@ -85,6 +85,12 @@ const actions: ActionTree<TallyState, RootState> = {
   ) {
     commit('assignNewButton', value);
   },
+  swapButtons(
+    { commit }: any,
+    value: {oldButton: any,  newIndex: number}
+  ) {
+    commit('swapButtons', value);
+  },
   deleteButton({ commit }: any, button: TallyButtonLayoutData) {
     commit('deleteButton', button);
   }
@@ -314,6 +320,24 @@ const mutations: MutationTree<TallyState> = {
       updateTallyDataDB(newState.tallyDataRec);
     }
 
+    updateLayoutDB(newState.tallyLayout);
+  },
+  async swapButtons(newState: any, value: {oldButton: any,  newIndex: number}) {
+    console.log('Move', newState, value);
+
+    const target = newState.tallyLayout.layoutData[value.newIndex];
+
+    const oldButton: TallyButtonLayoutData = {
+      ...target,
+      index: value.oldButton.index,
+    };
+    const newButton: TallyButtonLayoutData = {
+      ...value.oldButton,
+      index: value.newIndex
+    };
+
+    newState.tallyLayout.layoutData.splice(newButton.index, 1, newButton);
+    newState.tallyLayout.layoutData.splice(oldButton.index, 1, oldButton);
     updateLayoutDB(newState.tallyLayout);
   },
   async deleteButton(newState: any, button: TallyButtonLayoutData) {

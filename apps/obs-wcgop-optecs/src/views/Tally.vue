@@ -109,6 +109,8 @@ export default class Tally extends Vue {
   private setTallyOpMode: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
+  @Action('swapButtons', { namespace: 'tallyState' })
+  private swapButtons: any;
   @Action('deleteButton', { namespace: 'tallyState' })
   private deleteButton: any;
 
@@ -127,6 +129,8 @@ export default class Tally extends Vue {
 
   private currentSelectedSpecies: any = {}; // TODO actual species type
   private currentSelectedReason: string = '';
+
+  private currentSelectedButtonToMove: any = {}; // TODO button type?
 
   private speciesList = [];
 
@@ -161,6 +165,10 @@ export default class Tally extends Vue {
       this.setTallyOpMode(TallyOperationMode.Tally);
       this.deleteButton(data.button);
       return;
+    } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
+      this.currentSelectedButtonToMove = data.button;
+      this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
+      return;
     }
     data = {
       ...data,
@@ -180,6 +188,12 @@ export default class Tally extends Vue {
         reason: this.currentSelectedReason,
         index: button.index
       });
+    } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
+      this.swapButtons({
+        oldButton: this.currentSelectedButtonToMove,
+        newIndex: button.index
+      });
+      this.setTallyOpMode(TallyOperationMode.Tally);
     }
   }
 
@@ -205,6 +219,7 @@ export default class Tally extends Vue {
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
     this.currentSelectedReason = '';
+    this.currentSelectedButtonToMove = {};
     this.setTallyOpMode(TallyOperationMode.Tally);
     this.handleControlEvent('tally-mode');
   }
@@ -228,6 +243,9 @@ export default class Tally extends Vue {
         break;
       case 'delete-button':
         this.setTallyOpMode(TallyOperationMode.DeleteButtonSelect);
+        break;
+      case 'move-button':
+        this.setTallyOpMode(TallyOperationMode.MoveButtonSelect);
         break;
       case 'reset-data':
         this.confirmReset = true;

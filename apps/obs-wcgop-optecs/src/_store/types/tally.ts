@@ -7,9 +7,11 @@ export enum TallyButtonMode {
 export enum TallyOperationMode {
   Tally = 'TALLY_MODE',
   AddNamedSpeciesSelectSpecies = 'ADD_NAMED_SPECIES_SELECT_SPECIES',
-  AddNamedSpeciesSelectType = 'SELECT_TYPE',
-  AddNamedSpeciesSelectLocation = 'SELECT_LOCATION',
-  DeleteButtonSelect = 'SELECT_BUTTON_DELETE',
+  AddNamedSpeciesSelectType = 'ADD_NAMED_SPECIES_SELECT_TYPE',
+  AddNamedSpeciesSelectLocation = 'ADD_NAMED_SPECIES_SELECT_LOCATION',
+  DeleteButtonSelect = 'DELETE_BUTTON_SELECT',
+  MoveButtonSelect = 'MOVE_BUTTON_SELECT',
+  MoveSelectLocation = 'MOVE_SELECT_LOCATION',
   Unknown = 'Unknown'
 }
 
