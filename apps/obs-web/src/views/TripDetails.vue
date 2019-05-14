@@ -13,7 +13,7 @@
                     title="Trip is Selected">
                 </q-icon>
                 <br>
-                <span v-if="trip.activeTrip.fishery">{{ trip.activeTrip.fishery.name }}</span>
+                <span v-if="trip.activeTrip.fishery.name">{{ trip.activeTrip.fishery.name }}</span>
                 </div>
 
                 <div class="row items-start">
@@ -23,6 +23,7 @@
                         <q-date
                             v-model="departureDate"
                             color="green"
+                            dark
                             >
                         </q-date>
                     </div>
@@ -31,15 +32,16 @@
                         <q-date
                             v-model="returnDate"
                             color="red"
+                            dark
                             >
                         </q-date>
                     </div>
                 </div>
 
-                <q-select v-model="trip.activeTrip.departurePort.name" :dense="true" label="Start Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select v-model="trip.activeTrip.returnPort.name" :dense="true" label="End Port" @filter="filterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.activeTrip.departurePort.name" :dense="true" label="Start Port" @filter="portsFilterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select v-model="trip.activeTrip.returnPort.name" :dense="true" label="End Port" @filter="portsFilterFn" use-input stack-label :options="portOptions"></q-select>
 
-                <q-select v-model="trip.activeTrip.fishery.name" :dense="true" label="Fishery" stack-label :rules="[val => !!val || 'Field is required']" :options="fisheryOptions"></q-select>
+                <q-select v-model="trip.activeTrip.fishery" :dense="true" label="Fishery" stack-label :rules="[val => !!val || 'Field is required']" @filter="fisheriesFilterFn" use-input option-label="name" option-value="_id" :options="fisheryOptions"></q-select>
 
                 <p><strong>Permits</strong></p>
 
@@ -144,7 +146,8 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-  VesselTypeName
+  VesselTypeName,
+  Fishery
 } from '@boatnet/bn-models';
 
 @Component
@@ -174,10 +177,7 @@ export default class TripDetails extends Vue {
     // }
 
     private portOptions: string[] = [];
-
-    private get fisheryOptions() {
-        return this.general.fisheries;
-    }
+    private fisheryOptions: Fishery[] = [];
 
     constructor() {
         super();
@@ -208,7 +208,31 @@ export default class TripDetails extends Vue {
     //         }
     //     }
 
-    private filterFn(val: string, update: any, abort: any) {
+    private fisheriesFilterFn(val: string, update: any, abort: any) {
+    update(async () => {
+      try {
+        const db = pouchService.db;
+        const queryOptions: ListOptions = {
+          limit: 5,
+          start_key: val.toLowerCase(),
+          inclusive_end: true,
+          descending: false
+        };
+
+        const fisheries = await db.query(
+          pouchService.lookupsDBName,
+          'obs_web/all_fisheries',
+          queryOptions
+        );
+        console.log(fisheries)
+        this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
+      } catch (err) {
+        this.errorAlert(err);
+      }
+    });
+    }
+
+    private portsFilterFn(val: string, update: any, abort: any) {
     update(async () => {
       try {
         const db = pouchService.db;

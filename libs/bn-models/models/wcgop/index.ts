@@ -8,3 +8,4 @@ export * from './wcgop-basket';
 export * from './wcgop-specimen';
 export * from './wcgop-discard-reason';
 export * from './ots-target';
+export * from './observer-activity';

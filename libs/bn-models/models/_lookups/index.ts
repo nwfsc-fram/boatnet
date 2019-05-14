@@ -18,6 +18,7 @@ export * from './interaction-outcome';
 export * from './interaction-type';
 export * from './measurement-device';
 export * from './media';
+export * from './observer-activity-type';
 export * from './ots-target-type';
 export * from './person';
 export * from './port';

@@ -16,11 +16,13 @@
             <q-toggle
             v-model="showInactive"
             label="Show Inactive"
+            @click="showInactive = !showInactive"
             left-label
             />
             <q-toggle
             v-model="showPrevious"
             label="Show Previous"
+            @click="showPrevious = !showPrevious"
             left-label
             />
         </div>
@@ -194,15 +196,27 @@ export default class OtsMangement extends Vue {
     }
 
     private get fisheryTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide' && this.getStatus(target) == 'Active');
+        }
     }
 
     private get vesselTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Vessel');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Vessel');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Vessel' && this.getStatus(target) == 'Active');
+        }
     }
 
     private get portGroupTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Port Group');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Port Group');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Port Group' && this.getStatus(target) == 'Active');
+        }
     }
 
     private OtsTargetDetail(row: any) {

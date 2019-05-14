@@ -47,6 +47,11 @@ export interface ObserverAssignmentState {
   activeTrip: any | null;
 }
 
+export interface ObserverAvailabilityState {
+  activeActivity: any | null;
+  isNewActivity: any | null;
+}
+
 export interface GeneralState {
   ports: string[];
   fisheries: string[];

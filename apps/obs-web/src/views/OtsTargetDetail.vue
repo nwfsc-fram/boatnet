@@ -106,6 +106,7 @@
                       v-model="effectiveDate"
                       :options="optionsFn"
                       color="green"
+                      dark
                       >
                   </q-date>
                 </q-item-section>
@@ -118,6 +119,7 @@
                       v-model="expirationDate"
                       :options="optionsFn"
                       color="red"
+                      dark
                       >
                   </q-date>
                   </q-item-section>
