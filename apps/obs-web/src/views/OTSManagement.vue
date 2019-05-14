@@ -199,7 +199,7 @@ export default class OtsMangement extends Vue {
         if (this.showInactive) {
             return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide');
         } else {
-            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide' && this.getStatus(target) == 'Active');
+            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide' && this.getStatus(target) === 'Active');
         }
     }
 
@@ -207,7 +207,7 @@ export default class OtsMangement extends Vue {
         if (this.showInactive) {
             return this.otsTargets.filter((target) => target.targetType === 'Vessel');
         } else {
-            return this.otsTargets.filter((target) => target.targetType === 'Vessel' && this.getStatus(target) == 'Active');
+            return this.otsTargets.filter((target) => target.targetType === 'Vessel' && this.getStatus(target) === 'Active');
         }
     }
 
@@ -215,7 +215,7 @@ export default class OtsMangement extends Vue {
         if (this.showInactive) {
             return this.otsTargets.filter((target) => target.targetType === 'Port Group');
         } else {
-            return this.otsTargets.filter((target) => target.targetType === 'Port Group' && this.getStatus(target) == 'Active');
+            return this.otsTargets.filter((target) => target.targetType === 'Port Group' && this.getStatus(target) === 'Active');
         }
     }
 

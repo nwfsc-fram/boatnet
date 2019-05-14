@@ -224,7 +224,6 @@ export default class TripDetails extends Vue {
           'obs_web/all_fisheries',
           queryOptions
         );
-        console.log(fisheries)
         this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
       } catch (err) {
         this.errorAlert(err);

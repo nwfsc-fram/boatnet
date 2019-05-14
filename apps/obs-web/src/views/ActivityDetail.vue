@@ -98,7 +98,7 @@ private updateActivity() {
         pouchService.db.post(pouchService.userDBName, this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     } else {
-        delete this.obact.activeActivity.__index
+        delete this.obact.activeActivity.__index;
         pouchService.db.put(pouchService.userDBName, this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     }

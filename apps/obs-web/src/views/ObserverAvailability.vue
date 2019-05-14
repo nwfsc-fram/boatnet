@@ -108,7 +108,7 @@ export default class ObserverAssignment extends Vue {
 
   public get allActivities() {
       if (this.userActivities && this.userTrips) {
-          const allActivities = []
+          const allActivities = [];
           for (const activity of this.userActivities) {
               if (moment(activity.endDate) > moment()) {
                   allActivities.push(activity);
@@ -124,7 +124,7 @@ export default class ObserverAssignment extends Vue {
                   status: trip.tripStatus.description
                 });
             }
-          };
+          }
           return allActivities;
       } else {
           return [];
@@ -165,25 +165,25 @@ export default class ObserverAssignment extends Vue {
     ];
 
     private formatDate(date: string) {
-        return moment(date).format('MMM DD, YYYY')
+        return moment(date).format('MMM DD, YYYY');
     }
 
     private newActivity() {
         const newActivity = {
             type: ObserverActivityTypeName
-            }
+            };
         this.obact.activeActivity = newActivity;
         this.obact.isNewActivity = true;
-        this.$router.push({path: '/activity-detail'})
+        this.$router.push({path: '/activity-detail'});
     }
 
     private editActivity(row: any) {
         if (row.activityType !== 'Trip') {
             this.obact.activeActivity = row;
             this.obact.isNewActivity = false;
-            this.$router.push({path: '/activity-detail'})
+            this.$router.push({path: '/activity-detail'});
         } else {
-            alert('Trips are not editabe from this page.')
+            alert('Trips are not editabe from this page.');
         }
     }
 
