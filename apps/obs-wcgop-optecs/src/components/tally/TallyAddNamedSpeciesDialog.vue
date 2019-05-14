@@ -10,10 +10,12 @@
         v-model="selectedSpecies"
         label="Species Code / Name"
         use-input
+        fill-input
         hide-selected
         clearable
         input-debounce="50"
         :options="options"
+        option-value="label"
         @filter="filterFn"
         data-layout="normal"
       >

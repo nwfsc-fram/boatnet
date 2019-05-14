@@ -41,7 +41,7 @@
       :speciesList="speciesList"
       @cancel="handleCancelAddNamedSpecies"
     />
-    <div>Mode: {{tallyMode}}</div>
+    <!-- <div>Mode: {{tallyMode}}</div> -->
   </q-page>
 </template>
 
@@ -107,8 +107,12 @@ export default class Tally extends Vue {
   private setTallyIncDec: any;
   @Action('setTallyOpMode', { namespace: 'tallyState' })
   private setTallyOpMode: any;
+  @Action('setCurrentButtonIdx', { namespace: 'tallyState' })
+  private setCurrentButtonIdx: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
+  @Action('swapButtons', { namespace: 'tallyState' })
+  private swapButtons: any;
   @Action('deleteButton', { namespace: 'tallyState' })
   private deleteButton: any;
 
@@ -127,6 +131,8 @@ export default class Tally extends Vue {
 
   private currentSelectedSpecies: any = {}; // TODO actual species type
   private currentSelectedReason: string = '';
+
+  private currentSelectedButtonToMove: any = {}; // TODO button type?
 
   private speciesList = [];
 
@@ -161,6 +167,18 @@ export default class Tally extends Vue {
       this.setTallyOpMode(TallyOperationMode.Tally);
       this.deleteButton(data.button);
       return;
+    } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
+      this.currentSelectedButtonToMove = data.button;
+      this.setCurrentButtonIdx(data.button.index);
+      this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
+      return;
+    } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
+      this.swapButtons({
+        oldButton: this.currentSelectedButtonToMove,
+        newIndex: data.button.index
+      });
+      this.setTallyOpMode(TallyOperationMode.Tally);
+      return;
     }
     data = {
       ...data,
@@ -180,6 +198,12 @@ export default class Tally extends Vue {
         reason: this.currentSelectedReason,
         index: button.index
       });
+    } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
+      this.swapButtons({
+        oldButton: this.currentSelectedButtonToMove,
+        newIndex: button.index
+      });
+      this.setTallyOpMode(TallyOperationMode.Tally);
     }
   }
 
@@ -205,6 +229,7 @@ export default class Tally extends Vue {
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
     this.currentSelectedReason = '';
+    this.currentSelectedButtonToMove = {};
     this.setTallyOpMode(TallyOperationMode.Tally);
     this.handleControlEvent('tally-mode');
   }
@@ -228,6 +253,9 @@ export default class Tally extends Vue {
         break;
       case 'delete-button':
         this.setTallyOpMode(TallyOperationMode.DeleteButtonSelect);
+        break;
+      case 'move-button':
+        this.setTallyOpMode(TallyOperationMode.MoveButtonSelect);
         break;
       case 'reset-data':
         this.confirmReset = true;
@@ -281,7 +309,7 @@ export default class Tally extends Vue {
       !targetButton.labels.shortCode ||
       !this.tallyState.tallyDataRec
     ) {
-      return {count: -1 };
+      return { count: -1 };
     }
     const targetData = this.tallyState.tallyDataRec.data!.filter(
       (rec: TallyCountData) => {

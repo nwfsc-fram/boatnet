@@ -10,7 +10,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "quasar": "1.0.0-beta.16",
+    "quasar": "1.0.0-beta.23",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
