@@ -10,6 +10,18 @@
       >
         <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
         <q-badge v-if="tallyMode === moveSelect" color="blue-3" text-color="black" floating>MOVE</q-badge>
+        <q-badge
+          v-if="tallyMode === moveLocation && layout.index !== currentButtonIdx"
+          color="green-3"
+          text-color="black"
+          floating
+        >SWAP</q-badge>
+        <q-badge
+          v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
+          color="red"
+          text-color="white"
+          floating
+        >MOVING</q-badge>
         {{layout.labels.shortCode}}
         <br>
         {{layout.labels.reason}}
@@ -17,7 +29,9 @@
         {{data ? data.count : ''}}
       </q-btn>
     </span>
-    <span v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation)">
+    <span
+      v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation)"
+    >
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
         outline
@@ -26,7 +40,8 @@
         align="around"
         color="black"
         @click="handleBlankClicked"
-      />
+      >
+      </q-btn>
     </span>
   </span>
 </template>
@@ -70,6 +85,8 @@ export default class TallyBtn extends Vue {
   private incDecValue!: number;
   @Getter('tallyMode', { namespace: 'tallyState' })
   private tallyMode!: TallyOperationMode;
+  @Getter('currentButtonIdx', { namespace: 'tallyState' })
+  private currentButtonIdx!: number;
   @Getter('isSoundEnabled', { namespace: 'appState' })
   private isSoundEnabled!: boolean;
 
@@ -83,15 +100,15 @@ export default class TallyBtn extends Vue {
   }
 
   public handleClick() {
-    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
-      this.$emit('dataChanged', { button: this.layout, data: this.data });
-      return;
-    } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
+    if (
+      this.tallyMode === TallyOperationMode.DeleteButtonSelect ||
+      this.tallyMode === TallyOperationMode.MoveButtonSelect ||
+      this.tallyMode === TallyOperationMode.MoveSelectLocation
+    ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
     } else if (this.tallyMode !== TallyOperationMode.Tally) {
       console.log('Not in Tally mode, no data change.', this.incDecValue);
-
       this.playSound('bad');
       return;
     }

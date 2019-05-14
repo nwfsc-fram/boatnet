@@ -63,4 +63,5 @@ export interface TallyState {
   // State
   incDecValue?: number; // +1 or -1
   operationMode?: TallyOperationMode;
+  currentButtonIdx?: number;
 }
