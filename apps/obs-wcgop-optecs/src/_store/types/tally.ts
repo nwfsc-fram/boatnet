@@ -12,6 +12,9 @@ export enum TallyOperationMode {
   DeleteButtonSelect = 'DELETE_BUTTON_SELECT',
   MoveButtonSelect = 'MOVE_BUTTON_SELECT',
   MoveSelectLocation = 'MOVE_SELECT_LOCATION',
+  AddExistingSpeciesSelectSpecies = 'ADD_EXISTING_SPECIES_SELECT_SPECIES',
+  AddExistingSpeciesSelectReason = 'ADD_EXISTING_SPECIES_SELECT_REASON',
+  AddExistingSpeciesSelectLocation = 'ADD_EXISTING_SPECIES_SELECT_LOCATION',
   Unknown = 'Unknown'
 }
 
@@ -64,4 +67,5 @@ export interface TallyState {
   incDecValue?: number; // +1 or -1
   operationMode?: TallyOperationMode;
   currentButtonIdx?: number;
+  currentReason?: string; // TODO Lookup type? PRED, etc.
 }

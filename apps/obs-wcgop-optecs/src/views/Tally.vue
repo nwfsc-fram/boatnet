@@ -19,7 +19,7 @@
         @controlevent="handleControlEvent"
         @cancel="handleCancel"
         @selectedReason="handleSelectedReason"
-        :species="currentSelectedSpecies"
+        :speciesCode="currentSelectedSpecies.shortCode"
       ></component>
     </div>
     <q-dialog v-model="confirmReset" persistent>
@@ -41,7 +41,7 @@
       :speciesList="speciesList"
       @cancel="handleCancelAddNamedSpecies"
     />
-    <!-- <div>Mode: {{tallyMode}}</div> -->
+    <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
 
@@ -62,16 +62,19 @@ import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
+import TallyAddExistingControls from '../components/tally/TallyAddExistingControls.vue';
 import TallyAddNamedSpeciesDialog from '../components/tally/TallyAddNamedSpeciesDialog.vue';
 import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
+import { Species } from '@boatnet/bn-models';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
 Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
+Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
 
@@ -109,6 +112,8 @@ export default class Tally extends Vue {
   private setTallyOpMode: any;
   @Action('setCurrentButtonIdx', { namespace: 'tallyState' })
   private setCurrentButtonIdx: any;
+  @Action('setCurrentReason', { namespace: 'tallyState' })
+  private setCurrentReason: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
   @Action('swapButtons', { namespace: 'tallyState' })
@@ -122,6 +127,8 @@ export default class Tally extends Vue {
   private horizButtonCount!: number;
   @Getter('tallyMode', { namespace: 'tallyState' })
   private tallyMode!: TallyOperationMode;
+  @Getter('currentReason', { namespace: 'tallyState' })
+  private currentReason!: string;
 
   private btnLabel = '';
 
@@ -129,10 +136,9 @@ export default class Tally extends Vue {
 
   private confirmReset = false;
 
-  private currentSelectedSpecies: any = {}; // TODO actual species type
-  private currentSelectedReason: string = '';
+  private currentSelectedSpecies: any = { shortCode: '' }; // TODO actual species type, move to vuex?
 
-  private currentSelectedButtonToMove: any = {}; // TODO button type?
+  private currentSelectedButton: any = {}; // TODO button type?
 
   private speciesList = [];
 
@@ -168,17 +174,24 @@ export default class Tally extends Vue {
       this.deleteButton(data.button);
       return;
     } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
-      this.currentSelectedButtonToMove = data.button;
+      this.currentSelectedButton = data.button;
       this.setCurrentButtonIdx(data.button.index);
       this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
       return;
     } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
       this.swapButtons({
-        oldButton: this.currentSelectedButtonToMove,
+        oldButton: this.currentSelectedButton,
         newIndex: data.button.index
       });
       this.setTallyOpMode(TallyOperationMode.Tally);
       return;
+    } else if (
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies
+    ) {
+      this.currentSelectedButton = data.button;
+      this.setCurrentButtonIdx(data.button.index);
+      this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
+      this.handleControlEvent('select-exist-species');
     }
     data = {
       ...data,
@@ -195,20 +208,33 @@ export default class Tally extends Vue {
       this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
       this.assignNewButton({
         species: this.currentSelectedSpecies,
-        reason: this.currentSelectedReason,
+        reason: this.currentReason,
         index: button.index
       });
     } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
       this.swapButtons({
-        oldButton: this.currentSelectedButtonToMove,
+        oldButton: this.currentSelectedButton,
         newIndex: button.index
       });
       this.setTallyOpMode(TallyOperationMode.Tally);
+    } else if (
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation
+    ) {
+      this.assignNewButton({
+        species: { shortCode: this.currentSelectedButton.labels.shortCode }, // TODO Species full rec?
+        reason: this.currentReason,
+        index: button.index
+      });
+      this.setCurrentReason('');
+      this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectReason);
     }
   }
 
   public handleSelectedReason(reason: string) {
-    this.currentSelectedReason = reason;
+    this.setCurrentReason(reason);
+    if (this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectReason) {
+      this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectLocation);
+    }
   }
 
   public handleAddNamedSpecies(species: any) {
@@ -228,8 +254,9 @@ export default class Tally extends Vue {
     // Generic Cancel - return to tally mode
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
-    this.currentSelectedReason = '';
-    this.currentSelectedButtonToMove = {};
+    this.setCurrentReason('');
+    this.setCurrentButtonIdx(-1);
+    this.currentSelectedButton = {};
     this.setTallyOpMode(TallyOperationMode.Tally);
     this.handleControlEvent('tally-mode');
   }
@@ -256,6 +283,13 @@ export default class Tally extends Vue {
         break;
       case 'move-button':
         this.setTallyOpMode(TallyOperationMode.MoveButtonSelect);
+        break;
+      case 'add-exist':
+        this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectSpecies);
+        break;
+      case 'select-exist-species':
+        this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectReason);
+        this.currentControlComponent = 'tally-addexisting-controls';
         break;
       case 'reset-data':
         this.confirmReset = true;

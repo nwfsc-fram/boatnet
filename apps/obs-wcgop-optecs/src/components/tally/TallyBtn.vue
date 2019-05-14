@@ -17,6 +17,12 @@
           floating
         >SWAP</q-badge>
         <q-badge
+          v-if="tallyMode === addExistingSpecies"
+          color="blue"
+          text-color="white"
+          floating
+        >SELECT {{layout.labels.shortCode}}</q-badge>
+        <q-badge
           v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
           color="red"
           text-color="white"
@@ -30,7 +36,7 @@
       </q-btn>
     </span>
     <span
-      v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation)"
+      v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation || tallyMode === addExistingLocation)"
     >
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
@@ -40,8 +46,7 @@
         align="around"
         color="black"
         @click="handleBlankClicked"
-      >
-      </q-btn>
+      ></q-btn>
     </span>
   </span>
 </template>
@@ -94,6 +99,11 @@ export default class TallyBtn extends Vue {
   private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
   private moveSelect = TallyOperationMode.MoveButtonSelect;
   private moveLocation = TallyOperationMode.MoveSelectLocation;
+  private addExistingSpecies =
+    TallyOperationMode.AddExistingSpeciesSelectSpecies;
+  private addExistingReason = TallyOperationMode.AddExistingSpeciesSelectReason;
+  private addExistingLocation =
+    TallyOperationMode.AddExistingSpeciesSelectLocation;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -103,12 +113,14 @@ export default class TallyBtn extends Vue {
     if (
       this.tallyMode === TallyOperationMode.DeleteButtonSelect ||
       this.tallyMode === TallyOperationMode.MoveButtonSelect ||
-      this.tallyMode === TallyOperationMode.MoveSelectLocation
+      this.tallyMode === TallyOperationMode.MoveSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
     } else if (this.tallyMode !== TallyOperationMode.Tally) {
-      console.log('Not in Tally mode, no data change.', this.incDecValue);
+      console.log('Not in Tally mode, no data change.');
       this.playSound('bad');
       return;
     }

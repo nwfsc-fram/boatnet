@@ -79,6 +79,9 @@ const actions: ActionTree<TallyState, RootState> = {
   setCurrentButtonIdx({ commit }: any, index: number) {
     commit('setCurrentButtonIdx', index);
   },
+  setCurrentReason({ commit }: any, reason: string) {
+    commit('setCurrentReason', reason);
+  },
   assignNewButton(
     { commit }: any,
     value: {
@@ -290,6 +293,9 @@ const mutations: MutationTree<TallyState> = {
   setCurrentButtonIdx(newState: any, index: number) {
     newState.currentButtonIdx = index;
   },
+  setCurrentReason(newState: any, reason: string) {
+    newState.currentReason = reason;
+  },
   async assignNewButton(
     newState: any,
     value: { species: any; reason: string; index: number }
@@ -335,7 +341,6 @@ const mutations: MutationTree<TallyState> = {
     newState: any,
     value: { oldButton: any; newIndex: number }
   ) {
-
     const target = newState.tallyLayout.layoutData[value.newIndex];
 
     const oldButton: TallyButtonLayoutData = {
@@ -468,7 +473,11 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   currentButtonIdx(getState: TallyState) {
     return getState.currentButtonIdx;
+  },
+  currentReason(getState: TallyState) {
+    return getState.currentReason;
   }
+
 };
 
 export const tallyState: Module<TallyState, RootState> = {

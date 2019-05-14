@@ -29,7 +29,7 @@
       Move
       <br>Tally
     </tally-control-btn>
-    <tally-control-btn color="green-5">
+    <tally-control-btn control-name="add-exist" @controlclick="handleControlClick" color="green-5">
       Add
       <br>Existing
       <br>Species
