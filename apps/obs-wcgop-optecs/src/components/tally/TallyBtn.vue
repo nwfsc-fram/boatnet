@@ -9,6 +9,7 @@
         @click="handleClick"
       >
         <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
+        <q-badge v-if="tallyMode === moveSelect" color="blue-3" text-color="black" floating>MOVE</q-badge>
         {{layout.labels.shortCode}}
         <br>
         {{layout.labels.reason}}
@@ -16,7 +17,7 @@
         {{data ? data.count : ''}}
       </q-btn>
     </span>
-    <span v-if="layout && layout.blank && tallyMode === selectLocationMode">
+    <span v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation)">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
         outline
@@ -74,6 +75,8 @@ export default class TallyBtn extends Vue {
 
   private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;
   private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
+  private moveSelect = TallyOperationMode.MoveButtonSelect;
+  private moveLocation = TallyOperationMode.MoveSelectLocation;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -81,6 +84,9 @@ export default class TallyBtn extends Vue {
 
   public handleClick() {
     if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
+      this.$emit('dataChanged', { button: this.layout, data: this.data });
+      return;
+    } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
     } else if (this.tallyMode !== TallyOperationMode.Tally) {
