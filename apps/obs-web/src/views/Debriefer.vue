@@ -55,17 +55,16 @@ import {
 import { WcgopTrip } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar'
+import { date } from 'quasar';
 
 
 @Component
 export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
 
-  
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
-private fisheries = [ { id:1, description:'Catch Shares'}, { id:2, description:'Shoreside Hake' }, { id:3, description:'some fishery lookup 3' },{ id:5, description:'Some fishery lookup value' }  ];
+private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
 
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', required: true, align: 'left', sortable: true },
@@ -123,12 +122,14 @@ private created() {
 }
 
 private getFisheryLookup(key: any) {
-    var returnValue = "";
+    let returnValue = '';
 
-    for (const lookup of this.fisheries) 
-          if (lookup.id == key)
-              returnValue = lookup.description;
-    
+    for (const lookup of this.fisheries) {
+      if (lookup.id === key) {
+        returnValue = lookup.description;
+        }
+    }
+
     return returnValue;
 }
 

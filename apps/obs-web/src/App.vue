@@ -20,5 +20,14 @@
   }
 }
 
+.q-table th {
+    color: #1675d1 !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+.q-table__title {
+  font-weight: bold !important;
+}
 
 </style>

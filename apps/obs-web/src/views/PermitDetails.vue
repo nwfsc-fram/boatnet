@@ -1,6 +1,6 @@
 <template>
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card">
+    <q-card class="my-card bg-blue-grey-1">
       <q-card-section>
         <div class="text-h6">Vessel: {{ permit.activePermit.vessel_name }}</div>
         <div style="margin-left: 10px">
