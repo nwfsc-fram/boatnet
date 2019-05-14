@@ -25,7 +25,7 @@
       Delete
       <br>Tally
     </tally-control-btn>
-    <tally-control-btn color="grey-4">
+    <tally-control-btn control-name="move-button" @controlclick="handleControlClick" color="grey-4">
       Move
       <br>Tally
     </tally-control-btn>
