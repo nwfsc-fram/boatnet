@@ -41,7 +41,7 @@
       :speciesList="speciesList"
       @cancel="handleCancelAddNamedSpecies"
     />
-    <div>Mode: {{tallyMode}}</div>
+    <!-- <div>Mode: {{tallyMode}}</div> -->
   </q-page>
 </template>
 
