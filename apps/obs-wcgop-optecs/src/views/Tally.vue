@@ -107,6 +107,8 @@ export default class Tally extends Vue {
   private setTallyIncDec: any;
   @Action('setTallyOpMode', { namespace: 'tallyState' })
   private setTallyOpMode: any;
+  @Action('setCurrentButtonIdx', { namespace: 'tallyState' })
+  private setCurrentButtonIdx: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
   @Action('swapButtons', { namespace: 'tallyState' })
@@ -167,7 +169,15 @@ export default class Tally extends Vue {
       return;
     } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
       this.currentSelectedButtonToMove = data.button;
+      this.setCurrentButtonIdx(data.button.index);
       this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
+      return;
+    } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
+      this.swapButtons({
+        oldButton: this.currentSelectedButtonToMove,
+        newIndex: data.button.index
+      });
+      this.setTallyOpMode(TallyOperationMode.Tally);
       return;
     }
     data = {
@@ -299,7 +309,7 @@ export default class Tally extends Vue {
       !targetButton.labels.shortCode ||
       !this.tallyState.tallyDataRec
     ) {
-      return {count: -1 };
+      return { count: -1 };
     }
     const targetData = this.tallyState.tallyDataRec.data!.filter(
       (rec: TallyCountData) => {

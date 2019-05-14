@@ -18,6 +18,7 @@ import { pouchService } from '@boatnet/bn-pouch';
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 import { stringify } from 'querystring';
+import { getJSDocTemplateTag } from 'typescript';
 
 /* tslint:disable:no-var-requires  */
 const defaultTemplate = require('../assets/tally-templates/default.json');
@@ -75,6 +76,9 @@ const actions: ActionTree<TallyState, RootState> = {
   setTallyOpMode({ commit }: any, value: TallyOperationMode) {
     commit('setTallyOpMode', value);
   },
+  setCurrentButtonIdx({ commit }: any, index: number) {
+    commit('setCurrentButtonIdx', index);
+  },
   assignNewButton(
     { commit }: any,
     value: {
@@ -85,10 +89,7 @@ const actions: ActionTree<TallyState, RootState> = {
   ) {
     commit('assignNewButton', value);
   },
-  swapButtons(
-    { commit }: any,
-    value: {oldButton: any,  newIndex: number}
-  ) {
+  swapButtons({ commit }: any, value: { oldButton: any; newIndex: number }) {
     commit('swapButtons', value);
   },
   deleteButton({ commit }: any, button: TallyButtonLayoutData) {
@@ -167,7 +168,6 @@ const mutations: MutationTree<TallyState> = {
      * TODO refactor to combine with reset
      */
 
-
     if (!newState.tallyLayout._id) {
       newState.tallyLayout = createDefaultLayoutRecord();
       console.log('[Tally Module] New layout initialized.');
@@ -210,7 +210,7 @@ const mutations: MutationTree<TallyState> = {
     if (!createNewRecord && oldIdData) {
       newState.tallyDataRec._id = oldIdData;
     }
-
+    delete newState.currentButton;
     updateLayoutDB(newState.tallyLayout);
     updateTallyDataDB(newState.tallyDataRec);
   },
@@ -237,7 +237,10 @@ const mutations: MutationTree<TallyState> = {
         console.log('[Tally Module] Updated', params.data, targetRecIdx);
       } else {
         newState.tallyDataRec.data.push(params.data);
-        console.warn('[Tally Module] WARN: Unexpectedly inserted new tally data', params.data);
+        console.warn(
+          '[Tally Module] WARN: Unexpectedly inserted new tally data',
+          params.data
+        );
       }
     }
 
@@ -280,6 +283,12 @@ const mutations: MutationTree<TallyState> = {
   setTallyOpMode(newState: any, value: TallyOperationMode) {
     newState.operationMode = value;
     // TODO: Set/Reset all button.tempState if "Tally"?
+    if (value === TallyOperationMode.Tally) {
+      newState.currentButtonIdx = -1;
+    }
+  },
+  setCurrentButtonIdx(newState: any, index: number) {
+    newState.currentButtonIdx = index;
   },
   async assignNewButton(
     newState: any,
@@ -322,14 +331,16 @@ const mutations: MutationTree<TallyState> = {
 
     updateLayoutDB(newState.tallyLayout);
   },
-  async swapButtons(newState: any, value: {oldButton: any,  newIndex: number}) {
-    console.log('Move', newState, value);
+  async swapButtons(
+    newState: any,
+    value: { oldButton: any; newIndex: number }
+  ) {
 
     const target = newState.tallyLayout.layoutData[value.newIndex];
 
     const oldButton: TallyButtonLayoutData = {
       ...target,
-      index: value.oldButton.index,
+      index: value.oldButton.index
     };
     const newButton: TallyButtonLayoutData = {
       ...value.oldButton,
@@ -350,7 +361,9 @@ const mutations: MutationTree<TallyState> = {
   }
 };
 
-async function updateLayoutDB(layout: TallyLayoutRecord): Promise<TallyLayoutRecord> {
+async function updateLayoutDB(
+  layout: TallyLayoutRecord
+): Promise<TallyLayoutRecord> {
   const result = await updateDB(layout);
   if (result) {
     layout._id = result.id;
@@ -361,7 +374,9 @@ async function updateLayoutDB(layout: TallyLayoutRecord): Promise<TallyLayoutRec
   return layout;
 }
 
-async function updateTallyDataDB(tallyData: TallyDataRecord): Promise<TallyDataRecord> {
+async function updateTallyDataDB(
+  tallyData: TallyDataRecord
+): Promise<TallyDataRecord> {
   const result = await updateDB(tallyData);
   if (result) {
     tallyData._id = result.id;
@@ -450,6 +465,9 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   reasonButtonColors() {
     return reasonButtonColors;
+  },
+  currentButtonIdx(getState: TallyState) {
+    return getState.currentButtonIdx;
   }
 };
 
