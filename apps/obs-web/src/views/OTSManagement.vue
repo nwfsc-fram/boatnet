@@ -16,11 +16,13 @@
             <q-toggle
             v-model="showInactive"
             label="Show Inactive"
+            @click="showInactive = !showInactive"
             left-label
             />
             <q-toggle
             v-model="showPrevious"
             label="Show Previous"
+            @click="showPrevious = !showPrevious"
             left-label
             />
         </div>
@@ -33,17 +35,18 @@
         row-key='_id'
         :pagination.sync='pagination'
         hide-bottom
+        class="bg-blue-grey-1"
         >
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)' >
-                <q-td key='fishery' style='width: 200px; white-space: normal !important;' :props='props' >{{ props.row.fishery }}</q-td>
+                <q-td key='fishery' class="text-primary" style='width: 200px; white-space: normal !important;; font-weight: bold' :props='props' >{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
                 <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
                 <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
-                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
-                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
+                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
+                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ formatDate(props.row.expirationDate) }}</q-td>
+                <q-td key='status' :props='props'>{{ getStatus(props.row) }}</q-td>
             </q-tr>
         </template>
 
@@ -57,19 +60,20 @@
         row-key='_id'
         :pagination.sync='pagination'
         hide-bottom
+        class="bg-blue-grey-1"
         >
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
-                <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                <q-td key='vesselFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
-                <q-td key='targetVesselName' style='width: 200px' :props='props'>{{ props.row.targetVesselName }} ( {{ props.row.targetVesselCGNumber }} )</q-td>
-                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA'}}%</q-td>
-                <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
-                <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
+                <q-td key='vesselTargetVessel' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetVessel.vesselName }} ( {{ props.row.targetVessel.coastGuardNumber ? props.row.targetVessel.coastGuardNumber : props.row.targetVessel.stateRegulationNumber }} )</q-td>
+                <q-td key='vesselActualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA'}}%</q-td>
+                <q-td key='vesselCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                <q-td key='vesselSetRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <!-- <q-td key='targetVesselCGNumber' style='width: 100px' :props='props'>{{ props.row.targetVesselCGNumber }}</q-td> -->
-                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
-                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
+                <q-td key='vesselEffectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
+                <q-td key='vesselExpirationDate' style='width: 200px' :props='props'>{{ formatDate(props.row.expirationDate) }}</q-td>
+                <q-td key='vesselStatus' :props='props'>{{ getStatus(props.row) }}</q-td>
             </q-tr>
         </template>
         </q-table>
@@ -82,18 +86,19 @@
         row-key='_id'
         :pagination.sync='pagination'
         hide-bottom
+        class="bg-blue-grey-1"
         >
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
-                <q-td key='fishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
+                <q-td key='portFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
-                <q-td key='targetPortGroupDescription' style='width: 200px' :props='props'>{{ props.row.targetPortGroupDescription }}</q-td>
-                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
-                <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
-                <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
-                <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ props.row.effectiveDate }}</q-td>
-                <q-td key='expirationDate' style='width: 200px' :props='props'>{{ props.row.expirationDate }}</q-td>
-                <q-td key='status' :props='props'>{{ props.row.status }}</q-td>
+                <q-td key='portTargetPortGroup' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetPortGroup }}</q-td>
+                <q-td key='portActualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
+                <q-td key='portCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
+                <q-td key='portSetRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
+                <q-td key='portEffectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
+                <q-td key='portExpirationDate' style='width: 200px' :props='props'>{{ formatDate(props.row.expirationDate) }}</q-td>
+                <q-td key='portStatus' :props='props'>{{ getStatus(props.row) }}</q-td>
             </q-tr>
         </template>
         </q-table>
@@ -109,7 +114,7 @@ import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfp, OTSTarget } from '@boatnet/bn-models';
+import { EmEfp, OTSTarget, OTSTargetTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -126,226 +131,133 @@ export default class OtsMangement extends Vue {
     private showInactive: boolean = false;
     private showPrevious: boolean = false;
 
+    private otsTargets: OTSTarget[] = [];
+
     private pagination = {rowsPerPage: 0};
 
     private fisheryColumns: any[] = [
-        {name: 'fishery', label: 'Fishery', field: 'fishery',
-        required: true, align: 'left', sortable: true },
-        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
-        // required: true, align: 'left', sortable: true},
-        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
-        required: true, align: 'left', sortable: true },
-        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
-        required: true, align: 'left', sortable: true },
-        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
-        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
-        // required: false, align: 'left', sortable: true },
-        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered',
-        // required: false, align: 'left' },
-        // {name: 'percentDifference', label: '% Difference', field: 'percentDifference',
-        // required: true, align: 'left', sortable: true },
-        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'status', label: 'Status', field: 'status',
-        required: true, align: 'left', sortable: true}
+        {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true },
+        // {name: 'targetType' ,label: 'Target Type', field: 'targetType', required: true, align: 'left', sortable: true},
+        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved', required: true, align: 'left', sortable: true },
+        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal', required: true, align: 'left', sortable: true },
+        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left', sortable: true },
+        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded', required: false, align: 'left', sortable: true },
+        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered' required: false, align: 'left' },
+        // {name: 'percentDifference', label: '% Difference', field: 'percentDifference', required: true, align: 'left', sortable: true },
+        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate', required: true, align: 'left', sortable: true},
+        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate', required: true, align: 'left', sortable: true},
+        {name: 'status', label: 'Status', field: 'status', required: true, align: 'left', sortable: true}
     ];
 
     private vesselColumns: any[] = [
-        {name: 'fishery', label: 'Fishery', field: 'fishery', required: true,
-        align: 'left', sortable: true },
-        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
-        // required: true, align: 'left', sortable: true},
-        {name: 'targetVesselName', label: 'Vessel', field: 'targetVesselName',
-        required: true, align: 'left', sortable: true },
-        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
-        required: true, align: 'left', sortable: true },
-        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
-        required: true, align: 'left', sortable: true },
-        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
-        // {name: 'targetVesselId', label: 'Target Vessel ID', field: 'targetVesselId',
-        // required: true, align: 'left', sortable: true },
-        // {name: 'targetVesselCGNumber', label: 'Target Vessel CG Number', field: 'targetVesselCGNumber',
-        // required: true, align: 'left', sortable: true },
-        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
-        // required: false, align: 'left', sortable: true },
-        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered',
-        // required: false, align: 'left' },
-        // {name: 'percentDifference', label: '% Difference', field:
-        // 'percentDifference', required: true, align: 'left', sortable: true },
-        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'status', label: 'Status', field: 'status',
-        required: true, align: 'left', sortable: true}
+        {name: 'vesselFishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true },
+        {name: 'vesselTargetVessel', label: 'Vessel', field: 'targetVessel.vesselName', required: true, align: 'left', sortable: true },
+        {name: 'vesselActualObserved', label: 'Actual Observed', field: 'actualObserved', required: true, align: 'left', sortable: true },
+        {name: 'vesselCoverageGoal', label: 'Coverage Goal', field: 'coverageGoal', required: true, align: 'left', sortable: true },
+        {name: 'vesselSetRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left', sortable: true },
+        // {name: 'vesselLbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded', required: false, align: 'left', sortable: true },
+        // {name: 'vesselLbsCovered', label: 'LBS Covered', field: 'lbsCovered', required: false, align: 'left' },
+        // {name: 'vesselPercentDifference', label: '% Difference', field: 'percentDifference', required: true, align: 'left', sortable: true },
+        {name: 'vesselEffectiveDate', label: 'Effective Date', field: 'effectiveDate', required: true, align: 'left', sortable: true},
+        {name: 'vesselExpirationDate', label: 'expirationDate', field: 'expirationDate', required: true, align: 'left', sortable: true},
+        {name: 'vesselStatus', label: 'Status', field: 'status', required: true, align: 'left', sortable: true}
     ];
 
     private portGroupColumns: any[] = [
-        {name: 'fishery', label: 'Fishery', field: 'fishery', required: true,
-        align: 'left', sortable: true },
-        // {name: 'targetType' ,label: 'Target Type', field: 'targetType',
-        // required: true, align: 'left', sortable: true},
-        {name: 'targetPortGroupDescription', label: 'Port Group', field: 'targetPortGroupDescription',
-        required: true, align: 'left', sortable: true },
-        {name: 'actualObserved', label: 'Actual Observed', field: 'actualObserved',
-        required: true, align: 'left', sortable: true },
-        {name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal',
-        required: true, align: 'left', sortable: true },
-        {name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left' },
-        // {name: 'targetPortGroupId', label: 'Target Port Group ID', field:
-        // 'targetPortGroupId', required: true, align: 'left', sortable: true },
-        // {name: 'lbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded',
-        // required: false, align: 'left', sortable: true },
-        // {name: 'lbsCovered', label: 'LBS Covered', field: 'lbsCovered', required: false, align: 'left' },
-        // {name: 'percentDifference', label: '% Difference', field:
-        // 'percentDifference', required: true, align: 'left', sortable: true },
-        {name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'expirationDate', label: 'expirationDate', field: 'expirationDate',
-        required: true, align: 'left', sortable: true},
-        {name: 'status', label: 'Status', field: 'status',
-        required: true, align: 'left', sortable: true}
+        {name: 'portFishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true },
+        {name: 'portTargetPortGroup', label: 'Port Group', field: 'targetPortGroup', required: true, align: 'left', sortable: true },
+        {name: 'portActualObserved', label: 'Actual Observed', field: 'actualObserved', required: true, align: 'left', sortable: true },
+        {name: 'portCoverageGoal', label: 'Coverage Goal', field: 'coverageGoal', required: true, align: 'left', sortable: true },
+        {name: 'portSetRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left', sortable: true },
+        // {name: 'portLbsLanded', label: 'LBS Landed To Date', field: 'lbsLanded', required: false, align: 'left', sortable: true },
+        // {name: 'portLbsCovered', label: 'LBS Covered', field: 'lbsCovered', required: false, align: 'left' },
+        // {name: 'portPercentDifference', label: '% Difference', field: 'percentDifference', required: true, align: 'left', sortable: true },
+        {name: 'portEffectiveDate', label: 'Effective Date', field: 'effectiveDate', required: true, align: 'left', sortable: true},
+        {name: 'portExpirationDate', label: 'expirationDate', field: 'expirationDate', required: true, align: 'left', sortable: true},
+        {name: 'portStatus', label: 'Status', field: 'status', required: true, align: 'left', sortable: true}
     ];
 
-    private otsTargets: any[] = [
-        {
-            _id: 'weaefaq3ar34rwefgsdfq',
-            fishery: 'EM EFP',
-            targetType: 'Fishery',
-            coverageGoal: 27,
-            setRate: 33,
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 28,
-            status: 'Active'
-        },
-        {
-            _id: 'gsdffweer34rwgrthg34er34',
-            fishery: 'Limited Entry - Catch Shares',
-            targetType: 'Fishery',
-            coverageGoal: 32,
-            setRate: 37,
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 30,
-            status: 'Active'
-        },
-        {
-            _id: 'weaefaq3ar34rwefgsdfq',
-            fishery: 'Trawl Gear - Mod EFP',
-            targetType: 'Fishery',
-            coverageGoal: 33,
-            setRate: 33,
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 10,
-            status: 'Active'
-        },
-        {
-            _id: 'vsdffew34r34rfsdffd3r3',
-            fishery: 'EM EFP',
-            targetType: 'Vessel',
-            coverageGoal: 23,
-            setRate: 29,
-            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetVesselName: 'Excalibur',
-            targetVesselCGNumber: '5346605',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 27,
-            status: 'Active'
-        },
-        {
-            _id: 'fdsfweqrawfsdfsefafsdfqwe',
-            fishery: 'EM EFP',
-            targetType: 'Vessel',
-            coverageGoal: 35,
-            setRate: 40,
-            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetVesselName: 'Raven',
-            targetVesselCGNumber: '55432343',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 22,
-            status: 'Active'
-        },
-        {
-            _id: 'fesfgg54gsr5bsr5h45ats4s',
-            fishery: 'EM EFP',
-            targetType: 'Vessel',
-            coverageGoal: 40,
-            setRate: 55,
-            targetVesselID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetVesselName: 'Last Straw',
-            targetVesselCGNumber: '3456463',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 35,
-            status: 'Active'
-        },
-        {
-            _id: 'vsdfv3434rervsdfbq3a3rwfffdvsdf',
-            fishery: 'EM EFP',
-            targetType: 'Port Group',
-            coverageGoal: 22,
-            setRate: 27,
-            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetPortGroupDescription: 'SPS (Seattle Area)',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 20,
-            status: 'Active'
-        },
-        {
-            _id: 'f34wrsersgwerf34wfsgq34',
-            fishery: 'EM EFP',
-            targetType: 'Port Group',
-            coverageGoal: 30,
-            setRate: 35,
-            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetPortGroupDescription: 'ACA (Los Angeles Area)',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            status: 'Active'
-        },
-        {
-            _id: 'sfdvw43st4t45g56h6ehtyjrty',
-            fishery: 'EM EFP',
-            targetType: 'Port Group',
-            coverageGoal: 33,
-            setRate: 33,
-            targetPortGroupID: 'd4fsdsgrgre3q4q5wefsdfbsdfg',
-            targetPortGroupDescription: 'AOR (Northern Oregon)',
-            effectiveDate: moment().format('MM/DD/YYYY'),
-            expirationDate: '12/31/' + moment().format('YYYY'),
-            actualObserved: 33,
-            status: 'Active'
-        },
-    ];
+    private async getOtsTargets() {
+        const masterDB: Client<any> = couchService.masterDB;
+        try {
+            const otsTargets = await masterDB.viewWithDocs<any>(
+                'sethtest',
+                'all_ots_targets',
+                );
+            console.log(otsTargets);
+            for (const row of otsTargets.rows) {
+                const target = row.doc;
+                this.otsTargets.push(target);
+            }
+
+        } catch (err) {
+            this.error(err);
+        }
+    }
 
     private get fisheryTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Fishery');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide' && this.getStatus(target) === 'Active');
+        }
     }
 
     private get vesselTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Vessel');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Vessel');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Vessel' && this.getStatus(target) === 'Active');
+        }
     }
 
     private get portGroupTargets() {
-        return this.otsTargets.filter((target) => target.targetType === 'Port Group');
+        if (this.showInactive) {
+            return this.otsTargets.filter((target) => target.targetType === 'Port Group');
+        } else {
+            return this.otsTargets.filter((target) => target.targetType === 'Port Group' && this.getStatus(target) === 'Active');
+        }
     }
 
     private OtsTargetDetail(row: any) {
         console.log(row);
+        this.ots.newTarget = false;
         this.ots.activeOTSTarget = row;
         console.log(this.ots.activeOTSTarget);
         this.$router.push({path: '/ots-target-detail/' + this.otsTargets.indexOf(row)});
     }
 
     private newOtsTarget() {
+        const newOtsTarget: OTSTarget = {
+            type: OTSTargetTypeName,
+            fishery: '',
+            targetType: '',
+            coverageGoal: 0,
+            setRate: 0,
+            targetVessel: undefined,
+            targetPortGroup: undefined,
+            effectiveDate: moment().format('MM/DD/YYYY'),
+            expirationDate: '12/31/' + moment().format('YYYY'),
+        };
+        this.ots.newTarget = true;
+        this.ots.activeOTSTarget = newOtsTarget;
         this.$router.push({path: '/ots-target-detail'});
+    }
+
+    private formatDate(date: string) {
+        return moment(date).format('MMM Do, YYYY');
+    }
+
+    private getStatus(row: any) {
+        if ( moment(row.efffectiveDate) <= moment() && moment() <= moment(row.expirationDate) ) {
+            return 'Active';
+        } else {
+            return 'Inactive';
+        }
+    }
+
+    private created() {
+        this.getOtsTargets();
     }
 
 }

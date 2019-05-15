@@ -4,6 +4,8 @@ import { GearType } from '.';
 import { Vessel } from '.';
 import { EfpType } from '.';
 
+export const EmEfpTypeName = 'emefp';
+
 export interface EmEfp extends Base {
   emEfpNumber: string;
   efpTypes?: EfpType[];
@@ -14,3 +16,4 @@ export interface EmEfp extends Base {
   vesselName?: string;
   vesselCGNumber?: string;
 }
+

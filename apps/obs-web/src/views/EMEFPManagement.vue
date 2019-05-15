@@ -20,6 +20,7 @@
             selection="single"
             :selected.sync="selected"
             :pagination.sync="pagination"
+            class="bg-blue-grey-1"
             >
 
         <template v-slot:body="props">
@@ -82,24 +83,20 @@ private columns = [
 private async getEmEfp() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
-        // const vessels = await masterDB.view<any>(
-        //   'optecs_trawl',
-        //   'all_vessel_names',
-        //   queryOptions
-        // );
+        const queryOptions: ListOptions = {
+          descending: true
+        };
 
-        // this.options = vessels.rows.map((vessel) => vessel.value);
-
-        const emefp = await masterDB.view<any>(
+        const emefp = await masterDB.viewWithDocs<any>(
             'sethtest',
-            'all_em_efp_permits',
+            'all_em_efp',
+            queryOptions
             );
 
         console.log(emefp.rows);
 
         for (const row of emefp.rows) {
-            const efp = row.value;
-            efp.id = row.id;
+            const efp = row.doc;
             this.EM_EFP.push(efp);
         }
         console.log(this.EM_EFP);
@@ -127,11 +124,13 @@ private getArrayValues(array: any[]) {
 private emefpDetails(efp: EmEfp) {
     // console.log(efp.vesselName);
     if (efp === null) {
+        const newEmNum = parseInt(this.EM_EFP[0].emEfpNumber.substring(3), 10) + 1;
         efp = {
-          vesselName: '',
-          vesselCGNumber: '',
-          emEfpNumber: 'EM-??',
-          efpTypes: [],
+            type: 'em-efp',
+            emEfpNumber: 'EM-' + newEmNum.toString(),
+            vesselName: '',
+            vesselCGNumber: '',
+            efpTypes: [],
         };
         this.emefp.activeEmefp = efp;
         console.log(this.emefp.activeEmefp);
@@ -151,4 +150,5 @@ private emefpDetails(efp: EmEfp) {
 .my-special-class {
     width: 100px;
 }
+
 </style>

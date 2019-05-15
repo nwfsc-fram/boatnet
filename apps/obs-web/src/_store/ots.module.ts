@@ -8,7 +8,7 @@ import { RootState, OTSState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
-export const state: OTSState = {activeOTSTarget: null};
+export const state: OTSState = {activeOTSTarget: null, newTarget: false};
 
 export const ots: Module<OTSState, RootState> = {
     namespaced: true,

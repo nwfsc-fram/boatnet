@@ -9,6 +9,7 @@
                 dense
                 row-key='_id'
                 :pagination.sync='unassignedPagination'
+                class="bg-blue-grey-1"
                 >
                 <template v-slot:body='props'>
                 <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >
@@ -36,6 +37,7 @@
                 row-key='_id'
                 :pagination.sync='assignedPagination'
                 hide-bottom
+                class="bg-blue-grey-1"
                 >
                 <template v-slot:body='props'>
                 <q-tr :props='props' @click.native='ObserverAssignmentDetail(props.row)' >

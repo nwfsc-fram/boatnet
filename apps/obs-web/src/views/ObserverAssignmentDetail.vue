@@ -2,9 +2,9 @@
     <div>
         <q-card>
             <q-card-section>
-                <q-card>
+                <q-card class="bg-blue-grey-1">
                     <q-card-section>
-                        <div class="text-h6">{{ oa.activeTrip.vessel.vesselName }} - {{ oa.activeTrip.fishery.name }} - {{ oa.activeTrip.departurePort.name }} </div>
+                        <div class="text-h6 text-primary">{{ oa.activeTrip.vessel.vesselName }} - {{ oa.activeTrip.fishery.name }} - {{ oa.activeTrip.departurePort.name }} </div>
                         <sup v-if="oa.activeTrip.vessel.captain" class="text-primary">Skipper: {{ oa.activeTrip.vessel.captain.name }}</sup>
                         <div class="row items-start">
                         <div class="text-subtitle2 q-pa-md">
@@ -46,6 +46,7 @@
                         :pagination.sync="pagination"
                         title="Port Group Observer Availability"
                         hide-bottom
+                        class="bg-blue-grey-1"
                         >
                         <template v-slot:body="props">
                             <q-tr :props="props" @click.native="setObserver(props.row)">
