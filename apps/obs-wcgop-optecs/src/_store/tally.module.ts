@@ -53,60 +53,7 @@ const reasonButtonColors: any[] = [
   { name: 'RET', color: { bg: 'green-9', text: 'white' } }
 ];
 
-const actions: ActionTree<TallyState, RootState> = {
-  reset({ commit }: any) {
-    commit('reset');
-  },
-  connectDB({ commit }: any) {
-    commit('initialize');
-  },
-  updateButtonData(
-    { commit }: any,
-    params: {
-      button: TallyButtonLayoutData;
-      skipLayoutUpdate: boolean;
-      data: TallyCountData;
-      skipDataUpdate: boolean;
-    }
-  ) {
-    commit('updateButtonData', params);
-  },
-  setTallyIncDec({ commit }: any, value: number) {
-    commit('setTallyIncDec', value);
-  },
-  setTallyOpMode({ commit }: any, value: TallyOperationMode) {
-    commit('setTallyOpMode', value);
-  },
-  setCurrentButtonIdx({ commit }: any, index: number) {
-    commit('setCurrentButtonIdx', index);
-  },
-  setCurrentReason({ commit }: any, reason: string) {
-    commit('setCurrentReason', reason);
-  },
-  incTempSpeciesCounter({ commit }: any) {
-    commit('incTempSpeciesCounter');
-  },
-  delTempSpeciesCounter({ commit }: any, counter: number) {
-    commit('delTempSpeciesCounter', counter);
-  },
-  assignNewButton(
-    { commit }: any,
-    value: {
-      species: any;
-      reason: string;
-      index: number;
-    }
-  ) {
-    commit('assignNewButton', value);
-  },
-  swapButtons({ commit }: any, value: { oldButton: any; newIndex: number }) {
-    commit('swapButtons', value);
-  },
-  deleteButton({ commit }: any, button: TallyButtonLayoutData) {
-    commit('deleteButton', button);
-  }
-};
-
+// Helper Functions
 function getBtnColor(reason: string): { bg?: string; text?: string } {
   const rbcVal: any = reasonButtonColors.filter((rbc: any) => {
     return rbc.name === reason;
@@ -171,6 +118,62 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
   return newLayout;
 }
 
+// ACTIONS
+const actions: ActionTree<TallyState, RootState> = {
+  reset({ commit }: any) {
+    commit('reset');
+  },
+  connectDB({ commit }: any) {
+    commit('initialize');
+  },
+  updateButtonData(
+    { commit }: any,
+    params: {
+      button: TallyButtonLayoutData;
+      skipLayoutUpdate: boolean;
+      data: TallyCountData;
+      skipDataUpdate: boolean;
+    }
+  ) {
+    commit('updateButtonData', params);
+  },
+  setTallyIncDec({ commit }: any, value: number) {
+    commit('setTallyIncDec', value);
+  },
+  setTallyOpMode({ commit }: any, value: TallyOperationMode) {
+    commit('setTallyOpMode', value);
+  },
+  setCurrentButtonIdx({ commit }: any, index: number) {
+    commit('setCurrentButtonIdx', index);
+  },
+  setCurrentReason({ commit }: any, reason: string) {
+    commit('setCurrentReason', reason);
+  },
+  incTempSpeciesCounter({ commit }: any) {
+    commit('incTempSpeciesCounter');
+  },
+  delTempSpeciesCounter({ commit }: any, counter: number) {
+    commit('delTempSpeciesCounter', counter);
+  },
+  assignNewButton(
+    { commit }: any,
+    value: {
+      species: any;
+      reason: string;
+      index: number;
+    }
+  ) {
+    commit('assignNewButton', value);
+  },
+  swapButtons({ commit }: any, value: { oldButton: any; newIndex: number }) {
+    commit('swapButtons', value);
+  },
+  deleteButton({ commit }: any, button: TallyButtonLayoutData) {
+    commit('deleteButton', button);
+  }
+};
+
+// MUTATIONS
 const mutations: MutationTree<TallyState> = {
   async initialize(newState: any) {
     /**
@@ -471,6 +474,7 @@ async function updateDB(record: Base) {
   }
 }
 
+// GETTERS
 const getters: GetterTree<TallyState, RootState> = {
   horizButtonCount(getState: TallyState) {
     return getState.tallyLayout.horizButtonCount;
@@ -498,6 +502,22 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   currentTempName(getState: TallyState) {
     return '(TEMP' + getState.tempSpeciesCounter + ')';
+  },
+  isNameTempEnabled(getState: TallyState) {
+    // Check array for (TEMP#) values
+    // TODO if this isn't performant, use a Map
+    if (getState.tallyDataRec && getState.tallyDataRec.data) {
+      let foundTemp = false;
+      for (const rec of getState.tallyDataRec.data) {
+        if (rec.shortCode !== undefined && rec.shortCode.startsWith('(TEMP')) {
+          foundTemp = true;
+          break;
+        }
+      }
+      return foundTemp;
+    } else {
+      return false;
+    }
   }
 };
 
