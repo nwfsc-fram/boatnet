@@ -8,7 +8,6 @@ import BoatnetHauls from './components/BoatnetHauls.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
 import BoatnetTrips from './components/BoatnetTrips.vue';
-import BoatnetTable from './components/BoatnetTable.vue';
 
 const Components: any = {
   BoatnetDate,
@@ -20,7 +19,6 @@ const Components: any = {
   BoatnetKeyboard,
   BoatnetLicenses,
   BoatnetTrips,
-  BoatnetTable,
 };
 
 Object.keys(Components).forEach((name) => {
