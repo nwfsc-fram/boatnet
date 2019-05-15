@@ -26,13 +26,13 @@
         <template v-slot:body="props">
         <q-tr :props="props" @click.native="emefpDetails(props.row)">
           <q-td key="id"></q-td>
-          <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
-          <q-td key="vesselCGNumber" :props="props">{{ props.row.vesselCGNumber }}</q-td>
-          <q-td key="lePermit" :props="props">{{ props.row.lePermit }}</q-td>
+          <q-td key="vesselName" :props="props">{{ getVesselName(props.row) }}</q-td>
+          <q-td key="vesselCGNumber" :props="props">{{ getVesselId(props.row) }}</q-td>
+          <q-td key="lePermit" :props="props">{{ getLEPermit(props.row) }}</q-td>
           <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
           <q-td key="efpTypes" :props="props">
               {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
-          <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear) }}</q-td>
+          <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear.map((gear) => gear.description)) }}</q-td>
           <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
         </q-tr>
         </template>
@@ -52,7 +52,7 @@ import router from '../router';
 import { AlertState, EmefpState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfp } from '@boatnet/bn-models';
+import { EmEfp, EmEfpTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -121,23 +121,55 @@ private getArrayValues(array: any[]) {
     return returnString;
 }
 
+private getVesselName(row: any) {
+    if (row.vesselName) {
+        return row.vesselName;
+    } else if (row.vessel) {
+        return row.vessel.vesselName;
+    } else {
+        return '';
+    }
+}
+
+private getVesselId(row: any) {
+    if (row.vesselCGNumber) {
+        return row.vesselCGNumber;
+    } else if (row.vessel) {
+        return row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber;
+    } else {
+        return '';
+    }
+}
+
+private getLEPermit(row: any) {
+    if (row.lePermit) {
+        if (row.lePermit.permit_number) {
+            return row.lePermit.permit_number;
+        } else {
+            return row.lePermit;
+        }
+    } else {
+        return '';
+    }
+}
+
 private emefpDetails(efp: EmEfp) {
     // console.log(efp.vesselName);
     if (efp === null) {
         const newEmNum = parseInt(this.EM_EFP[0].emEfpNumber.substring(3), 10) + 1;
         efp = {
-            type: 'em-efp',
+            type: EmEfpTypeName,
             emEfpNumber: 'EM-' + newEmNum.toString(),
             vesselName: '',
             vesselCGNumber: '',
             efpTypes: [],
         };
         this.emefp.activeEmefp = efp;
-        console.log(this.emefp.activeEmefp);
+        this.emefp.newEmEfp = true;
         this.$router.push({path: '/em-efp-details/' + 'new' });
     } else {
         this.emefp.activeEmefp = efp;
-        console.log(this.emefp.activeEmefp);
+        this.emefp.newEmEfp = false;
         this.$router.push({path: '/em-efp-details/' + this.EM_EFP.indexOf(efp) });
     }
 
