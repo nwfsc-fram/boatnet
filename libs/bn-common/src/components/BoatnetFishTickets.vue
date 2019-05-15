@@ -119,9 +119,13 @@ export default class BoatnetFishTickets extends Vue {
   }
 
   private saveAdd() {
-    this.fishTickets.push(this.currFishTicket);
-    this.showDialog = false;
+    if (this.fishTickets) {
+      this.fishTickets.push(this.currFishTicket);
+    } else {
+      this.fishTickets = [this.currFishTicket];
+    }
     this.$emit('update:fishTickets', this.fishTickets);
+    this.showDialog = false;
     this.$emit('save');
   }
 
