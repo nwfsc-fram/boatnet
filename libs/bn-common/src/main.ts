@@ -1,16 +1,26 @@
 import Vue from 'vue';
+import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
+import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
+import BoatnetFishTickets from './components/BoatnetFishTickets.vue';
+import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetHauls from './components/BoatnetHauls.vue';
-import BoatnetTrips from './components/BoatnetTrips.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
+import BoatnetTrips from './components/BoatnetTrips.vue';
+import BoatnetTable from './components/BoatnetTable.vue';
 
 const Components: any = {
+  BoatnetDate,
   BoatnetDatetime,
+  BoatnetDeleteDialog,
+  BoatnetFishTickets,
+  BoatnetInputDialog,
   BoatnetHauls,
-  BoatnetTrips,
   BoatnetKeyboard,
-  BoatnetLicenses
+  BoatnetLicenses,
+  BoatnetTrips,
+  BoatnetTable,
 };
 
 Object.keys(Components).forEach((name) => {
