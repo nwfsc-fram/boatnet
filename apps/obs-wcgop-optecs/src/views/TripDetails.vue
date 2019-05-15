@@ -202,7 +202,10 @@
                     data-layout="normal"
                   />
                   <div class="text-h6 col-2">Fish Tickets</div>
-                  <boatnet-fish-tickets :fishTickets.sync="currentTrip.fishTickets" @save="saveOnUpdate"/>
+                  <boatnet-fish-tickets
+                    :fishTickets.sync="currentTrip.fishTickets"
+                    @save="saveOnUpdate"
+                  />
                 </div>
               </div>
             </div>
