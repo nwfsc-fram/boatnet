@@ -1,11 +1,21 @@
 <template>
+
         <q-table
             :data="WcgopTrips"
             :columns="columns"
             dense
             row-key="id"
             :pagination.sync="pagination"
+            :visible-columns="visibleColumns"
             >
+
+ <div v-if="$q.screen.gt.xs" class="col">
+          <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
+          <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
+          <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
+
+        </div>
+
 
         <template v-slot:body="props">
           <q-tr :props='props'>
@@ -65,7 +75,7 @@ export default class Debriefer extends Vue {
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
 private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
-
+private visibleColumns = ['key','tripStatus','vessel'];
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', required: true, align: 'left', sortable: true },
     {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', required: true, align: 'left', sortable: true },
