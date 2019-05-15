@@ -31,6 +31,7 @@
                         <div class="text-subtitle2">Return Date</div>
                         <q-date
                             v-model="returnDate"
+                            :options="returnDateOptionsFn"
                             color="red"
                             dark
                             >
@@ -308,6 +309,12 @@ export default class TripDetails extends Vue {
         if (this.trip.activeTrip) {
             this.trip.activeTrip.returnDate = value;
         }
+    }
+
+    private returnDateOptionsFn(val: string) {
+      if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
+          return moment(val) >= moment(this.trip.activeTrip.departureDate);
+      }
     }
 
     private updateTrip() {

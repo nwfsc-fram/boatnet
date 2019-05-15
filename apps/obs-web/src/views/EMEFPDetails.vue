@@ -8,10 +8,11 @@
             </template>
         </q-banner>
 
-        <q-card style="padding: 20px; max-width: 400px">
+        <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <div v-if="this.$route.params.id === 'new'">
             <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
-            <q-select v-model="emefp.activeEmefp.vesselName" label="Vessel" :options="options" @filter="filterFn" use-input stack-label ></q-select>
+            <q-select v-model="emefp.activeEmefp.vesselName" label="Vessel" :options="options" @filter="filterFn" use-input stack-label option-label="vesselName"
+            option-value="_id"></q-select>
           </div>
           <div v-else>
             <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>
@@ -34,11 +35,13 @@
             </q-select> -->
 
             <q-select
-            v-model="efpTypes"
+            v-model="emefp.activeEmefp.efpTypes"
             label="EFP Types"
-            bg-color="white"
+            bg-color="bg-blue-grey-1"
             color="primary"
             multiple
+            option-label="description"
+            option-value="_id"
             use-chips
             :options="efpTypeOptions"
             >
@@ -47,10 +50,12 @@
             <q-select
             v-model="emefp.activeEmefp.gear"
             label="Gear"
-            bg-color="white"
+            bg-color="bg-blue-grey-1"
             color="primary"
             multiple
             use-chips
+            option-label="description"
+            option-value="_id"
             :options="gearTypeOptions">
             </q-select>
 
@@ -116,14 +121,14 @@ export default class EMEFPDetails extends Vue {
           'obs_web/efp-type-options',
           queryOptions
         );
-        this.efpTypeOptions = efptypes.rows.map((efp: any) => efp.key);
+        this.efpTypeOptions = efptypes.rows.map((efp: any) => efp.value);
 
         const geartypes = await pouchDB.query(
           pouchService.lookupsDBName,
           'obs_web/gear-type-options',
           queryOptions
         );
-        this.gearTypeOptions = geartypes.rows.map((gear: any) => gear.key);
+        this.gearTypeOptions = geartypes.rows.map((gear: any) => gear.value);
 
         } catch (err) {
             this.error(err);
@@ -136,26 +141,26 @@ export default class EMEFPDetails extends Vue {
     //   return;
     // }
 
-    update(async () => {
-      try {
-        const masterDB: Client<any> = couchService.masterDB;
-        const queryOptions: ListOptions = {
-          limit: 10,
-          start_key: val.toLowerCase(),
-          inclusive_end: true,
-          descending: false
-        };
-        const vessels = await masterDB.view<any>(
-          'sethtest',
-          'all_vessels',
-          queryOptions
-        );
-        console.log(vessels);
-        this.options = vessels.rows.map((vessel) => vessel.key);
-      } catch (err) {
-        this.error(err);
-      }
-    });
+      update(async () => {
+        try {
+          const masterDB: Client<any> = couchService.masterDB;
+          const queryOptions: ListOptions = {
+            limit: 10,
+            start_key: val.toLowerCase(),
+            inclusive_end: true,
+            descending: false
+          };
+          const vessels = await masterDB.view<any>(
+            'sethtest',
+            'all_vessels',
+            queryOptions
+          );
+          console.log(vessels);
+          this.options = vessels.rows.map((vessel) => vessel.value);
+        } catch (err) {
+          this.error(err);
+        }
+      });
   }
 
   private created() {
