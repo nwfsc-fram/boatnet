@@ -17,6 +17,12 @@
           floating
         >SWAP</q-badge>
         <q-badge
+          v-if="tallyMode === addExistingSpecies"
+          color="blue"
+          text-color="white"
+          floating
+        >SELECT {{layout.labels.shortCode}}</q-badge>
+        <q-badge
           v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
           color="red"
           text-color="white"
@@ -29,9 +35,7 @@
         {{data ? data.count : ''}}
       </q-btn>
     </span>
-    <span
-      v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation)"
-    >
+    <span v-if="layout && layout.blank && isHighlightBlankActive()">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
         outline
@@ -40,8 +44,7 @@
         align="around"
         color="black"
         @click="handleBlankClicked"
-      >
-      </q-btn>
+      ></q-btn>
     </span>
   </span>
 </template>
@@ -94,21 +97,40 @@ export default class TallyBtn extends Vue {
   private deleteButtonMode = TallyOperationMode.DeleteButtonSelect;
   private moveSelect = TallyOperationMode.MoveButtonSelect;
   private moveLocation = TallyOperationMode.MoveSelectLocation;
+  private addExistingSpecies =
+    TallyOperationMode.AddExistingSpeciesSelectSpecies;
+  private addExistingReason = TallyOperationMode.AddExistingSpeciesSelectReason;
+  private addExistingLocation =
+    TallyOperationMode.AddExistingSpeciesSelectLocation;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
+  }
+
+  public isHighlightBlankActive() {
+    return (
+      this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.MoveSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
+    );
   }
 
   public handleClick() {
     if (
       this.tallyMode === TallyOperationMode.DeleteButtonSelect ||
       this.tallyMode === TallyOperationMode.MoveButtonSelect ||
-      this.tallyMode === TallyOperationMode.MoveSelectLocation
+      this.tallyMode === TallyOperationMode.MoveSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
+
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
     } else if (this.tallyMode !== TallyOperationMode.Tally) {
-      console.log('Not in Tally mode, no data change.', this.incDecValue);
+      console.log('Not in Tally mode, no data change.');
       this.playSound('bad');
       return;
     }

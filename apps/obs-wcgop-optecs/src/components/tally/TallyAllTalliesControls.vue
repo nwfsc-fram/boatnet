@@ -19,7 +19,7 @@
         :key="`${reason.name}`"
         @controlclick="handleControlClick"
       >
-        {{species}}
+        {{speciesCode}}
         <br>
         {{reason.name}}
         <br>
@@ -35,7 +35,7 @@
       Done
       <br>with
       <br>
-      {{species}}
+      {{speciesCode}}
     </tally-control-btn>
   </q-btn-group>
 </template>
@@ -49,7 +49,7 @@ Vue.component('tally-control-btn', TallyControlBtn);
 
 @Component
 export default class TallyAllTalliesControls extends Vue {
-  @Prop({ default: undefined }) public species!: string; // TODO probably pass actual record
+  @Prop({ default: undefined }) public speciesCode!: string; // TODO probably pass actual record
   @Getter('reasonButtonColors', { namespace: 'tallyState' })
   private reasonButtonColors!: any[];
 

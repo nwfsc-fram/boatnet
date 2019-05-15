@@ -35,7 +35,8 @@ export const state: TallyState = {
   },
   tallyDataRec: { type: TallyDataRecordTypeName, data: [] },
   incDecValue: 1,
-  operationMode: TallyOperationMode.Tally
+  operationMode: TallyOperationMode.Tally,
+  tempSpeciesCounter: 0 // TODO load from DB?
 };
 
 // TODO: Other Color Schemes
@@ -78,6 +79,15 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   setCurrentButtonIdx({ commit }: any, index: number) {
     commit('setCurrentButtonIdx', index);
+  },
+  setCurrentReason({ commit }: any, reason: string) {
+    commit('setCurrentReason', reason);
+  },
+  incTempSpeciesCounter({ commit }: any) {
+    commit('incTempSpeciesCounter');
+  },
+  delTempSpeciesCounter({ commit }: any, counter: number) {
+    commit('delTempSpeciesCounter', counter);
   },
   assignNewButton(
     { commit }: any,
@@ -167,7 +177,7 @@ const mutations: MutationTree<TallyState> = {
      * Initialize tally data if none exists
      * TODO refactor to combine with reset
      */
-
+    newState.tempSpeciesCounter = 0;
     if (!newState.tallyLayout._id) {
       newState.tallyLayout = createDefaultLayoutRecord();
       console.log('[Tally Module] New layout initialized.');
@@ -200,6 +210,7 @@ const mutations: MutationTree<TallyState> = {
     console.log('[Tally Module] Reset Tally Button Data');
     // Keep old IDs
     const oldIdLayout = newState.tallyLayout._id;
+    newState.tempSpeciesCounter = 0;
     newState.tallyLayout = createDefaultLayoutRecord();
     if (!createNewRecord && oldIdLayout) {
       newState.tallyLayout._id = oldIdLayout;
@@ -290,6 +301,17 @@ const mutations: MutationTree<TallyState> = {
   setCurrentButtonIdx(newState: any, index: number) {
     newState.currentButtonIdx = index;
   },
+  setCurrentReason(newState: any, reason: string) {
+    newState.currentReason = reason;
+  },
+  incTempSpeciesCounter(newState: any) {
+    newState.tempSpeciesCounter++;
+  },
+  delTempSpeciesCounter(newState: any, counter: number) {
+    if (counter === newState.tempSpeciesCounter) {
+      newState.tempSpeciesCounter--;
+    }
+  },
   async assignNewButton(
     newState: any,
     value: { species: any; reason: string; index: number }
@@ -335,7 +357,6 @@ const mutations: MutationTree<TallyState> = {
     newState: any,
     value: { oldButton: any; newIndex: number }
   ) {
-
     const target = newState.tallyLayout.layoutData[value.newIndex];
 
     const oldButton: TallyButtonLayoutData = {
@@ -468,6 +489,15 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   currentButtonIdx(getState: TallyState) {
     return getState.currentButtonIdx;
+  },
+  currentReason(getState: TallyState) {
+    return getState.currentReason;
+  },
+  tempCounter(getState: TallyState) {
+    return getState.tempSpeciesCounter;
+  },
+  currentTempName(getState: TallyState) {
+    return '(TEMP' + getState.tempSpeciesCounter + ')';
   }
 };
 
