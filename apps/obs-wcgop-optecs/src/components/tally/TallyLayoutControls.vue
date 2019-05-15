@@ -12,7 +12,7 @@
       <br>Temp
       <br>Species
     </tally-control-btn>
-    <tally-control-btn color="green-5">
+    <tally-control-btn control-name="add-temp-button" @controlclick="handleControlClick" color="green-5">
       Add
       <br>Temp
       <br>Species

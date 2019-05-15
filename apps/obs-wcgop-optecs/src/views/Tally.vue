@@ -114,6 +114,10 @@ export default class Tally extends Vue {
   private setCurrentButtonIdx: any;
   @Action('setCurrentReason', { namespace: 'tallyState' })
   private setCurrentReason: any;
+  @Action('incTempSpeciesCounter', { namespace: 'tallyState' })
+  private incTempSpeciesCounter: any;
+  @Action('resetTempSpeciesCounter', { namespace: 'tallyState' })
+  private resetTempSpeciesCounter: any;
   @Action('assignNewButton', { namespace: 'tallyState' })
   private assignNewButton: any;
   @Action('swapButtons', { namespace: 'tallyState' })
@@ -129,6 +133,10 @@ export default class Tally extends Vue {
   private tallyMode!: TallyOperationMode;
   @Getter('currentReason', { namespace: 'tallyState' })
   private currentReason!: string;
+  @Getter('tempCounter', { namespace: 'tallyState' })
+  private tempCounter!: string;
+  @Getter('currentTempName', { namespace: 'tallyState' })
+  private currentTempName!: string;
 
   private btnLabel = '';
 
@@ -192,6 +200,9 @@ export default class Tally extends Vue {
       this.setCurrentButtonIdx(data.button.index);
       this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
       this.handleControlEvent('select-exist-species');
+    } else if (this.tallyMode === TallyOperationMode.AddTempSpeciesReason) {
+      console.log('TODO DUNNO INCROISE');
+      this.handleControlEvent('select-exist-species');
     }
     data = {
       ...data,
@@ -205,12 +216,12 @@ export default class Tally extends Vue {
    */
   public handleBlankClicked(button: TallyButtonLayoutData) {
     if (this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation) {
-      this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
       this.assignNewButton({
         species: this.currentSelectedSpecies,
         reason: this.currentReason,
         index: button.index
       });
+      this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
     } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
       this.swapButtons({
         oldButton: this.currentSelectedButton,
@@ -227,6 +238,14 @@ export default class Tally extends Vue {
       });
       this.setCurrentReason('');
       this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectReason);
+    } else if (this.tallyMode === TallyOperationMode.AddTempSpeciesLocation) {
+      this.assignNewButton({
+        species: { shortCode: this.currentTempName },
+        reason: this.currentReason,
+        index: button.index
+      });
+      this.setCurrentReason('');
+      this.setTallyOpMode(TallyOperationMode.AddTempSpeciesReason);
     }
   }
 
@@ -234,6 +253,8 @@ export default class Tally extends Vue {
     this.setCurrentReason(reason);
     if (this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectReason) {
       this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectLocation);
+    } else if (this.tallyMode === TallyOperationMode.AddTempSpeciesReason) {
+      this.setTallyOpMode(TallyOperationMode.AddTempSpeciesLocation);
     }
   }
 
@@ -285,7 +306,16 @@ export default class Tally extends Vue {
         this.setTallyOpMode(TallyOperationMode.MoveButtonSelect);
         break;
       case 'add-exist':
+        this.setCurrentReason('');
         this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectSpecies);
+        break;
+      case 'add-temp-button':
+        this.incTempSpeciesCounter();
+        this.currentSelectedSpecies = {
+          shortCode: this.currentTempName
+        };
+        this.setTallyOpMode(TallyOperationMode.AddTempSpeciesReason);
+        this.currentControlComponent = 'tally-addexisting-controls';
         break;
       case 'select-exist-species':
         this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectReason);

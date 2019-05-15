@@ -35,9 +35,7 @@
         {{data ? data.count : ''}}
       </q-btn>
     </span>
-    <span
-      v-if="layout && layout.blank && (tallyMode === selectLocationMode || tallyMode === moveLocation || tallyMode === addExistingLocation)"
-    >
+    <span v-if="layout && layout.blank && isHighlightBlankActive()">
       <!-- <q-btn class="q-px-lg q-py-xs" size="30px" round width="30px"/> -->
       <q-btn
         outline
@@ -109,13 +107,25 @@ export default class TallyBtn extends Vue {
     this.$emit('blankClicked', this.layout);
   }
 
+  public isHighlightBlankActive() {
+    return (
+      this.tallyMode === TallyOperationMode.AddNamedSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.MoveSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
+    );
+  }
+
   public handleClick() {
     if (
       this.tallyMode === TallyOperationMode.DeleteButtonSelect ||
       this.tallyMode === TallyOperationMode.MoveButtonSelect ||
       this.tallyMode === TallyOperationMode.MoveSelectLocation ||
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies ||
-      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation
+      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
+
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
