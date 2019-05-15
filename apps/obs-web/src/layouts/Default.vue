@@ -11,7 +11,7 @@
           icon="menu"
         />
 
-        <q-btn flat dense round @click="navigateBack" aria-label="Back" icon="chevron_left"/>
+        <q-btn v-if="this.$router.currentRoute.name !== 'Home'" flat dense round @click="navigateBack" aria-label="Back" icon="chevron_left"/>
 
         <q-toolbar-title>
           <span
