@@ -17,7 +17,7 @@ import {
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
   QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable,
   QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels, QTabPanel, QSpinner,
-  QSpinnerBars, QSpinnerHourglass, QSpinnerRadio
+  QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
@@ -32,7 +32,7 @@ Vue.use(Quasar, {
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
     QChip, QAvatar, QBanner, QTable, QTh, QTr, QTd, QToggle, QSplitter,
-    QTabPanels, QTabPanel,   QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio
+    QTabPanels, QTabPanel,   QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace
   },
   directives: {
     ClosePopup
