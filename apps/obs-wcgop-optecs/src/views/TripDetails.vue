@@ -20,9 +20,11 @@
                     v-model="currentTrip.vessel.vesselName"
                     label="Vessel Name/ Registration"
                     use-input
+                    fill-input
                     hide-selected
                     input-debounce="0"
                     :options="options"
+                    option-value="label"
                     debounce="500"
                     @input="saveOnUpdate"
                     @filter="getVesselNames"

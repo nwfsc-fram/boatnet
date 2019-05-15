@@ -7,7 +7,7 @@
       <br>Species
     </tally-control-btn>
     <q-separator vertical/>
-    <tally-control-btn disabled>
+    <tally-control-btn control-name="name-temp-button" @controlclick="handleControlClick" :disabled="!isNameTempEnabled">
       Name
       <br>Temp
       <br>Species
@@ -40,12 +40,17 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 
 import TallyControlBtn from './TallyControlBtn.vue';
 Vue.component('tally-control-btn', TallyControlBtn);
 
 @Component
 export default class TallyLayoutControls extends Vue {
+
+  @Getter('isNameTempEnabled', { namespace: 'tallyState' })
+  private isNameTempEnabled!: boolean;
+
   public handleControlClick(controlName: string): void {
     // Pass along button event to Tally parent component
     if (controlName) {
