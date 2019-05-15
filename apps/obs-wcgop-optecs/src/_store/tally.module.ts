@@ -118,6 +118,22 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
   return newLayout;
 }
 
+function getHighestTempCounter(tallyData: TallyCountData[], startCount: number) {
+  let newCount = startCount;
+  for (const rec of tallyData) {
+    if (rec.shortCode !== undefined && rec.shortCode.startsWith('(TEMP')) {
+      const tempCounter = parseInt(
+        rec.shortCode.replace('(TEMP', '').replace(')', ''), // extract (TEMP###)
+        10
+      );
+      if (tempCounter > newCount) {
+        newCount = tempCounter
+      }
+    }
+  }
+  return newCount;
+}
+
 // ACTIONS
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
@@ -180,7 +196,8 @@ const mutations: MutationTree<TallyState> = {
      * Initialize tally data if none exists
      * TODO refactor to combine with reset
      */
-    newState.tempSpeciesCounter = 0;
+
+    // Tally Layout
     if (!newState.tallyLayout._id) {
       newState.tallyLayout = createDefaultLayoutRecord();
       console.log('[Tally Module] New layout initialized.');
@@ -193,6 +210,8 @@ const mutations: MutationTree<TallyState> = {
       console.log('TODO verify pouchdb vs vuex data');
     }
 
+    newState.tempSpeciesCounter = 0;
+    // Tally Data
     if (!newState.tallyDataRec._id) {
       newState.tallyDataRec = createDefaultButtonData();
       console.log('[Tally Module] New tally dataset initialized.');
@@ -201,6 +220,11 @@ const mutations: MutationTree<TallyState> = {
       console.log(
         '[Tally Module] Already have tally data, skip template init. DB ID=',
         newState.tallyDataRec._id
+      );
+      // find max temp button counter
+      newState.tempSpeciesCounter = getHighestTempCounter(
+        newState.tallyDataRec.data,
+        newState.tempSpeciesCounter
       );
       console.log('TODO verify pouchdb vs vuex data');
     }
@@ -498,6 +522,7 @@ const getters: GetterTree<TallyState, RootState> = {
     return getState.currentReason;
   },
   tempCounter(getState: TallyState) {
+    // TODO store
     return getState.tempSpeciesCounter;
   },
   currentTempName(getState: TallyState) {

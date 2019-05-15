@@ -23,7 +23,13 @@
           floating
         >SELECT {{layout.labels.shortCode}}</q-badge>
         <q-badge
-          v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
+          v-if="tallyMode === nameTempSpeciesButton && layout.labels.shortCode.startsWith('(TEMP')"
+          color="red"
+          text-color="white"
+          floating
+        >RENAME</q-badge>
+        <q-badge
+          v-if="moveLocation && layout.index === currentButtonIdx"
           color="red"
           text-color="white"
           floating
@@ -102,6 +108,7 @@ export default class TallyBtn extends Vue {
   private addExistingReason = TallyOperationMode.AddExistingSpeciesSelectReason;
   private addExistingLocation =
     TallyOperationMode.AddExistingSpeciesSelectLocation;
+  private nameTempSpeciesButton = TallyOperationMode.NameTempSpeciesSelect;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
