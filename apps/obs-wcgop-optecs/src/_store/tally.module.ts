@@ -127,7 +127,7 @@ function getHighestTempCounter(tallyData: TallyCountData[], startCount: number) 
         10
       );
       if (tempCounter > newCount) {
-        newCount = tempCounter
+        newCount = tempCounter;
       }
     }
   }
