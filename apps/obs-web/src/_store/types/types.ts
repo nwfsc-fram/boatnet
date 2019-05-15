@@ -24,7 +24,8 @@ export interface PermitState {
 }
 
 export interface EmefpState {
-  activeEmefp: EmEfp | null;
+  activeEmefp?: any;
+  newEmEfp?: boolean;
   filterText: string;
 }
 
