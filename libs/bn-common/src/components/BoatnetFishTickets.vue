@@ -3,7 +3,7 @@
     <q-table
       dense
       hide-bottom
-      :data="fishTickets"
+      :data="modifiedFishTickets"
       :columns="columns"
       row-key="__index"
       selection="single"
@@ -55,6 +55,7 @@ import moment from 'moment';
 @Component
 export default class BoatnetFishTickets extends Vue {
   @Prop() private fishTickets!: WcgopFishTicket[];
+  private modifiedFishTickets: WcgopFishTicket[] = [];
 
   private selected: any[] = [];
   private showDialog = false;
@@ -112,27 +113,23 @@ export default class BoatnetFishTickets extends Vue {
 
   private deleteRow() {
     if (this.selected.length > 0) {
-      this.fishTickets.splice(this.selected[0].__index, 1);
-      this.$emit('update:fishTickets', this.fishTickets);
+      this.modifiedFishTickets.splice(this.selected[0].__index, 1);
+      this.$emit('update:fishTickets', this.modifiedFishTickets);
       this.$emit('save');
     }
   }
 
   private saveAdd() {
-    if (this.fishTickets) {
-      this.fishTickets.push(this.currFishTicket);
-    } else {
-      this.fishTickets = [this.currFishTicket];
-    }
-    this.$emit('update:fishTickets', this.fishTickets);
+    this.modifiedFishTickets.push(this.currFishTicket);
+    this.$emit('update:fishTickets', this.modifiedFishTickets);
     this.showDialog = false;
     this.$emit('save');
   }
 
   private saveEdit() {
-    this.fishTickets.splice(this.selected[0].__index, 1, this.currFishTicket);
+    this.modifiedFishTickets.splice(this.selected[0].__index, 1, this.currFishTicket);
     this.showDialog = false;
-    this.$emit('update:fishTickets', this.fishTickets);
+    this.$emit('update:fishTickets', this.modifiedFishTickets);
     this.$emit('save');
     this.selected = [];
   }
