@@ -39,8 +39,27 @@
                     </div>
                 </div>
 
-                <q-select v-model="trip.activeTrip.departurePort.name" :dense="true" label="Start Port" @filter="portsFilterFn" use-input stack-label :options="portOptions"></q-select>
-                <q-select v-model="trip.activeTrip.returnPort.name" :dense="true" label="End Port" @filter="portsFilterFn" use-input stack-label :options="portOptions"></q-select>
+                <q-select
+                v-model="trip.activeTrip.departurePort.name"
+                dense
+                label="Start Port"
+                @filter="startPortsFilterFn"
+                use-input
+                stack-label
+                :options="portOptions"
+                >
+                </q-select>
+
+                <q-select
+                v-model="trip.activeTrip.returnPort.name"
+                :dense="true"
+                label="End Port"
+                @filter="endPortsFilterFn"
+                use-input
+                stack-label
+                :options="portOptions"
+                >
+                </q-select>
 
                 <q-select v-model="trip.activeTrip.fishery" :dense="true" label="Fishery" stack-label :rules="[val => !!val || 'Field is required']" @filter="fisheriesFilterFn" use-input option-label="name" option-value="_id" :options="fisheryOptions"></q-select>
 
@@ -54,6 +73,9 @@
                 use-chips
                 use-input
                 stack-label
+                :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
+                option-value="permitNumber"
+                @filter = "permitsFilterFn"
                 :options="permits"
                 style="width: 100%"
                 >
@@ -68,7 +90,8 @@
                             class="q-ma-none"
                             >
                             <q-avatar color="primary" text-color="white" icon="local_offer" />
-                            {{ scope.opt.label }}
+                            <span v-if="scope.opt.label">{{ scope.opt.label }}</span>
+                            <span v-else>{{ scope.opt.permitNumber }}</span>
                         </q-chip>
                     </template>
                 </q-select>
@@ -130,8 +153,8 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { date } from 'quasar';
-import { TripState, PermitState, UserState, GeneralState, VesselState } from '../_store/types/types';
-import { AlertState } from '../_store/types/types';
+import { TripState, PermitState, UserState, GeneralState, VesselState, AlertState } from '../_store/types/types';
+import { Permit } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
@@ -164,11 +187,10 @@ export default class TripDetails extends Vue {
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
-    // private trip = this.$store.state.activeTrip;
-    private get permits() {
-        return this.permit.permits.map( (permit: any) => ({label: permit.permit_number, value: permit.permit_number})
-        );
-    }
+    // private get permits() {
+    //     return this.permit.permits.map( (permit: any) => (permit)
+    //     );
+    // }
 
     private prompt = false;
     // private newMessage: string = '';
@@ -179,6 +201,9 @@ export default class TripDetails extends Vue {
 
     private portOptions: string[] = [];
     private fisheryOptions: Fishery[] = [];
+
+    // private vessels = [];
+    private permits: Permit[] = [];
 
     constructor() {
         super();
@@ -210,29 +235,47 @@ export default class TripDetails extends Vue {
     //     }
 
     private fisheriesFilterFn(val: string, update: any, abort: any) {
-    update(async () => {
-      try {
-        const db = pouchService.db;
-        const queryOptions: ListOptions = {
-          limit: 5,
-          start_key: val.toLowerCase(),
-          inclusive_end: true,
-          descending: false
-        };
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions: ListOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false
+                };
 
-        const fisheries = await db.query(
-          pouchService.lookupsDBName,
-          'obs_web/all_fisheries',
-          queryOptions
+                const fisheries = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/all_fisheries',
+                queryOptions
+                );
+                this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
+            } catch (err) {
+                this.errorAlert(err);
+            }
+        }
         );
-        this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
-      } catch (err) {
-        this.errorAlert(err);
-      }
-    });
     }
 
-    private portsFilterFn(val: string, update: any, abort: any) {
+    private permitsFilterFn(val: string, update: any, abort: any) {
+        console.log(this.permit.permits);
+        if (val === '') {
+            update(() => {
+                this.permits = this.permit.permits;
+            });
+            return;
+            }
+        update(() => {
+            const searchString = val.toLowerCase();
+            this.permits = this.permit.permits.filter(
+                (permit) => permit.permitNumber.toLowerCase().indexOf(searchString.toLowerCase()) > -1
+            );
+        });
+    }
+
+    private updatePorts(val: string, update: any, abort: any, portType: any) {
     update(async () => {
       try {
         const db = pouchService.db;
@@ -249,18 +292,28 @@ export default class TripDetails extends Vue {
           queryOptions
         );
         this.portOptions = ports.rows.map((port: any) => port.value);
-        this.portOptions.push('SAME AS START');
+        if (portType === 'end') {
+            this.portOptions.push('SAME AS START');
+        }
       } catch (err) {
         this.errorAlert(err);
       }
     });
+    }
+
+    private startPortsFilterFn(val: string, update: any, abort: any) {
+        this.updatePorts(val, update, abort, 'start');
         }
 
-    private deleteTrip() {
-        this.trip.trips.pop();
-        this.trip.activeTrip = null;
-        this.$router.push({path: '/trips/'});
-    }
+    private endPortsFilterFn(val: string, update: any, abort: any) {
+        this.updatePorts(val, update, abort, 'end');
+        }
+
+    // private deleteTrip() {
+    //     this.trip.trips.pop();
+    //     this.trip.activeTrip = null;
+    //     this.$router.push({path: '/trips/'});
+    // }
 
     private createTrip() {
         // this is where the pouch code to save the trip goes
@@ -320,6 +373,11 @@ export default class TripDetails extends Vue {
     private updateTrip() {
         pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
         this.$router.push({path: '/trips'});
+    }
+
+
+    private created() {
+        console.log(this.permit.permits);
     }
 
 }

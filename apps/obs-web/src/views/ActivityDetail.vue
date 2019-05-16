@@ -83,7 +83,16 @@ export default class ActivityDetail extends Vue {
 private pagination = {rowsPerPage: 0};
 private alert = false;
 private newActivity = {};
-private activityTypes = ['Training', 'Vacation'];
+private activityTypes = [
+                        'Briefing',
+                        'Debriefing',
+                        'Meeting',
+                        'Standby',
+                        'Training',
+                        'Travel',
+                        'Vacation',
+                        'Unpaid Leave'
+                        ];
 
 private startOptionsFn(val: string) {
     return moment(val) >= moment().subtract(1, 'days');

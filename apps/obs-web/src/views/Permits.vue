@@ -5,7 +5,7 @@
             <q-item v-for="(permit, i) of filteredPermits" :key="i">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
                 <q-item-section  @click="permitDetails(permit, i)">
-                    <q-item-label ><strong>{{ permit.permit_number }}</strong> <span class="text-primary" style="position: relative; left: 20px">{{ permit.vessel_name }}</span></q-item-label>
+                    <q-item-label ><strong>{{ permit.permitNumber }}</strong> <span class="text-primary" style="position: relative; left: 20px">{{ permit.vessel.vesselName }}</span></q-item-label>
                     <!-- <q-item-label caption>{{ permit.vessel_name }}</q-item-label> -->
                 </q-item-section>
                 <!-- </router-link> -->
@@ -45,14 +45,15 @@ export default class Permits extends Vue {
         super();
     }
 
-    private getPermits() {
-        axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
-            .then( (response) => {
-                // this.$store.dispatch('updatePermits', response.data.items);
-                this.permit.permits = response.data.items;
-                console.log(this.permit.permits);
-            });
-    }
+    // private getPermits() {
+    //     axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
+    //         .then( (response) => {
+    //             // this.$store.dispatch('updatePermits', response.data.items);
+    //             console.log(response.data.items)
+    //             this.permit.permits = response.data.items;
+    //             console.log(this.permit.permits);
+    //         });
+    // }
 
     private permitDetails(permit: any, i: number) {
         this.permit.activePermit = permit;
@@ -70,9 +71,9 @@ export default class Permits extends Vue {
             }
     }
 
-    private created() {
-        this.getPermits();
-    }
+    // private created() {
+    //     this.getPermits();
+    // }
 
 }
 </script>
@@ -98,7 +99,7 @@ export default {
     //         for (var permit of data.items)
     //             { permitArray.push(permit)}
     //         console.log(permitArray)
-    //         this.$store.dispatch('updatePermits', permitArray) 
+    //         this.$store.dispatch('updatePermits', permitArray)
     //         console.log(this.$store.state.permits)
     //         })
     //     },
@@ -124,7 +125,7 @@ export default {
         },
         filteredPermits() {
             if (this.filterText.length > 0) {
-                // implement search - as a mixin? 
+                // implement search - as a mixin?
                 return this.permits;
 
             } else {

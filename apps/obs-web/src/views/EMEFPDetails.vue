@@ -219,6 +219,7 @@ export default class EMEFPDetails extends Vue {
       try {
         const masterDB: Client<any> = couchService.masterDB;
 
+
         const vessels = await masterDB.view<any>(
           'sethtest',
           'all_vessels',

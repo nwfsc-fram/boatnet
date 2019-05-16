@@ -4,6 +4,19 @@
     <div class="centered-page-item">
       <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
       <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="alert = true">New Trip</q-btn>
+
+      <q-select
+      v-model="vessel.activeVessel"
+      label="Set Active Vessel (staff role only)"
+      dense
+      stack-label
+      use-input
+      @filter="vesselsFilterFn"
+      :options="vessels"
+      option-label="vesselName"
+      option-value="_id"
+      ></q-select>
+
     </div>
 
       <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
@@ -104,7 +117,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
   }
 })
 export default class Trips extends Vue {
-    @State('trip') private trip!: TripState;
+  @State('trip') private trip!: TripState;
     @State('vessel') private vessel!: VesselState;
     @State('user') private user!: UserState;
     @State('appState') private appState!: WcgopAppState;
@@ -114,6 +127,12 @@ export default class Trips extends Vue {
     @Action('error', { namespace: 'alert' }) private error: any;
 
   private userTrips!: any;
+  private vessels = [];
+  private alert = false;
+
+  constructor() {
+      super();
+  }
 
   public get userDBTrips() {
     // TODO: This seems to block the UI - handle asyn
@@ -173,11 +192,33 @@ export default class Trips extends Vue {
       );
     }
 
-    private alert = false;
+    private vesselsFilterFn(val: string, update: any, abort: any) {
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
 
-    constructor() {
-        super();
+                const vessels = await db.query(
+                    pouchService.lookupsDBName,
+                    'optecs_trawl/all_vessel_names',
+                    queryOptions
+                    );
+                this.vessels = vessels.rows.map((row: any) => row.doc);
+            } catch (err) {
+                this.error(err);
+            }
+        }
+    );
     }
+
+
 
     // private get trips() {
     //     return this.$store.getters.trips;
@@ -248,7 +289,7 @@ export default class Trips extends Vue {
                             departureDate: moment().format(),
                             departurePort: this.user.activeUser.homeport,
                             returnDate: moment().format(),
-                            returnPort: {name: 'same as start'},
+                            returnPort: {name: 'SAME AS START'},
                             isSelected: false,
                             fishery: {name: 'unknown'},
                             tripStatus: {

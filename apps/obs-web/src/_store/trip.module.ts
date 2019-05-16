@@ -4,14 +4,14 @@ import router from '../router';
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { RootState, TripState, VesselState } from '@/_store/types/types';
-import { trips } from '@/_store/data';
+// import { trips } from '@/_store/data';
 import { State, Action, Getter } from 'vuex-class';
 
 Vue.use(Vuex);
 
 export const state: TripState = {
-  activeTrip: trips[0],
-  trips,
+  activeTrip: null,
+  trips: [],
   newTrip: false,
 };
 

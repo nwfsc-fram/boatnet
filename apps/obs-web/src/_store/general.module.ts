@@ -7,14 +7,14 @@ import { RootState } from '@/_store/types/types';
 import { GeneralState } from '@/_store/types/types';
 import {
   ports,
-  fisheries,
-  targetTypes,
+  // fisheries,
+  // targetTypes,
   roles,
   usStates,
   portGroups,
   portDecoder,
   // otsTargets,
-  vessels,
+  // vessels,
   notificationOptions } from '@/_store/data';
 // import Vessel from '@boatnet/bn-models/models/_common';
 
@@ -22,14 +22,14 @@ Vue.use(Vuex);
 
 export const state: GeneralState = {
   ports,
-  fisheries,
-  targetTypes,
+  // fisheries,
+  // targetTypes,
   roles,
   usStates,
   portGroups,
   portDecoder,
   // otsTargets,
-  vessels,
+  // vessels,
   notificationOptions,
   // activeTarget: otsTargets[0]
 };
