@@ -47,20 +47,13 @@
     <!-- TODO: use q-tr, q-td etc for custom rows with no checkbox -->
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
-    <q-dialog v-model="confirmDelete" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="red" text-color="white"/>
-          <span class="q-ml-sm">Are you sure you want to delete trip #{{tripNum}}?</span>
-        </q-card-section>
+    <boatnet-delete-dialog
+      :message="deleteMessage"
+      :show.sync="showDeleteDialog"
+      @confirmDelete="onDeleteTrip"
+    />
 
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn flat label="Delete Trip" color="primary" @click="onDeleteTrip" v-close-popup/>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <div class="row q-gutter-sm q-pt-sm">
+    <div class="row q-gutter-sm q-pa-md absolute-bottom">
       <q-btn color="primary" icon="add" label="Add Trip" @click="onAddTrip"/>
       <q-btn
         color="primary"
@@ -80,7 +73,7 @@
         color="primary"
         icon="delete_forever"
         label="Delete Trip"
-        @click="confirmDelete = true"
+        @click="showDeleteDialog = true"
         :disabled="!currentTrip"
       />
       <q-space/>
@@ -103,11 +96,12 @@ export default class BoatnetTrips extends Vue {
   @Prop() public currentTrip!: BaseTrip;
   public selected: any[] = [];
   private searchText = '';
-  private confirmDelete = false;
 
-  private get tripNum() {
+  private showDeleteDialog = false;
+
+  private get deleteMessage() {
     if (this.currentTrip) {
-      return this.currentTrip.tripNum;
+      return 'Are you sure you want to delete trip #' + this.currentTrip.tripNum + '?';
     }
   }
 

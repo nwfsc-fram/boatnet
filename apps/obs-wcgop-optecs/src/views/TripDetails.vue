@@ -100,9 +100,10 @@
               </div>
               <div class="col-5">
                 <boatnet-licenses
-                  :certificates="certificate"
+                  :certificates.sync="currentTrip.certificates"
                   @displayKeyboard="displayKeyboard"
                   @error="handleError"
+                  @save="saveOnUpdate"
                 />
               </div>
               <div class="col-1 self-center">
@@ -203,19 +204,10 @@
                     data-layout="normal"
                   />
                   <div class="text-h6 col-2">Fish Tickets</div>
-                  <!-- TODO this should be a component -->
-                  <div class="row">
-                    <q-input
-                      outlined
-                      class="col-12"
-                      v-model="ph"
-                      label="Fish Ticket"
-                      debounce="500"
-                      @input="saveOnUpdate"
-                      @focus="displayKeyboard"
-                      data-layout="numeric"
-                    />
-                  </div>
+                  <boatnet-fish-tickets
+                    :fishTickets.sync="currentTrip.fishTickets"
+                    @save="saveOnUpdate"
+                  />
                 </div>
               </div>
             </div>
@@ -250,6 +242,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
+  WcgopFishTicket,
   Port,
   PortTypeName,
   WcgopOperation,
@@ -258,15 +251,18 @@ import {
   Vessel,
   Person,
   PersonTypeName,
-  VesselTypeName
+  VesselTypeName,
+  Certificate
 } from '@boatnet/bn-models';
 
 import { couchService } from '@boatnet/bn-couch';
 import BoatnetLicenses from '@boatnet/bn-common';
 import BoatnetDatetime from '@boatnet/bn-common';
+import BoatnetFishTickets from '@boatnet/bn-common';
 
 Vue.component(BoatnetLicenses);
 Vue.component(BoatnetDatetime);
+Vue.component(BoatnetFishTickets);
 
 @Component
 export default class Trips extends Vue {
@@ -285,9 +281,6 @@ export default class Trips extends Vue {
   private ph = ''; // TEMP
 
   private options: string[] = [];
-
-  // TODO modify this to load from DB
-  private certificate: string[] = [''];
 
   constructor() {
     super();
@@ -316,7 +309,10 @@ export default class Trips extends Vue {
   }
 
   private updateDepartureDate(datetime: string) {
-    if (this.currentTrip.returnDate && moment(datetime).isAfter(moment(this.currentTrip.returnDate))) {
+    if (
+      this.currentTrip.returnDate &&
+      moment(datetime).isAfter(moment(this.currentTrip.returnDate))
+    ) {
       this.errorAlert('Departure date must be before return date');
     } else {
       this.currentTrip.departureDate = datetime;
@@ -325,7 +321,10 @@ export default class Trips extends Vue {
   }
 
   private updateReturnDate(datetime: string) {
-    if (this.currentTrip.departureDate && moment(datetime).isBefore(moment(this.currentTrip.departureDate))) {
+    if (
+      this.currentTrip.departureDate &&
+      moment(datetime).isBefore(moment(this.currentTrip.departureDate))
+    ) {
       this.errorAlert('Return date must be after departure date');
     } else {
       this.currentTrip.returnDate = datetime;
@@ -359,7 +358,12 @@ export default class Trips extends Vue {
     this.getLookupVals(val, update, abort, 'optecs_trawl/all_vessel_names');
   }
 
-  private async getLookupVals(val: string, update: any, abort: any, lookupTable: string) {
+  private async getLookupVals(
+    val: string,
+    update: any,
+    abort: any,
+    lookupTable: string
+  ) {
     // if (val.length < 2) {
     //   abort();
     //   return;

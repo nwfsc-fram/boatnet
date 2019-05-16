@@ -25,7 +25,7 @@
     <q-table :data="haulsData" :columns="haulsSettings.columns" :selected.sync="selected"/>
 
     <!-- <div class="q-mt-md">Selected: {{ JSON.stringify(selected) }}</div> -->
-    <div class="row q-gutter-sm q-pt-sm">
+    <div class="row q-gutter-sm q-pa-md absolute-bottom">
       <q-btn color="primary" icon="add" label="Add Haul"/>
       <q-btn color="primary" icon="edit" label="Edit Haul" disabled="true"/>
       <q-btn color="primary" icon="done" label="End Haul" disabled="true"/>

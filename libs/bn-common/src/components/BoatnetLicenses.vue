@@ -4,8 +4,10 @@
       <q-input
         outlined
         class="col-2"
-        v-model="certificates[i]"
+        v-model="certificate.certificateNumber"
         label="Permit/ License #"
+        debounce="500"
+        @input="save"
         @focus="displayKeyboard"
         data-layout="numeric"
       >
@@ -25,22 +27,31 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+import { Certificate } from '@boatnet/bn-models';
 
 @Component
 export default class BoatnetLicenses extends Vue {
-  @Prop() private certificates!: string[];
+  @Prop({ default: () => [{ certificateNumber: '', certificationId: 0 }] })
+  private certificates!: Certificate[];
 
   private displayKeyboard(event: any) {
     this.$emit('displayKeyboard', event);
   }
 
+  private save() {
+    this.$emit('update:certificates', this.certificates);
+    this.$emit('save');
+  }
+
   private remove(index: number) {
     this.certificates.splice(index, 1);
+    this.$emit('update:certificates', this.certificates);
+    this.$emit('save');
   }
 
   private add() {
     if (this.certificates.length < 7) {
-      this.certificates.unshift('');
+      this.certificates.unshift({});
     } else {
       this.$emit('error', 'Cannot add more than 7 licenses');
     }
