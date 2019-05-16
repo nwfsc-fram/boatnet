@@ -214,9 +214,6 @@ export default class Tally extends Vue {
         };
         this.handleControlEvent('select-exist-species');
         return;
-      // case TallyOperationMode.AddTempSpeciesReason:
-      //   this.handleControlEvent('select-exist-species');
-      //   return;
       case TallyOperationMode.NameTempSpeciesSelect:
         if (data.button.labels.shortCode.startsWith('(TEMP')) {
           this.currentSelectedSpecies = {
