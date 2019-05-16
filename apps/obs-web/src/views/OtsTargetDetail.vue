@@ -117,9 +117,9 @@
                   <div class="text-subtitle2">Expiration Date</div>
                   <q-date
                       v-model="expirationDate"
-                      :options="optionsFn"
                       color="red"
                       dark
+                      :options="expirationDateOptionsFn"
                       >
                   </q-date>
                   </q-item-section>
@@ -372,6 +372,12 @@ export default class OtsTargeteDetail extends Vue {
         if (this.ots.activeOTSTarget) {
             this.ots.activeOTSTarget.expirationDate = value;
         }
+    }
+
+    private expirationDateOptionsFn(val: string) {
+      if (this.ots.activeOTSTarget && this.ots.activeOTSTarget.effectiveDate) {
+          return moment(val) >= moment(this.ots.activeOTSTarget.effectiveDate);
+      }
     }
 
     private filterVessels(val: string, update: any, abort: any) {

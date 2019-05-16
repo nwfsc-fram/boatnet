@@ -34,8 +34,8 @@ export interface Permit extends Base {
     // WDFW-specific Fields
 
     // ODFW-specific Fields
-    year: number;
-    potLimit: number;
+    year?: number;
+    potLimit?: number;
 
     // CDFW-specific Fields
 }

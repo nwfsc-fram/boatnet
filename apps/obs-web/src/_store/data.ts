@@ -4,10 +4,8 @@ import moment from 'moment';
 
 import { alert } from '@/_store/alert.module';
 
-import { Permit } from '@/_store/types/types.ts';
-
 import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
-import { OTSTrip, OTSMessage, OTSUser, OTSTarget, WcgopTrip } from '@boatnet/bn-models';
+import { OTSTrip, OTSMessage, OTSUser, OTSTarget, WcgopTrip, Permit } from '@boatnet/bn-models';
 
 import { RootState } from '@/_store/types/types';
 
@@ -22,14 +20,14 @@ Vue.use(Vuex);
 // const activePermit: string = '';
 // const newTrip: boolean =  false;
 
-export const targetTypes: string[] = ['Fishery', 'Vessel', 'Port Group'];
+// export const targetTypes: string[] = ['Fishery', 'Vessel', 'Port Group'];
 
-export const fisheries: string[] =  [
-  'EM EFP',
-  'Limited Entry - Catch Shares',
-  'Trawl Gear - MOD EFP',
-  'Catch Shares - Shore Side Hake'
-];
+// export const fisheries: string[] =  [
+//   'EM EFP',
+//   'Limited Entry - Catch Shares',
+//   'Trawl Gear - MOD EFP',
+//   'Catch Shares - Shore Side Hake'
+// ];
 
 export const notificationOptions: any[] = [
   {label: 'email', value: 'email', icon: 'mail'},
@@ -37,93 +35,45 @@ export const notificationOptions: any[] = [
   {label: 'app', value: 'app', icon: 'smartphone'}
 ];
 
-export const vessels: Vessel[] = [
-  {vesselName: 'Excalibur'},
-  {vesselName: 'Raven'},
-  {vesselName: 'Last Straw'}
-];
+// export const vessels: Vessel[] = [
+//   {vesselName: 'Excalibur'},
+//   {vesselName: 'Raven'},
+//   {vesselName: 'Last Straw'}
+// ];
 
 export const permits: Permit[] = [
-  { permit_number: 'GF0001', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'F/V VIGOROUS INC',
-    permit_owner_address: '6533 SEAVIEW AVE NW APT 607A', permit_owner_city: 'SEATTLE',
-    permit_owner_state: 'WA', permit_owner_zip: '98117', vessel_name: 'VIGOROUS',
-    vessel_length: 64.33, vessel_registration_number: '250226',
-    vessel_owner: 'F/V VIGOROUS INC AND GLEM FISHERIES LLC',
-    vessel_owner_address: '6533 SEAVIEW AVE NW APT 607A',
-    vessel_owner_city: 'SEATTLE', vessel_owner_state: 'WA',
-    vessel_owner_zip: '98117', trawl_gear: 'No', longline_gear: 'Yes',
-    trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 64.84,
-    sablefish_endorsement: 'Yes', sablefish_tier: '1', cp_endorsement: 'No',
-    ms_endorsement: 'No', mothership_catcher_vessel: 'No', whiting_percent: null,
-    whiting_assignment: null, status: 'Active', goid: '2108', ghid: '9687',
-    owner_on_board_exempt: 'Yes'
+  {
+    permitNumber: 'GF0001',
+    certificateStartDate: '2019-01-01T08:00:00Z',
+    permitType: 'NOAA Fisheries',
+    certificateEndDate: '2019-12-31T08:00:00Z',
+    owner: {
+      firstName: 'F/V VIGOROUS INC',
+      addressLine1: '123 Fake St.',
+      city: 'Anytown',
+      state: 'OH',
+      zipCode: '12345'
+    },
+    vessel: {
+      vesselName: 'VIGOROUS',
+      registeredLength: {value: 99.00001, units: 'cm'},
+      coastGuardNumber: '47',
+    },
+    isTrawlGear: true,
+    isLonglineGear: true,
+    isTrapPotGear: true,
+    isSmallFleet: true,
+    endorsedLength: 88.88,
+    isSableFishEndorsed: true,
+    sableFishTier: '1',
+    isCpEndorsed: true,
+    isMsEndorsed: true,
+    isMothershipCatcherVessel: true,
+    status: 'Active',
+    goid: '2001',
+    ghid: '1002',
+    isOwnerOnBoardExempt: true
   },
-  { permit_number: 'GF0002', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'ERICKSON, SHERYL ANN ',
-    permit_owner_address: '602 DAWLEY ROAD', permit_owner_city: 'SEQUIM',
-    permit_owner_state: 'WA', permit_owner_zip: '98382', vessel_name: 'GALLOWS POINT',
-    vessel_length: 43, vessel_registration_number: 'WN2165NM',
-    vessel_owner: 'OVERMAN, INGRID JOAN', vessel_owner_address:
-    'PO BOX 724', vessel_owner_city: 'GRAYLAND', vessel_owner_state: 'WA',
-    vessel_owner_zip: '98547', trawl_gear: 'No', longline_gear: 'Yes',
-    trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 44.3,
-    sablefish_endorsement: 'Yes', sablefish_tier: '3', cp_endorsement: 'No',
-    ms_endorsement: 'No', mothership_catcher_vessel: 'No', whiting_percent: null,
-    whiting_assignment: null, status: 'Active', goid: '10208', ghid: '9393',
-    owner_on_board_exempt: 'No'
-  },
-  { permit_number: 'GF0003', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'THE THOR CORPORATION',
-    permit_owner_address: '5525 SE SCENIC LN  UNIT 204', permit_owner_city: 'VANCOUVER',
-    permit_owner_state: 'WA', permit_owner_zip: '98661', vessel_name: 'GOLDEN CHALICE',
-    vessel_length: 56.75, vessel_registration_number: '548356',
-    vessel_owner: 'GOLDEN CHALICE LLC AND QV LLC', vessel_owner_address: 'PO BOX 1729',
-    vessel_owner_city: 'GIG HARBOR', vessel_owner_state: 'WA', vessel_owner_zip: '98335',
-    trawl_gear: 'No', longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No',
-    endorsed_length: 69, sablefish_endorsement: 'Yes', sablefish_tier: '2',
-    cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
-    whiting_percent: null, whiting_assignment: null, status: 'Active',
-    goid: '6216', ghid: '9847', owner_on_board_exempt: 'Yes'
-  },
-  { permit_number: 'GF0004', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z',
-    permit_owner: 'FLETCHER, JEFFREY L AND FLETCHER, TYNA L',
-    permit_owner_address: '560 KINGS AVE', permit_owner_city: 'LAKESIDE',
-    permit_owner_state: 'OR', permit_owner_zip: '97449', vessel_name: 'GINNY G',
-    vessel_length: 54.1, vessel_registration_number: '630351',
-    vessel_owner: 'FLETCHER, JEFFREY L AND FLETCHER, TYNA L',
-    vessel_owner_address: '560 KINGS AVE', vessel_owner_city: 'LAKESIDE',
-    vessel_owner_state: 'OR', vessel_owner_zip: '97449', trawl_gear: 'No',
-    longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No',
-    endorsed_length: 35, sablefish_endorsement: 'Yes', sablefish_tier: '3',
-    cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
-    whiting_percent: null, whiting_assignment: null, status: 'Active',
-    goid: '2269', ghid: '2353', owner_on_board_exempt: 'Yes'
-  },
-  { permit_number: 'GF0005', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'GREEN, MATTHEW KEONI',
-    permit_owner_address: '602 15TH AVE E', permit_owner_city: 'SEATTLE', permit_owner_state: 'WA',
-    permit_owner_zip: '98112', vessel_name: 'ESTHER LOUISE', vessel_length: 37.5,
-    vessel_registration_number: '545715', vessel_owner: 'CARROLL, PAAVO K',
-    vessel_owner_address: '184 MAIN STREET', vessel_owner_city: 'MORRO BAY',
-    vessel_owner_state: 'CA', vessel_owner_zip: '93442', trawl_gear: 'No', longline_gear: 'Yes',
-    trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 33, sablefish_endorsement: 'No',
-    sablefish_tier: null, cp_endorsement: 'No', ms_endorsement: 'No', mothership_catcher_vessel: 'No',
-    whiting_percent: null, whiting_assignment: null, status: 'Active', goid: '9531', ghid: '9532',
-    owner_on_board_exempt: null
-  },
-  { permit_number: 'GF0006', certificate_start_date: '2019-01-01T08:00:00Z',
-    certificate_end_date: '2019-12-31T08:00:00Z', permit_owner: 'D\'AMATO, ONOFRIO', permit_owner_address:
-    '1380 N PACIFIC ST', permit_owner_city: 'OCEANSIDE', permit_owner_state: 'CA', permit_owner_zip: '92054',
-    vessel_name: 'M TOO', vessel_length: 35, vessel_registration_number: '988700',
-    vessel_owner: 'D\'AMATO, ONOFRIO', vessel_owner_address: '1380 N PACIFIC ST',
-    vessel_owner_city: 'OCEANSIDE', vessel_owner_state: 'CA', vessel_owner_zip: '92054', trawl_gear: 'No',
-    longline_gear: 'Yes', trap_pot_gear: 'No', small_fleet: 'No', endorsed_length: 32,
-    sablefish_endorsement: 'No', sablefish_tier: null, cp_endorsement: 'No', ms_endorsement: 'No',
-    mothership_catcher_vessel: 'No', whiting_percent: null, whiting_assignment: null, status: 'Active',
-    goid: '1317', ghid: '1335', owner_on_board_exempt: null
-  }
 ];
 
 // export const otsTargets: OTSTarget[] = [
@@ -145,127 +95,127 @@ export const permits: Permit[] = [
 //   }
 // ];
 
-export const trips: WcgopTrip[] = [
-  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
-    vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '2018/08/03 10:01 AM', returnDate: '2019/05/16',
-    departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Open'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
-    vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
-    vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Open'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
-    vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Open'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
-    vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
-    departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Trawl Gear - MOD EFP'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
-    vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
-    departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
-    vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
-    departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Trawl Gear - MOD EFP'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 3, isSelected: true,
-    vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
-    departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 4, isSelected: true,
-    vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
-    departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
-    vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
-    departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 2, isSelected: false,
-    vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
-    departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 1, isSelected: true,
-    vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
-    departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Trawl Gear - MOD EFP'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
-    vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
-    departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
-    vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
-    departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Catch Shares - Shore Side Hake'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
-    vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
-    departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Trawl Gear - MOD EFP'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
-    vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
-    departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Closed'}
-  },
-  { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
-    vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
-    departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
-    departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
-    fishery: {name: 'Limited Entry - Catch Shares'},
-    tripStatus: {description: 'Closed'}
-  },
-];
+// export const trips: WcgopTrip[] = [
+//   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
+//     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '2018/08/03 10:01 AM', returnDate: '2019/05/16',
+//     departurePort: {name: 'Newport'} , returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Open'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
+//     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
+//     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Open'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
+//     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Open'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
+//     vessel: {vesselName: 'Excalibur', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Trawl Gear - MOD EFP'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
+//     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
+//     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Trawl Gear - MOD EFP'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 3, isSelected: true,
+//     vessel: {vesselName: 'Ms Julie', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 4, isSelected: true,
+//     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
+//     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 2, isSelected: false,
+//     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '12/1/2018 10:01 AM', returnDate: '12/15/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 1, isSelected: true,
+//     vessel: {vesselName: 'Last Straw', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Trawl Gear - MOD EFP'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 4, isSelected: false,
+//     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 5, isSelected: true,
+//     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '11/7/2018 10:01 AM', returnDate: '11/23/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Catch Shares - Shore Side Hake'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 3, isSelected: false,
+//     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '8/03/2018 10:01 AM', returnDate: '8/20/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Trawl Gear - MOD EFP'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 2, isSelected: true,
+//     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '9/9/2018 10:01 AM', returnDate: '9/17/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Closed'}
+//   },
+//   { _id: '123456', type: 'trip', tripNum: 1, isSelected: false,
+//     vessel: {vesselName: 'Raven', coastGuardNumber: 'fgr243rt'},
+//     departureDate: '10/23/2018 10:01 AM', returnDate: '10/31/2018 3:33 PM',
+//     departurePort: {name: 'Newport'}, returnPort: {name: 'same as start'},
+//     fishery: {name: 'Limited Entry - Catch Shares'},
+//     tripStatus: {description: 'Closed'}
+//   },
+// ];
 
 export const users: OTSUser[] = [
   {
@@ -1375,19 +1325,19 @@ export const portDecoder = [
     WCGOP_GROUP: 'ZZ'
   }];
 
-export const EM_EFP = [
-  {
-    vessel_name: 'Alex', USCG: '580568', LEP: 'GF0084',
-    EFP_Type: 'Leipzig', Gear: ['Bottom trawl, midwater'],
-    Sector: null, EM_EFP_Number: 'EM-34', Notes: null
-  },
-  {
-    vessel_name: 'Alyssa Ann', USCG: '976374', LEP: 'GF0875',
-    EFP_Type: 'Eder', Gear: ['Pot'],
-    Sector: null, EM_EFP_Number: 'EM-04', Notes: null
-  },
-  {
-    vessel_name: 'Arctic Fury', USCG: '996920', LEP: 'GF0675',
-    EFP_Type: 'Whiting', Gear: ['Midwater trawl'],
-    Sector: 'Both', EM_EFP_Number: 'EM-38', Notes: null
-  }];
+// export const EM_EFP = [
+//   {
+//     vessel_name: 'Alex', USCG: '580568', LEP: 'GF0084',
+//     EFP_Type: 'Leipzig', Gear: ['Bottom trawl, midwater'],
+//     Sector: null, EM_EFP_Number: 'EM-34', Notes: null
+//   },
+//   {
+//     vessel_name: 'Alyssa Ann', USCG: '976374', LEP: 'GF0875',
+//     EFP_Type: 'Eder', Gear: ['Pot'],
+//     Sector: null, EM_EFP_Number: 'EM-04', Notes: null
+//   },
+//   {
+//     vessel_name: 'Arctic Fury', USCG: '996920', LEP: 'GF0675',
+//     EFP_Type: 'Whiting', Gear: ['Midwater trawl'],
+//     Sector: 'Both', EM_EFP_Number: 'EM-38', Notes: null
+//   }];

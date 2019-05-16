@@ -4,25 +4,35 @@
                 <div class="centered-page-item">User Settings</div>
         <q-card>
             <q-card-section>
-                <q-select dense v-model="vessel.activeVessel" option-label="vesselName" :options="vessels" label="Active Vessel" ></q-select>
+                <q-select
+                    label="Active Vessel"
+                    v-model="vessel.activeVessel"
+                    :options="vessels"
+                    @filter="filterVessels"
+                    option-label="vesselName"
+                    option-value="_id"
+                    use-input
+                    dense
+                >
+                </q-select>
                 <br>
                 <q-select
-                    dense
+                    label="Notification Preferences"
                     v-model="user.activeUser.notification_prefs"
+                    :options="notificationOptions"
+                    dense
                     multiple
                     use-input
                     stack-label
-                    :options="notificationOptions"
                     style="width: 100%"
-                    label="Notification Preferences"
                     >
 
                     <template v-slot:selected-item="scope">
                         <q-chip
-                            removable
-                            dense
                             @remove="scope.removeAtIndex(scope.index)"
                             :tabindex="scope.tabindex"
+                            removable
+                            dense
                             color="primary"
                             text-color="white"
                             class="q-ma-none"
@@ -46,6 +56,12 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { GeneralState, UserState, VesselState } from '../_store/types/types';
+import { Vessel } from '@boatnet/bn-models';
+
+// import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AlertState } from '../_store/types/types';
 
 @Component
 export default class UserConfig extends Vue {
@@ -54,17 +70,44 @@ export default class UserConfig extends Vue {
     @State('general') private general!: GeneralState;
     @State('vessel') private vessel!: VesselState;
 
-    private get vessels() {
-        return this.general.vessels;
+    @State('alert') private alert!: AlertState;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+
+    private vessels: Vessel[] = [];
+
+    constructor() {
+        super();
     }
 
     private get notificationOptions() {
         return this.general.notificationOptions;
     }
 
-    constructor() {
-        super();
-    }
+
+    private filterVessels(val: string, update: any, abort: any) {
+      update(async () => {
+            try {
+              const masterDB: Client<any> = couchService.masterDB;
+              const queryOptions: ListOptions = {
+                limit: 7,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false
+              };
+
+              const vessels = await masterDB.viewWithDocs<any>(
+                'optecs_trawl',
+                'all_vessel_names',
+                queryOptions
+              );
+
+              this.vessels = vessels.rows.map((row: any) => row.doc);
+            } catch (err) {
+              this.errorAlert(err);
+            }
+          });
+        }
 
 }
 </script>
