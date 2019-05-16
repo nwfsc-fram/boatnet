@@ -126,6 +126,8 @@ export default class Tally extends Vue {
   private deleteButton: any;
   @Action('reassignSpecies', { namespace: 'tallyState' })
   private reassignSpecies: any;
+  @Action('setLastIncDecIndex', { namespace: 'tallyState' })
+  private setLastIncDecIndex: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -139,6 +141,8 @@ export default class Tally extends Vue {
   private tempCounter!: string;
   @Getter('currentTempName', { namespace: 'tallyState' })
   private currentTempName!: string;
+  @Getter('incDecValue', { namespace: 'tallyState' })
+  private incDecValue!: number;
 
   private btnLabel = '';
 
@@ -210,7 +214,7 @@ export default class Tally extends Vue {
         return;
       case TallyOperationMode.AddTempSpeciesReason:
         this.handleControlEvent('select-exist-species');
-        break;
+        return;
       case TallyOperationMode.NameTempSpeciesSelect:
         if (data.button.labels.shortCode.startsWith('(TEMP')) {
           this.currentSelectedSpecies = {
@@ -225,6 +229,7 @@ export default class Tally extends Vue {
       ...data,
       skipLayoutUpdate: true
     };
+    this.setLastIncDecIndex(data.button.index);
     this.updateButtonData(data);
   }
 

@@ -36,7 +36,9 @@ export const state: TallyState = {
   tallyDataRec: { type: TallyDataRecordTypeName, data: [] },
   incDecValue: 1,
   operationMode: TallyOperationMode.Tally,
-  tempSpeciesCounter: 0 // TODO load from DB?
+  tempSpeciesCounter: 0,
+  lastClickedIndex: -1,
+  lastClickedWasInc: true // true for Inc
 };
 
 // TODO: Other Color Schemes
@@ -167,7 +169,7 @@ async function updateDB(record: Base) {
   try {
     if (record._id) {
       const result = await pouchService.db.put(pouchService.userDBName, record);
-      console.log('[Tally Module] Updated record.', record.type, result);
+      // console.log('[Tally Module] Updated record.', record.type, result);
       return result;
     } else {
       const result = await pouchService.db.post(
@@ -226,9 +228,11 @@ async function updateDB(record: Base) {
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
     commit('reset');
+    commit('clearLastIncDec');
   },
   connectDB({ commit }: any) {
     commit('initialize');
+    commit('clearLastIncDec');
   },
   updateButtonData(
     { commit }: any,
@@ -258,6 +262,14 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   delTempSpeciesCounter({ commit }: any, counter: number) {
     commit('delTempSpeciesCounter', counter);
+  },
+  setLastIncDecIndex(
+    { commit }: any, index: number
+  ) {
+    commit('setLastIncDecIndex', index);
+  },
+  clearLastIncDec({ commit }: any) {
+    commit('clearLastIncDec');
   },
   assignNewButton(
     { commit }: any,
@@ -303,7 +315,7 @@ const mutations: MutationTree<TallyState> = {
         '[Tally Module] Already have tally layout, skip template init. DB ID=',
         newState.tallyLayout._id
       );
-      console.log('TODO verify pouchdb vs vuex data');
+      // TODO verify pouchdb vs vuex data
     }
 
     newState.tempSpeciesCounter = 0;
@@ -322,7 +334,7 @@ const mutations: MutationTree<TallyState> = {
         newState.tallyDataRec.data,
         newState.tempSpeciesCounter
       );
-      console.log('TODO verify pouchdb vs vuex data');
+      // TODO verify pouchdb vs vuex data
     }
   },
   async reset(newState: any, createNewRecord = false) {
@@ -368,7 +380,7 @@ const mutations: MutationTree<TallyState> = {
       );
       if (targetRecIdx >= 0) {
         newState.tallyDataRec.data.splice(targetRecIdx, 1, params.data);
-        console.log('[Tally Module] Updated', params.data, targetRecIdx);
+        // console.log('[Tally Module] Updated', params.data, targetRecIdx);
       } else {
         newState.tallyDataRec.data.push(params.data);
         console.warn(
@@ -434,6 +446,14 @@ const mutations: MutationTree<TallyState> = {
     if (counter === newState.tempSpeciesCounter) {
       newState.tempSpeciesCounter--;
     }
+  },
+  setLastIncDecIndex(newState: any, index: number) {
+    newState.lastClickedIndex = index;
+    newState.lastClickedWasInc = newState.incDecValue > 0;
+  },
+  clearLastIncDec(newState: any) {
+    newState.lastClickedIndex = -1;
+    newState.lastClickedWasInc = true;
   },
   async assignNewButton(
     newState: any,
