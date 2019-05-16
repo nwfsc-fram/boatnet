@@ -2,13 +2,13 @@
   <div class="q-pa-md row items-start q-gutter-md">
     <q-card class="my-card bg-blue-grey-1">
       <q-card-section>
-        <div class="text-h6">Vessel: {{ permit.activePermit.vessel_name }}</div>
+        <div class="text-h6">Vessel: {{ permit.activePermit.vessel.vesselName }}</div>
         <div style="margin-left: 10px">
-          <div>Reg. No.: {{ permit.activePermit.vessel_registration_number }}</div>
-          <div>Length: {{ permit.activePermit.vessel_length }}'</div>
-          <div>Owner: {{ permit.activePermit.vessel_owner }}</div>
+          <div>Reg. No.: {{ permit.activePermit.vessel.coastGuardNumber ? permit.activePermit.vessel.coastGuardNumber : permit.activePermit.vessel.stateRegulationNumber }}</div>
+          <div>Length: {{ permit.activePermit.vessel.registeredLength.value }}'</div>
+          <!-- <div>Owner: {{ permit.activePermit.vessel_owner }}</div> -->
           <q-select
-            v-model="permit.activePermit.activeCaptains"
+            v-model="permit.activePermit.captains"
             color="primary"
             multiple
             use-chips
@@ -37,30 +37,30 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="text-h6">Permit: {{ permit.activePermit.permit_number }}</div>
+        <div class="text-h6">Permit: {{ permit.activePermit.permitNumber }}</div>
 
-        <div style="margin-left: 10px">Endorsed Length: {{ permit.activePermit.endorsed_length }}'</div>
+        <div style="margin-left: 10px">Endorsed Length: {{ permit.activePermit.endorsedLength }}'</div>
 
         <div class="text-h6">Endorsements:</div>
         <ul style="margin-top: 0">
-          <li v-if="permit.activePermit.trawl_gear === 'Yes'">Trawl Gear</li>
-          <li v-if="permit.activePermit.longline_gear === 'Yes'">Longline Gear</li>
-          <li v-if="permit.activePermit.trap_pot_gear === 'Yes'">Trap Pot Gear</li>
-          <li v-if="permit.activePermit.small_fleet === 'Yes'">Small Fleet</li>
-          <li v-if="permit.activePermit.sablefish_endorsement === 'Yes'">Sablefish Endorsement</li>
+          <li v-if="permit.activePermit.isTrawlGear">Trawl Gear</li>
+          <li v-if="permit.activePermit.isLonglineGear">Longline Gear</li>
+          <li v-if="permit.activePermit.isTrapPotGear">Trap Pot Gear</li>
+          <li v-if="permit.activePermit.isSmallFleet">Small Fleet</li>
+          <li v-if="permit.activePermit.isSableFishEndorsed">Sablefish Endorsement</li>
           <li
-            v-if="permit.activePermit.sablefish_tier"
-          >Sablefish Tier {{ permit.activePermit.sablefish_tier }}</li>
-          <li v-if="permit.activePermit.cp_endorsement === 'Yes'">Catcher Processor</li>
-          <li v-if="permit.activePermit.ms_endorsement === 'Yes'">Mothership</li>
-          <li v-if="permit.activePermit.mothership_catcher_vessel === 'Yes'">Mothership Catcher</li>
+            v-if="permit.activePermit.sableFishTier"
+          >Sablefish Tier {{ permit.activePermit.sableFishTier }}</li>
+          <li v-if="permit.activePermit.isCpEndorsed">Catcher Processor</li>
+          <li v-if="permit.activePermit.isMsEndorsed">Mothership</li>
+          <li v-if="permit.activePermit.isMothershipCatcherVessel">Mothership Catcher</li>
           <li
-            v-if="permit.activePermit.whiting_percent"
-          >Whiting %: {{ permit.activePermit.whiting_percent }}</li>
+            v-if="permit.activePermit.whitingPercent"
+          >Whiting %: {{ permit.activePermit.whitingPercent }}</li>
           <li
-            v-if="permit.activePermit.whiting_assignment"
-          >Whiting Assignment: {{ permit.activePermit.whiting_assignment }}</li>
-          <li v-if="permit.activePermit.owner_on_board_exempt === 'Yes'">Owner On Board Exempt</li>
+            v-if="permit.activePermit.whitingAssignment"
+          >Whiting Assignment: {{ permit.activePermit.whitingAssignment }}</li>
+          <li v-if="permit.activePermit.isOwnerOnBoardExempt === 'Yes'">Owner On Board Exempt</li>
         </ul>
       </q-card-section>
     </q-card>

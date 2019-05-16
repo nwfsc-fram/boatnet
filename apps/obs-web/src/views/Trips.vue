@@ -117,7 +117,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
   }
 })
 export default class Trips extends Vue {
-    @State('trip') private trip!: TripState;
+  @State('trip') private trip!: TripState;
     @State('vessel') private vessel!: VesselState;
     @State('user') private user!: UserState;
     @State('appState') private appState!: WcgopAppState;
@@ -128,6 +128,11 @@ export default class Trips extends Vue {
 
   private userTrips!: any;
   private vessels = [];
+  private alert = false;
+
+  constructor() {
+      super();
+  }
 
   public get userDBTrips() {
     // TODO: This seems to block the UI - handle asyn
@@ -213,11 +218,7 @@ export default class Trips extends Vue {
     )
     }
 
-    private alert = false;
 
-    constructor() {
-        super();
-    }
 
     // private get trips() {
     //     return this.$store.getters.trips;

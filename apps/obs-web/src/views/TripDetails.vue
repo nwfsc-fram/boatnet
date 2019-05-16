@@ -73,8 +73,8 @@
                 use-chips
                 use-input
                 stack-label
-                option-label="permit_number"
-                option-value="permit_number"
+                :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
+                option-value="permitNumber"
                 @filter = "permitsFilterFn"
                 :options="permits"
                 style="width: 100%"
@@ -91,7 +91,7 @@
                             >
                             <q-avatar color="primary" text-color="white" icon="local_offer" />
                             <span v-if="scope.opt.label">{{ scope.opt.label }}</span>
-                            <span v-else>{{ scope.opt.permit_number }}</span>
+                            <span v-else>{{ scope.opt.permitNumber }}</span>
                         </q-chip>
                     </template>
                 </q-select>
@@ -153,8 +153,8 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { date } from 'quasar';
-import { TripState, PermitState, UserState, GeneralState, VesselState } from '../_store/types/types';
-import { AlertState } from '../_store/types/types';
+import { TripState, PermitState, UserState, GeneralState, VesselState, AlertState } from '../_store/types/types';
+import { Permit } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
@@ -203,7 +203,7 @@ export default class TripDetails extends Vue {
     private fisheryOptions: Fishery[] = [];
 
     // private vessels = [];
-    private permits = [];
+    private permits: Permit[] = [];
 
     constructor() {
         super();
@@ -270,7 +270,7 @@ export default class TripDetails extends Vue {
         update(() => {
             const searchString = val.toLowerCase();
             this.permits = this.permit.permits.filter(
-                (permit) => permit.permit_number.toLowerCase().indexOf(searchString) > -1
+                (permit) => permit.permitNumber.toLowerCase().indexOf(searchString.toLowerCase()) > -1
             );
         });
     }
@@ -374,6 +374,7 @@ export default class TripDetails extends Vue {
         pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
         this.$router.push({path: '/trips'});
     }
+
 
     private created() {
         console.log(this.permit.permits)

@@ -5,7 +5,7 @@ import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { RootState } from '@/_store/types/types';
 import { VesselState } from '@/_store/types/types';
-import { vessels } from '@/_store/data';
+// import { vessels } from '@/_store/data';
 // import Vessel from '@boatnet/bn-models/models/_common';
 
 Vue.use(Vuex);
