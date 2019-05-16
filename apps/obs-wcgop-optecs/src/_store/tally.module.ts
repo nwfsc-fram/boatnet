@@ -522,18 +522,32 @@ const mutations: MutationTree<TallyState> = {
       button.labels.shortCode &&
       button.labels.shortCode.startsWith('(TEMP')
     ) {
-      const deleteIdx = newState.tallyDataRec.data.findIndex(
-        (rec: TallyCountData) => {
+      // get a count of duplicate buttons
+      const duplicateLayouts = newState.tallyLayout.layoutData.filter(
+        (rec: TallyButtonLayoutData) => {
           return (
-            rec.shortCode === button.labels!.shortCode &&
-            rec.reason === button.labels!.reason
+             rec.labels &&
+             rec.labels.shortCode === button.labels!.shortCode &&
+             rec.labels.reason === button.labels!.reason
           );
         }
       );
-      if (deleteIdx >= 0) {
-        newState.tallyDataRec.data.splice(deleteIdx, 1);
+
+      if (duplicateLayouts.length === 1) {
+        // Only delete data if this is the only button of its (TEMP#) type.
+        const deleteIdx = newState.tallyDataRec.data.findIndex(
+          (rec: TallyCountData) => {
+            return (
+              rec.shortCode === button.labels!.shortCode &&
+              rec.reason === button.labels!.reason
+            );
+          }
+        );
+        if (deleteIdx >= 0) {
+          newState.tallyDataRec.data.splice(deleteIdx, 1);
+        }
+        updateTallyDataDB(newState.tallyDataRec);
       }
-      updateTallyDataDB(newState.tallyDataRec);
     }
 
     const blankRecord: TallyButtonLayoutData = {
