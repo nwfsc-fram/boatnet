@@ -161,6 +161,10 @@ export default class Tally extends Vue {
     this.populateSpecies(); // TODO use live view
   }
 
+  /**
+   * TODO: If this is called before the initial sync, or a record is added later, the page needs to reload.
+   * Review alternative methods or checks to reload (or reactive pouch-vue style, if performance allows)
+   */
   public async populateSpecies() {
     const db = pouchService.db;
     const queryOptions = {
@@ -201,7 +205,6 @@ export default class Tally extends Vue {
       this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
       this.handleControlEvent('select-exist-species');
     } else if (this.tallyMode === TallyOperationMode.AddTempSpeciesReason) {
-      console.log('TODO DUNNO INCROISE');
       this.handleControlEvent('select-exist-species');
     }
     data = {
@@ -320,6 +323,9 @@ export default class Tally extends Vue {
       case 'select-exist-species':
         this.setTallyOpMode(TallyOperationMode.AddExistingSpeciesSelectReason);
         this.currentControlComponent = 'tally-addexisting-controls';
+        break;
+      case 'name-temp-button':
+        this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelect);
         break;
       case 'reset-data':
         this.confirmReset = true;
