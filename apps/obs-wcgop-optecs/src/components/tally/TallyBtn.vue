@@ -29,7 +29,7 @@
           floating
         >RENAME</q-badge>
         <q-badge
-          v-if="moveLocation && layout.index === currentButtonIdx"
+          v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
           color="red"
           text-color="white"
           floating
@@ -131,7 +131,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies ||
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
-      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
+      this.tallyMode === TallyOperationMode.NameTempSpeciesSelect
 
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
