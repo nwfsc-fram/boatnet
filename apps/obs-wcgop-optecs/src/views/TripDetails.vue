@@ -330,11 +330,6 @@ export default class Trips extends Vue {
     }
   }
 
-  private saveLicenses(certificates: Certificate[]) {
-    this.currentTrip.certificates = certificates;
-    this.saveOnUpdate();
-  }
-
   private saveOnUpdate() {
     this.saveTrip(this.currentTrip);
   }
