@@ -319,7 +319,7 @@ export default class TripDetails extends Vue {
 
     private createTrip() {
         // this is where the pouch code to save the trip goes
-        let activeOTSTarget = undefined;
+        let activeOTSTarget;
         for (const otsTarget of this.otsTargets) {
             if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
                 if (otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === this.trip.activeTrip.fishery.name) {
@@ -331,7 +331,7 @@ export default class TripDetails extends Vue {
             if (otsTarget.targetVessel && this.trip.activeTrip && this.trip.activeTrip.vessel && this.trip.activeTrip.fishery) {
                 const otsVesselId = otsTarget.targetVessel.coastGuardNumber ? otsTarget.targetVessel.coastGuardNumber : otsTarget.targetVessel.stateRegulationNumber;
                 const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber ? this.trip.activeTrip.vessel.coastGuardNumber : this.trip.activeTrip.vessel.stateRegulationNumber;
-                if (otsTarget.targetType === 'Vessel' && otsTarget.fishery == this.trip.activeTrip.fishery.name && otsVesselId === tripVesselId) {
+                if (otsTarget.targetType === 'Vessel' && otsTarget.fishery === this.trip.activeTrip.fishery.name && otsVesselId === tripVesselId) {
                     activeOTSTarget = otsTarget;
                 }
             }
@@ -344,7 +344,7 @@ export default class TripDetails extends Vue {
             if (randomNum < activeOTSTarget.setRate) {
                     this.trip.activeTrip.isSelected = true;
                     this.trip.activeTrip.notes =
-                    "Trip selected using Target Type: " +
+                    'Trip selected using Target Type: ' +
                     activeOTSTarget.targetType +
                     ', with set rate of '
                     + activeOTSTarget.setRate +
@@ -352,7 +352,7 @@ export default class TripDetails extends Vue {
                     + randomNum +
                     ' was less than set rate: '
                     + activeOTSTarget.setRate +
-                    ")";
+                    ')';
             } else {
                 this.trip.activeTrip.isSelected = false;
                 this.trip.activeTrip.notes = '';
