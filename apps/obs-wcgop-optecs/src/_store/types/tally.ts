@@ -73,4 +73,6 @@ export interface TallyState {
   currentButtonIdx?: number;
   currentReason?: string; // TODO Lookup type? PRED, etc.
   tempSpeciesCounter?: number;
+  lastClickedIndex?: number;
+  lastClickedWasInc?: boolean; // true for Inc
 }
