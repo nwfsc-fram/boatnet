@@ -8,6 +8,16 @@
         :disabled="disabled"
         @click="handleClick"
       >
+        <q-badge
+          v-if="tallyState.lastClickedIndex === layout.index && tallyState.lastClickedWasInc"
+          color="black"
+          floating
+        ><q-icon name="arrow_upward" color="white" /></q-badge>
+        <q-badge
+          v-if="tallyState.lastClickedIndex === layout.index && !tallyState.lastClickedWasInc"
+          color="orange"
+          floating
+        ><q-icon name="arrow_downward" color="black" /></q-badge>
         <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
         <q-badge v-if="tallyMode === moveSelect" color="blue-3" text-color="black" floating>MOVE</q-badge>
         <q-badge
@@ -29,7 +39,7 @@
           floating
         >RENAME</q-badge>
         <q-badge
-          v-if="moveLocation && layout.index === currentButtonIdx"
+          v-if="tallyMode === moveLocation && layout.index === currentButtonIdx"
           color="red"
           text-color="white"
           floating
@@ -62,7 +72,8 @@ import {
   TallyOperationMode,
   TallyButtonLayoutData,
   TallyCountData,
-  TallyButtonMode
+  TallyButtonMode,
+  TallyState
 } from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
@@ -90,6 +101,7 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
   @Prop({ default: undefined }) public data!: TallyCountData;
   @Prop({ default: undefined }) public blank!: boolean;
+  @State('tallyState') private tallyState!: TallyState;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
   @Getter('tallyMode', { namespace: 'tallyState' })
@@ -131,8 +143,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies ||
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
-      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation
-
+      this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
+      this.tallyMode === TallyOperationMode.NameTempSpeciesSelect
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
@@ -148,6 +160,7 @@ export default class TallyBtn extends Vue {
         this.data.count = newVal;
       } else if (this.data.count === 0) {
         this.playSound('bad');
+        return;
       } else {
         this.playSound('dec');
         this.data.count = newVal;

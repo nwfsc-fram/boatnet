@@ -2,7 +2,7 @@
   <q-dialog v-model="isOpen" persistent position="left">
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Add Named Species</div>
+        <div class="text-h6">Select Species</div>
       </q-card-section>
       <q-select
         outlined

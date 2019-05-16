@@ -18,7 +18,7 @@ export enum TallyOperationMode {
   AddTempSpeciesReason = 'ADD_TEMP_SPECIES_REASON',
   AddTempSpeciesLocation = 'ADD_TEMP_SPECIES_LOCATION',
   NameTempSpeciesSelect = 'NAME_TEMP_SPECIES_SELECT',
-  NameTempSpeciesChooseSpecies = 'NAME_TEMP_SPECIES_CHOOSE_SPECIES',
+  NameTempSpeciesSelectSpecies = 'NAME_TEMP_SPECIES_SELECT_FRESH_SPECIES',
   Unknown = 'Unknown'
 }
 
@@ -73,4 +73,6 @@ export interface TallyState {
   currentButtonIdx?: number;
   currentReason?: string; // TODO Lookup type? PRED, etc.
   tempSpeciesCounter?: number;
+  lastClickedIndex?: number;
+  lastClickedWasInc?: boolean; // true for Inc
 }

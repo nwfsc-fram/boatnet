@@ -36,7 +36,9 @@ export const state: TallyState = {
   tallyDataRec: { type: TallyDataRecordTypeName, data: [] },
   incDecValue: 1,
   operationMode: TallyOperationMode.Tally,
-  tempSpeciesCounter: 0 // TODO load from DB?
+  tempSpeciesCounter: 0,
+  lastClickedIndex: -1,
+  lastClickedWasInc: true // true for Inc
 };
 
 // TODO: Other Color Schemes
@@ -118,7 +120,10 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
   return newLayout;
 }
 
-function getHighestTempCounter(tallyData: TallyCountData[], startCount: number) {
+function getHighestTempCounter(
+  tallyData: TallyCountData[],
+  startCount: number
+) {
   let newCount = startCount;
   for (const rec of tallyData) {
     if (rec.shortCode !== undefined && rec.shortCode.startsWith('(TEMP')) {
@@ -134,13 +139,100 @@ function getHighestTempCounter(tallyData: TallyCountData[], startCount: number) 
   return newCount;
 }
 
+async function updateLayoutDB(
+  layout: TallyLayoutRecord
+): Promise<TallyLayoutRecord> {
+  const result = await updateDB(layout);
+  if (result) {
+    layout._id = result.id;
+    layout._rev = result.rev;
+    layout.updatedDate = moment().format();
+    layout.updatedBy = authService.getCurrentUser()!.username;
+  }
+  return layout;
+}
+
+async function updateTallyDataDB(
+  tallyData: TallyDataRecord
+): Promise<TallyDataRecord> {
+  const result = await updateDB(tallyData);
+  if (result) {
+    tallyData._id = result.id;
+    tallyData._rev = result.rev;
+    tallyData.updatedDate = moment().format();
+    tallyData.updatedBy = authService.getCurrentUser()!.username;
+  }
+  return tallyData;
+}
+
+async function updateDB(record: Base) {
+  try {
+    if (record._id) {
+      const result = await pouchService.db.put(pouchService.userDBName, record);
+      // console.log('[Tally Module] Updated record.', record.type, result);
+      return result;
+    } else {
+      const result = await pouchService.db.post(
+        pouchService.userDBName,
+        record
+      );
+      console.log('[Tally Module] Created new record.', record.type, result);
+      return result;
+    }
+  } catch (err) {
+    if (err.status === 409) {
+      try {
+        const newerDoc = await pouchService.db.get(
+          pouchService.userDBName,
+          record._id
+        );
+        record._rev = newerDoc._rev;
+        const result = await pouchService.db.put(
+          pouchService.userDBName,
+          record
+        );
+        console.log(
+          '[Tally Module] Handled doc conflict, updated record',
+          record.type,
+          result
+        );
+        return result;
+      } catch (errRetry) {
+        if (errRetry.status === 404) {
+          delete record._id;
+          delete record._rev;
+          const result = await pouchService.db.put(
+            pouchService.userDBName,
+            record
+          );
+          console.log(
+            '[Tally Module] Handled doc deletion, created record',
+            record.type,
+            result
+          );
+          return result;
+        } else {
+          // TODO Alert Module
+          throw errRetry;
+        }
+      }
+    } else {
+      // TODO Alert Module
+      // console.log('ERROR!', err);
+      throw err;
+    }
+  }
+}
+
 // ACTIONS
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
     commit('reset');
+    commit('clearLastIncDec');
   },
   connectDB({ commit }: any) {
     commit('initialize');
+    commit('clearLastIncDec');
   },
   updateButtonData(
     { commit }: any,
@@ -171,6 +263,14 @@ const actions: ActionTree<TallyState, RootState> = {
   delTempSpeciesCounter({ commit }: any, counter: number) {
     commit('delTempSpeciesCounter', counter);
   },
+  setLastIncDecIndex(
+    { commit }: any, index: number
+  ) {
+    commit('setLastIncDecIndex', index);
+  },
+  clearLastIncDec({ commit }: any) {
+    commit('clearLastIncDec');
+  },
   assignNewButton(
     { commit }: any,
     value: {
@@ -186,6 +286,14 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   deleteButton({ commit }: any, button: TallyButtonLayoutData) {
     commit('deleteButton', button);
+  },
+  reassignSpecies(
+    { commit }: any,
+    value: { oldSpeciesCode: string; newSpeciesCode: string }
+  ) {
+    if (value.oldSpeciesCode !== value.newSpeciesCode) {
+      commit('reassignSpecies', value);
+    }
   }
 };
 
@@ -207,7 +315,7 @@ const mutations: MutationTree<TallyState> = {
         '[Tally Module] Already have tally layout, skip template init. DB ID=',
         newState.tallyLayout._id
       );
-      console.log('TODO verify pouchdb vs vuex data');
+      // TODO verify pouchdb vs vuex data
     }
 
     newState.tempSpeciesCounter = 0;
@@ -226,7 +334,7 @@ const mutations: MutationTree<TallyState> = {
         newState.tallyDataRec.data,
         newState.tempSpeciesCounter
       );
-      console.log('TODO verify pouchdb vs vuex data');
+      // TODO verify pouchdb vs vuex data
     }
   },
   async reset(newState: any, createNewRecord = false) {
@@ -272,7 +380,7 @@ const mutations: MutationTree<TallyState> = {
       );
       if (targetRecIdx >= 0) {
         newState.tallyDataRec.data.splice(targetRecIdx, 1, params.data);
-        console.log('[Tally Module] Updated', params.data, targetRecIdx);
+        // console.log('[Tally Module] Updated', params.data, targetRecIdx);
       } else {
         newState.tallyDataRec.data.push(params.data);
         console.warn(
@@ -339,6 +447,14 @@ const mutations: MutationTree<TallyState> = {
       newState.tempSpeciesCounter--;
     }
   },
+  setLastIncDecIndex(newState: any, index: number) {
+    newState.lastClickedIndex = index;
+    newState.lastClickedWasInc = newState.incDecValue > 0;
+  },
+  clearLastIncDec(newState: any) {
+    newState.lastClickedIndex = -1;
+    newState.lastClickedWasInc = true;
+  },
   async assignNewButton(
     newState: any,
     value: { species: any; reason: string; index: number }
@@ -400,103 +516,106 @@ const mutations: MutationTree<TallyState> = {
     updateLayoutDB(newState.tallyLayout);
   },
   async deleteButton(newState: any, button: TallyButtonLayoutData) {
+    // If (TEMP#), nuke the data as well
+    if (
+      button.labels &&
+      button.labels.shortCode &&
+      button.labels.shortCode.startsWith('(TEMP')
+    ) {
+      // get a count of duplicate buttons
+      const duplicateLayouts = newState.tallyLayout.layoutData.filter(
+        (rec: TallyButtonLayoutData) => {
+          return (
+             rec.labels &&
+             rec.labels.shortCode === button.labels!.shortCode &&
+             rec.labels.reason === button.labels!.reason
+          );
+        }
+      );
+
+      if (duplicateLayouts.length === 1) {
+        // Only delete data if this is the only button of its (TEMP#) type.
+        const deleteIdx = newState.tallyDataRec.data.findIndex(
+          (rec: TallyCountData) => {
+            return (
+              rec.shortCode === button.labels!.shortCode &&
+              rec.reason === button.labels!.reason
+            );
+          }
+        );
+        if (deleteIdx >= 0) {
+          newState.tallyDataRec.data.splice(deleteIdx, 1);
+        }
+        updateTallyDataDB(newState.tallyDataRec);
+      }
+    }
+
     const blankRecord: TallyButtonLayoutData = {
       index: button.index,
       blank: true
     };
     newState.tallyLayout.layoutData.splice(button.index, 1, blankRecord);
     updateLayoutDB(newState.tallyLayout);
+  },
+  reassignSpecies(
+    newState: any,
+    value: { oldSpeciesCode: string; newSpeciesCode: string }
+  ) {
+    // Generally oldSpeciesCode === (TEMP#), not sure if we need to reassign other species
+    // First build a map of oldSpeciesCode data
+    const oldSpeciesDataCountMap = new Map<string, number>(); // reason: count
+
+    for (const layout of newState.tallyLayout.layoutData) {
+      if (!layout.blank && layout.labels.shortCode === value.oldSpeciesCode) {
+        console.log(layout.labels.shortCode);
+
+        // combine data - find matching records if they exist
+        const sourceRecIdx = newState.tallyDataRec.data.findIndex(
+          (rec: TallyCountData) => {
+            return (
+              rec.shortCode === value.oldSpeciesCode &&
+              rec.reason === layout.labels.reason
+            );
+          }
+        );
+        if (sourceRecIdx) {
+          // delete old data
+          const sourceRec = newState.tallyDataRec.data[sourceRecIdx];
+          oldSpeciesDataCountMap.set(sourceRec.reason, sourceRec.count);
+          newState.tallyDataRec.data.splice(sourceRecIdx, 1);
+        }
+        // Rename this button
+        layout.labels.shortCode = value.newSpeciesCode;
+      }
+    }
+
+    // For data in map, add to existing data
+    for (const key of oldSpeciesDataCountMap.keys()) {
+      const combineRecIdx = newState.tallyDataRec.data.findIndex(
+        (rec: TallyCountData) => {
+          return rec.shortCode === value.newSpeciesCode && rec.reason === key;
+        }
+      );
+      if (combineRecIdx >= 0) {
+        const targRec = newState.tallyDataRec.data[combineRecIdx];
+        targRec.count += oldSpeciesDataCountMap.get(key);
+        newState.tallyDataRec.data.splice(combineRecIdx, 1, targRec);
+      } else {
+        const newData: TallyCountData = {
+          // species: value.species, // TODO Full Species
+          shortCode: value.newSpeciesCode,
+          reason: key,
+          count: 0
+        };
+        console.log('[Tally Module] Created new tally data', newData);
+        newState.tallyDataRec.data.push(newData);
+      }
+    }
+
+    updateLayoutDB(newState.tallyLayout);
+    updateTallyDataDB(newState.tallyDataRec);
   }
 };
-
-async function updateLayoutDB(
-  layout: TallyLayoutRecord
-): Promise<TallyLayoutRecord> {
-  const result = await updateDB(layout);
-  if (result) {
-    layout._id = result.id;
-    layout._rev = result.rev;
-    layout.updatedDate = moment().format();
-    layout.updatedBy = authService.getCurrentUser()!.username;
-  }
-  return layout;
-}
-
-async function updateTallyDataDB(
-  tallyData: TallyDataRecord
-): Promise<TallyDataRecord> {
-  const result = await updateDB(tallyData);
-  if (result) {
-    tallyData._id = result.id;
-    tallyData._rev = result.rev;
-    tallyData.updatedDate = moment().format();
-    tallyData.updatedBy = authService.getCurrentUser()!.username;
-  }
-  return tallyData;
-}
-
-/**
- * updateLayout standalone helper function
- * @param record Record to update in Database
- */
-async function updateDB(record: Base) {
-  try {
-    if (record._id) {
-      const result = await pouchService.db.put(pouchService.userDBName, record);
-      console.log('[Tally Module] Updated record.', record.type, result);
-      return result;
-    } else {
-      const result = await pouchService.db.post(
-        pouchService.userDBName,
-        record
-      );
-      console.log('[Tally Module] Created new record.', record.type, result);
-      return result;
-    }
-  } catch (err) {
-    if (err.status === 409) {
-      try {
-        const newerDoc = await pouchService.db.get(
-          pouchService.userDBName,
-          record._id
-        );
-        record._rev = newerDoc._rev;
-        const result = await pouchService.db.put(
-          pouchService.userDBName,
-          record
-        );
-        console.log(
-          '[Tally Module] Handled doc conflict, updated record',
-          record.type,
-          result
-        );
-        return result;
-      } catch (errRetry) {
-        if (errRetry.status === 404) {
-          delete record._id;
-          delete record._rev;
-          const result = await pouchService.db.put(
-            pouchService.userDBName,
-            record
-          );
-          console.log(
-            '[Tally Module] Handled doc deletion, created record',
-            record.type,
-            result
-          );
-          return result;
-        } else {
-          // TODO Alert Module
-          throw errRetry;
-        }
-      }
-    } else {
-      // TODO Alert Module
-      // console.log('ERROR!', err);
-      throw err;
-    }
-  }
-}
 
 // GETTERS
 const getters: GetterTree<TallyState, RootState> = {
