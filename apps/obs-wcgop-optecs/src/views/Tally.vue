@@ -124,6 +124,8 @@ export default class Tally extends Vue {
   private swapButtons: any;
   @Action('deleteButton', { namespace: 'tallyState' })
   private deleteButton: any;
+  @Action('reassignSpecies', { namespace: 'tallyState' })
+  private reassignSpecies: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -201,12 +203,22 @@ export default class Tally extends Vue {
       case TallyOperationMode.AddExistingSpeciesSelectSpecies:
         this.currentSelectedButton = data.button;
         this.setCurrentButtonIdx(data.button.index);
-        this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
+        this.currentSelectedSpecies = {
+          shortCode: data.button.labels.shortCode // TODO Full LOOKUP
+        };
         this.handleControlEvent('select-exist-species');
         return;
       case TallyOperationMode.AddTempSpeciesReason:
         this.handleControlEvent('select-exist-species');
         break;
+      case TallyOperationMode.NameTempSpeciesSelect:
+        if (data.button.labels.shortCode.startsWith('(TEMP')) {
+          this.currentSelectedSpecies = {
+            shortCode: data.button.labels.shortCode
+          };
+          this.handleControlEvent('rename-temp-species');
+        }
+        return;
     }
 
     data = {
@@ -264,10 +276,21 @@ export default class Tally extends Vue {
   }
 
   public handleAddNamedSpecies(species: any) {
-    this.currentSelectedSpecies = species;
+    switch (this.tallyMode) {
+      case TallyOperationMode.AddNamedSpeciesSelectType:
+        this.currentSelectedSpecies = species;
+        this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
+        this.handleControlEvent('tally-addnew-controls');
+        break;
+      case TallyOperationMode.NameTempSpeciesSelectSpecies:
+        this.reassignSpecies({
+          oldSpeciesCode: this.currentSelectedSpecies.shortCode,
+          newSpeciesCode: species.shortCode
+        });
+        break;
+    }
+    // Side effect of close: switches back to tally mode
     (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
-    this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
-    this.handleControlEvent('tally-addnew-controls');
   }
 
   public handleCancelAddNamedSpecies() {
@@ -340,6 +363,10 @@ export default class Tally extends Vue {
         break;
       case 'add-named-species':
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectSpecies);
+        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
+        break;
+      case 'rename-temp-species':
+        this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelectSpecies);
         (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
         break;
       default:
