@@ -260,7 +260,7 @@ export default class TripDetails extends Vue {
     }
 
     private permitsFilterFn(val: string, update: any, abort: any) {
-        console.log(this.permit.permits)
+        console.log(this.permit.permits);
         if (val === '') {
             update(() => {
                 this.permits = this.permit.permits;
@@ -293,7 +293,7 @@ export default class TripDetails extends Vue {
         );
         this.portOptions = ports.rows.map((port: any) => port.value);
         if (portType === 'end') {
-            this.portOptions.push('SAME AS START')
+            this.portOptions.push('SAME AS START');
         }
       } catch (err) {
         this.errorAlert(err);
@@ -302,11 +302,11 @@ export default class TripDetails extends Vue {
     }
 
     private startPortsFilterFn(val: string, update: any, abort: any) {
-        this.updatePorts(val, update, abort, 'start')
+        this.updatePorts(val, update, abort, 'start');
         }
 
     private endPortsFilterFn(val: string, update: any, abort: any) {
-        this.updatePorts(val, update, abort, 'end')
+        this.updatePorts(val, update, abort, 'end');
         }
 
     // private deleteTrip() {
@@ -377,7 +377,7 @@ export default class TripDetails extends Vue {
 
 
     private created() {
-        console.log(this.permit.permits)
+        console.log(this.permit.permits);
     }
 
 }

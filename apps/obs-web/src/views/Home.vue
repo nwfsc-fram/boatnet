@@ -122,11 +122,11 @@ export default class Home extends Vue {
         axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
             .then( (response) => {
                 // this.$store.dispatch('updatePermits', response.data.items);
-                console.log(response.data.items)
+                console.log(response.data.items);
                 this.permit.permits = [];
                 for (const item of response.data.items) {
-                  console.log(item)
-                  let permit: Permit = {
+                  console.log(item);
+                  const permit: Permit = {
                     type: 'permit',
                     permitNumber: item.permit_number,
                     certificateStartDate: item.certificate_start_date,
@@ -160,12 +160,12 @@ export default class Home extends Vue {
                     isOwnerOnBoardExempt: item.owner_on_board_exempt === 'Yes' ? true : false,
                     whitingAssignment: item.whiting_assignment ? item.whiting_assignment : null,
                     whitingPercent: item.whiting_assignment ? item.whiting_assignment : null
-                  }
-                  this.permit.permits.push(permit)
+                  };
+                  this.permit.permits.push(permit);
                 }
                 console.log(this.permit.permits);
             })
-            .catch(error => {
+            .catch( (error) => {
               console.log(error);
               console.log(error.response);
             });

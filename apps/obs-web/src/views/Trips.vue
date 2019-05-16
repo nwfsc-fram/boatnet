@@ -194,7 +194,7 @@ export default class Trips extends Vue {
 
     private vesselsFilterFn(val: string, update: any, abort: any) {
     update(
-        async() => {
+        async () => {
             try {
                 const db = pouchService.db;
                 const queryOptions = {
@@ -210,12 +210,12 @@ export default class Trips extends Vue {
                     'optecs_trawl/all_vessel_names',
                     queryOptions
                     );
-                    this.vessels = vessels.rows.map((row: any) => row.doc);
+                this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
                 this.error(err);
             }
         }
-    )
+    );
     }
 
 
