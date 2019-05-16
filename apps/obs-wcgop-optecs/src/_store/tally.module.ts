@@ -496,6 +496,26 @@ const mutations: MutationTree<TallyState> = {
     updateLayoutDB(newState.tallyLayout);
   },
   async deleteButton(newState: any, button: TallyButtonLayoutData) {
+    // If (TEMP#), nuke the data as well
+    if (
+      button.labels &&
+      button.labels.shortCode &&
+      button.labels.shortCode.startsWith('(TEMP')
+    ) {
+      const deleteIdx = newState.tallyDataRec.data.findIndex(
+        (rec: TallyCountData) => {
+          return (
+            rec.shortCode === button.labels!.shortCode &&
+            rec.reason === button.labels!.reason
+          );
+        }
+      );
+      if (deleteIdx >= 0) {
+        newState.tallyDataRec.data.splice(deleteIdx, 1);
+      }
+      updateTallyDataDB(newState.tallyDataRec);
+    }
+
     const blankRecord: TallyButtonLayoutData = {
       index: button.index,
       blank: true
@@ -538,12 +558,10 @@ const mutations: MutationTree<TallyState> = {
     // For data in map, add to existing data
     for (const key of oldSpeciesDataCountMap.keys()) {
       const combineRecIdx = newState.tallyDataRec.data.findIndex(
-      (rec: TallyCountData) => {
-        return (
-          rec.shortCode === value.newSpeciesCode &&
-          rec.reason === key
-        );
-      });
+        (rec: TallyCountData) => {
+          return rec.shortCode === value.newSpeciesCode && rec.reason === key;
+        }
+      );
       if (combineRecIdx >= 0) {
         const targRec = newState.tallyDataRec.data[combineRecIdx];
         targRec.count += oldSpeciesDataCountMap.get(key);

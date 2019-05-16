@@ -426,7 +426,6 @@ export default class Tally extends Vue {
   }
 
   // --- Private Methods ---
-
   private mounted() {
     this.connectDB();
   }
