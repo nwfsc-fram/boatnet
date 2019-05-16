@@ -181,32 +181,34 @@ export default class Tally extends Vue {
   }
 
   public handleDataChanged(data: any) {
-    if (this.tallyMode === TallyOperationMode.DeleteButtonSelect) {
-      this.setTallyOpMode(TallyOperationMode.Tally);
-      this.deleteButton(data.button);
-      return;
-    } else if (this.tallyMode === TallyOperationMode.MoveButtonSelect) {
-      this.currentSelectedButton = data.button;
-      this.setCurrentButtonIdx(data.button.index);
-      this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
-      return;
-    } else if (this.tallyMode === TallyOperationMode.MoveSelectLocation) {
-      this.swapButtons({
-        oldButton: this.currentSelectedButton,
-        newIndex: data.button.index
-      });
-      this.setTallyOpMode(TallyOperationMode.Tally);
-      return;
-    } else if (
-      this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectSpecies
-    ) {
-      this.currentSelectedButton = data.button;
-      this.setCurrentButtonIdx(data.button.index);
-      this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
-      this.handleControlEvent('select-exist-species');
-    } else if (this.tallyMode === TallyOperationMode.AddTempSpeciesReason) {
-      this.handleControlEvent('select-exist-species');
+    switch (this.tallyMode) {
+      case TallyOperationMode.DeleteButtonSelect:
+        this.setTallyOpMode(TallyOperationMode.Tally);
+        this.deleteButton(data.button);
+        return;
+      case TallyOperationMode.MoveButtonSelect:
+        this.currentSelectedButton = data.button;
+        this.setCurrentButtonIdx(data.button.index);
+        this.setTallyOpMode(TallyOperationMode.MoveSelectLocation);
+        return;
+      case TallyOperationMode.MoveSelectLocation:
+        this.swapButtons({
+          oldButton: this.currentSelectedButton,
+          newIndex: data.button.index
+        });
+        this.setTallyOpMode(TallyOperationMode.Tally);
+        return;
+      case TallyOperationMode.AddExistingSpeciesSelectSpecies:
+        this.currentSelectedButton = data.button;
+        this.setCurrentButtonIdx(data.button.index);
+        this.currentSelectedSpecies.shortCode = data.button.labels.shortCode; // TODO LOOKUP
+        this.handleControlEvent('select-exist-species');
+        return;
+      case TallyOperationMode.AddTempSpeciesReason:
+        this.handleControlEvent('select-exist-species');
+        break;
     }
+
     data = {
       ...data,
       skipLayoutUpdate: true
