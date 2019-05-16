@@ -154,11 +154,12 @@ import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { date } from 'quasar';
 import { TripState, PermitState, UserState, GeneralState, VesselState, AlertState } from '../_store/types/types';
-import { Permit } from '@boatnet/bn-models';
+import { Permit, OTSTarget } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import {
@@ -204,6 +205,7 @@ export default class TripDetails extends Vue {
 
     // private vessels = [];
     private permits: Permit[] = [];
+    private otsTargets: OTSTarget[] = [];
 
     constructor() {
         super();
@@ -317,10 +319,46 @@ export default class TripDetails extends Vue {
 
     private createTrip() {
         // this is where the pouch code to save the trip goes
-        const randomNum = Math.random();
-        if (randomNum > .5 && this.trip.activeTrip) {
-                this.trip.activeTrip.isSelected = true;
+        let activeOTSTarget = undefined;
+        for (const otsTarget of this.otsTargets) {
+            if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
+                if (otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === this.trip.activeTrip.fishery.name) {
+                    activeOTSTarget = otsTarget;
+                }
+            }
         }
+        for (const otsTarget of this.otsTargets) {
+            if (otsTarget.targetVessel && this.trip.activeTrip && this.trip.activeTrip.vessel && this.trip.activeTrip.fishery) {
+                const otsVesselId = otsTarget.targetVessel.coastGuardNumber ? otsTarget.targetVessel.coastGuardNumber : otsTarget.targetVessel.stateRegulationNumber;
+                const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber ? this.trip.activeTrip.vessel.coastGuardNumber : this.trip.activeTrip.vessel.stateRegulationNumber;
+                if (otsTarget.targetType === 'Vessel' && otsTarget.fishery == this.trip.activeTrip.fishery.name && otsVesselId === tripVesselId) {
+                    activeOTSTarget = otsTarget;
+                }
+            }
+        }
+
+
+        const randomNum = Math.floor(Math.random() * 100);
+
+        if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
+            if (randomNum < activeOTSTarget.setRate) {
+                    this.trip.activeTrip.isSelected = true;
+                    this.trip.activeTrip.notes =
+                    "Trip selected using Target Type: " +
+                    activeOTSTarget.targetType +
+                    ', with set rate of '
+                    + activeOTSTarget.setRate +
+                    ' (randomly generated number: '
+                    + randomNum +
+                    ' was less than set rate: '
+                    + activeOTSTarget.setRate +
+                    ")";
+            } else {
+                this.trip.activeTrip.isSelected = false;
+                this.trip.activeTrip.notes = '';
+            }
+        }
+
         pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
         this.$router.push({path: '/trips/'});
     }
@@ -375,9 +413,28 @@ export default class TripDetails extends Vue {
         this.$router.push({path: '/trips'});
     }
 
+    private async getOtsTargets() {
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+        const otsTargets = await masterDB.viewWithDocs<any>(
+            'sethtest',
+            'all_ots_targets',
+            );
+        console.log(otsTargets);
+        for (const row of otsTargets.rows) {
+            const target = row.doc;
+            this.otsTargets.push(target);
+        }
+
+    } catch (err) {
+        this.errorAlert(err);
+    }
+}
+
 
     private created() {
         console.log(this.permit.permits);
+        this.getOtsTargets();
     }
 
 }

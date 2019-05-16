@@ -125,7 +125,9 @@ export default class ObserverAssignment extends Vue {
                 });
             }
           }
-          return allActivities;
+
+          return allActivities.sort((a, b) => (a.startDate > b.startDate) ? 1 : -1);
+
       } else {
           return [];
       }
