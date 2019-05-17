@@ -27,8 +27,17 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" :mini="miniState"
+        :breakpoint="500">
       <q-list>
+        <q-item exact @click="toggleMiniState">
+          <q-item-section avatar @click="toggleMiniState" style="cursor: pointer;">
+            <q-icon :name="miniState === true ? 'fas fa-angle-double-right' : 'fas fa-angle-double-left'"/>
+          </q-item-section>
+          <q-item-section @click="toggleMiniState" style="cursor: pointer;">
+            <q-item-label>{{miniState === true ? '' : 'Minimize menu'}}</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item to="/comments" exact>
           <q-item-section avatar>
             <q-icon name="note"/>
@@ -89,7 +98,7 @@
 
         <q-item to="/login" exact>
           <q-item-section avatar>
-            <q-icon name="exit_to_app"/>
+            <q-icon name="power_settings_new"/>
           </q-item-section>
           <q-item-section>
             <q-item-label>Logout</q-item-label>
@@ -136,6 +145,7 @@ export default class DefaultLayout extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   private leftDrawerOpen: boolean;
+  private miniState = false;
 
   constructor() {
     super();
@@ -145,6 +155,14 @@ export default class DefaultLayout extends Vue {
       this.reconnect().catch((err: any) => {
         this.errorAlert(err);
       });
+    }
+  }
+
+  private toggleMiniState() {
+    if (this.miniState) {
+      this.miniState = false;
+    } else {
+      this.miniState = true;
     }
   }
 
