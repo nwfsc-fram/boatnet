@@ -29,32 +29,36 @@
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-        <div class="col self-start q-gutter-md q-pb-md">
-          <q-input outlined class="col-2" v-model="currFishTicket.fishNum" label="Fish Ticket #"/>
-          <div class="col-2">
-            <div>State:</div>
-            <q-btn-toggle
-              v-model="currFishTicket.state"
-              toggle-color="primary"
-              :options="[
+      <div class="col self-start q-gutter-md q-pb-md">
+        <q-input outlined class="col-2" v-model="currFishTicket.fishNum" label="Fish Ticket #"/>
+        <div class="col-2">
+          <div>State:</div>
+          <q-btn-toggle
+            v-model="currFishTicket.state"
+            toggle-color="primary"
+            :options="[
                 {label: 'CA', value: 'CA'},
                 {label: 'OR', value: 'OR'},
                 {label: 'WA', value: 'WA'}
                 ]"
-            />
-          </div>
-          <q-input
-            outlined
-            class="col-2"
-            label="Date"
-            mask="date"
-            :rules="['date']"
-            v-model="currFishTicket.date"
           />
         </div>
-        <div class="col q-pl-md">
-          <q-date v-model="currFishTicket.date" minimal/>
-        </div>
+        <q-input
+          outlined
+          class="col-2"
+          label="Date"
+          mask="date"
+          :rules="['date']"
+          v-model="currFishTicket.date"
+        >
+          <template v-slot:append>
+            <q-icon name="event"></q-icon>
+          </template>
+        </q-input>
+      </div>
+      <div class="col q-pl-md">
+        <q-date v-model="currFishTicket.date" minimal/>
+      </div>
     </boatnet-input-dialog>
   </span>
 </template>
