@@ -1,14 +1,12 @@
 <template>
   <q-dialog v-model="show" persistent>
-    <q-card>
+    <q-card style="width: 700px; max-width: 80vw;">
       <q-card-section>
         <div class="text-h6">{{title}}</div>
       </q-card-section>
 
       <q-card-section class="row items-center">
-        <div class="q-gutter-sm q-pa-md">
           <slot></slot>
-        </div>
       </q-card-section>
 
       <q-card-actions align="right">

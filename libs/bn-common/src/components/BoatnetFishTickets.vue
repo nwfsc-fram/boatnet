@@ -29,20 +29,32 @@
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-      <q-input outlined class="col-2" v-model="currFishTicket.fishNum" label="Fish Ticket #"/>
-      <div class="col-2">
-        <div>State:</div>
-        <q-btn-toggle
-          v-model="currFishTicket.state"
-          toggle-color="primary"
-          :options="[
+        <div class="col self-start q-gutter-md q-pb-md">
+          <q-input outlined class="col-2" v-model="currFishTicket.fishNum" label="Fish Ticket #"/>
+          <div class="col-2">
+            <div>State:</div>
+            <q-btn-toggle
+              v-model="currFishTicket.state"
+              toggle-color="primary"
+              :options="[
                 {label: 'CA', value: 'CA'},
                 {label: 'OR', value: 'OR'},
                 {label: 'WA', value: 'WA'}
                 ]"
-        />
-      </div>
-      <boatnet-date dateLabel="Date" :value.sync="currFishTicket.date"/>
+            />
+          </div>
+          <q-input
+            outlined
+            class="col-2"
+            label="Date"
+            mask="date"
+            :rules="['date']"
+            v-model="currFishTicket.date"
+          />
+        </div>
+        <div class="col q-pl-md">
+          <q-date v-model="currFishTicket.date" minimal/>
+        </div>
     </boatnet-input-dialog>
   </span>
 </template>
@@ -55,7 +67,7 @@ import moment from 'moment';
 @Component
 export default class BoatnetFishTickets extends Vue {
   @Prop() private fishTickets!: WcgopFishTicket[];
-  private modifiedFishTickets: WcgopFishTicket[] = [];
+  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets;
 
   private selected: any[] = [];
   private showDialog = false;
@@ -127,7 +139,11 @@ export default class BoatnetFishTickets extends Vue {
   }
 
   private saveEdit() {
-    this.modifiedFishTickets.splice(this.selected[0].__index, 1, this.currFishTicket);
+    this.modifiedFishTickets.splice(
+      this.selected[0].__index,
+      1,
+      this.currFishTicket
+    );
     this.showDialog = false;
     this.$emit('update:fishTickets', this.modifiedFishTickets);
     this.$emit('save');
