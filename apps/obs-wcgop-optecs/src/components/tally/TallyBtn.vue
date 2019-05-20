@@ -80,10 +80,10 @@ import { QBtn } from 'quasar';
 
 /* tslint:disable:no-var-requires  */
 // TODO Move audio to a separate service
-const lowClickFile = require('../../assets/audio/click4.wav');
-const highClickFile = require('../../assets/audio/clack.wav');
-const funnyFile = require('../../assets/audio/funnyclick.wav');
-const spaceyFile = require('../../assets/audio/spaceyclick.wav');
+const lowClickFile = require('../../assets/audio/click4.mp3');
+const highClickFile = require('../../assets/audio/clack.mp3');
+const funnyFile = require('../../assets/audio/funnyclick.mp3');
+const spaceyFile = require('../../assets/audio/spaceyclick.mp3');
 
 const lowClickAudio = new Audio(lowClickFile);
 const highClickAudio = new Audio(highClickFile);
