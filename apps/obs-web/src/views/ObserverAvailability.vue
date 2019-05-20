@@ -164,7 +164,7 @@ export default class ObserverAssignment extends Vue {
         {name: 'activityDescription', label: 'Description',
         field: 'activityDescription', required: false, align: 'left', sortable: true},
         {name: 'status', label: 'Status',
-        field: 'status', required: false, align: 'left', sortable: true},
+        field: 'status', required: false, align: 'left', sortable: true}
     ];
 
     private formatDate(date: string) {

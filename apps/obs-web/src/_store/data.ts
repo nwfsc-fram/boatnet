@@ -217,28 +217,28 @@ export const permits: Permit[] = [
 //   },
 // ];
 
-export const users: Person[] = [
-  {
-    firstName: 'Seth', lastName: "Gerou", userName: 'seth-test', applicationRoles: ['Captain'], workEmail: 'user@noaa.gov',
-    cellPhone: '2065551212', homePhone: '4322221232', port: {name: 'Seattle'}
-  },
-  // {
-  //   name: 'Melina Shak', roles: ['Captain'], email: 'user@noaa.gov',
-  //   mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
-  // },
-  // {
-  //   name: 'Nick Schaffer', roles: ['Observer'], email: 'user@noaa.gov',
-  //   mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
-  // },
-  // {
-  //   name: 'Neil Riley', roles: ['Staff'], email: 'user@noaa.gov',
-  //   mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
-  // },
-  // {
-  //   name: 'Will Smith', roles: ['Provider'], email: 'user@noaa.gov',
-  //   mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
-  // }
-];
+// export const users: Person[] = [
+//   {
+//     firstName: 'Seth', lastName: "Gerou", userName: 'sgerou-test', applicationRoles: ['Captain'], workEmail: 'user@noaa.gov',
+//     cellPhone: '2065551212', homePhone: '4322221232', port: {name: 'Seattle'}
+//   },
+//   {
+//     name: 'Melina Shak', roles: ['Captain'], email: 'user@noaa.gov',
+//     mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
+//   },
+//   {
+//     name: 'Nick Schaffer', roles: ['Observer'], email: 'user@noaa.gov',
+//     mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
+//   },
+//   {
+//     name: 'Neil Riley', roles: ['Staff'], email: 'user@noaa.gov',
+//     mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
+//   },
+//   {
+//     name: 'Will Smith', roles: ['Provider'], email: 'user@noaa.gov',
+//     mobile: 2065551212, home: 4322221232, homeport: {name: 'Seattle'}
+//   }
+// ];
 
 export const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 

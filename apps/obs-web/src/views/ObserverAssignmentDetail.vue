@@ -53,9 +53,9 @@
                             <q-td key="id"></q-td>
                             <q-td key="observerName" :props="props">{{ props.row.firstName }} {{ props.row.lastName }}</q-td>
                             <q-td key="observerPhone" :props="props">{{ formatTel(props.row.cellPhone) }}</q-td>
-                            <q-td key="status" :props="props">{{ props.row.status }}</q-td>
-                            <q-td key="lastScheduledDate" :props="props">{{ props.row.lastScheduledDate }}</q-td>
-                            <q-td key="nextScheduledDate" :props="props">{{ props.row.nextScheduledDate }}</q-td>
+                            <q-td key="status" :props="props">{{ getStatus(props.row) }}</q-td>
+                            <q-td key="lastScheduledDate" :props="props">{{ getLastScheduled(props.row) }}</q-td>
+                            <q-td key="nextScheduledDate" :props="props">{{ getNextScheduled(props.row) }}</q-td>
                             </q-tr>
                             </template>
                         </q-table>
@@ -95,25 +95,17 @@ export default class ObserverAssignment extends Vue {
     @State('user') private user!: UserState;
     @State('oa') private oa!: ObserverAssignmentState;
 
+    @Action('clear', { namespace: 'alert' }) private clear: any;
+    @Action('error', { namespace: 'alert' }) private error: any;
+
 private pagination = {rowsPerPage: 0};
 private alert = false;
 private selectedObserver: string = '';
 private observerAssigned: boolean = false;
+private trips: any[] = [];
+private activities: any[] = [];
 
-private observers = [
-    {firstName: 'Seth', lastName: 'Gerou', cellPhone: '2225551212',
-    status: 'Available For Dates', lastScheduledDate: '2019/03/04',
-    nextScheduledDate: '2019/05/25'},
-    {firstName: 'Will', lastName: 'Smith', cellPhone: '2225551212',
-    status: 'Available For Dates', lastScheduledDate: '2019/04/04',
-    nextScheduledDate: '2019/05/15'},
-    {firstName: 'Nick', lastName: 'Schaffer', cellPhone: '2225551212',
-    status: 'Available For Dates', lastScheduledDate: '2019/04/12',
-    nextScheduledDate: '2019/05/10'},
-    {firstName: 'Melina', lastName: 'Shak', cellPhone: '2225551212',
-    status: 'Not Available For Dates', lastScheduledDate: '2019/05/01',
-    nextScheduledDate: '2019/06/14'}
-];
+private observers: any[] = [];
 
 private get getObserverNames() {
     return this.observers.map((observer) => observer.firstName + ' ' + observer.lastName );
@@ -189,7 +181,136 @@ private async updateTrip() {
 
 }
 
+private async getObservers() {
+        const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions: ListOptions = {
+          start_key: '',
+          inclusive_end: true,
+          descending: false
+        };
+
+        try {
+            const observers = await masterDB.viewWithDocs<any>(
+                'sethtest',
+                'all_observers',
+                queryOptions
+                );
+
+            this.observers = observers.rows.map( (user) => user.doc );
+
+            for (const observer of this.observers) {
+                this.getObserverTrips(observer);
+                this.getObserverActivities(observer);
+            }
+    } catch (err) {
+        this.error(err);
+        }
+    }
+
+private getStatus(row: any) {
+
+    let available = true;
+
+    if (row.trips) {
+        for (const trip of row.trips) {
+            if (
+                moment(trip.departureDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate))
+                ||
+                moment(trip.returnDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate) )
+                ) { available = false; }
+        }
+    }
+
+    if (row.activities) {
+        for (const activity of row.activities) {
+            if (
+                moment(activity.startDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate))
+                ||
+                moment(activity.endDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate) )
+            ) { available = false; }
+        }
+    }
+
+    if (available === true) {
+        Vue.set(row, 'status', 'Available For Dates');
+        return 'Available For Dates';
+    } else {
+        Vue.set(row, 'status', 'Un-available');
+        return 'Un-available';
+        }
+}
+
+private getLastScheduled(row: any) {
+    let lastScheduled = 'TO DO';
+    // for (const trip of row.trips) {
+
+    //     if ( true ) {
+    //         lastScheduled = moment(trip.returnDate).format('YYYY/MM/DD');
+    //     }
+    // }
+
+
+    return lastScheduled;
+}
+
+private getNextScheduled(row: any) {
+    let nextScheduled = 'TO DO';
+    // for (const trip of row.trips) {
+
+    //     if ( true ) {
+    //         nextScheduled = moment(trip.departureDate).format('YYYY/MM/DD');
+    //     }
+    // }
+    return nextScheduled;
+}
+
+
+private async getObserverTrips(observer: any) {
+        const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions: ListOptions = {
+          start_key: '',
+          inclusive_end: true,
+          descending: false
+        };
+
+        try {
+            const trips = await masterDB.viewWithDocs<any>(
+                'sethtest',
+                'all_observed_trips',
+                {key: observer.userName}
+                );
+
+                Vue.set(observer, 'trips' , trips.rows.map( (trip) => trip.doc ));
+
+        } catch (err) {
+            this.error(err);
+        }
+}
+
+private async getObserverActivities(observer: any) {
+        const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions: ListOptions = {
+          start_key: '',
+          inclusive_end: true,
+          descending: false
+        };
+
+        try {
+            const activities = await masterDB.viewWithDocs<any>(
+                'sethtest',
+                'all_observer_activities',
+                {key: observer.userName}
+                );
+
+            Vue.set(observer, 'activities' , activities.rows.map( (activity) => activity.doc ));
+
+        } catch (err) {
+            this.error(err);
+        }
+}
+
 private created() {
+    this.getObservers();
     if (this.oa.activeTrip.observer) {
         this.observerAssigned = true;
     }

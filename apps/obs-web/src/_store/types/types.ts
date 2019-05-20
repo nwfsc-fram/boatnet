@@ -30,7 +30,7 @@ export interface EmefpState {
 }
 
 export interface UserState {
-  activeUser: Person;
+  activeUser?: Person;
   users: Person[];
   newUser: boolean;
 }

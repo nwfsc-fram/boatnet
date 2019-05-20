@@ -1,51 +1,7 @@
 <template>
-    <div>
-    <div class="q-pa-md  q-gutter-md">
-                <div class="centered-page-item">User Settings</div>
-        <q-card>
-            <q-card-section>
-                <q-select
-                    label="Active Vessel"
-                    v-model="vessel.activeVessel"
-                    :options="vessels"
-                    @filter="filterVessels"
-                    option-label="vesselName"
-                    option-value="_id"
-                    use-input
-                    dense
-                >
-                </q-select>
-                <br>
-                <q-select
-                    label="Notification Preferences"
-                    v-model="user.activeUser.notification_prefs"
-                    :options="notificationOptions"
-                    dense
-                    multiple
-                    use-input
-                    stack-label
-                    style="width: 100%"
-                    >
 
-                    <template v-slot:selected-item="scope">
-                        <q-chip
-                            @remove="scope.removeAtIndex(scope.index)"
-                            :tabindex="scope.tabindex"
-                            removable
-                            dense
-                            color="primary"
-                            text-color="white"
-                            class="q-ma-none"
-                            >
-                            <q-avatar color="primary" text-color="white" :icon="scope.opt.icon" />
-                            {{ scope.opt.label }}
-                        </q-chip>
-                    </template>
-                </q-select>
-            </q-card-section>
-        </q-card>
-    </div>
-    <app-user-details></app-user-details>
+    <div class="q-pa-md  q-gutter-md">
+        <app-user-details></app-user-details>
     </div>
 </template>
 

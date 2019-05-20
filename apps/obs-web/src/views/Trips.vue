@@ -290,7 +290,7 @@ export default class Trips extends Vue {
                             // permits: [],
                             // messages: [],
                             departureDate: moment().format(),
-                            departurePort: this.user.activeUser.port,
+                            departurePort: this.user.activeUser!.port,
                             returnDate: moment().format(),
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,
