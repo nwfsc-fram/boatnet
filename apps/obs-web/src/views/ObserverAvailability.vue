@@ -49,6 +49,7 @@ import moment from 'moment';
 import { ObserverActivityTypeName } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component({
   pouch: {
@@ -172,7 +173,9 @@ export default class ObserverAssignment extends Vue {
 
     private newActivity() {
         const newActivity = {
-            type: ObserverActivityTypeName
+            type: ObserverActivityTypeName,
+            createdBy: authService.getCurrentUser()!.username,
+            createdDate: moment().format(),
             };
         this.obact.activeActivity = newActivity;
         this.obact.isNewActivity = true;

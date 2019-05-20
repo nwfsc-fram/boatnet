@@ -177,6 +177,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
 export default class OtsTargeteDetail extends Vue {
@@ -323,6 +324,8 @@ export default class OtsTargeteDetail extends Vue {
           const masterDB: Client<any> = couchService.masterDB;
 
           delete this.ots.activeOTSTarget.__index;
+          this.ots.activeOTSTarget.updatedBy = authService.getCurrentUser()!.username;
+          this.ots.activeOTSTarget.updatedDate = moment().format();
 
           masterDB.put(this.ots.activeOTSTarget._id,
                         this.ots.activeOTSTarget,

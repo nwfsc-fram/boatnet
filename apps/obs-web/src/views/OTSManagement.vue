@@ -229,6 +229,8 @@ export default class OtsMangement extends Vue {
 
     private newOtsTarget() {
         const newOtsTarget: OTSTarget = {
+            createdBy: authService.getCurrentUser()!.username,
+            createdDate: moment().format(),
             type: OTSTargetTypeName,
             fishery: '',
             targetType: '',

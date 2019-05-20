@@ -71,6 +71,7 @@ import moment from 'moment';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
 export default class ActivityDetail extends Vue {
@@ -108,6 +109,9 @@ private updateActivity() {
         this.$router.push({path: '/observer-availability'});
     } else {
         delete this.obact.activeActivity.__index;
+        this.obact.activeActivity.updatedBy = authService.getCurrentUser()!.username;
+        this.obact.activeActivity.updatedDate = moment().format();
+
         pouchService.db.put(pouchService.userDBName, this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     }

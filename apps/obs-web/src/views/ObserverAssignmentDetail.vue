@@ -86,6 +86,7 @@ import moment from 'moment';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
 export default class ObserverAssignment extends Vue {
@@ -174,7 +175,8 @@ private async updateTrip() {
         delete this.oa.activeTrip.__index;
         delete this.oa.activeTrip.observer.__index;
 
-
+        this.oa.activeTrip.updatedBy = authService.getCurrentUser()!.username;
+        this.oa.activeTrip.updatedDate = moment().format();
         const masterDB: Client<any> = couchService.masterDB;
 
         masterDB.put(this.oa.activeTrip._id, this.oa.activeTrip, this.oa.activeTrip._rev).then( () => {

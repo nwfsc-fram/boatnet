@@ -16,8 +16,10 @@
                 <span v-if="trip.activeTrip.fishery.name">{{ trip.activeTrip.fishery.name }}</span>
                 </div>
 
+            <q-list>
                 <div class="row items-start">
-
+              <q-item>
+                <q-item-section>
                     <div>
                         <div class="text-subtitle2">Departure Date</div>
                         <q-date
@@ -27,6 +29,11 @@
                             >
                         </q-date>
                     </div>
+                </q-item-section>
+                </q-item>
+
+              <q-item>
+                <q-item-section>
                     <div>
                         <div class="text-subtitle2">Return Date</div>
                         <q-date
@@ -37,7 +44,10 @@
                             >
                         </q-date>
                     </div>
+                    </q-item-section>
+                </q-item>
                 </div>
+                </q-list>
 
                 <q-select
                 v-model="trip.activeTrip.departurePort.name"
@@ -161,6 +171,7 @@ import moment from 'moment';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 import {
   WcgopTrip,
@@ -409,6 +420,8 @@ export default class TripDetails extends Vue {
     }
 
     private updateTrip() {
+        this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
+        this.trip.activeTrip!.updatedDate = moment().format();
         pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
         this.$router.push({path: '/trips'});
     }

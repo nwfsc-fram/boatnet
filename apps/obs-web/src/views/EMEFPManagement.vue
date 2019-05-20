@@ -55,6 +55,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { EmEfp, EmEfpTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import moment from 'moment';
 
 @Component
 export default class EMEFPManagement extends Vue {
@@ -158,6 +159,8 @@ private emefpDetails(efp: EmEfp) {
     if (efp === null) {
         const newEmNum = parseInt(this.EM_EFP[0].emEfpNumber.substring(3), 10) + 1;
         efp = {
+            createdBy: authService.getCurrentUser()!.username,
+            createdDate: moment().format(),
             type: EmEfpTypeName,
             emEfpNumber: 'EM-' + newEmNum.toString(),
             vesselName: '',

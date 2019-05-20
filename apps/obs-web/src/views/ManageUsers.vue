@@ -19,7 +19,7 @@
         <div style="text-align: center; background-color: white" class="fixed-bottom q-pa-md q-gutter-sm">
             <q-input v-model="filterText" label="Search"></q-input>
         </div>
-    </div>    
+    </div>
 </template>
 
 
@@ -30,6 +30,8 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, PermitState, UserState, GeneralState } from '../_store/types/types';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import moment from 'moment';
 
 @Component
 export default class ManageUsers extends Vue {
@@ -46,15 +48,19 @@ export default class ManageUsers extends Vue {
 
     private userDetails(user: any) {
             this.user.activeUser = user;
+            this.user.newUser = false;
             const index = this.user.users.indexOf(user);
             this.$router.push({path: '/users/' + index});
         }
 
     private newUser() {
-            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null});
-            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length - 1];
-            const index = this.$store.state.users.indexOf(this.$store.state.activeUser);
-            this.$router.push({path: '/users/' + index});
+            const newUser = {
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format()
+            };
+            this.user.activeUser = newUser;
+            this.user.newUser = true;
+            this.$router.push({path: '/users/' + 'new'});
         }
 
     private get filteredUsers() {
