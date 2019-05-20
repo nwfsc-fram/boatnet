@@ -71,7 +71,7 @@ import moment from 'moment';
 @Component
 export default class BoatnetFishTickets extends Vue {
   @Prop() private fishTickets!: WcgopFishTicket[];
-  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets;
+  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets ? this.fishTickets : [];
 
   private selected: any[] = [];
   private showDialog = false;

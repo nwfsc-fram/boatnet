@@ -70,8 +70,8 @@
                   <boatnet-datetime
                     dateLabel="Departure Date"
                     timeLabel="Departure Time"
-                    :value="currentTrip.departureDate"
-                    @save="updateDepartureDate"
+                    :value.sync="currentTrip.departureDate"
+                    @save="saveOnUpdate"
                     @error="handleError"
                     @displayKeyboard="displayKeyboard"
                   />
@@ -163,8 +163,8 @@
                   <boatnet-datetime
                     dateLabel="Return Date"
                     timeLabel="Return Time"
-                    :value="currentTrip.returnDate"
-                    @save="updateReturnDate"
+                    :value.sync="currentTrip.returnDate"
+                    @save="saveOnUpdate"
                     @error="handleError"
                     @displayKeyboard="displayKeyboard"
                   />
@@ -274,8 +274,16 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('saveTrip', { namespace: 'appState' })
   private saveTrip: any;
-  @Getter('currentTrip', { namespace: 'appState' })
-  private currentTrip!: WcgopTrip;
+  @Getter('currentSelectionId', { namespace: 'appState' })
+  private currentSelectionId!: string;
+
+  private currentTrip: WcgopTrip = {
+    tripNum: this.tripNum,
+    type: 'wcgop-trip',
+    vessel: { vesselName: '' },
+    departurePort: { name: '' },
+    returnPort: { name: '' }
+  };
 
   private tab: string; // Current tab (start or end)
   private ph = ''; // TEMP
@@ -304,32 +312,34 @@ export default class Trips extends Vue {
     }
   }
 
+  private async created() {
+    if (this.currentSelectionId) {
+      try {
+        this.currentTrip = await pouchService.db.get(
+          pouchService.userDBName,
+          this.currentSelectionId
+        );
+      } catch (err) {
+        this.errorAlert('TripId not found in database');
+      }
+    } else {
+      try {
+        await pouchService.db
+          .post(pouchService.userDBName, this.currentTrip)
+          .then((response: any) => {
+            this.currentTrip._id = response.id;
+            this.currentTrip._rev = response.rev;
+          });
+      } catch (err) {
+        this.errorAlert(
+          'Trip ' + this.currentTrip.tripNum + ' was not added to the database'
+        );
+      }
+    }
+  }
+
   private handleError(errorMsg: string) {
     this.errorAlert(errorMsg);
-  }
-
-  private updateDepartureDate(datetime: string) {
-    if (
-      this.currentTrip.returnDate &&
-      moment(datetime).isAfter(moment(this.currentTrip.returnDate))
-    ) {
-      this.errorAlert('Departure date must be before return date');
-    } else {
-      this.currentTrip.departureDate = datetime;
-      this.saveOnUpdate();
-    }
-  }
-
-  private updateReturnDate(datetime: string) {
-    if (
-      this.currentTrip.departureDate &&
-      moment(datetime).isBefore(moment(this.currentTrip.departureDate))
-    ) {
-      this.errorAlert('Return date must be after departure date');
-    } else {
-      this.currentTrip.returnDate = datetime;
-      this.saveOnUpdate();
-    }
   }
 
   private saveOnUpdate() {

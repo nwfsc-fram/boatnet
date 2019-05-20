@@ -10,14 +10,8 @@ export interface AlertState {
   message: string | null;
 }
 
-export interface BreadcrumbNavigation {
-  // TODO - figure out how to store our locations
-  currentRouterLocation?: string;
-  prevRouterLocation?: any;
-}
-
 export interface WcgopAppState {
-  currentNavigation?: BreadcrumbNavigation;
+  currentSelectionId?: string;
   currentTrip?: WcgopTrip;
   isKeyboardEnabled?: boolean;
   isSoundEnabled?: boolean;

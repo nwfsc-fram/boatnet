@@ -145,7 +145,7 @@ export default class DefaultLayout extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   private leftDrawerOpen: boolean;
-  private miniState = false;
+  private miniState = true;
 
   constructor() {
     super();
