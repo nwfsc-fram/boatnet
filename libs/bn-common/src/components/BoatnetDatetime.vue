@@ -1,6 +1,6 @@
 <template>
   <div class="q-col-gutter-md column">
-    <boatnet-date :dateLabel="dateLabel" :date.sync="date" @save="saveDateTime"/>
+    <boatnet-date :dateLabel="dateLabel" :date.sync="date"/>
     <q-input
       outlined
       class="col-2"
@@ -8,8 +8,6 @@
       :label="timeLabel"
       mask="##:##"
       fill-mask
-      debounce="500"
-      @input="saveDateTime"
       @focus="displayKeyboard"
       data-layout="numeric"
     />
@@ -26,16 +24,25 @@ export default class BoatnetDatetime extends Vue {
   @Prop() private timeLabel!: string;
   @Prop() private value!: string;
 
-  private date: any = this.value
-    ? moment(this.value).format('YYYY/MM/DD')
-    : null;
-  private time: any = this.value
-    ? moment(this.value).format('HH:mm')
-    : null;
+  get date() {
+    return this.value ? moment(this.value).format('YYYY/MM/DD') : '';
+  }
+  set date(dateVal: string) {
+    this.update(dateVal, this.time);
+  }
 
-  private saveDateTime() {
-    const datetime = this.date + ' ' + this.time;
-    this.$emit('save', moment(datetime, 'YYYY/MM/DD HH:mm').format());
+  get time() {
+    return this.value ? moment(this.value).format('HH:mm') : '';
+  }
+  set time(timeVal: string) {
+    this.update(this.date, timeVal);
+  }
+
+  private update(dateVal: string, timeVal: string) {
+    const datetime = dateVal + ' ' + timeVal;
+    const formattedDateTime = moment(datetime, 'YYYY/MM/DD HH:mm').format();
+    this.$emit('update:value', formattedDateTime);
+    this.$emit('save', formattedDateTime);
   }
 
   private displayKeyboard(event: any) {

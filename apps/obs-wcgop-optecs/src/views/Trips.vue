@@ -71,6 +71,8 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
+  @Action('setCurrentSelectionId', { namespace: 'appState' })
+  private setCurrentSelectionId: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
@@ -149,19 +151,17 @@ export default class Trips extends Vue {
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+    this.setCurrentSelectionId(trip._id);
   }
 
   private handleAddTrip() {
-    const trip: WcgopTrip = {
-      type: WcgopTripTypeName,
-      vessel: {},
-      departurePort: {},
-      returnPort: {}
-    };
+    let tripNum;
     if (this.userDBTrips[0]) {
-      trip.tripNum = this.userDBTrips[0].tripNum + 1;
+      tripNum = this.userDBTrips[0].tripNum + 1;
     }
+    const trip: WcgopTrip = { tripNum };
     this.setCurrentTrip(trip);
+    this.setCurrentSelectionId(null);
     this.$router.push({ path: '/tripdetails/' + trip.tripNum });
   }
 

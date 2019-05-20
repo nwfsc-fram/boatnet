@@ -7,13 +7,16 @@ import { pouchService } from '@boatnet/bn-pouch';
 Vue.use(Vuex);
 
 export const state: WcgopAppState = {
-  currentNavigation: undefined, // TODO could set this to current router location?
+  currentSelectionId: undefined,
   currentTrip: undefined,
   isKeyboardEnabled: true,
   isSoundEnabled: true
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
+  setCurrentSelectionId({ commit }: any, id: string) {
+    commit('setCurrentSelectionId', id);
+  },
   saveTrip({ commit }: any, trip: WcgopTrip) {
     commit('saveTrip', trip);
   },
@@ -22,12 +25,6 @@ const actions: ActionTree<WcgopAppState, RootState> = {
   },
   clear({ commit }: any) {
     commit('setCurrentTrip', undefined);
-  },
-  navigate({ commit }: any, uri: string) {
-    commit('navigate', uri);
-  },
-  navigateBack({ commit }: any) {
-    commit('navigateBack');
   },
   setKeyboardStatus({ commit }: any, isEnabled: boolean) {
     commit('setKeyboardStatus', isEnabled);
@@ -38,19 +35,15 @@ const actions: ActionTree<WcgopAppState, RootState> = {
 };
 
 const mutations: MutationTree<WcgopAppState> = {
+  setCurrentSelectionId(newState: any, id: string) {
+    newState.currentSelectionId = id;
+  },
   saveTrip(newState: any, trip: WcgopTrip) {
     try {
       if (trip._id) {
         pouchService.db
           .put(pouchService.userDBName, trip)
           .then((response: any) => {
-            trip._rev = response.rev;
-          });
-      } else {
-        pouchService.db
-          .post(pouchService.userDBName, trip)
-          .then((response: any) => {
-            trip._id = response.id;
             trip._rev = response.rev;
           });
       }
@@ -61,12 +54,6 @@ const mutations: MutationTree<WcgopAppState> = {
   setCurrentTrip(newState: any, trip: WcgopTrip) {
     newState.currentTrip = trip;
   },
-  navigate(newState: any, uri: string) {
-    console.log('[AppState] TODO Navigate to', uri);
-  },
-  navigateBack(newState: any, uri: string) {
-    console.log('[AppState] TODO Navigate to', uri);
-  },
   setKeyboardStatus(newState: any, isEnabled: boolean) {
     newState.isKeyboardEnabled = isEnabled;
   },
@@ -76,6 +63,9 @@ const mutations: MutationTree<WcgopAppState> = {
 };
 
 const getters: GetterTree<WcgopAppState, RootState> = {
+  currentSelectionId(getState: WcgopAppState) {
+    return getState.currentSelectionId;
+  },
   currentTrip(getState: WcgopAppState) {
     return getState.currentTrip;
   },
