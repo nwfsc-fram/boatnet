@@ -54,8 +54,8 @@
                             <q-td key="observerName" :props="props">{{ props.row.firstName }} {{ props.row.lastName }}</q-td>
                             <q-td key="observerPhone" :props="props">{{ formatTel(props.row.cellPhone) }}</q-td>
                             <q-td key="status" :props="props">{{ getStatus(props.row) }}</q-td>
-                            <q-td key="lastScheduledDate" :props="props">{{ getLastScheduled(props.row) }}</q-td>
-                            <q-td key="nextScheduledDate" :props="props">{{ getNextScheduled(props.row) }}</q-td>
+                            <q-td key="lastScheduledDate" :props="props"> {{ formatDate(props.row.lastScheduledDate) }}</q-td>
+                            <q-td key="nextScheduledDate" :props="props">{{ formatDate(props.row.nextScheduledDate) }}</q-td>
                             </q-tr>
                             </template>
                         </q-table>
@@ -102,7 +102,7 @@ private pagination = {rowsPerPage: 0};
 private alert = false;
 private selectedObserver: string = '';
 private observerAssigned: boolean = false;
-private trips: any[] = [];
+private trips: any = {};
 private activities: any[] = [];
 
 private observers: any[] = [];
@@ -156,7 +156,11 @@ private formatTel(telNum: any) {
 }
 
 private formatDate(date: any) {
-    return moment(date).format('MMM Do');
+    if (date) {
+        return moment(date).format('MMM Do, YYYY');
+    } else {
+        return ''
+    }
 }
 
 private async updateTrip() {
@@ -214,20 +218,48 @@ private getStatus(row: any) {
     if (row.trips) {
         for (const trip of row.trips) {
             if (
-                moment(trip.departureDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate))
-                ||
-                moment(trip.returnDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate) )
-                ) { available = false; }
+                moment(trip.departureDate) <= moment(this.oa.activeTrip.returnDate) && moment(this.oa.activeTrip.departureDate) <= moment(trip.returnDate)
+            ) { available = false; }
+
+            if (
+                moment(trip.returnDate) <= moment(this.oa.activeTrip.returnDate)
+                && moment(trip.returnDate) > moment(row.lastScheduledDate)
+            ) { row.lastScheduledDate = trip.returnDate }
+
+            if (row.nextScheduledDate) {
+                if (
+                    moment(trip.departureDate) >= moment(this.oa.activeTrip.returnDate)
+                    && moment(trip.departureDate) < moment(row.nextScheduledDate)
+                ) { row.nextScheduledDate = trip.departureDate }
+            } else {
+                if (
+                    moment(trip.departureDate) >= moment(this.oa.activeTrip.returnDate)
+                ) { row.nextScheduledDate = trip.departureDate }
+            }
         }
     }
 
     if (row.activities) {
         for (const activity of row.activities) {
             if (
-                moment(activity.startDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate))
-                ||
-                moment(activity.endDate).isBetween( moment(this.oa.activeTrip.departureDate), moment(this.oa.activeTrip.returnDate) )
+                moment(activity.startDate) <= moment(this.oa.activeTrip.returnDate) && moment(this.oa.activeTrip.departureDate) <= moment(activity.endDate)
             ) { available = false; }
+
+            if (
+                moment(activity.endDate) <= moment(this.oa.activeTrip.returnDate)
+                && moment(activity.endDate) > moment(row.lastScheduledDate)
+            ) { row.lastScheduledDate = activity.endDate }
+
+            if (row.nextScheduledDate) {
+                if (
+                    moment(activity.startDate) >= moment(this.oa.activeTrip.returnDate)
+                    && moment(activity.startDate) < moment(row.nextScheduledDate)
+                ) { row.nextScheduledDate = activity.startDate }
+            } else {
+                if (
+                    moment(activity.startDate) >= moment(this.oa.activeTrip.returnDate)
+                ) { row.nextScheduledDate = activity.startDate }
+            }
         }
     }
 
@@ -239,31 +271,6 @@ private getStatus(row: any) {
         return 'Un-available';
         }
 }
-
-private getLastScheduled(row: any) {
-    let lastScheduled = 'TO DO';
-    // for (const trip of row.trips) {
-
-    //     if ( true ) {
-    //         lastScheduled = moment(trip.returnDate).format('YYYY/MM/DD');
-    //     }
-    // }
-
-
-    return lastScheduled;
-}
-
-private getNextScheduled(row: any) {
-    let nextScheduled = 'TO DO';
-    // for (const trip of row.trips) {
-
-    //     if ( true ) {
-    //         nextScheduled = moment(trip.departureDate).format('YYYY/MM/DD');
-    //     }
-    // }
-    return nextScheduled;
-}
-
 
 private async getObserverTrips(observer: any) {
         const masterDB: Client<any> = couchService.masterDB;
@@ -303,7 +310,6 @@ private async getObserverActivities(observer: any) {
                 );
 
             Vue.set(observer, 'activities' , activities.rows.map( (activity) => activity.doc ));
-
         } catch (err) {
             this.error(err);
         }
