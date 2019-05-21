@@ -5,7 +5,8 @@ import {
   BoatnetDate,
   SightingEvent,
   InteractionEvent,
-  Waiver
+  Waiver,
+  BrdDeployment
 } from '../_common/index';
 
 import { WcgopFishTicket } from './index';
@@ -35,7 +36,6 @@ export interface WcgopTrip extends BaseTrip {
   sightingEvents?: SightingEvent[];
   interactionEvents?: InteractionEvent[]; // TODO
   brd?: BrdConfiguration[];
-  hlfc?: WcgopHlfcConfiguration[];
 
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[]; // Permits and Licenses

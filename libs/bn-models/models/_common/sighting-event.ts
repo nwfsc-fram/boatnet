@@ -36,7 +36,7 @@ export interface SightingEvent extends Base {
   bestNumSighted?: number;
   closestApproach?: Measurement;
   duration?: Measurement; // in minutes
-  sightingCue?: string; // TODO review for removal - Vanessa T
+  sightingCue?: string;
   mediaData?: Media[]; // Derive media present for analyst view
   animalBehavior?: Behavior[]; // spy-hopping, tail raised on dive etc
   bodyLengthEstimates?: LengthEstimate[]; // multiple animals - TODO Ryan to review usefulness
@@ -46,9 +46,7 @@ export interface SightingEvent extends Base {
   birdBands?: BirdBand[]; // for birds
   // for pinnipeds
   brandId?: string;
-
   silhouetteDescriptor?: SilhouetteDescriptor[];
-
   gearPresent?: GearPresentComment;
 
   legacy?: {
