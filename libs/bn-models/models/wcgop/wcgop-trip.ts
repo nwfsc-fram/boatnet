@@ -5,12 +5,10 @@ import {
   BoatnetDate,
   SightingEvent,
   InteractionEvent,
-  Waiver,
-  BrdDeployment
+  Waiver
 } from '../_common/index';
 
 import { WcgopFishTicket } from './index';
-import { WcgopHlfcConfiguration } from './wcgop-hlfc-configuration';
 import { BrdConfiguration } from '../_common/brd-configuration';
 import { Program } from 'typescript';
 import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType } from '../_lookups/index';
