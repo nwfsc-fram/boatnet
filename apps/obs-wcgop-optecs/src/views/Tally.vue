@@ -280,8 +280,13 @@ export default class Tally extends Vue {
   }
 
   public handleAddNamedSpecies(species: any) {
+    console.log('MODE', this.tallyMode);
+    console.log('SPECIES', species);
     switch (this.tallyMode) {
-      case TallyOperationMode.AddNamedSpeciesSelectType:
+      case TallyOperationMode.AddNamedSpeciesSelectSpecies:
+        // Side effect of close: switches back to tally mode
+        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
+
         this.currentSelectedSpecies = species;
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
         this.handleControlEvent('tally-addnew-controls');
@@ -291,10 +296,10 @@ export default class Tally extends Vue {
           oldSpeciesCode: this.currentSelectedSpecies.shortCode,
           newSpeciesCode: species.shortCode
         });
+        // Side effect of close: switches back to tally mode
+        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
         break;
     }
-    // Side effect of close: switches back to tally mode
-    (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
   }
 
   public handleCancelAddNamedSpecies() {
@@ -327,6 +332,7 @@ export default class Tally extends Vue {
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
+        this.setTallyOpMode(TallyOperationMode.AllTalliesSelect);
         this.currentControlComponent = 'tally-alltallies-controls';
         break;
       case 'tally-addnew-controls':

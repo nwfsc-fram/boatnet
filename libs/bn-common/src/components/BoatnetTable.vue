@@ -1,0 +1,41 @@
+<template>
+  <span>
+    <q-table
+      :data="data"
+      :columns="settings.columns"
+      :row-key="settings.rowKey"
+      :selected.sync="selected"
+    >
+      <template v-slot:body="props">
+        <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer">
+          <slot v-bind:row="props.row"/>
+        </q-tr>
+      </template>
+    </q-table>
+  </span>
+</template>
+
+
+<script lang="ts">
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { BoatnetTripsSettings } from '@boatnet/bn-common';
+import { BaseTrip } from '@boatnet/bn-models';
+
+@Component
+export default class BoatnetTable extends Vue {
+  @Prop() public data!: any[];
+  @Prop() public settings!: any;
+  public selected: any[] = [];
+
+  private select(row: any) {
+    if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
+      this.selected = [];
+      this.$emit('select', undefined);
+    } else {
+      this.selected = [row];
+      //delete row.__index;
+      this.$emit('select', row);
+    }
+  }
+}
+</script>

@@ -7,19 +7,34 @@
           <q-btn flat label="Dismiss" @click="clear"/>
         </template>
       </q-banner>
-      <!-- <div v-if="currentTrip">{{currentTrip}}</div> -->
-      <boatnet-trips
-        :tripsSettings="wcgopTripsSettings"
-        :tripsData="userDBTrips"
-        :currentTrip="currentTrip"
-        @selectedTrip="handleSelectTrip"
-        @addTrip="handleAddTrip"
-        @editTrip="handleEditTrip"
-        @endTrip="handleEndTrip"
-        @deleteTrip="handleDeleteTrip"
+      <boatnet-summary
+        currentScreen="Trip"
+        :current="currentTrip"
+        @add="handleAddTrip"
+        @edit="handleEditTrip"
+        @end="handleEndTrip"
+        @delete="handleDeleteTrip"
         @displayKeyboard="displayKeyboard"
-        @goToHauls="handleGoToHauls"
-      />
+        @goTo="handleGoToHauls"
+      >
+        <template v-slot:table>
+          <boatnet-table
+            :data="userDBTrips"
+            :settings="wcgopTripsSettings"
+            @select="handleSelectTrip"
+          >
+            <template v-slot:default="rowVals">
+              <q-td key="tripNum">{{rowVals.row.tripNum}}</q-td>
+              <q-td key="vesselName">{{ rowVals.row.vessel.vesselName }}</q-td>
+              <q-td key="departurePort">{{ rowVals.row.departurePort.name }}</q-td>
+              <q-td key="departureDate">{{ formatDate(rowVals.row.departureDate) }}</q-td>
+              <q-td key="returnPort">{{ rowVals.row.returnPort.name }}</q-td>
+              <q-td key="returnDate">{{ formatDate(rowVals.row.returnDate) }}</q-td>
+              <q-td key="errors">{{ rowVals.row.errors }}</q-td>
+            </template>
+          </boatnet-table>
+        </template>
+      </boatnet-summary>
     </q-page>
   </span>
 </template>
@@ -32,7 +47,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { WcgopAppState } from '../_store/types/types';
 import { AlertState } from '../_store/types/types';
-import BoatnetTrips, { BoatnetTripsSettings } from '@boatnet/bn-common';
+import BoatnetSummary, { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
@@ -47,7 +62,7 @@ import {
 } from '@boatnet/bn-models';
 import moment from 'moment';
 
-Vue.component(BoatnetTrips);
+Vue.component(BoatnetSummary);
 
 @Component({
   pouch: {
@@ -71,6 +86,8 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
+  @Action('setCurrentSelectionId', { namespace: 'appState' })
+  private setCurrentSelectionId: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
@@ -143,25 +160,27 @@ export default class Trips extends Vue {
     };
   }
 
+  private formatDate(date: string) {
+    return moment(date).format('MM/DD/YY');
+  }
+
   private handleGoToHauls() {
     this.$router.push({ path: '/hauls/' });
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
     this.setCurrentTrip(trip);
+    this.setCurrentSelectionId(trip._id);
   }
 
   private handleAddTrip() {
-    const trip: WcgopTrip = {
-      type: WcgopTripTypeName,
-      vessel: {},
-      departurePort: {},
-      returnPort: {}
-    };
+    let tripNum;
     if (this.userDBTrips[0]) {
-      trip.tripNum = this.userDBTrips[0].tripNum + 1;
+      tripNum = this.userDBTrips[0].tripNum + 1;
     }
+    const trip: WcgopTrip = { tripNum };
     this.setCurrentTrip(trip);
+    this.setCurrentSelectionId(null);
     this.$router.push({ path: '/tripdetails/' + trip.tripNum });
   }
 
