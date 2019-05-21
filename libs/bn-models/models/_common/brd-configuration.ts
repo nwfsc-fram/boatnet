@@ -28,15 +28,15 @@ export interface BrdConfiguration extends Base {
   trawlDoorModConfig?: BrdTrawlDoorModification;
   otherConfig?: BrdOther[];
   snatchBlockConfig?: BrdSnatchBlock; // Seabird-only
-  waterSprayerConfig?: BrdWaterSprayer;  // Seabird-only
+  waterSprayerConfig?: BrdWaterSprayer; // Seabird-only
   streamerLineConfig?: BrdStreamerLine; // Seabird-only
   warpBoomConfig?: BrdWarpBoom; // Seabird-only
   buoyLineConfig?: BrdBuoyLine;
   lineWeightingConfig?: BrdLineWeighting;
 
-  strategies?: BrdStrategyType[]; 
+  strategies?: BrdStrategyType[];
 
   legacy?: {
     manufacturer?: string;
-  }
+  };
 }
