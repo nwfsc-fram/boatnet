@@ -5,46 +5,21 @@
 // BIO_SPECIMENS
 
 import { Measurement, BoatnetDate, CouchID } from '../_common/index';
-import { WcgopBasket } from './hake-survey-basket';
-import { WcgopDiscardReason } from './wcgop-discard-reason';
-import { WcgopSpecimen } from './hake-survey-specimen';
+import { HakeSurveyBasket } from './hake-survey-basket';
+import { HakeSurveySpecimen } from './hake-survey-specimen';
 import { Base } from '../_base/index';
-import { Species } from '../_lookups/index';
+import { Species, CatchContent } from '../_lookups/index';
 
 declare type RockfishHandlingCode = string; // TODO
 
 
-export const WcgopCatchSpeciesTypeName = 'wcgop-catch-species';
+export const HakeSurveyCatchSpeciesTypeName = 'hake-survey-catch-species';
 
-export interface WcgopCatchSpecies extends Base {
-  species: Species;
-  discardReason?: WcgopDiscardReason;
-  speciesWeight?: Measurement;
-  speciesCount?: number; // SPECIES_NUMBER
-  totalTally?: number;
-
-  specimens?: WcgopSpecimen[];
-
-  basket?: WcgopBasket[];
-
-  handling?: RockfishHandlingCode; // Rockfish Handling
-
-  sightingEventIds?: CouchID[];
-
-  speciesCompDataSource?: string;
-  speciesCompItemDataSource?: string;
+export interface HakeSurveyCatchSpecies extends Base {
+  species: CatchContent;
+  baskets?: HakeSurveyBasket[];
+  specimens?: HakeSurveySpecimen[];
 
   legacy?: {
-    speciesCompId?: number;
-    speciesCompItemId?: number;
-    biospecimenId?: number;
-    catchId?: number;
-    speciesWeightKp?: number;
-    speciesWeightKpItq?: number;
-    speciesNumberKp?: number;
-    speciesNumberKpItq?: number;
-    catchSampleMethod?: string;
-    basketNumber?: number;
-    obsprodLoadDate?: BoatnetDate;
   };
 }

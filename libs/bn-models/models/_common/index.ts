@@ -11,3 +11,4 @@ export * from './measurement';
 export * from './sighting-event';
 export * from './species-mix';
 export * from './waiver';
+export * from './lineal-measurement';
