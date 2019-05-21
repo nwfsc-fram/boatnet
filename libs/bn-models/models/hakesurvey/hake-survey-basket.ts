@@ -1,9 +1,9 @@
 import { BaseContainer } from '../_base/index';
 import { BoatnetDate } from '../_common';
 
-export const WcgopBasketTypeName = 'wcgop-basket';
+export const HakeSurveyBasketTypeName = 'hake-survey-basket';
 
-export interface WcgopBasket extends BaseContainer {
+export interface HakeSurveyBasket extends BaseContainer {
   legacy?: {
     speciesCompItemId?: number;
     speciesCompBasketId?: number;
