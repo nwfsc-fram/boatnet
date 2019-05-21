@@ -12,6 +12,7 @@ import { WeightMethod, GearType } from '../_lookups';
 export const WcgopOperationTypeName = 'wcgop-operation';
 
 declare type WcgopTargetStrategy = any; // TODO
+declare type ProductDeliveryState = any; // TODO Lookup
 
 // TODO: Create both WCGOP Trawl and Fixed Gear haul types?
 export interface WcgopOperation extends BaseOperation {
@@ -31,8 +32,9 @@ export interface WcgopOperation extends BaseOperation {
   isOperationUnsampled?: boolean;
   isGearLost?: boolean;
   isDataQualityPassing?: boolean;
-
   sightingEventIds?: CouchID[];
+  productDeliveryState?: ProductDeliveryState;
+
 
   // Set operation specific fields:
   avgSoakTime?: Measurement;
@@ -42,10 +44,17 @@ export interface WcgopOperation extends BaseOperation {
   totalGearSegments?: number;
   gearSegmentsLost?: number;
   hooksSampled?: number; // Pull up from WcgopCatch records (should be the same number)
-  avgNumHooksPerSegment?: number; // new data field
+  avgNumHooksPerSegment?: number; // auto-calculate, new data field
   beaufortValue?: number; // Possibly replaced with tides/currents data
   // Combine BRD and HLFC into isDeterrentUsed
   isDeterrentUsed?: boolean; // BRD/ HLFC related (prompt UI for details required)
+
+  avgSetSpeed?: Measurement; // Longline + Snap gear types only
+  floatsUsed?: boolean; // Longline + Snap gear types only
+  floatsPerSegment?: number; // Longline + Snap gear types only
+  sinkersUsed?: boolean; // Longline + Snap gear types only
+  weightPerSinker?: Measurement; // oz or lbs - Longline + Snap gear types only
+  avgNumSinkersPerSegment?: number; // Longline + Snap gear types only
 
   legacy?: {
     fishingActivityId: number;

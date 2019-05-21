@@ -1,5 +1,6 @@
 import { BoatnetDate } from '../_common';
 import { Base } from '../_base';
+import { Species } from './species';
 
 export const BrdTargetTypeName = 'brd-target-type';
 
@@ -20,57 +21,113 @@ export type BrdMeshType = string; // TODO lookup
 //   // ...
 // ];
 
+// TODO - Jason to provide a list of strategy types
+export type BrdStrategyType = string; // TODO Lookup 
+
 export interface BrdLight {
-  targets?: BrdTarget[];
-  // TODO: Ryan to review
+  targets?: Species[] | BrdTarget[];
+
   numLightsSingleRigged?: number;
   numLightsDoubleRiggedPort?: number;
   numLightsDoubleRiggedStarboard?: number;
 
   colors?: BrdColor[]; // Usually Green
-  pattern?: BrdPattern[];
-  manufacturer?: BrdManufacturer[]; // TODO remove? Legacy?
   locations?: BrdLocation[];
+
+  legacy?: {
+    manufacturer?: BrdManufacturer[];
+    pattern?: BrdPattern[];
+  }
 }
 
 export interface BrdEscapement {
-  targets?: BrdTarget[];
+  targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   isIlluminated?: boolean;
 }
 
 export interface BrdSortingGrateGrid {
   // TODO May be required to collect
-  targets?: BrdTarget[];
+  targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   isIlluminated?: boolean;
 }
 
 export interface BrdModifiedCodendMesh {
-  targets?: BrdTarget[];
+  targets?: Species[] | BrdTarget[];
   meshType?: BrdMeshType[];
 }
 
 export interface BrdTrawlDoorModification {
-  targets?: BrdTarget[];
+  targets?: Species[] | BrdTarget[];
 }
 
 export interface BrdOther {
-  targets?: BrdTarget[];
+  targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
+  comment?: string;
+}
+
+export interface BrdStreamerLine {  // Seabird-only
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  numStreamLines: number;
+  numFloats: number;
+  numWeights: number;
+  isFixedHooksAerialExtentLessThan40m?: boolean;
+  isSnapGearAerialExtentLessThan20m?: boolean;
+  isSnapGearHorDistLessThan2m?: boolean;
+  comment?: string;
+}
+
+export interface BrdBuoyLine {  // Seabird-only
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  numBuoyLines: number;
+  numFloats: number;
+  numWeights: number;
+
+  comment?: string;
+}
+
+
+export interface BrdSnatchBlock {  // Seabird-only
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  comment?: string;
+}
+
+export interface BrdWaterSprayer {  // Seabird-only
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  comment?: string;
+}
+
+export interface BrdWarpBoom {  // Seabird-only
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  comment?: string;
+}
+
+export interface BrdLineWeighting {
+  targets?: Species[] | BrdTarget[];
+  locations?: BrdLocation[];
+  isIntegratedWeightLine?: boolean;
+  isAddedWeightLine?: boolean;
   comment?: string;
 }
 
 export interface BrdTarget extends Base {
   // From LOOKUPS
   value: string;
-  // ETL Note: remove Alpha character
-  // A: Salmon
-  // B: Eulachon
-  // C: PHLB
-  // D: Rockfish
-  // E: Flatfishes
-  // F: Other
+  // ETL Note: remove legacy, leading Alpha character
+  // Salmon
+  // Eulachon
+  // PHLB
+  // Rockfish
+  // Flatfishes
+  // Seabirds
+  // Other
 
   legacy?: {
     description?: string;

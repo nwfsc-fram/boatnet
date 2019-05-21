@@ -7,18 +7,17 @@ import {
   BrdModifiedCodendMesh,
   BrdTrawlDoorModification,
   BrdOther,
-  BrdLocation,
-  BrdColor,
-  BrdPattern,
-  BrdTarget
+  BrdSnatchBlock,
+  BrdWaterSprayer,
+  BrdWarpBoom,
+  BrdBuoyLine,
+  BrdStreamerLine,
+  BrdStrategyType,
+  BrdLineWeighting
 } from '../_lookups/brd-lookups';
 import { Species } from '../_lookups';
 
 export const BrdConfigurationTypeName = 'brd-configuration';
-
-declare type BrdEquipmentType = string;
-// e.g. Modified Codend, Sorting Grate Grid, Trawl Door Modification
-
 export interface BrdConfiguration extends Base {
   operations?: CouchID[];
 
@@ -28,16 +27,16 @@ export interface BrdConfiguration extends Base {
   modifiedCodendMeshConfig?: BrdModifiedCodendMesh;
   trawlDoorModConfig?: BrdTrawlDoorModification;
   otherConfig?: BrdOther[];
-}
+  snatchBlockConfig?: BrdSnatchBlock; // Seabird-only
+  waterSprayerConfig?: BrdWaterSprayer;  // Seabird-only
+  streamerLineConfig?: BrdStreamerLine; // Seabird-only
+  warpBoomConfig?: BrdWarpBoom; // Seabird-only
+  buoyLineConfig?: BrdBuoyLine;
+  lineWeightingConfig?: BrdLineWeighting;
 
-export const BrdDeploymentTypeName = 'brd-deployment';
+  strategies?: BrdStrategyType[]; 
 
-export interface BrdDeployment extends Base {
-  // New for ASHOP
-  operations?: CouchID[];
-  targetSpecies?: Species[] | BrdTarget[]; // ASHOP: Need to include seabirds
-  equipment?: BrdEquipmentType;
-  locations?: BrdLocation[];
-  colors?: BrdColor[]; // Usually Green
-  pattern?: BrdPattern[];
+  legacy?: {
+    manufacturer?: string;
+  }
 }
