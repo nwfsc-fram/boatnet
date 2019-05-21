@@ -159,7 +159,7 @@ private formatDate(date: any) {
     if (date) {
         return moment(date).format('MMM Do, YYYY');
     } else {
-        return ''
+        return '';
     }
 }
 
@@ -224,17 +224,17 @@ private getStatus(row: any) {
             if (
                 moment(trip.returnDate) <= moment(this.oa.activeTrip.returnDate)
                 && moment(trip.returnDate) > moment(row.lastScheduledDate)
-            ) { row.lastScheduledDate = trip.returnDate }
+            ) { row.lastScheduledDate = trip.returnDate; }
 
             if (row.nextScheduledDate) {
                 if (
                     moment(trip.departureDate) >= moment(this.oa.activeTrip.returnDate)
                     && moment(trip.departureDate) < moment(row.nextScheduledDate)
-                ) { row.nextScheduledDate = trip.departureDate }
+                ) { row.nextScheduledDate = trip.departureDate; }
             } else {
                 if (
                     moment(trip.departureDate) >= moment(this.oa.activeTrip.returnDate)
-                ) { row.nextScheduledDate = trip.departureDate }
+                ) { row.nextScheduledDate = trip.departureDate; }
             }
         }
     }
@@ -248,17 +248,17 @@ private getStatus(row: any) {
             if (
                 moment(activity.endDate) <= moment(this.oa.activeTrip.returnDate)
                 && moment(activity.endDate) > moment(row.lastScheduledDate)
-            ) { row.lastScheduledDate = activity.endDate }
+            ) { row.lastScheduledDate = activity.endDate; }
 
             if (row.nextScheduledDate) {
                 if (
                     moment(activity.startDate) >= moment(this.oa.activeTrip.returnDate)
                     && moment(activity.startDate) < moment(row.nextScheduledDate)
-                ) { row.nextScheduledDate = activity.startDate }
+                ) { row.nextScheduledDate = activity.startDate; }
             } else {
                 if (
                     moment(activity.startDate) >= moment(this.oa.activeTrip.returnDate)
-                ) { row.nextScheduledDate = activity.startDate }
+                ) { row.nextScheduledDate = activity.startDate; }
             }
         }
     }
@@ -287,7 +287,7 @@ private async getObserverTrips(observer: any) {
                 {key: observer.userName}
                 );
 
-                Vue.set(observer, 'trips' , trips.rows.map( (trip) => trip.doc ));
+            Vue.set(observer, 'trips' , trips.rows.map( (trip) => trip.doc ));
 
         } catch (err) {
             this.error(err);
@@ -310,6 +310,7 @@ private async getObserverActivities(observer: any) {
                 );
 
             Vue.set(observer, 'activities' , activities.rows.map( (activity) => activity.doc ));
+
         } catch (err) {
             this.error(err);
         }

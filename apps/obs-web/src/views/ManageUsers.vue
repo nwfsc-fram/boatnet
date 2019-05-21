@@ -116,8 +116,8 @@ export default class ManageUsers extends Vue {
                 'all_persons',
                 queryOptions
                 );
-            console.log(users);
-            this.user.users = users.rows.map( (user) => user.doc )
+
+            this.user.users = users.rows.map( (user) => user.doc );
 
 
         } catch (err) {

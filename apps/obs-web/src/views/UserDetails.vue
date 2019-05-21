@@ -227,7 +227,7 @@ export default class UserDetails extends Vue {
             this.user.activeUser!.updatedDate = moment().format();
             pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
                 this.$router.push({path: '/manage-users/'})
-            )
+            );
         }
     }
 
