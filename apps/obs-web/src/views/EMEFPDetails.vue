@@ -98,11 +98,13 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { EmefpState, AlertState, PermitState } from '../_store/types/types';
 import { GearType } from '@boatnet/bn-models';
 import { EfpType } from '@boatnet/bn-models';
+import moment from 'moment';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import axios from 'axios';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
 export default class EMEFPDetails extends Vue {
@@ -260,6 +262,9 @@ export default class EMEFPDetails extends Vue {
         try {
           if (this.emefp.activeEmefp) {
             delete this.emefp.activeEmefp.__index;
+
+            this.emefp.activeEmefp.updatedBy = authService.getCurrentUser()!.username;
+            this.emefp.activeEmefp.updatedDate = moment().format();
 
             masterDB.put(this.emefp.activeEmefp._id,
                           this.emefp.activeEmefp,
