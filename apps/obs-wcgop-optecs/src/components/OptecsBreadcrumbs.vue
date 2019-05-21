@@ -37,6 +37,7 @@ export default class OptecsBreadcrumbs extends Vue {
     if (!this.$route.meta.breadcrumb) {
       return;
     }
+    // make a deep copy
     const temp = JSON.stringify(this.$route.meta.breadcrumb);
     this.breadcrumbs = JSON.parse(temp);
 
@@ -44,7 +45,7 @@ export default class OptecsBreadcrumbs extends Vue {
       if (this.$route.meta.breadcrumb[i].name === 'tripIdPlaceholder') {
         const tripNum = this.currentTrip ? this.currentTrip.tripNum : 0;
         this.breadcrumbs[i].name = String(tripNum);
-        this.breadcrumbs[i].link = 'tripdetails/' + String(tripNum);
+        this.breadcrumbs[i].link = '/tripdetails/' + String(tripNum);
       } else {
         this.breadcrumbs[i] = this.$route.meta.breadcrumb[i];
       }

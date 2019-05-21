@@ -42,6 +42,7 @@ export interface Person extends Base {
   // This is sensitive PII
   firstName?: string;
   lastName?: string;
+  userName?: string;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;

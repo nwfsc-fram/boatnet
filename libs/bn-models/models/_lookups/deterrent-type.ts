@@ -4,7 +4,7 @@ import { BoatnetDate } from '../_common';
 export const DeterrenceTypeTypeName = 'deterrence-type';
 
 export interface DeterrentType extends Base {
-  description?: string;
+  description?: string; // seal bomb, firearm, gaff, yelling, acoustic device, other
   lookupVal?: number;
 
   legacy?: {

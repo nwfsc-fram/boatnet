@@ -54,8 +54,6 @@ export interface AshopHaul extends BaseOperation {
   tribalDelivery?: string; // TODO name of tribe LOOKUP
   sampleDesignType?: string; // TODO lookup
 
-  sightingEventIds?: CouchID[];
-
   samples?: AshopSample[];
 
   legacy?: {

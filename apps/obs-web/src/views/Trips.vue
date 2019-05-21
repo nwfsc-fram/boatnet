@@ -89,6 +89,7 @@ import { TripState, VesselState, UserState, WcgopAppState } from '../_store/type
 import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 import {
   WcgopTrip,
@@ -281,13 +282,15 @@ export default class Trips extends Vue {
       }
 
       const newTrip: WcgopTrip = {
+                            createdBy: authService.getCurrentUser()!.username,
+                            createdDate: moment().format(),
                             type: 'wcgop-trip',
                             tripNum: newTripNum,
                             vessel: this.vessel.activeVessel,
                             // permits: [],
                             // messages: [],
                             departureDate: moment().format(),
-                            departurePort: this.user.activeUser.homeport,
+                            departurePort: this.user.activeUser!.port,
                             returnDate: moment().format(),
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,

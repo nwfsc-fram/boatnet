@@ -1,15 +1,39 @@
 <template>
-  <boatnet-hauls
-    v-bind:haulsSettings="wcgopHaulsSettings"
-    v-bind:haulsData="wcgopHaulsData"
-    @displayKeyboard="displayKeyboard"
-  />
+<q-page padding>
+  <boatnet-summary
+        currentScreen="Haul"
+        :current="currentHaul"
+      >
+        <template v-slot:table>
+          <boatnet-table
+            :data="wcgopHaulsData"
+            :settings="wcgopHaulsSettings"
+            @select="handleSelectHaul"
+          >
+            <template v-slot:default="rowVals">
+              <q-td key="haulNum">{{rowVals.row.haulNum}}</q-td>
+              <q-td key="weightMethod">{{ rowVals.row.observerTotalCatch.weightMethod }}</q-td>
+              <q-td key="gearPerf">{{ rowVals.row.gearPerformance }}</q-td>
+              <q-td key="targetStrategy">{{ rowVals.row.targetStrategy }}</q-td>
+              <q-td key="gearType">{{ rowVals.row.gearType }}</q-td>
+              <q-td key="setDate">{{ formatDate(rowVals.row.locations[0].date) }}</q-td>
+              <q-td key="upDate">{{ formatDate(rowVals.row.locations[1].date) }}</q-td>
+              <q-td key="otcWeight">{{ rowVals.row.observerTotalCatch.value }}</q-td>
+              <q-td key="errors">{{ rowVals.row.errors }}</q-td>
+            </template>
+          </boatnet-table>
+        </template>
+        <template v-slot:goToButtons>
+          <q-btn color="primary" icon="play_arrow" label="Go To Logbook"/>
+        </template>
+      </boatnet-summary>
+</q-page>
 </template>
 
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BoatnetHauls, { BoatnetHaulsSettings } from '@boatnet/bn-common';
+import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Point } from 'geojson';
 import {
   WcgopOperation,
@@ -22,12 +46,13 @@ import {
 
 import moment from 'moment';
 
-Vue.component(BoatnetHauls);
+Vue.component(BoatnetSummary);
 
 @Component
 export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
   private wcgopHaulsData: any[];
+  private currentHaul!: any;
 
   constructor() {
     super();
@@ -145,6 +170,15 @@ export default class Hauls extends Vue {
     };
 
     this.wcgopHaulsData = [exampleHaul, exampleHaul2];
+  }
+
+  private handleSelectHaul(haul: any) {
+    console.log(JSON.stringify(haul));
+    this.currentHaul = haul;
+  }
+
+  private formatDate(date: string) {
+    return moment(date).format('HH:mm MM/DD/YY');
   }
 
   private displayKeyboard(e: any) {

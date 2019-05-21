@@ -83,7 +83,8 @@ export default class ObserverAssignment extends Vue {
 
 private unassignedPagination = {rowsPerPage: 10};
 private assignedPagination = {rowsPerPage: 0};
-private trips: any[] = [];
+private emefpTrips: any[] = [];
+private observers: any[] = [];
 
 private columns = [
     {name: 'vessel', label: 'Vessel Name', field: 'vessel',
@@ -109,7 +110,7 @@ private columns = [
 ];
 
 private get assignedTrips() {
-    return this.trips.filter(
+    return this.emefpTrips.filter(
         (trip) => {
           if (trip.observer) {
             return trip;
@@ -119,7 +120,7 @@ private get assignedTrips() {
 }
 
 private get unassignedTrips() {
-    return this.trips.filter(
+    return this.emefpTrips.filter(
         (trip) => {
           if (!trip.observer) {
             return trip;
@@ -201,7 +202,7 @@ private async getEMEFPTrips() {
         console.log(emefpTrips);
         for (const row of emefpTrips.rows) {
             const trip = row.doc;
-            this.trips.push(trip);
+            this.emefpTrips.push(trip);
         }
 
     } catch (err) {
@@ -211,7 +212,7 @@ private async getEMEFPTrips() {
 
 private ObserverAssignmentDetail(row: any) {
     this.oa.activeTrip = row;
-    this.$router.push({path: '/observer-assignment-detail/' + this.trips.indexOf(row)});
+    this.$router.push({path: '/observer-assignment-detail/' + this.emefpTrips.indexOf(row)});
 }
 
 private formatTel(telNum: any) {
@@ -266,6 +267,8 @@ private getStatus(row: any) {
         return 'Not Selected';
     }
 }
+
+
 
 private created() {
     this.getEMEFPTrips();

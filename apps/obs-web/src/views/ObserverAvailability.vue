@@ -49,6 +49,7 @@ import moment from 'moment';
 import { ObserverActivityTypeName } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component({
   pouch: {
@@ -125,7 +126,9 @@ export default class ObserverAssignment extends Vue {
                 });
             }
           }
-          return allActivities;
+
+          return allActivities.sort((a, b) => (a.startDate > b.startDate) ? 1 : -1);
+
       } else {
           return [];
       }
@@ -161,7 +164,7 @@ export default class ObserverAssignment extends Vue {
         {name: 'activityDescription', label: 'Description',
         field: 'activityDescription', required: false, align: 'left', sortable: true},
         {name: 'status', label: 'Status',
-        field: 'status', required: false, align: 'left', sortable: true},
+        field: 'status', required: false, align: 'left', sortable: true}
     ];
 
     private formatDate(date: string) {
@@ -170,7 +173,9 @@ export default class ObserverAssignment extends Vue {
 
     private newActivity() {
         const newActivity = {
-            type: ObserverActivityTypeName
+            type: ObserverActivityTypeName,
+            createdBy: authService.getCurrentUser()!.username,
+            createdDate: moment().format(),
             };
         this.obact.activeActivity = newActivity;
         this.obact.isNewActivity = true;

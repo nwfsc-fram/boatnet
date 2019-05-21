@@ -70,8 +70,8 @@
                   <boatnet-datetime
                     dateLabel="Departure Date"
                     timeLabel="Departure Time"
-                    :value="currentTrip.departureDate"
-                    @save="updateDepartureDate"
+                    :value.sync="currentTrip.departureDate"
+                    @save="saveOnUpdate"
                     @error="handleError"
                     @displayKeyboard="displayKeyboard"
                   />
@@ -81,9 +81,11 @@
                     v-model="currentTrip.departurePort.name"
                     label="Departure Port"
                     use-input
+                    fill-input
                     hide-selected
                     input-debounce="0"
                     :options="options"
+                    option-value="label"
                     debounce="500"
                     @input="saveOnUpdate"
                     @filter="getPorts"
@@ -100,9 +102,10 @@
               </div>
               <div class="col-5">
                 <boatnet-licenses
-                  :certificates="certificate"
+                  :certificates.sync="currentTrip.certificates"
                   @displayKeyboard="displayKeyboard"
                   @error="handleError"
+                  @save="saveOnUpdate"
                 />
               </div>
               <div class="col-1 self-center">
@@ -162,8 +165,8 @@
                   <boatnet-datetime
                     dateLabel="Return Date"
                     timeLabel="Return Time"
-                    :value="currentTrip.returnDate"
-                    @save="updateReturnDate"
+                    :value.sync="currentTrip.returnDate"
+                    @save="saveOnUpdate"
                     @error="handleError"
                     @displayKeyboard="displayKeyboard"
                   />
@@ -173,9 +176,11 @@
                     v-model="currentTrip.returnPort.name"
                     label="Return Port"
                     use-input
+                    fill-input
                     hide-selected
                     input-debounce="0"
                     :options="options"
+                    option-value="label"
                     debounce="500"
                     @input="saveOnUpdate"
                     @filter="getPorts"
@@ -203,19 +208,10 @@
                     data-layout="normal"
                   />
                   <div class="text-h6 col-2">Fish Tickets</div>
-                  <!-- TODO this should be a component -->
-                  <div class="row">
-                    <q-input
-                      outlined
-                      class="col-12"
-                      v-model="ph"
-                      label="Fish Ticket"
-                      debounce="500"
-                      @input="saveOnUpdate"
-                      @focus="displayKeyboard"
-                      data-layout="numeric"
-                    />
-                  </div>
+                  <boatnet-fish-tickets
+                    :fishTickets.sync="currentTrip.fishTickets"
+                    @save="saveOnUpdate"
+                  />
                 </div>
               </div>
             </div>
@@ -250,6 +246,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
   WcgopTripTypeName,
+  WcgopFishTicket,
   Port,
   PortTypeName,
   WcgopOperation,
@@ -258,15 +255,18 @@ import {
   Vessel,
   Person,
   PersonTypeName,
-  VesselTypeName
+  VesselTypeName,
+  Certificate
 } from '@boatnet/bn-models';
 
 import { couchService } from '@boatnet/bn-couch';
 import BoatnetLicenses from '@boatnet/bn-common';
 import BoatnetDatetime from '@boatnet/bn-common';
+import BoatnetFishTickets from '@boatnet/bn-common';
 
 Vue.component(BoatnetLicenses);
 Vue.component(BoatnetDatetime);
+Vue.component(BoatnetFishTickets);
 
 @Component
 export default class Trips extends Vue {
@@ -278,16 +278,21 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('saveTrip', { namespace: 'appState' })
   private saveTrip: any;
-  @Getter('currentTrip', { namespace: 'appState' })
-  private currentTrip!: WcgopTrip;
+  @Getter('currentSelectionId', { namespace: 'appState' })
+  private currentSelectionId!: string;
+
+  private currentTrip: WcgopTrip = {
+    tripNum: this.tripNum,
+    type: 'wcgop-trip',
+    vessel: { vesselName: '' },
+    departurePort: { name: '' },
+    returnPort: { name: '' }
+  };
 
   private tab: string; // Current tab (start or end)
   private ph = ''; // TEMP
 
   private options: string[] = [];
-
-  // TODO modify this to load from DB
-  private certificate: string[] = [''];
 
   constructor() {
     super();
@@ -311,26 +316,34 @@ export default class Trips extends Vue {
     }
   }
 
+  private async created() {
+    if (this.currentSelectionId) {
+      try {
+        this.currentTrip = await pouchService.db.get(
+          pouchService.userDBName,
+          this.currentSelectionId
+        );
+      } catch (err) {
+        this.errorAlert('TripId not found in database');
+      }
+    } else {
+      try {
+        await pouchService.db
+          .post(pouchService.userDBName, this.currentTrip)
+          .then((response: any) => {
+            this.currentTrip._id = response.id;
+            this.currentTrip._rev = response.rev;
+          });
+      } catch (err) {
+        this.errorAlert(
+          'Trip ' + this.currentTrip.tripNum + ' was not added to the database'
+        );
+      }
+    }
+  }
+
   private handleError(errorMsg: string) {
     this.errorAlert(errorMsg);
-  }
-
-  private updateDepartureDate(datetime: string) {
-    if (this.currentTrip.returnDate && moment(datetime).isAfter(moment(this.currentTrip.returnDate))) {
-      this.errorAlert('Departure date must be before return date');
-    } else {
-      this.currentTrip.departureDate = datetime;
-      this.saveOnUpdate();
-    }
-  }
-
-  private updateReturnDate(datetime: string) {
-    if (this.currentTrip.departureDate && moment(datetime).isBefore(moment(this.currentTrip.departureDate))) {
-      this.errorAlert('Return date must be after departure date');
-    } else {
-      this.currentTrip.returnDate = datetime;
-      this.saveOnUpdate();
-    }
   }
 
   private saveOnUpdate() {
@@ -359,7 +372,12 @@ export default class Trips extends Vue {
     this.getLookupVals(val, update, abort, 'optecs_trawl/all_vessel_names');
   }
 
-  private async getLookupVals(val: string, update: any, abort: any, lookupTable: string) {
+  private async getLookupVals(
+    val: string,
+    update: any,
+    abort: any,
+    lookupTable: string
+  ) {
     // if (val.length < 2) {
     //   abort();
     //   return;

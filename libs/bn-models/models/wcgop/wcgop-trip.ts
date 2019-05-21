@@ -9,7 +9,6 @@ import {
 } from '../_common/index';
 
 import { WcgopFishTicket } from './index';
-import { WcgopHlfcConfiguration } from './wcgop-hlfc-configuration';
 import { BrdConfiguration } from '../_common/brd-configuration';
 import { Program } from 'typescript';
 import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType } from '../_lookups/index';
@@ -35,7 +34,6 @@ export interface WcgopTrip extends BaseTrip {
   sightingEvents?: SightingEvent[];
   interactionEvents?: InteractionEvent[]; // TODO
   brd?: BrdConfiguration[];
-  hlfc?: WcgopHlfcConfiguration[];
 
   fishTickets?: WcgopFishTicket[];
   certificates?: Certificate[]; // Permits and Licenses
