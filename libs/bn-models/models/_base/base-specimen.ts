@@ -13,14 +13,13 @@ declare type Viability = string;
 declare type LifeStage = string;
 declare type Population = string;
 declare type MaturityTable = string; // TODO Lookup - description
-declare type Maturity = {
+export interface Maturity {
   maturityTable?: MaturityTable;
   sex?: Sex;
   stage?: string;
   stageCode?: number;
   description?: string; // might include identifying characteristcs
-}; // TODO Species-specific tables for maturies
-
+} // TODO Species-specific tables for maturies
 
 export interface BaseSpecimen extends Base {
   sex?: Sex; // TODO Lookup
@@ -37,12 +36,11 @@ export interface BaseSpecimen extends Base {
 
   numSpecimensInBag?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent;
-  protocol?: Protocol;  // Include sampling strategy (randomly selected, etc.)
-    // Canary - Sl100 AW25 OvTiFc 
+  protocol?: Protocol; // Include sampling strategy (randomly selected, etc.)
+  // Canary - Sl100 AW25 OvTiFc
 
   specialProjects?: any[]; // TODO move to Protocol: arbitrary special project data
   frequency?: number; // = 1 if undefined (WCGOP only)
 
   mediaData: Media[];
-
 }
