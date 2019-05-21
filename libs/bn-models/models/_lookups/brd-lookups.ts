@@ -22,7 +22,7 @@ export type BrdMeshType = string; // TODO lookup
 // ];
 
 // TODO - Jason to provide a list of strategy types
-export type BrdStrategyType = string; // TODO Lookup 
+export type BrdStrategyType = string; // TODO Lookup
 
 export interface BrdLight {
   targets?: Species[] | BrdTarget[];
@@ -37,7 +37,7 @@ export interface BrdLight {
   legacy?: {
     manufacturer?: BrdManufacturer[];
     pattern?: BrdPattern[];
-  }
+  };
 }
 
 export interface BrdEscapement {
@@ -68,7 +68,8 @@ export interface BrdOther {
   comment?: string;
 }
 
-export interface BrdStreamerLine {  // Seabird-only
+export interface BrdStreamerLine {
+  // Seabird-only
   targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   numStreamLines: number;
@@ -80,7 +81,8 @@ export interface BrdStreamerLine {  // Seabird-only
   comment?: string;
 }
 
-export interface BrdBuoyLine {  // Seabird-only
+export interface BrdBuoyLine {
+  // Seabird-only
   targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   numBuoyLines: number;
@@ -90,20 +92,22 @@ export interface BrdBuoyLine {  // Seabird-only
   comment?: string;
 }
 
-
-export interface BrdSnatchBlock {  // Seabird-only
+export interface BrdSnatchBlock {
+  // Seabird-only
   targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   comment?: string;
 }
 
-export interface BrdWaterSprayer {  // Seabird-only
+export interface BrdWaterSprayer {
+  // Seabird-only
   targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   comment?: string;
 }
 
-export interface BrdWarpBoom {  // Seabird-only
+export interface BrdWarpBoom {
+  // Seabird-only
   targets?: Species[] | BrdTarget[];
   locations?: BrdLocation[];
   comment?: string;
