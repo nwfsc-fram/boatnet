@@ -33,6 +33,12 @@
           floating
         >SELECT {{layout.labels.shortCode}}</q-badge>
         <q-badge
+          v-if="tallyMode === modifyDistSelectButton"
+          color="blue"
+          text-color="white"
+          floating
+        >SELECT</q-badge>
+        <q-badge
           v-if="tallyMode === nameTempSpeciesButton && layout.labels.shortCode.startsWith('(TEMP')"
           color="red"
           text-color="white"
@@ -44,6 +50,12 @@
           text-color="white"
           floating
         >MOVING</q-badge>
+        <q-badge
+          v-if="tallyMode === modifyDistSelectDisp && layout.index === currentButtonIdx"
+          color="red"
+          text-color="white"
+          floating
+        >NEW DISP</q-badge>
         {{layout.labels.shortCode}}
         <br>
         {{layout.labels.reason}}
@@ -121,6 +133,8 @@ export default class TallyBtn extends Vue {
   private addExistingLocation =
     TallyOperationMode.AddExistingSpeciesSelectLocation;
   private nameTempSpeciesButton = TallyOperationMode.NameTempSpeciesSelect;
+  private modifyDistSelectButton = TallyOperationMode.ModifyDispButtonSelect;
+  private modifyDistSelectDisp = TallyOperationMode.ModifyDispSelectDisp;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -144,7 +158,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddExistingSpeciesSelectLocation ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
-      this.tallyMode === TallyOperationMode.NameTempSpeciesSelect
+      this.tallyMode === TallyOperationMode.NameTempSpeciesSelect ||
+      this.tallyMode === TallyOperationMode.ModifyDispButtonSelect
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
