@@ -24,15 +24,13 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
+import { WcgopTrip } from '@boatnet/bn-models';
 
 @Component
 export default class OptecsBreadcrumbs extends Vue {
   private breadcrumbs: any[] = [];
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
-  @Getter('currentHaul', { namespace: 'appState' })
-  private currentHaul!: WcgopOperation;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
@@ -48,10 +46,6 @@ export default class OptecsBreadcrumbs extends Vue {
         const tripNum = this.currentTrip ? this.currentTrip.tripNum : 0;
         this.breadcrumbs[i].name = String(tripNum);
         this.breadcrumbs[i].link = '/tripdetails/' + String(tripNum);
-      } else if (this.$route.meta.breadcrumb[i].name === 'haulIdPlaceholder') {
-        const haulNum = this.currentHaul ? this.currentHaul.operationNum : 0;
-        this.breadcrumbs[i].name = String(haulNum);
-        this.breadcrumbs[i].link = '/hauldetails/' + String(haulNum);
       } else {
         this.breadcrumbs[i] = this.$route.meta.breadcrumb[i];
       }

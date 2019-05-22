@@ -1,8 +1,6 @@
 <template>
   <span>
     <q-table
-      :dense="isCondensed"
-      :hide-bottom="showBottom"
       :data="data"
       :columns="settings.columns"
       :row-key="settings.rowKey"
@@ -27,8 +25,6 @@ import { BaseTrip } from '@boatnet/bn-models';
 export default class BoatnetTable extends Vue {
   @Prop() public data!: any[];
   @Prop() public settings!: any;
-  @Prop({ default: false }) public showBottom!: boolean;
-  @Prop({ default: false }) public isCondensed!: boolean;
   public selected: any[] = [];
 
   private select(row: any) {

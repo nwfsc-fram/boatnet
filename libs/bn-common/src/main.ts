@@ -6,10 +6,8 @@ import BoatnetFishTickets from './components/BoatnetFishTickets.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
-import BoatnetLocations from './components/BoatnetLocations.vue';
 import BoatnetSummary from './components/BoatnetSummary.vue';
 import BoatnetTable from './components/BoatnetTable.vue';
-import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
 
 const Components: any = {
   BoatnetDate,
@@ -19,10 +17,8 @@ const Components: any = {
   BoatnetInputDialog,
   BoatnetKeyboard,
   BoatnetLicenses,
-  BoatnetLocations,
   BoatnetSummary,
   BoatnetTable,
-  BoatnetTabPanel
 };
 
 Object.keys(Components).forEach((name) => {
