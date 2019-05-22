@@ -31,7 +31,7 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn flat label="Reset Data" color="primary" @click="reset" v-close-popup/>
+          <q-btn flat label="Reset Data" color="primary" @click="handleResetAllData" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -329,7 +329,12 @@ export default class Tally extends Vue {
     this.handleControlEvent('tally-mode');
   }
 
-  public handleCancel() {
+  public handleResetAllData() {
+    this.reset();
+    this.handleCancel();
+  }
+
+public handleCancel() {
     // Generic Cancel - return to tally mode
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
