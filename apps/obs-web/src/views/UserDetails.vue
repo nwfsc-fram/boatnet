@@ -6,7 +6,7 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
                 </div>
 
                 <q-select class="q-pa-sm" outlined v-model="user.activeUser.applicationRoles" label="Roles" multiple :options="roles">
@@ -82,11 +82,10 @@
                 <q-select class="col-md q-pa-sm" outlined label="Emergency Contacts" v-model="user.activeUser.emergencyContacts"></q-select>
 
             </q-card-section>
-            <q-card-section align="right" v-if="this.$route.name === 'User Details'">
-                <q-btn color="primary" @click="navigateBack" label="Done"/>
-                <q-btn color="red" label="Cancel"></q-btn>
+            <q-card-actions align="right">
+                <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
                 <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
-            </q-card-section>
+            </q-card-actions>
         </q-card>
     </div>
 </template>
@@ -220,18 +219,72 @@ export default class UserDetails extends Vue {
 
     private saveUser() {
         if (this.user.newUser) {
-            pouchService.db.post(pouchService.userDBName, this.user.activeUser);
-            this.$router.push({path: '/manage-users/'});
+            console.log('new user')
+            if (this.$route.name === 'User Details') {
+                pouchService.db.post(pouchService.lookupsDBName, this.user.activeUser).then(
+                    this.navigateBack()
+                );
+            } else {
+                pouchService.db.post(pouchService.lookupsDBName, this.user.activeUser).then(
+                    this.errorAlert('fish')
+                );
+            }
         } else {
+            console.log("existing user")
             this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
             this.user.activeUser!.updatedDate = moment().format();
-            pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
-                this.$router.push({path: '/manage-users/'})
-            );
+            if (this.$route.name === 'User Details') {
+                pouchService.db.put(pouchService.lookupsDBName, this.user.activeUser).then(
+                this.navigateBack()
+                );
+            } else {
+                pouchService.db.put(pouchService.lookupsDBName, this.user.activeUser).then(
+                    this.errorAlert('fish')
+                );
+            }
         }
     }
 
-    private created() {
+    private async getUser() {
+            try {
+                // get user doc from pouch if exits, create new user if it doesn't?
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 1,
+                start_key: '',
+                inclusive_end: true,
+                descending: false,
+                include_docs: true,
+                key: authService.getCurrentUser()!.username
+                };
+
+                const user = await db.query(
+                    pouchService.lookupsDBName,
+                    'obs_web/all-persons',
+                    queryOptions
+                )
+                if (user.rows[0]) {
+                    this.user.newUser = false;
+                    this.user.activeUser = user.rows[0].doc;
+                } else {
+                    this.user.newUser = true;
+                    this.user.activeUser = {
+                        userName: authService.getCurrentUser()!.username,
+                        createdBy: authService.getCurrentUser()!.username,
+                        createdDate: moment().format()
+                    }
+                }
+
+            } catch (err) {
+                this.errorAlert(err);
+            }
+    }
+
+    private mounted() {
+        if (!this.user.activeUser) {
+            this.getUser();
+        } else {
+        }
         this.getVessels();
     }
     // private filterStates(val: string , update: any) {
