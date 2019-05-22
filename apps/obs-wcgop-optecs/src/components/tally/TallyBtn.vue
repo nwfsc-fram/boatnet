@@ -27,7 +27,7 @@
           floating
         >SWAP</q-badge>
         <q-badge
-          v-if="tallyMode === addExistingSpecies"
+          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect"
           color="blue"
           text-color="white"
           floating
@@ -135,6 +135,7 @@ export default class TallyBtn extends Vue {
   private nameTempSpeciesButton = TallyOperationMode.NameTempSpeciesSelect;
   private modifyDistSelectButton = TallyOperationMode.ModifyDispButtonSelect;
   private modifyDistSelectDisp = TallyOperationMode.ModifyDispSelectDisp;
+  private allTalliesSelect = TallyOperationMode.AllTalliesSelectSpecies;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -159,7 +160,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
       this.tallyMode === TallyOperationMode.NameTempSpeciesSelect ||
-      this.tallyMode === TallyOperationMode.ModifyDispButtonSelect
+      this.tallyMode === TallyOperationMode.ModifyDispButtonSelect ||
+      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;

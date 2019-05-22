@@ -231,6 +231,13 @@ export default class Tally extends Vue {
         this.setTallyOpMode(TallyOperationMode.ModifyDispSelectDisp);
         this.handleControlEvent('tally-addnew-controls');
         return;
+      case TallyOperationMode.AllTalliesSelectSpecies:
+        this.currentSelectedButton = data.button;
+        this.currentSelectedSpecies = {
+          shortCode: data.button.labels.shortCode
+        }; // TODO full species?
+        this.handleControlEvent('all-tallies');
+        return;
     }
 
     data = {
@@ -358,7 +365,10 @@ public handleCancel() {
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
-        this.setTallyOpMode(TallyOperationMode.AllTalliesSelect);
+        this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        break;
+      case 'all-tallies':
+        this.setTallyOpMode(TallyOperationMode.AllTallies);
         this.currentControlComponent = 'tally-alltallies-controls';
         break;
       case 'tally-addnew-controls':
