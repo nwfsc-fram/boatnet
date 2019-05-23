@@ -5,31 +5,27 @@
       @controlclick="handleControlClick"
       :color="tallyMode.color"
       :textcolor="tallyMode['textcolor']"
+      size="md"
     >
       Tally
       <br>Mode
       <br>
       {{tallyMode.incdecText}}
     </tally-control-btn>
-    <template v-for="reason in reasonButtonColors">
-      <tally-control-btn
-        :control-name="reason.name"
-        :color="reason.color.bg"
-        :text-color="reason.color.text"
-        :key="`${reason.name}`"
-        @controlclick="handleControlClick"
-      >
-        {{speciesCode}}
-        <br>
-        {{reason.name}}
-        <br>
-        {{counts[reason.name]}}
-      </tally-control-btn>
+    <template v-for="reasonInfo in reasonButtonColors">
+      <tally-btn
+        :layout="getLayout(reasonInfo)"
+        :data="getData(reasonInfo)"
+        @dataChanged="handleDataChanged"
+        :key="reasonInfo.name"
+        size="md"
+      />
     </template>
     <tally-control-btn
       color="red-5"
       textcolor="white"
       control-name="all-tallies-done"
+      size="md"
       @controlclick="handleControlClick"
     >
       Done
@@ -42,30 +38,33 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Getter } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 
 import TallyControlBtn from './TallyControlBtn.vue';
+import TallyBtn from './TallyBtn.vue';
+import {
+  TallyCountData,
+  TallyButtonLayoutData,
+  TallyState
+} from '../../_store/types';
 Vue.component('tally-control-btn', TallyControlBtn);
+Vue.component('tally-btn', TallyBtn);
 
 @Component
 export default class TallyAllTalliesControls extends Vue {
   @Prop({ default: undefined }) public speciesCode!: string; // TODO probably pass actual record
+  @State('tallyState') private tallyState!: TallyState;
+  @Action('updateAllDB', { namespace: 'tallyState' })
+  private updateAllDB: any;
+  @Action('updateButtonData', { namespace: 'tallyState' })
+  private updateButtonData: any;
+  @Action('clearLastIncDec', { namespace: 'tallyState' })
+  private clearLastIncDec: any;
   @Getter('reasonButtonColors', { namespace: 'tallyState' })
   private reasonButtonColors!: any[];
+  @Getter('incDecValue', { namespace: 'tallyState' })
+  private incDecValue!: number;
 
-  private counts: any = {
-    // Map/ Set is not reactive, so came up with this workaround
-    SFTY: 0,
-    DOCK: 0,
-    ACCI: 0,
-    USED: 0,
-    OTHR: 0,
-    REG: 0,
-    DROP: 0,
-    PRED: 0,
-    MKT: 0,
-    RET: 0
-  };
 
   private tallyModeInc: any = {
     value: 1,
@@ -83,10 +82,9 @@ export default class TallyAllTalliesControls extends Vue {
 
   private tallyMode = this.tallyModeInc;
 
-  public incCount(reason: string) {
-    this.counts[reason]++;
+  public mounted() {
+    this.tallyMode = this.incDecValue > 0 ? this.tallyModeInc : this.tallyModeDec;
   }
-
   public setTallyMode(incMode: boolean) {
     if (incMode) {
       this.tallyMode = this.tallyModeInc;
@@ -97,6 +95,10 @@ export default class TallyAllTalliesControls extends Vue {
     }
   }
 
+  public handleDataChanged(data: any) {
+    // Don't care, but this means we were clicked, so clear the up/down arrow
+    this.clearLastIncDec();
+  }
   public handleControlClick(controlName: string): void {
     switch (controlName) {
       case 'tally-mode':
@@ -105,10 +107,54 @@ export default class TallyAllTalliesControls extends Vue {
         this.setTallyMode(!isInc);
         break;
       case 'all-tallies-done':
-        this.$emit('controlevent', controlName);
+        this.updateAllDB();
+      // Fall through to default
       default:
-        this.incCount(controlName);
+        console.log('HAHHAA', controlName);
+        this.$emit('controlevent', controlName);
     }
+  }
+
+  public getData(reasonInfo: any): TallyCountData {
+    const targetData = this.tallyState.tallyDataRec!.data!.filter(
+      (rec: TallyCountData) => {
+        return (
+          rec.shortCode === this.speciesCode && rec.reason === reasonInfo.name
+        );
+      }
+    );
+    if (targetData[0]) {
+      return targetData[0];
+    } else {
+      this.updateButtonData({
+        skipLayoutUpdate: true,
+        skipDataUpdate: true, // skip data update to avoid slamming the DB with zero count entries
+        data: {
+          // TODO full species data?
+          shortCode: this.speciesCode,
+          reason: reasonInfo.name,
+          count: 0
+        }
+      });
+      // The update will trigger a data update. For now, return valid data
+      return {
+        shortCode: this.speciesCode,
+        reason: reasonInfo.name,
+        count: 0
+      };
+    }
+  }
+
+  public getLayout(reasonInfo: any): TallyButtonLayoutData {
+    return {
+      index: 99, // prevent index tracking from up-arrowing
+      color: reasonInfo.color.bg,
+      'text-color': reasonInfo.color.text,
+      labels: {
+        shortCode: this.speciesCode,
+        reason: reasonInfo.name
+      }
+    };
   }
 }
 </script>

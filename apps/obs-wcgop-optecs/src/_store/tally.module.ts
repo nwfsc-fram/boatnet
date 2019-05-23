@@ -168,8 +168,8 @@ async function updateTallyDataDB(
 async function updateDB(record: Base) {
   try {
     if (record._id) {
+      // console.log('[Tally Module] Updating record.', record.type);
       const result = await pouchService.db.put(pouchService.userDBName, record);
-      // console.log('[Tally Module] Updated record.', record.type, result);
       return result;
     } else {
       const result = await pouchService.db.post(
@@ -180,6 +180,7 @@ async function updateDB(record: Base) {
       return result;
     }
   } catch (err) {
+    // console.log('[Tally Module] First error caught.', err.status);
     if (err.status === 409) {
       try {
         const newerDoc = await pouchService.db.get(
@@ -198,6 +199,7 @@ async function updateDB(record: Base) {
         );
         return result;
       } catch (errRetry) {
+        // console.log('[Tally Module] Second error caught.', errRetry.status);
         if (errRetry.status === 404) {
           delete record._id;
           delete record._rev;
@@ -213,12 +215,14 @@ async function updateDB(record: Base) {
           return result;
         } else {
           // TODO Alert Module
+          console.error('[Tally Module] Unknown error', errRetry);
           throw errRetry;
         }
       }
     } else {
       // TODO Alert Module
       // console.log('ERROR!', err);
+      console.error('[Tally Module] Unknown error', err);
       throw err;
     }
   }
@@ -234,10 +238,13 @@ const actions: ActionTree<TallyState, RootState> = {
     commit('initialize');
     commit('clearLastIncDec');
   },
+  updateAllDB({ commit }: any) {
+    commit('updateAllDB');
+  },
   updateButtonData(
     { commit }: any,
     params: {
-      button: TallyButtonLayoutData;
+      button?: TallyButtonLayoutData;
       skipLayoutUpdate: boolean;
       data: TallyCountData;
       skipDataUpdate: boolean;
@@ -263,9 +270,7 @@ const actions: ActionTree<TallyState, RootState> = {
   delTempSpeciesCounter({ commit }: any, counter: number) {
     commit('delTempSpeciesCounter', counter);
   },
-  setLastIncDecIndex(
-    { commit }: any, index: number
-  ) {
+  setLastIncDecIndex({ commit }: any, index: number) {
     commit('setLastIncDecIndex', index);
   },
   clearLastIncDec({ commit }: any) {
@@ -360,10 +365,14 @@ const mutations: MutationTree<TallyState> = {
     updateLayoutDB(newState.tallyLayout);
     updateTallyDataDB(newState.tallyDataRec);
   },
+  async updateAllDB(newState: any) {
+    updateLayoutDB(newState.tallyLayout);
+    updateTallyDataDB(newState.tallyDataRec);
+  },
   async updateButtonData(
     newState: any,
     params: {
-      button: TallyButtonLayoutData;
+      button?: TallyButtonLayoutData;
       skipLayoutUpdate?: boolean;
       data: TallyCountData;
       skipDataUpdate?: boolean;
@@ -383,44 +392,41 @@ const mutations: MutationTree<TallyState> = {
         // console.log('[Tally Module] Updated', params.data, targetRecIdx);
       } else {
         newState.tallyDataRec.data.push(params.data);
-        console.warn(
-          '[Tally Module] WARN: Unexpectedly inserted new tally data',
-          params.data
-        );
+        console.log('[Tally Module] Created new tally data');
       }
     }
 
-    if (params.button.index === undefined) {
-      console.log(
-        '[Tally Module] Button has no index, cannot update.',
+    if (params.button && params.button.index !== undefined) {
+      newState.tallyLayout.layoutData.splice(
+        params.button.index,
+        1,
         params.button
       );
-      return;
+    } else {
+      console.log(
+        '[Tally Module] Button has no index, skipped layoutData update.',
+        params.button
+      );
     }
-    newState.tallyLayout.layoutData.splice(
-      params.button.index,
-      1,
-      params.button
-    );
 
     if (!params.skipLayoutUpdate) {
       try {
         updateLayoutDB(newState.tallyLayout);
       } catch (err) {
-        console.log('TODO Fix Layout', err);
+        console.error('[Tally Module] Layout update error', err);
       }
-    } else {
-      // console.log('[Tally Module] Skipped Layout DB Update');
     }
 
     if (!params.skipDataUpdate) {
       try {
+        // console.log(
+        //   '[Tally Module] Updating tally data.',
+        //   newState.tallyDataRec
+        // );
         updateTallyDataDB(newState.tallyDataRec);
       } catch (err) {
-        console.log('TODO Fix Data', err);
+        console.error('[Tally Module] Data update error', err);
       }
-    } else {
-      console.warn('[Tally Module] Warning: Skipped Tally Data DB Update');
     }
   },
   setTallyIncDec(newState: any, value: number) {
@@ -526,9 +532,9 @@ const mutations: MutationTree<TallyState> = {
       const duplicateLayouts = newState.tallyLayout.layoutData.filter(
         (rec: TallyButtonLayoutData) => {
           return (
-             rec.labels &&
-             rec.labels.shortCode === button.labels!.shortCode &&
-             rec.labels.reason === button.labels!.reason
+            rec.labels &&
+            rec.labels.shortCode === button.labels!.shortCode &&
+            rec.labels.reason === button.labels!.reason
           );
         }
       );
