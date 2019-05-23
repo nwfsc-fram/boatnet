@@ -1,12 +1,12 @@
 <template>
     <div>
-        <q-card>
+        <q-card v-if="user.activeUser">
 
             <q-card-section>
                 <div class="row">
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
                 </div>
 
                 <q-select class="q-pa-sm" outlined v-model="user.activeUser.applicationRoles" label="Roles" multiple :options="roles">
@@ -82,11 +82,10 @@
                 <q-select class="col-md q-pa-sm" outlined label="Emergency Contacts" v-model="user.activeUser.emergencyContacts"></q-select>
 
             </q-card-section>
-            <q-card-section align="right" v-if="this.$route.name === 'User Details'">
-                <q-btn color="primary" @click="navigateBack" label="Done"/>
-                <q-btn color="red" label="Cancel"></q-btn>
+            <q-card-actions align="right">
+                <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
                 <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
-            </q-card-section>
+            </q-card-actions>
         </q-card>
     </div>
 </template>
@@ -220,29 +219,114 @@ export default class UserDetails extends Vue {
 
     private saveUser() {
         if (this.user.newUser) {
-            pouchService.db.post(pouchService.userDBName, this.user.activeUser);
-            this.$router.push({path: '/manage-users/'});
+            console.log('new user');
+            if (this.$route.name === 'User Details') {
+                couchService.masterDB.post(this.user.activeUser).then(
+                    this.navigateBack()
+                );
+            } else {
+                pouchService.db.post(pouchService.userDBName, this.user.activeUser).then(
+                    this.getUser()
+                );
+            }
         } else {
+            console.log('existing user');
             this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
             this.user.activeUser!.updatedDate = moment().format();
-            pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
-                this.$router.push({path: '/manage-users/'})
-            );
+            if (this.$route.name === 'User Details') {
+                couchService.masterDB.put(
+                    this.user.activeUser!._id,
+                    this.user.activeUser!,
+                    this.user.activeUser!._rev
+                ).then(
+                this.navigateBack()
+                );
+            } else {
+                pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
+                    this.getUser()
+                );
+            }
         }
     }
 
-    private created() {
+    private async getUserFromUserDB() {
+        // get user doc from userDB if exits
+        console.log('getting user from userDB');
+
+        try {
+            const allDocs = await pouchService.db.allDocs(
+                pouchService.userDBName
+                );
+
+            for (const row of allDocs.rows) {
+                if (row.doc.type === 'person' && row.doc.userName) {
+                    if (row.doc.userName === authService.getCurrentUser()!.username) {
+
+                        this.user.newUser = false;
+                        this.user.activeUser = row.doc;
+                    }
+                }
+            }
+        } catch (err) {
+            this.errorAlert(err);
+        }
+    }
+
+    private async getUserFromMasterDB() {
+        // get user doc from master if exists / then put in userDB.
+        if (this.user.activeUser === undefined) {
+            console.log('Getting user from masterDB');
+            try {
+                const masterDB: Client<any> = couchService.masterDB;
+                const user = await masterDB.viewWithDocs<any>(
+                    'sethtest',
+                    'all_usernames',
+                    {key: authService.getCurrentUser()!.username}
+                );
+
+                if (user.rows) {
+                    couchService.masterDB.remove(couchService.masterDB, user.rows[0].doc);
+                    pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
+                }
+            } catch (err) {
+                this.errorAlert(err);
+            }
+        }
+    }
+
+
+    private getUser() {
+        this.user.activeUser = undefined;
+
+        this.getUserFromUserDB().then(
+           () => {
+                this.getUserFromMasterDB();
+                console.log('after get user from pouch');
+                console.log(this.user.activeUser);
+            }
+           ).then(
+               () => {
+                    if (this.user.activeUser === undefined) {
+                        this.user.newUser = true;
+                        this.user.activeUser = {
+                            type: 'person',
+                            firstName: undefined,
+                            lastName: undefined,
+                            userName: authService.getCurrentUser()!.username,
+                            createdBy: authService.getCurrentUser()!.username,
+                            createdDate: moment().format()
+                            };
+                        }
+                    }
+                );
+    }
+
+    private mounted() {
+        if (this.$route.name === 'User Config') {
+            this.getUser();
+        }
         this.getVessels();
     }
-    // private filterStates(val: string , update: any) {
-    //     if (val === '') {
-    //         return this.general.usStates;
-    //     } else {
-    //         return this.general.usStates.filter(
-    //             (v: any) => v.toLowerCase().indexOf( val.toLowerCase() )
-    //         );
-    //     }
-    // }
 
     private navigateBack() {
         this.$router.back();

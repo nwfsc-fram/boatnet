@@ -17,7 +17,7 @@ import { mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import { State, Action } from 'vuex-class';
-import { AlertState, VesselState, PermitState } from '../_store/types/types';
+import { AlertState, VesselState, PermitState, UserState } from '../_store/types/types';
 import { AuthState } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -30,6 +30,7 @@ import axios from 'axios';
 export default class Home extends Vue {
   @State('alert') private alert!: AlertState;
   @State('auth') private auth!: AuthState;
+  @State('user') private user!: UserState;
 
   @State('permit') private permit!: PermitState;
   @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
