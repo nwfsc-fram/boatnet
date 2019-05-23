@@ -1,10 +1,10 @@
 {
   "_id": "_design/replication_filters",
-  "_rev": "2-be4bc679bc74f822a5a43121ef9dd79c",
+  "_rev": "2-3ba7d17ab3a5d5bd94ad06f6f2047060",
   "filters": {
     "deletedFilter": "function(doc, req) { if(doc._deleted) { return false; }  else { return true; }}",
     "exclude_design_docs": "function(doc, req) { if(doc._id.startsWith('_design/')) { return false; }  else { return true; }}",
-    "lookups": "function(doc, req) { const LOOKUP_TYPES = [\"program\", \"species\", \"port\", \"vessel\", \"beaufort\"]; return LOOKUP_TYPES.indexOf(doc.type) != -1;}"
+    "lookups": "function(doc, req) { const LOOKUP_TYPES = [\"program\", \"species\", \"port\", \"vessel\", \"beaufort\", \"gear-performance\", \"gear-type\"]; return LOOKUP_TYPES.indexOf(doc.type) != -1;}"
   },
   "language": "javascript"
 }
