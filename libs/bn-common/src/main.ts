@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import BoatnetButtonToggle from './components/BoatnetButtonToggle.vue';
 import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
 import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
@@ -12,6 +13,7 @@ import BoatnetTable from './components/BoatnetTable.vue';
 import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
 
 const Components: any = {
+  BoatnetButtonToggle,
   BoatnetDate,
   BoatnetDatetime,
   BoatnetDeleteDialog,

@@ -3,7 +3,7 @@
     <boatnet-table
       :data="locations"
       :settings="settings"
-      :showBottom="true"
+      :showBottom="false"
       :isCondensed="true"
       @select="selectTrip"
     >
