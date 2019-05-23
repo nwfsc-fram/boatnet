@@ -2,22 +2,27 @@
   <span>
     <span v-if="layout && layout.labels && !layout.blank">
       <q-btn
-        class="q-px-lg q-py-md"
+        class="q-px-md q-py-md"
         :color="layout.color"
         :text-color="layout['text-color']"
         :disabled="disabled"
+        :size="size"
         @click="handleClick"
       >
         <q-badge
           v-if="tallyState.lastClickedIndex === layout.index && tallyState.lastClickedWasInc"
           color="black"
           floating
-        ><q-icon name="arrow_upward" color="white" /></q-badge>
+        >
+          <q-icon name="arrow_upward" color="white"/>
+        </q-badge>
         <q-badge
           v-if="tallyState.lastClickedIndex === layout.index && !tallyState.lastClickedWasInc"
           color="orange"
           floating
-        ><q-icon name="arrow_downward" color="black" /></q-badge>
+        >
+          <q-icon name="arrow_downward" color="black"/>
+        </q-badge>
         <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
         <q-badge v-if="tallyMode === moveSelect" color="blue-3" text-color="black" floating>MOVE</q-badge>
         <q-badge
@@ -27,7 +32,7 @@
           floating
         >SWAP</q-badge>
         <q-badge
-          v-if="tallyMode === addExistingSpecies"
+          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect"
           color="blue"
           text-color="white"
           floating
@@ -135,6 +140,7 @@ export default class TallyBtn extends Vue {
   private nameTempSpeciesButton = TallyOperationMode.NameTempSpeciesSelect;
   private modifyDistSelectButton = TallyOperationMode.ModifyDispButtonSelect;
   private modifyDistSelectDisp = TallyOperationMode.ModifyDispSelectDisp;
+  private allTalliesSelect = TallyOperationMode.AllTalliesSelectSpecies;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -159,15 +165,20 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddTempSpeciesReason ||
       this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
       this.tallyMode === TallyOperationMode.NameTempSpeciesSelect ||
-      this.tallyMode === TallyOperationMode.ModifyDispButtonSelect
+      this.tallyMode === TallyOperationMode.ModifyDispButtonSelect ||
+      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
-    } else if (this.tallyMode !== TallyOperationMode.Tally) {
+    } else if (
+      this.tallyMode !== TallyOperationMode.Tally &&
+      this.tallyMode !== TallyOperationMode.AllTallies
+    ) {
       console.log('Not in Tally mode, no data change.');
       this.playSound('bad');
       return;
     }
+    // Else, we will inc/dec this tally
     if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
       if (this.incDecValue > 0) {
