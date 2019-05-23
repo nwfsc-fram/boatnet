@@ -1,10 +1,10 @@
 {
-    "_id": "_design/replication_filters",
-    "_rev": "3-9bf9b67428ee4e46df95e666ab752c35",
-    "filters": {
-      "deletedFilter": "function(doc, req) { if(doc._deleted) { return false; }  else { return true; }}",
-      "exclude_design_docs": "function(doc, req) { if(doc._id.startsWith('_design/')) { return false; }  else { return true; }}",
-      "lookups": "function(doc, req) { const LOOKUP_TYPES = [\"program\", \"species\", \"port\", \"vessel\"]; return LOOKUP_TYPES.indexOf(doc.type) != -1;}"
-    },
-    "language": "javascript"
-  }
+  "_id": "_design/replication_filters",
+  "_rev": "2-be4bc679bc74f822a5a43121ef9dd79c",
+  "filters": {
+    "deletedFilter": "function(doc, req) { if(doc._deleted) { return false; }  else { return true; }}",
+    "exclude_design_docs": "function(doc, req) { if(doc._id.startsWith('_design/')) { return false; }  else { return true; }}",
+    "lookups": "function(doc, req) { const LOOKUP_TYPES = [\"program\", \"species\", \"port\", \"vessel\", \"beaufort\"]; return LOOKUP_TYPES.indexOf(doc.type) != -1;}"
+  },
+  "language": "javascript"
+}
