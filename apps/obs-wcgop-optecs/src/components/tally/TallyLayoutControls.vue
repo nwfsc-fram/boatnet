@@ -17,7 +17,7 @@
       <br>Temp
       <br>Species
     </tally-control-btn>
-    <tally-control-btn color="grey-4">
+    <tally-control-btn control-name="modify-disp" @controlclick="handleControlClick" color="grey-4">
       Modify
       <br>Disp.
     </tally-control-btn>

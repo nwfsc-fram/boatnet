@@ -20,10 +20,10 @@ import { QBtn } from 'quasar';
 import { TallyButtonLayoutData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
-const funnyFile = require('../../assets/audio/funnyclick.wav');
+const funnyFile = require('../../assets/audio/funnyclick.mp3');
 const funnyAudio = new Audio(funnyFile);
 
-const lowClickFile = require('../../assets/audio/click3.wav');
+const lowClickFile = require('../../assets/audio/click3.mp3');
 const lowClickAudio = new Audio(lowClickFile);
 
 @Component

@@ -36,3 +36,6 @@ export * from './weight-method';
 export * from './em-efp';
 export * from './debris';
 export * from './catch-grouping';
+export * from './catch-content';
+export * from './taxonomy';
+export * from './protocol';

@@ -1,6 +1,7 @@
 import { BiostructureType } from '../_lookups/biostructure-type';
 import { Base } from '../_base';
 import { BoatnetDate } from './boatnet-date';
+import { Protocol } from '../_lookups';
 
 // TODO Lookups:
 // cutting?: Biostructure; // for Corals / Sponges/ etc
@@ -15,9 +16,12 @@ import { BoatnetDate } from './boatnet-date';
 // wholeSpecimen?: Biostructure;
 export const BiostructureTypeName = 'biostructure';
 
+declare type SamplingStrategy = string; // TODO Lookups
+
 export interface Biostructure extends Base {
   structureType?: BiostructureType;
   label?: string; // Barcode Value
+  // protocol?: Protocol; // sampling strategy / lab results possibilities
 
   legacy?: {
     dissectionId?: number;

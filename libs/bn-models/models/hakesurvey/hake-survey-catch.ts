@@ -3,43 +3,44 @@
 
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement, BoatnetDate, CouchID } from '../_common/index';
-import { WcgopCatchSpecies } from './hake-survey-catch-species';
+import { HakeSurveyCatchSpecies, HakeSurveyCatchSpecies } from './hake-survey-catch-species';
+import { CatchContent } from '../_lookups';
+import { HakeSurveyBasket } from './hake-survey-basket';
 
-export const WcgopCatchTypeName = 'wcgop-catch';
+declare type WeightMethod = string; // TODO Lookups - visual estimate, volume, load cell
+declare type CatchType = string; /// TODO Lookups - codend, pocket net, mix, submix
 
-export interface WcgopCatch extends BaseCatch {
+export const HakeSurveyCatchTypeName = 'hake-survey-catch';
+
+export interface HakeSurveyCatch extends BaseCatch {
   catchNum?: number; // Unique per Operation sequential
-  disposition?: string;
-  weightMethod?: string;
-  species?: WcgopCatchSpecies[];
-  weight?: Measurement;
-  count?: number;
-  sampleWeight?: Measurement;
-  sampleCount?: number;
-  gearSegmentsSampled?: number;
+  catchType?: CatchType; // codend, pocket net, mix, submix
+  contents?: (HakeSurveyCatch | HakeSurveyCatchSpecies)[];
+  // isSubsampled?: boolean; // rare, but could occur
+  weightMethod?: WeightMethod; // ETL from Haul SubsampleCode
+  estimatedWeight?: Measurement; // via the weightMethod
+
+  // TODO - Think about this and confirm that we're satisfied
+  //  with having a separate baskets array for the mixes/submixes
+  baskets?: HakeSurveyBasket[]; // used only for mix or submix
 
   legacy?: {
-    catchId?: number;
-    catchCategoryId?: number;
-    catchCategoryName?: string;
-    catchCategoryCode?: string;
-    catchPurity?: string;
-
-    volume?: Measurement;
-    density?: Measurement;
-
-    basketsWeighedItq?: number;
-    totalBasketsItq?: number;
-    partialBasketWeightItq?: number;
-    unitsSampledItq?: number;
-    totalUnitsItq?: number;
-    // All other _ITQ fields NULL, can ignore (confirm with Neil)
-
-    basketWeightKp?: number;
-    addlBasketWeightKp?: number;
-    basketWeightCountKp?: number;
-
-    obsprodLoadDate?: BoatnetDate;
-    hooksSampled?: number; // pulled up to Operation
   };
 }
+
+/*
+Codend              HSC
+  Canary Rockfish     HSCS
+    Basket 1            HSB
+    Basket 2            HSB
+  Dover sole          HSCS
+  Mix #1              HSC
+    Basket #1           HSB
+    Pacific hake        HSCS
+      Basket #1           HSB
+    Aurora rockfish     HSCS
+    Submix #1           HSC
+      Basket #1           HSB
+      Petrale sole        HSCS
+        Basket #1           HSB
+*/
