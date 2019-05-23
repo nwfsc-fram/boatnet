@@ -3,9 +3,9 @@
     class="q-px-lg q-py-xs"
     :color="color"
     :text-color="textcolor"
-    :size="size"
     :disabled="disabled"
     :control-name="controlName"
+    :size="size"
     @click="handleClick"
   >
     <slot/>
@@ -13,10 +13,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../../_store/types';
-import { State, Action, Getter } from 'vuex-class';
-import { QBtn } from 'quasar';
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 import { TallyButtonLayoutData } from '../../_store/types';
 
 /* tslint:disable:no-var-requires  */
@@ -37,7 +35,6 @@ export default class TallyControlBtn extends Vue {
   @Prop({ default: undefined }) public disabled!: boolean;
   @Prop({ default: undefined }) public controlName!: string; // History, Tally Mode etc
   // Data:
-  @Prop({ default: undefined }) public layout!: TallyButtonLayoutData;
   @Prop({ default: undefined }) public blank!: boolean;
   @Getter('isSoundEnabled', { namespace: 'appState' })
   private isSoundEnabled!: boolean;

@@ -240,6 +240,7 @@ export default class Tally extends Vue {
         return;
     }
 
+
     data = {
       ...data,
       skipLayoutUpdate: true
@@ -365,6 +366,7 @@ public handleCancel() {
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
+        this.clearLastIncDec();
         this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
         break;
       case 'all-tallies':
