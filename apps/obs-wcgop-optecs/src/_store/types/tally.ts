@@ -19,6 +19,8 @@ export enum TallyOperationMode {
   AddTempSpeciesLocation = 'ADD_TEMP_SPECIES_LOCATION',
   NameTempSpeciesSelect = 'NAME_TEMP_SPECIES_SELECT',
   NameTempSpeciesSelectSpecies = 'NAME_TEMP_SPECIES_SELECT_FRESH_SPECIES',
+  ModifyDispButtonSelect = 'MODIFY_DISP_BUTTON_SELECT',
+  ModifyDispSelectDisp = 'MODIFY_DISP_SELECT_DISP',
   AllTalliesSelect = 'ALL_TALLIES_SELECT',
   Unknown = 'Unknown'
 }

@@ -47,7 +47,6 @@ export default class TallyAddNewButton extends Vue {
         break;
       default:
         this.$emit('selectedReason', controlName); // Reason e.g. RET, MKT
-        this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectLocation);
     }
   }
 }
