@@ -2,9 +2,15 @@
   "_id": "_design/optecs_trawl",
   "_rev": "3-6a416cb535966fa8bb6778d43d915d07",
   "views": {
-    "all_beaufort_names": {
+    "all_beaufort_description": {
       "map": "function (doc) {\n  if (doc.type === 'beaufort') {\n    emit(doc.legacy.lookupVal, doc.description);\n  }\n}"
-    }
+    },
+    "all_gear_performance_description": {
+      "map": "function (doc) {\n  if (doc.type === 'gear-performance') {\n    emit(doc.legacy.lookupVal, doc.description);\n  }\n}"
+    },
+    "all_gear_type_description": {
+      "map": "function (doc) {\n  if (doc.type === 'gear-type') {\n    emit(doc.legacy.lookupVal, doc.description);\n  }\n}"
+    },
     "all_vessel_names": {
       "map": "function(doc) {\n    if (doc.type == 'vessel') { \n      var regNum = (doc.coastGuardNumber ? doc.coastGuardNumber : doc.stateRegulationNumber);\n      emit(doc.vesselName.toLowerCase(), doc.vesselName + ' (' + regNum + ')');\n    }\n}"
     },
