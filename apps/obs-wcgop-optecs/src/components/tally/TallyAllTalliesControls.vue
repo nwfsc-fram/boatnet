@@ -16,6 +16,7 @@
       <tally-btn
         :layout="getLayout(reasonInfo)"
         :data="getData(reasonInfo)"
+        @dataChanged="handleDataChanged"
         :key="reasonInfo.name"
         size="md"
       />
@@ -57,8 +58,13 @@ export default class TallyAllTalliesControls extends Vue {
   private updateAllDB: any;
   @Action('updateButtonData', { namespace: 'tallyState' })
   private updateButtonData: any;
+  @Action('clearLastIncDec', { namespace: 'tallyState' })
+  private clearLastIncDec: any;
   @Getter('reasonButtonColors', { namespace: 'tallyState' })
   private reasonButtonColors!: any[];
+  @Getter('incDecValue', { namespace: 'tallyState' })
+  private incDecValue!: number;
+
 
   private tallyModeInc: any = {
     value: 1,
@@ -76,6 +82,9 @@ export default class TallyAllTalliesControls extends Vue {
 
   private tallyMode = this.tallyModeInc;
 
+  public mounted() {
+    this.tallyMode = this.incDecValue > 0 ? this.tallyModeInc : this.tallyModeDec;
+  }
   public setTallyMode(incMode: boolean) {
     if (incMode) {
       this.tallyMode = this.tallyModeInc;
@@ -86,6 +95,10 @@ export default class TallyAllTalliesControls extends Vue {
     }
   }
 
+  public handleDataChanged(data: any) {
+    // Don't care, but this means we were clicked, so clear the up/down arrow
+    this.clearLastIncDec();
+  }
   public handleControlClick(controlName: string): void {
     switch (controlName) {
       case 'tally-mode':
@@ -97,6 +110,7 @@ export default class TallyAllTalliesControls extends Vue {
         this.updateAllDB();
       // Fall through to default
       default:
+        console.log('HAHHAA', controlName);
         this.$emit('controlevent', controlName);
     }
   }

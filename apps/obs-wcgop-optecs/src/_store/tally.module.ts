@@ -419,10 +419,10 @@ const mutations: MutationTree<TallyState> = {
 
     if (!params.skipDataUpdate) {
       try {
-        console.log(
-          '[Tally Module] Updating tally data.',
-          newState.tallyDataRec
-        );
+        // console.log(
+        //   '[Tally Module] Updating tally data.',
+        //   newState.tallyDataRec
+        // );
         updateTallyDataDB(newState.tallyDataRec);
       } catch (err) {
         console.error('[Tally Module] Data update error', err);

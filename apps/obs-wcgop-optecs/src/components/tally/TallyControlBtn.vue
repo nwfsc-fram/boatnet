@@ -1,6 +1,6 @@
 <template>
   <q-btn
-    class="q-px-lg q-py-xs"
+    class="q-px-md q-py-xs"
     :color="color"
     :text-color="textcolor"
     :disabled="disabled"
