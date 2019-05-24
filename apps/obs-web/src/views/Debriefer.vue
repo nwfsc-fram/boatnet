@@ -22,18 +22,26 @@
           outlined
           v-model="visibleColumns"
           multiple
-          :options="columnNames"
+          :options="columns"
           label="Visible Columns"
-          style="width: 250px"
+          style="width: 270px"
+          option-label="label"
+          option-value="name"
+          emit-value
           :display-value=null
         >
+        <template v-slot:append>
+          <q-btn round dense flat style="font-size: .5em" icon="fa fa-plus-circle" @click="addAll" />
+          <q-btn round dense flat style="font-size: .5em" icon="fa fa-minus-circle" @click="removeAll" />
+        </template>
+
             <template v-slot:option="scope">
             <q-item
               v-bind="scope.itemProps"
               v-on="scope.itemEvents"
             >
               <q-item-section>
-                <q-item-label v-html="scope.opt" />
+                <q-item-label v-html="scope.opt.label" />
               </q-item-section>
               <q-item-section avatar v-if="scope.selected">
                 <q-icon name="fa fa-check-circle" />
@@ -133,6 +141,7 @@ private columns = [
     {name: 'waiver', label: 'Waiver', field: 'waiver', align: 'left', sortable: true },
     {name: 'intendedGearType', label: 'Intended Gear Type', field: 'intendedGearType', align: 'left', sortable: true }
 ];
+
 private async getTrips() {
   const masterDB: Client<any> = couchService.masterDB;
   try {
@@ -157,9 +166,9 @@ private async getTrips() {
   }
 }
 
-private get columnNames() {
-  return this.columns.map( (column) => column.name );
-}
+// private get columnNames() {
+//   return this.columns.map( (column) => column.name );
+// }
 
 private created() {
     this.getTrips();
@@ -181,6 +190,13 @@ private formatDate(inputDate: any) {
     return date.formatDate(inputDate, 'MM/DD/YYYY');
 }
 
+private addAll() {
+  this.visibleColumns = this.columns.map( (column) => column.name)
+}
+
+private removeAll() {
+  this.visibleColumns = [];
+}
 
 
 }
