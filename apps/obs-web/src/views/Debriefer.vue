@@ -191,7 +191,7 @@ private formatDate(inputDate: any) {
 }
 
 private addAll() {
-  this.visibleColumns = this.columns.map( (column) => column.name)
+  this.visibleColumns = this.columns.map( (column) => column.name);
 }
 
 private removeAll() {
