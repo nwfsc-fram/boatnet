@@ -24,6 +24,7 @@ export enum TallyOperationMode {
   AllTalliesSelectSpecies = 'ALL_TALLIES_SELECT_SPECIES',
   AllTallies = 'ALL_TALLIES',
   WeightsForSelectSpecies = 'WEIGHTS_FOR_SELECT_SPECIES',
+  WeightsForAddingWeight = 'WEIGHTS_FOR_ADDING_WEIGHT',
   Unknown = 'Unknown'
 }
 

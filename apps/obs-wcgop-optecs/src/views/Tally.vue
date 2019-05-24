@@ -243,6 +243,15 @@ export default class Tally extends Vue {
         }; // TODO full species?
         this.handleControlEvent('all-tallies');
         return;
+      case TallyOperationMode.WeightsForSelectSpecies:
+        this.currentSelectedButton = data.button;
+        this.currentSelectedSpecies = {
+          shortCode: data.button.labels.shortCode
+        }; // TODO full species?
+        this.setTallyOpMode(TallyOperationMode.WeightsForAddingWeight);
+        // TODO Weights Dialog
+        this.openAddSpeciesPopup();
+        return;
     }
 
     data = {

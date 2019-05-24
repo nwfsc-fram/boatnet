@@ -167,7 +167,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
       this.tallyMode === TallyOperationMode.NameTempSpeciesSelect ||
       this.tallyMode === TallyOperationMode.ModifyDispButtonSelect ||
-      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies
+      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies ||
+      this.tallyMode === TallyOperationMode.WeightsForSelectSpecies
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
