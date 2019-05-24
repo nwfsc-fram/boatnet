@@ -22,7 +22,7 @@
                 class="bg-blue-grey-1"
                 >
                 <template v-slot:body="props">
-                    <q-tr :props="props" @click.native="editActivity(props.row)">
+                    <q-tr :props="props" @click.native="editActivity(props.row)" @contextmenu.native="deleteActivity($event, props.row)">
                         <q-td key="startDate" :props="props">{{ formatDate(props.row.startDate) }}</q-td>
                         <q-td key="endDate" :props="props">{{ formatDate(props.row.endDate) }}</q-td>
                         <q-td key="activityType" :props="props">{{ props.row.activityType }}</q-td>
@@ -189,6 +189,13 @@ export default class ObserverAssignment extends Vue {
             this.$router.push({path: '/activity-detail'});
         } else {
             alert('Trips are not editabe from this page.');
+        }
+    }
+
+    private deleteActivity($event: any, row: any) {
+        $event.preventDefault();
+        if (row.activityType !== 'Trip') {
+            console.log("To Do: implement delete activity on right click / long click.");
         }
     }
 

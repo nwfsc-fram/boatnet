@@ -10,6 +10,7 @@ class CouchService {
   private couchMaster: any | null = null;
   private couchLookups: any | null = null;
   private couchUser: any | null = null;
+  private isConnectCalled = false; // set once - does not necessarily guarantee continuous connection?
 
   constructor() {
     console.log('[CouchDB Service] Instantiated.');
@@ -39,8 +40,15 @@ class CouchService {
     return this.couchUser;
   }
 
+  public get isConnected() {
+    return this.isConnectCalled;
+  }
+
+
+
   public connect(credentials: CouchDBCredentials) {
     console.log('[CouchDB Service] Connecting.');
+    this.isConnectCalled = true;
 
     this.currentCredentials = credentials;
 
