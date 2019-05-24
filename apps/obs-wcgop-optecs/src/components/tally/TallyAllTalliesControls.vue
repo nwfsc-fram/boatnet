@@ -65,7 +65,6 @@ export default class TallyAllTalliesControls extends Vue {
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
 
-
   private tallyModeInc: any = {
     value: 1,
     color: 'light-blue-2',
@@ -83,7 +82,8 @@ export default class TallyAllTalliesControls extends Vue {
   private tallyMode = this.tallyModeInc;
 
   public mounted() {
-    this.tallyMode = this.incDecValue > 0 ? this.tallyModeInc : this.tallyModeDec;
+    this.tallyMode =
+      this.incDecValue > 0 ? this.tallyModeInc : this.tallyModeDec;
   }
   public setTallyMode(incMode: boolean) {
     if (incMode) {
@@ -110,7 +110,6 @@ export default class TallyAllTalliesControls extends Vue {
         this.updateAllDB();
       // Fall through to default
       default:
-        console.log('HAHHAA', controlName);
         this.$emit('controlevent', controlName);
     }
   }
