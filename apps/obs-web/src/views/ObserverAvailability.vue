@@ -195,7 +195,7 @@ export default class ObserverAssignment extends Vue {
     private deleteActivity($event: any, row: any) {
         $event.preventDefault();
         if (row.activityType !== 'Trip') {
-            console.log("To Do: implement delete activity on right click / long click.");
+            console.log('To Do: implement delete activity on right click / long click.');
         }
     }
 

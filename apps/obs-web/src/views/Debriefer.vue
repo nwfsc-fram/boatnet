@@ -88,7 +88,7 @@ export default class Debriefer extends Vue {
 private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
 private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
-private visibleColumns = ['key','tripStatus','vessel'];
+private visibleColumns = ['key', 'tripStatus', 'vessel'];
 private selectedColumns = [];
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
@@ -142,7 +142,7 @@ private async getTrips() {
 }
 
 private get columnNames() {
-  return this.columns.map( (column) => column.name )
+  return this.columns.map( (column) => column.name );
 }
 
 private created() {
