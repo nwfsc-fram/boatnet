@@ -19,13 +19,29 @@
 
       <div v-if="$q.screen.gt.xs" class="col">
         <q-select
-          filled
+          outlined
           v-model="visibleColumns"
           multiple
           :options="columnNames"
-          label="Selected Columns"
+          label="Visible Columns"
           style="width: 250px"
-        />
+          :display-value=null
+        >
+            <template v-slot:option="scope">
+            <q-item
+              v-bind="scope.itemProps"
+              v-on="scope.itemEvents"
+            >
+              <q-item-section>
+                <q-item-label v-html="scope.opt" />
+              </q-item-section>
+              <q-item-section avatar v-if="scope.selected">
+                <q-icon name="fa fa-check-circle" />
+              </q-item-section>
+            </q-item>
+          </template>
+
+        </q-select>
       </div>
 
   </template>
