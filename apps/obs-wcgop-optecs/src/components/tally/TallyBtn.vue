@@ -32,7 +32,7 @@
           floating
         >SWAP</q-badge>
         <q-badge
-          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect"
+          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect || tallyMode === weightsForSelect"
           color="blue"
           text-color="white"
           floating
@@ -141,6 +141,7 @@ export default class TallyBtn extends Vue {
   private modifyDistSelectButton = TallyOperationMode.ModifyDispButtonSelect;
   private modifyDistSelectDisp = TallyOperationMode.ModifyDispSelectDisp;
   private allTalliesSelect = TallyOperationMode.AllTalliesSelectSpecies;
+  private weightsForSelect = TallyOperationMode.WeightsForSelectSpecies;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);

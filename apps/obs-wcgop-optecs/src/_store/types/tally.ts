@@ -23,6 +23,7 @@ export enum TallyOperationMode {
   ModifyDispSelectDisp = 'MODIFY_DISP_SELECT_DISP',
   AllTalliesSelectSpecies = 'ALL_TALLIES_SELECT_SPECIES',
   AllTallies = 'ALL_TALLIES',
+  WeightsForSelectSpecies = 'WEIGHTS_FOR_SELECT_SPECIES',
   Unknown = 'Unknown'
 }
 
@@ -55,11 +56,17 @@ export interface TallyLayoutRecord extends Base {
 // -- Data Related Interfaces --
 export const TallyDataRecordTypeName = 'tally-data';
 
+interface TallyWeightData {
+  weighedCount?: number;
+  weight?: number;
+}
+
 export interface TallyCountData extends Base {
   species?: any; // TODO actual Species data
   shortCode?: string; // TODO redundant with species, refactor
   reason?: string;
   count?: number;
+  weightData?: TallyWeightData[];
 }
 
 export interface TallyDataRecord extends Base {

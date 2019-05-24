@@ -380,11 +380,23 @@ export default class Tally extends Vue {
         break;
       case 'all-tallies-for':
         this.clearLastIncDec();
-        this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        if (this.tallyState.operationMode === TallyOperationMode.AllTalliesSelectSpecies) {
+          this.handleCancel();
+        } else {
+          this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        }
         break;
       case 'all-tallies':
         this.setTallyOpMode(TallyOperationMode.AllTallies);
         this.currentControlComponent = 'tally-alltallies-controls';
+        break;
+      case 'weights-for':
+        this.clearLastIncDec();
+        if (this.tallyState.operationMode === TallyOperationMode.WeightsForSelectSpecies) {
+          this.handleCancel();
+        } else {
+          this.setTallyOpMode(TallyOperationMode.WeightsForSelectSpecies);
+        }
         break;
       case 'tally-addnew-controls':
         this.currentControlComponent = 'tally-addnew-controls';
