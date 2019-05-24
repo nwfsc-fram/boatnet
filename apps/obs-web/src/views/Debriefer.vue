@@ -9,23 +9,26 @@
             :visible-columns="visibleColumns"
             >
 
- <div v-if="$q.screen.gt.xs" class="col">
-          <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
-          <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
-          <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
+  <template v-slot:top="props">
 
-        </div>
- <div v-if="$q.screen.gt.xs" class="col">
-      <q-select
-        filled
-        v-model="selectedColumns"
-        multiple
-        :options="visibleColumns"
-        label="Selected Columns"
-        style="width: 250px"
-      />
+      <div v-if="$q.screen.gt.xs" class="col">
+        <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
+        <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
+        <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
+      </div>
 
-        </div>
+      <div v-if="$q.screen.gt.xs" class="col">
+        <q-select
+          filled
+          v-model="visibleColumns"
+          multiple
+          :options="columnNames"
+          label="Selected Columns"
+          style="width: 250px"
+        />
+      </div>
+
+  </template>
 
         <template v-slot:body="props">
           <q-tr :props='props'>
@@ -88,9 +91,9 @@ private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, descriptio
 private visibleColumns = ['key','tripStatus','vessel'];
 private selectedColumns = [];
 private columns = [
-    {name: 'key', label: 'Trip ID', field: 'key', required: true, align: 'left', sortable: true },
-    {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', required: true, align: 'left', sortable: true },
-    {name: 'vessel', label: 'Vessel', field: 'vessel', required: true, align: 'left', sortable: true },
+    {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
+    {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', align: 'left', sortable: true },
+    {name: 'vessel', label: 'Vessel', field: 'vessel', align: 'left', sortable: true },
     {name: 'program', label: 'Program', field: 'program', required: true, align: 'left', sortable: true },
     {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: true, align: 'left', sortable: true },
     {name: 'departureDate', label: 'Departure Date', field: 'departureDate', required: true, align: 'left', sortable: true },
@@ -136,6 +139,10 @@ private async getTrips() {
   } catch (err) {
       this.error(err);
   }
+}
+
+private get columnNames() {
+  return this.columns.map( (column) => column.name )
 }
 
 private created() {
