@@ -24,7 +24,10 @@ import {
   QItemSection,
   QItemLabel,
   QTabPanels,
-  QTabPanel
+  QTabPanel,
+  QTabs,
+  QTab,
+  QRouteTab
 } from 'quasar';
 
 Vue.use(Quasar, {
@@ -44,7 +47,10 @@ Vue.use(Quasar, {
     QItemSection,
     QItemLabel,
     QTabPanels,
-    QTabPanel
+    QTabPanel,
+    QTabs,
+    QTab,
+    QRouteTab
   },
   directives: {},
   plugins: {}
