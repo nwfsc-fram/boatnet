@@ -1,4 +1,75 @@
+
 <template>
+    <div class="q-pa-md">
+    <div class="q-gutter-y-md" style="max-width: 600px">
+      <q-card>
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
+        >
+          <q-tab name="mails" label="Mails" />
+          <q-tab name="alarms" label="Alarms" />
+          <q-tab name="movies" label="Movies" />
+        </q-tabs>
+
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="mails">
+            <div class="text-h6">Mails</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+
+          <q-tab-panel name="alarms">
+            <div class="text-h6">Alarms</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+
+          <q-tab-panel name="movies">
+            <div class="text-h6">Movies</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card>
+
+      <q-card>
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="mails">
+            <div class="text-h6">Mails</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+
+          <q-tab-panel name="alarms">
+            <div class="text-h6">Alarms</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+
+          <q-tab-panel name="movies">
+            <div class="text-h6">Movies</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+        </q-tab-panels>
+
+        <q-separator />
+
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-grey-3"
+          align="justify"
+          narrow-indicator
+        >
+          <q-tab name="mails" label="Mails" />
+          <q-tab name="alarms" label="Alarms" />
+          <q-tab name="movies" label="Movies" />
+        </q-tabs>
+      </q-card>
+
 
         <q-table
             :data="WcgopTrips"
@@ -11,6 +82,7 @@
 
   <template v-slot:top="props">
 
+  
       <div v-if="$q.screen.gt.xs" class="col">
         <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
         <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
@@ -67,7 +139,7 @@
           <q-td key="captain" :props="props">{{ props.row.captain }}</q-td>
           <q-td key="isPartialTrip" :props="props">{{ props.row.isPartialTrip }}</q-td>
           <q-td key="fishingDays" :props="props">{{ props.row.fishingDays }}</q-td>
-          <q-td key="fishery" :props="props">{{ getFisheryLookup(props.row.fishery) }}</q-td>
+          <q-td key="fishery" :props="props">{{ props.row.fishery ? props.row.fishery.description :'' }}</q-td>
           <q-td key="crewSize" :props="props">{{ props.row.crewSize }}</q-td>
           <q-td key="firstReceiver" :props="props">{{ props.row.firstReceiver }}</q-td>
           <q-td key="isFishProcessed" :props="props">{{ props.row.isFishProcessed }}</q-td>
@@ -85,6 +157,8 @@
         </template>
 
         </q-table>
+          </div>
+  </div>
 </template>
 
 
@@ -103,6 +177,7 @@ import { WcgopTrip } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
+import { convertToObject } from 'typescript';
 
 
 @Component
@@ -114,6 +189,7 @@ private pagination = {rowsPerPage: 50};
 private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
 private visibleColumns = ['key', 'tripStatus', 'vessel'];
 private selectedColumns = [];
+private tab = 'mails';
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
     {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', align: 'left', sortable: true },
@@ -160,6 +236,7 @@ private async getTrips() {
           trip.key = row.key;
           this.WcgopTrips.push(trip);
       }
+      console.log(this.WcgopTrips);
 
   } catch (err) {
       this.error(err);
