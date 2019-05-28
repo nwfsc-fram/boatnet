@@ -11,6 +11,7 @@ import BoatnetLocations from './components/BoatnetLocations.vue';
 import BoatnetSummary from './components/BoatnetSummary.vue';
 import BoatnetTable from './components/BoatnetTable.vue';
 import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
+import BoatnetAddSpeciesDialog from './components/BoatnetAddSpeciesDialog.vue';
 
 const Components: any = {
   BoatnetButtonToggle,
@@ -24,7 +25,8 @@ const Components: any = {
   BoatnetLocations,
   BoatnetSummary,
   BoatnetTable,
-  BoatnetTabPanel
+  BoatnetTabPanel,
+  BoatnetAddSpeciesDialog
 };
 
 Object.keys(Components).forEach((name) => {

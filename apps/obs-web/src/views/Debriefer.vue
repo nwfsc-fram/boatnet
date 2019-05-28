@@ -9,17 +9,50 @@
             :visible-columns="visibleColumns"
             >
 
-        <template v-slot:top="props">
-          <div class="col-2 q-table__title">Wcgop Trips</div>
+  <template v-slot:top="props">
 
-          <q-space />
+      <div v-if="$q.screen.gt.xs" class="col">
+        <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
+        <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
+        <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
+      </div>
 
-          <div v-if="$q.screen.gt.xs" class="col">
-            <q-toggle v-model="visibleColumns" val="key" label="Trip ID"/>
-            <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
-            <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
-          </div>
+      <div v-if="$q.screen.gt.xs" class="col">
+        <q-select
+          outlined
+          v-model="visibleColumns"
+          multiple
+          :options="columns"
+          label="Visible Columns"
+          style="width: 270px"
+          option-label="label"
+          option-value="name"
+          emit-value
+          :display-value=null
+        >
+        <template v-slot:append>
+          <q-btn round dense flat style="font-size: .5em" icon="fa fa-plus-circle" @click="addAll" />
+          <q-btn round dense flat style="font-size: .5em" icon="fa fa-minus-circle" @click="removeAll" />
         </template>
+
+            <template v-slot:option="scope">
+            <q-item
+              v-bind="scope.itemProps"
+              v-on="scope.itemEvents"
+            >
+              <q-item-section>
+                <q-item-label v-html="scope.opt.label" />
+              </q-item-section>
+              <q-item-section avatar v-if="scope.selected">
+                <q-icon name="fa fa-check-circle" />
+              </q-item-section>
+            </q-item>
+          </template>
+
+        </q-select>
+      </div>
+
+  </template>
 
         <template v-slot:body="props">
           <q-tr :props='props'>
@@ -80,33 +113,35 @@ private WcgopTrips: WcgopTrip[] = [];
 private pagination = {rowsPerPage: 50};
 private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
 private visibleColumns = ['key', 'tripStatus', 'vessel'];
+private selectedColumns = [];
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
     {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', align: 'left', sortable: true },
     {name: 'vessel', label: 'Vessel', field: 'vessel', align: 'left', sortable: true },
-    {name: 'program', label: 'Program', field: 'program', align: 'left', sortable: true, required: true },
-    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', align: 'left', sortable: true, required: true },
-    {name: 'departureDate', label: 'Departure Date', field: 'departureDate', align: 'left', sortable: true, required: true },
-    {name: 'returnPort', label: 'Return Port', field: 'returnPort', align: 'left', sortable: true, required: true },
-    {name: 'returnDate', label: 'Return Date', field: 'returnDate', align: 'left', sortable: true, required: true },
-    {name: 'captain', label: 'Skipper', field: 'captain', align: 'left', sortable: true, required: true },
-    {name: 'isPartialTrip', label: 'Partial Trip', field: 'isPartialTrip', align: 'left', sortable: true, required: true },
-    {name: 'fishingDays', label: 'Fishing Days', field: 'fishingDays', align: 'left', sortable: true, required: true },
-    {name: 'fishery', label: 'Fishery', field: 'fishery', align: 'left', sortable: true, required: true },
-    {name: 'crewSize', label: 'Crew Size', field: 'crewSize', align: 'left', sortable: true, required: true },
-    {name: 'firstReceiver', label: 'First Receiver', field: 'firstReceiver', align: 'left', sortable: true, required: true },
-    {name: 'isFishProcessed', label: 'Fish Processed', field: 'isFishProcessed', align: 'left', sortable: true, required: true },
-    {name: 'logbookNum', label: 'Logbook #', field: 'logbookNum', align: 'left', sortable: true, required: true },
-    {name: 'logbookType', label: 'Logbook Type', field: 'logbookType', align: 'left', sortable: true, required: true },
-    {name: 'observerLogbookNum', label: 'Observer Logbook', field: 'observerLogbookNum', align: 'left', sortable: true, required: true },
-    {name: 'debriefer', label: 'Debriefer', field: 'debriefer', align: 'left', sortable: true, required: true },
-    {name: 'brd', label: 'BRD', field: 'brd', align: 'left', sortable: true, required: true },
-    {name: 'hlfc', label: 'HLFC', field: 'hlfc', align: 'left', sortable: true, required: true },
-    {name: 'fishTickets', label: 'Fish Tickets', field: 'fishTickets', align: 'left', sortable: true, required: true },
-    {name: 'certificates', label: 'Certificates', field: 'certificates', align: 'left', sortable: true, required: true },
-    {name: 'waiver', label: 'Waiver', field: 'waiver', align: 'left', sortable: true, required: true },
-    {name: 'intendedGearType', label: 'Intended Gear Type', field: 'intendedGearType', align: 'left', sortable: true, required: true }
+    {name: 'program', label: 'Program', field: 'program', align: 'left', sortable: true },
+    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', align: 'left', sortable: true },
+    {name: 'departureDate', label: 'Departure Date', field: 'departureDate', align: 'left', sortable: true },
+    {name: 'returnPort', label: 'Return Port', field: 'returnPort', align: 'left', sortable: true },
+    {name: 'returnDate', label: 'Return Date', field: 'returnDate', align: 'left', sortable: true },
+    {name: 'captain', label: 'Skipper', field: 'captain', align: 'left', sortable: true },
+    {name: 'isPartialTrip', label: 'Partial Trip', field: 'isPartialTrip', align: 'left', sortable: true },
+    {name: 'fishingDays', label: 'Fishing Days', field: 'fishingDays', align: 'left', sortable: true },
+    {name: 'fishery', label: 'Fishery', field: 'fishery', align: 'left', sortable: true },
+    {name: 'crewSize', label: 'Crew Size', field: 'crewSize', align: 'left', sortable: true },
+    {name: 'firstReceiver', label: 'First Receiver', field: 'firstReceiver', align: 'left', sortable: true },
+    {name: 'isFishProcessed', label: 'Fish Processed', field: 'isFishProcessed', align: 'left', sortable: true },
+    {name: 'logbookNum', label: 'Logbook #', field: 'logbookNum', align: 'left', sortable: true },
+    {name: 'logbookType', label: 'Logbook Type', field: 'logbookType', align: 'left', sortable: true },
+    {name: 'observerLogbookNum', label: 'Observer Logbook', field: 'observerLogbookNum', align: 'left', sortable: true },
+    {name: 'debriefer', label: 'Debriefer', field: 'debriefer', align: 'left', sortable: true },
+    {name: 'brd', label: 'BRD', field: 'brd', align: 'left', sortable: true },
+    {name: 'hlfc', label: 'HLFC', field: 'hlfc', align: 'left', sortable: true },
+    {name: 'fishTickets', label: 'Fish Tickets', field: 'fishTickets', align: 'left', sortable: true },
+    {name: 'certificates', label: 'Certificates', field: 'certificates', align: 'left', sortable: true },
+    {name: 'waiver', label: 'Waiver', field: 'waiver', align: 'left', sortable: true },
+    {name: 'intendedGearType', label: 'Intended Gear Type', field: 'intendedGearType', align: 'left', sortable: true }
 ];
+
 private async getTrips() {
   const masterDB: Client<any> = couchService.masterDB;
   try {
@@ -131,6 +166,10 @@ private async getTrips() {
   }
 }
 
+// private get columnNames() {
+//   return this.columns.map( (column) => column.name );
+// }
+
 private created() {
     this.getTrips();
 }
@@ -151,6 +190,13 @@ private formatDate(inputDate: any) {
     return date.formatDate(inputDate, 'MM/DD/YYYY');
 }
 
+private addAll() {
+  this.visibleColumns = this.columns.map( (column) => column.name);
+}
+
+private removeAll() {
+  this.visibleColumns = [];
+}
 
 
 }

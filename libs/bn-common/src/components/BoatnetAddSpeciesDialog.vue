@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isOpen" persistent position="left">
+  <q-dialog v-model="isOpen" persistent :position="position">
     <q-card style="min-width: 300px">
       <q-card-section>
         <div class="text-h6">Select Species</div>
@@ -27,24 +27,21 @@
       </q-select>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="close()"/>
-        <q-btn flat label="Add" :disabled="!selectedSpecies" @click="addSpecies"/>
+        <q-btn flat label="Cancel" v-close-popup />
+        <q-btn flat label="Add" :disabled="!selectedSpecies" @click="addSpecies" v-close-popup/>
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../../_store/types';
-import { State, Getter, Action } from 'vuex-class';
-import { QBtn } from 'quasar';
-
-import { pouchService } from '@boatnet/bn-pouch';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
-export default class TallyAddNamedSpeciesDialog extends Vue {
+export default class BoatnetAddSpeciesDialog extends Vue {
+  // See usage in obs-wcgop-optecs for example usage
   @Prop() public speciesList!: any[];
+  @Prop( {default: 'center'}) public position!: string;
   private selectedSpecies: any = null;
   private options: any[] = [];
   private isOpen = false;
@@ -60,7 +57,7 @@ export default class TallyAddNamedSpeciesDialog extends Vue {
   }
 
   public addSpecies() {
-    // TODO These are temporary species records.
+    // TODO These are temporary species records, pending taxonomy DB merge
     this.$emit('addNewSpecies', this.selectedSpecies.doc);
   }
 

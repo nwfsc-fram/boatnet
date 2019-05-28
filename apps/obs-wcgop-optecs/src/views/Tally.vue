@@ -35,10 +35,11 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-    <tally-addnamedspecies-dialog
+    <boatnet-add-species-dialog
       ref="addNamedSpeciesModal"
       @addNewSpecies="handleAddNamedSpecies"
       :speciesList="speciesList"
+      position="left"
       @cancel="handleCancelAddNamedSpecies"
     />
     <div>Mode: {{tallyMode}}</div>
@@ -58,12 +59,14 @@ import {
   TallyOperationMode,
   TallyCountData
 } from '../_store/types';
+
+import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
+
 import TallyBtn from '../components/tally/TallyBtn.vue';
 import TallyControls from '../components/tally/TallyControls.vue';
 import TallyLayoutControls from '../components/tally/TallyLayoutControls.vue';
 import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls.vue';
 import TallyAddExistingControls from '../components/tally/TallyAddExistingControls.vue';
-import TallyAddNamedSpeciesDialog from '../components/tally/TallyAddNamedSpeciesDialog.vue';
 import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
 import { WcgopAppState } from '../_store/types';
@@ -76,7 +79,7 @@ Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
-Vue.component('tally-addnamedspecies-dialog', TallyAddNamedSpeciesDialog);
+Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
   pouch: {
@@ -158,6 +161,8 @@ export default class Tally extends Vue {
 
   private speciesList = [];
 
+  private isAddSpeciesDialogOpen = false;
+
   // Reactive
   private tallyTemplates!: any;
   private tallyData!: any;
@@ -231,6 +236,13 @@ export default class Tally extends Vue {
         this.setTallyOpMode(TallyOperationMode.ModifyDispSelectDisp);
         this.handleControlEvent('tally-addnew-controls');
         return;
+      case TallyOperationMode.AllTalliesSelectSpecies:
+        this.currentSelectedButton = data.button;
+        this.currentSelectedSpecies = {
+          shortCode: data.button.labels.shortCode
+        }; // TODO full species?
+        this.handleControlEvent('all-tallies');
+        return;
     }
 
     data = {
@@ -300,14 +312,23 @@ export default class Tally extends Vue {
     }
   }
 
+  public closeAddSpeciesPopup() {
+    (this.$refs.addNamedSpeciesModal as any).close();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
+  public openAddSpeciesPopup() {
+    (this.$refs.addNamedSpeciesModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
   public handleAddNamedSpecies(species: any) {
     // console.log('MODE', this.tallyMode);
     // console.log('SPECIES', species);
     switch (this.tallyMode) {
       case TallyOperationMode.AddNamedSpeciesSelectSpecies:
         // Side effect of close: switches back to tally mode
-        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
-
+        this.closeAddSpeciesPopup();
         this.currentSelectedSpecies = species;
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectType);
         this.handleControlEvent('tally-addnew-controls');
@@ -318,7 +339,7 @@ export default class Tally extends Vue {
           newSpeciesCode: species.shortCode
         });
         // Side effect of close: switches back to tally mode
-        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).close();
+        this.closeAddSpeciesPopup();
         break;
     }
   }
@@ -334,7 +355,7 @@ export default class Tally extends Vue {
     this.handleCancel();
   }
 
-public handleCancel() {
+  public handleCancel() {
     // Generic Cancel - return to tally mode
     // TODO refactor into setTallyMode
     this.currentSelectedSpecies = {};
@@ -358,7 +379,11 @@ public handleCancel() {
         this.currentControlComponent = 'tally-controls';
         break;
       case 'all-tallies-for':
-        this.setTallyOpMode(TallyOperationMode.AllTalliesSelect);
+        this.clearLastIncDec();
+        this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        break;
+      case 'all-tallies':
+        this.setTallyOpMode(TallyOperationMode.AllTallies);
         this.currentControlComponent = 'tally-alltallies-controls';
         break;
       case 'tally-addnew-controls':
@@ -403,11 +428,11 @@ public handleCancel() {
         break;
       case 'add-named-species':
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectSpecies);
-        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
+        this.openAddSpeciesPopup();
         break;
       case 'rename-temp-species':
         this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelectSpecies);
-        (this.$refs.addNamedSpeciesModal as TallyAddNamedSpeciesDialog).open();
+        this.openAddSpeciesPopup();
         break;
       default:
         console.log('Unhandled tally control event:', controlName);

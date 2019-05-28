@@ -161,22 +161,27 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Action, Getter, State } from 'vuex-class';
 import { Platform } from 'quasar';
 import router from '../router';
-import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
 import { TripState, VesselState, UserState } from '../_store/types/types';
+import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
+import { CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
 
 @Component
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
+  @State('couchState') private couchState!: CouchDBState;
   @State('trip') private trip!: TripState;
   @State('vessel') private vessel!: VesselState;
   @State('user') private user!: UserState;
+
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
+
+  @Action('reconnect', {namespace: 'baseCouch'}) private reconnectCouch: any;
   private leftDrawerOpen: boolean = false;
 
   constructor() {
@@ -184,6 +189,11 @@ export default class DefaultLayout extends Vue {
     if (!pouchService.isConnected) {
       // Reconnect PouchDB if page refreshed but still logged in
       this.reconnect().catch((err: any) => {
+        this.errorAlert(err);
+      });
+    }
+    if (!couchService.isConnected) {
+      this.reconnectCouch().catch((err: any) => {
         this.errorAlert(err);
       });
     }

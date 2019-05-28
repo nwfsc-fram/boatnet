@@ -14,4 +14,5 @@ export interface OTSTarget extends Base {
   setRate?: number;
   effectiveDate?: BoatnetDate | undefined;
   expirationDate?: BoatnetDate | undefined;
+  status?: string;
 }
