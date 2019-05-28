@@ -221,6 +221,7 @@ export default class Trips extends Vue {
 
 
 
+
     // private get trips() {
     //     return this.$store.getters.trips;
     // }

@@ -15,5 +15,6 @@ export interface EmEfp extends Base {
   vesselId?: CouchID;
   vesselName?: string;
   vesselCGNumber?: string;
+  vessel?: Vessel;
 }
 

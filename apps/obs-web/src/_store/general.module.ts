@@ -6,7 +6,6 @@ import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { RootState } from '@/_store/types/types';
 import { GeneralState } from '@/_store/types/types';
 import {
-  ports,
   // fisheries,
   // targetTypes,
   roles,
@@ -21,7 +20,6 @@ import {
 Vue.use(Vuex);
 
 export const state: GeneralState = {
-  ports,
   // fisheries,
   // targetTypes,
   roles,

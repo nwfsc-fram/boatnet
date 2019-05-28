@@ -1,5 +1,12 @@
 <template>
   <div>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clear"/>
+      </template>
+    </q-banner>
+
     <q-card bordered>
       <q-card-section>
         <q-list>
@@ -132,14 +139,38 @@
       <q-card-actions>
           <q-btn color="red" label="Cancel" icon="warning" to="/ots-management" exact/>
           <q-btn color="primary" @click="saveTarget">Save</q-btn>
+          <q-btn v-if="this.ots.activeOTSTarget.status ==='Active'" color="red" label="Deactivate" icon-right="fa fa-minus-circle" @click="confirm = true"></q-btn>
+          <q-btn v-if="this.ots.activeOTSTarget.status ==='Inactive'" color="primary" label="Reactivate" icon-right="fa fa-plus-circle" @click="saveTarget"></q-btn>
       </q-card-actions>
 
       </q-card-section>
 
+      <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'EM EFP'">
+        <q-table
+        title="Affected Vessels"
+        :data="affectedVessels"
+        :columns="vesselColumns"
+        dense
+        row_key="_id"
+        :pagination.sync="pagination"
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+              <q-td key="coastGuardNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
+              <q-td key="vesselTrips" :props="props">{{ getTripsTaken(props.row.vessel) }}</q-td>
+              <q-td key="selectedTrips" :props="props">{{ getSelectedTrips(props.row.vessel) }}</q-td>
+              <q-td key="coveredPercent" :props="props">{{ getCoveredPercent(props.row.vessel) }}%</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </q-card-section>
+
+
       <q-card-section>
         <q-table
           title="Target History"
-          :data="data"
+          :data="targetHistory"
           :columns="columns"
           dense
           row_key="_id"
@@ -149,14 +180,29 @@
             <q-tr :props="props">
               <q-td key="coverageGoal" :props="props">{{ props.row.coverageGoal }}%</q-td>
               <q-td key="setRate" :props="props">{{ props.row.setRate }}%</q-td>
-              <q-td key="effectiveDate" :props="props">{{ props.row.effectiveDate }}</q-td>
-              <q-td key="expirationDate" :props="props">{{ props.row.expirationDate }}</q-td>
-              <q-td key="changedBy" :props="props">{{ props.row.changedBy }}</q-td>
+              <q-td key="effectiveDate" :props="props">{{ formatDate(props.row.effectiveDate) }}</q-td>
+              <q-td key="expirationDate" :props="props">{{ formatDate(props.row.expirationDate) }}</q-td>
+              <q-td key="changedBy" :props="props">{{ props.row.createdBy }}</q-td>
             </q-tr>
           </template>
         </q-table>
       </q-card-section>
     </q-card>
+
+    <q-dialog v-model="confirm">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Are you sure you want to deactivate this OTS target?  (This may result in no target being set for the fishery/vessel/port group)</div>
+          <div style="float: right">
+            <q-btn color="primary" size="md" @click="confirm = false">Cancel</q-btn>
+            &nbsp;
+            <q-btn color="red" size="md"  @click="deactivateTarget">Yes, I'm sure</q-btn>
+
+          </div>
+          <br><br>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -172,7 +218,7 @@ import {
   PermitState,
   OTSState
 } from '../_store/types/types';
-import { OTSTarget, Vessel } from '@boatnet/bn-models';
+import { OTSTarget, Vessel, WcgopTrip, EmEfp } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -180,7 +226,7 @@ import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
-export default class OtsTargeteDetail extends Vue {
+export default class OtsTargetDetail extends Vue {
   @State('ots') private ots!: OTSState;
 
   @Action('clear', { namespace: 'alert' }) private clear: any;
@@ -196,83 +242,29 @@ export default class OtsTargeteDetail extends Vue {
   private vessels: Vessel[] = [];
   private portGroups = ['TO DO - Populate DB with Port Groups'];
 
-  private columns = [
-    {
-      name: 'coverageGoal',
-      label: 'Coverage Goal',
-      field: 'coverageGoal',
-      required: true,
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'setRate',
-      label: 'Set Rate',
-      field: 'setRate',
-      required: true,
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'effectiveDate',
-      label: 'Effective Date',
-      field: 'effectiveDate',
-      required: true,
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'expirationDate',
-      label: 'Expiration Date',
-      field: 'expirationDate',
-      required: true,
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'changedBy',
-      label: 'Changed By',
-      field: 'changedBy',
-      required: true,
-      align: 'left',
-      sortable: true
-    }
+  private confirm = false;
+  private pagination = {rowsPerPage: 10};
+
+  private columns =
+  [
+    { name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal', required: true, align: 'left', sortable: true },
+    { name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left', sortable: true },
+    { name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate', required: true, align: 'left', sortable: true },
+    { name: 'expirationDate', label: 'Expiration Date', field: 'expirationDate', required: true, align: 'left', sortable: true },
+    { name: 'changedBy', label: 'Changed By', field: 'changedBy', required: true, align: 'left', sortable: true }
   ];
 
-  private data = [
-    {
-      _id: 'dfe24rgsdfg34rwersg',
-      coverageGoal: 35,
-      setRate: 37,
-      effectiveDate: moment().format('MM/DD/YYYY'),
-      expirationDate: '12/31/' + moment().format('YYYY'),
-      changedBy: 'Scott Leach'
-    },
-    {
-      _id: 'gergse545yehtdfg',
-      coverageGoal: 25,
-      setRate: 29,
-      effectiveDate: moment().format('MM/DD/YYYY'),
-      expirationDate: '12/31/' + moment().format('YYYY'),
-      changedBy: 'John La Fargue'
-    },
-    {
-      _id: 'gdhe45e45ydthnytesrfgb',
-      coverageGoal: 17,
-      setRate: 27,
-      effectiveDate: moment().format('MM/DD/YYYY'),
-      expirationDate: '12/31/' + moment().format('YYYY'),
-      changedBy: 'Scott Leach'
-    },
-    {
-      _id: 'wtsdgdhrt5dure7yh',
-      coverageGoal: 43,
-      setRate: 43,
-      effectiveDate: moment().format('MM/DD/YYYY'),
-      expirationDate: '12/31/' + moment().format('YYYY'),
-      changedBy: 'John La Fargue'
-    }
-  ];
+  private vesselColumns = [
+    { name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
+    { name: 'coastGuardNumber', label: 'Vessel Id', field: 'coastGuardNumber', required: true, align: 'left', sortable: true },
+    { name: 'vesselTrips', label: 'Trips Taken', field: 'vesselTrips', required: true, align: 'left', sortable: true },
+    { name: 'selectedTrips', label: 'Selected Trips', field: 'selectedTrips', required: true, align: 'left', sortable: true },
+    { name: 'coveredPercent', label: 'Covered (%)', field: 'coveredPercent', required: true, align: 'left', sortable: true },
+  ]
+
+  private otsTargetHistory: any[] = [];
+  private emEfpTrips: WcgopTrip[] = [];
+  private emEfpRoster: EmEfp[] = [];
 
   @Watch('ots.activeOTSTarget.targetType')
   private onChange(newVal: any, oldVal: any) {
@@ -314,8 +306,154 @@ export default class OtsTargeteDetail extends Vue {
         }
     }
 
+    // function to get ots target history
+    private async getHistory() {
+      const masterDB: Client<any> = couchService.masterDB;
+
+      const history = await masterDB.viewWithDocs<any>(
+        'sethtest',
+        'all_ots_targets'
+      );
+      console.log(history);
+      for (const row of history.rows) {
+        const target = row.doc;
+        this.otsTargetHistory.push(target);
+      }
+    }
+
+    private async getEMEFP() {
+      const masterDB: Client<any> = couchService.masterDB;
+
+      const emefpTrips = await masterDB.viewWithDocs<any>(
+        'sethtest',
+        'em-efp-trips'
+      );
+
+      for (const row of emefpTrips.rows) {
+        const trip = row.doc;
+        this.emEfpTrips.push(trip);
+      }
+
+      const emefpRoster = await masterDB.viewWithDocs<any>(
+        'sethtest',
+        'all_em_efp'
+      );
+
+      for (const row of emefpRoster.rows) {
+        const member = row.doc;
+        this.emEfpRoster.push(member);
+      }
+
+    }
+
+    private getStatus(row: any) {
+        if ( (moment(row.efffectiveDate) <= moment() && moment() <= moment(row.expirationDate)) && ( row.status !== 'Inactive' )) {
+            return 'Active';
+        } else {
+            return 'Inactive';
+        }
+    }
+
+    private get affectedVessels() {
+      let affectedVessels: any[] = [];
+      let targetedVessels: any[] = [];
+      if (this.ots.activeOTSTarget.targetType === 'Fishery Wide') {
+        // get active vesselTarget vessels
+        for (const target of this.otsTargetHistory) {
+          // create an array of active fishery target vessels
+          if (this.getStatus(target) === 'Active' && target.fishery === this.ots.activeOTSTarget.fishery && target.targetType === "Vessel")  {
+            targetedVessels.push( target.targetVessel.coastGuardNumber ? target.targetVessel.coastGuardNumber : target.targetVessel.stateRegulationNumber );
+          }
+
+        }
+        // build a list of em efp vessels that are selected only based on an EM EFP Fishery Wide target
+        for (const member of this.emEfpRoster) {
+          if (member.vessel) {
+            const vesselID = member.vessel!.coastGuardNumber ? member.vessel!.coastGuardNumber : member.vessel!.stateRegulationNumber;
+            if (targetedVessels.indexOf(vesselID) === -1) {
+              console.log(targetedVessels);
+              console.log(vesselID);
+              affectedVessels.push(member);
+            }
+          }
+        }
+
+
+        // this.emEfpRoster.filter( (member) => member.vessel.vesselName )
+            // calculate percentage of trips covered per included vessel
+            console.log(affectedVessels);
+            return affectedVessels;
+      }
+      if (this.ots.activeOTSTarget.targetType === "Vessel") {
+        // calculate percentage of trips covered for the target vessel
+        return affectedVessels;
+      }
+      // TBD - Port Group
+      else {
+        return ['fish']
+      }
+    }
+
+    private get targetHistory() {
+      return this.otsTargetHistory.filter( (target) => target.targetType === this.ots.activeOTSTarget.targetType && target.fishery === this.ots.activeOTSTarget.fishery)
+    }
+
     private optionsFn(val: string) {
       return moment(val) >= moment().subtract(1, 'days');
+    }
+
+    private formatDate(date: string) {
+        return moment(date).format('MMM Do, YYYY');
+    }
+
+    private getTripsTaken(vessel: any) {
+      const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
+      console.log(vesselID);
+      let count = 0;
+      for (const trip of this.emEfpTrips) {
+        let tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        if ( tripVesselID === vesselID) {
+          console.log(trip.vessel!.coastGuardNumber)
+          count++
+        }
+      }
+      return count;
+    }
+
+    private getSelectedTrips(vessel: any) {
+      const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
+      let count = 0;
+      for (const trip of this.emEfpTrips) {
+        let tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        if ( tripVesselID === vesselID && trip.isSelected) {
+          console.log(trip.vessel!.coastGuardNumber)
+          count++
+        }
+      }
+      return count;
+    }
+
+    private getCoveredPercent(vessel: any) {
+      let coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
+      return coveredPercent ? coveredPercent : 0;
+    }
+
+
+    private async deactivateTarget() {
+      try {
+        const masterDB: Client<any> = couchService.masterDB;
+
+        const oldDoc = await masterDB.get(this.ots.activeOTSTarget._id);
+        oldDoc.status = "Inactive";
+        masterDB.put( oldDoc._id, oldDoc, oldDoc._rev ).then(
+          () => {
+            this.$router.push({path: '/ots-management'});
+          }
+        );
+
+      } catch (err) {
+        this.errorAlert(err);
+      }
     }
 
     private async saveTarget() {
@@ -323,27 +461,50 @@ export default class OtsTargeteDetail extends Vue {
         try {
           const masterDB: Client<any> = couchService.masterDB;
 
-          delete this.ots.activeOTSTarget.__index;
-          this.ots.activeOTSTarget.updatedBy = authService.getCurrentUser()!.username;
-          this.ots.activeOTSTarget.updatedDate = moment().format();
+          // set unchanged existing document status to inactive
 
-          masterDB.put(this.ots.activeOTSTarget._id,
-                        this.ots.activeOTSTarget,
-                        this.ots.activeOTSTarget._rev)
-                        .then( () => {this.$router.push({path: '/ots-management'});
-                        });
+          const oldDoc = await masterDB.get(this.ots.activeOTSTarget._id);
+          oldDoc.status = "Inactive";
+          console.log(oldDoc);
+          masterDB.put( oldDoc._id, oldDoc, oldDoc._rev ).then(
+            () => {
+              // create new document with new changes
+              delete this.ots.activeOTSTarget.__index;
+              delete this.ots.activeOTSTarget._id;
+              delete this.ots.activeOTSTarget._rev;
+              this.ots.activeOTSTarget.status = "Active"
+              this.ots.activeOTSTarget.createdBy = authService.getCurrentUser()!.username;
+              this.ots.activeOTSTarget.createdDate = moment().format();
+
+              masterDB.post(this.ots.activeOTSTarget).then(
+                () => {
+                  this.$router.push({path: '/ots-management'});
+                }
+              )
+            }
+          )
+
+          // masterDB.put(this.ots.activeOTSTarget._id,
+          //               this.ots.activeOTSTarget,
+          //               this.ots.activeOTSTarget._rev)
+          //               .then( () => {this.$router.push({path: '/ots-management'});
+          //               });
         } catch (err) {
-          console.log(err);
+          this.errorAlert(err);
           }
       } else {
         try {
           const masterDB: Client<any> = couchService.masterDB;
 
+          this.ots.activeOTSTarget.status = 'Active';
+          this.ots.activeOTSTarget.createdBy = authService.getCurrentUser()!.username;
+          this.ots.activeOTSTarget.createdDate = moment().format();
+
           masterDB.post(this.ots.activeOTSTarget).then( () => {
                       this.$router.push({path: '/ots-management'});
                   });
         } catch (err) {
-          console.log(err);
+          this.errorAlert(err);
         }
 
       }
@@ -409,6 +570,8 @@ export default class OtsTargeteDetail extends Vue {
 
     private created() {
       this.getOptions();
+      this.getHistory();
+      this.getEMEFP();
     }
 
 }

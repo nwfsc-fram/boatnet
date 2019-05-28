@@ -54,7 +54,7 @@ export interface ObserverAvailabilityState {
 }
 
 export interface GeneralState {
-  ports: string[];
+  // ports: string[];
   // fisheries: string[];
   // targetTypes: string[];
   roles: string[];
