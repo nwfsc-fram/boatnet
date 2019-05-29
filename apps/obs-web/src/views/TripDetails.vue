@@ -50,23 +50,23 @@
                 </q-list>
 
                 <q-select
-                v-model="trip.activeTrip.departurePort.name"
-                dense
                 label="Start Port"
-                @filter="portsFilterFn"
-                use-input
-                stack-label
+                v-model="trip.activeTrip.departurePort"
+                :options="ports"
+                @filter="startPortsFilterFn"
                 :option-label="opt => opt.name"
                 option-value="_id"
-                :options="ports"
+                dense
+                use-input
+                stack-label
                 >
                 </q-select>
 
                 <q-select
-                v-model="trip.activeTrip.returnPort.name"
+                v-model="trip.activeTrip.returnPort"
                 :dense="true"
                 label="End Port"
-                @filter="portsFilterFn"
+                @filter="endPortsFilterFn"
                 use-input
                 stack-label
                 :option-label="opt => opt.name"
@@ -294,7 +294,7 @@ export default class TripDetails extends Vue {
     }
 
 
-    private portsFilterFn(val: string, update: any, abort: any) {
+    private startPortsFilterFn(val: string, update: any, abort: any) {
     update(
         async () => {
             try {
@@ -313,6 +313,33 @@ export default class TripDetails extends Vue {
                     queryOptions
                     );
                 this.ports = ports.rows.map((row: any) => row.doc);
+            } catch (err) {
+                this.errorAlert(err);
+            }
+        }
+    );
+    }
+
+    private endPortsFilterFn(val: string, update: any, abort: any) {
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
+
+                const ports = await db.query(
+                    pouchService.lookupsDBName,
+                    'optecs_trawl/all_port_names',
+                    queryOptions
+                    );
+                this.ports = ports.rows.map((row: any) => row.doc);
+                this.ports.unshift({name: 'SAME AS START'});
             } catch (err) {
                 this.errorAlert(err);
             }

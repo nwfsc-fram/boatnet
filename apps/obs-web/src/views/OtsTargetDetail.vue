@@ -49,15 +49,16 @@
           <q-item v-if="ots.activeOTSTarget.targetType === 'Vessel'">
             <q-item-section>
             <q-select
-            v-model="ots.activeOTSTarget.targetVessel"
-            dense
             label="Target Vessel"
-            stack-label
-            option-label="vesselName"
-            option-value="_id"
-            use-input
+            v-model="ots.activeOTSTarget.targetVessel"
+            :options="vessels"
             @filter="filterVessels"
-            :options="vessels">
+            :option-label="opt => opt.vesselName"
+            option-value="_id"
+            stack-label
+            use-input
+            dense
+            >
             </q-select>
             </q-item-section>
           </q-item>
@@ -145,7 +146,7 @@
 
       </q-card-section>
 
-      <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'EM EFP'">
+      <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'EM EFP' && !ots.newTarget">
         <q-table
         title="Affected Vessels"
         :data="affectedVessels"
@@ -153,14 +154,18 @@
         dense
         row_key="_id"
         :pagination.sync="pagination"
+        :hide-bottom="this.ots.activeOTSTarget.targetType === 'Vessel'"
         >
           <template v-slot:body="props">
             <q-tr :props="props">
-              <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
-              <q-td key="coastGuardNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
-              <q-td key="vesselTrips" :props="props">{{ getTripsTaken(props.row.vessel) }}</q-td>
+              <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
+              <q-td key="coastGuardNumber" :props="props">{{ props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber }}</q-td>
+              <!-- <q-td key="vesselTrips" :props="props">{{ getTripsTaken(props.row.vessel) }}</q-td>
               <q-td key="selectedTrips" :props="props">{{ getSelectedTrips(props.row.vessel) }}</q-td>
-              <q-td key="coveredPercent" :props="props">{{ getCoveredPercent(props.row.vessel) }}%</q-td>
+              <q-td key="coveredPercent" :props="props">{{ getCoveredPercent(props.row.vessel) }}%</q-td> -->
+              <q-td key="vesselTrips" :props="props">{{ props.row.tripsTaken }}</q-td>
+              <q-td key="selectedTrips" :props="props">{{ props.row.selectedTrips }}</q-td>
+              <q-td key="coveredPercent" :props="props">{{ props.row.coveredPercent || '' }}</q-td>
             </q-tr>
           </template>
         </q-table>
@@ -239,7 +244,7 @@ export default class OtsTargetDetail extends Vue {
   private fisheries = [];
   private targetTypes = [];
 
-  private vessels: Vessel[] = [];
+  private vessels: any[] = [];
   private portGroups = ['TO DO - Populate DB with Port Groups'];
 
   private confirm = false;
@@ -260,7 +265,7 @@ export default class OtsTargetDetail extends Vue {
     { name: 'vesselTrips', label: 'Trips Taken', field: 'vesselTrips', required: true, align: 'left', sortable: true },
     { name: 'selectedTrips', label: 'Selected Trips', field: 'selectedTrips', required: true, align: 'left', sortable: true },
     { name: 'coveredPercent', label: 'Covered (%)', field: 'coveredPercent', required: true, align: 'left', sortable: true },
-  ]
+  ];
 
   private otsTargetHistory: any[] = [];
   private emEfpTrips: WcgopTrip[] = [];
@@ -314,7 +319,7 @@ export default class OtsTargetDetail extends Vue {
         'sethtest',
         'all_ots_targets'
       );
-      console.log(history);
+
       for (const row of history.rows) {
         const target = row.doc;
         this.otsTargetHistory.push(target);
@@ -355,66 +360,85 @@ export default class OtsTargetDetail extends Vue {
     }
 
     private get affectedVessels() {
-      let affectedVessels: any[] = [];
-      let targetedVessels: any[] = [];
-      if (this.ots.activeOTSTarget.targetType === 'Fishery Wide') {
-        // get active vesselTarget vessels
-        for (const target of this.otsTargetHistory) {
-          // create an array of active fishery target vessels
-          if (this.getStatus(target) === 'Active' && target.fishery === this.ots.activeOTSTarget.fishery && target.targetType === "Vessel")  {
-            targetedVessels.push( target.targetVessel.coastGuardNumber ? target.targetVessel.coastGuardNumber : target.targetVessel.stateRegulationNumber );
-          }
+      const affectedVessels: any[] = [];
+      const targetedVessels: any[] = [];
 
-        }
+      if (this.ots.activeOTSTarget.targetType === 'Fishery Wide') {
+
         // build a list of em efp vessels that are selected only based on an EM EFP Fishery Wide target
+        // for (const target of this.otsTargetHistory) {
+        //   if (this.getStatus(target) === 'Active' && target.fishery === this.ots.activeOTSTarget.fishery && target.targetType === 'Vessel')  {
+        //     targetedVessels.push( target.targetVessel.coastGuardNumber ? target.targetVessel.coastGuardNumber : target.targetVessel.stateRegulationNumber );
+        //   }
+        // }
+
         for (const member of this.emEfpRoster) {
           if (member.vessel) {
             const vesselID = member.vessel!.coastGuardNumber ? member.vessel!.coastGuardNumber : member.vessel!.stateRegulationNumber;
             if (targetedVessels.indexOf(vesselID) === -1) {
-              console.log(targetedVessels);
-              console.log(vesselID);
-              affectedVessels.push(member);
+              affectedVessels.push(member.vessel);
             }
           }
         }
-
-
-        // this.emEfpRoster.filter( (member) => member.vessel.vesselName )
-            // calculate percentage of trips covered per included vessel
-            console.log(affectedVessels);
-            return affectedVessels;
-      }
-      if (this.ots.activeOTSTarget.targetType === "Vessel") {
-        // calculate percentage of trips covered for the target vessel
+        for (const vessel of affectedVessels) {
+          vessel.tripsTaken = this.getTripsTaken(vessel);
+          vessel.selectedTrips = this.getSelectedTrips(vessel);
+          vessel.coveredPercent = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+        }
         return affectedVessels;
       }
+
+      if (this.ots.activeOTSTarget.targetType === 'Vessel') {
+
+        const activeVesselId = this.ots.activeOTSTarget.targetVessel.coastGuardNumber ? this.ots.activeOTSTarget.targetVessel.coastGuardNumber : this.ots.activeOTSTarget.targetVessel.stateRegulationNumber;
+
+
+        for (const member of this.emEfpRoster) {
+          if (member.vessel) {
+            const memberVesselId = member.vessel.coastGuardNumber ? member.vessel.coastGuardNumber : member.vessel.stateRegulationNumber;
+            if (memberVesselId === activeVesselId) {
+              affectedVessels.push(member.vessel);
+            }
+          }
+        }
+        for (const vessel of affectedVessels) {
+          vessel.tripsTaken = this.getTripsTaken(vessel);
+          vessel.selectedTrips = this.getSelectedTrips(vessel);
+          vessel.coveredPercent = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+        }
+        return affectedVessels;
+      } else {
       // TBD - Port Group
-      else {
-        return ['fish']
+        return ['fish'];
       }
     }
 
     private get targetHistory() {
-      return this.otsTargetHistory.filter( (target) => target.targetType === this.ots.activeOTSTarget.targetType && target.fishery === this.ots.activeOTSTarget.fishery)
+      if (this.ots.activeOTSTarget.targetType === 'Fishery Wide') {
+        return this.otsTargetHistory.filter( (target) => target.targetType === this.ots.activeOTSTarget.targetType && target.fishery === this.ots.activeOTSTarget.fishery);
+      } else if (this.ots.activeOTSTarget.targetType === 'Vessel') {
+        return this.otsTargetHistory.filter( (target) => target.targetType === this.ots.activeOTSTarget.targetType && target.fishery === this.ots.activeOTSTarget.fishery && target.targetVessel.vesselName === this.ots.activeOTSTarget.targetVessel.vesselName);
+      } else {
+        return 'FISH';
+      }
+
     }
 
     private optionsFn(val: string) {
       return moment(val) >= moment().subtract(1, 'days');
     }
 
-    private formatDate(date: string) {
-        return moment(date).format('MMM Do, YYYY');
+    private formatDate(rawdate: string) {
+        return moment(rawdate).format('MMM Do, YYYY');
     }
 
     private getTripsTaken(vessel: any) {
       const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
-      console.log(vesselID);
       let count = 0;
       for (const trip of this.emEfpTrips) {
-        let tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
         if ( tripVesselID === vesselID) {
-          console.log(trip.vessel!.coastGuardNumber)
-          count++
+          count++;
         }
       }
       return count;
@@ -424,17 +448,16 @@ export default class OtsTargetDetail extends Vue {
       const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
       let count = 0;
       for (const trip of this.emEfpTrips) {
-        let tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
         if ( tripVesselID === vesselID && trip.isSelected) {
-          console.log(trip.vessel!.coastGuardNumber)
-          count++
+          count++;
         }
       }
       return count;
     }
 
     private getCoveredPercent(vessel: any) {
-      let coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
+      const coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
       return coveredPercent ? coveredPercent : 0;
     }
 
@@ -444,7 +467,7 @@ export default class OtsTargetDetail extends Vue {
         const masterDB: Client<any> = couchService.masterDB;
 
         const oldDoc = await masterDB.get(this.ots.activeOTSTarget._id);
-        oldDoc.status = "Inactive";
+        oldDoc.status = 'Inactive';
         masterDB.put( oldDoc._id, oldDoc, oldDoc._rev ).then(
           () => {
             this.$router.push({path: '/ots-management'});
@@ -464,15 +487,14 @@ export default class OtsTargetDetail extends Vue {
           // set unchanged existing document status to inactive
 
           const oldDoc = await masterDB.get(this.ots.activeOTSTarget._id);
-          oldDoc.status = "Inactive";
-          console.log(oldDoc);
+          oldDoc.status = 'Inactive';
           masterDB.put( oldDoc._id, oldDoc, oldDoc._rev ).then(
             () => {
               // create new document with new changes
               delete this.ots.activeOTSTarget.__index;
               delete this.ots.activeOTSTarget._id;
               delete this.ots.activeOTSTarget._rev;
-              this.ots.activeOTSTarget.status = "Active"
+              this.ots.activeOTSTarget.status = 'Active';
               this.ots.activeOTSTarget.createdBy = authService.getCurrentUser()!.username;
               this.ots.activeOTSTarget.createdDate = moment().format();
 
@@ -480,9 +502,9 @@ export default class OtsTargetDetail extends Vue {
                 () => {
                   this.$router.push({path: '/ots-management'});
                 }
-              )
+              );
             }
-          )
+          );
 
           // masterDB.put(this.ots.activeOTSTarget._id,
           //               this.ots.activeOTSTarget,
@@ -545,27 +567,30 @@ export default class OtsTargetDetail extends Vue {
     }
 
     private filterVessels(val: string, update: any, abort: any) {
-      update(async () => {
-            try {
-              const masterDB: Client<any> = couchService.masterDB;
-              const queryOptions: ListOptions = {
-                limit: 7,
-                start_key: val.toLowerCase(),
-                inclusive_end: true,
-                descending: false
-              };
+      // update(async () => {
+      //       try {
+      //         const masterDB: Client<any> = couchService.masterDB;
+      //         const queryOptions: ListOptions = {
+      //           limit: 7,
+      //           start_key: val.toLowerCase(),
+      //           inclusive_end: true,
+      //           descending: false
+      //         };
 
-              const vessels = await masterDB.viewWithDocs<any>(
-                'optecs_trawl',
-                'all_vessel_names',
-                queryOptions
-              );
+      //         const vessels = await masterDB.viewWithDocs<any>(
+      //           'optecs_trawl',
+      //           'all_vessel_names',
+      //           queryOptions
+      //         );
 
-              this.vessels = vessels.rows.map((row: any) => row.doc);
-            } catch (err) {
-              this.errorAlert(err);
-            }
-          });
+      //         this.vessels = vessels.rows.map((row: any) => row.doc);
+      //       } catch (err) {
+      //         this.errorAlert(err);
+      //       }
+      //     });
+          update(
+            this.vessels = this.emEfpRoster.map( (member) => member.vessel)
+          );
         }
 
     private created() {

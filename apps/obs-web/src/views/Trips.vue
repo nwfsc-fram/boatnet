@@ -13,7 +13,7 @@
       use-input
       @filter="vesselsFilterFn"
       :options="vessels"
-      option-label="vesselName"
+      :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
       option-value="_id"
       ></q-select>
 
