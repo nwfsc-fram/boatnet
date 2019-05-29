@@ -1,7 +1,7 @@
 
 <template>
     <div class="q-pa-md">
-    <div class="q-gutter-y-md" style="max-width: 600px">
+    <div class="q-gutter-y-md">
       <q-card>
         <q-tabs
           v-model="tab"
@@ -12,151 +12,137 @@
           align="justify"
           narrow-indicator
         >
-          <q-tab name="mails" label="Mails" />
-          <q-tab name="alarms" label="Alarms" />
-          <q-tab name="movies" label="Movies" />
+          <q-tab name="trips" label="Trips" />
+          <q-tab name="hauls" label="Hauls" />
+          <q-tab name="catch" label="Catch" />
+          <q-tab name="catchBaskets" label="Catch Baskets" />
+          <q-tab name="specimens" label="Specimens" />
         </q-tabs>
 
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="mails">
-            <div class="text-h6">Mails</div>
+          <q-tab-panel name="trips">
+            <div class="text-h6">Trips</div>
+
+
+
+                  <q-table
+                              :data="WcgopTrips"
+                              :columns="columns"
+                              dense
+                              row-key="id"
+                              :pagination.sync="pagination"
+                              :visible-columns="visibleColumns"
+                              >
+
+                    <template v-slot:top="props">
+
+                    
+                        <div v-if="$q.screen.gt.xs" class="col">
+                          <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
+                          <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
+                          <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
+                        </div>
+
+                        <div v-if="$q.screen.gt.xs" class="col">
+                          <q-select
+                            outlined
+                            v-model="visibleColumns"
+                            multiple
+                            :options="columns"
+                            label="Visible Columns"
+                            style="width: 270px"
+                            option-label="label"
+                            option-value="name"
+                            emit-value
+                            :display-value=null
+                          >
+                          <template v-slot:append>
+                            <q-btn round dense flat style="font-size: .5em" icon="fa fa-plus-circle" @click="addAll" />
+                            <q-btn round dense flat style="font-size: .5em" icon="fa fa-minus-circle" @click="removeAll" />
+                          </template>
+
+                              <template v-slot:option="scope">
+                              <q-item
+                                v-bind="scope.itemProps"
+                                v-on="scope.itemEvents"
+                              >
+                                <q-item-section>
+                                  <q-item-label v-html="scope.opt.label" />
+                                </q-item-section>
+                                <q-item-section avatar v-if="scope.selected">
+                                  <q-icon name="fa fa-check-circle" />
+                                </q-item-section>
+                              </q-item>
+                            </template>
+
+                          </q-select>
+                        </div>
+
+                    </template>
+
+                          <template v-slot:body="props">
+                            <q-tr :props='props'>
+                            <q-td key="key" :props="props">{{ props.row.key }}</q-td>
+                            <q-td key="tripStatus" :props="props">{{ props.row.tripStatus.description }}</q-td>
+                            <q-td key="vessel" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+                            <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
+                            <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
+                            <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
+                            <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
+                            <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
+                            <q-td key="captain" :props="props">{{ props.row.captain }}</q-td>
+                            <q-td key="isPartialTrip" :props="props">{{ props.row.isPartialTrip }}</q-td>
+                            <q-td key="fishingDays" :props="props">{{ props.row.fishingDays }}</q-td>
+                            <q-td key="fishery" :props="props">{{ props.row.fishery ? props.row.fishery.description :'' }}</q-td>
+                            <q-td key="crewSize" :props="props">{{ props.row.crewSize }}</q-td>
+                            <q-td key="firstReceiver" :props="props">{{ props.row.firstReceiver }}</q-td>
+                            <q-td key="isFishProcessed" :props="props">{{ props.row.isFishProcessed }}</q-td>
+                            <q-td key="logbookNum" :props="props">{{ props.row.logbookNum }}</q-td>
+                            <q-td key="logbookType" :props="props">{{ props.row.logbookType }}</q-td>
+                            <q-td key="observerLogbookNum" :props="props">{{ props.row.observerLogbookNum }}</q-td>
+                            <q-td key="debriefer" :props="props">{{ props.row.debriefer }}</q-td>
+                            <q-td key="brd" :props="props">{{ props.row.brd }}</q-td>
+                            <q-td key="hlfc" :props="props">{{ props.row.hlfc }}</q-td>
+                            <q-td key="fishTickets" :props="props">{{ props.row.fishTickets }}</q-td>
+                            <q-td key="certificates" :props="props">{{ props.row.certificates }}</q-td>
+                            <q-td key="waiver" :props="props">{{ props.row.waiver }}</q-td>
+                            <q-td key="intendedGearType" :props="props">{{ props.row.intendedGearType }}</q-td>
+                            </q-tr>
+                          </template>
+
+                          </q-table>
+
+          </q-tab-panel>
+
+          <q-tab-panel name="hauls">
+            <div class="text-h6">Hauls</div>
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
           </q-tab-panel>
 
-          <q-tab-panel name="alarms">
-            <div class="text-h6">Alarms</div>
+          <q-tab-panel name="catch">
+            <div class="text-h6">Catch</div>
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
           </q-tab-panel>
 
-          <q-tab-panel name="movies">
-            <div class="text-h6">Movies</div>
+        <q-tab-panel name="catchBaskets">
+            <div class="text-h6">Catch Baskets</div>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          </q-tab-panel>
+
+          <q-tab-panel name="specimens">
+            <div class="text-h6">Specimens</div>
             Lorem ipsum dolor sit amet consectetur adipisicing elit.
           </q-tab-panel>
         </q-tab-panels>
+
+
+
+
       </q-card>
-
-      <q-card>
-        <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="mails">
-            <div class="text-h6">Mails</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </q-tab-panel>
-
-          <q-tab-panel name="alarms">
-            <div class="text-h6">Alarms</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </q-tab-panel>
-
-          <q-tab-panel name="movies">
-            <div class="text-h6">Movies</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          </q-tab-panel>
-        </q-tab-panels>
-
-        <q-separator />
-
-        <q-tabs
-          v-model="tab"
-          dense
-          class="bg-grey-3"
-          align="justify"
-          narrow-indicator
-        >
-          <q-tab name="mails" label="Mails" />
-          <q-tab name="alarms" label="Alarms" />
-          <q-tab name="movies" label="Movies" />
-        </q-tabs>
-      </q-card>
-
-
-        <q-table
-            :data="WcgopTrips"
-            :columns="columns"
-            dense
-            row-key="id"
-            :pagination.sync="pagination"
-            :visible-columns="visibleColumns"
-            >
-
-  <template v-slot:top="props">
 
   
-      <div v-if="$q.screen.gt.xs" class="col">
-        <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
-        <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
-        <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
-      </div>
-
-      <div v-if="$q.screen.gt.xs" class="col">
-        <q-select
-          outlined
-          v-model="visibleColumns"
-          multiple
-          :options="columns"
-          label="Visible Columns"
-          style="width: 270px"
-          option-label="label"
-          option-value="name"
-          emit-value
-          :display-value=null
-        >
-        <template v-slot:append>
-          <q-btn round dense flat style="font-size: .5em" icon="fa fa-plus-circle" @click="addAll" />
-          <q-btn round dense flat style="font-size: .5em" icon="fa fa-minus-circle" @click="removeAll" />
-        </template>
-
-            <template v-slot:option="scope">
-            <q-item
-              v-bind="scope.itemProps"
-              v-on="scope.itemEvents"
-            >
-              <q-item-section>
-                <q-item-label v-html="scope.opt.label" />
-              </q-item-section>
-              <q-item-section avatar v-if="scope.selected">
-                <q-icon name="fa fa-check-circle" />
-              </q-item-section>
-            </q-item>
-          </template>
-
-        </q-select>
-      </div>
-
-  </template>
-
-        <template v-slot:body="props">
-          <q-tr :props='props'>
-          <q-td key="key" :props="props">{{ props.row.key }}</q-td>
-          <q-td key="tripStatus" :props="props">{{ props.row.tripStatus.description }}</q-td>
-          <q-td key="vessel" :props="props">{{ props.row.vessel.vesselName }}</q-td>
-          <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
-          <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
-          <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
-          <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
-          <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
-          <q-td key="captain" :props="props">{{ props.row.captain }}</q-td>
-          <q-td key="isPartialTrip" :props="props">{{ props.row.isPartialTrip }}</q-td>
-          <q-td key="fishingDays" :props="props">{{ props.row.fishingDays }}</q-td>
-          <q-td key="fishery" :props="props">{{ props.row.fishery ? props.row.fishery.description :'' }}</q-td>
-          <q-td key="crewSize" :props="props">{{ props.row.crewSize }}</q-td>
-          <q-td key="firstReceiver" :props="props">{{ props.row.firstReceiver }}</q-td>
-          <q-td key="isFishProcessed" :props="props">{{ props.row.isFishProcessed }}</q-td>
-          <q-td key="logbookNum" :props="props">{{ props.row.logbookNum }}</q-td>
-          <q-td key="logbookType" :props="props">{{ props.row.logbookType }}</q-td>
-          <q-td key="observerLogbookNum" :props="props">{{ props.row.observerLogbookNum }}</q-td>
-          <q-td key="debriefer" :props="props">{{ props.row.debriefer }}</q-td>
-          <q-td key="brd" :props="props">{{ props.row.brd }}</q-td>
-          <q-td key="hlfc" :props="props">{{ props.row.hlfc }}</q-td>
-          <q-td key="fishTickets" :props="props">{{ props.row.fishTickets }}</q-td>
-          <q-td key="certificates" :props="props">{{ props.row.certificates }}</q-td>
-          <q-td key="waiver" :props="props">{{ props.row.waiver }}</q-td>
-          <q-td key="intendedGearType" :props="props">{{ props.row.intendedGearType }}</q-td>
-          </q-tr>
-        </template>
-
-        </q-table>
           </div>
   </div>
 </template>
@@ -189,7 +175,7 @@ private pagination = {rowsPerPage: 50};
 private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
 private visibleColumns = ['key', 'tripStatus', 'vessel'];
 private selectedColumns = [];
-private tab = 'mails';
+private tab = 'trips';
 private columns = [
     {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
     {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', align: 'left', sortable: true },
