@@ -67,7 +67,7 @@ export interface TallyCountData extends Base {
   shortCode?: string; // TODO redundant with species, refactor
   reason?: string;
   count?: number;
-  weightData?: TallyWeightData[];
+  weightData?: TallyWeightData;
 }
 
 export interface TallyDataRecord extends Base {

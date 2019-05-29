@@ -40,7 +40,13 @@
       @addNewSpecies="handleAddNamedSpecies"
       :speciesList="speciesList"
       position="left"
-      @cancel="handleCancelAddNamedSpecies"
+      @cancel="handleCancel"
+    />
+    <tally-weights-dialog
+      ref="addTallyWeightsModal"
+      @addNewSpecies="handleAddNamedSpecies"
+      :speciesList="speciesList"
+      @cancel="handleCancel"
     />
     <div>Mode: {{tallyMode}}</div>
   </q-page>
@@ -72,6 +78,7 @@ import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
 import { Species } from '@boatnet/bn-models';
+import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -79,6 +86,7 @@ Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
+Vue.component('tally-weights-dialog', TallyWeightsForDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
@@ -249,8 +257,7 @@ export default class Tally extends Vue {
           shortCode: data.button.labels.shortCode
         }; // TODO full species?
         this.setTallyOpMode(TallyOperationMode.WeightsForAddingWeight);
-        // TODO Weights Dialog
-        this.openAddSpeciesPopup();
+        this.openAddWeightsDialog();
         return;
     }
 
@@ -331,6 +338,16 @@ export default class Tally extends Vue {
     // TODO cleaner way to do this? (calling member of component)
   }
 
+  public closeAddWeightsDialog() {
+    (this.$refs.addTallyWeightsModal as any).close();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
+  public openAddWeightsDialog() {
+    (this.$refs.addTallyWeightsModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
   public handleAddNamedSpecies(species: any) {
     // console.log('MODE', this.tallyMode);
     // console.log('SPECIES', species);
@@ -351,12 +368,6 @@ export default class Tally extends Vue {
         this.closeAddSpeciesPopup();
         break;
     }
-  }
-
-  public handleCancelAddNamedSpecies() {
-    // TODO same as handleCancel?
-    this.setTallyOpMode(TallyOperationMode.Tally);
-    this.handleControlEvent('tally-mode');
   }
 
   public handleResetAllData() {
