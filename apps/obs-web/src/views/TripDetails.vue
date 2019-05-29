@@ -50,24 +50,28 @@
                 </q-list>
 
                 <q-select
-                v-model="trip.activeTrip.departurePort.name"
-                dense
                 label="Start Port"
+                v-model="trip.activeTrip.departurePort"
+                :options="ports"
                 @filter="startPortsFilterFn"
+                :option-label="opt => opt.name"
+                option-value="_id"
+                dense
                 use-input
                 stack-label
-                :options="portOptions"
                 >
                 </q-select>
 
                 <q-select
-                v-model="trip.activeTrip.returnPort.name"
+                v-model="trip.activeTrip.returnPort"
                 :dense="true"
                 label="End Port"
                 @filter="endPortsFilterFn"
                 use-input
                 stack-label
-                :options="portOptions"
+                :option-label="opt => opt.name"
+                option-value="_id"
+                :options="ports"
                 >
                 </q-select>
 
@@ -217,6 +221,7 @@ export default class TripDetails extends Vue {
     // private vessels = [];
     private permits: Permit[] = [];
     private otsTargets: OTSTarget[] = [];
+    private ports: any[] = [];
 
     constructor() {
         super();
@@ -288,39 +293,93 @@ export default class TripDetails extends Vue {
         });
     }
 
-    private updatePorts(val: string, update: any, abort: any, portType: any) {
-    update(async () => {
-      try {
-        const db = pouchService.db;
-        const queryOptions: ListOptions = {
-          limit: 5,
-          start_key: val.toLowerCase(),
-          inclusive_end: true,
-          descending: false
-        };
-
-        const ports = await db.query(
-          pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
-          queryOptions
-        );
-        this.portOptions = ports.rows.map((port: any) => port.value);
-        if (portType === 'end') {
-            this.portOptions.push('SAME AS START');
-        }
-      } catch (err) {
-        this.errorAlert(err);
-      }
-    });
-    }
 
     private startPortsFilterFn(val: string, update: any, abort: any) {
-        this.updatePorts(val, update, abort, 'start');
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
+
+                const ports = await db.query(
+                    pouchService.lookupsDBName,
+                    'optecs_trawl/all_port_names',
+                    queryOptions
+                    );
+                this.ports = ports.rows.map((row: any) => row.doc);
+            } catch (err) {
+                this.errorAlert(err);
+            }
         }
+    );
+    }
 
     private endPortsFilterFn(val: string, update: any, abort: any) {
-        this.updatePorts(val, update, abort, 'end');
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
+
+                const ports = await db.query(
+                    pouchService.lookupsDBName,
+                    'optecs_trawl/all_port_names',
+                    queryOptions
+                    );
+                this.ports = ports.rows.map((row: any) => row.doc);
+                this.ports.unshift({name: 'SAME AS START'});
+            } catch (err) {
+                this.errorAlert(err);
+            }
         }
+    );
+    }
+
+    // private updatePorts(val: string, update: any, abort: any, portType: any) {
+    // update(async () => {
+    //   try {
+    //     const db = pouchService.db;
+    //     const queryOptions: ListOptions = {
+    //       limit: 5,
+    //       start_key: val.toLowerCase(),
+    //       inclusive_end: true,
+    //       descending: false
+    //     };
+
+    //     const ports = await db.query(
+    //       pouchService.lookupsDBName,
+    //       'optecs_trawl/all_port_names',
+    //       queryOptions
+    //     );
+    //     this.portOptions = ports.rows.map((port: any) => port.value);
+    //     if (portType === 'end') {
+    //         this.portOptions.push('SAME AS START');
+    //     }
+    //   } catch (err) {
+    //     this.errorAlert(err);
+    //   }
+    // });
+    // }
+
+    // private startPortsFilterFn(val: string, update: any, abort: any) {
+    //     this.updatePorts(val, update, abort, 'start');
+    //     }
+
+    // private endPortsFilterFn(val: string, update: any, abort: any) {
+    //     this.updatePorts(val, update, abort, 'end');
+    //     }
 
     // private deleteTrip() {
     //     this.trip.trips.pop();
@@ -328,18 +387,26 @@ export default class TripDetails extends Vue {
     //     this.$router.push({path: '/trips/'});
     // }
 
+    private getStatus(otsTarget: OTSTarget) {
+        if ( (moment(otsTarget.effectiveDate) <= moment() && moment() <= moment(otsTarget.expirationDate)) && ( otsTarget.status !== 'Inactive' )) {
+            return 'Active';
+        } else {
+            return 'Inactive';
+        }
+    }
+
     private createTrip() {
         // this is where the pouch code to save the trip goes
         let activeOTSTarget;
         for (const otsTarget of this.otsTargets) {
             if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
-                if (otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === this.trip.activeTrip.fishery.name) {
+                if (this.getStatus(otsTarget) === 'Active' && otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === this.trip.activeTrip.fishery.name) {
                     activeOTSTarget = otsTarget;
                 }
             }
         }
         for (const otsTarget of this.otsTargets) {
-            if (otsTarget.targetVessel && this.trip.activeTrip && this.trip.activeTrip.vessel && this.trip.activeTrip.fishery) {
+            if (this.getStatus(otsTarget) === 'Active' && otsTarget.targetVessel && this.trip.activeTrip && this.trip.activeTrip.vessel && this.trip.activeTrip.fishery) {
                 const otsVesselId = otsTarget.targetVessel.coastGuardNumber ? otsTarget.targetVessel.coastGuardNumber : otsTarget.targetVessel.stateRegulationNumber;
                 const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber ? this.trip.activeTrip.vessel.coastGuardNumber : this.trip.activeTrip.vessel.stateRegulationNumber;
                 if (otsTarget.targetType === 'Vessel' && otsTarget.fishery === this.trip.activeTrip.fishery.name && otsVesselId === tripVesselId) {

@@ -18,10 +18,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import { State, Action } from 'vuex-class';
 import { AlertState, VesselState, PermitState, UserState } from '../_store/types/types';
-import { AuthState } from '@boatnet/bn-auth';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';
@@ -35,12 +36,35 @@ export default class Home extends Vue {
   @State('permit') private permit!: PermitState;
   @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
 
-  @Action('clear', { namespace: 'alert' }) private clear: any;
-  @Action('error', { namespace: 'alert' }) private error: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   constructor() {
     super();
   }
+
+    private async getUserFromUserDB() {
+        // get user doc from userDB if exits
+        console.log('getting user from userDB');
+
+        try {
+            const allDocs = await pouchService.db.allDocs(
+                pouchService.userDBName
+                );
+
+            for (const row of allDocs.rows) {
+                if (row.doc.type === 'person' && row.doc.userName) {
+                    if (row.doc.userName === authService.getCurrentUser()!.username) {
+
+                        this.user.newUser = false;
+                        this.user.activeUser = row.doc;
+                    }
+                }
+            }
+        } catch (err) {
+            this.errorAlert(err);
+        }
+    }
 
   private getPermits() {
 
@@ -99,6 +123,7 @@ export default class Home extends Vue {
   private created() {
     // this.couch();
     this.getPermits();
+    this.getUserFromUserDB();
   }
 
 }

@@ -53,7 +53,20 @@
                 </div>
 
                 <div class="row">
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.port" label="Home Port" @filter="filterPorts" use-input l :options="portOptions"></q-select>
+                    <q-select
+                    class="col-md q-pa-sm"
+                    label="Home Port"
+                    v-model="user.activeUser.port"
+                    :options="ports"
+                    @filter="portsFilterFn"
+                    :option-label="opt => opt.name"
+                    option-value="_id"
+                    outlined
+                    dense
+                    stack-label
+                    use-input
+                    >
+                    </q-select>
 
                     <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" option-label="vesselName" option-value="_id" use-input dense > </q-select>
                 </div>
@@ -119,12 +132,9 @@ export default class UserDetails extends Vue {
 
     private vessels: Vessel[] = [];
 
-    private portOptions: any = [];
     private usStateOptions: any = [];
 
-    private get ports() {
-        return this.general.ports.sort();
-    }
+    private ports: any[] = [];
 
     private get usStates() {
         return this.general.usStates;
@@ -142,19 +152,31 @@ export default class UserDetails extends Vue {
         super();
     }
 
-    private filterPorts(val: string , update: any) {
-        if (val === '') {
-            update(() => {
-                this.portOptions = this.general.ports.sort();
-                });
-            return;
+    private portsFilterFn(val: string, update: any, abort: any) {
+    update(
+        async () => {
+            try {
+                const db = pouchService.db;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
+
+                const ports = await db.query(
+                    pouchService.lookupsDBName,
+                    'optecs_trawl/all_port_names',
+                    queryOptions
+                    );
+                this.ports = ports.rows.map((row: any) => row.doc);
+            } catch (err) {
+                this.errorAlert(err);
+            }
         }
-        update(() => {
-            const searchString = val.toLowerCase();
-            this.portOptions = this.general.ports.filter(
-                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 ).sort();
-            });
-        }
+    );
+    }
 
     private filterStates(val: string , update: any) {
         if (val === '') {

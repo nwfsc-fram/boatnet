@@ -38,7 +38,6 @@
 
                     <template v-slot:top="props">
 
-                    
                         <div v-if="$q.screen.gt.xs" class="col">
                           <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
                           <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
@@ -142,7 +141,7 @@
 
       </q-card>
 
-  
+
           </div>
   </div>
 </template>
