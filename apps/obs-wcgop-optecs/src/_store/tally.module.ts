@@ -8,6 +8,7 @@ import {
   TallyLayoutRecordTypeName,
   TallyLayoutRecord,
   TallyCountData,
+  TallyCountWeight,
   TallyDataRecordTypeName,
   TallyDataRecord,
   TallyOperationMode
@@ -276,6 +277,9 @@ const actions: ActionTree<TallyState, RootState> = {
   clearLastIncDec({ commit }: any) {
     commit('clearLastIncDec');
   },
+  addTallyCountWeight({ commit }: any, value: TallyCountWeight) {
+    commit('addTallyCountWeight', value);
+  },
   assignNewButton(
     { commit }: any,
     value: {
@@ -461,6 +465,10 @@ const mutations: MutationTree<TallyState> = {
     newState.lastClickedIndex = -1;
     newState.lastClickedWasInc = true;
   },
+  addTallyCountWeight(newState: any, value: TallyCountWeight) {
+    console.log('TODO ADD', value);
+    // newState.countWeightData
+  },
   async assignNewButton(
     newState: any,
     value: { species: any; reason: string; index: number }
@@ -541,14 +549,12 @@ const mutations: MutationTree<TallyState> = {
 
       if (duplicateLayouts.length === 1) {
         // Only delete data if this is the only button of its (TEMP#) type.
-        const deleteIdx = newState.tallyDataRec.data.findIndex(
-          (rec: TallyCountData) => {
-            return (
-              rec.shortCode === button.labels!.shortCode &&
-              rec.reason === button.labels!.reason
-            );
-          }
+        const deleteIdx = findDataIndex(
+          newState,
+          button.labels!.shortCode,
+          button.labels!.reason!
         );
+
         if (deleteIdx >= 0) {
           newState.tallyDataRec.data.splice(deleteIdx, 1);
         }
@@ -573,16 +579,11 @@ const mutations: MutationTree<TallyState> = {
 
     for (const layout of newState.tallyLayout.layoutData) {
       if (!layout.blank && layout.labels.shortCode === value.oldSpeciesCode) {
-        console.log(layout.labels.shortCode);
-
         // combine data - find matching records if they exist
-        const sourceRecIdx = newState.tallyDataRec.data.findIndex(
-          (rec: TallyCountData) => {
-            return (
-              rec.shortCode === value.oldSpeciesCode &&
-              rec.reason === layout.labels.reason
-            );
-          }
+        const sourceRecIdx = findDataIndex(
+          newState,
+          value.oldSpeciesCode,
+          layout.labels.reason
         );
         if (sourceRecIdx) {
           // delete old data
@@ -623,6 +624,40 @@ const mutations: MutationTree<TallyState> = {
   }
 };
 
+// Helpers
+function getButtonFromIndex(getState: TallyState, idx: number) {
+  if (idx === undefined || idx < 0) {
+    return;
+  }
+  const button = getState.tallyLayout.layoutData[idx];
+  return button;
+}
+
+function findDataIndex(
+  getState: TallyState,
+  shortCode: string,
+  reason: string
+) {
+  // Find matching data field
+  const currentDataIdx = getState.tallyDataRec!.data!.findIndex(
+    (rec: TallyCountData) => {
+      return rec.shortCode === shortCode && rec.reason === reason;
+    }
+  );
+  return currentDataIdx;
+}
+
+function getCurrentDataIndex(getState: TallyState) {
+  const button = getButtonFromIndex(getState, getState.currentButtonIdx!);
+  if (button) {
+    return findDataIndex(
+      getState,
+      button.labels!.shortCode!,
+      button.labels!.reason!
+    );
+  }
+}
+
 // GETTERS
 const getters: GetterTree<TallyState, RootState> = {
   horizButtonCount(getState: TallyState) {
@@ -645,6 +680,12 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   currentReason(getState: TallyState) {
     return getState.currentReason;
+  },
+  currentCWData(getState: TallyState) {
+    const currentDataIdx = getCurrentDataIndex(getState);
+    if (currentDataIdx !== undefined && currentDataIdx >= 0) {
+      return getState.tallyDataRec!.data![currentDataIdx].countWeightData;
+    }
   },
   tempCounter(getState: TallyState) {
     // TODO store

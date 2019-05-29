@@ -45,7 +45,8 @@
     <tally-weights-dialog
       ref="addTallyWeightsModal"
       @addNewSpecies="handleAddNamedSpecies"
-      :speciesList="speciesList"
+      :buttonData="currentSelectedButton"
+      :speciesData="currentSelectedButton"
       @cancel="handleCancel"
     />
     <div>Mode: {{tallyMode}}</div>
@@ -253,6 +254,7 @@ export default class Tally extends Vue {
         return;
       case TallyOperationMode.WeightsForSelectSpecies:
         this.currentSelectedButton = data.button;
+        this.setCurrentButtonIdx(data.button.index);
         this.currentSelectedSpecies = {
           shortCode: data.button.labels.shortCode
         }; // TODO full species?

@@ -57,7 +57,7 @@ export interface TallyLayoutRecord extends Base {
 // -- Data Related Interfaces --
 export const TallyDataRecordTypeName = 'tally-data';
 
-interface TallyWeightData {
+export interface TallyCountWeight {
   weighedCount?: number;
   weight?: number;
 }
@@ -67,7 +67,10 @@ export interface TallyCountData extends Base {
   shortCode?: string; // TODO redundant with species, refactor
   reason?: string;
   count?: number;
-  weightData?: TallyWeightData;
+  calculatedTotalWeighedCount?: number;
+  calculatedTotalWeighedWeight?: number;
+  calculatedAverageWeight?: number;
+  countWeightData?: TallyCountWeight[];
 }
 
 export interface TallyDataRecord extends Base {
