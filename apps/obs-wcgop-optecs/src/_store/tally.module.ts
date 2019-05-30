@@ -229,6 +229,39 @@ async function updateDB(record: Base) {
   }
 }
 
+function getButtonFromIndex(getState: TallyState, idx: number) {
+  if (idx === undefined || idx < 0) {
+    return;
+  }
+  const button = getState.tallyLayout.layoutData[idx];
+  return button;
+}
+
+function findDataIndex(
+  getState: TallyState,
+  shortCode: string,
+  reason: string
+) {
+  // Find matching data field
+  const currentDataIdx = getState.tallyDataRec!.data!.findIndex(
+    (rec: TallyCountData) => {
+      return rec.shortCode === shortCode && rec.reason === reason;
+    }
+  );
+  return currentDataIdx;
+}
+
+function getCurrentDataIndex(getState: TallyState) {
+  const button = getButtonFromIndex(getState, getState.currentButtonIdx!);
+  if (button) {
+    return findDataIndex(
+      getState,
+      button.labels!.shortCode!,
+      button.labels!.reason!
+    );
+  }
+}
+
 // ACTIONS
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
@@ -466,8 +499,15 @@ const mutations: MutationTree<TallyState> = {
     newState.lastClickedWasInc = true;
   },
   addTallyCountWeight(newState: any, value: TallyCountWeight) {
-    console.log('TODO ADD', value);
-    // newState.countWeightData
+    const idx = getCurrentDataIndex(newState);
+    if (newState.tallyDataRec.data[idx!].countWeightData) {
+      newState.tallyDataRec.data[idx!].countWeightData.push(value);
+    } else {
+      // Create reactive entry
+      Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);
+    }
+    // TODO: Calculate calc values
+    updateTallyDataDB(newState.tallyDataRec);
   },
   async assignNewButton(
     newState: any,
@@ -623,40 +663,6 @@ const mutations: MutationTree<TallyState> = {
     updateTallyDataDB(newState.tallyDataRec);
   }
 };
-
-// Helpers
-function getButtonFromIndex(getState: TallyState, idx: number) {
-  if (idx === undefined || idx < 0) {
-    return;
-  }
-  const button = getState.tallyLayout.layoutData[idx];
-  return button;
-}
-
-function findDataIndex(
-  getState: TallyState,
-  shortCode: string,
-  reason: string
-) {
-  // Find matching data field
-  const currentDataIdx = getState.tallyDataRec!.data!.findIndex(
-    (rec: TallyCountData) => {
-      return rec.shortCode === shortCode && rec.reason === reason;
-    }
-  );
-  return currentDataIdx;
-}
-
-function getCurrentDataIndex(getState: TallyState) {
-  const button = getButtonFromIndex(getState, getState.currentButtonIdx!);
-  if (button) {
-    return findDataIndex(
-      getState,
-      button.labels!.shortCode!,
-      button.labels!.reason!
-    );
-  }
-}
 
 // GETTERS
 const getters: GetterTree<TallyState, RootState> = {
