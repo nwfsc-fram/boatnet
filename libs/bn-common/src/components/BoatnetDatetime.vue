@@ -1,9 +1,9 @@
 <template>
-  <div class="q-col-gutter-md column">
-    <boatnet-date :dateLabel="dateLabel" :date.sync="date"/>
+  <div>
+    <boatnet-date :dateLabel="dateLabel" :date.sync="date" :showDatePicker="showPopup"/>
     <q-input
       outlined
-      class="col-2"
+      class="q-pt-md"
       v-model="time"
       :label="timeLabel"
       mask="##:##"
@@ -23,6 +23,7 @@ export default class BoatnetDatetime extends Vue {
   @Prop() private dateLabel!: string;
   @Prop() private timeLabel!: string;
   @Prop() private value!: string;
+  @Prop() private showPopup!: boolean;
 
   get date() {
     return this.value ? moment(this.value).format('YYYY/MM/DD') : '';
