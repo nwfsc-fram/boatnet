@@ -144,8 +144,8 @@ export default class Trips extends Vue {
   private saveHaul: any;
   private currentHaul: WcgopOperation = {
     observerTotalCatch: {
-      weightMethod: {
-      }
+      measurement: {},
+      weightMethod: {}
     },
     legacy: {}
   };
