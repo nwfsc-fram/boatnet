@@ -15,7 +15,6 @@ export interface HakeSurveyCatch extends BaseCatch {
 
   children?: HakeSurveyCatch[];
 
-  baskets?: Basket[];
   specimens?: Specimen[];
   
   legacy?: {

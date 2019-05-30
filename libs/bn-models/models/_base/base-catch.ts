@@ -3,6 +3,7 @@ import { Base } from './base';
 import { UnsortedCatch } from '../_lookups/unsorted-catch';
 import { TaxonomyAlias } from '../_lookups/taxonomy-alias';
 import { CatchGrouping, Debris } from '../_lookups';
+import { Basket } from '../_common';
 
 // Ignore simple interface linting warning
 // https://github.com/palantir/tslint/blob/master/docs/usage/rule-flags/index.md
@@ -14,6 +15,8 @@ export interface BaseCatch extends Base {
   catchNum?: number; // Unique per Operation sequential
   catchType?: CatchType; // Lookups - TaxonomyAlias, Aggregate (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
   catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);  
+  baskets?: Basket[];
+
 }
 
 // Example object for discussion purposes
