@@ -11,21 +11,17 @@ import { RootState } from '@/_store/types/types';
 
 Vue.use(Vuex);
 
-export const notificationOptions: any[] = [
-  {label: 'email', value: 'email', icon: 'mail'},
-  {label: 'sms/text', value: 'sms/text', icon: 'sms'},
-  {label: 'app', value: 'app', icon: 'smartphone'}
-];
+
 
 export const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 
-export const usStates = [
-  'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
-  'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
-  'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
-  'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
-  'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
-];
+// export const usStates = [
+//   'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
+//   'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
+//   'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND',
+//   'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
+//   'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
+// ];
 
 // const activeVessel = 'Excalibur';
 // const activeTrip = '';

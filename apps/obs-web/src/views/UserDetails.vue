@@ -138,13 +138,13 @@ export default class UserDetails extends Vue {
 
     private ports: any[] = [];
 
-    private get roles() {
-        return this.general.roles.sort();
-    }
+    private notificationOptions: any[] = [
+    {label: 'email', value: 'email', icon: 'mail'},
+    {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+    {label: 'app', value: 'app', icon: 'smartphone'}
+    ];
 
-    private get notificationOptions() {
-        return this.general.notificationOptions;
-    }
+    private roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 
     constructor() {
         super();

@@ -7,8 +7,6 @@ import { RootState } from '@/_store/types/types';
 import { GeneralState } from '@/_store/types/types';
 import {
   roles,
-  usStates,
-  notificationOptions,
   portDecoder
 } from '@/_store/data';
 
@@ -16,8 +14,6 @@ Vue.use(Vuex);
 
 export const state: GeneralState = {
   roles,
-  usStates,
-  notificationOptions,
   portDecoder
 };
 
