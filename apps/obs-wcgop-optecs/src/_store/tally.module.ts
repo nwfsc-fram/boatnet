@@ -275,11 +275,13 @@ function calculateTallyValues(rec: TallyCountData) {
   let weighedWeight = 0;
   let avgWeight = 0;
   let totalCount = rec.count ? rec.count : 0;
+
   for (const data of rec.countWeightData) {
     weighedCount += data.weighedCount ? data.weighedCount : 0;
     weighedWeight += data.weight ? data.weight : 0;
+
     if (!data.isAddedToTally) {
-      totalCount += weighedCount;
+      totalCount += data.weighedCount!;
       Vue.set(data, 'isAddedToTally', true);
     }
   }
@@ -550,7 +552,6 @@ const mutations: MutationTree<TallyState> = {
     );
     const removeCount = newState.tallyDataRec.data[idx!].countWeightData[index].weighedCount;
     const newCount = newState.tallyDataRec.data[idx!].count - removeCount;
-    console.log('Counts', removeCount, newCount);
     Vue.set(newState.tallyDataRec.data[idx!], 'count', newCount);
     newState.tallyDataRec.data[idx!].countWeightData.splice(index, 1);
 

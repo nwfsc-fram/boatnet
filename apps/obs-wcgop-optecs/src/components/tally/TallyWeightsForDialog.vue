@@ -10,7 +10,13 @@
         <div class="text-body1">Average Weight: {{avgWeight}}</div>
       </q-card-section>
       <q-card-section>
-        <q-markup-table v-if="countsWeights" separator="horizontal" flat bordered>
+        <q-markup-table
+          class="scroll overflow-hidden"
+          v-if="countsWeights"
+          separator="horizontal"
+          flat
+          bordered
+        >
           <thead>
             <tr>
               <th class="text-left">Count</th>
@@ -49,12 +55,11 @@
       >Add To Tally</q-btn>&nbsp;&nbsp;
       <q-btn
         color="green"
-        :disabled="isAddDisabled"
+        :disabled="isAddAlreadyDisabled"
         @click="addTallyCountWeights(true)"
       >Add (Count Already Tallied)</q-btn>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup/>
         <q-btn flat label="Done" @click="close" v-close-popup/>
       </q-card-actions>
     </q-card>
@@ -107,6 +112,8 @@ export default Vue.component('tally-weights-dialog', {
         isAddedToTally: isAlreadyAdded
       };
       this.$store.commit('tallyState/addTallyCountWeight', newCW);
+      this.addCountValue = null;
+      this.addWeightValue = null;
     },
     handleDelete(index: number) {
       this.$store.commit('tallyState/deleteTallyCountWeight', index);
@@ -153,7 +160,24 @@ export default Vue.component('tally-weights-dialog', {
         : '';
     },
     isAddDisabled(): boolean {
-      return !this.addCountValue || !this.addWeightValue;
+      // TODO q-input range?
+      return (
+        !this.addCountValue ||
+        !this.addWeightValue ||
+        this.addCountValue! <= 0 ||
+        this.addCountValue! <= 0
+      );
+    },
+    isAddAlreadyDisabled(): boolean {
+      // TODO q-input range?
+      // TODO Calculate difference between total tally and weighed count, then restrict accordingly
+      return (
+        !this.addCountValue ||
+        !this.addWeightValue ||
+        this.addCountValue! <= 0 ||
+        this.addCountValue! <= 0 ||
+        this.addCountValue! >= this.$store.getters['tallyState/currentTallyData'].count
+      );
     }
   }
 });

@@ -10,6 +10,14 @@
         @click="handleClick"
       >
         <q-badge
+          v-if="data.calculatedTotalWeighedCount"
+          color="green-3"
+          text-color="black"
+          align="bottom"
+          floating
+          transparent
+        >Weighed</q-badge>
+        <q-badge
           v-if="tallyState.lastClickedIndex === layout.index && tallyState.lastClickedWasInc"
           color="black"
           floating
@@ -183,10 +191,12 @@ export default class TallyBtn extends Vue {
     // Else, we will inc/dec this tally
     if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
+      // If we have tally counts/ weights, then don't allow less than 0
+      const minVal = this.data.calculatedTotalWeighedCount ? this.data.calculatedTotalWeighedCount : 0;
       if (this.incDecValue > 0) {
         this.playSound('inc');
         this.data.count = newVal;
-      } else if (this.data.count === 0) {
+      } else if (newVal < minVal) {
         this.playSound('bad');
         return;
       } else {
