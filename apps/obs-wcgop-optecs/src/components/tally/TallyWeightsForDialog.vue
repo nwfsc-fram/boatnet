@@ -138,17 +138,17 @@ export default Vue.component('tally-weights-dialog', {
       }
     },
     weighedCount(): number {
-      if (this.$store.getters['tallyState/currentTallyData']) {
-        return this.$store.getters['tallyState/currentTallyData']
-          .calculatedTotalWeighedCount;
+      const tallyData = this.$store.getters['tallyState/currentTallyData'];
+      if (tallyData && tallyData.calculatedTotalWeighedCount) {
+        return tallyData.calculatedTotalWeighedCount;
       } else {
         return 0;
       }
     },
     avgWeight(): number {
-      if (this.$store.getters['tallyState/currentTallyData']) {
-        return this.$store.getters['tallyState/currentTallyData']
-          .calculatedAverageWeight.toFixed(2);
+      const tallyData = this.$store.getters['tallyState/currentTallyData'];
+      if (tallyData && tallyData.calculatedAverageWeight) {
+        return tallyData.calculatedAverageWeight.toFixed(2);
       } else {
         return 0;
       }
