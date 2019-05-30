@@ -13,7 +13,7 @@ Vue.use(Vuex);
 
 
 
-export const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
+// export const roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 
 // export const usStates = [
 //   'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
