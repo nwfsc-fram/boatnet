@@ -7,7 +7,7 @@
       <template v-slot:content1>
         <div class="q-gutter-md column">
           <div>
-            <b>Biolist:</b>2
+            <b>Biolist: </b>2
           </div>
           <boatnet-button-toggle
             title="Beaufort Scale:"
@@ -66,7 +66,7 @@
       <template v-slot:content2>
         <div class="q-gutter-md">
           <div>
-            <b>Biolist:</b>2
+            <b>Biolist: </b>2
           </div>
           <boatnet-button-toggle
             title="Weight Calib"
