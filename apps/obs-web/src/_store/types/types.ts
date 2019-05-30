@@ -59,7 +59,7 @@ export interface GeneralState {
   // targetTypes: string[];
   roles: string[];
   usStates: string[];
-  portGroups: string[];
+  // portGroups: string[];
   portDecoder: any[];
   // otsTargets: OTSTarget[];
   // vessels: Vessel[];

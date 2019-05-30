@@ -3,7 +3,7 @@
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
 

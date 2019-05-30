@@ -45,11 +45,11 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" @filter="filterStates" use-input :options="usStateOptions"></q-select>
+                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" use-input :options="usStates" :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
 
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.country" label="Country"  @filter="filterStates" use-input :options="usStateOptions"></q-select>
+                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.country" label="Country" use-input :options="countryOptions"></q-select>
                 </div>
 
                 <div class="row">
@@ -111,7 +111,7 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { GeneralState, UserState, VesselState } from '../_store/types/types';
-import { Vessel } from '@boatnet/bn-models';
+import { Vessel, UsState } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
@@ -133,12 +133,10 @@ export default class UserDetails extends Vue {
     private vessels: Vessel[] = [];
 
     private usStateOptions: any = [];
+    private usStates: UsState[] = [];
+    private countryOptions = ['United States', 'Canada', 'Mexico'];
 
     private ports: any[] = [];
-
-    private get usStates() {
-        return this.general.usStates;
-    }
 
     private get roles() {
         return this.general.roles.sort();
@@ -177,20 +175,6 @@ export default class UserDetails extends Vue {
         }
     );
     }
-
-    private filterStates(val: string , update: any) {
-        if (val === '') {
-            update(() => {
-                this.usStateOptions = this.general.usStates.sort();
-                });
-            return;
-        }
-        update(() => {
-            const searchString = val.toLowerCase();
-            this.usStateOptions = this.general.usStates.filter(
-                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 ).sort();
-            });
-        }
 
     private filterVessels(val: string, update: any, abort: any) {
       update(async () => {
@@ -343,11 +327,38 @@ export default class UserDetails extends Vue {
                 );
     }
 
+    private async getUsStates() {
+        const masterDB: Client<any> = couchService.lookupsDB;
+        try {
+        const queryOptions: ListOptions = {
+            descending: false
+        };
+
+        const usstates = await masterDB.viewWithDocs<any>(
+            'obs_web',
+            'all_us_states',
+            queryOptions
+            );
+
+        console.log(usstates.rows);
+
+        for (const row of usstates.rows) {
+            const state = row.doc;
+            this.usStates.push(state);
+        }
+        console.log(this.usStates);
+
+        } catch (err) {
+        this.errorAlert(err);
+        }
+    }
+
     private mounted() {
         if (this.$route.name === 'User Config') {
             this.getUser();
         }
         this.getVessels();
+        this.getUsStates();
     }
 
     private navigateBack() {
