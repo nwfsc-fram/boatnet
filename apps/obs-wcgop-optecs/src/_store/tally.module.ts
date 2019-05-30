@@ -313,6 +313,9 @@ const actions: ActionTree<TallyState, RootState> = {
   addTallyCountWeight({ commit }: any, value: TallyCountWeight) {
     commit('addTallyCountWeight', value);
   },
+  deleteTallyCountWeight({ commit }: any, index: number) {
+    commit('deleteTallyCountWeight', index);
+  },
   assignNewButton(
     { commit }: any,
     value: {
@@ -505,6 +508,19 @@ const mutations: MutationTree<TallyState> = {
     } else {
       // Create reactive entry
       Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);
+    }
+    // TODO: Calculate calc values
+    updateTallyDataDB(newState.tallyDataRec);
+  },
+  deleteTallyCountWeight(newState: any, index: number) {
+    const idx = getCurrentDataIndex(newState);
+    console.log('[Tally Module] Deleting CW data', newState.tallyDataRec.data[idx!].countWeightData[index]);
+    newState.tallyDataRec.data[idx!].countWeightData.splice(index, 1);
+
+    const length = newState.tallyDataRec.data[idx!].countWeightData.length;
+    if (length === 0) {
+      // Delete reactive entry
+      Vue.delete(newState.tallyDataRec.data[idx!], 'countWeightData');
     }
     // TODO: Calculate calc values
     updateTallyDataDB(newState.tallyDataRec);

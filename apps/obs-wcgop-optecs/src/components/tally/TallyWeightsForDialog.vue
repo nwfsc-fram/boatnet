@@ -2,14 +2,28 @@
   <q-dialog v-model="isOpen" persistent>
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Counts/ Weights for {{shortCode}} - {{reason}} </div>
-        <div>{{stuffState}}</div>
+        <div class="text-h6">Counts/ Weights for {{shortCode}} - {{reason}}</div>
+        <q-markup-table v-if="countsWeights" separator="horizontal" flat bordered>
+          <thead>
+            <tr>
+              <th class="text-left">Count</th>
+              <th class="text-left">Weight</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(cw, index) in countsWeights" :key="index">
+              <th class="text-left">{{cw.weighedCount}}</th>
+              <th class="text-left">{{cw.weight}}</th>
+              <th @click="handleDelete(index)"><q-icon style="font-size: 32px;" name="delete_forever"/></th>
+            </tr>
+          </tbody>
+        </q-markup-table>
       </q-card-section>
       <q-btn @click="addTallyCountWeights">ADD</q-btn>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Done" @click="addTallyCountWeights" v-close-popup/>
+        <q-btn flat label="Done" v-close-popup/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -25,7 +39,7 @@ export default Vue.component('tally-weights-dialog', {
     // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
     buttonData: {
       type: Object,
-      default: { labels: { shortCode: '', reason: ''}}
+      default: { labels: { shortCode: '', reason: '' } }
     },
     speciesData: {
       type: Object,
@@ -50,70 +64,35 @@ export default Vue.component('tally-weights-dialog', {
     },
     addTallyCountWeights() {
       const dummy = {
-        weighedCount: 10,
-        weight: 10.25
+        weighedCount: Math.floor(Math.random() * 10),
+        weight: Math.random() * 10
       };
       this.$store.commit('tallyState/addTallyCountWeight', dummy);
-      // this.$emit('addNewSpecies', this.selectedSpecies.doc);
+    },
+    handleDelete(index: number) {
+      this.$store.commit('tallyState/deleteTallyCountWeight', index);
     }
-
   },
   computed: {
-    stuffState(): string {
+    countsWeights(): string {
       return this.$store.getters['tallyState/currentCWData'];
     },
     shortCode(): string {
-      return this.buttonData && this.buttonData.labels ? this.buttonData.labels.shortCode : '';
+      return this.buttonData && this.buttonData.labels
+        ? this.buttonData.labels.shortCode
+        : '';
     },
     reason(): string {
-      return this.buttonData && this.buttonData.labels ? this.buttonData.labels.reason : '';
+      return this.buttonData && this.buttonData.labels
+        ? this.buttonData.labels.reason
+        : '';
     }
   }
 });
 
-// @Component
-// export default class TallyWeightsForDialog extends Vue {
-//   // See usage in obs-wcgop-optecs for example usage
-//   @Prop() public speciesList!: any[];
-//   private selectedSpecies: any = null;
-//   private options: any[] = [];
-//   private isOpen = false;
-
-//   public open() {
-//     this.selectedSpecies = undefined;
-//     this.isOpen = true;
-//   }
-
-//   public close() {
-//     this.$emit('cancel');
-//     this.isOpen = false;
-//   }
-
-//   public addTallyCountWeights() {
-//       console.log('TODO ADD COUNTS WEIGHTS');
-//     //this.$emit('addNewSpecies', this.selectedSpecies.doc);
-//   }
-
-//   /**
-//    * Autocomplete: Search by 4-letter code and common name
-//    */
-//   private async filterFn(val: string, update: any, abort: any) {
-//     update(async () => {
-//       const valUpper = val.toUpperCase();
-//       this.options = this.speciesList
-//         .filter((s: any) => {
-//           return (
-//             s.key.startsWith(valUpper) ||
-//             s.value.commonName.toUpperCase().indexOf(valUpper) > -1
-//           );
-//         })
-//         .map((s: any) => {
-//           return {
-//             label: s.key + ': ' + s.value.commonName,
-//             ...s
-//           };
-//         });
-//     });
-//   }
-// }
 </script>
+<style scoped lang="scss">
+th {
+  font-size: 20px; // Not working?
+}
+</style>
