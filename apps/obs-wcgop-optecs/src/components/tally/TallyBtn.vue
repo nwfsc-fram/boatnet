@@ -10,6 +10,14 @@
         @click="handleClick"
       >
         <q-badge
+          v-if="data.calculatedTotalWeighedCount"
+          color="green-3"
+          text-color="black"
+          align="bottom"
+          floating
+          transparent
+        >Weighed</q-badge>
+        <q-badge
           v-if="tallyState.lastClickedIndex === layout.index && tallyState.lastClickedWasInc"
           color="black"
           floating
@@ -32,7 +40,7 @@
           floating
         >SWAP</q-badge>
         <q-badge
-          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect"
+          v-if="tallyMode === addExistingSpecies || tallyMode === allTalliesSelect || tallyMode === weightsForSelect"
           color="blue"
           text-color="white"
           floating
@@ -141,6 +149,7 @@ export default class TallyBtn extends Vue {
   private modifyDistSelectButton = TallyOperationMode.ModifyDispButtonSelect;
   private modifyDistSelectDisp = TallyOperationMode.ModifyDispSelectDisp;
   private allTalliesSelect = TallyOperationMode.AllTalliesSelectSpecies;
+  private weightsForSelect = TallyOperationMode.WeightsForSelectSpecies;
 
   public handleBlankClicked() {
     this.$emit('blankClicked', this.layout);
@@ -166,7 +175,8 @@ export default class TallyBtn extends Vue {
       this.tallyMode === TallyOperationMode.AddTempSpeciesLocation ||
       this.tallyMode === TallyOperationMode.NameTempSpeciesSelect ||
       this.tallyMode === TallyOperationMode.ModifyDispButtonSelect ||
-      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies
+      this.tallyMode === TallyOperationMode.AllTalliesSelectSpecies ||
+      this.tallyMode === TallyOperationMode.WeightsForSelectSpecies
     ) {
       this.$emit('dataChanged', { button: this.layout, data: this.data });
       return;
@@ -181,18 +191,17 @@ export default class TallyBtn extends Vue {
     // Else, we will inc/dec this tally
     if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
+      // If we have tally counts/ weights, then don't allow less than 0
+      const minVal = this.data.calculatedTotalWeighedCount ? this.data.calculatedTotalWeighedCount : 0;
       if (this.incDecValue > 0) {
         this.playSound('inc');
         this.data.count = newVal;
-      } else if (this.data.count === 0) {
+      } else if (newVal < minVal) {
         this.playSound('bad');
         return;
       } else {
         this.playSound('dec');
         this.data.count = newVal;
-        if (this.data.count < 0) {
-          this.data.count = 0;
-        }
       }
 
       this.$emit('dataChanged', { button: this.layout, data: this.data });

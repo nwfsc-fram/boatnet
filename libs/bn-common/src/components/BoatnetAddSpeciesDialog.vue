@@ -27,7 +27,7 @@
       </q-select>
 
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" v-close-popup />
+        <q-btn flat label="Cancel" v-close-popup/>
         <q-btn flat label="Add" :disabled="!selectedSpecies" @click="addSpecies" v-close-popup/>
       </q-card-actions>
     </q-card>
@@ -35,52 +35,58 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 
-@Component
-export default class BoatnetAddSpeciesDialog extends Vue {
-  // See usage in obs-wcgop-optecs for example usage
-  @Prop() public speciesList!: any[];
-  @Prop( {default: 'center'}) public position!: string;
-  private selectedSpecies: any = null;
-  private options: any[] = [];
-  private isOpen = false;
-
-  public open() {
-    this.selectedSpecies = undefined;
-    this.isOpen = true;
+export default Vue.component('boatnet-add-species-dialog', {
+  props: {
+    // https://vuejs.org/v2/guide/components-props.html
+    speciesList: {
+      // this seems complicated, not sure if there's a simpler way
+      // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
+      type: Array as () => any[]
+    },
+    position: {
+      type: String,
+      default: 'center'
+    }
+  },
+  data() {
+    return {
+      selectedSpecies: null as any,
+      options: [] as any[],
+      isOpen: false
+    };
+  },
+  methods: {
+    open() {
+      this.selectedSpecies = undefined;
+      this.isOpen = true;
+    },
+    close() {
+      this.$emit('cancel');
+      this.isOpen = false;
+    },
+    addSpecies() {
+      this.$emit('addNewSpecies', this.selectedSpecies.doc);
+    },
+    async filterFn(val: string, update: any, abort: any) {
+      update(async () => {
+        const valUpper = val.toUpperCase();
+        this.options = this.speciesList
+          .filter((s: any) => {
+            return (
+              s.key.startsWith(valUpper) ||
+              s.value.commonName.toUpperCase().indexOf(valUpper) > -1
+            );
+          })
+          .map((s: any) => {
+            return {
+              label: s.key + ': ' + s.value.commonName,
+              ...s
+            };
+          });
+      });
+    }
   }
-
-  public close() {
-    this.$emit('cancel');
-    this.isOpen = false;
-  }
-
-  public addSpecies() {
-    // TODO These are temporary species records, pending taxonomy DB merge
-    this.$emit('addNewSpecies', this.selectedSpecies.doc);
-  }
-
-  /**
-   * Autocomplete: Search by 4-letter code and common name
-   */
-  private async filterFn(val: string, update: any, abort: any) {
-    update(async () => {
-      const valUpper = val.toUpperCase();
-      this.options = this.speciesList
-        .filter((s: any) => {
-          return (
-            s.key.startsWith(valUpper) ||
-            s.value.commonName.toUpperCase().indexOf(valUpper) > -1
-          );
-        })
-        .map((s: any) => {
-          return {
-            label: s.key + ': ' + s.value.commonName,
-            ...s
-          };
-        });
-    });
-  }
-}
+});
 </script>
