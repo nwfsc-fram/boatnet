@@ -1,27 +1,27 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { WcgopAppState, RootState } from '@/_store/types/types';
-import { WcgopTrip, BoatnetUser } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, BoatnetUser } from '@boatnet/bn-models';
 import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
 
 export const state: WcgopAppState = {
-  currentSelectionId: undefined,
   currentTrip: undefined,
+  currentHaul: undefined,
   isKeyboardEnabled: true,
   isSoundEnabled: true
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
-  setCurrentSelectionId({ commit }: any, id: string) {
-    commit('setCurrentSelectionId', id);
-  },
-  saveTrip({ commit }: any, trip: WcgopTrip) {
-    commit('saveTrip', trip);
+  save({ commit }: any, trip: WcgopTrip) {
+    commit('save', trip);
   },
   setCurrentTrip({ commit }: any, trip: WcgopTrip) {
     commit('setCurrentTrip', trip);
+  },
+  setCurrentHaul({ commit }: any, haul: WcgopOperation) {
+    commit('setCurrentHaul', haul);
   },
   clear({ commit }: any) {
     commit('setCurrentTrip', undefined);
@@ -35,16 +35,13 @@ const actions: ActionTree<WcgopAppState, RootState> = {
 };
 
 const mutations: MutationTree<WcgopAppState> = {
-  setCurrentSelectionId(newState: any, id: string) {
-    newState.currentSelectionId = id;
-  },
-  saveTrip(newState: any, trip: WcgopTrip) {
+  save(newState: any, record: any) {
     try {
-      if (trip._id) {
+      if (record._id) {
         pouchService.db
-          .put(pouchService.userDBName, trip)
+          .put(pouchService.userDBName, record)
           .then((response: any) => {
-            trip._rev = response.rev;
+            record._rev = response.rev;
           });
       }
     } catch (err) {
@@ -53,6 +50,9 @@ const mutations: MutationTree<WcgopAppState> = {
   },
   setCurrentTrip(newState: any, trip: WcgopTrip) {
     newState.currentTrip = trip;
+  },
+  setCurrentHaul(newState: any, haul: WcgopOperation) {
+    newState.currentHaul = haul;
   },
   setKeyboardStatus(newState: any, isEnabled: boolean) {
     newState.isKeyboardEnabled = isEnabled;
@@ -63,11 +63,11 @@ const mutations: MutationTree<WcgopAppState> = {
 };
 
 const getters: GetterTree<WcgopAppState, RootState> = {
-  currentSelectionId(getState: WcgopAppState) {
-    return getState.currentSelectionId;
-  },
   currentTrip(getState: WcgopAppState) {
     return getState.currentTrip;
+  },
+  currentHaul(getState: WcgopAppState) {
+    return getState.currentHaul;
   },
   isSoundEnabled(getState: WcgopAppState) {
     return getState.isSoundEnabled;

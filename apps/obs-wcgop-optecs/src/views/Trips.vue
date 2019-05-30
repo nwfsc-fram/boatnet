@@ -169,8 +169,13 @@ export default class Trips extends Vue {
   }
 
   private handleSelectTrip(trip: WcgopTrip) {
-    this.setCurrentTrip(trip);
-    this.setCurrentSelectionId(trip._id);
+    if (trip) {
+      this.setCurrentTrip(trip);
+      this.setCurrentSelectionId(trip._id);
+    } else {
+      this.setCurrentTrip(null);
+      this.setCurrentSelectionId(null);
+    }
   }
 
   private handleAddTrip() {

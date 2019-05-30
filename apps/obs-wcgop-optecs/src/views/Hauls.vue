@@ -1,33 +1,30 @@
 <template>
-<q-page padding>
-  <boatnet-summary
-        currentScreen="Haul"
-        :current="currentHaul"
-      >
-        <template v-slot:table>
-          <boatnet-table
-            :data="wcgopHaulsData"
-            :settings="wcgopHaulsSettings"
-            @select="handleSelectHaul"
-          >
-            <template v-slot:default="rowVals">
-              <q-td key="haulNum">{{rowVals.row.haulNum}}</q-td>
-              <q-td key="weightMethod">{{ rowVals.row.observerTotalCatch.weightMethod }}</q-td>
-              <q-td key="gearPerf">{{ rowVals.row.gearPerformance }}</q-td>
-              <q-td key="targetStrategy">{{ rowVals.row.targetStrategy }}</q-td>
-              <q-td key="gearType">{{ rowVals.row.gearType }}</q-td>
-              <q-td key="setDate">{{ formatDate(rowVals.row.locations[0].date) }}</q-td>
-              <q-td key="upDate">{{ formatDate(rowVals.row.locations[1].date) }}</q-td>
-              <q-td key="otcWeight">{{ rowVals.row.observerTotalCatch.value }}</q-td>
-              <q-td key="errors">{{ rowVals.row.errors }}</q-td>
-            </template>
-          </boatnet-table>
-        </template>
-        <template v-slot:goToButtons>
-          <q-btn color="primary" icon="play_arrow" label="Go To Logbook"/>
-        </template>
-      </boatnet-summary>
-</q-page>
+  <q-page padding>
+    <boatnet-summary currentScreen="Haul" :current="currentHaul" @edit="editHauls">
+      <template v-slot:table>
+        <boatnet-table
+          :data="wcgopHaulsData"
+          :settings="wcgopHaulsSettings"
+          @select="handleSelectHaul"
+        >
+          <template v-slot:default="rowVals">
+            <q-td key="haulNum">{{rowVals.row.doc.operationNum}}</q-td>
+            <q-td key="weightMethod">{{ rowVals.row.doc.observerTotalCatch.weightMethod.description }}</q-td>
+            <q-td key="gearPerf">{{ rowVals.row.doc.gearPerformance }}</q-td>
+            <q-td key="targetStrategy">SALM</q-td> <!--TODO {{ rowVals.row.doc.targetStrategy }}-->
+            <q-td key="gearType">{{ rowVals.row.doc.gearType }}</q-td>
+            <q-td key="setDate">{{ formatDate(rowVals.row.doc.locations[0].date) }}</q-td>
+            <q-td key="upDate">{{ formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].date) }}</q-td>
+            <q-td key="otcWeight">{{ (rowVals.row.doc.observerTotalCatch.measurement.value) }}</q-td>
+            <q-td key="errors">100</q-td> <!-- TODO -->
+          </template>
+        </boatnet-table>
+      </template>
+      <template v-slot:goToButtons>
+        <q-btn color="primary" icon="play_arrow" label="Go To Logbook"/>
+      </template>
+    </boatnet-summary>
+  </q-page>
 </template>
 
 
@@ -35,7 +32,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Point } from 'geojson';
+import { pouchService } from '@boatnet/bn-pouch';
+import { Action, Getter } from 'vuex-class';
 import {
+  WcgopTrip,
   WcgopOperation,
   WcgopOperationTypeName,
   LocationEvent,
@@ -51,8 +51,14 @@ Vue.component(BoatnetSummary);
 @Component
 export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
-  private wcgopHaulsData: any[];
-  private currentHaul!: any;
+  private wcgopHaulsData: any[] = [];
+
+  @Action('setCurrentHaul', { namespace: 'appState' })
+  private setCurrentHaul: any;
+  @Getter('currentHaul', { namespace: 'appState' })
+  private currentHaul!: WcgopOperation;
+  @Getter('currentTrip', { namespace: 'appState' })
+  private currentTrip!: WcgopTrip;
 
   constructor() {
     super();
@@ -126,55 +132,49 @@ export default class Hauls extends Vue {
         }
       ]
     };
-    const locationExample: LocationEvent = {
-      location: {
-        // GeoJSON https://tools.ietf.org/html/rfc7946
-        type: 'Point',
-        coordinates: [124.6, 10.1]
-      },
-      date: moment()
-        .subtract(1, 'days')
-        .format()
-    };
+  }
 
-    const locationExample2: LocationEvent = {
-      location: {
-        // GeoJSON https://tools.ietf.org/html/rfc7946
-        type: 'Point',
-        coordinates: [124.6, 10.1]
-      },
-      date: moment().format()
+  private async getHauls() {
+    const queryOptions = {
+      keys: this.currentTrip.operationIDs
     };
+    try {
+      const result = await pouchService.db.allDocs(
+        pouchService.userDBName,
+        queryOptions
+      );
+      this.wcgopHaulsData = result.rows;
+     // console.log('le output ' + JSON.stringify(this.wcgopHaulsData));
+    } catch (err) {
+      console.log('error fetching hauls');
+    }
+  }
 
-    const exampleHaul = {
-      _id: '1',
-      type: WcgopOperationTypeName,
-      createdBy: 'test',
-      createdDate: moment().format(),
-      haulNum: 1,
-      observerTotalCatch: {
-        value: 170,
-        units: 'kg',
-        weightMethod: '21'
-      },
-      locations: [locationExample, locationExample2],
-      gearPerformance: '5',
-      targetStrategy: 'ALBC',
-      gearType: 'Trawl'
-    };
-
-    const exampleHaul2 = {
-      ...exampleHaul,
-      haulNum: 2,
-      targetStrategy: 'BANK'
-    };
-
-    this.wcgopHaulsData = [exampleHaul, exampleHaul2];
+  private created() {
+    this.getHauls();
   }
 
   private handleSelectHaul(haul: any) {
-    console.log(JSON.stringify(haul));
-    this.currentHaul = haul;
+    if (haul) {
+      this.setCurrentHaul(haul.doc);
+    } else {
+      this.setCurrentHaul(undefined);
+    }
+  }
+
+  private addHauls() {
+   /* let haulNum;
+    if (this.wcgopHaulsData[0]) {
+      tripNum = this.userDBTrips[0].tripNum + 1;
+    }
+    const trip: WcgopTrip = { tripNum };
+    this.setCurrentTrip(trip);
+    this.$router.push({ path: '/hauldetails/' + trip.tripNum });
+    */
+  }
+
+  private editHauls() {
+    this.$router.push({ path: '/hauldetails/' + this.currentHaul.operationNum });
   }
 
   private formatDate(date: string) {

@@ -1,5 +1,5 @@
 - We use feature branches and Gitlab/ github.com merge requests to handle workflow (instead of just committing straight to master.) This should help us all out for brief code reviews, learning, and not breaking master.
-- Example for a ticket, FIELD-123: Add xyz Component
+- Example for a ticket, FIELD-123: Add xyz Component  [You can do all of this in Visual Studio Code, but here's the cmd line version]
   - `git checkout master && git pull` newest master
   - `git checkout -b FIELD-123_Add_xyz_component` Create new branch and check it out
   - `git push --set-upstream origin FIELD-123_Add_xyz_component` track your new branch upstream, so git push works. (Or add this when you do your push)

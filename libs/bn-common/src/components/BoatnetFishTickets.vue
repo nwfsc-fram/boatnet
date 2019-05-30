@@ -1,23 +1,19 @@
 <template>
   <span>
-    <q-table
-      dense
-      hide-bottom
+    <boatnet-table
       :data="modifiedFishTickets"
-      :columns="columns"
-      row-key="__index"
-      selection="single"
-      :selected.sync="selected"
+      :settings="settings"
+      :showBottom="true"
+      :isCondensed="true"
+      @select="selectTrip"
     >
-      <template v-slot:body="props">
-        <q-tr :props="props" @click.native="selectTrip(props.row)" class="cursor-pointer">
-          <q-td/>
-          <q-td key="fishTicketNum" :props="props">{{ props.row.fishNum }}</q-td>
-          <q-td key="date" :props="props">{{ props.row.date }}</q-td>
-          <q-td key="state" :props="props">{{ props.row.state }}</q-td>
-        </q-tr>
+      <template v-slot:default="rowVals">
+        <q-td key="fishTicketNum">{{ rowVals.row.fishNum }}</q-td>
+        <q-td key="date">{{ rowVals.row.date }}</q-td>
+        <q-td key="state">{{ rowVals.row.state }}</q-td>
       </template>
-    </q-table>
+    </boatnet-table>
+
     <div class="row q-gutter-sm q-pa-md justify-center">
       <q-btn color="primary" label="Add" @click="addRow"/>
       <q-btn color="primary" label="Edit" @click="editRow" :disabled="selected.length <= 0"/>
@@ -71,7 +67,9 @@ import moment from 'moment';
 @Component
 export default class BoatnetFishTickets extends Vue {
   @Prop() private fishTickets!: WcgopFishTicket[];
-  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets ? this.fishTickets : [];
+  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets
+    ? this.fishTickets
+    : [];
 
   private selected: any[] = [];
   private showDialog = false;
@@ -79,37 +77,36 @@ export default class BoatnetFishTickets extends Vue {
 
   private currFishTicket: WcgopFishTicket = {};
 
-  private columns = [
-    {
-      name: 'fishTicketNum',
-      required: true,
-      label: 'Fish #',
-      align: 'left',
-      field: (row: any) => row.fishNum,
-      sortable: true
-    },
-    {
-      name: 'date',
-      align: 'left',
-      label: 'Date',
-      field: (row: any) => row.date,
-      sortable: true
-    },
-    {
-      name: 'state',
-      align: 'left',
-      label: 'State',
-      field: (row: any) => row.state,
-      sortable: true
-    }
-  ];
+  private settings = {
+    rowKey: '__index',
+    columns: [
+      {
+        name: 'fishTicketNum',
+        required: true,
+        label: 'Fish #',
+        align: 'left',
+        field: (row: any) => row.fishNum,
+        sortable: true
+      },
+      {
+        name: 'date',
+        align: 'left',
+        label: 'Date',
+        field: (row: any) => row.date,
+        sortable: true
+      },
+      {
+        name: 'state',
+        align: 'left',
+        label: 'State',
+        field: (row: any) => row.state,
+        sortable: true
+      }
+    ]
+  };
 
   private selectTrip(row: any) {
-    if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
-      this.selected = [];
-    } else {
-      this.selected = [row];
-    }
+    this.selected = row ? [row] : [];
   }
 
   private addRow() {
