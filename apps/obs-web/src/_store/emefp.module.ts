@@ -5,7 +5,6 @@ import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { RootState } from '@/_store/types/types';
 import { EmefpState } from '@/_store/types/types';
-import { permits } from '@/_store/data';
 
 Vue.use(Vuex);
 

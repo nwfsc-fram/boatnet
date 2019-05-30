@@ -39,3 +39,4 @@ export * from './catch-grouping';
 export * from './catch-content';
 export * from './taxonomy';
 export * from './protocol';
+export * from './us-state';

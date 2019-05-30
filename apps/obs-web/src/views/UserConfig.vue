@@ -32,14 +32,15 @@ export default class UserConfig extends Vue {
 
     private vessels: Vessel[] = [];
 
+    private notificationOptions: any[] = [
+        {label: 'email', value: 'email', icon: 'mail'},
+        {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+        {label: 'app', value: 'app', icon: 'smartphone'}
+    ];
+
     constructor() {
         super();
     }
-
-    private get notificationOptions() {
-        return this.general.notificationOptions;
-    }
-
 
     private filterVessels(val: string, update: any, abort: any) {
       update(async () => {
