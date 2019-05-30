@@ -1,13 +1,13 @@
 // WCGOP Operation: Haul / Set (Fishing Activity)
 import { BaseOperation } from '../_base/base-operation';
 import {
-  LocationEvent,
   Measurement,
   BoatnetDate,
   CouchID
 } from '../_common/index';
 import { WcgopCatch } from './wcgop-catch';
 import { WeightMethod, GearType } from '../_lookups';
+import { FishingLocation } from '../_common/fishing-location';
 
 export const WcgopOperationTypeName = 'wcgop-operation';
 
@@ -19,7 +19,7 @@ export interface WcgopOperation extends BaseOperation {
   biolist?: number;
   catches?: WcgopCatch[];
   operationNum?: number; // Sequential
-  locations?: LocationEvent[];
+  locations?: FishingLocation[];
   observerTotalCatch?: {
     measurement?: Measurement;
     weightMethod?: WeightMethod;

@@ -41,7 +41,7 @@
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)' >
                 <q-td key='fishery' class="text-primary" style='width: 200px; white-space: normal !important;; font-weight: bold' :props='props' >{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
-                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
+                <q-td key='actualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <q-td key='effectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
@@ -67,7 +67,7 @@
                 <q-td key='vesselFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
                 <q-td key='vesselTargetVessel' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetVessel.vesselName }} ( {{ props.row.targetVessel.coastGuardNumber ? props.row.targetVessel.coastGuardNumber : props.row.targetVessel.stateRegulationNumber }} )</q-td>
-                <q-td key='vesselActualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA'}}%</q-td>
+                <q-td key='vesselActualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='vesselCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='vesselSetRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <!-- <q-td key='targetVesselCGNumber' style='width: 100px' :props='props'>{{ props.row.targetVesselCGNumber }}</q-td> -->
@@ -93,7 +93,7 @@
                 <q-td key='portFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
                 <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
                 <q-td key='portTargetPortGroup' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetPortGroup }}</q-td>
-                <q-td key='portActualObserved' style='width: 100px' :props='props'>{{ props.row.actualObserved || 'NA' }}%</q-td>
+                <q-td key='portActualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='portCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='portSetRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
                 <q-td key='portEffectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
@@ -114,7 +114,7 @@ import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { EmEfp, OTSTarget, OTSTargetTypeName } from '@boatnet/bn-models';
+import { EmEfp, OTSTarget, OTSTargetTypeName, WcgopTrip } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -130,6 +130,9 @@ export default class OtsMangement extends Vue {
 
     private showInactive: boolean = false;
     private showPrevious: boolean = false;
+
+    private emEfpTrips: WcgopTrip[] = [];
+    private emEfpRoster: EmEfp[] = [];
 
     private otsTargets: OTSTarget[] = [];
 
@@ -195,6 +198,90 @@ export default class OtsMangement extends Vue {
         }
     }
 
+    private async getEMEFP() {
+      const masterDB: Client<any> = couchService.masterDB;
+
+      const emefpTrips = await masterDB.viewWithDocs<any>(
+        'sethtest',
+        'em-efp-trips'
+      );
+
+      for (const row of emefpTrips.rows) {
+        const trip = row.doc;
+        this.emEfpTrips.push(trip);
+      }
+
+      const emefpRoster = await masterDB.viewWithDocs<any>(
+        'sethtest',
+        'all_em_efp'
+      );
+
+      for (const row of emefpRoster.rows) {
+        const member = row.doc;
+        this.emEfpRoster.push(member);
+      }
+
+    }
+
+    private getActualObserved(otsTarget: OTSTarget) {
+        if (otsTarget.targetType === 'Vessel') {
+            return this.getCoveredPercent(otsTarget.targetVessel);
+        }
+        if (otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === 'EM EFP') {
+            const affectedVessels = [];
+            let tripsTaken = 0;
+            let selectedTrips = 0;
+            let coveredPercent = 0;
+            // get roster
+            for (const member of this.emEfpRoster) {
+                if (member.vessel) {
+                    affectedVessels.push(member.vessel);
+                }
+            }
+
+            for (const vessel of affectedVessels) {
+                tripsTaken += this.getTripsTaken(vessel);
+                selectedTrips += this.getSelectedTrips(vessel);
+            }
+
+            coveredPercent = Math.floor((selectedTrips / tripsTaken) * 100);
+
+            return coveredPercent;
+        } else {
+            return 'N/A';
+        }
+    }
+
+    private getTripsTaken(vessel: any) {
+      const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
+      let count = 0;
+      for (const trip of this.emEfpTrips) {
+        const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        if ( tripVesselID === vesselID) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    private getSelectedTrips(vessel: any) {
+      const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
+      let count = 0;
+      for (const trip of this.emEfpTrips) {
+        const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
+        if ( tripVesselID === vesselID && trip.isSelected) {
+          count++;
+        }
+      }
+      return count;
+    }
+
+    private getCoveredPercent(vessel: any) {
+      const coveredPercent = (this.getSelectedTrips(vessel) / this.getTripsTaken(vessel)) * 100;
+      return coveredPercent ? coveredPercent : 0;
+    }
+
+
     private get fisheryTargets() {
         if (this.showInactive) {
             return this.otsTargets.filter((target) => target.targetType === 'Fishery Wide');
@@ -251,7 +338,7 @@ export default class OtsMangement extends Vue {
     }
 
     private getStatus(row: any) {
-        if ( moment(row.efffectiveDate) <= moment() && moment() <= moment(row.expirationDate) ) {
+        if ( (moment(row.efffectiveDate) <= moment() && moment() <= moment(row.expirationDate)) && ( row.status !== 'Inactive' )) {
             return 'Active';
         } else {
             return 'Inactive';
@@ -260,6 +347,7 @@ export default class OtsMangement extends Vue {
 
     private created() {
         this.getOtsTargets();
+        this.getEMEFP();
     }
 
 }

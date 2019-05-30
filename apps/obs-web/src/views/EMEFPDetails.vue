@@ -9,29 +9,31 @@
         </q-banner>
 
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
-          <div v-if="this.$route.params.id === 'new'">
+          <!-- <div v-if="this.$route.params.id === 'new'"> -->
             <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
             <q-select v-model="emefp.activeEmefp.vessel" label="Vessel" :options="options" @filter="filterFn" use-input stack-label option-label="vesselName"
             option-value="_id"></q-select>
-          </div>
-          <div v-else>
+          <!-- </div> -->
+          <!-- <div v-else> -->
             <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>
             <div style="diplay: flex">
-              <div>Vessel: {{ emefp.activeEmefp.vesselName ? emefp.activeEmefp.vesselName : emefp.activeEmefp.vessel.vesselName }}</div>
-              <div>Vessel ID: {{ emefp.activeEmefp.vesselCGNumber ? emefp.activeEmefp.vesselCGNumber : emefp.activeEmefp.vessel.coastGuardNumber ? emefp.activeEmefp.vessel.coastGuardNumber : emefp.activeEmefp.vessel.stateRegulationNumber }}</div>
+              <div>Vessel: {{ emefp.activeEmefp.vessel.vesselName ? emefp.activeEmefp.vessel.vesselName : '' }}</div>
+              <div>Vessel ID: {{ emefp.activeEmefp.vessel.coastGuardNumber ? emefp.activeEmefp.vessel.coastGuardNumber : emefp.activeEmefp.vessel.stateRegulationNumber }}</div>
               <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permit_number ? emefp.activeEmefp.lePermit.permit_number : emefp.activeEmefp.lePermit }}</span></div>
-            </div>
+            <!-- </div> -->
           </div>
 
+          {{ emefp.activeEmefp.vessel }}
+
             <!-- <q-select
-            v-model="emefp.activeEmefp.vesselName"
+            v-model="emefp.activeEmefp.vessel.vesselName"
             label="Vessel Name"
             use-input
             hide-selected
             :options="options"
             @filter="filterFn"
-            @input="updateVessel(emefp.activeEmefp.vesselName)">
-            <template>{{ emefp.activeEmefp.vesselCGNumber }} </template>
+            @input="updateVessel(emefp.activeEmefp.vessel.vesselName)">
+            <template>{{ emefp.activeEmefp.vessel.vesselCGNumber }} </template>
             </q-select> -->
 
             <q-select
@@ -40,8 +42,8 @@
             bg-color="bg-blue-grey-1"
             color="primary"
             use-chips
-            option-label="permit_number"
-            option-value="permit_number"
+            option-label="permitNumber"
+            option-value="permitNumber"
             :options="permit.permits"
             >
 
