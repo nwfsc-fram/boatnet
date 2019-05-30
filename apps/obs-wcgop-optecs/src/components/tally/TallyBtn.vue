@@ -202,9 +202,6 @@ export default class TallyBtn extends Vue {
       } else {
         this.playSound('dec');
         this.data.count = newVal;
-        if (this.data.count < 0) {
-          this.data.count = 0;
-        }
       }
 
       this.$emit('dataChanged', { button: this.layout, data: this.data });

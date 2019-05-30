@@ -6,7 +6,7 @@
       </q-card-section>
       <q-card-section>
         <div class="text-body1">Current Total Tally: {{totalCount}}</div>
-        <div class="text-body1">Weight Count: {{weighedCount}}</div>
+        <div class="text-body1">Weighed Count: {{weighedCount}}</div>
         <div class="text-body1">Average Weight: {{avgWeight}}</div>
       </q-card-section>
       <q-card-section>
@@ -48,16 +48,18 @@
           style="max-width: 200px"
         />
       </q-card-section>
-      <q-btn
-        color="green"
-        :disabled="isAddDisabled"
-        @click="addTallyCountWeights(false)"
-      >Add To Tally</q-btn>&nbsp;&nbsp;
-      <q-btn
-        color="green"
-        :disabled="isAddAlreadyDisabled"
-        @click="addTallyCountWeights(true)"
-      >Add (Count Already Tallied)</q-btn>
+      <q-card-section>
+        <q-btn
+          color="green"
+          :disabled="isAddDisabled"
+          @click="addTallyCountWeights(false)"
+        >Add To Tally</q-btn>&nbsp;&nbsp;
+        <q-btn
+          color="green"
+          :disabled="isAddAlreadyDisabled"
+          @click="addTallyCountWeights(true)"
+        >Add (Count Already Tallied)</q-btn>
+      </q-card-section>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Done" @click="close" v-close-popup/>
@@ -99,16 +101,18 @@ export default Vue.component('tally-weights-dialog', {
     },
     close() {
       this.$emit('cancel');
+      this.addCountValue = null;
+      this.addWeightValue = null;
       this.isOpen = false;
     },
     addTallyCountWeights(isAlreadyAdded: boolean) {
       if (!this.addCountValue || !this.addWeightValue) {
-        console.log('Zero values, do not add CW');
+        console.error('Zero values, do not add CW');
         return;
       }
       const newCW = {
-        weighedCount: this.addWeightValue,
-        weight: this.addCountValue,
+        weighedCount: this.addCountValue,
+        weight: this.addWeightValue,
         isAddedToTally: isAlreadyAdded
       };
       this.$store.commit('tallyState/addTallyCountWeight', newCW);
@@ -144,7 +148,7 @@ export default Vue.component('tally-weights-dialog', {
     avgWeight(): number {
       if (this.$store.getters['tallyState/currentTallyData']) {
         return this.$store.getters['tallyState/currentTallyData']
-          .calculatedAverageWeight;
+          .calculatedAverageWeight.toFixed(2);
       } else {
         return 0;
       }
@@ -171,12 +175,24 @@ export default Vue.component('tally-weights-dialog', {
     isAddAlreadyDisabled(): boolean {
       // TODO q-input range?
       // TODO Calculate difference between total tally and weighed count, then restrict accordingly
+
+      const curData = this.$store.getters['tallyState/currentTallyData'];
+      let availableTallyCount = 0;
+      if (curData) {
+        const currentTotalCount = curData.count ? curData.count : 0;
+        const currentWeighedCount = curData.calculatedTotalWeighedCount
+          ? curData.calculatedTotalWeighedCount
+          : 0;
+
+        availableTallyCount = currentTotalCount - currentWeighedCount;
+      }
+      // console.log('AVAILABLE', availableTallyCount);
       return (
         !this.addCountValue ||
         !this.addWeightValue ||
         this.addCountValue! <= 0 ||
         this.addCountValue! <= 0 ||
-        this.addCountValue! >= this.$store.getters['tallyState/currentTallyData'].count
+        this.addCountValue! > availableTallyCount
       );
     }
   }
