@@ -28,7 +28,7 @@ const mutations: MutationTree<CouchDBState> = {
   reconnectRequest(newState: CouchDBState) {
     if (!newState.credentials) {
       throw new Error('Please log out and back in for DB connection.');
-    }
+    } else couchService.connect(newState.credentials);
   },
   connectSuccess(newState: any, newUser: any) { // TODO
     // newState.status = { isLoggedIn: true };
