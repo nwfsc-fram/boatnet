@@ -7,7 +7,7 @@
       <q-card-section>
         <div class="text-body1">Current Total Tally: {{totalCount}}</div>
         <div class="text-body1">Weight Count: {{weighedCount}}</div>
-        <div class="text-body1">Average Weight: x</div>
+        <div class="text-body1">Average Weight: {{avgWeight}}</div>
       </q-card-section>
       <q-card-section>
         <q-markup-table v-if="countsWeights" separator="horizontal" flat bordered>
@@ -32,7 +32,7 @@
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
-        <q-btn flat label="Done" v-close-popup/>
+        <q-btn flat label="Done" @click="close" v-close-popup/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -99,6 +99,13 @@ export default Vue.component('tally-weights-dialog', {
     weighedCount(): number {
       if (this.$store.getters['tallyState/currentTallyData']) {
         return this.$store.getters['tallyState/currentTallyData'].calculatedTotalWeighedCount;
+      } else {
+        return 0;
+      }
+    },
+    avgWeight(): number {
+      if (this.$store.getters['tallyState/currentTallyData']) {
+        return this.$store.getters['tallyState/currentTallyData'].calculatedAverageWeight;
       } else {
         return 0;
       }

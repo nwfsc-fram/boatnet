@@ -264,7 +264,32 @@ function getCurrentDataIndex(getState: TallyState) {
 
 function calculateTallyValues(rec: TallyCountData) {
   // Roll up values
-  Vue.set(rec, 'calculatedTotalWeighedCount', 123);
+
+  if (rec.countWeightData === undefined || rec.countWeightData.length === 0) {
+    Vue.delete(rec, 'calculatedTotalWeighedCount');
+    Vue.delete(rec, 'calculatedTotalWeighedWeight');
+    Vue.delete(rec, 'calculatedAverageWeight');
+    return;
+  }
+  let weighedCount = 0;
+  let weighedWeight = 0;
+  let avgWeight = 0;
+  let totalCount = rec.count ? rec.count : 0;
+  for (const data of rec.countWeightData) {
+    weighedCount += data.weighedCount ? data.weighedCount : 0;
+    weighedWeight += data.weight ? data.weight : 0;
+    if (!data.alreadyAddedToTally) {
+      totalCount += weighedCount;
+      Vue.set(data, 'alreadyAddedToTally', true);
+    }
+  }
+  if (weighedCount > 0) {
+    avgWeight = weighedWeight / weighedCount;
+  }
+  Vue.set(rec, 'calculatedTotalWeighedCount', weighedCount);
+  Vue.set(rec, 'calculatedTotalWeighedWeight', weighedWeight);
+  Vue.set(rec, 'calculatedAverageWeight', avgWeight);
+  Vue.set(rec, 'count', totalCount);
 }
 
 // ACTIONS
@@ -514,13 +539,19 @@ const mutations: MutationTree<TallyState> = {
       // Create reactive entry
       Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);
     }
-    // TODO: Calculate calc values
     calculateTallyValues(newState.tallyDataRec.data[idx!]);
     updateTallyDataDB(newState.tallyDataRec);
   },
   deleteTallyCountWeight(newState: any, index: number) {
     const idx = getCurrentDataIndex(newState);
-    console.log('[Tally Module] Deleting CW data', newState.tallyDataRec.data[idx!].countWeightData[index]);
+    console.log(
+      '[Tally Module] Deleting CW data',
+      newState.tallyDataRec.data[idx!].countWeightData[index]
+    );
+    const removeCount = newState.tallyDataRec.data[idx!].countWeightData[index].weighedCount;
+    const newCount = newState.tallyDataRec.data[idx!].count - removeCount;
+    console.log('Counts', removeCount, newCount);
+    Vue.set(newState.tallyDataRec.data[idx!], 'count', newCount);
     newState.tallyDataRec.data[idx!].countWeightData.splice(index, 1);
 
     const length = newState.tallyDataRec.data[idx!].countWeightData.length;
@@ -528,7 +559,7 @@ const mutations: MutationTree<TallyState> = {
       // Delete reactive entry
       Vue.delete(newState.tallyDataRec.data[idx!], 'countWeightData');
     }
-    // TODO: Calculate calc values
+    calculateTallyValues(newState.tallyDataRec.data[idx!]);
     updateTallyDataDB(newState.tallyDataRec);
   },
   async assignNewButton(
