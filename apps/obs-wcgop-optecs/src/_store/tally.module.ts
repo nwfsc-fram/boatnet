@@ -278,9 +278,9 @@ function calculateTallyValues(rec: TallyCountData) {
   for (const data of rec.countWeightData) {
     weighedCount += data.weighedCount ? data.weighedCount : 0;
     weighedWeight += data.weight ? data.weight : 0;
-    if (!data.alreadyAddedToTally) {
+    if (!data.isAddedToTally) {
       totalCount += weighedCount;
-      Vue.set(data, 'alreadyAddedToTally', true);
+      Vue.set(data, 'isAddedToTally', true);
     }
   }
   if (weighedCount > 0) {

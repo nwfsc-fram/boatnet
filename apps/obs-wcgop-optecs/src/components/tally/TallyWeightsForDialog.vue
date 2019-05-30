@@ -28,7 +28,30 @@
           </tbody>
         </q-markup-table>
       </q-card-section>
-      <q-btn @click="addTallyCountWeights">ADD</q-btn>
+      <q-card-section>
+        <q-input
+          v-model.number="addCountValue"
+          type="number"
+          label="Count"
+          style="max-width: 200px"
+        />
+        <q-input
+          v-model.number="addWeightValue"
+          type="number"
+          label="Weight"
+          style="max-width: 200px"
+        />
+      </q-card-section>
+      <q-btn
+        color="green"
+        :disabled="isAddDisabled"
+        @click="addTallyCountWeights(false)"
+      >Add To Tally</q-btn>&nbsp;&nbsp;
+      <q-btn
+        color="green"
+        :disabled="isAddDisabled"
+        @click="addTallyCountWeights(true)"
+      >Add (Count Already Tallied)</q-btn>
 
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Cancel" v-close-popup/>
@@ -59,7 +82,9 @@ export default Vue.component('tally-weights-dialog', {
     return {
       selectedSpecies: null as any,
       options: [] as any[],
-      isOpen: false
+      isOpen: false,
+      addCountValue: null,
+      addWeightValue: null
     };
   },
   methods: {
@@ -71,12 +96,17 @@ export default Vue.component('tally-weights-dialog', {
       this.$emit('cancel');
       this.isOpen = false;
     },
-    addTallyCountWeights() {
-      const dummy = {
-        weighedCount: Math.floor(Math.random() * 10),
-        weight: Math.random() * 10
+    addTallyCountWeights(isAlreadyAdded: boolean) {
+      if (!this.addCountValue || !this.addWeightValue) {
+        console.log('Zero values, do not add CW');
+        return;
+      }
+      const newCW = {
+        weighedCount: this.addWeightValue,
+        weight: this.addCountValue,
+        isAddedToTally: isAlreadyAdded
       };
-      this.$store.commit('tallyState/addTallyCountWeight', dummy);
+      this.$store.commit('tallyState/addTallyCountWeight', newCW);
     },
     handleDelete(index: number) {
       this.$store.commit('tallyState/deleteTallyCountWeight', index);
@@ -98,14 +128,16 @@ export default Vue.component('tally-weights-dialog', {
     },
     weighedCount(): number {
       if (this.$store.getters['tallyState/currentTallyData']) {
-        return this.$store.getters['tallyState/currentTallyData'].calculatedTotalWeighedCount;
+        return this.$store.getters['tallyState/currentTallyData']
+          .calculatedTotalWeighedCount;
       } else {
         return 0;
       }
     },
     avgWeight(): number {
       if (this.$store.getters['tallyState/currentTallyData']) {
-        return this.$store.getters['tallyState/currentTallyData'].calculatedAverageWeight;
+        return this.$store.getters['tallyState/currentTallyData']
+          .calculatedAverageWeight;
       } else {
         return 0;
       }
@@ -119,6 +151,9 @@ export default Vue.component('tally-weights-dialog', {
       return this.buttonData && this.buttonData.labels
         ? this.buttonData.labels.reason
         : '';
+    },
+    isAddDisabled(): boolean {
+      return !this.addCountValue || !this.addWeightValue;
     }
   }
 });

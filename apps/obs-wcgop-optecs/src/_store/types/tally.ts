@@ -60,7 +60,7 @@ export const TallyDataRecordTypeName = 'tally-data';
 export interface TallyCountWeight {
   weighedCount?: number;
   weight?: number;
-  alreadyAddedToTally?: boolean; // if user chose to add to tally, then remove from tally if deleted
+  isAddedToTally?: boolean; // if user chose to add to tally, then remove from tally if deleted
 }
 
 export interface TallyCountData extends Base {
