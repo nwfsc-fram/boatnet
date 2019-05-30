@@ -1,12 +1,19 @@
 // Base Catch Class, intended to be subclassed
 import { Base } from './base';
+import { UnsortedCatch } from '../_lookups/unsorted-catch';
+import { TaxonomyAlias } from '../_lookups/taxonomy-alias';
+import { CatchGrouping, Debris } from '../_lookups';
 
 // Ignore simple interface linting warning
 // https://github.com/palantir/tslint/blob/master/docs/usage/rule-flags/index.md
 /* tslint:disable:no-empty-interface */
+declare type CatchType = string; /// TODO Lookups - codend, pocket net, mix, submix
 
 export interface BaseCatch extends Base {
   // use createdDate for sequential ordering
+  catchNum?: number; // Unique per Operation sequential
+  catchType?: CatchType; // Lookups - TaxonomyAlias, Aggregate (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
+  catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);  
 }
 
 // Example object for discussion purposes

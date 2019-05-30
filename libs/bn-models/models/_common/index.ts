@@ -1,3 +1,4 @@
+export * from './basket';
 export * from './biostructure';
 export * from './boatnet-date';
 export * from './boatnet-user';
@@ -12,3 +13,4 @@ export * from './sighting-event';
 export * from './species-mix';
 export * from './waiver';
 export * from './lineal-measurement';
+export * from './specimen';

@@ -1,5 +1,6 @@
 import { Base } from '../_base/index';
 import { BoatnetDate, CouchID } from '../_common';
+import { TaxonomyAlias } from './taxonomy-alias';
 
 export const TaxonomyTypeName = 'taxonomy';
 
@@ -11,9 +12,14 @@ export interface Taxonomy extends Base {
   level: TaxonomyLevel;
   taxonomyName: string;
   scientificName?: string; // copy of taxonomyName except for species & subspecies
-  commonNames?: string[];
+  // primaryCommonName?: string;
+  // commonNames?: string[];
+  children?: TaxonomyId[];
+  parent?: TaxonomyId;
+  // aliases?: TaxonomyAlias[];
   wcgopTallyShortCode?: string;
-  children?: Taxonomy[];
+
+  
 
   // Used by EDC + Obs Analysts
   pacfinNomCode?: string; // when a landing does not have species comp

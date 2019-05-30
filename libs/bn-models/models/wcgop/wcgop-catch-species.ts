@@ -5,7 +5,7 @@
 // BIO_SPECIMENS
 
 import { Measurement, BoatnetDate, CouchID } from '../_common/index';
-import { WcgopBasket } from './wcgop-basket';
+import { WcgopBasket } from '../_common/basket';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
 import { Base } from '../_base/index';
