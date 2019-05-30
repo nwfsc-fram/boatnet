@@ -16,6 +16,7 @@ declare type ProductDeliveryState = any; // TODO Lookup
 
 // TODO: Create both WCGOP Trawl and Fixed Gear haul types?
 export interface WcgopOperation extends BaseOperation {
+  biolist?: number;
   catches?: WcgopCatch[];
   operationNum?: number; // Sequential
   locations?: FishingLocation[];
@@ -34,6 +35,7 @@ export interface WcgopOperation extends BaseOperation {
   isDataQualityPassing?: boolean;
   sightingEventIds?: CouchID[];
   productDeliveryState?: ProductDeliveryState;
+  beaufortValue?: number; // Possibly replaced with tides/currents data
 
 
   // Set operation specific fields:
@@ -45,7 +47,6 @@ export interface WcgopOperation extends BaseOperation {
   gearSegmentsLost?: number;
   hooksSampled?: number; // Pull up from WcgopCatch records (should be the same number)
   avgNumHooksPerSegment?: number; // auto-calculate, new data field
-  beaufortValue?: number; // Possibly replaced with tides/currents data
   // Combine BRD and HLFC into isDeterrentUsed
   isDeterrentUsed?: boolean; // BRD/ HLFC related (prompt UI for details required)
 
@@ -57,8 +58,8 @@ export interface WcgopOperation extends BaseOperation {
   avgNumSinkersPerSegment?: number; // Longline + Snap gear types only
 
   legacy?: {
-    fishingActivityId: number;
-    tripId: number;
+    fishingActivityId?: number;
+    tripId?: number;
     catchWeightKp?: number;
     catchCountKp?: number;
     volume?: Measurement;

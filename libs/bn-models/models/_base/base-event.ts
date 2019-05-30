@@ -5,6 +5,7 @@ import { Point } from 'geojson'; // GeoJSON https://tools.ietf.org/html/rfc7946
 import { Base } from './base';
 
 export interface BaseEvent extends Base  {
+    type?: string;
     location?: Point;
     depth?: Measurement;
     date?: BoatnetDate;
