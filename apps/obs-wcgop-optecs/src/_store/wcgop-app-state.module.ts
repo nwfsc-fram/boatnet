@@ -14,8 +14,8 @@ export const state: WcgopAppState = {
 };
 
 const actions: ActionTree<WcgopAppState, RootState> = {
-  saveTrip({ commit }: any, trip: WcgopTrip) {
-    commit('saveTrip', trip);
+  save({ commit }: any, trip: WcgopTrip) {
+    commit('save', trip);
   },
   setCurrentTrip({ commit }: any, trip: WcgopTrip) {
     commit('setCurrentTrip', trip);
@@ -35,13 +35,13 @@ const actions: ActionTree<WcgopAppState, RootState> = {
 };
 
 const mutations: MutationTree<WcgopAppState> = {
-  saveTrip(newState: any, trip: WcgopTrip) {
+  save(newState: any, record: any) {
     try {
-      if (trip._id) {
+      if (record._id) {
         pouchService.db
-          .put(pouchService.userDBName, trip)
+          .put(pouchService.userDBName, record)
           .then((response: any) => {
-            trip._rev = response.rev;
+            record._rev = response.rev;
           });
       }
     } catch (err) {

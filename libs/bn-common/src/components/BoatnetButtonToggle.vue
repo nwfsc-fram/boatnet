@@ -24,6 +24,7 @@ export default class BoatnetButtonToggle extends Vue {
   }
   set valueHolder(value: string) {
     this.$emit('update:value', value);
+    this.$emit('save');
   }
 }
 </script>

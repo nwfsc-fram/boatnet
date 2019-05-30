@@ -255,7 +255,7 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
-  @Action('saveTrip', { namespace: 'appState' })
+  @Action('save', { namespace: 'appState' })
   private saveTrip: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTripState!: WcgopTrip;

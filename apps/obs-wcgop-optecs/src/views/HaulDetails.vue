@@ -5,53 +5,57 @@
         <div class="text-h5 row justify-center">Haul #{{haulNum}} Info Part 1</div>
       </template>
       <template v-slot:content1>
-        <div class="q-gutter-md">
+        <div class="q-gutter-md column">
           <div>
             <b>Biolist:</b>2
           </div>
           <boatnet-button-toggle
             title="Beaufort Scale:"
-            :value.sync="beaufort"
+            :value.sync="currentHaul.beaufortValue"
             :options="beaufortOptions"
-            :description="beaufortLookupVals[beaufort] ? beaufortLookupVals[beaufort].value : ''"
+            :description="beaufortLookupVals[currentHaul.beaufortValue] ? beaufortLookupVals[currentHaul.beaufortValue].value : ''"
+            @save="save"
           />
           <boatnet-button-toggle
             title="Gear Type:"
-            :value.sync="gearType"
+            :value.sync="currentHaul.gearType"
             :options="gearTypeOptions"
-            :description="gearTypeLookupVals[gearType] ? gearTypeLookupVals[gearType].value : ''"
+            :description="gearTypeLookupVals[currentHaul.gearType] ? gearTypeLookupVals[currentHaul.gearType].value : ''"
+            @save="save"
           />
-        </div>
-        <div class="row q-pt-md">
-          <div class="col q-gutter-md">
-            <boatnet-button-toggle
-              title="BRD Present?"
-              :value.sync="currentHaul"
-              :options="[
+
+          <boatnet-button-toggle
+            title="BRD Present?"
+            :value.sync="currentHaul.legacy.isBrdPresent"
+            :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
                 ]"
-            />
-          </div>
-          <div class="col q-gutter-md q-pl-sm">
-            <boatnet-button-toggle
-              title="EFP?"
-              :value.sync="efp"
-              :options="[
+            @save="save"
+          />
+          <boatnet-button-toggle
+            title="EFP?"
+            :value.sync="currentHaul.isEfpUsed"
+            :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
                 ]"
-            />
+            @save="save"
+          />
+          <div class="col-2">
             <q-select
+              class="col-2"
+              debounce="500"
+              @input="save"
               outlined
               use-input
               fill-input
               hide-selected
-              v-model="targetStrategy"
+              v-model="currentHaul.targetStrategy"
               label="Target Strategy"
-              :options="speciesLookupVals"
+              :options="options"
               option-value="label"
-              @filter="getSpeciesLookup"
+              @filter="filterSpecies"
             />
           </div>
         </div>
@@ -66,29 +70,46 @@
           </div>
           <boatnet-button-toggle
             title="Weight Calib"
-            :value.sync="currentHaul"
+            :value.sync="currentHaul.calWeight"
             :options="[
-                {label: '11.00', value: '1'},
-                {label: '11.05', value: '2'},
-                {label: 'Scale Not Used', value: '3'}
+                {label: '11.00', value: '11.00'},
+                {label: '11.05', value: '11.05'},
+                {label: 'Scale Not Used', value: 'NA'}
                 ]"
+            @save="save"
           />
           <boatnet-button-toggle
             title="Gear Performance"
             :value.sync="currentHaul.gearPerformance"
             :options="gearPerformanceOptions"
-            :description="gearPerformanceLookupVals[currentHaul.gearPerformance-1] ? gearPerformanceLookupVals[currentHaul.gearPerformance-1].value : ''"
+            :description="gearPerformanceLookupVals[currentHaul.gearPerformance] ? gearPerformanceLookupVals[currentHaul.gearPerformance].value : ''"
+            @save="save"
           />
           <boatnet-button-toggle
             title="OTC Weight Method"
-            :value.sync="currentHaul"
+            :value.sync="currentHaul.observerTotalCatch.weightMethod.description"
             :options="[
                 {label: '14', value: '14'},
                 {label: '6', value: '6'}
                 ]"
+            @save="save"
           />
-          <q-input outlined class="col-2" v-model="emptyString" label="Visual OTC"/>
-          <q-input outlined class="col-2" v-model="emptyString" label="Fit #"/>
+          <q-input
+            outlined
+            class="col-2"
+            v-model="currentHaul.observerTotalCatch.measurement.value"
+            label="Visual OTC"
+            debounce="500"
+            @input="save"
+          />
+          <q-input
+            outlined
+            class="col-2"
+            v-model="currentHaul.fit"
+            label="Fit #"
+            debounce="500"
+            @input="save"
+          />
         </div>
       </template>
       <template v-slot:title3>
@@ -96,7 +117,7 @@
       </template>
       <template v-slot:content3>
         <div>
-          <boatnet-locations :locations="currentHaul.locations"/>
+          <boatnet-locations :locations="currentHaul.locations" @save="save"/>
         </div>
       </template>
     </boatnet-tab-panel>
@@ -108,7 +129,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { ListOptions } from 'davenport';
 import { WcgopOperation } from '@boatnet/bn-models';
 import { pouchService } from '@boatnet/bn-pouch';
-import { Getter } from 'vuex-class';
+import { Action, Getter } from 'vuex-class';
 
 import moment from 'moment';
 
@@ -119,9 +140,16 @@ export default class Trips extends Vue {
 
   @Getter('currentHaul', { namespace: 'appState' })
   private currentHaulState!: WcgopOperation;
-
-  private currentHaul: WcgopOperation = {};
-  private speciesLookupVals: string[] = [];
+  @Action('save', { namespace: 'appState' })
+  private saveHaul: any;
+  private currentHaul: WcgopOperation = {
+    observerTotalCatch: {
+      weightMethod: {
+      }
+    },
+    legacy: {}
+  };
+  private speciesList: string[] = [];
 
   private beaufortLookupVals: any[] = [];
   private beaufortOptions: any[] = [];
@@ -131,6 +159,8 @@ export default class Trips extends Vue {
 
   private gearTypeLookupVals: any[] = [];
   private gearTypeOptions: any[] = [];
+
+  private options: string[] = [];
 
   // TODO change to read from db
   private beaufort = 0;
@@ -156,67 +186,85 @@ export default class Trips extends Vue {
       'optecs_trawl/all_beaufort_description'
     );
     this.beaufortOptions = this.getOptions(this.beaufortLookupVals);
+
     this.gearPerformanceLookupVals = await this.getLookupVals(
       'optecs_trawl/all_gear_performance_description'
     );
     this.gearPerformanceOptions = this.getOptions(
       this.gearPerformanceLookupVals
     );
+    // TODO toggle between all_gear_type_trawl or all_gear_type_fixed_gear
+    // based on what gear user selects
     this.gearTypeLookupVals = await this.getLookupVals(
-      'optecs_trawl/all_gear_type_description'
+      'optecs_trawl/all_gear_type_trawl'
     );
     this.gearTypeOptions = this.getOptions(this.gearTypeLookupVals);
+    this.populateSpeciesList();
   }
 
   private async getLookupVals(tableName: string) {
+    let lookupVals;
     try {
       const descriptions = await pouchService.db.query(
         pouchService.lookupsDBName,
         tableName
       );
-      return descriptions.rows.map((row: any) => row);
+      lookupVals = descriptions.rows.map((row: any) => row);
+      lookupVals.sort(this.sorter);
+      return lookupVals.reduce(this.reducer, {});
     } catch (err) {
       console.log(err.message);
     }
   }
 
-  private getOptions(lookups: any[]): any[] {
+  private getOptions(lookups: any): any[] {
     const optionsHolder = [];
-    for (const lookup of lookups) {
-      optionsHolder.push({ label: lookup.key, value: lookup.key });
+    for (const lookup of Object.keys(lookups)) {
+      optionsHolder.push({ label: lookup, value: lookup });
     }
     return optionsHolder;
   }
 
-  private async getSpeciesLookup(
-    val: string,
-    update: any,
-    abort: any,
-    lookupTable: string
-  ) {
-    update(async () => {
-      try {
-        const db = pouchService.db;
-        const queryOptions = {
-          limit: 5,
-          start_key: val.toLowerCase(),
-          end_key: val.toLowerCase() + '{}',
-          inclusive_end: true,
-          descending: false
-        };
+  private sorter(a: any, b: any) {
+    return a.key - b.key;
+  }
 
-        const species = await db.query(
-          pouchService.lookupsDBName,
-          'optecs_trawl/all_tally_species',
-          queryOptions
-        );
-        this.speciesLookupVals = species.rows.map(
-          (s: any) => s.key + '  ' + s.value.commonName
-        );
-      } catch (err) {
-        console.log('Issue fetching species info ' + err);
-      }
+  private reducer(accum: any, curr: any) {
+    const lookup = 'key';
+    accum[curr[lookup]] = curr;
+    return accum;
+  }
+
+  private async populateSpeciesList() {
+    const species = await pouchService.db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/all_tally_species'
+    );
+
+    this.speciesList = species.rows;
+  }
+
+  private async filterSpecies(val: string, update: any, abort: any) {
+    update(async () => {
+      const valUpper = val.toUpperCase();
+      this.options = this.speciesList
+        .filter((s: any) => {
+          return (
+            s.key.startsWith(valUpper) ||
+            s.value.commonName.toUpperCase().indexOf(valUpper) > -1
+          );
+        })
+        .map((s: any) => {
+          return {
+            label: s.key + ': ' + s.value.commonName,
+            ...s
+          };
+        });
     });
+  }
+
+  private save() {
+    this.saveHaul(this.currentHaul);
   }
 }
 </script>
