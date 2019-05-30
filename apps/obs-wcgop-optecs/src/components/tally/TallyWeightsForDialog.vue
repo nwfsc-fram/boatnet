@@ -2,7 +2,14 @@
   <q-dialog v-model="isOpen" persistent>
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Counts/ Weights for {{shortCode}} - {{reason}}</div>
+        <div class="text-h6">Tally Weights for {{shortCode}} - {{reason}}</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="text-body1">Current Total Tally: {{totalCount}}</div>
+        <div class="text-body1">Weight Count: {{weighedCount}}</div>
+        <div class="text-body1">Average Weight: x</div>
+      </q-card-section>
+      <q-card-section>
         <q-markup-table v-if="countsWeights" separator="horizontal" flat bordered>
           <thead>
             <tr>
@@ -14,7 +21,9 @@
             <tr v-for="(cw, index) in countsWeights" :key="index">
               <th class="text-left">{{cw.weighedCount}}</th>
               <th class="text-left">{{cw.weight}}</th>
-              <th @click="handleDelete(index)"><q-icon style="font-size: 32px;" name="delete_forever"/></th>
+              <th @click="handleDelete(index)">
+                <q-icon style="font-size: 32px;" name="delete_forever"/>
+              </th>
             </tr>
           </tbody>
         </q-markup-table>
@@ -77,6 +86,23 @@ export default Vue.component('tally-weights-dialog', {
     countsWeights(): string {
       return this.$store.getters['tallyState/currentCWData'];
     },
+    tallyData(): any {
+      return this.$store.getters['tallyState/currentTallyData'];
+    },
+    totalCount(): number {
+      if (this.$store.getters['tallyState/currentTallyData']) {
+        return this.$store.getters['tallyState/currentTallyData'].count;
+      } else {
+        return 0;
+      }
+    },
+    weighedCount(): number {
+      if (this.$store.getters['tallyState/currentTallyData']) {
+        return this.$store.getters['tallyState/currentTallyData'].calculatedTotalWeighedCount;
+      } else {
+        return 0;
+      }
+    },
     shortCode(): string {
       return this.buttonData && this.buttonData.labels
         ? this.buttonData.labels.shortCode
@@ -89,7 +115,6 @@ export default Vue.component('tally-weights-dialog', {
     }
   }
 });
-
 </script>
 <style scoped lang="scss">
 th {

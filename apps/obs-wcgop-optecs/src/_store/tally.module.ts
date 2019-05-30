@@ -262,6 +262,11 @@ function getCurrentDataIndex(getState: TallyState) {
   }
 }
 
+function calculateTallyValues(rec: TallyCountData) {
+  // Roll up values
+  Vue.set(rec, 'calculatedTotalWeighedCount', 123);
+}
+
 // ACTIONS
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
@@ -510,6 +515,7 @@ const mutations: MutationTree<TallyState> = {
       Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);
     }
     // TODO: Calculate calc values
+    calculateTallyValues(newState.tallyDataRec.data[idx!]);
     updateTallyDataDB(newState.tallyDataRec);
   },
   deleteTallyCountWeight(newState: any, index: number) {
@@ -707,6 +713,12 @@ const getters: GetterTree<TallyState, RootState> = {
     const currentDataIdx = getCurrentDataIndex(getState);
     if (currentDataIdx !== undefined && currentDataIdx >= 0) {
       return getState.tallyDataRec!.data![currentDataIdx].countWeightData;
+    }
+  },
+  currentTallyData(getState: TallyState) {
+    const currentDataIdx = getCurrentDataIndex(getState);
+    if (currentDataIdx !== undefined && currentDataIdx >= 0) {
+      return getState.tallyDataRec!.data![currentDataIdx];
     }
   },
   tempCounter(getState: TallyState) {
