@@ -4,6 +4,9 @@
       <q-card-section>
         <div class="text-h6">Template Manager</div>
       </q-card-section>
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Done" @click="close" v-close-popup/>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
@@ -13,10 +16,10 @@ import Vue from 'vue';
 import { TallyHistory } from '../../_store/types';
 import moment from 'moment';
 
-export default Vue.component('tally-history-dialog', {
+export default Vue.component('tally-template-dialog', {
   data() {
     return {
-      isOpen: false,
+      isOpen: false
     };
   },
   methods: {
