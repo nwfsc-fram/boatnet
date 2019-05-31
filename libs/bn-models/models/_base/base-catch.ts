@@ -14,7 +14,7 @@ export interface BaseCatch extends Base {
   // use createdDate for sequential ordering
   catchNum?: number; // Unique per Operation sequential
   catchType?: CatchType; // Lookups - TaxonomyAlias, Aggregate (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
-  catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);  
+  catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);
   baskets?: Basket[];
 
 }

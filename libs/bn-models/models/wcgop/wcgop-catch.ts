@@ -3,7 +3,6 @@
 
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement, BoatnetDate, CouchID, Basket } from '../_common/index';
-import { WcgopCatchSpecies } from './wcgop-catch-species';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
 
@@ -68,6 +67,6 @@ export interface WcgopCatch extends BaseCatch {
     speciesNumberKpItq?: number;
     catchSampleMethod?: string;
     basketNumber?: number;
-    // obsprodLoadDate?: BoatnetDate;    
+    // obsprodLoadDate?: BoatnetDate;
   };
 }

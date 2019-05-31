@@ -2,7 +2,7 @@
 import { LocationEvent, Measurement, CouchID } from '../_common/index';
 import { GearType } from '../_lookups/index';
 import { BaseOperation, BaseCatch } from '../_base/index';
-import { AshopSample } from './ashop-catch';
+import { AshopCatch } from './ashop-catch';
 
 export const AshopHaulTypeName = 'ashop-haul';
 
@@ -54,7 +54,7 @@ export interface AshopHaul extends BaseOperation {
   tribalDelivery?: string; // TODO name of tribe LOOKUP
   sampleDesignType?: string; // TODO lookup
 
-  samples?: AshopSample[];
+  samples?: AshopCatch[];
 
   legacy?: {
     haulSeq?: number;

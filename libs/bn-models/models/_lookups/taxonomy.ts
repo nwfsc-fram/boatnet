@@ -19,8 +19,6 @@ export interface Taxonomy extends Base {
   // aliases?: TaxonomyAlias[];
   wcgopTallyShortCode?: string;
 
-  
-
   // Used by EDC + Obs Analysts
   pacfinNomCode?: string; // when a landing does not have species comp
 
