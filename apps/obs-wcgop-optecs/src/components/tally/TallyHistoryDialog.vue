@@ -5,7 +5,7 @@
         <div class="text-h6">History</div>
       </q-card-section>
       <q-card-section>
-        <q-table :data="history" :columns="columns"/>
+        <q-table dense :pagination.sync="pagination" :data="history" :columns="columns"/>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Done" @click="close" v-close-popup/>
@@ -23,6 +23,7 @@ export default Vue.component('tally-history-dialog', {
   data() {
     return {
       isOpen: false,
+      pagination: { rowsPerPage: 10 },
       columns: [
         {
           name: 'eventTime',
