@@ -10,6 +10,7 @@
       <boatnet-summary
         currentScreen="Trip"
         :current="currentTrip"
+        :selectionId="currentTrip ? currentTrip.tripNum : 0"
         @add="handleAddTrip"
         @edit="handleEditTrip"
         @end="handleEndTrip"
@@ -86,8 +87,6 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
-  @Action('setCurrentSelectionId', { namespace: 'appState' })
-  private setCurrentSelectionId: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
@@ -168,13 +167,12 @@ export default class Trips extends Vue {
     this.$router.push({ path: '/hauls/' });
   }
 
-  private handleSelectTrip(trip: WcgopTrip) {
+  private handleSelectTrip(trip: any) {
     if (trip) {
+      delete trip.__index;
       this.setCurrentTrip(trip);
-      this.setCurrentSelectionId(trip._id);
     } else {
       this.setCurrentTrip(null);
-      this.setCurrentSelectionId(null);
     }
   }
 
@@ -185,7 +183,6 @@ export default class Trips extends Vue {
     }
     const trip: WcgopTrip = { tripNum };
     this.setCurrentTrip(trip);
-    this.setCurrentSelectionId(null);
     this.$router.push({ path: '/tripdetails/' + trip.tripNum });
   }
 

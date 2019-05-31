@@ -14,6 +14,15 @@
         <template v-slot:content1>
           <div class="q-col-gutter-md row">
             <div class="col q-col-gutter-md">
+              <boatnet-button-toggle
+              title="Gear Type:"
+              :value.sync="currentTrip.gearType"
+              :options="[
+                {label: 'Trawl', value: 'trawl'},
+                {label: 'Fixed Gear', value: 'fixed'}
+                ]"
+              @save="saveOnUpdate"
+            />
               <q-select
                 outlined
                 class="col-2"
@@ -259,6 +268,8 @@ export default class Trips extends Vue {
   private saveTrip: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTripState!: WcgopTrip;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
 
   private currentTrip: WcgopTrip = {
     tripNum: this.tripNum,
@@ -324,6 +335,7 @@ export default class Trips extends Vue {
   }
 
   private saveOnUpdate() {
+    this.setCurrentTrip(this.currentTrip);
     this.saveTrip(this.currentTrip);
   }
 

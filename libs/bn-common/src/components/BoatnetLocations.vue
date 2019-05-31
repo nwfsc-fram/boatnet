@@ -9,7 +9,7 @@
     >
       <template v-slot:default="rowVals">
         <q-td key="type">{{ rowVals.row.type }}</q-td>
-        <q-td key="date">{{ formatDate(rowVals.row.date) }}</q-td>
+        <q-td key="date">{{ formatDate(rowVals.row.locationDate) }}</q-td>
         <q-td key="longitude">{{ rowVals.row.location.coordinates[0] }}</q-td>
         <q-td key="latitude">{{ rowVals.row.location.coordinates[1] }}</q-td>
         <q-td key="depth">{{ rowVals.row.depth }}</q-td>
@@ -28,25 +28,26 @@
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
       <div class="col q-gutter-md q-pb-md">
-        <boatnet-datetime
-          dateLabel="Date"
-          timeLabel="Time (Local 24hr)"
-          :value.sync="current.date"
-          :showPopup="false"
-        />
+        <q-input outlined label="Date" mask="date" v-model="dateVal" fill-mask/>
+        <q-input outlined label="Time" mask="time" v-model="timeVal" fill-mask/>
+
         <q-input
           outlined
           class="col-2"
           v-model="current.location.coordinates[0]"
           label="Longitude"
+          mask="###°##.##"
           fill-mask
+          hint="format: ddd°mm.mm"
         />
         <q-input
           outlined
           class="col-2"
           v-model="current.location.coordinates[1]"
           label="Latitude"
+          mask="##°##.##"
           fill-mask
+          hint="format: dd°mm.mm"
         />
         <q-input
           outlined
@@ -54,11 +55,11 @@
           v-model="current.depth"
           label="Depth (ftm)"
           mask="###"
-          fill-mask
+          unmasked-value
         />
       </div>
       <div class="col q-pl-md self-start">
-        <q-date v-model="current.date" minimal :default-year-month="defaultYearMonth"/>
+        <q-date v-model="dateVal" minimal default-year-month="2019/05"/>
       </div>
     </boatnet-input-dialog>
   </span>
@@ -66,13 +67,14 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { WcgopFishTicket, LocationEvent } from '@boatnet/bn-models';
+import { WcgopFishTicket } from '@boatnet/bn-models';
 import moment from 'moment';
+import { FishingLocation } from '@boatnet/bn-models/models/_common/fishing-location';
 
 @Component
 export default class BoatnetLocations extends Vue {
-  @Prop() private locations!: LocationEvent[];
-  private locationHolder: LocationEvent[] = this.locations
+  @Prop() private locations!: FishingLocation[];
+  private locationHolder: FishingLocation[] = this.locations
     ? this.locations
     : [];
   private defaultYearMonth = moment().format('YYYY/MM');
@@ -81,9 +83,10 @@ export default class BoatnetLocations extends Vue {
   private showDialog = false;
   private action = '';
 
-  private temp = '';
+  private dateVal: any = null;
+  private timeVal: string = '';
 
-  private current: LocationEvent = {
+  private current: FishingLocation = {
     location: {
       type: 'Point',
       coordinates: []
@@ -163,6 +166,10 @@ export default class BoatnetLocations extends Vue {
     };
     this.current.type = this.setType();
     this.action = 'add';
+    this.timeVal = '';
+    this.dateVal = null;
+
+    console.log('date' + this.dateVal + 'time' + this.timeVal + ' ' + this.defaultYearMonth);
     this.showDialog = true;
   }
 
@@ -173,8 +180,13 @@ export default class BoatnetLocations extends Vue {
       const temp = JSON.stringify(
         this.locationHolder[this.selected[0].__index]
       );
-
       this.current = JSON.parse(temp);
+      this.dateVal = this.current.locationDate
+        ? moment(this.current.locationDate).format('YYYY/MM/DD')
+        : '';
+      this.timeVal = this.current.locationDate
+        ? moment(this.current.locationDate).format('HH:mm')
+        : '';
     }
   }
 
@@ -187,16 +199,24 @@ export default class BoatnetLocations extends Vue {
   }
 
   private saveAdd() {
+    this.current.locationDate = moment(
+      this.dateVal + ' ' + this.timeVal,
+      'YYYY/MM/DD HH:mm'
+    ).format();
     this.locationHolder.push(this.current);
-    this.$emit('update:location', this.locationHolder);
+    this.$emit('update:locations', this.locationHolder);
     this.showDialog = false;
     this.$emit('save');
   }
 
   private saveEdit() {
+    this.current.locationDate = moment(
+      this.dateVal + ' ' + this.timeVal,
+      'YYYY/MM/DD HH:mm'
+    ).format();
     this.locationHolder.splice(this.selected[0].__index, 1, this.current);
     this.showDialog = false;
-    this.$emit('update:location', this.locationHolder);
+    this.$emit('update:locations', this.locationHolder);
     this.$emit('save');
     this.selected = [];
   }
