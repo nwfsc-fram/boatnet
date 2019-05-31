@@ -1,5 +1,5 @@
 import { Base } from './base';
-import { Measurement } from '../_common/index';
+import { Measurement, BoatnetDate } from '../_common/index';
 import { MeasurementDevice } from '../_lookups/index';
 
 export interface BaseContainer extends Base {

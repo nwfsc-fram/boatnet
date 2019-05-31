@@ -318,7 +318,7 @@ export default class UserDetails extends Vue {
                             type: 'person',
                             firstName: undefined,
                             lastName: undefined,
-                            userName: authService.getCurrentUser()!.username,
+                            apexUserAdminUserName: authService.getCurrentUser()!.username,
                             createdBy: authService.getCurrentUser()!.username,
                             createdDate: moment().format()
                             };
