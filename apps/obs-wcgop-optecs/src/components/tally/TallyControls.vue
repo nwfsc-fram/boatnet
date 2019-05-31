@@ -3,7 +3,7 @@
     <tally-control-btn color="grey-2" text-color="black" control-name="history" @controlclick="handleControlClick">History</tally-control-btn>
     <tally-control-btn control-name="template-manager" color="grey-3" @controlclick="handleControlClick">
       Template
-      <br>Save/Load
+      <br>Load/Save
     </tally-control-btn>
     <q-separator vertical/>
     <tally-control-btn control-name="modify-layout" @controlclick="handleControlClick" color="grey-4" text-color="black">

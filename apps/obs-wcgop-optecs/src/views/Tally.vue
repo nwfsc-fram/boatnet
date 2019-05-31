@@ -50,7 +50,12 @@
       @cancel="handleCancel"
     />
     <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
-    <tally-template-dialog ref="templateModal" @cancel="handleCancel"/>
+    <tally-template-dialog
+      ref="templateModal"
+      @cancel="handleCancel"
+      @selectedDefaultTemplate="handleSelectedDefaultTemplate"
+      :templateData="tallyDefaultTemplates"
+    />
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -63,11 +68,14 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 import {
   TallyLayoutRecordTypeName,
+  TallyTemplateRecordTypeName,
+  TallySpeciesRecordTypeName,
   TallyDataRecordTypeName,
   TallyButtonLayoutData,
   TallyOperationMode,
   TallyCountData,
-  TallyHistory
+  TallyHistory,
+  TallyLayoutRecord
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -99,7 +107,7 @@ Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
   pouch: {
-    tallyTemplates() {
+    tallyLayouts() {
       return {
         database: pouchService.userDBName,
         selector: { type: TallyLayoutRecordTypeName },
@@ -180,25 +188,27 @@ export default class Tally extends Vue {
   private currentSelectedButton: any = {}; // TODO button type?
 
   private speciesList = [];
+  private tallyDefaultTemplates = [];
 
   private isAddSpeciesDialogOpen = false;
 
-  // Reactive
-  private tallyTemplates!: any;
+  // Reactive rows from PouchDB
+  private tallyLayouts!: any;
   private tallyData!: any;
 
   constructor() {
     super();
 
     this.setTallyOpMode(TallyOperationMode.Tally);
-    this.populateSpecies(); // TODO use live view
+    this.populateSpeciesView(); // TODO use live view
+    this.populateTallyTemplatesView();
   }
 
   /**
    * TODO: If this is called before the initial sync, or a record is added later, the page needs to reload.
    * Review alternative methods or checks to reload (or reactive pouch-vue style, if performance allows)
    */
-  public async populateSpecies() {
+  public async populateSpeciesView() {
     const db = pouchService.db;
     const queryOptions = {
       include_docs: true
@@ -211,6 +221,21 @@ export default class Tally extends Vue {
     );
 
     this.speciesList = species.rows;
+  }
+
+  public async populateTallyTemplatesView() {
+    const db = pouchService.db;
+    const queryOptions = {
+      include_docs: true
+    };
+
+    const templates = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/tally_templates',
+      queryOptions
+    );
+
+    this.tallyDefaultTemplates = templates.rows;
   }
 
   public handleDataChanged(data: any) {
@@ -397,6 +422,10 @@ export default class Tally extends Vue {
         this.closeAddSpeciesPopup();
         break;
     }
+  }
+
+  public handleSelectedDefaultTemplate(template: TallyLayoutRecord) {
+    console.log('TODO HANDLE THIS!', template);
   }
 
   public handleResetAllData() {

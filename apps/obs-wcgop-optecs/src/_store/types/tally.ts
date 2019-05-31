@@ -54,6 +54,7 @@ export interface TallyHistory {
   newValue?: any;
 }
 
+export const TallyTemplateRecordTypeName = 'tally-template';
 export const TallyLayoutRecordTypeName = 'tally-layout';
 export interface TallyLayoutRecord extends Base {
   description: string; // friendly name
@@ -64,6 +65,7 @@ export interface TallyLayoutRecord extends Base {
 }
 
 // -- Data Related Interfaces --
+export const TallySpeciesRecordTypeName = 'tally-species';
 export const TallyDataRecordTypeName = 'tally-data';
 
 export interface TallyCountWeight {

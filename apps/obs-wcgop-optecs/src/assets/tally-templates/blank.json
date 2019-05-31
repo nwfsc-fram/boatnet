@@ -1,5 +1,6 @@
 {
-  "fishery": "-",
+  "_id": "tally-template-blank",
+  "type": "tally-template",
   "templateName": "default",
   "description": "Empty Template",
   "vertButtonCount": 4,
