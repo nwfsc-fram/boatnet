@@ -1,4 +1,6 @@
 {
+  "_id": "tally-template-ncs_sabl_ll",
+  "type": "tally-template",
   "fishery": "Non-Catch Shares",
   "templateName": "ncs_sabl_ll",
   "description": "SABL Long Line",

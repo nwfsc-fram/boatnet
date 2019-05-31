@@ -19,8 +19,6 @@ import { pouchService } from '@boatnet/bn-pouch';
 
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
-import { stringify } from 'querystring';
-import { getJSDocTemplateTag } from 'typescript';
 
 /* tslint:disable:no-var-requires  */
 const defaultTemplate = require('../assets/tally-templates/default.json');

@@ -1,4 +1,6 @@
 {
+  "_id": "tally-template-cs_sabl_pot",
+  "type": "tally-template",
   "fishery": "Catch Shares",
   "templateName": "cs_sabl_pot",
   "description": "SABL POT",

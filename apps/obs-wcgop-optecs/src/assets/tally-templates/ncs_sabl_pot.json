@@ -1,4 +1,6 @@
 {
+  "_id": "tally-template-ncs_sabl_pot",
+  "type": "tally-template",
   "fishery": "Non-Catch Shares",
   "templateName": "ncs_sabl_pot",
   "description": "SABL POT",
