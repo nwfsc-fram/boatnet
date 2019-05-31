@@ -20,8 +20,8 @@
             <q-td key="gearPerf">{{ rowVals.row.doc.gearPerformance }}</q-td>
             <q-td key="targetStrategy">SALM</q-td><!--TODO {{ rowVals.row.doc.targetStrategy }}-->
             <q-td key="gearType">{{ rowVals.row.doc.gearType }}</q-td>
-            <q-td key="setDate">{{ formatDate(rowVals.row.doc.locations[0].locationDate) }}</q-td>
-            <q-td key="upDate">{{ formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate) }}</q-td>
+            <q-td key="setDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[0].locationDate) : '' }}</q-td>
+            <q-td key="upDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate) : ''}}</q-td>
             <q-td key="otcWeight">{{ (rowVals.row.doc.observerTotalCatch.measurement.value) }}</q-td>
             <q-td key="errors">100</q-td><!-- TODO -->
           </template>
