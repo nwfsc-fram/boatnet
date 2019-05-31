@@ -6,10 +6,10 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
                 </div>
 
-                <q-select class="q-pa-sm" outlined v-model="user.activeUser.applicationRoles" label="Roles" multiple :options="roles">
+                <q-select class="q-pa-sm" outlined v-model="applicationRoles" label="Roles" multiple :options="roles">
                     <template v-slot:selected-item="scope">
                         <q-chip
                             removable
@@ -68,10 +68,11 @@
                     >
                     </q-select>
 
-                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" option-label="vesselName" option-value="_id" use-input dense > </q-select>
+                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id" use-input dense >
+                    </q-select>
                 </div>
 
-                <q-select class="q-pa-sm" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
+                    <q-select class="q-pa-sm" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
 
                     <template v-slot:selected-item="scope">
                         <q-chip
@@ -125,6 +126,7 @@ import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 export default class UserDetails extends Vue {
     @State('general') private general!: GeneralState;
     @State('user') private user!: UserState;
+    @State('vessel') private vessel!: VesselState;
 
     @State('alert') private alert!: AlertState;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
@@ -137,6 +139,8 @@ export default class UserDetails extends Vue {
     private countryOptions = ['United States', 'Canada', 'Mexico'];
 
     private ports: any[] = [];
+
+    private applicationRoles = [];
 
     private notificationOptions: any[] = [
     {label: 'email', value: 'email', icon: 'mail'},
@@ -224,6 +228,9 @@ export default class UserDetails extends Vue {
         }
 
     private saveUser() {
+        if (this.user.activeUser!.activeVessel) {
+            this.vessel.activeVessel = this.user.activeUser!.activeVessel;
+        }
         if (this.user.newUser) {
             console.log('new user');
             if (this.$route.name === 'User Details') {
@@ -265,8 +272,8 @@ export default class UserDetails extends Vue {
                 );
 
             for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.userName) {
-                    if (row.doc.userName === authService.getCurrentUser()!.username) {
+                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
 
                         this.user.newUser = false;
                         this.user.activeUser = row.doc;
@@ -340,13 +347,10 @@ export default class UserDetails extends Vue {
             queryOptions
             );
 
-        console.log(usstates.rows);
-
         for (const row of usstates.rows) {
             const state = row.doc;
             this.usStates.push(state);
         }
-        console.log(this.usStates);
 
         } catch (err) {
         this.errorAlert(err);
