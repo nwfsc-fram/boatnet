@@ -239,7 +239,8 @@ export default class Tally extends Vue {
   public async populateTallyTemplatesView() {
     const db = pouchService.db;
     const queryOptions = {
-      include_docs: true
+      include_docs: true,
+      ascending: true
     };
 
     const templates = await db.query(
