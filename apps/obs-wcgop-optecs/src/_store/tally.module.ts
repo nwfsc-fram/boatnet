@@ -536,7 +536,7 @@ const mutations: MutationTree<TallyState> = {
   addTallyCountWeight(newState: any, value: TallyCountWeight) {
     const idx = getCurrentDataIndex(newState);
     if (newState.tallyDataRec.data[idx!].countWeightData) {
-      newState.tallyDataRec.data[idx!].countWeightData.push(value);
+      newState.tallyDataRec.data[idx!].countWeightData.unshift(value);
     } else {
       // Create reactive entry
       Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);

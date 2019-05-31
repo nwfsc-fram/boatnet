@@ -10,29 +10,25 @@
         <div class="text-body1">Average Weight: {{avgWeight}}</div>
       </q-card-section>
       <q-card-section>
-        <q-markup-table
-          class="scroll overflow-hidden"
-          v-if="countsWeights"
-          separator="horizontal"
-          flat
-          bordered
-        >
-          <thead>
-            <tr>
-              <th class="text-left">Count</th>
-              <th class="text-left">Weight</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(cw, index) in countsWeights" :key="index">
-              <th class="text-left">{{cw.weighedCount}}</th>
-              <th class="text-left">{{cw.weight}}</th>
-              <th @click="handleDelete(index)">
-                <q-icon style="font-size: 32px;" name="delete_forever"/>
-              </th>
-            </tr>
-          </tbody>
-        </q-markup-table>
+        <q-scroll-area style="height: 200px;">
+          <q-markup-table v-if="countsWeights" separator="horizontal" dense flat bordered>
+            <thead>
+              <tr>
+                <th class="text-left">Count</th>
+                <th class="text-left">Weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(cw, index) in countsWeights" :key="index">
+                <th class="text-left">{{cw.weighedCount}}</th>
+                <th class="text-left">{{cw.weight}}</th>
+                <th @click="handleDelete(index)">
+                  <q-icon style="font-size: 32px;" name="delete_forever"/>
+                </th>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </q-scroll-area>
       </q-card-section>
       <q-card-section>
         <q-input
