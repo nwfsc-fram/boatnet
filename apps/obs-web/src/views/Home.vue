@@ -60,7 +60,7 @@ export default class Home extends Vue {
                         this.user.newUser = false;
                         this.user.activeUser = row.doc;
                         if (row.doc.activeVessel) {
-                          this.vessel.activeVessel = row.doc.activeVessel
+                          this.vessel.activeVessel = row.doc.activeVessel;
                         }
                     }
                 }
