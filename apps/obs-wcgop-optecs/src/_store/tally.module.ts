@@ -729,8 +729,8 @@ const mutations: MutationTree<TallyState> = {
   addTallyHistory(newState: any, value: TallyHistory) {
     newState.tallyDataRec.history.unshift(value);
   },
-  setDefaultLayout(newState: any, value: TallyLayoutRecord) {
-    console.log('GETTING CLOSE! Set this', value.description);
+  setDefaultLayout(newState: any, layout: TallyLayoutRecord) {
+    newState.defaultLayout = layout;
   }
 };
 
