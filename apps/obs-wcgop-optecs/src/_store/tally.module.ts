@@ -21,13 +21,13 @@ import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 
 /* tslint:disable:no-var-requires  */
-const defaultTemplate = require('../assets/tally-templates/default.json');
+const defaultTemplateFile = require('../assets/tally-templates/default.json');
 
 Vue.use(Vuex);
 
 export const state: TallyState = {
   tallyLayout: {
-    recordName: 'Default',
+    description: 'Default',
     type: TallyLayoutRecordTypeName,
     layoutData: [],
     vertButtonCount: 4,
@@ -38,7 +38,8 @@ export const state: TallyState = {
   operationMode: TallyOperationMode.Tally,
   tempSpeciesCounter: 0,
   lastClickedIndex: -1,
-  lastClickedWasInc: true // true for Inc
+  lastClickedWasInc: true, // true for Inc
+  defaultLayout: defaultTemplateFile
 };
 
 // TODO: Other Color Schemes
@@ -68,19 +69,19 @@ function getBtnColor(reason: string): { bg?: string; text?: string } {
   }
 }
 
-function createDefaultButtonData(): TallyDataRecord {
+function createDefaultButtonData(layoutDefault: TallyLayoutRecord): TallyDataRecord {
   const newData: TallyDataRecord = {
     type: TallyDataRecordTypeName,
     data: [],
     history: []
   };
-  const template = defaultTemplate.templateData;
-  template.forEach((item: { code?: string; reason: string }, index: number) => {
-    if (item.code) {
+  const template = layoutDefault.layoutData;
+  template.forEach((item: TallyButtonLayoutData, index: number) => {
+    if (item.labels!.shortCode) {
       const data = {
         // species:  //TODO look up full species record?
-        shortCode: item.code,
-        reason: item.reason,
+        shortCode: item.labels!.shortCode,
+        reason: item.labels!.reason,
         count: 0
       };
       newData.data!.push(data);
@@ -89,17 +90,15 @@ function createDefaultButtonData(): TallyDataRecord {
   return newData;
 }
 
-function createDefaultLayoutRecord(): TallyLayoutRecord {
+function createDefaultLayoutRecord(layoutDefault: TallyLayoutRecord): TallyLayoutRecord {
   const newLayout: TallyLayoutRecord = {
-    recordName: 'Default',
+    ...layoutDefault,
     type: TallyLayoutRecordTypeName,
-    layoutData: [],
-    vertButtonCount: 4,
-    horizButtonCount: 8
+    layoutData: []
   };
-  const template = defaultTemplate.templateData;
-  template.forEach((item: { code?: string; reason: string }, index: number) => {
-    if (item.reason === 'INVIS') {
+  const template = layoutDefault.layoutData;
+  template.forEach((item: TallyButtonLayoutData, index: number) => {
+    if (item.labels!.reason === 'INVIS') {
       newLayout.layoutData.push({
         index,
         blank: true
@@ -107,11 +106,11 @@ function createDefaultLayoutRecord(): TallyLayoutRecord {
     } else {
       newLayout.layoutData.push({
         index,
-        color: getBtnColor(item.reason!).bg,
-        'text-color': getBtnColor(item.reason!).text,
+        color: getBtnColor(item.labels!.reason!).bg,
+        'text-color': getBtnColor(item.labels!.reason!).text,
         labels: {
-          shortCode: item.code,
-          reason: item.reason
+          shortCode: item.labels!.shortCode,
+          reason: item.labels!.reason
         }
       });
     }
@@ -391,7 +390,7 @@ const mutations: MutationTree<TallyState> = {
 
     // Tally Layout
     if (!newState.tallyLayout._id) {
-      newState.tallyLayout = createDefaultLayoutRecord();
+      newState.tallyLayout = createDefaultLayoutRecord(newState.defaultLayout);
       console.log('[Tally Module] New layout initialized.');
       await updateLayoutDB(newState.tallyLayout); // ignore retval for now
     } else {
@@ -405,7 +404,7 @@ const mutations: MutationTree<TallyState> = {
     newState.tempSpeciesCounter = 0;
     // Tally Data
     if (!newState.tallyDataRec._id) {
-      newState.tallyDataRec = createDefaultButtonData();
+      newState.tallyDataRec = createDefaultButtonData(newState.defaultLayout);
       console.log('[Tally Module] New tally dataset initialized.');
       await updateTallyDataDB(newState.tallyDataRec); // ignore retval for now
     } else {
@@ -430,12 +429,12 @@ const mutations: MutationTree<TallyState> = {
     // Keep old IDs
     const oldIdLayout = newState.tallyLayout._id;
     newState.tempSpeciesCounter = 0;
-    newState.tallyLayout = createDefaultLayoutRecord();
+    newState.tallyLayout = createDefaultLayoutRecord(newState.defaultLayout);
     if (!createNewRecord && oldIdLayout) {
       newState.tallyLayout._id = oldIdLayout;
     }
 
-    newState.tallyDataRec = createDefaultButtonData();
+    newState.tallyDataRec = createDefaultButtonData(newState.defaultLayout);
     const oldIdData = newState.tallyDataRec._id;
     if (!createNewRecord && oldIdData) {
       newState.tallyDataRec._id = oldIdData;

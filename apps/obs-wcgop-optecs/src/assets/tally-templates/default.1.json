@@ -2,7 +2,9 @@
   "fishery": "-",
   "templateName": "default",
   "description": "Empty Template",
-  "templateData": [
+  "vertButtonCount": 4,
+  "horizButtonCount": 8,
+  "layoutData": [
     { "reason": "INVIS"},
     { "reason": "INVIS"},
     { "reason": "INVIS"},

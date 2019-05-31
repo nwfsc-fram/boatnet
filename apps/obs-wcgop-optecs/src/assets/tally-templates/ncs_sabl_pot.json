@@ -4,7 +4,9 @@
   "fishery": "Non-Catch Shares",
   "templateName": "ncs_sabl_pot",
   "description": "SABL POT",
-  "templateData": [
+  "vertButtonCount": 4,
+  "horizButtonCount": 8,
+  "layoutData": [
     { "code": "SABL", "reason": "MKT"},
     { "code": "SABL", "reason": "PRED"},
     { "reason": "INVIS"},
