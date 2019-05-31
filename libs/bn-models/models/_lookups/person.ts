@@ -66,6 +66,9 @@ export interface Person extends Base {
   port?: Port;
   notificationPreferences?: notificationPreferences[];
   media?: Media[];
+  // added to person from VesselCaptain as we don't know whether a person is a captain when the person is created.
+  isActive?: boolean;
+  activeVessel?: Vessel;
 
   legacy?: {
     PersonId?: number;
@@ -76,6 +79,6 @@ export interface Person extends Base {
 
 export interface VesselCaptain extends Person {
   isCaptainActive?: boolean;
-  activeVessel?: CouchID;
+  activeVessel?: Vessel;
   license?: string; // alphanumeric - goal in 2020 to remove this
 }

@@ -6,7 +6,7 @@
         <q-list bordered separator>
             <q-item v-for="(user, i) of filteredUsers" :key="i">
                 <q-item-section @click="userDetails(user)">
-                    <q-item-label><strong>{{ user.firstName }} {{ user.lastName }}</strong> ( {{ user.applicationRoles }} )
+                    <q-item-label><strong>{{ user.firstName }} {{ user.lastName }}</strong>
                     </q-item-label>
                 </q-item-section>
             </q-item>
