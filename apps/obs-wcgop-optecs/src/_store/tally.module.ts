@@ -377,6 +377,9 @@ const actions: ActionTree<TallyState, RootState> = {
       ...value
     };
     commit('addTallyHistory', value);
+  },
+  setDefaultLayout({ commit }: any, layout: TallyLayoutRecord) {
+    commit('setDefaultLayout', layout);
   }
 };
 
@@ -725,6 +728,9 @@ const mutations: MutationTree<TallyState> = {
   },
   addTallyHistory(newState: any, value: TallyHistory) {
     newState.tallyDataRec.history.unshift(value);
+  },
+  setDefaultLayout(newState: any, value: TallyLayoutRecord) {
+    console.log('GETTING CLOSE! Set this', value.description);
   }
 };
 

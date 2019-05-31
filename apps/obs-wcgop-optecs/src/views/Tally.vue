@@ -13,6 +13,12 @@
         </div>
       </div>
     </div>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-green text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
+      </template>
+    </q-banner>
     <div class="q-pa-md">
       <component
         v-bind:is="currentControlComponent"
@@ -56,6 +62,7 @@
       @selectedDefaultTemplate="handleSelectedDefaultTemplate"
       :templateData="tallyDefaultTemplates"
     />
+
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -89,6 +96,7 @@ import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
+import { AlertState } from '../_store/index';
 import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
@@ -124,10 +132,13 @@ Vue.component(BoatnetAddSpeciesDialog);
   }
 })
 export default class Tally extends Vue {
+  @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
   @State('pouchState') private pouchState!: PouchDBState;
   @State('tallyState') private tallyState!: TallyState;
 
+  @Action('success', { namespace: 'alert' }) private successAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButtonData', { namespace: 'tallyState' })
   private updateButtonData: any;
@@ -159,6 +170,8 @@ export default class Tally extends Vue {
   private clearLastIncDec: any;
   @Action('addTallyHistory', { namespace: 'tallyState' })
   private addTallyHistory: any;
+  @Action('setDefaultLayout', { namespace: 'tallyState' })
+  private setDefaultLayout: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -185,7 +198,7 @@ export default class Tally extends Vue {
 
   private currentSelectedSpecies: any = { shortCode: '' }; // TODO actual species type, move to vuex?
 
-  private currentSelectedButton: any = {}; // TODO button type?
+  private currentSelectedButton: any = {};
 
   private speciesList = [];
   private tallyDefaultTemplates = [];
@@ -425,7 +438,8 @@ export default class Tally extends Vue {
   }
 
   public handleSelectedDefaultTemplate(template: TallyLayoutRecord) {
-    console.log('TODO HANDLE THIS!', template);
+    this.setDefaultLayout(template);
+    this.successAlert('To use \"' + template.description + '\" template, click Reset Data (in Modify Layout)');
   }
 
   public handleResetAllData() {
