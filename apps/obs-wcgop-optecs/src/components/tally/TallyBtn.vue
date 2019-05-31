@@ -199,7 +199,7 @@ export default class TallyBtn extends Vue {
         ? this.data.calculatedTotalWeighedCount
         : 0;
       const newHistory: TallyHistory = {
-          type: 'tally',
+          type: 'Tally',
           shortCode: this.layout!.labels!.shortCode,
           reason: this.layout!.labels!.reason,
           oldValue: this.data.count,

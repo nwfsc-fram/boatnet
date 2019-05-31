@@ -727,7 +727,6 @@ const mutations: MutationTree<TallyState> = {
     updateTallyDataDB(newState.tallyDataRec);
   },
   addTallyHistory(newState: any, value: TallyHistory) {
-    console.log('TODO ADD TO HISTORY', value);
     newState.tallyDataRec.history.unshift(value);
   }
 };

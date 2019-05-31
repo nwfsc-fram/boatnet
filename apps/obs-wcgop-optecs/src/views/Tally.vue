@@ -49,10 +49,7 @@
       :speciesData="currentSelectedButton"
       @cancel="handleCancel"
     />
-    <tally-history-dialog
-      ref="historyModal"
-      @cancel="handleCancel"
-    />
+    <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -68,7 +65,8 @@ import {
   TallyDataRecordTypeName,
   TallyButtonLayoutData,
   TallyOperationMode,
-  TallyCountData
+  TallyCountData,
+  TallyHistory
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -148,6 +146,8 @@ export default class Tally extends Vue {
   private setLastIncDecIndex: any;
   @Action('clearLastIncDec', { namespace: 'tallyState' })
   private clearLastIncDec: any;
+  @Action('addTallyHistory', { namespace: 'tallyState' })
+  private addTallyHistory: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -379,6 +379,12 @@ export default class Tally extends Vue {
           oldSpeciesCode: this.currentSelectedSpecies.shortCode,
           newSpeciesCode: species.shortCode
         });
+        const renameHistory: TallyHistory = {
+          type: 'Rename',
+          oldValue: this.currentSelectedSpecies.shortCode,
+          newValue: species.shortCode
+        };
+        this.addTallyHistory(renameHistory);
         // Side effect of close: switches back to tally mode
         this.closeAddSpeciesPopup();
         break;
@@ -415,7 +421,10 @@ export default class Tally extends Vue {
         break;
       case 'all-tallies-for':
         this.clearLastIncDec();
-        if (this.tallyState.operationMode === TallyOperationMode.AllTalliesSelectSpecies) {
+        if (
+          this.tallyState.operationMode ===
+          TallyOperationMode.AllTalliesSelectSpecies
+        ) {
           this.handleCancel();
         } else {
           this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
@@ -427,7 +436,10 @@ export default class Tally extends Vue {
         break;
       case 'weights-for':
         this.clearLastIncDec();
-        if (this.tallyState.operationMode === TallyOperationMode.WeightsForSelectSpecies) {
+        if (
+          this.tallyState.operationMode ===
+          TallyOperationMode.WeightsForSelectSpecies
+        ) {
           this.handleCancel();
         } else {
           this.setTallyOpMode(TallyOperationMode.WeightsForSelectSpecies);

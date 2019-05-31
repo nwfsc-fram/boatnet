@@ -4,6 +4,9 @@
       <q-card-section>
         <div class="text-h6">History</div>
       </q-card-section>
+      <q-card-section>
+        <q-table :data="history" :columns="columns"/>
+      </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Done" @click="close" v-close-popup/>
       </q-card-actions>
@@ -14,18 +17,54 @@
 <script lang="ts">
 import Vue from 'vue';
 import { TallyHistory } from '../../_store/types';
+import moment from 'moment';
 
 export default Vue.component('tally-history-dialog', {
-  props: {
-    history: {
-      // this seems complicated, not sure if there's a simpler way
-      // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
-      type: Array as () => TallyHistory[]
-    }
-  },
   data() {
     return {
-      isOpen: false
+      isOpen: false,
+      columns: [
+        {
+          name: 'eventTime',
+          label: 'Time',
+          field: 'eventTime',
+          align: 'left',
+          format: (val: any) => {
+            return moment(val).format('MM/DD hh:mm');
+          }
+        },
+        {
+          name: 'type',
+          label: 'Action',
+          field: 'type',
+          align: 'left'
+        },
+        {
+          name: 'shortCode',
+          label: 'Code',
+          field: 'shortCode',
+          align: 'left'
+        },
+
+        {
+          name: 'reason',
+          label: 'Disp.',
+          field: 'reason',
+          align: 'left'
+        },
+        {
+          name: 'oldValue',
+          label: 'Previous',
+          field: 'oldValue',
+          align: 'left'
+        },
+        {
+          name: 'newValue',
+          label: 'New Value',
+          field: 'newValue',
+          align: 'left'
+        }
+      ]
     };
   },
   methods: {
@@ -38,6 +77,9 @@ export default Vue.component('tally-history-dialog', {
     }
   },
   computed: {
+    history(): TallyHistory[] {
+      return this.$store.getters['tallyState/currentTallyHistory'];
+    }
   }
 });
 </script>
