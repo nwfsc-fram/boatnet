@@ -5,7 +5,9 @@
         <div class="text-h6">History</div>
       </q-card-section>
       <q-card-section>
-        <q-table dense :pagination.sync="pagination" :data="history" :columns="columns"/>
+        <q-table :pagination.sync="pagination" :data="history" :columns="columns">
+
+        </q-table>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
         <q-btn flat label="Done" @click="close" v-close-popup/>
@@ -19,18 +21,22 @@ import Vue from 'vue';
 import { TallyHistory } from '../../_store/types';
 import moment from 'moment';
 
+function getReasonClass(val: string) {
+  return 'bg-gray-2';
+}
+
 export default Vue.component('tally-history-dialog', {
   data() {
     return {
       isOpen: false,
-      pagination: { rowsPerPage: 10 },
+      pagination: { rowsPerPage: 7, page: 1 },
       columns: [
         {
           name: 'eventTime',
           label: 'Time',
           field: 'eventTime',
           align: 'left',
-          format: (val: any) => {
+          format: (val: string) => {
             return moment(val).format('MM/DD hh:mm');
           }
         },
@@ -38,7 +44,8 @@ export default Vue.component('tally-history-dialog', {
           name: 'type',
           label: 'Action',
           field: 'type',
-          align: 'left'
+          align: 'left',
+          classes: 'bg-grey-2'
         },
         {
           name: 'shortCode',
@@ -46,7 +53,6 @@ export default Vue.component('tally-history-dialog', {
           field: 'shortCode',
           align: 'left'
         },
-
         {
           name: 'reason',
           label: 'Disp.',
@@ -63,7 +69,8 @@ export default Vue.component('tally-history-dialog', {
           name: 'newValue',
           label: 'New Value',
           field: 'newValue',
-          align: 'left'
+          align: 'left',
+          classes: 'bg-green-2'
         }
       ]
     };
@@ -71,6 +78,7 @@ export default Vue.component('tally-history-dialog', {
   methods: {
     open() {
       this.isOpen = true;
+      this.pagination.page = 1;
     },
     close() {
       this.$emit('cancel');
