@@ -13,7 +13,7 @@ import { BoatnetDate } from './boatnet-date';
 import { Point } from 'geojson';
 import { Base } from '../_base/index';
 import { WcgopSpecimen } from '../wcgop';
-import { AshopSpecimen } from '../ashop';
+import { Specimen } from './specimen';
 
 declare type InteractionType = string; // TODO Lookup
 
@@ -35,7 +35,7 @@ export interface InteractionEvent extends Base {
   hauls?: CouchID[];
   catchSpecies?: CouchID[]; // tied to Species Comp/ Specimen Record
   // TODO: Verify behavior of syntax for specimens:
-  specimens?: WcgopSpecimen[] | AshopSpecimen[] | CouchID[];
+  specimens?: WcgopSpecimen[] | Specimen[] | CouchID[];
   species?: Species;
 
   date?: BoatnetDate;

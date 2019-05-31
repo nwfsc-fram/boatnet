@@ -10,18 +10,20 @@ import { Permit } from '../_misc/permit';
 export const PersonTypeName = 'person';
 export const VesselCaptainTypeName = 'vessel-captain';
 
-declare type ApplicationRole = string; // TODO Lookup - match Apex User Admin
 // Existing roles:
-// OBSERVER
+// OBSERVER = Application
 //  * observer, debriefer, captain, permit owner, provider,
 //    analyst, lab analyst, data steward, enforcement,
 //    vessel owner, program manager, gear technician, lead observer,
-//    logistical admin, coordinator, trainer, reports user
+//    logistical admin, coordinator, trainer, reports user, staff,
+//    development staff
 
-// TRAWL
+// SURVEY = Application
 //  * FPC, biologist, captain, crew, data steward,
 //    program manager, permit owner, lab analyst,
-//    reports user (PACFIN etc)
+//    reports user (PACFIN etc), development staff
+//
+// Roles used for DataStore access, App Screen access, Widget-level access (divs, etc.)
 
 interface EmergencyContact {
   contact?: Person;
@@ -42,7 +44,7 @@ export interface Person extends Base {
   // This is sensitive PII
   firstName?: string;
   lastName?: string;
-  userName?: string;
+  apexUserAdminUserName?: string;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
@@ -56,7 +58,6 @@ export interface Person extends Base {
   homeEmail?: string[];
   birthdate?: BoatnetDate;
   emergencyContacts?: EmergencyContact[];
-  applicationRoles?: ApplicationRole[];
   organizations?: OrganizationDateRange[];
   plbNum?: string;
   epirbNum?: string[]; // NOAA database that keeps track of these, perhaps
@@ -65,6 +66,9 @@ export interface Person extends Base {
   port?: Port;
   notificationPreferences?: notificationPreferences[];
   media?: Media[];
+  // added to person from VesselCaptain as we don't know whether a person is a captain when the person is created.
+  isActive?: boolean;
+  activeVessel?: Vessel;
 
   legacy?: {
     PersonId?: number;
@@ -75,6 +79,6 @@ export interface Person extends Base {
 
 export interface VesselCaptain extends Person {
   isCaptainActive?: boolean;
-  activeVessel?: CouchID;
+  activeVessel?: Vessel;
   license?: string; // alphanumeric - goal in 2020 to remove this
 }

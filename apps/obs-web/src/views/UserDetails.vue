@@ -6,10 +6,10 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.userName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
                 </div>
 
-                <q-select class="q-pa-sm" outlined v-model="user.activeUser.applicationRoles" label="Roles" multiple :options="roles">
+                <q-select class="q-pa-sm" outlined v-model="applicationRoles" label="Roles" multiple :options="roles">
                     <template v-slot:selected-item="scope">
                         <q-chip
                             removable
@@ -45,11 +45,11 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" @filter="filterStates" use-input :options="usStateOptions"></q-select>
+                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" use-input :options="usStates" :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
 
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.country" label="Country"  @filter="filterStates" use-input :options="usStateOptions"></q-select>
+                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.country" label="Country" use-input :options="countryOptions"></q-select>
                 </div>
 
                 <div class="row">
@@ -68,10 +68,11 @@
                     >
                     </q-select>
 
-                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" option-label="vesselName" option-value="_id" use-input dense > </q-select>
+                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id" use-input dense >
+                    </q-select>
                 </div>
 
-                <q-select class="q-pa-sm" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
+                    <q-select class="q-pa-sm" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
 
                     <template v-slot:selected-item="scope">
                         <q-chip
@@ -111,7 +112,7 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { GeneralState, UserState, VesselState } from '../_store/types/types';
-import { Vessel } from '@boatnet/bn-models';
+import { Vessel, UsState } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
@@ -125,6 +126,7 @@ import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 export default class UserDetails extends Vue {
     @State('general') private general!: GeneralState;
     @State('user') private user!: UserState;
+    @State('vessel') private vessel!: VesselState;
 
     @State('alert') private alert!: AlertState;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
@@ -133,20 +135,20 @@ export default class UserDetails extends Vue {
     private vessels: Vessel[] = [];
 
     private usStateOptions: any = [];
+    private usStates: UsState[] = [];
+    private countryOptions = ['United States', 'Canada', 'Mexico'];
 
     private ports: any[] = [];
 
-    private get usStates() {
-        return this.general.usStates;
-    }
+    private applicationRoles = [];
 
-    private get roles() {
-        return this.general.roles.sort();
-    }
+    private notificationOptions: any[] = [
+    {label: 'email', value: 'email', icon: 'mail'},
+    {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+    {label: 'app', value: 'app', icon: 'smartphone'}
+    ];
 
-    private get notificationOptions() {
-        return this.general.notificationOptions;
-    }
+    private roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
 
     constructor() {
         super();
@@ -177,20 +179,6 @@ export default class UserDetails extends Vue {
         }
     );
     }
-
-    private filterStates(val: string , update: any) {
-        if (val === '') {
-            update(() => {
-                this.usStateOptions = this.general.usStates.sort();
-                });
-            return;
-        }
-        update(() => {
-            const searchString = val.toLowerCase();
-            this.usStateOptions = this.general.usStates.filter(
-                (v: any) => v.toLowerCase().indexOf(searchString) > - 1 ).sort();
-            });
-        }
 
     private filterVessels(val: string, update: any, abort: any) {
       update(async () => {
@@ -240,6 +228,9 @@ export default class UserDetails extends Vue {
         }
 
     private saveUser() {
+        if (this.user.activeUser!.activeVessel) {
+            this.vessel.activeVessel = this.user.activeUser!.activeVessel;
+        }
         if (this.user.newUser) {
             console.log('new user');
             if (this.$route.name === 'User Details') {
@@ -281,8 +272,8 @@ export default class UserDetails extends Vue {
                 );
 
             for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.userName) {
-                    if (row.doc.userName === authService.getCurrentUser()!.username) {
+                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
 
                         this.user.newUser = false;
                         this.user.activeUser = row.doc;
@@ -334,7 +325,7 @@ export default class UserDetails extends Vue {
                             type: 'person',
                             firstName: undefined,
                             lastName: undefined,
-                            userName: authService.getCurrentUser()!.username,
+                            apexUserAdminUserName: authService.getCurrentUser()!.username,
                             createdBy: authService.getCurrentUser()!.username,
                             createdDate: moment().format()
                             };
@@ -343,11 +334,35 @@ export default class UserDetails extends Vue {
                 );
     }
 
+    private async getUsStates() {
+        const masterDB: Client<any> = couchService.lookupsDB;
+        try {
+        const queryOptions: ListOptions = {
+            descending: false
+        };
+
+        const usstates = await masterDB.viewWithDocs<any>(
+            'obs_web',
+            'all_us_states',
+            queryOptions
+            );
+
+        for (const row of usstates.rows) {
+            const state = row.doc;
+            this.usStates.push(state);
+        }
+
+        } catch (err) {
+        this.errorAlert(err);
+        }
+    }
+
     private mounted() {
         if (this.$route.name === 'User Config') {
             this.getUser();
         }
         this.getVessels();
+        this.getUsStates();
     }
 
     private navigateBack() {

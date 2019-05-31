@@ -3,7 +3,7 @@
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clear"/>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
 
@@ -35,6 +35,7 @@ export default class Home extends Vue {
 
   @State('permit') private permit!: PermitState;
   @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
+  @State('vessel') private vessel!: VesselState;
 
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
@@ -53,11 +54,14 @@ export default class Home extends Vue {
                 );
 
             for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.userName) {
-                    if (row.doc.userName === authService.getCurrentUser()!.username) {
+                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
 
                         this.user.newUser = false;
                         this.user.activeUser = row.doc;
+                        if (row.doc.activeVessel) {
+                          this.vessel.activeVessel = row.doc.activeVessel;
+                        }
                     }
                 }
             }
@@ -70,11 +74,8 @@ export default class Home extends Vue {
 
     axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500' )
         .then( (response) => {
-            // this.$store.dispatch('updatePermits', response.data.items);
-            console.log(response.data.items);
             this.permit.permits = [];
             for (const item of response.data.items) {
-              console.log(item);
               const permit: Permit = {
                 type: 'permit',
                 permitNumber: item.permit_number,
@@ -112,7 +113,6 @@ export default class Home extends Vue {
               };
               this.permit.permits.push(permit);
             }
-            console.log(this.permit.permits);
         })
         .catch( (error) => {
           console.log(error);

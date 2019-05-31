@@ -40,8 +40,16 @@
       @addNewSpecies="handleAddNamedSpecies"
       :speciesList="speciesList"
       position="left"
-      @cancel="handleCancelAddNamedSpecies"
+      @cancel="handleCancel"
     />
+    <tally-weights-dialog
+      ref="addTallyWeightsModal"
+      @addNewSpecies="handleAddNamedSpecies"
+      :buttonData="currentSelectedButton"
+      :speciesData="currentSelectedButton"
+      @cancel="handleCancel"
+    />
+    <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -57,7 +65,8 @@ import {
   TallyDataRecordTypeName,
   TallyButtonLayoutData,
   TallyOperationMode,
-  TallyCountData
+  TallyCountData,
+  TallyHistory
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -72,6 +81,8 @@ import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
 import { Species } from '@boatnet/bn-models';
+import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
+import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -79,6 +90,8 @@ Vue.component('tally-layout-controls', TallyLayoutControls);
 Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
+Vue.component('tally-weights-dialog', TallyWeightsForDialog);
+Vue.component('tally-history-dialog', TallyHistoryDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
@@ -133,6 +146,8 @@ export default class Tally extends Vue {
   private setLastIncDecIndex: any;
   @Action('clearLastIncDec', { namespace: 'tallyState' })
   private clearLastIncDec: any;
+  @Action('addTallyHistory', { namespace: 'tallyState' })
+  private addTallyHistory: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -148,6 +163,8 @@ export default class Tally extends Vue {
   private currentTempName!: string;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
+  @Getter('currentTallyHistory', { namespace: 'tallyState' })
+  private currentTallyHistory!: History[];
 
   private btnLabel = '';
 
@@ -243,6 +260,15 @@ export default class Tally extends Vue {
         }; // TODO full species?
         this.handleControlEvent('all-tallies');
         return;
+      case TallyOperationMode.WeightsForSelectSpecies:
+        this.currentSelectedButton = data.button;
+        this.setCurrentButtonIdx(data.button.index);
+        this.currentSelectedSpecies = {
+          shortCode: data.button.labels.shortCode
+        }; // TODO full species?
+        this.setTallyOpMode(TallyOperationMode.WeightsForAddingWeight);
+        this.openAddWeightsDialog();
+        return;
     }
 
     data = {
@@ -322,6 +348,21 @@ export default class Tally extends Vue {
     // TODO cleaner way to do this? (calling member of component)
   }
 
+  public openHistoryPopup() {
+    (this.$refs.historyModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
+  public closeAddWeightsDialog() {
+    (this.$refs.addTallyWeightsModal as any).close();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
+  public openAddWeightsDialog() {
+    (this.$refs.addTallyWeightsModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
   public handleAddNamedSpecies(species: any) {
     // console.log('MODE', this.tallyMode);
     // console.log('SPECIES', species);
@@ -338,16 +379,16 @@ export default class Tally extends Vue {
           oldSpeciesCode: this.currentSelectedSpecies.shortCode,
           newSpeciesCode: species.shortCode
         });
+        const renameHistory: TallyHistory = {
+          type: 'Rename',
+          oldValue: this.currentSelectedSpecies.shortCode,
+          newValue: species.shortCode
+        };
+        this.addTallyHistory(renameHistory);
         // Side effect of close: switches back to tally mode
         this.closeAddSpeciesPopup();
         break;
     }
-  }
-
-  public handleCancelAddNamedSpecies() {
-    // TODO same as handleCancel?
-    this.setTallyOpMode(TallyOperationMode.Tally);
-    this.handleControlEvent('tally-mode');
   }
 
   public handleResetAllData() {
@@ -380,11 +421,29 @@ export default class Tally extends Vue {
         break;
       case 'all-tallies-for':
         this.clearLastIncDec();
-        this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        if (
+          this.tallyState.operationMode ===
+          TallyOperationMode.AllTalliesSelectSpecies
+        ) {
+          this.handleCancel();
+        } else {
+          this.setTallyOpMode(TallyOperationMode.AllTalliesSelectSpecies);
+        }
         break;
       case 'all-tallies':
         this.setTallyOpMode(TallyOperationMode.AllTallies);
         this.currentControlComponent = 'tally-alltallies-controls';
+        break;
+      case 'weights-for':
+        this.clearLastIncDec();
+        if (
+          this.tallyState.operationMode ===
+          TallyOperationMode.WeightsForSelectSpecies
+        ) {
+          this.handleCancel();
+        } else {
+          this.setTallyOpMode(TallyOperationMode.WeightsForSelectSpecies);
+        }
         break;
       case 'tally-addnew-controls':
         this.currentControlComponent = 'tally-addnew-controls';
@@ -429,6 +488,9 @@ export default class Tally extends Vue {
       case 'add-named-species':
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectSpecies);
         this.openAddSpeciesPopup();
+        break;
+      case 'history':
+        this.openHistoryPopup();
         break;
       case 'rename-temp-species':
         this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelectSpecies);

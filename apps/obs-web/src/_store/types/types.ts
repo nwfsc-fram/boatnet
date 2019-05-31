@@ -54,16 +54,16 @@ export interface ObserverAvailabilityState {
 }
 
 export interface GeneralState {
+  portDecoder: any[];
   // ports: string[];
   // fisheries: string[];
   // targetTypes: string[];
-  roles: string[];
-  usStates: string[];
-  portGroups: string[];
-  portDecoder: any[];
+  // roles: string[];
+  // usStates: string[];
+  // portGroups: string[];
   // otsTargets: OTSTarget[];
   // vessels: Vessel[];
-  notificationOptions: any[];
+  // notificationOptions: any[];
   // activeTarget: OTSTarget;
 }
 

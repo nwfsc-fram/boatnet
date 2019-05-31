@@ -5,13 +5,13 @@ import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { RootState } from '@/_store/types/types';
 import { PermitState } from '@/_store/types/types';
-import { permits } from '@/_store/data';
+// import { permits } from '@/_store/data';
 
 Vue.use(Vuex);
 
 export const state: PermitState = {
-  activePermit: permits[0],
-  permits,
+  activePermit: null,
+  permits: [],
   filterText: ''
 };
 

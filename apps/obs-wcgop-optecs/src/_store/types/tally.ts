@@ -1,4 +1,4 @@
-import { Base } from '@boatnet/bn-models';
+import { Base, BoatnetDate } from '@boatnet/bn-models';
 
 export enum TallyButtonMode {
   MovingButton,
@@ -23,6 +23,8 @@ export enum TallyOperationMode {
   ModifyDispSelectDisp = 'MODIFY_DISP_SELECT_DISP',
   AllTalliesSelectSpecies = 'ALL_TALLIES_SELECT_SPECIES',
   AllTallies = 'ALL_TALLIES',
+  WeightsForSelectSpecies = 'WEIGHTS_FOR_SELECT_SPECIES',
+  WeightsForAddingWeight = 'WEIGHTS_FOR_ADDING_WEIGHT',
   Unknown = 'Unknown'
 }
 
@@ -42,8 +44,17 @@ export interface TallyButtonLayoutData {
   };
 }
 
-export const TallyLayoutRecordTypeName = 'tally-layout';
+export interface TallyHistory {
+  type: string; // 'tally', etc
+  eventTime?: BoatnetDate;
+  desc?: string;
+  shortCode?: string;
+  reason?: string;
+  oldValue?: any;
+  newValue?: any;
+}
 
+export const TallyLayoutRecordTypeName = 'tally-layout';
 export interface TallyLayoutRecord extends Base {
   recordName: string; // friendly name
   isTemplate?: boolean; // is a template for new catches?
@@ -55,21 +66,32 @@ export interface TallyLayoutRecord extends Base {
 // -- Data Related Interfaces --
 export const TallyDataRecordTypeName = 'tally-data';
 
+export interface TallyCountWeight {
+  weighedCount?: number;
+  weight?: number;
+  isAddedToTally?: boolean; // if user chose to add to tally, then remove from tally if deleted
+}
+
 export interface TallyCountData extends Base {
   species?: any; // TODO actual Species data
   shortCode?: string; // TODO redundant with species, refactor
   reason?: string;
   count?: number;
+  calculatedTotalWeighedCount?: number;
+  calculatedTotalWeighedWeight?: number;
+  calculatedAverageWeight?: number;
+  countWeightData?: TallyCountWeight[];
 }
 
 export interface TallyDataRecord extends Base {
   data?: TallyCountData[];
+  history?: TallyHistory[];
 }
 
 // -- TallyState Interface --
 export interface TallyState {
   tallyLayout: TallyLayoutRecord;
-  tallyDataRec?: TallyDataRecord;
+  tallyDataRec?: TallyDataRecord; // data and history
 
   // State
   incDecValue?: number; // +1 or -1
