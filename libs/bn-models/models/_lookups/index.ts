@@ -40,3 +40,4 @@ export * from './taxonomy';
 export * from './protocol';
 export * from './unsorted-catch';
 export * from './taxonomy-alias';
+export * from './us-state';

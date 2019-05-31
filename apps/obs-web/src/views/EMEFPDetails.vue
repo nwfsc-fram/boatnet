@@ -23,8 +23,6 @@
             <!-- </div> -->
           </div>
 
-          {{ emefp.activeEmefp.vessel }}
-
             <!-- <q-select
             v-model="emefp.activeEmefp.vessel.vesselName"
             label="Vessel Name"

@@ -8,6 +8,7 @@ import {
   TallyLayoutRecordTypeName,
   TallyLayoutRecord,
   TallyCountData,
+  TallyCountWeight,
   TallyDataRecordTypeName,
   TallyDataRecord,
   TallyOperationMode
@@ -228,6 +229,71 @@ async function updateDB(record: Base) {
   }
 }
 
+function getButtonFromIndex(getState: TallyState, idx: number) {
+  if (idx === undefined || idx < 0) {
+    return;
+  }
+  const button = getState.tallyLayout.layoutData[idx];
+  return button;
+}
+
+function findDataIndex(
+  getState: TallyState,
+  shortCode: string,
+  reason: string
+) {
+  // Find matching data field
+  const currentDataIdx = getState.tallyDataRec!.data!.findIndex(
+    (rec: TallyCountData) => {
+      return rec.shortCode === shortCode && rec.reason === reason;
+    }
+  );
+  return currentDataIdx;
+}
+
+function getCurrentDataIndex(getState: TallyState) {
+  const button = getButtonFromIndex(getState, getState.currentButtonIdx!);
+  if (button) {
+    return findDataIndex(
+      getState,
+      button.labels!.shortCode!,
+      button.labels!.reason!
+    );
+  }
+}
+
+function calculateTallyValues(rec: TallyCountData) {
+  // Roll up values
+
+  if (rec.countWeightData === undefined || rec.countWeightData.length === 0) {
+    Vue.delete(rec, 'calculatedTotalWeighedCount');
+    Vue.delete(rec, 'calculatedTotalWeighedWeight');
+    Vue.delete(rec, 'calculatedAverageWeight');
+    return;
+  }
+  let weighedCount = 0;
+  let weighedWeight = 0;
+  let avgWeight = 0;
+  let totalCount = rec.count ? rec.count : 0;
+
+  for (const data of rec.countWeightData) {
+    weighedCount += data.weighedCount ? data.weighedCount : 0;
+    weighedWeight += data.weight ? data.weight : 0;
+
+    if (!data.isAddedToTally) {
+      totalCount += data.weighedCount!;
+      Vue.set(data, 'isAddedToTally', true);
+    }
+  }
+  if (weighedCount > 0) {
+    avgWeight = weighedWeight / weighedCount;
+  }
+  Vue.set(rec, 'calculatedTotalWeighedCount', weighedCount);
+  Vue.set(rec, 'calculatedTotalWeighedWeight', weighedWeight);
+  Vue.set(rec, 'calculatedAverageWeight', avgWeight);
+  Vue.set(rec, 'count', totalCount);
+}
+
 // ACTIONS
 const actions: ActionTree<TallyState, RootState> = {
   reset({ commit }: any) {
@@ -275,6 +341,12 @@ const actions: ActionTree<TallyState, RootState> = {
   },
   clearLastIncDec({ commit }: any) {
     commit('clearLastIncDec');
+  },
+  addTallyCountWeight({ commit }: any, value: TallyCountWeight) {
+    commit('addTallyCountWeight', value);
+  },
+  deleteTallyCountWeight({ commit }: any, index: number) {
+    commit('deleteTallyCountWeight', index);
   },
   assignNewButton(
     { commit }: any,
@@ -461,6 +533,36 @@ const mutations: MutationTree<TallyState> = {
     newState.lastClickedIndex = -1;
     newState.lastClickedWasInc = true;
   },
+  addTallyCountWeight(newState: any, value: TallyCountWeight) {
+    const idx = getCurrentDataIndex(newState);
+    if (newState.tallyDataRec.data[idx!].countWeightData) {
+      newState.tallyDataRec.data[idx!].countWeightData.push(value);
+    } else {
+      // Create reactive entry
+      Vue.set(newState.tallyDataRec.data[idx!], 'countWeightData', [value]);
+    }
+    calculateTallyValues(newState.tallyDataRec.data[idx!]);
+    updateTallyDataDB(newState.tallyDataRec);
+  },
+  deleteTallyCountWeight(newState: any, index: number) {
+    const idx = getCurrentDataIndex(newState);
+    console.log(
+      '[Tally Module] Deleting CW data',
+      newState.tallyDataRec.data[idx!].countWeightData[index]
+    );
+    const removeCount = newState.tallyDataRec.data[idx!].countWeightData[index].weighedCount;
+    const newCount = newState.tallyDataRec.data[idx!].count - removeCount;
+    Vue.set(newState.tallyDataRec.data[idx!], 'count', newCount);
+    newState.tallyDataRec.data[idx!].countWeightData.splice(index, 1);
+
+    const length = newState.tallyDataRec.data[idx!].countWeightData.length;
+    if (length === 0) {
+      // Delete reactive entry
+      Vue.delete(newState.tallyDataRec.data[idx!], 'countWeightData');
+    }
+    calculateTallyValues(newState.tallyDataRec.data[idx!]);
+    updateTallyDataDB(newState.tallyDataRec);
+  },
   async assignNewButton(
     newState: any,
     value: { species: any; reason: string; index: number }
@@ -541,14 +643,12 @@ const mutations: MutationTree<TallyState> = {
 
       if (duplicateLayouts.length === 1) {
         // Only delete data if this is the only button of its (TEMP#) type.
-        const deleteIdx = newState.tallyDataRec.data.findIndex(
-          (rec: TallyCountData) => {
-            return (
-              rec.shortCode === button.labels!.shortCode &&
-              rec.reason === button.labels!.reason
-            );
-          }
+        const deleteIdx = findDataIndex(
+          newState,
+          button.labels!.shortCode,
+          button.labels!.reason!
         );
+
         if (deleteIdx >= 0) {
           newState.tallyDataRec.data.splice(deleteIdx, 1);
         }
@@ -573,16 +673,11 @@ const mutations: MutationTree<TallyState> = {
 
     for (const layout of newState.tallyLayout.layoutData) {
       if (!layout.blank && layout.labels.shortCode === value.oldSpeciesCode) {
-        console.log(layout.labels.shortCode);
-
         // combine data - find matching records if they exist
-        const sourceRecIdx = newState.tallyDataRec.data.findIndex(
-          (rec: TallyCountData) => {
-            return (
-              rec.shortCode === value.oldSpeciesCode &&
-              rec.reason === layout.labels.reason
-            );
-          }
+        const sourceRecIdx = findDataIndex(
+          newState,
+          value.oldSpeciesCode,
+          layout.labels.reason
         );
         if (sourceRecIdx) {
           // delete old data
@@ -645,6 +740,18 @@ const getters: GetterTree<TallyState, RootState> = {
   },
   currentReason(getState: TallyState) {
     return getState.currentReason;
+  },
+  currentCWData(getState: TallyState) {
+    const currentDataIdx = getCurrentDataIndex(getState);
+    if (currentDataIdx !== undefined && currentDataIdx >= 0) {
+      return getState.tallyDataRec!.data![currentDataIdx].countWeightData;
+    }
+  },
+  currentTallyData(getState: TallyState) {
+    const currentDataIdx = getCurrentDataIndex(getState);
+    if (currentDataIdx !== undefined && currentDataIdx >= 0) {
+      return getState.tallyDataRec!.data![currentDataIdx];
+    }
   },
   tempCounter(getState: TallyState) {
     // TODO store

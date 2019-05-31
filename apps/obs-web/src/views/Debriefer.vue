@@ -13,7 +13,7 @@
           narrow-indicator
         >
           <q-tab name="trips" label="Trips" />
-          <q-tab name="hauls" label="Hauls" />
+          <q-tab name="hauls" label="Hauls" @click="getOperations"/>
           <q-tab name="catch" label="Catch" />
           <q-tab name="catchBaskets" label="Catch Baskets" />
           <q-tab name="specimens" label="Specimens" />
@@ -25,11 +25,9 @@
           <q-tab-panel name="trips">
             <div class="text-h6">Trips</div>
 
-
-
                   <q-table
                               :data="WcgopTrips"
-                              :columns="columns"
+                              :columns="tripColumns"
                               dense
                               row-key="id"
                               :pagination.sync="pagination"
@@ -39,17 +37,11 @@
                     <template v-slot:top="props">
 
                         <div v-if="$q.screen.gt.xs" class="col">
-                          <q-toggle v-model="visibleColumns" val="key" label="Trip ID" />
-                          <q-toggle v-model="visibleColumns" val="tripStatus" label="Trip Status" />
-                          <q-toggle v-model="visibleColumns" val="vessel" label="Vessel" />
-                        </div>
-
-                        <div v-if="$q.screen.gt.xs" class="col">
                           <q-select
                             outlined
                             v-model="visibleColumns"
                             multiple
-                            :options="columns"
+                            :options="tripColumns"
                             label="Visible Columns"
                             style="width: 270px"
                             option-label="label"
@@ -117,7 +109,26 @@
 
           <q-tab-panel name="hauls">
             <div class="text-h6">Hauls</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+
+              <q-table
+                :data="WcgopOperations"
+                :columns="haulColumns"
+                dense
+                row-key="id"
+                :pagination.sync="pagination"
+                >
+
+                  <template v-slot:body="props">
+                    <q-tr :props='props'>
+                      <q-td key="key" :props="props">{{ props.row.key }}</q-td>
+                      <q-td key="operationNum" :props="props">{{ props.row.operationNum }}</q-td>
+                      <q-td key="observerTotalCatch" :props="props">{{ props.row.observerTotalCatch.measurement.value.toFixed(2) }}</q-td>
+
+                    </q-tr>
+                  </template>
+
+                </q-table>
+
           </q-tab-panel>
 
           <q-tab-panel name="catch">
@@ -158,7 +169,7 @@ import {
   UserState,
   GeneralState
 } from '../_store/types/types';
-import { WcgopTrip } from '@boatnet/bn-models';
+import { WcgopTrip,WcgopOperation } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
@@ -170,12 +181,12 @@ export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
 
 private WcgopTrips: WcgopTrip[] = [];
+private WcgopOperations: WcgopOperation[] = [];
 private pagination = {rowsPerPage: 50};
-private fisheries = [ { id: 1, description: 'Catch Shares'}, { id: 2, description: 'Shoreside Hake' }, { id: 3, description: 'some fishery lookup 3' }, { id: 5, description: 'Some fishery lookup value' }  ];
 private visibleColumns = ['key', 'tripStatus', 'vessel'];
 private selectedColumns = [];
 private tab = 'trips';
-private columns = [
+private tripColumns = [
     {name: 'key', label: 'Trip ID', field: 'key', align: 'left', sortable: true },
     {name: 'tripStatus', label: 'Trip Status', field: 'tripStatus', align: 'left', sortable: true },
     {name: 'vessel', label: 'Vessel', field: 'vessel', align: 'left', sortable: true },
@@ -203,6 +214,12 @@ private columns = [
     {name: 'intendedGearType', label: 'Intended Gear Type', field: 'intendedGearType', align: 'left', sortable: true }
 ];
 
+private haulColumns = [
+    {name: 'key', label: 'Haul ID', field: 'key', align: 'left', sortable: true },
+    {name: 'operationNum', label: 'Haul #', field: 'operationNum', align: 'left', sortable: true },
+    {name: 'observerTotalCatch', label: 'OTC', field: 'observerTotalCatch', align: 'left', sortable: true }
+];
+
 private async getTrips() {
   const masterDB: Client<any> = couchService.masterDB;
   try {
@@ -221,31 +238,38 @@ private async getTrips() {
           trip.key = row.key;
           this.WcgopTrips.push(trip);
       }
-      console.log(this.WcgopTrips);
 
   } catch (err) {
       this.error(err);
   }
 }
 
-// private get columnNames() {
-//   return this.columns.map( (column) => column.name );
-// }
+private async getOperations() {
+  const masterDB: Client<any> = couchService.masterDB;
+  try {
+      const options: ListOptions = {
+        limit: 20
+      };
 
-private created() {
-    this.getTrips();
+      const hauls = await masterDB.viewWithDocs<any>(
+          'MainDocs',
+          'all-operations',
+          options
+          );
+
+      for (const row of hauls.rows) {
+          const haul = row.doc;
+          haul.key = row.key;
+          this.WcgopOperations.push(haul);
+      }
+  } catch (err) {
+      this.error(err);
+  }
 }
 
-private getFisheryLookup(key: any) {
-    let returnValue = '';
 
-    for (const lookup of this.fisheries) {
-      if (lookup.id === key) {
-        returnValue = lookup.description;
-        }
-    }
-
-    return returnValue;
+private created() {
+    this.getTrips();   
 }
 
 private formatDate(inputDate: any) {
@@ -253,7 +277,7 @@ private formatDate(inputDate: any) {
 }
 
 private addAll() {
-  this.visibleColumns = this.columns.map( (column) => column.name);
+  this.visibleColumns = this.tripColumns.map( (tripColumns) => tripColumns.name);
 }
 
 private removeAll() {
