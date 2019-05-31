@@ -11,7 +11,8 @@ import {
   TallyCountWeight,
   TallyDataRecordTypeName,
   TallyDataRecord,
-  TallyOperationMode
+  TallyOperationMode,
+  TallyHistory
 } from '@/_store/types';
 
 import { pouchService } from '@boatnet/bn-pouch';
@@ -34,7 +35,7 @@ export const state: TallyState = {
     vertButtonCount: 4,
     horizButtonCount: 8
   },
-  tallyDataRec: { type: TallyDataRecordTypeName, data: [] },
+  tallyDataRec: { type: TallyDataRecordTypeName, data: [], history: [] },
   incDecValue: 1,
   operationMode: TallyOperationMode.Tally,
   tempSpeciesCounter: 0,
@@ -72,7 +73,8 @@ function getBtnColor(reason: string): { bg?: string; text?: string } {
 function createDefaultButtonData(): TallyDataRecord {
   const newData: TallyDataRecord = {
     type: TallyDataRecordTypeName,
-    data: []
+    data: [],
+    history: []
   };
   const template = defaultTemplate.templateData;
   template.forEach((item: { code?: string; reason: string }, index: number) => {
@@ -371,6 +373,13 @@ const actions: ActionTree<TallyState, RootState> = {
     if (value.oldSpeciesCode !== value.newSpeciesCode) {
       commit('reassignSpecies', value);
     }
+  },
+  addTallyHistory({ commit }: any, value: TallyHistory) {
+    value = {
+      eventTime: moment().format(),
+      ...value
+    };
+    commit('addTallyHistory', value);
   }
 };
 
@@ -550,7 +559,8 @@ const mutations: MutationTree<TallyState> = {
       '[Tally Module] Deleting CW data',
       newState.tallyDataRec.data[idx!].countWeightData[index]
     );
-    const removeCount = newState.tallyDataRec.data[idx!].countWeightData[index].weighedCount;
+    const removeCount =
+      newState.tallyDataRec.data[idx!].countWeightData[index].weighedCount;
     const newCount = newState.tallyDataRec.data[idx!].count - removeCount;
     Vue.set(newState.tallyDataRec.data[idx!], 'count', newCount);
     newState.tallyDataRec.data[idx!].countWeightData.splice(index, 1);
@@ -715,6 +725,10 @@ const mutations: MutationTree<TallyState> = {
 
     updateLayoutDB(newState.tallyLayout);
     updateTallyDataDB(newState.tallyDataRec);
+  },
+  addTallyHistory(newState: any, value: TallyHistory) {
+    console.log('TODO ADD TO HISTORY', value);
+    newState.tallyDataRec.history.unshift(value);
   }
 };
 
@@ -751,6 +765,11 @@ const getters: GetterTree<TallyState, RootState> = {
     const currentDataIdx = getCurrentDataIndex(getState);
     if (currentDataIdx !== undefined && currentDataIdx >= 0) {
       return getState.tallyDataRec!.data![currentDataIdx];
+    }
+  },
+  currentTallyHistory(getState: TallyState) {
+    if (getState.tallyDataRec) {
+      return getState.tallyDataRec.history;
     }
   },
   tempCounter(getState: TallyState) {

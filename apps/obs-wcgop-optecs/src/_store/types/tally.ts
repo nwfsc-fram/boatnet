@@ -1,4 +1,4 @@
-import { Base } from '@boatnet/bn-models';
+import { Base, BoatnetDate } from '@boatnet/bn-models';
 
 export enum TallyButtonMode {
   MovingButton,
@@ -44,8 +44,17 @@ export interface TallyButtonLayoutData {
   };
 }
 
-export const TallyLayoutRecordTypeName = 'tally-layout';
+export interface TallyHistory {
+  type: string; // 'tally', etc
+  eventTime?: BoatnetDate;
+  desc?: string;
+  shortCode?: string;
+  reason?: string;
+  oldValue?: any;
+  newValue?: any;
+}
 
+export const TallyLayoutRecordTypeName = 'tally-layout';
 export interface TallyLayoutRecord extends Base {
   recordName: string; // friendly name
   isTemplate?: boolean; // is a template for new catches?
@@ -76,12 +85,13 @@ export interface TallyCountData extends Base {
 
 export interface TallyDataRecord extends Base {
   data?: TallyCountData[];
+  history?: TallyHistory[];
 }
 
 // -- TallyState Interface --
 export interface TallyState {
   tallyLayout: TallyLayoutRecord;
-  tallyDataRec?: TallyDataRecord;
+  tallyDataRec?: TallyDataRecord; // data and history
 
   // State
   incDecValue?: number; // +1 or -1

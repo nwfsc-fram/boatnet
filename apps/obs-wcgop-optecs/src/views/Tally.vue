@@ -157,6 +157,8 @@ export default class Tally extends Vue {
   private currentTempName!: string;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
+  @Getter('currentTallyHistory', { namespace: 'tallyState' })
+  private currentTallyHistory!: History[];
 
   private btnLabel = '';
 
