@@ -49,6 +49,10 @@
       :speciesData="currentSelectedButton"
       @cancel="handleCancel"
     />
+    <tally-history-dialog
+      ref="historyModal"
+      @cancel="handleCancel"
+    />
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -80,6 +84,7 @@ import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
 import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
+import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -88,6 +93,7 @@ Vue.component('tally-alltallies-controls', TallyAllTalliesControls);
 Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-weights-dialog', TallyWeightsForDialog);
+Vue.component('tally-history-dialog', TallyHistoryDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
@@ -342,6 +348,11 @@ export default class Tally extends Vue {
     // TODO cleaner way to do this? (calling member of component)
   }
 
+  public openHistoryPopup() {
+    (this.$refs.historyModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
   public closeAddWeightsDialog() {
     (this.$refs.addTallyWeightsModal as any).close();
     // TODO cleaner way to do this? (calling member of component)
@@ -465,6 +476,9 @@ export default class Tally extends Vue {
       case 'add-named-species':
         this.setTallyOpMode(TallyOperationMode.AddNamedSpeciesSelectSpecies);
         this.openAddSpeciesPopup();
+        break;
+      case 'history':
+        this.openHistoryPopup();
         break;
       case 'rename-temp-species':
         this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelectSpecies);
