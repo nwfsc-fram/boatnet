@@ -98,7 +98,8 @@ import {
   TallyButtonLayoutData,
   TallyCountData,
   TallyButtonMode,
-  TallyState
+  TallyState,
+  TallyHistory
 } from '../../_store/types';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
@@ -127,6 +128,8 @@ export default class TallyBtn extends Vue {
   @Prop({ default: undefined }) public data!: TallyCountData;
   @Prop({ default: undefined }) public blank!: boolean;
   @State('tallyState') private tallyState!: TallyState;
+  @Action('addTallyHistory', { namespace: 'tallyState' })
+  private addTallyHistory: any;
   @Getter('incDecValue', { namespace: 'tallyState' })
   private incDecValue!: number;
   @Getter('tallyMode', { namespace: 'tallyState' })
@@ -192,16 +195,28 @@ export default class TallyBtn extends Vue {
     if (this.data && this.data.count !== undefined) {
       const newVal = this.data.count + this.incDecValue;
       // If we have tally counts/ weights, then don't allow less than 0
-      const minVal = this.data.calculatedTotalWeighedCount ? this.data.calculatedTotalWeighedCount : 0;
+      const minVal = this.data.calculatedTotalWeighedCount
+        ? this.data.calculatedTotalWeighedCount
+        : 0;
+      const newHistory: TallyHistory = {
+          type: 'Tally',
+          shortCode: this.layout!.labels!.shortCode,
+          reason: this.layout!.labels!.reason,
+          oldValue: this.data.count,
+          newValue: newVal
+        };
+
       if (this.incDecValue > 0) {
         this.playSound('inc');
         this.data.count = newVal;
+        this.addTallyHistory(newHistory);
       } else if (newVal < minVal) {
         this.playSound('bad');
         return;
       } else {
         this.playSound('dec');
         this.data.count = newVal;
+        this.addTallyHistory(newHistory);
       }
 
       this.$emit('dataChanged', { button: this.layout, data: this.data });
