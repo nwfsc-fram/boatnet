@@ -140,6 +140,7 @@ export default class Tally extends Vue {
 
   @Action('success', { namespace: 'alert' }) private successAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('setSpeciesList', { namespace: 'pdfState' }) private setSpeciesList: any;
   @Action('setData', { namespace: 'pdfState' }) private setData: any;
   @Action('generatePdf', { namespace: 'pdfState' }) private generatePdf: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
@@ -218,7 +219,8 @@ export default class Tally extends Vue {
     super();
 
     this.setTallyOpMode(TallyOperationMode.Tally);
-    this.populateSpeciesView(); // TODO use live view
+    this.populateSpeciesView(); // TODO consider use live pouch-vue view
+    this.populateSpeciesShortList();
     this.populateTallyTemplatesView();
   }
 
@@ -239,6 +241,15 @@ export default class Tally extends Vue {
     );
 
     this.speciesList = species.rows;
+  }
+
+  public async populateSpeciesShortList() {
+    const db = pouchService.db;
+    const speciesShort = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/all_tally_species'
+    );
+    this.setSpeciesList(speciesShort.rows);
   }
 
   public async populateTallyTemplatesView() {

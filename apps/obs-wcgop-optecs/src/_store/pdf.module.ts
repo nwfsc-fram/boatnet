@@ -18,10 +18,14 @@ export const state: PdfState = {
   catchId: 'Not Set'
 };
 
+// Species Map
+const speciesMap = new Map();
+
 // Helper Functions
 
 function generateTallyPdfData(newState: PdfState, tallyData: TallyCountData[]) {
   const header = [
+    'Code',
     'Species',
     'Weight Method',
     'Tally Count',
@@ -42,11 +46,10 @@ function generateTallyPdfData(newState: PdfState, tallyData: TallyCountData[]) {
       data.calculatedAverageWeight.toFixed(2) : '';
       const calculations = 'Weighed ' + twc + ' @ ' + tww + ' (Avg. Wt. = ' + avgwt + ' )';
       const totalWeight = data.count * (data.calculatedAverageWeight ? data.calculatedAverageWeight : 0);
-      //     calculatedTotalWeighedCount?: number;
-      // calculatedTotalWeighedWeight?: number;
-      // calculatedAverageWeight?: number;
+      const commonName = speciesMap.get(data.shortCode);
       pdfData.push([
         { text: data.shortCode, bold: true },
+        { text: commonName, italics: true },
         { text: '13', alignment: 'center' },
         { text: data.count },
         { text: tww ? totalWeight.toFixed(2) : '', bold: true },
@@ -56,15 +59,6 @@ function generateTallyPdfData(newState: PdfState, tallyData: TallyCountData[]) {
     }
   });
 
-  // [
-  //   d.catch,
-  //   { text: d.speciesCode + ` (${commonName})`, bold: true },
-  //   { text: d.weightMethod ? d.weightMethod : '-', alignment: 'center' },
-  //   { text: d.fishCount },
-  //   { text: d.weight ? d.weight.toFixed(2) : '-', bold: true },
-  //   { text: d.disposition, bold: true, alignment: 'center' },
-  //   { text: d.calculations ? d.calculations : '-' }
-  // ]
   return pdfData;
 }
 const actions: ActionTree<PdfState, RootState> = {
@@ -73,6 +67,11 @@ const actions: ActionTree<PdfState, RootState> = {
     data: { tripId: string; haulId: string; catchId: string }
   ) {
     commit('setData', data);
+  },
+  setSpeciesList( { commit }: any, speciesList: any[]) {
+    speciesList.forEach((element) => {
+      speciesMap.set(element.key, element.value.commonName);
+    });
   },
   generatePdf({ commit }: any, tallyData: TallyCountData[]) {
     commit('generatePdf', tallyData);
@@ -128,7 +127,7 @@ const mutations: MutationTree<PdfState> = {
               // headers are automatically repeated if the table spans over multiple pages
               // you can declare how many rows should be treated as headers
               headerRows: 1,
-              widths: [150, 'auto', 'auto', 'auto', 'auto', 'auto'],
+              widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
               body: tallyDataDef
             }
           }
