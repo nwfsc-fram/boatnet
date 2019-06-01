@@ -56,6 +56,7 @@
       @cancel="handleCancel"
     />
     <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
+    <tally-pdf-dialog ref="pdfModal" @generatePdf="handleGeneratePdf" @cancel="handleCancel"/>
     <tally-template-dialog
       ref="templateModal"
       @cancel="handleCancel"
@@ -102,6 +103,7 @@ import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
 import TallyTemplateManagerDialog from '../components/tally/TallyTemplateManagerDialog.vue';
+import TallyPDFOptionsDialogVue from '../components/tally/TallyPDFOptionsDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -111,6 +113,7 @@ Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-weights-dialog', TallyWeightsForDialog);
 Vue.component('tally-history-dialog', TallyHistoryDialog);
+Vue.component('tally-pdf-dialog', TallyPDFOptionsDialogVue);
 Vue.component('tally-template-dialog', TallyTemplateManagerDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
@@ -140,7 +143,8 @@ export default class Tally extends Vue {
 
   @Action('success', { namespace: 'alert' }) private successAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
-  @Action('setSpeciesList', { namespace: 'pdfState' }) private setSpeciesList: any;
+  @Action('setSpeciesList', { namespace: 'pdfState' })
+  private setSpeciesList: any;
   @Action('setData', { namespace: 'pdfState' }) private setData: any;
   @Action('generatePdf', { namespace: 'pdfState' }) private generatePdf: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
@@ -403,16 +407,22 @@ export default class Tally extends Vue {
 
   public openAddSpeciesPopup() {
     (this.$refs.addNamedSpeciesModal as any).open();
-    // TODO cleaner way to do this? (calling member of component)
   }
 
   public openHistoryPopup() {
     (this.$refs.historyModal as any).open();
-    // TODO cleaner way to do this? (calling member of component)
   }
 
-  public handleGeneratePdf() {
-    this.setData({ tripId: '123', haulId: '234', catchId: '666' });
+  public openPdfPopup() {
+    (this.$refs.pdfModal as any).open();
+  }
+
+  public handleGeneratePdf(config: any) {
+    this.setData({
+      tripId: config.tripId,
+      haulId: config.haulId,
+      catchId: config.catchId
+    });
     this.generatePdf(this.allTallyData);
   }
 
@@ -570,7 +580,8 @@ export default class Tally extends Vue {
         this.openHistoryPopup();
         break;
       case 'generate-pdf':
-        this.handleGeneratePdf();
+        this.openPdfPopup();
+        // this.handleGeneratePdf();
         break;
       case 'template-manager':
         this.openTemplateManagerPopup();

@@ -106,7 +106,7 @@ const mutations: MutationTree<PdfState> = {
             { width: 150, bold: true, text: 'FIXED GEAR DECK FORM' },
             {
               width: 'auto',
-              text: 'TRIP ' + tripId + ', HAUL ' + haulId + ', CATCH ' + catchId
+              text: 'TRIP # ' + tripId + '   HAUL # ' + haulId + '   CATCH # ' + catchId
             },
             { width: 150, text: `${dateStr}`, alignment: 'right' },
             {
