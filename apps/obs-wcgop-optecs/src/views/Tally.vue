@@ -13,6 +13,12 @@
         </div>
       </div>
     </div>
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-green text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
+      </template>
+    </q-banner>
     <div class="q-pa-md">
       <component
         v-bind:is="currentControlComponent"
@@ -50,6 +56,13 @@
       @cancel="handleCancel"
     />
     <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
+    <tally-template-dialog
+      ref="templateModal"
+      @cancel="handleCancel"
+      @selectedDefaultTemplate="handleSelectedDefaultTemplate"
+      :templateData="tallyDefaultTemplates"
+    />
+
     <div>Mode: {{tallyMode}}</div>
   </q-page>
 </template>
@@ -62,11 +75,14 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 import {
   TallyLayoutRecordTypeName,
+  TallyTemplateRecordTypeName,
+  TallySpeciesRecordTypeName,
   TallyDataRecordTypeName,
   TallyButtonLayoutData,
   TallyOperationMode,
   TallyCountData,
-  TallyHistory
+  TallyHistory,
+  TallyLayoutRecord
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -80,9 +96,11 @@ import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
 import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
+import { AlertState } from '../_store/index';
 import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
+import TallyTemplateManagerDialog from '../components/tally/TallyTemplateManagerDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -92,11 +110,12 @@ Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-weights-dialog', TallyWeightsForDialog);
 Vue.component('tally-history-dialog', TallyHistoryDialog);
+Vue.component('tally-template-dialog', TallyTemplateManagerDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
 @Component({
   pouch: {
-    tallyTemplates() {
+    tallyLayouts() {
       return {
         database: pouchService.userDBName,
         selector: { type: TallyLayoutRecordTypeName },
@@ -113,10 +132,13 @@ Vue.component(BoatnetAddSpeciesDialog);
   }
 })
 export default class Tally extends Vue {
+  @State('alert') private alert!: AlertState;
   @State('appState') private appState!: WcgopAppState;
   @State('pouchState') private pouchState!: PouchDBState;
   @State('tallyState') private tallyState!: TallyState;
 
+  @Action('success', { namespace: 'alert' }) private successAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButtonData', { namespace: 'tallyState' })
   private updateButtonData: any;
@@ -148,6 +170,8 @@ export default class Tally extends Vue {
   private clearLastIncDec: any;
   @Action('addTallyHistory', { namespace: 'tallyState' })
   private addTallyHistory: any;
+  @Action('setDefaultLayout', { namespace: 'tallyState' })
+  private setDefaultLayout: any;
 
   @Getter('vertButtonCount', { namespace: 'tallyState' })
   private vertButtonCount!: number;
@@ -174,28 +198,30 @@ export default class Tally extends Vue {
 
   private currentSelectedSpecies: any = { shortCode: '' }; // TODO actual species type, move to vuex?
 
-  private currentSelectedButton: any = {}; // TODO button type?
+  private currentSelectedButton: any = {};
 
   private speciesList = [];
+  private tallyDefaultTemplates = [];
 
   private isAddSpeciesDialogOpen = false;
 
-  // Reactive
-  private tallyTemplates!: any;
+  // Reactive rows from PouchDB
+  private tallyLayouts!: any;
   private tallyData!: any;
 
   constructor() {
     super();
 
     this.setTallyOpMode(TallyOperationMode.Tally);
-    this.populateSpecies(); // TODO use live view
+    this.populateSpeciesView(); // TODO use live view
+    this.populateTallyTemplatesView();
   }
 
   /**
    * TODO: If this is called before the initial sync, or a record is added later, the page needs to reload.
    * Review alternative methods or checks to reload (or reactive pouch-vue style, if performance allows)
    */
-  public async populateSpecies() {
+  public async populateSpeciesView() {
     const db = pouchService.db;
     const queryOptions = {
       include_docs: true
@@ -208,6 +234,22 @@ export default class Tally extends Vue {
     );
 
     this.speciesList = species.rows;
+  }
+
+  public async populateTallyTemplatesView() {
+    const db = pouchService.db;
+    const queryOptions = {
+      include_docs: true,
+      ascending: true
+    };
+
+    const templates = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/tally_templates',
+      queryOptions
+    );
+
+    this.tallyDefaultTemplates = templates.rows;
   }
 
   public handleDataChanged(data: any) {
@@ -353,6 +395,11 @@ export default class Tally extends Vue {
     // TODO cleaner way to do this? (calling member of component)
   }
 
+  public openTemplateManagerPopup() {
+    (this.$refs.templateModal as any).open();
+    // TODO cleaner way to do this? (calling member of component)
+  }
+
   public closeAddWeightsDialog() {
     (this.$refs.addTallyWeightsModal as any).close();
     // TODO cleaner way to do this? (calling member of component)
@@ -389,6 +436,11 @@ export default class Tally extends Vue {
         this.closeAddSpeciesPopup();
         break;
     }
+  }
+
+  public handleSelectedDefaultTemplate(template: TallyLayoutRecord) {
+    this.setDefaultLayout(template);
+    this.successAlert('To use \"' + template.description + '\" template, click Reset Data (in Modify Layout)');
   }
 
   public handleResetAllData() {
@@ -491,6 +543,9 @@ export default class Tally extends Vue {
         break;
       case 'history':
         this.openHistoryPopup();
+        break;
+      case 'template-manager':
+        this.openTemplateManagerPopup();
         break;
       case 'rename-temp-species':
         this.setTallyOpMode(TallyOperationMode.NameTempSpeciesSelectSpecies);
