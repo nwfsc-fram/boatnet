@@ -35,17 +35,43 @@ function generateTallyPdfData(newState: PdfState, tallyData: TallyCountData[]) {
   ];
 
   const pdfData: any[] = [header];
+  // Sort tallyData by Code
+  tallyData.sort(
+    (n1: TallyCountData, n2: TallyCountData) => {
+      if (n1.shortCode === n2.shortCode) {
+        return 0;
+      } else {
+        return n1!.shortCode! > n2!.shortCode! ? 1 : -1;
+      }
+    }
+  );
+
+  // Sort tallyData by disposition
+  tallyData.sort(
+    (n1: TallyCountData, n2: TallyCountData) => {
+      if (n1.reason === n2.reason) {
+        return 0;
+      } else {
+        return n1!.reason! > n2!.reason! ? 1 : -1;
+      }
+    }
+  );
   tallyData.forEach((data) => {
     if (data.count) {
       const tww = data.calculatedTotalWeighedWeight
         ? data.calculatedTotalWeighedWeight.toFixed(2)
         : '';
-      const twc = data.calculatedTotalWeighedCount ?
-      data.calculatedTotalWeighedCount : '';
-      const avgwt = data.calculatedAverageWeight ?
-      data.calculatedAverageWeight.toFixed(2) : '';
-      const calculations = 'Weighed ' + twc + ' @ ' + tww + ' (Avg. Wt. = ' + avgwt + ' )';
-      const totalWeight = data.count * (data.calculatedAverageWeight ? data.calculatedAverageWeight : 0);
+      const twc = data.calculatedTotalWeighedCount
+        ? data.calculatedTotalWeighedCount
+        : '';
+      const avgwt = data.calculatedAverageWeight
+        ? data.calculatedAverageWeight.toFixed(2)
+        : '';
+      const calculations =
+        'Weighed ' + twc + ' @ ' + tww + ' (Avg. Wt. = ' + avgwt + ' )';
+      const totalWeight =
+        data.count *
+        (data.calculatedAverageWeight ? data.calculatedAverageWeight : 0);
       const commonName = speciesMap.get(data.shortCode);
       pdfData.push([
         { text: data.shortCode, bold: true },
@@ -68,7 +94,7 @@ const actions: ActionTree<PdfState, RootState> = {
   ) {
     commit('setData', data);
   },
-  setSpeciesList( { commit }: any, speciesList: any[]) {
+  setSpeciesList({ commit }: any, speciesList: any[]) {
     speciesList.forEach((element) => {
       speciesMap.set(element.key, element.value.commonName);
     });
@@ -106,7 +132,13 @@ const mutations: MutationTree<PdfState> = {
             { width: 150, bold: true, text: 'FIXED GEAR DECK FORM' },
             {
               width: 'auto',
-              text: 'TRIP # ' + tripId + '   HAUL # ' + haulId + '   CATCH # ' + catchId
+              text:
+                'TRIP # ' +
+                tripId +
+                '   HAUL # ' +
+                haulId +
+                '   CATCH # ' +
+                catchId
             },
             { width: 150, text: `${dateStr}`, alignment: 'right' },
             {
