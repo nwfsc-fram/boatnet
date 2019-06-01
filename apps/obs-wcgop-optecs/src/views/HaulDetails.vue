@@ -289,7 +289,6 @@ export default class Trips extends Vue {
   }
 
   private async created() {
-    console.log('checking ' + this.currentHaulState._id);
     if (this.currentHaulState._id) {
       try {
         this.currentHaul = await pouchService.db.get(
@@ -336,10 +335,6 @@ export default class Trips extends Vue {
     } else {
       gearLookUpTable = 'all_gear_type_trawl';
     }
-
-    console.log('setestestestset ' + JSON.stringify(this.currentTrip));
-    console.log('gear type of current trip ' + this.currentTrip.gearType);
-    console.log('value set ' + gearLookUpTable);
     this.gearTypeLookupVals = await this.getLookupVals(
       'optecs_trawl/' + gearLookUpTable
     );
