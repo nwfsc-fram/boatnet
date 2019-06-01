@@ -116,7 +116,7 @@ const mutations: MutationTree<PdfState> = {
   },
   generatePdf(newState: any, tallyData: TallyCountData[]) {
     const date = moment().format();
-    const dateStr = moment().format('MM/DD hh:mm');
+    const dateStr = moment().format('MM/DD HH:mm');
     const tripId = newState.tripId;
     const haulId = newState.haulId;
     const catchId = newState.catchId;
