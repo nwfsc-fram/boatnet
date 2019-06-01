@@ -352,6 +352,8 @@ export default class Trips extends Vue {
       this.currentTrip.operationIDs = this.currentTrip.operationIDs.concat(
         this.currentHaul._id
       );
+    } else if (this.currentHaul._id) {
+      this.currentTrip.operationIDs = [this.currentHaul._id];
     }
     this.setCurrentTrip(this.currentTrip);
     this.save(this.currentTrip);

@@ -16,13 +16,13 @@
         >
           <template v-slot:default="rowVals">
             <q-td key="haulNum">{{rowVals.row.doc.operationNum}}</q-td>
-            <q-td key="weightMethod">{{ rowVals.row.doc.observerTotalCatch.weightMethod.description }}</q-td>
+            <q-td key="weightMethod">{{rowVals.row.doc.observerTotalCatch.weightMethod ? rowVals.row.doc.observerTotalCatch.weightMethod.description : ''}}</q-td>
             <q-td key="gearPerf">{{ rowVals.row.doc.gearPerformance }}</q-td>
-            <q-td key="targetStrategy">SALM</q-td><!--TODO {{ rowVals.row.doc.targetStrategy }}-->
+            <q-td key="targetStrategy">SALM</q-td> <!--TODO {{ rowVals.row.doc.targetStrategy }}-->
             <q-td key="gearType">{{ rowVals.row.doc.gearType }}</q-td>
             <q-td key="setDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[0].locationDate) : '' }}</q-td>
             <q-td key="upDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate) : ''}}</q-td>
-            <q-td key="otcWeight">{{ (rowVals.row.doc.observerTotalCatch.measurement.value) }}</q-td>
+            <q-td key="otcWeight">{{rowVals.row.doc.observerTotalCatch.measurement ? rowVals.row.doc.observerTotalCatch.measurement.value : ''}}</q-td>
             <q-td key="errors">100</q-td><!-- TODO -->
           </template>
         </boatnet-table>
@@ -148,18 +148,20 @@ export default class Hauls extends Vue {
   }
 
   private async getHauls() {
-    const queryOptions = {
-      keys: this.currentTrip.operationIDs,
-      descending: true
-    };
-    try {
-      const result = await pouchService.db.allDocs(
-        pouchService.userDBName,
-        queryOptions
-      );
-      this.wcgopHaulsData = result.rows;
-    } catch (err) {
-      console.log('error fetching hauls');
+    if (this.currentTrip && this.currentTrip.operationIDs) {
+      const queryOptions = {
+        keys: this.currentTrip.operationIDs,
+        descending: true
+      };
+      try {
+        const result = await pouchService.db.allDocs(
+          pouchService.userDBName,
+          queryOptions
+        );
+        this.wcgopHaulsData = result.rows;
+      } catch (err) {
+        console.log('error fetching hauls');
+      }
     }
   }
 
@@ -176,7 +178,7 @@ export default class Hauls extends Vue {
   }
 
   private addHauls() {
-    let operationNum;
+    let operationNum = 1;
     if (this.wcgopHaulsData[0]) {
       operationNum = this.wcgopHaulsData[0].doc.operationNum + 1;
     }
