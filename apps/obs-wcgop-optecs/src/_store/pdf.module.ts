@@ -31,26 +31,40 @@ function generateTallyPdfData(newState: PdfState, tallyData: TallyCountData[]) {
   ];
 
   const pdfData: any[] = [header];
-  pdfData.push(
-    [
-      { text: 'SPEC', bold: true },
-      { text: '13', alignment: 'center' },
-      { text: '123' },
-      { text: '234.4', bold: true},
-      { text: 'RET', alignment: 'center' },
-      { text: '1 + 2 = 4' }
-    ]
-  );
-  console.log('TODO', tallyData);
-// [
-    //   d.catch,
-    //   { text: d.speciesCode + ` (${commonName})`, bold: true },
-    //   { text: d.weightMethod ? d.weightMethod : '-', alignment: 'center' },
-    //   { text: d.fishCount },
-    //   { text: d.weight ? d.weight.toFixed(2) : '-', bold: true },
-    //   { text: d.disposition, bold: true, alignment: 'center' },
-    //   { text: d.calculations ? d.calculations : '-' }
-    // ]
+  tallyData.forEach((data) => {
+    if (data.count) {
+      const tww = data.calculatedTotalWeighedWeight
+        ? data.calculatedTotalWeighedWeight.toFixed(2)
+        : '';
+      const twc = data.calculatedTotalWeighedCount ?
+      data.calculatedTotalWeighedCount : '';
+      const avgwt = data.calculatedAverageWeight ?
+      data.calculatedAverageWeight.toFixed(2) : '';
+      const calculations = 'Weighed ' + twc + ' @ ' + tww + ' (Avg. Wt. = ' + avgwt + ' )';
+      const totalWeight = data.count * (data.calculatedAverageWeight ? data.calculatedAverageWeight : 0);
+      //     calculatedTotalWeighedCount?: number;
+      // calculatedTotalWeighedWeight?: number;
+      // calculatedAverageWeight?: number;
+      pdfData.push([
+        { text: data.shortCode, bold: true },
+        { text: '13', alignment: 'center' },
+        { text: data.count },
+        { text: tww ? totalWeight.toFixed(2) : '', bold: true },
+        { text: data.reason, alignment: 'center' },
+        { text: tww ? calculations : '' }
+      ]);
+    }
+  });
+
+  // [
+  //   d.catch,
+  //   { text: d.speciesCode + ` (${commonName})`, bold: true },
+  //   { text: d.weightMethod ? d.weightMethod : '-', alignment: 'center' },
+  //   { text: d.fishCount },
+  //   { text: d.weight ? d.weight.toFixed(2) : '-', bold: true },
+  //   { text: d.disposition, bold: true, alignment: 'center' },
+  //   { text: d.calculations ? d.calculations : '-' }
+  // ]
   return pdfData;
 }
 const actions: ActionTree<PdfState, RootState> = {
@@ -91,9 +105,16 @@ const mutations: MutationTree<PdfState> = {
         return {
           columns: [
             { width: 150, bold: true, text: 'FIXED GEAR DECK FORM' },
-            { width: 'auto', text: 'TRIP ' + tripId + ', HAUL ' + haulId + ', CATCH ' + catchId},
+            {
+              width: 'auto',
+              text: 'TRIP ' + tripId + ', HAUL ' + haulId + ', CATCH ' + catchId
+            },
             { width: 150, text: `${dateStr}`, alignment: 'right' },
-            { width: 100, text: `Page ${currentPage} of ${pageCount}`, alignment: 'right' }
+            {
+              width: 100,
+              text: `Page ${currentPage} of ${pageCount}`,
+              alignment: 'right'
+            }
           ],
           margin: [10, 10, 10, 10]
         };
