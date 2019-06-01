@@ -43,9 +43,8 @@
                 ]"
               @save="saveChanges"
             />
-            <div class="col-2">
+            <div>
               <q-select
-                class="col-2"
                 debounce="500"
                 @input="saveChanges"
                 outlined
@@ -67,7 +66,7 @@
         <div class="text-h5 row justify-center">Haul #{{haulNum}} Gear Info</div>
       </template>
       <template v-slot:content2>
-        <div class="q-col-gutter-md row">
+        <div class="q-col-gutter-md row q-pt-md">
           <div class="col q-col-gutter-md">
             <q-input
               outlined
@@ -208,7 +207,6 @@
             />
             <q-input
               outlined
-              class="col-2"
               v-model="currentHaul.observerTotalCatch.measurement.value"
               label="Visual OTC"
               debounce="500"
@@ -216,7 +214,6 @@
             />
             <q-input
               outlined
-              class="col-2"
               v-model="currentHaul.fit"
               label="Fit #"
               debounce="500"
@@ -230,7 +227,7 @@
         <div class="text-h5 row justify-center">Locations</div>
       </template>
       <template v-slot:content4>
-        <div class="q-col-gutter-md">
+        <div class="q-col-gutter-md q-pt-md">
           <boatnet-locations :locations.sync="currentHaul.locations" @save="saveChanges"/>
         </div>
       </template>

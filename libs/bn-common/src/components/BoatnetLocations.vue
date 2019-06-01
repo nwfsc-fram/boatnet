@@ -28,7 +28,7 @@
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
       <div class="col q-gutter-md q-pb-md">
-        <q-input outlined label="Date" mask="date" v-model="dateVal" fill-mask/>
+        <q-input outlined label="Date" mask="date" v-model="dateVal"/>
         <q-input outlined label="Time" mask="time" v-model="timeVal" fill-mask/>
 
         <q-input
@@ -168,8 +168,6 @@ export default class BoatnetLocations extends Vue {
     this.action = 'add';
     this.timeVal = '';
     this.dateVal = null;
-
-    console.log('date' + this.dateVal + 'time' + this.timeVal + ' ' + this.defaultYearMonth);
     this.showDialog = true;
   }
 

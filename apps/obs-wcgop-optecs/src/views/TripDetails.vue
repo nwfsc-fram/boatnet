@@ -48,7 +48,6 @@
               </q-select>
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.captainName"
                 label="Skipper's Name"
                 debounce="500"
@@ -58,7 +57,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.crewSize"
                 label="# of Crew"
                 debounce="500"
@@ -68,7 +66,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Observer Logbook #"
                 debounce="500"
@@ -86,7 +83,6 @@
               />
               <q-select
                 outlined
-                class="col-2"
                 v-model="currentTrip.departurePort.name"
                 label="Departure Port"
                 use-input
@@ -145,7 +141,6 @@
               </div>
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookType"
                 label="Vessel Logbook Name"
                 debounce="500"
@@ -155,7 +150,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
                 debounce="500"
@@ -173,7 +167,6 @@
               />
               <q-select
                 outlined
-                class="col-2"
                 v-model="currentTrip.returnPort.name"
                 label="Return Port"
                 use-input
@@ -199,7 +192,6 @@
               <div class="column q-col-gutter-md">
                 <q-input
                   outlined
-                  class="col-2"
                   :value="firstReceiverName"
                   label="First Receiver"
                   debounce="500"
