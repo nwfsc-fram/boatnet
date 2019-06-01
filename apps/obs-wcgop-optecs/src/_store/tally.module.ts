@@ -763,6 +763,9 @@ const getters: GetterTree<TallyState, RootState> = {
       return getState.tallyDataRec!.data![currentDataIdx].countWeightData;
     }
   },
+  allTallyData(getState: TallyState) {
+    return getState.tallyDataRec!.data;
+  },
   currentTallyData(getState: TallyState) {
     const currentDataIdx = getCurrentDataIndex(getState);
     if (currentDataIdx !== undefined && currentDataIdx >= 0) {

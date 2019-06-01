@@ -82,7 +82,8 @@ import {
   TallyOperationMode,
   TallyCountData,
   TallyHistory,
-  TallyLayoutRecord
+  TallyLayoutRecord,
+  TallyDataRecord
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -139,6 +140,8 @@ export default class Tally extends Vue {
 
   @Action('success', { namespace: 'alert' }) private successAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('setData', { namespace: 'pdfState' }) private setData: any;
+  @Action('generatePdf', { namespace: 'pdfState' }) private generatePdf: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButtonData', { namespace: 'tallyState' })
   private updateButtonData: any;
@@ -189,6 +192,8 @@ export default class Tally extends Vue {
   private incDecValue!: number;
   @Getter('currentTallyHistory', { namespace: 'tallyState' })
   private currentTallyHistory!: History[];
+  @Getter('allTallyData', { namespace: 'tallyState' })
+  private allTallyData!: TallyCountData[];
 
   private btnLabel = '';
 
@@ -395,6 +400,11 @@ export default class Tally extends Vue {
     // TODO cleaner way to do this? (calling member of component)
   }
 
+  public handleGeneratePdf() {
+    this.setData({ tripId: '123', haulId: '234', catchId: '666' });
+    this.generatePdf(this.allTallyData);
+  }
+
   public openTemplateManagerPopup() {
     (this.$refs.templateModal as any).open();
     // TODO cleaner way to do this? (calling member of component)
@@ -440,7 +450,11 @@ export default class Tally extends Vue {
 
   public handleSelectedDefaultTemplate(template: TallyLayoutRecord) {
     this.setDefaultLayout(template);
-    this.successAlert('To use \"' + template.description + '\" template, click Reset Data (in Modify Layout)');
+    this.successAlert(
+      'To use "' +
+        template.description +
+        '" template, click Reset Data (in Modify Layout)'
+    );
   }
 
   public handleResetAllData() {
@@ -543,6 +557,9 @@ export default class Tally extends Vue {
         break;
       case 'history':
         this.openHistoryPopup();
+        break;
+      case 'generate-pdf':
+        this.handleGeneratePdf();
         break;
       case 'template-manager':
         this.openTemplateManagerPopup();

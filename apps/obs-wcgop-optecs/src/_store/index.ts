@@ -7,6 +7,7 @@ import { alert } from '@/_store/alert.module';
 import { auth } from '@boatnet/bn-auth';
 import { pouchState } from '@boatnet/bn-pouch';
 import { tallyState } from '@/_store/tally.module';
+import { pdfState } from '@/_store/pdf.module';
 
 import { RootState } from '@/_store/types/types';
 
@@ -31,7 +32,8 @@ const store: StoreOptions<RootState> = {
     alert,
     auth,
     pouchState,
-    tallyState
+    tallyState,
+    pdfState
   },
   plugins: [vuexLocalStorage.plugin]
 };
