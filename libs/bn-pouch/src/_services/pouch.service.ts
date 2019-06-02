@@ -16,6 +16,12 @@ PouchDB.plugin(pa);
 
 Vue.use(PouchVue, {
   pouch: PouchDB,
+  optionsDB: {
+    fetch: function (url:any, opts:any) {
+        opts.credentials = 'include';
+      return PouchDB.fetch(url, opts);
+      }    
+  }  
 });
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
