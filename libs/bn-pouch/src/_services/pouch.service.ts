@@ -3,40 +3,19 @@
 /* tslint:disable:no-console  */
 /* tslint:disable:no-var-requires  */
 import { Component, Vue, Prop } from 'vue-property-decorator';
-// @ts-ignore
 import PouchDB from 'pouchdb-browser';
-// @ts-ignore
 import lf from 'pouchdb-find';
-// @ts-ignore
 import plf from 'pouchdb-live-find';
-// @ts-ignore
 import pa from 'pouchdb-authentication';
-// @ts-ignore
-import PouchVue, { PublicPouchVueMethods } from 'pouch-vue';
+import PouchVue, { PouchAPI } from 'pouch-vue';
 
 // PouchDB plugins: pouchdb-find (included in the monorepo), LiveFind (external plugin), and couchdb auth
 PouchDB.plugin(lf);
 PouchDB.plugin(plf);
 PouchDB.plugin(pa);
 
-// https://vuejs.org/v2/guide/typescript.html#Augmenting-Types-for-Use-with-Plugins
-declare module 'vue/types/vue' {
-  // Declare augmentation for Vue
-  interface Vue {
-    // @ts-ignore
-    $pouch: PublicPouchVueMethods; // optional if `PouchDB` is available on the global object
-    $defaultDB: string; // the database to use if none is specified in the pouch setting of the vue component
-  }
-}
-
-declare module 'vue/types/options' {
-  interface ComponentOptions<V extends Vue> {
-    pouch?: any; // this is where the database will be reactive
-  }
-}
-
 Vue.use(PouchVue, {
-  pouch: PouchDB
+  pouch: PouchDB,
 });
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
