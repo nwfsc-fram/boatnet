@@ -33,6 +33,7 @@ const actions: ActionTree<PouchDBState, any> = {
   // Mutations are asynchronous
   async connect({ commit }: any, credentials: CouchDBCredentials) {
     activateSyncListener( commit );
+    await pouchService.connect(credentials);
     commit('connectRequest', credentials);
   },
   async reconnect({ commit }: any) {
@@ -54,7 +55,6 @@ const actions: ActionTree<PouchDBState, any> = {
 const mutations: MutationTree<PouchDBState> = {
   // Mutations must by synchronous
   connectRequest(newState: PouchDBState, credentials: CouchDBCredentials) {
-    pouchService.connect(credentials);
     newState.credentials = credentials;
   },
   reconnectRequest(newState: PouchDBState) {
