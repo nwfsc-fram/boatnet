@@ -148,17 +148,10 @@ class PouchService extends Vue {
     this.$emit('syncCompleted', initialSyncRO);
 
     this.$pouch
-      .sync(credentials.dbInfo.userDB, credentialedUserDB, syncOptsLive)
-      .on('paused', (err: any) => {
-        // weird logic in pouch-vue, so handling this here
-        this.syncDeactive({});
-      });
+      .sync(credentials.dbInfo.userDB, credentialedUserDB, syncOptsLive);
+      
     this.$pouch
-      .sync(credentials.dbInfo.lookupsDB, credentialedReadOnlyDB, syncOptsLive)
-      .on('paused', (err: any) => {
-        // weird logic in pouch-vue, so handling this here
-        this.syncDeactive({});
-      });
+      .sync(credentials.dbInfo.lookupsDB, credentialedReadOnlyDB, syncOptsLive);
 
     console.log('[PouchDB Service] Live sync enabled.');
   }
