@@ -58,6 +58,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/vessels" exact>
+          <q-item-section avatar>
+            <q-icon name="fa fa-ship"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Vessel Management</q-item-label>
+            <q-item-label caption>Associate Captains with Vessels</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/em-efp-management" exact>
           <q-item-section avatar>
             <q-icon name="videocam"/>

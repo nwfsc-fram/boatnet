@@ -20,7 +20,7 @@
             <div style="diplay: flex">
               <div>Vessel: {{ emefp.activeEmefp.vessel.vesselName ? emefp.activeEmefp.vessel.vesselName : '' }}</div>
               <div>Vessel ID: {{ emefp.activeEmefp.vessel.coastGuardNumber ? emefp.activeEmefp.vessel.coastGuardNumber : emefp.activeEmefp.vessel.stateRegulationNumber }}</div>
-              <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permit_number ? emefp.activeEmefp.lePermit.permit_number : emefp.activeEmefp.lePermit }}</span></div>
+              <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permitNumber ? emefp.activeEmefp.lePermit.permitNumber : emefp.activeEmefp.lePermit }}</span></div>
             <!-- </div> -->
           </div>
 

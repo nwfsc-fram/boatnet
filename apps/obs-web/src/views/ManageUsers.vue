@@ -1,7 +1,17 @@
 <template>
     <div class="">
         <div class="q-pa-md  q-gutter-md centered-page-item">
+
             <q-btn color="primary" @click="newUser">New User</q-btn>
+
+        <q-input v-model="filterText" label="Search" style="width: 100%" autofocus>
+            <template v-if="filterText">
+                <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
+            </template>
+        </q-input>
+        
+        <div style="text-align: center; background-color: white" class="q-pa-md q-gutter-sm">
+        </div>
         </div>
         <q-list bordered separator>
             <q-item v-for="(user, i) of filteredUsers" :key="i">
@@ -11,9 +21,6 @@
                 </q-item-section>
             </q-item>
         </q-list>
-        <div style="text-align: center; background-color: white" class="fixed-bottom q-pa-md q-gutter-sm">
-            <q-input v-model="filterText" label="Search"></q-input>
-        </div>
     </div>
 </template>
 

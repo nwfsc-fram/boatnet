@@ -23,6 +23,8 @@ import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 import ObserverAvailability from './views/ObserverAvailability.vue';
 import ActivityDetail from './views/ActivityDetail.vue';
+import Vessels from './views/Vessels.vue';
+import VesselDetails from './views/VesselDetails.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -81,11 +83,13 @@ const router = new Router({
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
         { path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement },
         { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails },
-        {path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment },
-        {path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
+        { path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment },
+        { path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
         component: ObserverAssignmentDetail },
-        {path: '/observer-availability', name: 'Observer Availability', component: ObserverAvailability},
-        {path: '/activity-detail', name: 'Activity Detail', component: ActivityDetail }
+        { path: '/observer-availability', name: 'Observer Availability', component: ObserverAvailability},
+        { path: '/activity-detail', name: 'Activity Detail', component: ActivityDetail },
+        { path: '/vessels', name: 'Vessels', component: Vessels },
+        { path: '/vessels/:id', name: 'Vessel Details', component: VesselDetails },
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }
