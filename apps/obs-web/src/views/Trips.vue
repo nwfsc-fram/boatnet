@@ -21,7 +21,6 @@
 
       <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
   <div class=" row items-start" >
-      <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-primary text-white" v-if="trip.is_open"> -->
 
       <q-card v-for="(trip, i) in openTrips" :key="i" class="my-card bg-primary text-white" style="margin: 10px">
         <q-card-section>
@@ -46,7 +45,6 @@
     </div>
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
-    <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
