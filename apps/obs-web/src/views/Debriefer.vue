@@ -391,9 +391,8 @@ private async getOperations() {
 
       for (const row of operations.rows) {
         const operation = row.doc;
-
+        
         for (const locationRow of operation.locations) {
-
           let opLoc = Object.assign({}, row.doc);
           opLoc.key = row.key;
           opLoc.trip = this.WcgopOperationTripDict[operation._id];
@@ -401,6 +400,7 @@ private async getOperations() {
           this.WcgopOperations.push(opLoc);
         }
       }
+
 
   } catch (err) {
       this.error(err);
