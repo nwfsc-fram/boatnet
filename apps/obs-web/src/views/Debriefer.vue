@@ -391,20 +391,16 @@ private async getOperations() {
 
       for (const row of operations.rows) {
         const operation = row.doc;
-        operation.key = row.key;
-        operation.trip = this.WcgopOperationTripDict[operation._id];
 
         for (const locationRow of operation.locations) {
 
-          operation.location = locationRow;
-          console.log(locationRow.position);
-          console.log(operation.location.position);
-          console.log(operation);
-          
-          this.WcgopOperations.push(operation);
+          let opLoc = Object.assign({}, row.doc);
+          opLoc.key = row.key;
+          opLoc.trip = this.WcgopOperationTripDict[operation._id];
+          opLoc.location = locationRow;
+          this.WcgopOperations.push(opLoc);
         }
       }
-      console.log(this.WcgopOperations);
 
   } catch (err) {
       this.error(err);
