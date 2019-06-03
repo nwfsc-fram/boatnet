@@ -5,7 +5,7 @@
       Template
       <br>Load/Save
     </tally-control-btn>
-    <q-separator vertical/>
+    <tally-control-btn color="grey-2" text-color="black" control-name="generate-pdf" @controlclick="handleControlClick">Generate<br>PDF</tally-control-btn>
     <tally-control-btn control-name="modify-layout" @controlclick="handleControlClick" color="grey-4" text-color="black">
       Modify
       <br>Layout
@@ -15,7 +15,6 @@
       <br>Mode
       <br>{{tallyMode.incdecText}}
     </tally-control-btn>
-    <q-separator vertical/>
     <tally-control-btn control-name="weights-for" @controlclick="handleControlClick" color="grey-5" text-color="black">
       Weights
       <br>For...

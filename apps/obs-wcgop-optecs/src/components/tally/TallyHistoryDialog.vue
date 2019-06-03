@@ -37,7 +37,7 @@ export default Vue.component('tally-history-dialog', {
           field: 'eventTime',
           align: 'left',
           format: (val: string) => {
-            return moment(val).format('MM/DD hh:mm');
+            return moment(val).format('MM/DD HH:mm');
           }
         },
         {

@@ -118,7 +118,7 @@ export default class Hauls extends Vue {
           align: 'center',
           label: 'Set Time', // TODO: this needs logic to get first and last
           field: (row: any) =>
-            moment(row.locations[0].date).format('hh:mm MM/DD/YY'),
+            moment(row.locations[0].date).format('HH:mm MM/DD/YY'),
           sortable: true
         },
         {
@@ -126,7 +126,7 @@ export default class Hauls extends Vue {
           align: 'center',
           label: 'Up Time', // TODO: this needs logic to get first and last
           field: (row: any) =>
-            moment(row.locations[1].date).format('hh:mm MM/DD/YY'),
+            moment(row.locations[1].date).format('HH:mm MM/DD/YY'),
           sortable: true
         },
         {
