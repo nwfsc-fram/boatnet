@@ -56,6 +56,7 @@
       @cancel="handleCancel"
     />
     <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
+    <tally-pdf-dialog ref="pdfModal" @generatePdf="handleGeneratePdf" @cancel="handleCancel"/>
     <tally-template-dialog
       ref="templateModal"
       @cancel="handleCancel"
@@ -82,7 +83,8 @@ import {
   TallyOperationMode,
   TallyCountData,
   TallyHistory,
-  TallyLayoutRecord
+  TallyLayoutRecord,
+  TallyDataRecord
 } from '../_store/types';
 
 import BoatnetAddSpeciesDialog from '@boatnet/bn-common';
@@ -101,6 +103,7 @@ import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
 import TallyTemplateManagerDialog from '../components/tally/TallyTemplateManagerDialog.vue';
+import TallyPDFOptionsDialogVue from '../components/tally/TallyPDFOptionsDialog.vue';
 
 Vue.component('tally-btn', TallyBtn);
 Vue.component('tally-controls', TallyControls);
@@ -110,6 +113,7 @@ Vue.component('tally-addexisting-controls', TallyAddExistingControls);
 Vue.component('tally-addnew-controls', TallyAddNewButton);
 Vue.component('tally-weights-dialog', TallyWeightsForDialog);
 Vue.component('tally-history-dialog', TallyHistoryDialog);
+Vue.component('tally-pdf-dialog', TallyPDFOptionsDialogVue);
 Vue.component('tally-template-dialog', TallyTemplateManagerDialog);
 Vue.component(BoatnetAddSpeciesDialog);
 
@@ -139,6 +143,10 @@ export default class Tally extends Vue {
 
   @Action('success', { namespace: 'alert' }) private successAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('setSpeciesList', { namespace: 'pdfState' })
+  private setSpeciesList: any;
+  @Action('setData', { namespace: 'pdfState' }) private setData: any;
+  @Action('generatePdf', { namespace: 'pdfState' }) private generatePdf: any;
   @Action('connectDB', { namespace: 'tallyState' }) private connectDB: any;
   @Action('updateButtonData', { namespace: 'tallyState' })
   private updateButtonData: any;
@@ -189,6 +197,8 @@ export default class Tally extends Vue {
   private incDecValue!: number;
   @Getter('currentTallyHistory', { namespace: 'tallyState' })
   private currentTallyHistory!: History[];
+  @Getter('allTallyData', { namespace: 'tallyState' })
+  private allTallyData!: TallyCountData[];
 
   private btnLabel = '';
 
@@ -213,7 +223,8 @@ export default class Tally extends Vue {
     super();
 
     this.setTallyOpMode(TallyOperationMode.Tally);
-    this.populateSpeciesView(); // TODO use live view
+    this.populateSpeciesView(); // TODO consider use live pouch-vue view
+    this.populateSpeciesShortList();
     this.populateTallyTemplatesView();
   }
 
@@ -234,6 +245,15 @@ export default class Tally extends Vue {
     );
 
     this.speciesList = species.rows;
+  }
+
+  public async populateSpeciesShortList() {
+    const db = pouchService.db;
+    const speciesShort = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/all_tally_species'
+    );
+    this.setSpeciesList(speciesShort.rows);
   }
 
   public async populateTallyTemplatesView() {
@@ -387,12 +407,23 @@ export default class Tally extends Vue {
 
   public openAddSpeciesPopup() {
     (this.$refs.addNamedSpeciesModal as any).open();
-    // TODO cleaner way to do this? (calling member of component)
   }
 
   public openHistoryPopup() {
     (this.$refs.historyModal as any).open();
-    // TODO cleaner way to do this? (calling member of component)
+  }
+
+  public openPdfPopup() {
+    (this.$refs.pdfModal as any).open();
+  }
+
+  public handleGeneratePdf(config: any) {
+    this.setData({
+      tripId: config.tripId,
+      haulId: config.haulId,
+      catchId: config.catchId
+    });
+    this.generatePdf(this.allTallyData);
   }
 
   public openTemplateManagerPopup() {
@@ -440,7 +471,11 @@ export default class Tally extends Vue {
 
   public handleSelectedDefaultTemplate(template: TallyLayoutRecord) {
     this.setDefaultLayout(template);
-    this.successAlert('To use \"' + template.description + '\" template, click Reset Data (in Modify Layout)');
+    this.successAlert(
+      'To use "' +
+        template.description +
+        '" template, click Reset Data (in Modify Layout)'
+    );
   }
 
   public handleResetAllData() {
@@ -543,6 +578,10 @@ export default class Tally extends Vue {
         break;
       case 'history':
         this.openHistoryPopup();
+        break;
+      case 'generate-pdf':
+        this.openPdfPopup();
+        // this.handleGeneratePdf();
         break;
       case 'template-manager':
         this.openTemplateManagerPopup();

@@ -177,7 +177,7 @@ export default class Trips extends Vue {
   }
 
   private handleAddTrip() {
-    let tripNum;
+    let tripNum = 1;
     if (this.userDBTrips[0]) {
       tripNum = this.userDBTrips[0].tripNum + 1;
     }

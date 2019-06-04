@@ -10,6 +10,12 @@ export interface AlertState {
   message: string | null;
 }
 
+export interface PdfState {
+  tripId?: string;
+  haulId?: string;
+  catchId?: string;
+}
+
 export interface WcgopAppState {
   currentTrip?: WcgopTrip;
   currentHaul?: WcgopOperation;
