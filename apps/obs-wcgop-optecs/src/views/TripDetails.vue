@@ -14,6 +14,15 @@
         <template v-slot:content1>
           <div class="q-col-gutter-md row">
             <div class="col q-col-gutter-md">
+              <boatnet-button-toggle
+              title="Gear Type:"
+              :value.sync="currentTrip.gearType"
+              :options="[
+                {label: 'Trawl', value: 'trawl'},
+                {label: 'Fixed Gear', value: 'fixed'}
+                ]"
+              @save="saveOnUpdate"
+            />
               <q-select
                 outlined
                 class="col-2"
@@ -39,7 +48,6 @@
               </q-select>
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.captainName"
                 label="Skipper's Name"
                 debounce="500"
@@ -49,7 +57,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.crewSize"
                 label="# of Crew"
                 debounce="500"
@@ -59,7 +66,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Observer Logbook #"
                 debounce="500"
@@ -77,7 +83,6 @@
               />
               <q-select
                 outlined
-                class="col-2"
                 v-model="currentTrip.departurePort.name"
                 label="Departure Port"
                 use-input
@@ -136,7 +141,6 @@
               </div>
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookType"
                 label="Vessel Logbook Name"
                 debounce="500"
@@ -146,7 +150,6 @@
               />
               <q-input
                 outlined
-                class="col-2"
                 v-model="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
                 debounce="500"
@@ -164,7 +167,6 @@
               />
               <q-select
                 outlined
-                class="col-2"
                 v-model="currentTrip.returnPort.name"
                 label="Return Port"
                 use-input
@@ -190,7 +192,6 @@
               <div class="column q-col-gutter-md">
                 <q-input
                   outlined
-                  class="col-2"
                   :value="firstReceiverName"
                   label="First Receiver"
                   debounce="500"
@@ -259,6 +260,8 @@ export default class Trips extends Vue {
   private saveTrip: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTripState!: WcgopTrip;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
 
   private currentTrip: WcgopTrip = {
     tripNum: this.tripNum,
@@ -324,6 +327,7 @@ export default class Trips extends Vue {
   }
 
   private saveOnUpdate() {
+    this.setCurrentTrip(this.currentTrip);
     this.saveTrip(this.currentTrip);
   }
 

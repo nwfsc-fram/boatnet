@@ -31,7 +31,7 @@ export enum TallyOperationMode {
 // -- Layout Related Interfaces --
 export interface TallyButtonLayoutData {
   // Pure code and reason layout info. No count data
-  index: number; // screen location
+  index?: number; // screen location
   // Styling
   color?: string;
   'text-color'?: string;
@@ -54,9 +54,10 @@ export interface TallyHistory {
   newValue?: any;
 }
 
+export const TallyTemplateRecordTypeName = 'tally-template';
 export const TallyLayoutRecordTypeName = 'tally-layout';
 export interface TallyLayoutRecord extends Base {
-  recordName: string; // friendly name
+  description: string; // friendly name
   isTemplate?: boolean; // is a template for new catches?
   layoutData: TallyButtonLayoutData[];
   vertButtonCount: number;
@@ -64,6 +65,7 @@ export interface TallyLayoutRecord extends Base {
 }
 
 // -- Data Related Interfaces --
+export const TallySpeciesRecordTypeName = 'tally-species';
 export const TallyDataRecordTypeName = 'tally-data';
 
 export interface TallyCountWeight {
@@ -101,4 +103,6 @@ export interface TallyState {
   tempSpeciesCounter?: number;
   lastClickedIndex?: number;
   lastClickedWasInc?: boolean; // true for Inc
+
+  defaultLayout?: TallyLayoutRecord;
 }

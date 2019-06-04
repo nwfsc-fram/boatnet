@@ -6,7 +6,7 @@
       class="q-pt-md"
       v-model="time"
       :label="timeLabel"
-      mask="##:##"
+      mask="time"
       fill-mask
       @focus="displayKeyboard"
       data-layout="numeric"

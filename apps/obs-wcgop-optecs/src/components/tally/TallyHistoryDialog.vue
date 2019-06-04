@@ -1,5 +1,5 @@
 <template>
-  <q-dialog v-model="isOpen" persistent>
+  <q-dialog v-model="isOpen" persistent position="left">
     <q-card style="min-width: 300px">
       <q-card-section>
         <div class="text-h6">History</div>

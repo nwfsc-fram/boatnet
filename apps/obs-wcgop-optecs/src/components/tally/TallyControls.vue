@@ -1,10 +1,9 @@
 <template>
   <q-btn-group spread>
-    <tally-control-btn color="light-blue-2" text-color="black" control-name="history" @controlclick="handleControlClick">History</tally-control-btn>
-    <tally-control-btn control-name="switch-page" @controlclick="handleControlClick" disabled>
-      Switch
-      <br>Page
-      <br>&gt;
+    <tally-control-btn color="grey-2" text-color="black" control-name="history" @controlclick="handleControlClick">History</tally-control-btn>
+    <tally-control-btn control-name="template-manager" color="grey-3" @controlclick="handleControlClick">
+      Template
+      <br>Load/Save
     </tally-control-btn>
     <q-separator vertical/>
     <tally-control-btn control-name="modify-layout" @controlclick="handleControlClick" color="grey-4" text-color="black">
@@ -17,11 +16,11 @@
       <br>{{tallyMode.incdecText}}
     </tally-control-btn>
     <q-separator vertical/>
-    <tally-control-btn control-name="weights-for" @controlclick="handleControlClick" color="grey-4" text-color="black">
+    <tally-control-btn control-name="weights-for" @controlclick="handleControlClick" color="grey-5" text-color="black">
       Weights
       <br>For...
     </tally-control-btn>
-    <tally-control-btn control-name="all-tallies-for" @controlclick="handleControlClick" color="grey-4" text-color="black">     All
+    <tally-control-btn control-name="all-tallies-for" @controlclick="handleControlClick" color="grey-6" text-color="black">     All
       <br>Tallies
       <br>For...
     </tally-control-btn>

@@ -66,6 +66,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { TallyHistory } from '../../_store/types';
 
 export default Vue.component('tally-weights-dialog', {
   props: {
@@ -111,12 +112,27 @@ export default Vue.component('tally-weights-dialog', {
         weight: this.addWeightValue,
         isAddedToTally: isAlreadyAdded
       };
-      this.$store.commit('tallyState/addTallyCountWeight', newCW);
+      const newHistory: TallyHistory = {
+        type: 'Add C+Wt',
+        shortCode: this.buttonData.labels.shortCode,
+        reason: this.buttonData.labels.reason,
+        newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
+      };
+      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
+      this.$store.dispatch('tallyState/addTallyCountWeight', newCW);
       this.addCountValue = null;
       this.addWeightValue = null;
     },
     handleDelete(index: number) {
-      this.$store.commit('tallyState/deleteTallyCountWeight', index);
+      const newHistory: TallyHistory = {
+        type: 'Del C+Wt',
+        shortCode: this.buttonData.labels.shortCode,
+        reason: this.buttonData.labels.reason
+        // TODO figure out what's deleted, handleDelete parms more than mere index?
+        // newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
+      };
+      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
+      this.$store.dispatch('tallyState/deleteTallyCountWeight', index);
     }
   },
   computed: {

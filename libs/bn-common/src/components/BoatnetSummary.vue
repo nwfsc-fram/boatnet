@@ -94,7 +94,7 @@ export default class BoatnetSummary extends Vue {
   private get deleteMessage() {
     if (this.current) {
       return (
-        'Are you sure you want to delete ' + this.currentScreen + ' #' + this.current.tripNum + '?'
+        'Are you sure you want to delete ' + this.currentScreen + ' #' + this.selectionId + '?'
       );
     }
   }

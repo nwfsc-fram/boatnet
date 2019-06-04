@@ -1,6 +1,13 @@
 <template>
   <q-page padding>
-    <boatnet-summary currentScreen="Haul" :current="currentHaul" @edit="editHauls">
+    <boatnet-summary
+      currentScreen="Haul"
+      :current="currentHaul"
+      :selectionId="currentHaul ? currentHaul.operationNum : 0"
+      @edit="editHauls"
+      @add="addHauls"
+      @delete="deleteHauls"
+    >
       <template v-slot:table>
         <boatnet-table
           :data="wcgopHaulsData"
@@ -9,14 +16,14 @@
         >
           <template v-slot:default="rowVals">
             <q-td key="haulNum">{{rowVals.row.doc.operationNum}}</q-td>
-            <q-td key="weightMethod">{{ rowVals.row.doc.observerTotalCatch.weightMethod.description }}</q-td>
+            <q-td key="weightMethod">{{rowVals.row.doc.observerTotalCatch.weightMethod ? rowVals.row.doc.observerTotalCatch.weightMethod.description : ''}}</q-td>
             <q-td key="gearPerf">{{ rowVals.row.doc.gearPerformance }}</q-td>
             <q-td key="targetStrategy">SALM</q-td> <!--TODO {{ rowVals.row.doc.targetStrategy }}-->
             <q-td key="gearType">{{ rowVals.row.doc.gearType }}</q-td>
-            <q-td key="setDate">{{ formatDate(rowVals.row.doc.locations[0].date) }}</q-td>
-            <q-td key="upDate">{{ formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].date) }}</q-td>
-            <q-td key="otcWeight">{{ (rowVals.row.doc.observerTotalCatch.measurement.value) }}</q-td>
-            <q-td key="errors">100</q-td> <!-- TODO -->
+            <q-td key="setDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[0].locationDate) : '' }}</q-td>
+            <q-td key="upDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate) : ''}}</q-td>
+            <q-td key="otcWeight">{{rowVals.row.doc.observerTotalCatch.measurement ? rowVals.row.doc.observerTotalCatch.measurement.value : ''}}</q-td>
+            <q-td key="errors">100</q-td><!-- TODO -->
           </template>
         </boatnet-table>
       </template>
@@ -57,8 +64,14 @@ export default class Hauls extends Vue {
   private setCurrentHaul: any;
   @Getter('currentHaul', { namespace: 'appState' })
   private currentHaul!: WcgopOperation;
+
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
+  @Action('setCurrentTrip', { namespace: 'appState' })
+  private setCurrentTrip: any;
+
+  @Action('save', { namespace: 'appState' })
+  private save: any;
 
   constructor() {
     super();
@@ -135,18 +148,20 @@ export default class Hauls extends Vue {
   }
 
   private async getHauls() {
-    const queryOptions = {
-      keys: this.currentTrip.operationIDs
-    };
-    try {
-      const result = await pouchService.db.allDocs(
-        pouchService.userDBName,
-        queryOptions
-      );
-      this.wcgopHaulsData = result.rows;
-     // console.log('le output ' + JSON.stringify(this.wcgopHaulsData));
-    } catch (err) {
-      console.log('error fetching hauls');
+    if (this.currentTrip && this.currentTrip.operationIDs) {
+      const queryOptions = {
+        keys: this.currentTrip.operationIDs,
+        descending: true
+      };
+      try {
+        const result = await pouchService.db.allDocs(
+          pouchService.userDBName,
+          queryOptions
+        );
+        this.wcgopHaulsData = result.rows;
+      } catch (err) {
+        console.log('error fetching hauls');
+      }
     }
   }
 
@@ -163,18 +178,31 @@ export default class Hauls extends Vue {
   }
 
   private addHauls() {
-   /* let haulNum;
+    let operationNum = 1;
     if (this.wcgopHaulsData[0]) {
-      tripNum = this.userDBTrips[0].tripNum + 1;
+      operationNum = this.wcgopHaulsData[0].doc.operationNum + 1;
     }
-    const trip: WcgopTrip = { tripNum };
-    this.setCurrentTrip(trip);
-    this.$router.push({ path: '/hauldetails/' + trip.tripNum });
-    */
+    const haul: WcgopOperation = { operationNum };
+    this.setCurrentHaul(haul);
+    this.$router.push({ path: '/hauldetails/' + haul.operationNum });
   }
 
   private editHauls() {
     this.$router.push({ path: '/hauldetails/' + this.currentHaul.operationNum });
+  }
+
+  private deleteHauls() {
+    pouchService.db.remove(pouchService.userDBName, this.currentHaul);
+    if (this.currentTrip.operationIDs && this.currentHaul._id) {
+      const removalIndex = this.currentTrip.operationIDs.indexOf(
+        this.currentHaul._id
+      );
+      this.currentTrip.operationIDs.splice(removalIndex, 1);
+    }
+    this.getHauls();
+    this.setCurrentTrip(this.currentTrip);
+    this.save(this.currentTrip);
+    this.setCurrentHaul(undefined);
   }
 
   private formatDate(date: string) {
