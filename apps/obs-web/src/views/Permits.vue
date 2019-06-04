@@ -1,6 +1,13 @@
 <template>
     <div>
         <div class="centered-page-item" style="margin: 10px"><strong>Active Permits</strong></div>
+            <div style="background-color: white" class="q-pa-md q-gutter-sm centered-page-item">
+                <q-input v-model="permit.filterText" label="Search" style="width: 100%" autofocus >
+                    <template v-if="permit.filterText">
+                        <q-avatar dense icon="clear" @click="permit.filterText = ''"></q-avatar>
+                    </template>
+                </q-input>
+            </div>
         <q-list bordered separator>
             <q-item v-for="(permit, i) of filteredPermits" :key="i">
                 <!-- <router-link :to="{ path: '/permits/' + i }" style="text-decoration: none; color: black"> -->
@@ -10,13 +17,7 @@
                 </q-item-section>
                 <!-- </router-link> -->
             </q-item>
-            <div style="background-color: white" class="fixed-bottom q-pa-md q-gutter-sm centered-page-item">
-                <q-input v-model="permit.filterText" label="Search" autofocus >
-                    <template v-if="permit.filterText">
-                        <q-avatar dense icon="clear" @click="permit.filterText = ''"></q-avatar>
-                    </template>
-                </q-input>
-            </div>
+
         </q-list>
     </div>
 </template>
@@ -64,8 +65,9 @@ export default class Permits extends Vue {
     private get filteredPermits() {
         if (this.permit.filterText.length > 0) {
             return this.permit.permits.filter( (permit: any) =>
-                permit.vessel_name.toLowerCase().includes( this.permit.filterText.toLowerCase() ) ||
-                permit.permit_number.toLowerCase().includes( this.permit.filterText.toLowerCase() ) );
+                permit.vessel.vesselName.toLowerCase().includes( this.permit.filterText.toLowerCase() ) ||
+                permit.permitNumber.toLowerCase().includes( this.permit.filterText.toLowerCase() )
+                );
         } else {
             return this.permit.permits;
             }

@@ -11,7 +11,8 @@ import { VesselState } from '@/_store/types/types';
 Vue.use(Vuex);
 
 export const state: VesselState = {
-  activeVessel: {vesselName: 'Excalibur'}
+  activeVessel: null,
+  filterText: ''
 };
 
 // const actions: ActionTree<VesselState, RootState> = {

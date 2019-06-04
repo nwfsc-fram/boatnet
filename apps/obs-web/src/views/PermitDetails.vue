@@ -26,7 +26,6 @@
                 :tabindex="scope.tabindex"
                 color="primary"
                 text-color="white"
-                class="q-ma-none"
               >
                 <q-avatar color="primary" text-color="white" icon="person"/>
                 {{ scope.opt.label }}

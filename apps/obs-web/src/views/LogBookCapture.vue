@@ -24,8 +24,5 @@ export default class LogBookCapture extends Vue {
   @State('vessel') private vessel!: VesselState;
   @State('alert') private alert!: AlertState;
 
-  private created() {
-      this.vessel.activeVessel = {vesselName: 'Raven'};
-  }
 }
 </script>
