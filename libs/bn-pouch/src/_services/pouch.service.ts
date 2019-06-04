@@ -7,7 +7,7 @@ import PouchDB from 'pouchdb-browser';
 import lf from 'pouchdb-find';
 import plf from 'pouchdb-live-find';
 import pa from 'pouchdb-authentication';
-import PouchVue, { PouchAPI } from 'pouch-vue';
+import PouchVue from 'pouch-vue';
 
 // PouchDB plugins: pouchdb-find (included in the monorepo), LiveFind (external plugin), and couchdb auth
 PouchDB.plugin(lf);
