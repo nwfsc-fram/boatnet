@@ -19,7 +19,7 @@ Vue.use(Vuex);
 
 // Preserves state between page refreshes.
 const vuexLocalStorage = new VuexPersist({
-  key: 'vuex',
+  key: 'obs-wcgop-optecs',
   storage: window.localStorage
 });
 
