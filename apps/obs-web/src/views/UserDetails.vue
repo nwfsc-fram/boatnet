@@ -243,7 +243,6 @@ export default class UserDetails extends Vue {
 
                 this.contacts = contacts.rows.map((row: any) => row.doc);
 
-                console.log(this.contacts)
             } catch (err) {
                 this.errorAlert(err);
             }
