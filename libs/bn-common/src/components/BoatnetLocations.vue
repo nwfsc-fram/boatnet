@@ -8,7 +8,7 @@
       @select="selectTrip"
     >
       <template v-slot:default="rowVals">
-        <q-td key="type">{{ rowVals.row.type }}</q-td>
+        <q-td key="position">{{ getPositionName(rowVals.row.__index) }}</q-td>
         <q-td key="date">{{ formatDate(rowVals.row.locationDate) }}</q-td>
         <q-td key="longitude">{{ rowVals.row.location.coordinates[0] }}</q-td>
         <q-td key="latitude">{{ rowVals.row.location.coordinates[1] }}</q-td>
@@ -23,7 +23,7 @@
     </div>
 
     <boatnet-input-dialog
-      :title="action === 'add' ? setType() : current.type"
+      :title="action === 'add' ? getPositionName(locationHolder.length) : getPositionName(current.__index)"
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
@@ -59,7 +59,7 @@
         />
       </div>
       <div class="col q-pl-md self-start">
-        <q-date v-model="dateVal" minimal default-year-month="2019/05"/>
+        <q-date v-model="dateVal" minimal :default-year-month="defaultYearMonth"/>
       </div>
     </boatnet-input-dialog>
   </span>
@@ -97,7 +97,7 @@ export default class BoatnetLocations extends Vue {
     rowKey: '__index',
     columns: [
       {
-        name: 'type',
+        name: 'position',
         required: true,
         label: 'Type',
         align: 'left',
@@ -139,13 +139,29 @@ export default class BoatnetLocations extends Vue {
     ]
   };
 
-  private setType() {
-    if (this.locationHolder.length === 0) {
+  private created() {
+    this.locationHolder = this.sortByDate(this.locations);
+  }
+
+  private sortByDate(locs: FishingLocation[]) {
+    return locs.sort((a, b) => {
+      if (moment(a.locationDate).isAfter(b.locationDate)) {
+            return 1;
+          } else if (moment(a.locationDate).isBefore(b.locationDate)) {
+            return -1;
+          } else {
+            return 0;
+          }
+    });
+  }
+
+  private getPositionName(index: number) {
+    if (index === 0) {
       return 'Set';
-    } else if (this.locationHolder.length === 1) {
+    } else if (index === 1) {
       return 'Up';
     } else {
-      return 'Loc#' + (this.locationHolder.length - 1);
+      return 'Loc#' + (index - 1);
     }
   }
 
@@ -164,7 +180,6 @@ export default class BoatnetLocations extends Vue {
         coordinates: []
       }
     };
-    this.current.type = this.setType();
     this.action = 'add';
     this.timeVal = '';
     this.dateVal = null;
@@ -202,6 +217,7 @@ export default class BoatnetLocations extends Vue {
       'YYYY/MM/DD HH:mm'
     ).format();
     this.locationHolder.push(this.current);
+    this.locationHolder = this.sortByDate(this.locationHolder);
     this.$emit('update:locations', this.locationHolder);
     this.showDialog = false;
     this.$emit('save');
@@ -213,6 +229,7 @@ export default class BoatnetLocations extends Vue {
       'YYYY/MM/DD HH:mm'
     ).format();
     this.locationHolder.splice(this.selected[0].__index, 1, this.current);
+    this.locationHolder = this.sortByDate(this.locationHolder);
     this.showDialog = false;
     this.$emit('update:locations', this.locationHolder);
     this.$emit('save');
