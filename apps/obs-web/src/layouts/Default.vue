@@ -15,7 +15,7 @@
 
         <q-toolbar-title>
           <span
-            v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"
+            v-if="(this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail') && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}

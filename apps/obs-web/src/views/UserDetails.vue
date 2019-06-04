@@ -18,7 +18,6 @@
                             :tabindex="scope.tabindex"
                             color="primary"
                             text-color="white"
-                            class="q-ma-none"
                             >
                             <q-avatar color="primary" text-color="white" icon="person" />
                             {{ scope.opt }}
@@ -82,7 +81,6 @@
                             dense
                             color="primary"
                             text-color="white"
-                            class="q-ma-none"
                             >
                             <q-avatar color="primary" text-color="white" :icon="scope.opt.icon" />
                             {{ scope.opt.label }}
@@ -91,9 +89,50 @@
 
                 </q-select>
 
-                <q-input class="col-md q-pa-sm" outlined v-model="user.activeUser.birthdate" label="Birth Date" type="date"></q-input>
+                <q-input class="col-md q-pa-sm"
+                outlined
+                dense
+                v-model="user.activeUser.birthdate" label="Birth Date">
+                    <template v-slot:append>
+                        <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                            <q-date v-model="user.activeUser.birthdate" @input="() => $refs.qDateProxy.hide()" />
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
+                </q-input>
 
-                <q-select class="col-md q-pa-sm" outlined label="Emergency Contacts" v-model="user.activeUser.emergencyContacts"></q-select>
+                <q-select
+                class="col-md q-pa-sm"
+                label="Emergency Contacts"
+                v-model="user.activeUser.emergencyContacts"
+                :options="contacts"
+                @filter="contactsFilterFn"
+                :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')'"
+                option-value="_id"
+                use-input
+                multiple
+                outlined
+                use-chips
+                >
+                    <template v-slot:append>
+                        <q-btn flat style="font-size: .5em" icon="fa fa-plus-circle" @click="newContact" >&nbsp;Add Contact</q-btn>
+                    </template>
+
+                    <template v-slot:selected-item="scope">
+                        <q-chip
+                            removable
+                            dense
+                            @remove="scope.removeAtIndex(scope.index)"
+                            :tabindex="scope.tabindex"
+                            color="primary"
+                            text-color="white"
+                            >
+                            <q-avatar color="primary" text-color="white" icon="person" />
+                            <span>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
+                        </q-chip>
+                    </template>
+                </q-select>
 
             </q-card-section>
             <q-card-actions align="right">
@@ -112,7 +151,7 @@ import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { GeneralState, UserState, VesselState } from '../_store/types/types';
-import { Vessel, UsState } from '@boatnet/bn-models';
+import { Vessel, UsState, PersonTypeName, Person } from '@boatnet/bn-models';
 
 import moment from 'moment';
 
@@ -137,6 +176,8 @@ export default class UserDetails extends Vue {
     private usStateOptions: any = [];
     private usStates: UsState[] = [];
     private countryOptions = ['United States', 'Canada', 'Mexico'];
+
+    private contacts: Person[] = [];
 
     private ports: any[] = [];
 
@@ -173,6 +214,36 @@ export default class UserDetails extends Vue {
                     queryOptions
                     );
                 this.ports = ports.rows.map((row: any) => row.doc);
+            } catch (err) {
+                this.errorAlert(err);
+            }
+        }
+    );
+    }
+
+
+    private contactsFilterFn(val: string, update: any, abort: any) {
+    update(
+        async () => {
+            try {
+                const db = couchService.masterDB;
+                const queryOptions = {
+                limit: 5,
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+                };
+
+                const contacts = await db.viewWithDocs(
+                    'sethtest',
+                    'all_persons',
+                    queryOptions
+                    );
+
+                this.contacts = contacts.rows.map((row: any) => row.doc);
+
+                console.log(this.contacts)
             } catch (err) {
                 this.errorAlert(err);
             }
@@ -298,7 +369,7 @@ export default class UserDetails extends Vue {
                 );
 
                 if (user.rows) {
-                    couchService.masterDB.remove(couchService.masterDB, user.rows[0].doc);
+                    couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
                     pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
                 }
             } catch (err) {
@@ -332,6 +403,19 @@ export default class UserDetails extends Vue {
                         }
                     }
                 );
+    }
+
+    private newContact() {
+            const newUser = {
+                type: PersonTypeName,
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format()
+            };
+            this.user.activeUser = newUser;
+            this.user.activeUser.activeVessel = this.vessel.activeVessel;
+            this.user.activeUser.port = this.vessel.activeVessel.port;
+            this.user.newUser = true;
+            this.$router.push({path: '/users/' + 'new'});
     }
 
     private async getUsStates() {

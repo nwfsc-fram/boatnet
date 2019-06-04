@@ -113,7 +113,6 @@ export default class Home extends Vue {
               };
               this.permit.permits.push(permit);
             }
-            console.log(this.permit.permits)
         })
         .catch( (error) => {
           this.errorAlert(error);

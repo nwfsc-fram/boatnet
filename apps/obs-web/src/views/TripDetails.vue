@@ -101,7 +101,6 @@
                             :tabindex="scope.tabindex"
                             color="primary"
                             text-color="white"
-                            class="q-ma-none"
                             >
                             <q-avatar color="primary" text-color="white" icon="local_offer" />
                             <span v-if="scope.opt.label">{{ scope.opt.label }}</span>

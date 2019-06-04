@@ -47,6 +47,7 @@ export default class ManageUsers extends Vue {
     @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
     private filterText: string = '';
+
     private get userOptions() {
         return this.user.users;
     }

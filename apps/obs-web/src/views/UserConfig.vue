@@ -74,7 +74,6 @@ export default class UserConfig extends Vue {
 export default {
     data() {
         return {
-            vessels: ['Excalibur', 'Raven'],
             notificationOptions: ['email', 'sms/text', 'app']
         }
     },
