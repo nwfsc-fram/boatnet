@@ -823,8 +823,9 @@ export default class Debriefer extends Vue {
         trip.key = row.key;
         this.WcgopTrips.push(trip);
 
-        for (const operationId of trip.operationIDs)
+        for (const operationId of trip.operationIDs) {
           this.WcgopOperationTripDict[operationId] = trip;
+        }
       }
     } catch (err) {
       this.error(err);
@@ -848,7 +849,7 @@ export default class Debriefer extends Vue {
         const operation = row.doc;
 
         for (const locationRow of operation.locations) {
-          let opLoc = Object.assign({}, row.doc);
+          const opLoc = Object.assign({}, row.doc);
           opLoc.key = row.key;
           opLoc.trip = this.WcgopOperationTripDict[operation._id];
           opLoc.location = locationRow;
