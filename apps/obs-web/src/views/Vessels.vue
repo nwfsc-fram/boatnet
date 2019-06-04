@@ -188,7 +188,7 @@ private async getVessels() {
     // this.getVessels();
     this.onRequest({
         pagination: this.pagination,
-        filter: undefined
+        filter: this.vessel.filterText
     });
   }
 
