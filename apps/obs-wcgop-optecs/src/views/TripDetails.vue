@@ -265,7 +265,6 @@ export default class Trips extends Vue {
   }
 
   private saveOnUpdate() {
-    console.log('gonna save this');
     this.setCurrentTrip(this.currentTrip);
     this.saveTrip(this.currentTrip);
   }

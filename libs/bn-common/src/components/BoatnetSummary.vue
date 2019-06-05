@@ -1,7 +1,12 @@
 <template>
   <span>
     <div class="row justify-end">
-      <boatnet-keyboard-input :value.sync="searchText" label="Search" keyboardType="normal" class="q-pb-md">
+      <boatnet-keyboard-input
+        :value.sync="searchText"
+        label="Search"
+        keyboardType="normal"
+        class="q-pb-md"
+      >
         <template v-slot:after>
           <q-icon
             v-if="searchText !== ''"
