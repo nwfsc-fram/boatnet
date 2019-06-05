@@ -15,7 +15,7 @@
 
         <q-toolbar-title>
           <span
-            v-if="this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail'"
+            v-if="(this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail') && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
@@ -55,6 +55,16 @@
           <q-item-section>
             <q-item-label>Log Book Capture</q-item-label>
             <q-item-label caption>take/upload logbook photo</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item to="/vessels" exact>
+          <q-item-section avatar>
+            <q-icon name="fa fa-ship"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Vessel Management</q-item-label>
+            <q-item-label caption>Associate Captains with Vessels</q-item-label>
           </q-item-section>
         </q-item>
 
