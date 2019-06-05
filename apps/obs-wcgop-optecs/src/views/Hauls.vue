@@ -208,10 +208,6 @@ export default class Hauls extends Vue {
   private formatDate(date: string) {
     return moment(date).format('HH:mm MM/DD/YY');
   }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e);
-  }
 }
 </script>
 

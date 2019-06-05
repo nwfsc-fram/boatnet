@@ -44,18 +44,13 @@
               @save="saveChanges"
             />
             <div>
-              <q-select
-                debounce="500"
-                @input="saveChanges"
-                outlined
-                use-input
-                fill-input
-                hide-selected
-                v-model="currentHaul.targetStrategy"
+              <boatnet-keyboard-select
+                :value.sync="currentHaul.targetStrategy"
                 label="Target Strategy"
+                keyboardType="normal"
                 :options="options"
-                option-value="label"
                 @filter="filterSpecies"
+                @save="saveChanges"
               />
             </div>
           </div>
@@ -68,48 +63,43 @@
       <template v-slot:content2>
         <div class="q-col-gutter-md row q-pt-md">
           <div class="col q-col-gutter-md">
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.totalHook"
               label="Total Hooks"
-              v-model="currentHaul.totalHooks"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.totalHooksLost"
               label="Total Hooks Lost"
-              v-model="currentHaul.totalHooksLost"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.totalGearSegments"
               label="Total Gear Segments"
-              v-model="currentHaul.totalGearSegments"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.gearSegmentsLost"
               label="Total Gear Segments Lost"
-              v-model="currentHaul.gearSegmentsLost"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.hooksSampled"
               label="Hooks Sampled"
-              v-model="currentHaul.hooksSampled"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.avgNumHooksPerSegment"
               label="Avg # of hooks per segment"
-              v-model="currentHaul.avgNumHooksPerSegment"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
+
             <boatnet-button-toggle
               title="Is deterrent used?"
               :value.sync="currentHaul.isDeterrentUsed"
@@ -121,13 +111,13 @@
             />
           </div>
           <div class="col q-col-gutter-md">
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.avgSetSpeed"
               label="Avg set speed"
-              v-model="currentHaul.avgSetSpeed"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
+
             <boatnet-button-toggle
               title="Floats Used?"
               :value.sync="currentHaul.floatsUsed"
@@ -137,13 +127,13 @@
                 ]"
               @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.floatsPerSegment"
               label="Float per segment"
-              v-model="currentHaul.floatsPerSegment"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
+
             <boatnet-button-toggle
               title="Sinkers Used?"
               :value.sync="currentHaul.floatsPerSegment"
@@ -153,19 +143,17 @@
                 ]"
               @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.weightPerSinker"
               label="Weight per sinker"
-              v-model="currentHaul.weightPerSinker"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.avgNumSinkersPerSegment"
               label="Avg # sinkers per segment"
-              v-model="currentHaul.avgNumSinkersPerSegment"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
           </div>
         </div>
@@ -205,19 +193,17 @@
                 ]"
               @save="saveChanges"
             />
-            <q-input
-              outlined
-              v-model="currentHaul.observerTotalCatch.measurement.value"
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.observerTotalCatch.measurement.value"
               label="Visual OTC"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
-            <q-input
-              outlined
-              v-model="currentHaul.fit"
+            <boatnet-keyboard-input
+              :value.sync="currentHaul.fit"
               label="Fit #"
-              debounce="500"
-              @input="saveChanges"
+              keyboardType="numeric"
+              @save="saveChanges"
             />
           </div>
           <div class="col q-col-gutter-md"></div>

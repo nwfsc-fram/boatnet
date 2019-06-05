@@ -1,26 +1,20 @@
 <template>
   <div class="q-col-gutter-md column">
     <span v-for="(certificate, i) in certificates" :key="i">
-      <q-input
-        outlined
-        class="col-2"
-        v-model="certificate.certificateNumber"
+      <boatnet-keyboard-input
+        :value.sync="certificate.certificateNumber"
         label="Permit/ License #"
-        debounce="500"
-        @input="save"
-        @focus="displayKeyboard"
-        data-layout="numeric"
+        keyboardType="numeric"
+        @save="save"
       >
-        <template v-slot:append>
-          <q-btn
-            round
-            dense
-            flat
-            :icon="i != 0 ? 'clear' : 'add'"
+        <template v-slot:after>
+          <q-icon
+            :name="i != 0 ? 'clear' : 'add'"
             @click="i != 0 ? confirmDelete(i) : add()"
+            class="cursor-pointer"
           />
         </template>
-      </q-input>
+      </boatnet-keyboard-input>
     </span>
 
     <boatnet-delete-dialog
@@ -42,10 +36,6 @@ export default class BoatnetLicenses extends Vue {
   private deleteMessage: string = '';
   private showDeleteDialog: boolean = false;
   private deleteIndex!: number;
-
-  private displayKeyboard(event: any) {
-    this.$emit('displayKeyboard', event);
-  }
 
   private save() {
     this.$emit('update:certificates', this.certificates);

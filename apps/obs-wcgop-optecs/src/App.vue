@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <router-view @displayKeyboard="displayKeyboard"/>
+    <router-view/>
     <boatnet-keyboard
-      :visible.sync="isKeyboardVisible"
-      :layout="keyboardType"
-      :input="keyboardInputTarget"
+      :visible.sync="keyboardStatus"
+      :layout="keyboard.keyboardType"
+      :input="keyboard.keyboardInputTarget"
       @next="next"
     />
   </div>
@@ -12,27 +12,34 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { WcgopAppState } from '@/_store/types';
+import { KeyboardState } from './_store';
 
 @Component
 export default class App extends Vue {
   @State('appState') private appState!: WcgopAppState;
-  private isKeyboardVisible: boolean = false;
-  private keyboardType: string = 'normal';
-  private keyboardInputTarget = null;
+  @State('keyboard') private keyboard!: KeyboardState;
+  @Action('setKeyboard', { namespace: 'keyboard' })
+  private setKeyboard: any;
 
-  private displayKeyboard(event: any) {
-    this.isKeyboardVisible = this.appState.isKeyboardEnabled ? true : false;
-    this.keyboardType = event.dataset.layout;
-    this.keyboardInputTarget = event;
+  get keyboardStatus() {
+    if (this.appState.isKeyboardEnabled && this.keyboard.showKeyboard) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  set keyboardStatus(status: boolean) {
+    this.setKeyboard(status);
   }
 
   private next() {
     const inputs = document.querySelectorAll('input');
     let found = false;
     for (let i = 0; i < inputs.length; i++) {
-      if (!found && inputs[i] === this.keyboardInputTarget && i < inputs.length - 1) {
+      if (!found && inputs[i] === this.keyboard.keyboardInputTarget && i < inputs.length - 1) {
         found = true;
         this.$nextTick(() => {
           inputs[i + 1].focus();
@@ -40,7 +47,7 @@ export default class App extends Vue {
       }
     }
     if (!found) {
-      this.isKeyboardVisible = false;
+      this.keyboardStatus = false;
     }
   }
 }

@@ -15,63 +15,39 @@
           <div class="q-col-gutter-md row">
             <div class="col q-col-gutter-md">
               <boatnet-button-toggle
-              title="Gear Type:"
-              :value.sync="currentTrip.gearType"
-              :options="[
+                title="Gear Type:"
+                :value.sync="currentTrip.gearType"
+                :options="[
                 {label: 'Trawl', value: 'trawl'},
                 {label: 'Fixed Gear', value: 'fixed'}
                 ]"
-              @save="saveOnUpdate"
-            />
-              <q-select
-                outlined
-                class="col-2"
-                v-model="currentTrip.vessel.vesselName"
+                @save="saveOnUpdate"
+              />
+             <boatnet-keyboard-select
+                :value.sync="currentTrip.vessel.vesselName"
                 label="Vessel Name/ Registration"
-                use-input
-                fill-input
-                hide-selected
-                input-debounce="0"
+                keyboardType="normal"
                 :options="options"
-                option-value="label"
-                debounce="500"
-                @input="saveOnUpdate"
                 @filter="getVesselNames"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">No results</q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
-              <q-input
-                outlined
-                v-model="currentTrip.captainName"
+                @save="saveOnUpdate"
+              />
+              <boatnet-keyboard-input
+                :value.sync="currentTrip.captainName"
                 label="Skipper's Name"
-                debounce="500"
-                @input="saveOnUpdate"
-                @focus="displayKeyboard"
-                data-layout="normal"
+                keyboardType="normal"
+                @save="saveOnUpdate"
               />
-              <q-input
-                outlined
-                v-model="currentTrip.crewSize"
+              <boatnet-keyboard-input
+                :value.sync="currentTrip.crewSize"
                 label="# of Crew"
-                debounce="500"
-                @input="saveOnUpdate"
-                @focus="displayKeyboard"
-                data-layout="numeric"
+                keyboardType="numeric"
+                @save="saveOnUpdate"
               />
-              <q-input
-                outlined
-                v-model="currentTrip.logbookNum"
+              <boatnet-keyboard-input
+                :value.sync="currentTrip.logbookNum"
                 label="Observer Logbook #"
-                debounce="500"
-                @input="saveOnUpdate"
-                @focus="displayKeyboard"
-                data-layout="numeric"
+                keyboardType="numeric"
+                @save="saveOnUpdate"
               />
               <boatnet-datetime
                 dateLabel="Departure Date"
@@ -79,35 +55,19 @@
                 :value.sync="currentTrip.departureDate"
                 @save="saveOnUpdate"
                 @error="handleError"
-                @displayKeyboard="displayKeyboard"
               />
-              <q-select
-                outlined
-                v-model="currentTrip.departurePort.name"
+              <boatnet-keyboard-select
+                :value.sync="currentTrip.departurePort.name"
                 label="Departure Port"
-                use-input
-                fill-input
-                hide-selected
-                input-debounce="0"
+                keyboardType="normal"
                 :options="options"
-                option-value="label"
-                debounce="500"
-                @input="saveOnUpdate"
                 @filter="getPorts"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">No results</q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
+                @save="saveOnUpdate"
+              />
             </div>
             <div class="col">
               <boatnet-licenses
                 :certificates.sync="currentTrip.certificates"
-                @displayKeyboard="displayKeyboard"
                 @error="handleError"
                 @save="saveOnUpdate"
               />
@@ -139,23 +99,17 @@
                   :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
                 />
               </div>
-              <q-input
-                outlined
-                v-model="currentTrip.logbookType"
+              <boatnet-keyboard-input
+                :value.sync="currentTrip.logbookType"
                 label="Vessel Logbook Name"
-                debounce="500"
-                @input="saveOnUpdate"
-                @focus="displayKeyboard"
-                data-layout="normal"
+                keyboardType="normal"
+                @save="saveOnUpdate"
               />
-              <q-input
-                outlined
-                v-model="currentTrip.logbookNum"
+              <boatnet-keyboard-input
+                :value.sync="currentTrip.logbookNum"
                 label="Vessel Logbook Page #"
-                debounce="500"
-                @input="saveOnUpdate"
-                @focus="displayKeyboard"
-                data-layout="numeric"
+                keyboardType="numeric"
+                @save="saveOnUpdate"
               />
               <boatnet-datetime
                 dateLabel="Return Date"
@@ -163,41 +117,23 @@
                 :value.sync="currentTrip.returnDate"
                 @save="saveOnUpdate"
                 @error="handleError"
-                @displayKeyboard="displayKeyboard"
               />
-              <q-select
-                outlined
-                v-model="currentTrip.returnPort.name"
+              <boatnet-keyboard-select
+                :value.sync="currentTrip.returnPort.name"
                 label="Return Port"
-                use-input
-                fill-input
-                hide-selected
-                input-debounce="0"
+                keyboardType="normal"
                 :options="options"
-                option-value="label"
-                debounce="500"
-                @input="saveOnUpdate"
                 @filter="getPorts"
-                @focus="displayKeyboard"
-                data-layout="normal"
-              >
-                <template v-slot:no-option>
-                  <q-item>
-                    <q-item-section class="text-grey">No results</q-item-section>
-                  </q-item>
-                </template>
-              </q-select>
+                @save="saveOnUpdate"
+              />
             </div>
             <div class="col q-col-gutter-md">
               <div class="column q-col-gutter-md">
-                <q-input
-                  outlined
-                  :value="firstReceiverName"
+                <boatnet-keyboard-input
+                  :value.sync="firstReceiverName"
                   label="First Receiver"
-                  debounce="500"
-                  @input="saveOnUpdate"
-                  @focus="displayKeyboard"
-                  data-layout="normal"
+                  keyboardType="normal"
+                  @save="saveOnUpdate"
                 />
                 <div class="text-h6 col-2">Fish Tickets</div>
                 <boatnet-fish-tickets
@@ -333,12 +269,6 @@ export default class Trips extends Vue {
 
   private goToHauls() {
     this.$router.push({ path: '/hauls/' });
-  }
-
-  private displayKeyboard(event: any) {
-    if (event) {
-      this.$emit('displayKeyboard', event.target);
-    }
   }
 
   private async getPorts(val: string, update: any, abort: any) {

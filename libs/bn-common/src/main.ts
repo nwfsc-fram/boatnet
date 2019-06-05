@@ -4,6 +4,8 @@ import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
 import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
 import BoatnetFishTickets from './components/BoatnetFishTickets.vue';
+import BoatnetKeyboardInput from './components/BoatnetKeyboardInput.vue';
+import BoatnetKeyboardSelect from './components/BoatnetKeyboardSelect.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
@@ -19,6 +21,8 @@ const Components: any = {
   BoatnetDatetime,
   BoatnetDeleteDialog,
   BoatnetFishTickets,
+  BoatnetKeyboardInput,
+  BoatnetKeyboardSelect,
   BoatnetInputDialog,
   BoatnetKeyboard,
   BoatnetLicenses,

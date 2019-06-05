@@ -16,6 +16,12 @@ export interface PdfState {
   catchId?: string;
 }
 
+export interface KeyboardState {
+  showKeyboard?: boolean;
+  keyboardType?: string;
+  keyboardInputTarget?: any;
+}
+
 export interface WcgopAppState {
   currentTrip?: WcgopTrip;
   currentHaul?: WcgopOperation;

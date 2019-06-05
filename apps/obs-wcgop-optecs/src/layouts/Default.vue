@@ -116,7 +116,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view @displayKeyboard="displayKeyboard"/>
+      <router-view/>
     </q-page-container>
   </q-layout>
 </template>
@@ -168,10 +168,6 @@ export default class DefaultLayout extends Vue {
 
   private navigateBack() {
     this.$router.back();
-  }
-
-  private displayKeyboard(event: any) {
-    this.$emit('displayKeyboard', event);
   }
 }
 </script>
