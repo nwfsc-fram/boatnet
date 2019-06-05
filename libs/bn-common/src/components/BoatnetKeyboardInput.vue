@@ -8,6 +8,7 @@
     debounce="500"
     @input="save"
     @focus="displayKeyboard"
+    :fill-mask="mask ? true : false"
     :data-layout="keyboardType"
   >
   <template v-slot:append>
