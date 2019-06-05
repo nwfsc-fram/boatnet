@@ -1,9 +1,19 @@
 <template>
-  <div>
+  <div v-if="visible">
     <vue-touch-keyboard
-      :class="{ keyboard: true }"
+      v-if="layout === 'normal'"
+      :class="{ keyboard: true, normal: true }"
       :options="keyboardOptions"
-      v-if="visible"
+      :layout="layout"
+      :cancel="hide"
+      :accept="accept"
+      :input="input"
+      :next="next"
+    />
+    <vue-touch-keyboard
+      v-else-if="layout === 'numeric'"
+      :class="{ keyboard: true, numeric: true }"
+      :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
       :accept="accept"
@@ -50,9 +60,17 @@ export default class BoatnetKeyboard extends Vue {
 
   z-index: 1000;
   width: 100%;
-  max-width: 1000px;
+
   margin: 0 auto;
 
   padding: 1em;
+}
+
+.normal {
+  max-width: 1000px;
+}
+
+.numeric {
+  max-width: 500px;
 }
 </style>
