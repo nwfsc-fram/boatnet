@@ -194,8 +194,6 @@ export default class Trips extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('save', { namespace: 'appState' })
   private saveTrip: any;
-  @Action('setKeyboard', { namespace: 'keyboard' })
-  private setKeyboard: any;
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTripState!: WcgopTrip;
   @Action('setCurrentTrip', { namespace: 'appState' })
