@@ -62,14 +62,11 @@ export default class BoatnetKeyboard extends Vue {
   width: 100%;
 
   margin: 0 auto;
-
   padding: 1em;
 }
-
 .normal {
   max-width: 1000px;
 }
-
 .numeric {
   max-width: 500px;
 }
