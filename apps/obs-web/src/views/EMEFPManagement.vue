@@ -163,8 +163,7 @@ private emefpDetails(efp: EmEfp) {
             createdDate: moment().format(),
             type: EmEfpTypeName,
             emEfpNumber: 'EM-' + newEmNum.toString(),
-            vesselName: '',
-            vesselCGNumber: '',
+            vessel: {},
             efpTypes: [],
         };
         this.emefp.activeEmefp = efp;

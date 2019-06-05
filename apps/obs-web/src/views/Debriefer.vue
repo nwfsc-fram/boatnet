@@ -276,7 +276,7 @@ import {
   UserState,
   GeneralState
 } from '../_store/types/types';
-import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, WcgopCatch } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';

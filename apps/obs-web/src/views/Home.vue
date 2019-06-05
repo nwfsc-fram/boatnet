@@ -115,8 +115,8 @@ export default class Home extends Vue {
             }
         })
         .catch( (error) => {
-          console.log(error);
-          console.log(error.response);
+          this.errorAlert(error);
+          this.errorAlert(error.response);
         });
   }
 

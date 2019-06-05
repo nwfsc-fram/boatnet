@@ -11,7 +11,8 @@
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <!-- <div v-if="this.$route.params.id === 'new'"> -->
             <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
-            <q-select v-model="emefp.activeEmefp.vessel" label="Vessel" :options="options" @filter="filterFn" use-input stack-label option-label="vesselName"
+            <q-select v-model="emefp.activeEmefp.vessel" label="Vessel" :options="options" @filter="filterFn" use-input stack-label
+            :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
             option-value="_id"></q-select>
           <!-- </div> -->
           <!-- <div v-else> -->
@@ -19,7 +20,7 @@
             <div style="diplay: flex">
               <div>Vessel: {{ emefp.activeEmefp.vessel.vesselName ? emefp.activeEmefp.vessel.vesselName : '' }}</div>
               <div>Vessel ID: {{ emefp.activeEmefp.vessel.coastGuardNumber ? emefp.activeEmefp.vessel.coastGuardNumber : emefp.activeEmefp.vessel.stateRegulationNumber }}</div>
-              <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permit_number ? emefp.activeEmefp.lePermit.permit_number : emefp.activeEmefp.lePermit }}</span></div>
+              <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permitNumber ? emefp.activeEmefp.lePermit.permitNumber : emefp.activeEmefp.lePermit }}</span></div>
             <!-- </div> -->
           </div>
 

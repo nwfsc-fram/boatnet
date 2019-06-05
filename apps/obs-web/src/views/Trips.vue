@@ -1,9 +1,14 @@
 <template>
   <div class="q-pa-md q-gutter-md">
 
-    <div class="centered-page-item">
-      <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
-      <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="alert = true">New Trip</q-btn>
+    <div class="centered-page-item" >
+      <div v-if="vessel.activeVessel">
+        <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
+        <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="alert = true">New Trip</q-btn>
+      </div>
+      <div v-else>
+        <p>No active vessel, please set your active vessel in User Config.</p>
+      </div>
 
       <q-select
       v-model="vessel.activeVessel"
@@ -19,9 +24,8 @@
 
     </div>
 
-      <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
-  <div class=" row items-start" >
-      <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-primary text-white" v-if="trip.is_open"> -->
+  <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
+    <div class=" row items-start" >
 
       <q-card v-for="(trip, i) in openTrips" :key="i" class="my-card bg-primary text-white" style="margin: 10px">
         <q-card-section>
@@ -44,9 +48,9 @@
         </q-card-actions>
     </q-card>
     </div>
+
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
-    <!-- <q-card v-for="(trip, i) in trips.filter(trip => trip.vessel == this.$store.state.activeVessel.name)" :key="trip.trip_num" class="my-card bg-blue-grey-3 text-white" v-if="!trip.is_open"> -->
 
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
@@ -168,29 +172,41 @@ export default class Trips extends Vue {
   }
 
     private get openTrips() {
-      return this.userDBTrips.filter(
-        (trip: any) => {
-          if (trip.vessel && trip.tripStatus) {
-            return trip.tripStatus.description === 'open' &&
-            trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
-          } else {
-            return [];
-          }
-          }
-        );
+      if (this.vessel.activeVessel) {
+        return this.userDBTrips.filter(
+          (trip: any) => {
+            if (trip.vessel && trip.tripStatus && this.vessel.activeVessel) {
+              const tripVesselReg = trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
+              const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+              return trip.tripStatus.description === 'open' &&
+              tripVesselReg === activeVesselReg;
+            } else {
+              return [];
+            }
+            }
+          );
+      } else {
+        return [];
+      }
     }
 
     private get closedTrips() {
-      return this.userDBTrips.filter(
-        (trip: any) => {
-          if (trip.vessel && trip.tripStatus) {
-            return trip.tripStatus.description !== 'open' &&
-            trip.vessel.vesselName === this.vessel.activeVessel.vesselName;
-          } else {
-            return [];
+      if (this.vessel.activeVessel) {
+        return this.userDBTrips.filter(
+          (trip: any) => {
+            if (trip.vessel && trip.tripStatus && this.vessel.activeVessel) {
+              const tripVesselReg = trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
+              const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+              return trip.tripStatus.description !== 'open' &&
+              tripVesselReg === activeVesselReg;
+            } else {
+              return [];
+            }
           }
-        }
-      );
+        );
+      } else {
+        return [];
+      }
     }
 
     private vesselsFilterFn(val: string, update: any, abort: any) {
@@ -287,7 +303,7 @@ export default class Trips extends Vue {
                             createdDate: moment().format(),
                             type: 'wcgop-trip',
                             tripNum: newTripNum,
-                            vessel: this.vessel.activeVessel,
+                            vessel: this.vessel.activeVessel!,
                             // permits: [],
                             // messages: [],
                             departureDate: moment().format(),
