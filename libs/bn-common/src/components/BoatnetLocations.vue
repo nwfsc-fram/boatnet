@@ -22,7 +22,7 @@
       <q-btn color="primary" label="Delete" @click="deleteRow" :disabled="selected.length <= 0"/>
     </div>
 
-    <boatnet-input-dialog
+    <boatnet-keyboard-input-dialog
       :title="action === 'add' ? getPositionName(locationHolder.length) : getPositionName(current.__index)"
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
@@ -61,7 +61,7 @@
       <div class="col q-pl-md self-start">
         <q-date v-model="dateVal" minimal :default-year-month="defaultYearMonth"/>
       </div>
-    </boatnet-input-dialog>
+    </boatnet-keyboard-input-dialog>
   </span>
 </template>
 

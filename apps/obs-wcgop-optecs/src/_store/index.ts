@@ -8,6 +8,7 @@ import { auth } from '@boatnet/bn-auth';
 import { pouchState } from '@boatnet/bn-pouch';
 import { tallyState } from '@/_store/tally.module';
 import { pdfState } from '@/_store/pdf.module';
+import { keyboard } from '@/_store/keyboard.module';
 
 import { RootState } from '@/_store/types/types';
 
@@ -33,7 +34,8 @@ const store: StoreOptions<RootState> = {
     auth,
     pouchState,
     tallyState,
-    pdfState
+    pdfState,
+    keyboard
   },
   plugins: [vuexLocalStorage.plugin]
 };

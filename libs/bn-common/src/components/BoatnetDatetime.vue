@@ -1,16 +1,9 @@
 <template>
   <div>
     <boatnet-date :dateLabel="dateLabel" :date.sync="date" :showDatePicker="showPopup"/>
-    <q-input
-      outlined
-      class="q-pt-md"
-      v-model="time"
-      :label="timeLabel"
-      mask="time"
-      fill-mask
-      @focus="displayKeyboard"
-      data-layout="numeric"
-    />
+    <div class="q-pt-md">
+      <boatnet-keyboard-input :value.sync="time" :label="timeLabel" keyboardType="numeric" mask="time"/>
+    </div>
   </div>
 </template>
 
@@ -44,10 +37,6 @@ export default class BoatnetDatetime extends Vue {
     const formattedDateTime = moment(datetime, 'YYYY/MM/DD HH:mm').format();
     this.$emit('update:value', formattedDateTime);
     this.$emit('save', formattedDateTime);
-  }
-
-  private displayKeyboard(event: any) {
-    this.$emit('displayKeyboard', event);
   }
 }
 </script>

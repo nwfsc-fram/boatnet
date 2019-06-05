@@ -2,7 +2,6 @@
   <div>
     <q-input
       outlined
-      class="col-2"
       :label="dateLabel"
       v-model="dateVal"
       mask="date"
