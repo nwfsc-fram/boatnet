@@ -376,8 +376,14 @@
                     key="disposition"
                     :props="props"
                   >{{ props.row.catch.disposition.description }}</q-td>
-                  <q-td key="catchWM" :props="props">{{ nullDescriptionCheck(props.row.catch.weightMethod) }}</q-td>
-                  <q-td key="catchWeight" :props="props">{{ nullValueCheck(props.row.catch.weight,true) }}</q-td>
+                  <q-td
+                    key="catchWM"
+                    :props="props"
+                  >{{ nullDescriptionCheck(props.row.catch.weightMethod) }}</q-td>
+                  <q-td
+                    key="catchWeight"
+                    :props="props"
+                  >{{ nullValueCheck(props.row.catch.weight,true) }}</q-td>
                 </q-tr>
               </template>
             </q-table>
@@ -510,21 +516,35 @@
                     key="disposition"
                     :props="props"
                   >{{ props.row.catch.disposition.description }}</q-td>
-                  <q-td key="catchWM" :props="props">{{ nullDescriptionCheck(props.row.catch.weightMethod) }}</q-td>
-                  <q-td key="catchWeight" :props="props">{{ nullValueCheck(props.row.catch.weight,true) }}</q-td>
+                  <q-td
+                    key="catchWM"
+                    :props="props"
+                  >{{ nullDescriptionCheck(props.row.catch.weightMethod) }}</q-td>
+                  <q-td
+                    key="catchWeight"
+                    :props="props"
+                  >{{ nullValueCheck(props.row.catch.weight,true) }}</q-td>
                   <q-td
                     key="catchSpecies"
                     :props="props"
                   >{{ props.row.catch.species.species.commonName }} ({{ props.row.catch.species.species.scientificName }})</q-td>
-                  <q-td key="catchSpeciesWeight" :props="props">{{ nullValueCheck(props.row.catch.species.speciesWeight,true) }}</q-td>
-                  <q-td key="catchSpeciesCount" :props="props">{{ props.row.catch.species.speciesCount }}</q-td>
-                  <q-td key="catchSpeciesDiscardReason" :props="props">{{ nullDescriptionCheck(props.row.catch.species.discardReason) }}</q-td>
-
+                  <q-td
+                    key="catchSpeciesWeight"
+                    :props="props"
+                  >{{ nullValueCheck(props.row.catch.species.speciesWeight,true) }}</q-td>
+                  <q-td
+                    key="catchSpeciesCount"
+                    :props="props"
+                  >{{ props.row.catch.species.speciesCount }}</q-td>
+                  <q-td
+                    key="catchSpeciesDiscardReason"
+                    :props="props"
+                  >{{ nullDescriptionCheck(props.row.catch.species.discardReason) }}</q-td>
                 </q-tr>
               </template>
             </q-table>
           </q-tab-panel>
-          
+
           <q-tab-panel name="catchBaskets">
             <div class="text-h6">Catch Baskets</div>Lorem ipsum dolor sit amet consectetur adipisicing elit.
           </q-tab-panel>
@@ -1431,7 +1451,7 @@ export default class Debriefer extends Vue {
     }
   ];
 
-private catchSpeciesColumns = [
+  private catchSpeciesColumns = [
     {
       name: 'tripKey',
       label: 'Trip ID',
@@ -1865,7 +1885,7 @@ private catchSpeciesColumns = [
     }
   }
 
-private async getCatchSpecies() {
+  private async getCatchSpecies() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
@@ -1882,9 +1902,7 @@ private async getCatchSpecies() {
         const operation = row.doc;
 
         for (const catchRow of operation.catches) {
-
-          if(catchRow.species!=null)
-          {
+          if (catchRow.species != null) {
             for (const catchSpeciesRow of catchRow.species) {
               let opCatch = Object.assign({}, row.doc);
               opCatch.key = row.key;
@@ -1910,20 +1928,17 @@ private async getCatchSpecies() {
     return date.formatDate(inputDate, 'MM/DD/YYYY');
   }
 
-  private nullValueCheck(input: any, round:boolean) {
-    if (input !=null)
-      if(round)
-        return input.value.toFixed(2);
-      else
-        return input.value;
-    
+  private nullValueCheck(input: any, round: boolean) {
+    if (input != null)
+      if (round) return input.value.toFixed(2);
+      else return input.value;
+
     return '';
   }
 
   private nullDescriptionCheck(input: any) {
-    if (input !=null)
-      return input.description;
-    
+    if (input != null) return input.description;
+
     return '';
   }
 
