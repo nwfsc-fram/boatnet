@@ -1,17 +1,13 @@
 <template>
   <span>
     <div class="row justify-end">
-      <q-input
-        outlined
-        bottom-slots
-        v-model="searchText"
+      <boatnet-keyboard-input
+        :value.sync="searchText"
         label="Search"
-        maxlength="12"
-        style="width: 200px;"
-        @focus="displayKeyboard"
-        data-layout="normal"
+        keyboardType="normal"
+        class="q-pb-md"
       >
-        <template v-slot:append>
+        <template v-slot:after>
           <q-icon
             v-if="searchText !== ''"
             name="close"
@@ -20,7 +16,7 @@
           />
           <q-icon name="search"/>
         </template>
-      </q-input>
+      </boatnet-keyboard-input>
     </div>
 
     <slot name="table"/>
@@ -94,7 +90,11 @@ export default class BoatnetSummary extends Vue {
   private get deleteMessage() {
     if (this.current) {
       return (
-        'Are you sure you want to delete ' + this.currentScreen + ' #' + this.selectionId + '?'
+        'Are you sure you want to delete ' +
+        this.currentScreen +
+        ' #' +
+        this.selectionId +
+        '?'
       );
     }
   }
@@ -118,10 +118,6 @@ export default class BoatnetSummary extends Vue {
 
   private goTo() {
     this.$emit('goTo');
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>

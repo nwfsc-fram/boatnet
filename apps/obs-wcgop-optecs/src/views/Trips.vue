@@ -15,7 +15,6 @@
         @edit="handleEditTrip"
         @end="handleEndTrip"
         @delete="handleDeleteTrip"
-        @displayKeyboard="displayKeyboard"
         @goTo="handleGoToHauls"
       >
         <template v-slot:table>
@@ -229,10 +228,6 @@ export default class Trips extends Vue {
   private get lookupsDB() {
     // @ts-ignore
     return this[this.selectedDBName];
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e);
   }
 }
 </script>

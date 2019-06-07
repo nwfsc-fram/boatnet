@@ -33,34 +33,21 @@
           <div v-show="!!alert.message">
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
-
-          <q-input
-            outlined
-            ref="username"
-            v-model="username"
-            label="Username"
-            @focus="displayKeyboard"
-            data-layout="normal"
-          />
-
-          <q-input
-            outlined
-            ref="password"
-            :type="isPwd ? 'password' : 'text'"
-            v-model="password"
+          <boatnet-keyboard-input :value.sync="username" label="Username" keyboardType="normal"/>
+          <boatnet-keyboard-input
+            :value.sync="password"
             label="Password"
-            autocomplete="boatnet password"
-            @focus="displayKeyboard"
-            data-layout="normal"
+            keyboardType="normal"
+            :encodingType="isPwd ? 'password' : 'text'"
           >
-            <template v-slot:append>
+            <template v-slot:after>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
               />
             </template>
-          </q-input>
+          </boatnet-keyboard-input>
           <div style="text-align: center">
             <q-btn
               class="full-width"
@@ -186,10 +173,6 @@ export default class Login extends Vue {
     } else {
       return 'Never';
     }
-  }
-
-  private displayKeyboard(e: any) {
-    this.$emit('displayKeyboard', e.target);
   }
 }
 </script>
