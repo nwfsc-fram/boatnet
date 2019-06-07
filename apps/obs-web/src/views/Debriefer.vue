@@ -570,7 +570,13 @@ import {
   UserState,
   GeneralState
 } from '../_store/types/types';
-import { WcgopTrip, WcgopOperation, WcgopCatch, WcgopBasket, WcgopSpecimen } from '@boatnet/bn-models';
+import {
+  WcgopTrip,
+  WcgopOperation,
+  WcgopCatch,
+  WcgopBasket,
+  WcgopSpecimen
+} from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
@@ -1923,8 +1929,7 @@ export default class Debriefer extends Vue {
     }
   }
 
-
-   private async getCatchBaskets() {
+  private async getCatchBaskets() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
@@ -1959,7 +1964,6 @@ export default class Debriefer extends Vue {
       this.error(err);
     }
   }
-
 
   private async getCatchSpecimens() {
     const masterDB: Client<any> = couchService.masterDB;
@@ -2006,7 +2010,7 @@ export default class Debriefer extends Vue {
   }
 
   private nullValueCheck(input: any, round: boolean) {
-    if (input != null)
+    if (input)
       if (round) return input.value.toFixed(2);
       else return input.value;
 
@@ -2014,7 +2018,9 @@ export default class Debriefer extends Vue {
   }
 
   private nullDescriptionCheck(input: any) {
-    if (input != null) return input.description;
+    if (input != null) {
+      return input.description;
+    }
 
     return '';
   }
