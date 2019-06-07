@@ -58,7 +58,7 @@ export default class BoatnetKeyboard extends Vue {
   right: 0;
   bottom: 0;
 
-  z-index: 1000;
+  z-index: 10000;
   width: 100%;
 
   margin: 0 auto;

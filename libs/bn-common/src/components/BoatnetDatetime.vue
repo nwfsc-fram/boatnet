@@ -1,6 +1,6 @@
 <template>
   <div>
-    <boatnet-date :dateLabel="dateLabel" :date.sync="date" :showDatePicker="showPopup"/>
+    <boatnet-date :dateLabel="dateLabel" :date.sync="date"/>
     <div class="q-pt-md">
       <boatnet-keyboard-input :value.sync="time" :label="timeLabel" keyboardType="numeric" mask="time"/>
     </div>
@@ -16,7 +16,6 @@ export default class BoatnetDatetime extends Vue {
   @Prop() private dateLabel!: string;
   @Prop() private timeLabel!: string;
   @Prop() private value!: string;
-  @Prop() private showPopup!: boolean;
 
   get date() {
     return this.value ? moment(this.value).format('YYYY/MM/DD') : '';

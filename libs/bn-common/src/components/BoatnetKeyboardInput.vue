@@ -8,7 +8,8 @@
     debounce="500"
     @input="save"
     @focus="displayKeyboard"
-    :fill-mask="mask ? true : false"
+    :fill-mask="showMask"
+    :hint="hint"
     :data-layout="keyboardType"
   >
   <template v-slot:append>
@@ -28,6 +29,8 @@ export default class BoatnetKeyboardInput extends Vue {
   @Prop() private keyboardType!: string;
   @Prop({ default: 'text' }) private encodingType!: string;
   @Prop() private mask!: string;
+  @Prop({ default: true }) private showMask!: boolean;
+  @Prop() private hint!: string;
 
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;

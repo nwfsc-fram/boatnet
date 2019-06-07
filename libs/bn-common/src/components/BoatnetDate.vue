@@ -28,7 +28,7 @@ import moment from 'moment';
 export default class BoatnetDate extends Vue {
   @Prop() private dateLabel!: string;
   @Prop() private date!: string;
-  @Prop() private showDatePicker!: boolean;
+  private showDatePicker!: boolean;
 
   private status: boolean = false;
   private defaultMonthYear: string = moment().format('YYYY/MM');
@@ -41,7 +41,7 @@ export default class BoatnetDate extends Vue {
   }
 
   private show() {
-    this.status = this.showDatePicker ? true : false;
+    this.status = true;
   }
 
   private hide() {

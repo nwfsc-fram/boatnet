@@ -26,7 +26,11 @@
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
       <div class="col self-start q-gutter-md q-pb-md">
-        <q-input outlined class="col-2" v-model="currFishTicket.fishNum" label="Fish Ticket #"/>
+        <boatnet-keyboard-input
+                  :value.sync="currFishTicket.fishNum"
+                  label="Fish Ticket #"
+                  keyboardType="normal"
+                />
         <div class="col-2">
           <div>State:</div>
           <q-btn-toggle

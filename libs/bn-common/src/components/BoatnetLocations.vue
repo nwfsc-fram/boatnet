@@ -29,33 +29,31 @@
     >
       <div class="col q-gutter-md q-pb-md">
         <q-input outlined label="Date" mask="date" v-model="dateVal"/>
-        <q-input outlined label="Time" mask="time" v-model="timeVal" fill-mask/>
-
-        <q-input
-          outlined
-          class="col-2"
-          v-model="current.location.coordinates[0]"
+        <boatnet-keyboard-input
+          :value.sync="timeVal"
+          label="Time"
+          keyboardType="numeric"
+          mask="time"
+          :showMask="true"
+        />
+        <boatnet-keyboard-input
+          :value.sync="current.location.coordinates[0]"
           label="Longitude"
+          keyboardType="numeric"
           mask="###°##.##"
-          fill-mask
-          hint="format: ddd°mm.mm"
         />
-        <q-input
-          outlined
-          class="col-2"
-          v-model="current.location.coordinates[1]"
+        <boatnet-keyboard-input
+          :value.sync="current.location.coordinates[1]"
           label="Latitude"
+          keyboardType="numeric"
           mask="##°##.##"
-          fill-mask
-          hint="format: dd°mm.mm"
         />
-        <q-input
-          outlined
-          class="col-2"
-          v-model="current.depth"
+        <boatnet-keyboard-input
+          :value.sync="current.depth"
           label="Depth (ftm)"
+          keyboardType="numeric"
           mask="###"
-          unmasked-value
+          :showMask="false"
         />
       </div>
       <div class="col q-pl-md self-start">
@@ -146,12 +144,12 @@ export default class BoatnetLocations extends Vue {
   private sortByDate(locs: FishingLocation[]) {
     return locs.sort((a, b) => {
       if (moment(a.locationDate).isAfter(b.locationDate)) {
-            return 1;
-          } else if (moment(a.locationDate).isBefore(b.locationDate)) {
-            return -1;
-          } else {
-            return 0;
-          }
+        return 1;
+      } else if (moment(a.locationDate).isBefore(b.locationDate)) {
+        return -1;
+      } else {
+        return 0;
+      }
     });
   }
 
