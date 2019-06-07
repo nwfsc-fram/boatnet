@@ -15,8 +15,8 @@
           <q-tab name="operations" label="Hauls" @click="getOperations"/>
           <q-tab name="catch" label="Catch" @click="getCatches"/>
           <q-tab name="catchSpecies" label="Catch Species" @click="getCatchSpecies"/>
-          <q-tab name="catchBaskets" label="Catch Baskets"/>
-          <q-tab name="specimens" label="Specimens"/>
+          <q-tab name="catchBaskets" label="Catch Baskets" @click="getCatchBaskets"/>
+          <q-tab name="specimens" label="Specimens" @click="getCatchSpecimens"/>
         </q-tabs>
 
         <q-separator/>
@@ -570,7 +570,7 @@ import {
   UserState,
   GeneralState
 } from '../_store/types/types';
-import { WcgopTrip, WcgopOperation, WcgopCatch } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, WcgopCatch, WcgopBasket, WcgopSpecimen } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
@@ -585,6 +585,8 @@ export default class Debriefer extends Vue {
   private WcgopOperations: WcgopOperation[] = [];
   private WcgopCatches: WcgopCatch[] = [];
   private WcgopCatchSpecies: WcgopCatch[] = [];
+  private WcgopCatchBaskets: WcgopBasket[] = [];
+  private WcgopCatchSpecimens: WcgopSpecimen[] = [];
 
   private pagination = { rowsPerPage: 50 };
   private visibleTripColumns = [
@@ -1920,6 +1922,81 @@ export default class Debriefer extends Vue {
       this.error(err);
     }
   }
+
+
+   private async getCatchBaskets() {
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+      const options: ListOptions = {
+        keys: Object.keys(this.WcgopOperationTripDict)
+      };
+
+      const operations = await masterDB.viewWithDocs<any>(
+        'MainDocs',
+        'all-operations',
+        options
+      );
+
+      for (const row of operations.rows) {
+        const operation = row.doc;
+
+        for (const catchRow of operation.catches) {
+          if (catchRow.baskets != null) {
+            for (const catchBasketRow of catchRow.baskets) {
+              let opCatch = Object.assign({}, row.doc);
+              opCatch.key = row.key;
+              opCatch.trip = this.WcgopOperationTripDict[operation._id];
+              opCatch.catch = catchRow;
+              opCatch.catch.basket = catchBasketRow;
+              this.WcgopCatchBaskets.push(opCatch);
+            }
+          }
+        }
+      }
+
+      console.log(this.WcgopCatchBaskets);
+    } catch (err) {
+      this.error(err);
+    }
+  }
+
+
+  private async getCatchSpecimens() {
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+      const options: ListOptions = {
+        keys: Object.keys(this.WcgopOperationTripDict)
+      };
+
+      const operations = await masterDB.viewWithDocs<any>(
+        'MainDocs',
+        'all-operations',
+        options
+      );
+
+      for (const row of operations.rows) {
+        const operation = row.doc;
+
+        for (const catchRow of operation.catches) {
+          if (catchRow.specimens != null) {
+            for (const catchSpecimenRow of catchRow.specimens) {
+              let opCatch = Object.assign({}, row.doc);
+              opCatch.key = row.key;
+              opCatch.trip = this.WcgopOperationTripDict[operation._id];
+              opCatch.catch = catchRow;
+              opCatch.catch.basket = catchSpecimenRow;
+              this.WcgopCatchBaskets.push(opCatch);
+            }
+          }
+        }
+      }
+
+      console.log(this.WcgopCatchSpecimens);
+    } catch (err) {
+      this.error(err);
+    }
+  }
+
   private created() {
     this.getTrips();
   }
