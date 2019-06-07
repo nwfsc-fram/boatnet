@@ -3063,7 +3063,7 @@ private catchSpecimensColumns = [
     if (input) {
       if (round) {
         return input.value.toFixed(2);
-      } else {
+ } else {
         return input.value;
       }
     }
