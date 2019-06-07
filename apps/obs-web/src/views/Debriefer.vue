@@ -574,8 +574,8 @@ import {
   WcgopTrip,
   WcgopOperation,
   WcgopCatch,
-  WcgopBasket,
-  WcgopSpecimen
+  WcgopSpecimen,
+  Basket
 } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -591,7 +591,7 @@ export default class Debriefer extends Vue {
   private WcgopOperations: WcgopOperation[] = [];
   private WcgopCatches: WcgopCatch[] = [];
   private WcgopCatchSpecies: WcgopCatch[] = [];
-  private WcgopCatchBaskets: WcgopBasket[] = [];
+  private WcgopCatchBaskets: Basket[] = [];
   private WcgopCatchSpecimens: WcgopSpecimen[] = [];
 
   private pagination = { rowsPerPage: 50 };
@@ -1825,8 +1825,9 @@ export default class Debriefer extends Vue {
         trip.key = row.key;
         this.WcgopTrips.push(trip);
 
-        for (const operationId of trip.operationIDs)
+        for (const operationId of trip.operationIDs) {
           this.WcgopOperationTripDict[operationId] = trip;
+        }
       }
     } catch (err) {
       this.error(err);
@@ -1850,7 +1851,7 @@ export default class Debriefer extends Vue {
         const operation = row.doc;
 
         for (const locationRow of operation.locations) {
-          let opLoc = Object.assign({}, row.doc);
+          const opLoc = Object.assign({}, row.doc);
           opLoc.key = row.key;
           opLoc.trip = this.WcgopOperationTripDict[operation._id];
           opLoc.location = locationRow;
@@ -1879,7 +1880,7 @@ export default class Debriefer extends Vue {
         const operation = row.doc;
 
         for (const catchRow of operation.catches) {
-          let opCatch = Object.assign({}, row.doc);
+          const opCatch = Object.assign({}, row.doc);
           opCatch.key = row.key;
           opCatch.trip = this.WcgopOperationTripDict[operation._id];
           opCatch.catch = catchRow;
@@ -1912,7 +1913,7 @@ export default class Debriefer extends Vue {
         for (const catchRow of operation.catches) {
           if (catchRow.species != null) {
             for (const catchSpeciesRow of catchRow.species) {
-              let opCatch = Object.assign({}, row.doc);
+              const opCatch = Object.assign({}, row.doc);
               opCatch.key = row.key;
               opCatch.trip = this.WcgopOperationTripDict[operation._id];
               opCatch.catch = catchRow;
@@ -1948,7 +1949,7 @@ export default class Debriefer extends Vue {
         for (const catchRow of operation.catches) {
           if (catchRow.baskets != null) {
             for (const catchBasketRow of catchRow.baskets) {
-              let opCatch = Object.assign({}, row.doc);
+              const opCatch = Object.assign({}, row.doc);
               opCatch.key = row.key;
               opCatch.trip = this.WcgopOperationTripDict[operation._id];
               opCatch.catch = catchRow;
@@ -1984,7 +1985,7 @@ export default class Debriefer extends Vue {
         for (const catchRow of operation.catches) {
           if (catchRow.specimens != null) {
             for (const catchSpecimenRow of catchRow.specimens) {
-              let opCatch = Object.assign({}, row.doc);
+              const opCatch = Object.assign({}, row.doc);
               opCatch.key = row.key;
               opCatch.trip = this.WcgopOperationTripDict[operation._id];
               opCatch.catch = catchRow;
@@ -2010,9 +2011,13 @@ export default class Debriefer extends Vue {
   }
 
   private nullValueCheck(input: any, round: boolean) {
-    if (input)
-      if (round) return input.value.toFixed(2);
-      else return input.value;
+    if (input) {
+      if (round) {
+        return input.value.toFixed(2);
+      } else {
+        return input.value;
+      }
+    }
 
     return '';
   }
