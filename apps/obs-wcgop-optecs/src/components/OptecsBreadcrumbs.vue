@@ -52,7 +52,8 @@ export default class OptecsBreadcrumbs extends Vue {
         const haulNum = this.currentHaul ? this.currentHaul.operationNum : 0;
         this.breadcrumbs[i].name = String(haulNum);
         this.breadcrumbs[i].link = '/hauldetails/' + String(haulNum);
-      } else {
+      } 
+      else {
         this.breadcrumbs[i] = this.$route.meta.breadcrumb[i];
       }
       // TODO read state and populate haulId and species

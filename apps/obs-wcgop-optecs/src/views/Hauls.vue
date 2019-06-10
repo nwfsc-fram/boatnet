@@ -7,6 +7,7 @@
       @edit="editHauls"
       @add="addHauls"
       @delete="deleteHauls"
+      @goTo="handleGoToCatch"
     >
       <template v-slot:table>
         <boatnet-table
@@ -175,6 +176,10 @@ export default class Hauls extends Vue {
     } else {
       this.setCurrentHaul(undefined);
     }
+  }
+
+  private handleGoToCatch() {
+    this.$router.push({ path: '/catch/' });
   }
 
   private addHauls() {

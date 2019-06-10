@@ -1,4 +1,4 @@
-import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, WcgopCatch } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -25,6 +25,7 @@ export interface KeyboardState {
 export interface WcgopAppState {
   currentTrip?: WcgopTrip;
   currentHaul?: WcgopOperation;
+  currentCatch?: WcgopCatch;
   isKeyboardEnabled?: boolean;
   isSoundEnabled?: boolean;
 }
