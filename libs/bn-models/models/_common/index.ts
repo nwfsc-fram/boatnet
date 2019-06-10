@@ -13,3 +13,4 @@ export * from './sighting-event';
 export * from './waiver';
 export * from './lineal-measurement';
 export * from './specimen';
+export * from './message';

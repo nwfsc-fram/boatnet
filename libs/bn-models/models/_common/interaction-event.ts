@@ -6,7 +6,8 @@ import {
   SpecimenTag,
   Species,
   Person,
-  Confidence
+  Confidence,
+  Protocol
 } from '../_lookups';
 import { Deterrent } from '../_lookups/deterrent';
 import { BoatnetDate } from './boatnet-date';
@@ -65,6 +66,8 @@ export interface InteractionEvent extends Base {
   mediaData: Media[];
   weather?: Weather;
   vesselActivity?: VesselActivity;
+
+  protocols?: Protocol[]; // Include sampling strategy (randomly selected, etc.)
 
   legacy?: {
     waterTemp?: Measurement;

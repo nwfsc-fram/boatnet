@@ -13,13 +13,8 @@ declare type WcgopBiosampleMethod = any;
 export const WcgopSpecimenTypeName = 'wcgop-specimen';
 
 export interface WcgopSpecimen extends BaseSpecimen {
-  biosampleMethod?: WcgopBiosampleMethod; // TODO
+  biosampleMethod?: WcgopBiosampleMethod; // TODO - Random inside sample, Random outside sample
   discardReason?: WcgopDiscardReason;
-  isAdiposePresent?: boolean;
-  bandId?: string; // from DISSECTION.BAND_ID
-  cwtCode?: string; // coded wire tag for Salmon
-  cwtStatus?: string;
-  cwtType?: string;
 
   legacy?: {
     biospecimenId?: number;
