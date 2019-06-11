@@ -12,7 +12,6 @@ export const WcgopCatchTypeName = 'wcgop-catch';
 declare type RockfishHandlingCode = string; // TODO
 
 export interface WcgopCatch extends BaseCatch {
-  catchNum?: number; // Unique per Operation sequential
   disposition?: CatchDisposition;
   weightMethod?: WeightMethod;
   weight?: Measurement; // Could be species or higher level
@@ -22,13 +21,12 @@ export interface WcgopCatch extends BaseCatch {
   gearSegmentsSampled?: number;
 
   // Species-level data
-  species: Species;
   discardReason?: WcgopDiscardReason;
   totalTally?: number;
   handling?: RockfishHandlingCode; // Rockfish Handling
   sightingEventIds?: CouchID[];
-  specimens?: WcgopSpecimen[];
 
+  specimens?: WcgopSpecimen[];
   children?: WcgopCatch[];
 
   legacy?: {
