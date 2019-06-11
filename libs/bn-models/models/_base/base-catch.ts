@@ -2,7 +2,7 @@
 import { Base } from './base';
 import { UnsortedCatch } from '../_lookups/unsorted-catch';
 import { TaxonomyAlias } from '../_lookups/taxonomy-alias';
-import { CatchGrouping, Debris } from '../_lookups';
+import { CatchGrouping, Debris, Protocol } from '../_lookups';
 import { Basket } from '../_common';
 
 // Ignore simple interface linting warning
@@ -16,7 +16,7 @@ export interface BaseCatch extends Base {
   catchType?: CatchType; // Lookups - TaxonomyAlias, Aggregate (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
   catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);
   baskets?: Basket[];
-
+  protocols?: Protocol[]; // Include sampling strategy (randomly selected, etc.)
 }
 
 // Example object for discussion purposes

@@ -25,12 +25,12 @@ export const VesselCaptainTypeName = 'vessel-captain';
 //
 // Roles used for DataStore access, App Screen access, Widget-level access (divs, etc.)
 
-interface EmergencyContact {
+export interface EmergencyContact {
   contact?: Person;
   relationToObserver?: string; // Lookup value
 }
 
-interface OrganizationDateRange {
+export interface OrganizationDateRange {
   org: Organization;
   startDate?: BoatnetDate;
   endDate?: BoatnetDate;
@@ -39,12 +39,23 @@ interface OrganizationDateRange {
 declare type notificationPreferences = string;
 export type Organization = Person;
 
+
+export type PrimaryContactID = string; // = ApexUserAdminUserName
+
+/*
+ContactsDB, replcating from MasterDB that includes:
+    first name
+    last name
+    ApexUserAdminUserName
+
+*/
+
 // Originally CONTACTS
 export interface Person extends Base {
   // This is sensitive PII
   firstName?: string;
   lastName?: string;
-  apexUserAdminUserName?: string;
+  apexUserAdminUserName?: PrimaryContactID;
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
