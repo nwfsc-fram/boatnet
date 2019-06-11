@@ -6,12 +6,12 @@ import {
   Confidence,
   Media,
   BirdBand,
-  Species
+  Species,
+  BodyLength,
+  SightingCondition,
+  Behavior
 } from '../_lookups/index';
 
-declare type SightingConditions = string; // TODO Review Good/ Fair/ Poor, same as confidence?
-declare type Behavior = string; // TODO
-declare type LengthEstimate = any; // TODO Choices: < 3, 3-8, 8-16, 16-26, > 26 meters - TODO Ryan to review usefulness
 declare type DescriptorIcon = any; // TODO Pick-list images of Cetacea and Pinniped Descriptions (Silhouettes)
 
 interface SilhouetteDescriptor {
@@ -24,13 +24,15 @@ interface GearPresentComment {
   comments?: string; // gear color etc
 }
 
+export declare const SightingEventTypeName = "sighting-event";
+
 export interface SightingEvent extends Base {
   species?: Species;
   confidentOfSpecies?: Confidence; // Y/N/? Might be useful?
   sightingDate?: BoatnetDate;
   location?: Point;
   beaufort?: Beaufort;
-  sightingConditions?: SightingConditions;
+  sightingConditions?: SightingCondition;
   minNumSighted?: number;
   maxNumSighted?: number;
   bestNumSighted?: number;
@@ -39,7 +41,7 @@ export interface SightingEvent extends Base {
   sightingCue?: string;
   mediaData?: Media[]; // Derive media present for analyst view
   animalBehavior?: Behavior[]; // spy-hopping, tail raised on dive etc
-  bodyLengthEstimates?: LengthEstimate[]; // multiple animals - TODO Ryan to review usefulness
+  bodyLengthEstimates?: BodyLength[]; // multiple animals - TODO Ryan to review usefulness
 
   // for turtles (no data yet)
   tagColor?: string;
