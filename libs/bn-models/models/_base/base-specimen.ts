@@ -53,7 +53,7 @@ export interface BaseSpecimen extends Base {
   location?: LocationEvent; // where was the boat when the specimen was collected
 
   frequency?: number; // = 1 if undefined (WCGOP only)
-  mediaData: Media[];
+  mediaData?: Media[];
 
   specialProject?: SpecialProject[]; // Actual data collected
 }

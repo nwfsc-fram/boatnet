@@ -6,7 +6,7 @@ import {
   CouchID
 } from '../_common/index';
 import { WcgopCatch } from './wcgop-catch';
-import { WeightMethod, GearType } from '../_lookups';
+import { WeightMethod, GearType, GearPerformance } from '../_lookups';
 import { FishingLocation } from '../_common/fishing-location';
 
 export const WcgopOperationTypeName = 'wcgop-operation';
@@ -25,7 +25,7 @@ export interface WcgopOperation extends BaseOperation {
     weightMethod?: WeightMethod;
   };
   gearType?: GearType;
-  gearPerformance?: string;
+  gearPerformance?: GearPerformance;
   targetStrategy?: WcgopTargetStrategy;
   isEfpUsed?: boolean;
   calWeight?: number;

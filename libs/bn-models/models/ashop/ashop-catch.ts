@@ -1,6 +1,6 @@
 // A-SHOP Catch
 import { BaseCatch } from '../_base/base-catch';
-import { Measurement, Basket, CouchID, Specimen } from '../_common/index';
+import { Measurement, CouchID, Specimen } from '../_common/index';
 
 export const AshopCatchTypeName = 'ashop-catch';
 
@@ -32,6 +32,9 @@ export interface AshopCatch extends BaseCatch {
 
   legacy?: {
     sampleSequence?: number;
+    parentSequence?: number;
+    cruiseNum?: number;
+    permit?: string;
     // Omit combined sample flag
     // Omit # of segments sampled
     // Omit Hooks
