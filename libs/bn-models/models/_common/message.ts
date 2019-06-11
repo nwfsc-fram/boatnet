@@ -9,8 +9,8 @@ declare type PriorityLevel = string; // TODO
 declare type MessageType = string; // Email, Phone Call, Text, In-Person Conversation
 
 export interface Receipt {
-    receivedBy: (Person | Vessel),
-    receivedDate: BoatnetDate
+    receivedBy: (Person | Vessel);
+    receivedDate: BoatnetDate;
 }
 
 /*
@@ -29,6 +29,9 @@ Recipients sending to Organization - need to noodle through it
 export const MessageAttachmentTypeName = 'message-attachment';
 export interface MessageAttachment extends Base {
     // Attachments - any record that has an ID can have an attachment
+    title?: string;
+    type?: string;
+    attachment?: object;
 }
 
 export const MessageTypeName = 'message';

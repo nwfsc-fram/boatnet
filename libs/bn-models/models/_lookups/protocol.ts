@@ -18,7 +18,7 @@ export interface Protocol extends Base {
 
   // TODO - Next Meeting
   // 1. How do define strata?
-  // 2. How do define comingled observations/structures?
+  // 2. How do def`ine comingled observations/structures?
   //      What am I doing on this age sample?
   //        maybe just need to define a given subsample
   // 3. How to capture a special project PI wanting standard data as well?
