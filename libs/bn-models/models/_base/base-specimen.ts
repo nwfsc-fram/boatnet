@@ -27,14 +27,14 @@ declare type TagLocation = string; // where the band ID was ...
 declare type CwtStatus = string; //
 export interface Tag {
   type: TagType;
-  subtype:  TagSubType;
+  subtype: TagSubType;
   code: string; // alphanumeric - cwtcode
-  location?: TagLocation; // 
+  location?: TagLocation;
   status?: CwtStatus; // Tag Read - Ok, Tag Lost, Head Not Processed, etc.
 }
 
 export interface SpecialProject {
-
+  tbd?: any;
 }
 
 export interface BaseSpecimen extends Base {
