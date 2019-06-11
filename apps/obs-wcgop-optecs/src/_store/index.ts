@@ -21,7 +21,7 @@ Vue.use(Vuex);
 // Preserves state between page refreshes.
 const vuexLocalStorage = new VuexPersist({
   key: 'obs-wcgop-optecs',
-  storage: window.localStorage
+  modules: ['appState', 'auth', 'pouchState', 'tallyState', 'pdfState']
 });
 
 const store: StoreOptions<RootState> = {
