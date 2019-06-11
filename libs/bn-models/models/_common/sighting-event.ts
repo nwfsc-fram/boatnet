@@ -24,7 +24,7 @@ interface GearPresentComment {
   comments?: string; // gear color etc
 }
 
-export declare const SightingEventTypeName = "sighting-event";
+export declare const SightingEventTypeName = 'sighting-event';
 
 export interface SightingEvent extends Base {
   species?: Species;

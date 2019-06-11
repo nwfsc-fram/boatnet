@@ -27,7 +27,7 @@ export interface BaseCatch extends Base {
         disposition=D
         children: [
           TaxonomyAlias - Canary Rockfish
-            DiscardReason #1            
+            DiscardReason #1
           TaxonomAlias - Canary Rockfish
             DiscardReason #2
           TaxonomyAlias - Dover sole
