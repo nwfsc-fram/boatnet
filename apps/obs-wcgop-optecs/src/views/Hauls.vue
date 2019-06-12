@@ -67,8 +67,6 @@ export default class Hauls extends Vue {
 
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
-  @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
 
   @Action('save', { namespace: 'appState' })
   private save: any;
@@ -200,7 +198,6 @@ export default class Hauls extends Vue {
       this.currentTrip.operationIDs.splice(removalIndex, 1);
     }
     this.getHauls();
-    this.setCurrentTrip(this.currentTrip);
     this.save(this.currentTrip);
     this.setCurrentHaul(undefined);
   }

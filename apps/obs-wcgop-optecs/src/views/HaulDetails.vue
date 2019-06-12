@@ -242,8 +242,6 @@ export default class Trips extends Vue {
 
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
-  @Action('setCurrentTrip', { namespace: 'appState' })
-  private setCurrentTrip: any;
 
   @Action('save', { namespace: 'appState' })
   private save: any;
@@ -336,7 +334,6 @@ export default class Trips extends Vue {
     } else if (this.currentHaul._id) {
       this.currentTrip.operationIDs = [this.currentHaul._id];
     }
-    this.setCurrentTrip(this.currentTrip);
     this.save(this.currentTrip);
   }
 
