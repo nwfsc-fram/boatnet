@@ -5,14 +5,15 @@ import { BaseCatch } from '../_base/base-catch';
 import { Measurement, BoatnetDate, CouchID, Basket } from '../_common/index';
 import { WcgopDiscardReason } from './wcgop-discard-reason';
 import { WcgopSpecimen } from './wcgop-specimen';
+import { CatchDisposition } from '../_lookups/catch-disposition';
+import { WeightMethod, Species } from '../_lookups';
 
 export const WcgopCatchTypeName = 'wcgop-catch';
 declare type RockfishHandlingCode = string; // TODO
 
 export interface WcgopCatch extends BaseCatch {
-  catchNum?: number; // Unique per Operation sequential
-  disposition?: string;
-  weightMethod?: string;
+  disposition?: CatchDisposition;
+  weightMethod?: WeightMethod;
   weight?: Measurement; // Could be species or higher level
   count?: number; // Could be at species or higher level
   sampleWeight?: Measurement;
@@ -24,8 +25,8 @@ export interface WcgopCatch extends BaseCatch {
   totalTally?: number;
   handling?: RockfishHandlingCode; // Rockfish Handling
   sightingEventIds?: CouchID[];
-  specimens?: WcgopSpecimen[];
 
+  specimens?: WcgopSpecimen[];
   children?: WcgopCatch[];
 
   legacy?: {

@@ -5,7 +5,7 @@ import {
   LocationEvent,
   LinealMeasurement
 } from '../_common/index';
-import { Media, Species, Protocol } from '../_lookups/index';
+import { Media, Species, Protocol, OtsTargetType } from '../_lookups/index';
 
 // TODO create lookups for these:
 declare type Sex = string;
@@ -21,6 +21,22 @@ export interface Maturity {
   description?: string; // might include identifying characteristcs
 } // TODO Species-specific tables for maturies
 
+declare type TagType = string; // CWT, Band, Branding, etc.
+declare type TagSubType = string; // CWT, Band, etc.
+declare type TagLocation = string; // where the band ID was ...
+declare type CwtStatus = string; //
+export interface Tag {
+  type: TagType;
+  subtype: TagSubType;
+  code: string; // alphanumeric - cwtcode
+  location?: TagLocation;
+  status?: CwtStatus; // Tag Read - Ok, Tag Lost, Head Not Processed, etc.
+}
+
+export interface SpecialProject {
+  tbd?: any;
+}
+
 export interface BaseSpecimen extends Base {
   sex?: Sex; // TODO Lookup
   length?: LinealMeasurement;
@@ -28,19 +44,16 @@ export interface BaseSpecimen extends Base {
   weight?: Measurement;
   viability?: Viability;
   lifeStage?: LifeStage;
-  population?: Population; // Probably for Trawl Survey
   visualMaturity?: Maturity;
-
   biostructures?: Biostructure[];
-  // TODO How do we handle special project PI?
+  tags: Tag[];
+  isAdiposePresent?: boolean; // Hatchery v. Wild
 
   numSpecimensInBag?: number; // TODO ?? We think this is a bag of specimens
-  location?: LocationEvent;
-  protocol?: Protocol; // Include sampling strategy (randomly selected, etc.)
-  // Canary - Sl100 AW25 OvTiFc
+  location?: LocationEvent; // where was the boat when the specimen was collected
 
-  specialProjects?: any[]; // TODO move to Protocol: arbitrary special project data
   frequency?: number; // = 1 if undefined (WCGOP only)
+  mediaData?: Media[];
 
-  mediaData: Media[];
+  specialProject?: SpecialProject[]; // Actual data collected
 }

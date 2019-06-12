@@ -6,7 +6,13 @@ import {
   SpecimenTag,
   Species,
   Person,
-  Confidence
+  Confidence,
+  Protocol,
+  InteractionOutcome,
+  InteractionType,
+  BodyLength,
+  SightingCondition,
+  Behavior
 } from '../_lookups';
 import { Deterrent } from '../_lookups/deterrent';
 import { BoatnetDate } from './boatnet-date';
@@ -15,24 +21,13 @@ import { Base } from '../_base/index';
 import { WcgopSpecimen } from '../wcgop';
 import { Specimen } from './specimen';
 
-declare type InteractionType = string; // TODO Lookup
-
-interface Interaction {
-  type?: InteractionType;
-  notes?: string;
-  isLethal?: boolean;
-} // TODO lookup type
-
-interface OutcomeType {
-  description?: string;
-  isLethal?: boolean;
-} // TODO lookup type
-
 declare type Weather = string; // TODO Lookup
 declare type VesselActivity = string; // TODO ASHOP Lookup: Fishing, Processing, etc
 
+export const InteractionEventTypeName = 'interaction-event';
+
 export interface InteractionEvent extends Base {
-  hauls?: CouchID[];
+  operations?: CouchID[];
   catchSpecies?: CouchID[]; // tied to Species Comp/ Specimen Record
   // TODO: Verify behavior of syntax for specimens:
   specimens?: WcgopSpecimen[] | Specimen[] | CouchID[];
@@ -57,18 +52,21 @@ export interface InteractionEvent extends Base {
   deterrents?: Deterrent[];
   areAnimalsInjured?: boolean; // limit interaction choices in UI
   areAnimalsDead?: boolean; // limit interaction choices in UI
+  animalBehavior: Behavior[];
   interactions?: InteractionType[]; // TODO important - review. Limit to single isLethal interaction
-  outcome?: OutcomeType; // Interaction uniquely defined by organism and outcome
+  outcome?: InteractionOutcome; // Interaction uniquely defined by organism and outcome
 
-  bodyLength?: Measurement; // lookup gives a range as text.  many notes i found gave more specific body size info
+  bodyLength?: BodyLength; // lookup gives a range as text.  many notes i found gave more specific body size info
   mediaTaken?: boolean;
-  mediaData: Media[];
+  mediaData?: Media[];
   weather?: Weather;
   vesselActivity?: VesselActivity;
 
+  protocols?: Protocol[]; // Include sampling strategy (randomly selected, etc.)
+
   legacy?: {
     waterTemp?: Measurement;
-    sightingCondition?: string;
+    sightingCondition?: SightingCondition;
     eventNumber?: number;
     birdLocation?: string;
     numBirds?: number;

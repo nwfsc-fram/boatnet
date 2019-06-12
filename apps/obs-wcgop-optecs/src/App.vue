@@ -23,6 +23,14 @@ export default class App extends Vue {
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
 
+  private mounted() {
+    document.addEventListener('click', () => {
+      if (document.activeElement && Object.keys(document.activeElement).length === 0) {
+        this.setKeyboard(false);
+      }
+    });
+  }
+
   get keyboardStatus() {
     if (this.appState.isKeyboardEnabled && this.keyboard.showKeyboard) {
       return true;

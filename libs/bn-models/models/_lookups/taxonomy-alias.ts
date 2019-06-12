@@ -12,7 +12,7 @@ declare type Condition = string; // Might want a different name, this is for dec
 
 export interface TaxonomyAlias extends Base {
   taxonomy: Taxonomy; // Use this instead of _id for clarity except for top level record
-  alias: string;
+  alias: string; // Rockfish, Canary
   aliasType: AliasType; // Lookup - Common Name, WCGOP Tally Short Code, etc.
   lifestage?: Lifestage;
   condition?: Condition;
