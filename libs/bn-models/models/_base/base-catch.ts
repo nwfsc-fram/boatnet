@@ -13,7 +13,8 @@ declare type CatchType = string; /// TODO Lookups - codend, pocket net, mix, sub
 export interface BaseCatch extends Base {
   // use createdDate for sequential ordering
   catchNum?: number; // Unique per Operation sequential
-  catchType?: CatchType; // Lookups - TaxonomyAlias, UnsortedCatch (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
+  // Lookups - TaxonomyAlias, UnsortedCatch (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
+  catchType?: CatchType;
   catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);
   baskets?: Basket[];
   protocols?: Protocol[]; // Include sampling strategy (randomly selected, etc.)
