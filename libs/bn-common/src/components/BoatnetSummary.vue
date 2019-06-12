@@ -72,6 +72,7 @@ export default class BoatnetSummary extends Vue {
   private showDeleteDialog = false;
 
   private showEnd() {
+    console.log('Show End Function Executing');
     if (this.currentScreen === 'Trip' || this.currentScreen === 'Haul') {
       return true;
     } else {
@@ -84,6 +85,8 @@ export default class BoatnetSummary extends Vue {
       return 'Hauls';
     } else if (this.currentScreen === 'Haul') {
       return 'Catch';
+    } else if (this.currentScreen === 'Species') {
+      return 'Wts & Cnts'
     }
   }
 
