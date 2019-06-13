@@ -882,7 +882,6 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
-import DebrieferTrip from './DebrieferTrip.vue'
 
 @Component
 export default class Debriefer extends Vue {
@@ -895,7 +894,6 @@ export default class Debriefer extends Vue {
   private WcgopCatchSpecies: WcgopCatch[] = [];
   private WcgopCatchBaskets: Basket[] = [];
   private WcgopCatchSpecimens: WcgopSpecimen[] = [];
-  private DebrieferTrip: any;
   private pagination = { rowsPerPage: 50 };
   private visibleTripColumns = [
     'key',
@@ -3053,7 +3051,7 @@ private catchSpecimensColumns = [
   }
 
   private created() {
-    this.DebrieferTrip.getTrips();
+    this.getTrips();
     
   }
 
