@@ -5,7 +5,7 @@ import { VesselType } from './vessel-type';
 import { BoatnetDate, Measurement, CouchID } from '../_common/index';
 import { Person, VesselCaptain } from './person';
 import { Media } from './media';
-import { Permit } from '../_misc/permit';
+import { Permit } from './permit';
 
 export const VesselTypeName = 'vessel';
 
@@ -18,10 +18,16 @@ interface SafetyMeasure extends Base {
   expirationDate?: BoatnetDate;
 }
 
+export interface VesselPortAssignment {
+  port?: Port;
+  startDate?: BoatnetDate;
+  endDate?: BoatnetDate;
+}
 export interface Vessel extends Base {
   vesselName?: string;
   vesselType?: VesselType;
-  port?: Port;
+  homePort?: Port;
+  tempPort?: VesselPortAssignment;
   coastGuardNumber?: string;
   stateRegulationNumber?: string;
   registeredLength?: Measurement;

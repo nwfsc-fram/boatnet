@@ -36,6 +36,15 @@ export interface MessageAttachment extends Base {
 
 export const MessageTypeName = 'message';
 export interface Message extends Base {
+    /*
+    Search for all comms by:
+    - vessel
+    - person (captain, observer, etc.)
+    - trip
+    - date range
+    - status
+    - etc.
+    */
 
     messageType: MessageType; //
     sender: CouchID; // of the Person record
@@ -44,7 +53,7 @@ export interface Message extends Base {
     priority: PriorityLevel;
     subject?: string;
     associatedRecords?: CouchID[]; // Any record with which to associate
-        // Trips, Deployments, Hauls, etc ...
+        // Trips, Deployments, Hauls, VesselSelectionResult, etc ...
     message: string;
     receipt?: Receipt[];
     status?: MessageStatus; // Sent, Unsent, Failed, Retried 1st
