@@ -24,81 +24,117 @@
           </boatnet-table>
         </template>
         <template v-slot:goToButtons>
-          <q-btn color="primary" icon="play_arrow" label="Go To Biospecimens"/>
+          <q-btn color="primary" icon="play_arrow" label="Go To Tallies"/>
+          <q-btn color="primary" icon="play_arrow" label="Go To Biospec"/>
         </template>
     </boatnet-summary>
 
         <q-dialog v-model="addSpeciesDialog" position="right">
-            <q-card style="width: 500px">
+            <q-card style="width: 600px; padding: 4px">
                 <q-card-section>
                   <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="addSpeciesDialog = false"></q-btn>
                   <div class="q-col-gutter-md row q-pa-md">
                     <div class="col" style="min-width: 250px; padding: 0">
                       <q-btn label="Frequent List" @click="frequentList = !frequentList" :color="frequentList ? 'primary': 'grey-5' " ></q-btn>
-                    </div>
-                    <div class="col" style="padding: 0 16px">
-                      <q-btn :label="disposition" @click="disposition === 'Discarded'? disposition = 'Retained' : disposition = 'Discarded'" :color="disposition === 'Retained' ? 'green': 'primary' "></q-btn>
-                    </div>
-                  </div>
-                  <div class="q-col-gutter-md row q-pa-md">
-                    <div class="col" style="min-width: 250px; padding: 0">
-                      <q-input v-model="filterText" label="Search Species" style="width: 100%">
+                                            <q-input v-model="filterText" label="Search Species" style="width: 100%">
                         <template v-if="filterText">
                           <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
                         </template>
                       </q-input>
-                      <!-- <q-select
-                      label="Species"
-                      :options="options"
-                      use-input
-                      :option-label="opt => opt.value.commonName"
-                      option-value="_id"
-                      fill-input
-                      hide-selected
-                      clearable
-                      input-debounce="50"
-                      @filter="filterFn"
-                      >
-                      </q-select> -->
-                      <q-scroll-area style="height: 515px">
+                      <q-scroll-area style="height: 475px">
                         <q-list bordered separator>
                           <q-item
                             v-for="(option, i) of filteredSpecies"
                             :key="i"
-                            dense
                             :active="selectedSpecies === option"
                             activeClass="itemSelected"
                             style="cursor:pointer"
+                            @click="setSelectedSpecies(option)"
+                            clickable
                             >
-                            <div @click="setSelectedSpecies(option)">
                               {{ option.value.commonName }}
-                            </div>
                           </q-item>
                         </q-list>
                       </q-scroll-area>
                     </div>
+                    <div class="col q-col-gutter-md" style="padding: 0 16px">
+                      <div>
+                        <div><b>Disposition</b></div>
+                        <q-btn :label="disposition" @click="disposition === 'Discarded'? disposition = 'Retained' : disposition = 'Discarded'" :color="disposition === 'Retained' ? 'green': 'primary' ">
+                        </q-btn>
+                      </div>
 
-                  <div class="col">
-                    <boatnet-button-toggle
+                      <!-- <boatnet-button-toggle
                       title="Weight Method"
                       :value.sync="weightMethod"
                       :options="wmOptions"
                       description="description"
+                      /> -->
+
+                      <div>
+                      <q-btn-dropdown
+                      color="primary"
+                      :label="getWMLabel"
+                      cover
+                      style="width: 100%"
+                      >
+                      <q-list>
+                        <q-item v-for="(option, i) of wmOptions" :key="i" clickable v-close-popup>
+                          <q-item-section>
+                            <q-item-label>
+                              {{ option.label }} - {{ option.value}}
+                            </q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
+                    </q-btn-dropdown>
+                  </div>
+                    <!-- <q-input label="Catch Weight"></q-input> -->
+                    <boatnet-keyboard-input
+
+                      label="Catch Weight"
+                      keyboardType="numeric"
+                      @save="saveChanges"
                       />
-                    <q-input label="Catch Weight"></q-input>
-                    <q-input label="Total # of fish"></q-input>
-                    <boatnet-button-toggle
+                    <!-- <q-input label="Total # of fish"></q-input> -->
+                    <boatnet-keyboard-input
+
+                      label="Total # of fish"
+                      keyboardType="numeric"
+                      @save="saveChanges"
+                      />
+
+                    <!-- <boatnet-button-toggle
                       title="Discard Reason"
-                      :value.sync="weightMethod"
+                      :value.sync="discardReason"
                       :options="wmOptions"
                       description="description"
-                      />
-                    <div style="margin-top: 50px; text-align: center">
-                      <q-btn color="primary" label="update"></q-btn>
+                      /> -->
+
+                    <div>
+                      <q-btn-dropdown
+                        color="primary"
+                        :label="getDRLabel"
+                        cover
+                        style="width: 100%"
+                        >
+                        <q-list>
+                          <q-item v-for="(option, i) of wmOptions" :key="i" clickable v-close-popup>
+                            <q-item-section>
+                              <q-item-label>
+                                {{ option.label }} - {{ option.value}}
+                              </q-item-label>
+                            </q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-btn-dropdown>
                     </div>
                   </div>
-
                 </div>
+
+                  <q-card-actions style="float: right">
+                      <q-btn color="primary" label="update"></q-btn>
+                  </q-card-actions>
                 </q-card-section>
             </q-card>
           </q-dialog>
@@ -131,7 +167,8 @@ export default class Catch extends Vue {
     private disposition = 'Retained';
     private speciesList = [];
     private options: any[] = [];
-    private weightMethod: any = 1;
+    private weightMethod: any = {label: "1", value: 'Weight method description' };
+    private discardReason: any = {label: "1", value: 'Weight method description' };
     private selectedSpecies = null;
     private filterText = '';
 
@@ -248,6 +285,16 @@ private addSpecies() {
   this.setCurrentCatch(wCatch);
   this.addCatch = true;
   this.addSpeciesDialog = true;
+}
+
+private get getWMLabel() {
+  let selection = "1"
+  return "Weight Method: " + selection;
+}
+
+private get getDRLabel() {
+  let selection = "1"
+  return "Discard Reason: " + selection;
 }
 
 

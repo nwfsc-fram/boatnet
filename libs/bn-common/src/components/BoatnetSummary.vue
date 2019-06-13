@@ -71,8 +71,7 @@ export default class BoatnetSummary extends Vue {
   private searchText = '';
   private showDeleteDialog = false;
 
-  private showEnd() {
-    console.log('Show End Function Executing');
+  private get showEnd() {
     if (this.currentScreen === 'Trip' || this.currentScreen === 'Haul') {
       return true;
     } else {

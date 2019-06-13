@@ -1,5 +1,5 @@
 import { Base } from '../_base/index';
-import { Person } from 'normalize-package-data';
+import { Person } from './person';
 import { TaxonomyAlias } from './taxonomy-alias';
 import { Measurement } from '../_common';
 
