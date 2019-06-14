@@ -664,11 +664,9 @@ import { convertToObject } from 'typescript';
 @Component
 export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
-
   @State('debriefer') private debriefer!: DebrieferState;
-  
+
   private WcgopTrips: WcgopTrip[] = [];
-  //private WcgopOperationTripDict: any = {};
   private WcgopOperations: WcgopOperation[] = [];
   private WcgopCatches: WcgopCatch[] = [];
   private WcgopCatchSpecies: WcgopCatch[] = [];
@@ -763,8 +761,6 @@ export default class Debriefer extends Vue {
   ];
 
   private tab = 'trips';
-  
-
   private operationColumns = [
     {
       name: 'tripKey',
@@ -2540,9 +2536,8 @@ private catchSpecimensColumns = [
 
       for (const row of operations.rows) {
         const operation = row.doc;
-console.log(operation.catches);
+        console.log(operation.catches);
         for (const catchRow of operation.catches) {
-          
           if (catchRow.children != null) {
             for (const catchSpeciesRow of catchRow.children) {
               const opCatch = Object.assign({}, row.doc);

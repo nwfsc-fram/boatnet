@@ -9,7 +9,7 @@ import { DebrieferState } from '@/_store/types/types';
 Vue.use(Vuex);
 
 export const state: DebrieferState = {
- WcgopOperationTripDict: {} 
+ WcgopOperationTripDict: {}
 };
 
 export const debriefer: Module<DebrieferState, RootState> = {

@@ -118,7 +118,6 @@ export default class DebrieferTrips extends Vue {
   @State('debriefer') private debriefer!: DebrieferState;
 
   private WcgopTrips: WcgopTrip[] = [];
-  //private WcgopOperationTripDict: any = {};
   private pagination = { rowsPerPage: 50 };
 
   private visibleTripColumns = [
