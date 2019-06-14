@@ -1,6 +1,6 @@
 export * from './beaufort';
 export * from './behavior';
-export * from './biospecimen-sample-method';.
+export * from './biospecimen-sample-method';
 export * from './biostructure-type';
 export * from './bird-band';
 export * from './body-length';

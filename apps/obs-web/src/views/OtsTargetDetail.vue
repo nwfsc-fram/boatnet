@@ -36,7 +36,7 @@
               {{ ots.activeOTSTarget.fishery }} :
               {{ ots.activeOTSTarget.targetType }} Target
               <span
-                v-if="ots.activeOTSTarget.targetType === 'Vessel'"
+                v-if="ots.activeOTSTarget.targetType === 'Vessel' && ots.activeOTSTarget.targetVessel"
               >: {{ ots.activeOTSTarget.targetVessel.vesselName }}  ( {{ ots.activeOTSTarget.targetVessel.coastGuardNumber ? ots.activeOTSTarget.targetVessel.coastGuardNumber : ots.activeOTSTarget.targetVessel.stateRegulationNumber }} )</span>
               <span
                 v-if="ots.activeOTSTarget.targetType === 'Port Group'"
@@ -49,14 +49,16 @@
           <q-item v-if="ots.activeOTSTarget.targetType === 'Vessel'">
             <q-item-section>
             <q-select
-            label="Target Vessel"
             v-model="ots.activeOTSTarget.targetVessel"
+            label="Target Vessel"
             :options="vessels"
             @filter="filterVessels"
-            :option-label="opt => opt.vesselName"
+            :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
             option-value="_id"
             stack-label
             use-input
+            fill-input
+            hide-selected
             dense
             >
             </q-select>
@@ -180,6 +182,7 @@
           dense
           row_key="_id"
           hide-bottom
+          v-if="this.ots.newTarget === 'False'"
         >
           <template v-slot:body="props">
             <q-tr :props="props">
@@ -419,7 +422,7 @@ export default class OtsTargetDetail extends Vue {
       } else if (this.ots.activeOTSTarget.targetType === 'Vessel') {
         return this.otsTargetHistory.filter( (target) => target.targetType === this.ots.activeOTSTarget.targetType && target.fishery === this.ots.activeOTSTarget.fishery && target.targetVessel.vesselName === this.ots.activeOTSTarget.targetVessel.vesselName);
       } else {
-        return 'FISH';
+        return [];
       }
 
     }
@@ -429,7 +432,7 @@ export default class OtsTargetDetail extends Vue {
     }
 
     private formatDate(rawdate: string) {
-        return moment(rawdate).format('MMM Do, YYYY');
+        return moment(rawdate).format('MMM DD, YYYY');
     }
 
     private getTripsTaken(vessel: any) {
@@ -497,6 +500,9 @@ export default class OtsTargetDetail extends Vue {
               this.ots.activeOTSTarget.status = 'Active';
               this.ots.activeOTSTarget.createdBy = authService.getCurrentUser()!.username;
               this.ots.activeOTSTarget.createdDate = moment().format();
+              if (this.ots.newTarget === true) {
+                this.ots.newTarget = false;
+              }
 
               masterDB.post(this.ots.activeOTSTarget).then(
                 () => {
@@ -588,9 +594,15 @@ export default class OtsTargetDetail extends Vue {
       //         this.errorAlert(err);
       //       }
       //     });
+        if (val.length > 0) {
           update(
-            this.vessels = this.emEfpRoster.map( (member) => member.vessel)
+            this.vessels = this.emEfpRoster.map((member) => member.vessel ).filter( (vessel: any) => vessel.vesselName!.toLowerCase().includes(val.toLowerCase()))
           );
+          } else {
+          update(
+            this.vessels = this.emEfpRoster.map((member) => member.vessel )
+          );
+          }
         }
 
     private created() {

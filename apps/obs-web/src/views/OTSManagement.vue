@@ -334,7 +334,7 @@ export default class OtsMangement extends Vue {
     }
 
     private formatDate(date: string) {
-        return moment(date).format('MMM Do, YYYY');
+        return moment(date).format('MMM DD, YYYY');
     }
 
     private getStatus(row: any) {
