@@ -1,5 +1,5 @@
-import { Base } from "../_base";
-import { Port } from "./port";
+import { Base } from '../_base';
+import { Port } from './port';
 
 export const PortGroupTypeName = 'port-group';
 

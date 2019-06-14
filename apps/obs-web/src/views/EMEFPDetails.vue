@@ -11,9 +11,19 @@
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <!-- <div v-if="this.$route.params.id === 'new'"> -->
             <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
-            <q-select v-model="emefp.activeEmefp.vessel" label="Vessel" :options="options" @filter="filterFn" use-input stack-label
-            :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-            option-value="_id"></q-select>
+            <q-select
+              v-model="emefp.activeEmefp.vessel"
+              label="Vessel"
+              :options="options"
+              @filter="filterFn"
+              use-input
+              fill-input
+              hide-selected
+              stack-label
+              :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+              option-value="_id"
+              >
+            </q-select>
           <!-- </div> -->
           <!-- <div v-else> -->
             <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>

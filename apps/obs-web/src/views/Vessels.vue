@@ -25,6 +25,7 @@
             :filter="vessel.filterText"
             @request="onRequest"
             binary-state-sort
+            hide-bottom
             >
 
             <template v-slot:top="props">

@@ -18,7 +18,7 @@ declare type PermitType = string; // NOAA Fisheres, WDFW, ODFW, CDFW
     - Logic
         -- When vessel takes trip with observer during selection
             period, need to know if they've had a landing
-        -- If they have a landing during that period, then it 
+        -- If they have a landing during that period, then it
             won't rollover
         -- Otherwise rollover it over to what ???
 
@@ -47,7 +47,7 @@ export interface Permit extends Base {
     permitNumber: string; // ODFW = Number
 
     // TODO what are the certificateStart/End dates?
-    // TODO what arethe permitStartDate / permitEndDate? 
+    // TODO what arethe permitStartDate / permitEndDate?
 
     certificateStartDate: BoatnetDate; // What do these dates represent?
     certificateEndDate: BoatnetDate; // What do these dates represent?
