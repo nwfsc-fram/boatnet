@@ -894,7 +894,6 @@ export default class Debriefer extends Vue {
   private WcgopCatchSpecies: WcgopCatch[] = [];
   private WcgopCatchBaskets: Basket[] = [];
   private WcgopCatchSpecimens: WcgopSpecimen[] = [];
-
   private pagination = { rowsPerPage: 50 };
   private visibleTripColumns = [
     'key',
@@ -3053,6 +3052,7 @@ private catchSpecimensColumns = [
 
   private created() {
     this.getTrips();
+    
   }
 
   private formatDate(inputDate: any) {
