@@ -20,9 +20,9 @@
             left-label
             />
             <q-toggle
-            v-model="showPrevious"
-            label="Show Previous"
-            @click="showPrevious = !showPrevious"
+            v-model="showPriorYear"
+            label="Show Prior Year Observed %"
+            @click="showPriorYear = !showPriorYear"
             left-label
             />
         </div>
@@ -129,7 +129,7 @@ export default class OtsMangement extends Vue {
     @Action('error', { namespace: 'alert' }) private error: any;
 
     private showInactive: boolean = false;
-    private showPrevious: boolean = false;
+    private showPriorYear: boolean = false;
 
     private emEfpTrips: WcgopTrip[] = [];
     private emEfpRoster: EmEfp[] = [];
@@ -245,6 +245,9 @@ export default class OtsMangement extends Vue {
             }
 
             coveredPercent = Math.floor((selectedTrips / tripsTaken) * 100);
+            if (!coveredPercent) {
+                coveredPercent = 0;
+            }
 
             return coveredPercent;
         } else {
@@ -257,9 +260,24 @@ export default class OtsMangement extends Vue {
       let count = 0;
       for (const trip of this.emEfpTrips) {
         const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
-        if ( tripVesselID === vesselID) {
-          count++;
+        if (this.showPriorYear) {
+            if ( tripVesselID === vesselID &&
+                (
+                (moment(trip.departureDate).years() || moment(trip.returnDate).years()) === moment().subtract(1, 'years').years()
+                )
+            ) {
+                count++;
+            }
+        } else {
+            if ( tripVesselID === vesselID &&
+                (
+                (moment(trip.departureDate).years() || moment(trip.returnDate).years()) === moment().years()
+                )
+            ) {
+                count++;
+            }
         }
+
       }
       return count;
     }
@@ -269,8 +287,22 @@ export default class OtsMangement extends Vue {
       let count = 0;
       for (const trip of this.emEfpTrips) {
         const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
-        if ( tripVesselID === vesselID && trip.isSelected) {
-          count++;
+        if (this.showPriorYear) {
+            if ( tripVesselID === vesselID && trip.isSelected &&
+                (
+                    (moment(trip.departureDate).years() || moment(trip.returnDate).years()) === moment().subtract(1, 'years').years()
+                )
+            ) {
+              count++;
+            }
+        } else {
+            if ( tripVesselID === vesselID && trip.isSelected &&
+                (
+                    (moment(trip.departureDate).years() || moment(trip.returnDate).years()) === moment().years()
+                )
+            ) {
+              count++;
+            }
         }
       }
       return count;
