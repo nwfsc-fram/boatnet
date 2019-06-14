@@ -25,29 +25,31 @@
         <q-input v-model="vessel.activeVessel.notes" label="Notes"></q-input>
 
         <q-select
-        v-model="vessel.activeVessel.port"
-        label="Port"
-        :options="ports"
-        :option-label="opt => opt.name"
-        option-value="_id"
-        @filter="portsFilterFn"
-        stack-label
-        use-input
-        >
+            v-model="vessel.activeVessel.port"
+            label="Port"
+            :options="ports"
+            :option-label="opt => opt.name"
+            option-value="_id"
+            @filter="portsFilterFn"
+            stack-label
+            use-input
+            fill-input
+            hide-selected
+            >
         </q-select>
 
         <q-select
-        v-model="vessel.activeVessel.captains"
-        label="Vessel Captains"
-        :options="captains"
-        :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')' "
-        option-value="_id"
-        @filter="captainsFilterFn"
-        stack-label
-        use-input
-        multiple
-        use-chips
-        >
+            v-model="vessel.activeVessel.captains"
+            label="Vessel Captains"
+            :options="captains"
+            :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')' "
+            option-value="_id"
+            @filter="captainsFilterFn"
+            stack-label
+            use-input
+            multiple
+            use-chips
+            >
         <template v-slot:selected-item="scope">
             <q-chip
                 removable

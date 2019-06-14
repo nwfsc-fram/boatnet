@@ -1,7 +1,7 @@
-import { Base } from "../_base";
-import { Fishery, Vessel, PortGroup, Permit } from "../_lookups";
-import { BoatnetDate } from "./boatnet-date";
-import { CouchID } from "./couch-id";
+import { Base } from '../_base';
+import { Fishery, Vessel, PortGroup, Permit } from '../_lookups';
+import { BoatnetDate } from './boatnet-date';
+import { CouchID } from './couch-id';
 
 declare type RolloverStatus = string; // TODO Lookup
     // Options include:  Vessel Covered, Permit Rollover, Likely not to fish
@@ -12,13 +12,13 @@ export interface VesselSelectionItem {
 
     // May store the CouchID or the actual Vessel or Permit record in here
     item: CouchID; // Vessel | Permit; // West Coast Open Access + IPHC use Vessel, otherwise Permit
-        // We need the permit contact info to let them know that 
+        // We need the permit contact info to let them know that
         // congratulations, you've been selected
         // Name, Phone, Address, City, State, Zip Code
 
-    rolloverStatus?: RolloverStatus; // 
+    rolloverStatus?: RolloverStatus; //
     isSelected?: boolean;
-} 
+}
 
 declare type LetterEventType = string; // TODO Lookup
 
@@ -34,7 +34,7 @@ export interface VesselSelectionResult extends Base {
     startDate?: BoatnetDate; // Month + Year only
     endDate?: BoatnetDate; // Month + Year only
     selectionItems?: VesselSelectionItem[]; // Vessel or Permit
-    // CA Nearshore - they can have a shallow and deep permit, only one of 
+    // CA Nearshore - they can have a shallow and deep permit, only one of
     //    which should be selected in a given year
 
     // otherCoveredPermits?: Permit[];
@@ -44,7 +44,7 @@ export interface VesselSelectionResult extends Base {
 
     // Permit tracking - from the time a vessel is selected (in Nov),
     // a permit may have moved to a new vessel before it's selected
-    // period.  We need to keep track of which vessel/owner has the permit    
+    // period.  We need to keep track of which vessel/owner has the permit
 
     // portGroup assigned where majority of vessel landings occurred
     // from the previous two years
@@ -61,5 +61,5 @@ export interface VesselSelectionResult extends Base {
     legacy: {
         cycleNumber: number;
         periodNumber: number;
-    }
+    };
 }
