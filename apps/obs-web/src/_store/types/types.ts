@@ -11,6 +11,10 @@ export interface AlertState {
   message: string | null;
 }
 
+export interface DebrieferState {
+  WcgopOperationTripDict: any;
+}
+
 export interface TripState {
   activeTrip: WcgopTrip | null;
   trips: WcgopTrip[];
