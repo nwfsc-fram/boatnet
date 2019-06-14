@@ -7,6 +7,7 @@ import { alert } from './alert.module';
 import { trip } from './trip.module';
 import { permit } from './permit.module';
 import { user } from './user.module';
+import { debriefer } from './debriefer.module';
 import { vessel } from './vessel.module';
 import { general } from './general.module';
 import { emefp } from './emefp.module';
@@ -50,7 +51,8 @@ const store: StoreOptions<RootState> = {
     oa,
     obact,
     pouchState,
-    appState
+    appState,
+    debriefer
   },
   plugins: [vuexLocalStorage.plugin]
 };

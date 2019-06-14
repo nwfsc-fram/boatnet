@@ -21,6 +21,7 @@ import {
 } from 'quasar';
 
 import UserDetails from './views/UserDetails.vue';
+import DebrieferTrips from './views/DebrieferTrips.vue';
 
 // Vue.use(VueResource);
 
@@ -42,6 +43,7 @@ Vue.use(Quasar, {
 });
 
 Vue.component('appUserDetails', UserDetails);
+Vue.component('appDebrieferTrips', DebrieferTrips);
 Vue.config.productionTip = false;
 
 new Vue({
