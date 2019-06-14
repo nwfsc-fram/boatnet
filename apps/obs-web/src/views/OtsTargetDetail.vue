@@ -162,12 +162,12 @@
             <q-tr :props="props">
               <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
               <q-td key="coastGuardNumber" :props="props">{{ props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber }}</q-td>
-              <!-- <q-td key="vesselTrips" :props="props">{{ getTripsTaken(props.row.vessel) }}</q-td>
-              <q-td key="selectedTrips" :props="props">{{ getSelectedTrips(props.row.vessel) }}</q-td>
-              <q-td key="coveredPercent" :props="props">{{ getCoveredPercent(props.row.vessel) }}%</q-td> -->
               <q-td key="vesselTrips" :props="props">{{ props.row.tripsTaken }}</q-td>
               <q-td key="selectedTrips" :props="props">{{ props.row.selectedTrips }}</q-td>
-              <q-td key="coveredPercent" :props="props">{{ props.row.coveredPercent || '' }}</q-td>
+              <q-td key="coveredYTD" :props="props">{{ props.row.coveredYTD || 0 }}</q-td>
+              <q-td key="vesselTripsLastYear" :props="props">{{ props.row.tripsTakenLastYear || 0 }}</q-td>
+              <q-td key="selectedTripsLastYear" :props="props">{{ props.row.selectedTripsLastYear || 0 }}</q-td>
+              <q-td key="coveredLastYear" :props="props">{{ props.row.coveredLastYear || 0 }}</q-td>
             </q-tr>
           </template>
         </q-table>
@@ -267,7 +267,10 @@ export default class OtsTargetDetail extends Vue {
     { name: 'coastGuardNumber', label: 'Vessel Id', field: 'coastGuardNumber', required: true, align: 'left', sortable: true },
     { name: 'vesselTrips', label: 'Trips Taken', field: 'vesselTrips', required: true, align: 'left', sortable: true },
     { name: 'selectedTrips', label: 'Selected Trips', field: 'selectedTrips', required: true, align: 'left', sortable: true },
-    { name: 'coveredPercent', label: 'Covered (%)', field: 'coveredPercent', required: true, align: 'left', sortable: true },
+    { name: 'coveredYTD', label: 'Covered YTD (%)', field: 'coveredYTD', required: true, align: 'left', sortable: true },
+    { name: 'vesselTripsLastYear', label: 'Trips Taken Last Year', field: 'vesselTripsLastYear', required: true, align: 'left', sortable: true },
+    { name: 'selectedTripsLastYear', label: 'Selected Trips Last Year', field: 'selectedTripsLastYear', required: true, align: 'left', sortable: true },
+    { name: 'coveredLastYear', label: 'Covered Last Year (%)', field: 'coveredLastYear', required: true, align: 'left', sortable: true },
   ];
 
   private otsTargetHistory: any[] = [];
@@ -384,9 +387,12 @@ export default class OtsTargetDetail extends Vue {
           }
         }
         for (const vessel of affectedVessels) {
-          vessel.tripsTaken = this.getTripsTaken(vessel);
-          vessel.selectedTrips = this.getSelectedTrips(vessel);
-          vessel.coveredPercent = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+          vessel.tripsTaken = this.getTripsTaken(vessel, moment().year());
+          vessel.selectedTrips = this.getSelectedTrips(vessel, moment().year());
+          vessel.tripsTakenLastYear = this.getTripsTaken(vessel, moment().subtract(1, 'years').year());
+          vessel.selectedTripsLastYear = this.getSelectedTrips(vessel, moment().subtract(1, 'years').year());
+          vessel.coveredYTD = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+          vessel.coveredLastYear = Math.floor((vessel.selectedTripsLastYear / vessel.tripsTakenLastYear) * 100);
         }
         return affectedVessels;
       }
@@ -405,9 +411,12 @@ export default class OtsTargetDetail extends Vue {
           }
         }
         for (const vessel of affectedVessels) {
-          vessel.tripsTaken = this.getTripsTaken(vessel);
-          vessel.selectedTrips = this.getSelectedTrips(vessel);
-          vessel.coveredPercent = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+          vessel.tripsTaken = this.getTripsTaken(vessel, moment().year());
+          vessel.selectedTrips = this.getSelectedTrips(vessel, moment().year());
+          vessel.tripsTakenLastYear = this.getTripsTaken(vessel, moment().subtract(1, 'years').year());
+          vessel.selectedTripsLastYear = this.getSelectedTrips(vessel, moment().subtract(1, 'years').year());
+          vessel.coveredYTD = Math.floor((vessel.selectedTrips / vessel.tripsTaken) * 100);
+          vessel.coveredLastYear = Math.floor((vessel.selectedTripsLastYear / vessel.tripsTakenLastYear) * 100);
         }
         return affectedVessels;
       } else {
@@ -435,34 +444,34 @@ export default class OtsTargetDetail extends Vue {
         return moment(rawdate).format('MMM DD, YYYY');
     }
 
-    private getTripsTaken(vessel: any) {
+    private getTripsTaken(vessel: any, year: any) {
       const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
       let count = 0;
       for (const trip of this.emEfpTrips) {
         const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
-        if ( tripVesselID === vesselID) {
+        if ( tripVesselID === vesselID && ((moment(trip.departureDate).years() || moment(trip.returnDate).years()) === year) ) {
           count++;
         }
       }
       return count;
     }
 
-    private getSelectedTrips(vessel: any) {
+    private getSelectedTrips(vessel: any, year: any) {
       const vesselID = vessel.coastGuardNumber ? vessel.coastGuardNumber : vessel.stateRegulationNumber;
       let count = 0;
       for (const trip of this.emEfpTrips) {
         const tripVesselID = trip.vessel!.coastGuardNumber ? trip.vessel!.coastGuardNumber : trip.vessel!.stateRegulationNumber;
-        if ( tripVesselID === vesselID && trip.isSelected) {
+        if ( tripVesselID === vesselID && trip.isSelected && ((moment(trip.departureDate).years() || moment(trip.returnDate).years()) === year) ) {
           count++;
         }
       }
       return count;
     }
 
-    private getCoveredPercent(vessel: any) {
-      const coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
-      return coveredPercent ? coveredPercent : 0;
-    }
+    // private getCoveredPercent(vessel: any) {
+    //   const coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
+    //   return coveredPercent ? coveredPercent : 0;
+    // }
 
 
     private async deactivateTarget() {
