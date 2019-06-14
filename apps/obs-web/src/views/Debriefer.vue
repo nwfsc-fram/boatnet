@@ -2658,14 +2658,5 @@ console.log(operation.catches);
     return '';
   }
 
-  private addAll() {
-    this.visibleTripColumns = this.tripColumns.map(
-      (tripColumns) => tripColumns.name
-    );
-  }
-
-  private removeAll() {
-    this.visibleTripColumns = [];
-  }
 }
 </script>
