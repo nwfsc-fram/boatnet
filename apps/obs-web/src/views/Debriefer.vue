@@ -3052,7 +3052,6 @@ private catchSpecimensColumns = [
 
   private created() {
     this.getTrips();
-    
   }
 
   private formatDate(inputDate: any) {
