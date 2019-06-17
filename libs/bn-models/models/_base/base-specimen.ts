@@ -3,7 +3,8 @@ import {
   Measurement,
   Biostructure,
   LocationEvent,
-  LinealMeasurement
+  LinealMeasurement,
+  CouchID
 } from '../_common/index';
 import { Media, Species, Protocol, OtsTargetType } from '../_lookups/index';
 
@@ -45,9 +46,10 @@ export interface BaseSpecimen extends Base {
   viability?: Viability;
   lifeStage?: LifeStage;
   visualMaturity?: Maturity;
+  isAdiposePresent?: boolean; // Hatchery v. Wild
+
   biostructures?: Biostructure[];
   tags: Tag[];
-  isAdiposePresent?: boolean; // Hatchery v. Wild
 
   numSpecimensInBag?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent; // where was the boat when the specimen was collected
@@ -55,5 +57,7 @@ export interface BaseSpecimen extends Base {
   frequency?: number; // = 1 if undefined (WCGOP only)
   mediaData?: Media[];
 
+  programYearProtocol?: CouchID; // ProgramYearProtocol
+  protocolIndex?: number; // ProgramYearProtocol.protocols array index
   specialProject?: SpecialProject[]; // Actual data collected
 }
