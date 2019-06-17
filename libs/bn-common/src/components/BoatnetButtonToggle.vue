@@ -3,7 +3,7 @@
     <div>
       <b>{{title}}</b>
     </div>
-      <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="options" />
+      <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="options"/>
     <div>{{description}}</div>
   </div>
 </template>

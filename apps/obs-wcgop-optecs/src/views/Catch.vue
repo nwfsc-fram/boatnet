@@ -16,10 +16,10 @@
             <template v-slot:default="rowVals">
               <q-td key="disposition">{{rowVals.row.dispositon}}</q-td>
               <q-td key="weightMethod">{{rowVals.row.weightMethod.description ? rowVals.weightMethod.description : ''}}</q-td>
+              <q-td key="discardReason">{{ rowVals.row.discardReason }}</q-td>
               <q-td key="name">{{ rowVals.row.name }}</q-td>
               <q-td key="weight">{{ rowVals.row.weight }}</q-td>
               <q-td key="count">{{ rowVals.row.count }}</q-td>
-              <q-td key="discardReason">{{ rowVals.row.discardReason }}</q-td>
             </template>
           </boatnet-table>
         </template>
@@ -34,29 +34,7 @@
                 <q-card-section>
                   <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="addSpeciesDialog = false"></q-btn>
                   <div class="q-col-gutter-md row q-pa-md">
-                    <div class="col" style="min-width: 250px; padding: 0">
-                      <q-btn label="Frequent List" @click="frequentList = !frequentList" :color="frequentList ? 'primary': 'grey-5' " ></q-btn>
-                                            <q-input v-model="filterText" label="Search Species" style="width: 100%">
-                        <template v-if="filterText">
-                          <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
-                        </template>
-                      </q-input>
-                      <q-scroll-area style="height: 475px">
-                        <q-list bordered separator>
-                          <q-item
-                            v-for="(option, i) of filteredSpecies"
-                            :key="i"
-                            :active="selectedSpecies === option"
-                            activeClass="itemSelected"
-                            style="cursor:pointer"
-                            @click="setSelectedSpecies(option)"
-                            clickable
-                            >
-                              {{ option.value.commonName }}
-                          </q-item>
-                        </q-list>
-                      </q-scroll-area>
-                    </div>
+
                     <div class="col q-col-gutter-md" style="padding: 0 16px">
                       <div>
                         <div><b>Disposition</b></div>
@@ -64,12 +42,13 @@
                         </q-btn>
                       </div>
 
-                      <!-- <boatnet-button-toggle
-                      title="Weight Method"
-                      :value.sync="weightMethod"
-                      :options="wmOptions"
-                      description="description"
-                      /> -->
+                      <div>
+                        <boatnet-button-toggle
+                        title="Weight Method"
+                        :value.sync="weightMethod"
+                        :options="wmOptions"
+                        />
+                      </div>
 
                       <div>
                       <q-btn-dropdown
@@ -104,12 +83,12 @@
                       @save="saveChanges"
                       />
 
-                    <!-- <boatnet-button-toggle
+                    <boatnet-button-toggle
                       title="Discard Reason"
                       :value.sync="discardReason"
                       :options="wmOptions"
                       description="description"
-                      /> -->
+                      />
 
                     <div>
                       <q-btn-dropdown
@@ -130,6 +109,29 @@
                       </q-btn-dropdown>
                     </div>
                   </div>
+                  <div class="col" style="min-width: 250px; padding: 0">
+                      <q-btn label="Frequent List" @click="frequentList = !frequentList" :color="frequentList ? 'primary': 'grey-5' " ></q-btn>
+                                            <q-input v-model="filterText" label="Search Species" style="width: 100%">
+                        <template v-if="filterText">
+                          <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
+                        </template>
+                      </q-input>
+                      <q-scroll-area style="height: 475px">
+                        <q-list bordered separator>
+                          <q-item
+                            v-for="(option, i) of filteredSpecies"
+                            :key="i"
+                            :active="selectedSpecies === option"
+                            activeClass="itemSelected"
+                            style="cursor:pointer"
+                            @click="setSelectedSpecies(option)"
+                            clickable
+                            >
+                              {{ option.value.commonName }}
+                          </q-item>
+                        </q-list>
+                      </q-scroll-area>
+                    </div>
                 </div>
 
                   <q-card-actions style="float: right">
@@ -213,6 +215,12 @@ export default class Catch extends Vue {
             sortable: true
             },
             {
+            name: 'discardReason',
+            align: 'center',
+            label: 'Discard Reason', // TODO: this needs logic to get first and last
+            field: 'discardReason'
+            },
+            {
             name: 'name',
             align: 'center',
             label: 'Name',
@@ -232,12 +240,6 @@ export default class Catch extends Vue {
             label: 'Count',
             field: 'count',
             sortable: true
-            },
-            {
-            name: 'discardReason',
-            align: 'center',
-            label: 'Discard Reason', // TODO: this needs logic to get first and last
-            field: 'discardReason'
             }
         ]
     };
