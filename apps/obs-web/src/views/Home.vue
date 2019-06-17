@@ -70,54 +70,68 @@ export default class Home extends Vue {
         }
     }
 
-  private getPermits() {
+  private async getPermits() {
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+        const permits = await masterDB.viewWithDocs<any>(
+            'sethtest',
+            'all_permits',
+            );
+        console.log(permits);
+        for (const row of permits.rows) {
+            const permit = row.doc;
+            this.permit.permits.push(permit);
+        }
 
-    axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500' )
-        .then( (response) => {
-            this.permit.permits = [];
-            for (const item of response.data.items) {
-              const permit: Permit = {
-                type: 'permit',
-                permitNumber: item.permit_number,
-                certificateStartDate: item.certificate_start_date,
-                permitType: 'NOAA Fisheries',
-                certificateEndDate: item.certificate_end_date,
-                owner: {
-                  firstName: item.permit_owner,
-                  addressLine1: item.permit_owner_address,
-                  city: item.permit_owner_city,
-                  state: item.permit_owner_state,
-                  zipCode: item.permit_owner_zip
-                },
-                vessel: {
-                  vesselName: item.vessel_name,
-                  registeredLength: {value: item.vessel_length, units: 'feet'},
-                  coastGuardNumber: item.vessel_registration_number,
-                },
-                isTrawlGear: item.trawl_gear === 'Yes' ? true : false,
-                isLonglineGear: item.longline_gear === 'Yes' ? true : false,
-                isTrapPotGear: item.trap_pot_gear === 'Yes' ? true : false,
-                isSmallFleet: item.small_fleet === 'Yes' ? true : false,
-                endorsedLength: item.endorsed_length,
-                isSableFishEndorsed: item.sablefish_endorsement === 'Yes' ? true : false,
-                sableFishTier: item.sablefish_tier ? item.sablefish_tier : null,
-                isCpEndorsed: item.cp_endorsement === 'Yes' ? true : false,
-                isMsEndorsed: item.ms_endorsement === 'Yes' ? true : false,
-                isMothershipCatcherVessel: item.mothership_catcher_vessel === 'Yes' ? true : false,
-                status: item.status,
-                goid: item.goid,
-                ghid: item.ghid,
-                isOwnerOnBoardExempt: item.owner_on_board_exempt === 'Yes' ? true : false,
-                whitingAssignment: item.whiting_assignment ? item.whiting_assignment : null,
-                whitingPercent: item.whiting_assignment ? item.whiting_assignment : null
-              };
-              this.permit.permits.push(permit);
-            }
-        })
-        .catch( (error) => {
-          this.errorAlert(error);
-          this.errorAlert(error.response);
-        });
+        } catch (err) {
+            this.errorAlert(err);
+        }
+    // axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500' )
+    //     .then( (response) => {
+    //         this.permit.permits = [];
+    //         for (const item of response.data.items) {
+    //           const permit: Permit = {
+    //             type: 'permit',
+    //             permitNumber: item.permit_number,
+    //             certificateStartDate: item.certificate_start_date,
+    //             permitType: 'NOAA Fisheries',
+    //             certificateEndDate: item.certificate_end_date,
+    //             owner: {
+    //               firstName: item.permit_owner,
+    //               addressLine1: item.permit_owner_address,
+    //               city: item.permit_owner_city,
+    //               state: item.permit_owner_state,
+    //               zipCode: item.permit_owner_zip
+    //             },
+    //             vessel: {
+    //               vesselName: item.vessel_name,
+    //               registeredLength: {value: item.vessel_length, units: 'feet'},
+    //               coastGuardNumber: item.vessel_registration_number,
+    //             },
+    //             isTrawlGear: item.trawl_gear === 'Yes' ? true : false,
+    //             isLonglineGear: item.longline_gear === 'Yes' ? true : false,
+    //             isTrapPotGear: item.trap_pot_gear === 'Yes' ? true : false,
+    //             isSmallFleet: item.small_fleet === 'Yes' ? true : false,
+    //             endorsedLength: item.endorsed_length,
+    //             isSableFishEndorsed: item.sablefish_endorsement === 'Yes' ? true : false,
+    //             sableFishTier: item.sablefish_tier ? item.sablefish_tier : null,
+    //             isCpEndorsed: item.cp_endorsement === 'Yes' ? true : false,
+    //             isMsEndorsed: item.ms_endorsement === 'Yes' ? true : false,
+    //             isMothershipCatcherVessel: item.mothership_catcher_vessel === 'Yes' ? true : false,
+    //             status: item.status,
+    //             goid: item.goid,
+    //             ghid: item.ghid,
+    //             isOwnerOnBoardExempt: item.owner_on_board_exempt === 'Yes' ? true : false,
+    //             whitingAssignment: item.whiting_assignment ? item.whiting_assignment : null,
+    //             whitingPercent: item.whiting_assignment ? item.whiting_assignment : null
+    //           };
+    //           this.permit.permits.push(permit);
+    //         }
+    //     })
+    //     .catch( (error) => {
+    //       this.errorAlert(error);
+    //       this.errorAlert(error.response);
+    //     });
   }
 
   private created() {

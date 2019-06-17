@@ -10,13 +10,11 @@ import Permits from './views/Permits.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OTSManagement from './views/OTSManagement.vue';
-import OTSDashboard from './views/OTSDashboard.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import UserDetails from './views/UserDetails.vue';
 import UserConfig from './views/UserConfig.vue';
 import LogBookCapture from './views/LogBookCapture.vue';
 import Login from './views/Login.vue';
-import EMEFPManagementResponsive from './views/EMEFPManagement-responsive.vue';
 import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
@@ -76,7 +74,6 @@ const router = new Router({
         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
         { path: 'ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail },
         { path: 'ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail },
-        { path: '/ots-dashboard', name: 'OTS Dashboard', component: OTSDashboard },
         { path: 'user-config', name: 'User Config', component: UserConfig },
         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
         { path: '/users/:id', name: 'User Details', component: UserDetails},
