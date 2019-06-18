@@ -1,5 +1,17 @@
 <template>
     <q-page padding>
+
+      <!-- <q-tree
+      :nodes="catches"
+      node-key="label"
+      :expanded-sync="expanded"
+      default-expand-all
+      >
+      <template v-slot="prop">
+        {{ prop }}
+      </template>
+      </q-tree> -->
+
       <boatnet-summary
         currentScreen="Species"
         :current="currentCatch"
@@ -8,18 +20,27 @@
         >
         <template v-slot:table>
           <boatnet-table
-            :data="wcgopCatchData"
+            :data="getCatches"
             :settings="wcgopCatchSettings"
             @select="handleSelectCatch"
             @goTo="handleGoToWtCnt"
+            :pagination="pagination"
             >
-            <template v-slot:default="rowVals">
-              <q-td key="disposition">{{rowVals.row.dispositon}}</q-td>
-              <q-td key="weightMethod">{{rowVals.row.weightMethod.description ? rowVals.weightMethod.description : ''}}</q-td>
-              <q-td key="discardReason">{{ rowVals.row.discardReason }}</q-td>
-              <q-td key="name">{{ rowVals.row.name }}</q-td>
-              <q-td key="weight">{{ rowVals.row.weight }}</q-td>
-              <q-td key="count">{{ rowVals.row.count }}</q-td>
+            <template v-slot:default="rowVals" @click="setCurrentCatch(rowVals.row)">
+
+              <q-td style="width: 20px;">
+                <q-icon v-if="expanded.indexOf(rowVals.row.name) === -1 && rowVals.row.children.length > 0" name="chevron_right" style="font-size: 26px;" @click="expand(rowVals.row)"></q-icon>
+                <q-icon v-if="expanded.indexOf(rowVals.row.name) !== -1 && rowVals.row.children.length > 0" name="expand_more" style="font-size: 26px;" @click="collapse(rowVals.row)"></q-icon>
+              </q-td>
+              <q-td key="disposition" style="width: 120px">{{rowVals.row.dispositon === 'retain' ? 'R' : rowVals.row.disposition === 'discard'? "D" : ''}}</q-td>
+              <q-td key="weightMethod" style="width: 120px">{{rowVals.row.weightMethod ? rowVals.row.weightMethod : ''}}</q-td>
+              <q-td key="discardReason" style="width: 120px">{{ rowVals.row.discardReason ? rowVals.row.discardReason: '' }}</q-td>
+              <q-td key="name">
+                <span v-if="rowVals.row.children.length === 0">&nbsp;&nbsp;</span>
+                {{ rowVals.row.name }}
+                </q-td>
+              <q-td key="weight">{{ getWeight(rowVals.row) }}</q-td>
+              <q-td key="count">{{ getCount(rowVals.row) }}</q-td>
             </template>
           </boatnet-table>
         </template>
@@ -29,7 +50,7 @@
         </template>
     </boatnet-summary>
 
-        <q-dialog v-model="addSpeciesDialog" position="right">
+        <!-- <q-dialog v-model="addSpeciesDialog" position="right">
             <q-card style="width: 600px; padding: 4px">
                 <q-card-section>
                   <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="addSpeciesDialog = false"></q-btn>
@@ -38,24 +59,28 @@
                     <div class="col q-col-gutter-md" style="padding: 0 16px">
                       <div>
                         <div><b>Disposition</b></div>
-                        <q-btn :label="disposition" @click="disposition === 'Discarded'? disposition = 'Retained' : disposition = 'Discarded'" :color="disposition === 'Retained' ? 'green': 'primary' ">
+                        <q-btn v-model="currentCatch.disposition.description" :label="disposition" @click="disposition === 'Discarded'? disposition = 'Retained' : disposition = 'Discarded'" :color="disposition === 'Retained' ? 'green': 'primary' " @save="saveChanges">
                         </q-btn>
                       </div>
 
                       <div>
                         <boatnet-button-toggle
+                        v-model="currentCatch.weightMethod"
                         title="Weight Method"
                         :value.sync="weightMethod"
                         :options="wmOptions"
+                        @save="saveChanges"
                         />
                       </div>
 
                       <div>
                       <q-btn-dropdown
                       color="primary"
+                      v-model="currentCatch.weightMethod"
                       :label="getWMLabel"
                       cover
                       style="width: 100%"
+                      @save="saveChanges"
                       >
                       <q-list>
                         <q-item v-for="(option, i) of wmOptions" :key="i" clickable v-close-popup>
@@ -68,26 +93,28 @@
                       </q-list>
                     </q-btn-dropdown>
                   </div>
-                    <!-- <q-input label="Catch Weight"></q-input> -->
-                    <boatnet-keyboard-input
 
+                    <boatnet-keyboard-input
+                      v-model="currentCatch.weight"
                       label="Catch Weight"
                       keyboardType="numeric"
                       @save="saveChanges"
                       />
-                    <!-- <q-input label="Total # of fish"></q-input> -->
-                    <boatnet-keyboard-input
 
+                    <boatnet-keyboard-input
+                      v-model="currentCatch.count"
                       label="Total # of fish"
                       keyboardType="numeric"
                       @save="saveChanges"
                       />
 
                     <boatnet-button-toggle
+                      v-model="currentCatch.discardReason"
                       title="Discard Reason"
                       :value.sync="discardReason"
                       :options="wmOptions"
                       description="description"
+                      @save="saveChanges"
                       />
 
                     <div>
@@ -111,7 +138,7 @@
                   </div>
                   <div class="col" style="min-width: 250px; padding: 0">
                       <q-btn label="Frequent List" @click="frequentList = !frequentList" :color="frequentList ? 'primary': 'grey-5' " ></q-btn>
-                                            <q-input v-model="filterText" label="Search Species" style="width: 100%">
+                      <q-input v-model="filterText" label="Search Species" style="width: 100%">
                         <template v-if="filterText">
                           <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
                         </template>
@@ -139,7 +166,7 @@
                   </q-card-actions>
                 </q-card-section>
             </q-card>
-          </q-dialog>
+          </q-dialog> -->
 
     </q-page>
 </template>
@@ -174,6 +201,17 @@ export default class Catch extends Vue {
     private selectedSpecies = null;
     private filterText = '';
 
+    private catches: any = [
+      {catchNum: 1, name: 'Basket Weight Determination', disposition: 'discard', weightMethod: 3, weight: null, count: null, discardReason: null, children: [
+        {catchNum: 2, name: 'Salmon', disposition: null, weightMethod: null, weight: 10, count: 5, discardReason: 12, children: []},
+        {catchNum: 3, name: 'Pacific Halibut', disposition: null, weightMethod: null, weight: 45, count: 7, discardReason: 13, children: []},
+      ]},
+      {catchNum: 4, name: 'Visual Spatial 1/4', disposition: 'discard', weightMethod: 15, weight: null, count: null, discardReason: null, children: [
+        {catchNum: 5, name: 'Tuna', disposition: null, weightMethod: null, weight: 25, count: 8, discardReason: 6, children: []},
+        {catchNum: 6, name: 'Sturgeon', disposition: null, weightMethod: null, weight: 35, count: 12, discardReason: 7, children: []},
+      ]},
+    ]
+
     private wmOptions = [
                         {label: "1", value: 'Weight method description' },
                         {label: "3", value: 'Weight method description' },
@@ -185,12 +223,21 @@ export default class Catch extends Vue {
                         {label: "15", value: 'Weight method description' },
                         ]
 
+    private expanded: any = [];
+
     @Action('setCurrentCatch', { namespace: 'appState' })
     private setCurrentCatch: any;
+
     @Getter('currentCatch', { namespace: 'appState' })
     private currentCatch!: WcgopCatch;
+
     @Getter('currentHaul', { namespace: 'appState' })
     private currentHaul!: WcgopOperation;
+
+    @Action('save', { namespace: 'appState' })
+    private save: any;
+
+    private pagination = {rowsPerPage: 0};
 
     constructor() {
         super(
@@ -199,48 +246,13 @@ export default class Catch extends Vue {
 
         this.wcgopCatchSettings = {
         columns: [
-            {
-            name: 'disposition',
-            required: true,
-            label: 'R/D',
-            align: 'left',
-            field: 'disposition',
-            sortable: true
-            },
-            {
-            name: 'weightMethod',
-            align: 'center',
-            label: 'WM',
-            field: (row: any) => row.observerTotalCatch.weightMethod,
-            sortable: true
-            },
-            {
-            name: 'discardReason',
-            align: 'center',
-            label: 'Discard Reason', // TODO: this needs logic to get first and last
-            field: 'discardReason'
-            },
-            {
-            name: 'name',
-            align: 'center',
-            label: 'Name',
-            field: 'name',
-            sortable: true
-            },
-            {
-            name: 'weight',
-            align: 'center',
-            label: 'Weight',
-            field: 'weigth',
-            sortable: true
-            },
-            {
-            name: 'count',
-            align: 'center',
-            label: 'Count',
-            field: 'count',
-            sortable: true
-            }
+            { name: 'action', align: 'left', label: ''},
+            { name: 'disposition', required: true, label: 'R/D', align: 'left', field: 'disposition', sortable: true },
+            { name: 'weightMethod', align: 'left', label: 'WM', field: (row: any) => row.observerTotalCatch.weightMethod, sortable: true },
+            { name: 'discardReason', align: 'left', label: 'Discard Reason', field: 'discardReason' },
+            { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true },
+            { name: 'weight', align: 'left', label: 'Weight', field: 'weigth', sortable: true },
+            { name: 'count', align: 'left', label: 'Count', field: 'count', sortable: true }
         ]
     };
     }
@@ -267,6 +279,7 @@ private handleSelectCatch(wCatch: any) {
     } else {
       this.setCurrentCatch(undefined);
     }
+    console.log(this.currentCatch);
   }
 
 private handleGoToWtCnt() {
@@ -278,15 +291,26 @@ private getCatch() {
 }
 
 private addSpecies() {
+  if (this.currentCatch) {
+    this.addSpeciesDialog = true;
+  } else {
+    // no catch row selected - create a new one
   let catchNum = 1;
   if (this.currentHaul.catches) {
       const catchNum = this.currentHaul.catches.length + 1;
   }
 
   const wCatch: WcgopCatch = { catchNum };
-  this.setCurrentCatch(wCatch);
+  console.log(this.currentHaul)
+  if (!this.currentHaul.catches) {
+    this.currentHaul.catches = []
+  }
+  this.currentHaul.catches!.push(wCatch);
+  this.currentCatch = wCatch;
   this.addCatch = true;
   this.addSpeciesDialog = true;
+  }
+
 }
 
 private get getWMLabel() {
@@ -334,6 +358,64 @@ private get filteredSpecies() {
       return this.speciesList;
         }
 }
+
+  private saveChanges() {
+    this.save(this.currentHaul);
+    console.log(this.currentHaul)
+  }
+
+  private expand(row: any) {
+    this.expanded.push(row.name)
+    console.log(this.expanded);
+  }
+
+  private collapse(row: any) {
+    const index = this.expanded.indexOf(row.name);
+
+    if (index > -1) {
+      this.expanded.splice(index, 1);
+      console.log(this.expanded);
+    }
+  }
+
+  private get getCatches() {
+    let returnCatches: any = []
+    for (const row of this.catches) {
+      console.log(row);
+      returnCatches.push(row);
+      if (this.expanded.indexOf(row.name) !== -1) {
+        for (const child of row.children) {
+          console.log(child);
+          returnCatches.push(child)
+        }
+      }
+    }
+    return returnCatches;
+  }
+
+  private getWeight(row: any) {
+    if (row.weight) {
+      return row.weight;
+    } else {
+      let weight = 0;
+      for (const child of row.children) {
+        weight += child.weight;
+      }
+      return weight;
+    }
+  }
+
+  private getCount(row: any) {
+    if (row.count) {
+      return row.count;
+    } else {
+      let count = 0;
+      for (const child of row.children) {
+        count += child.count;
+      }
+      return count;
+    }
+  }
 
 }
 </script>

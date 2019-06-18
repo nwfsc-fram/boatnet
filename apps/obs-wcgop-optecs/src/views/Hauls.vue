@@ -179,7 +179,9 @@ export default class Hauls extends Vue {
   }
 
   private handleGoToCatch() {
-    this.$router.push({ path: '/catch/' });
+    if (this.currentHaul) {
+      this.$router.push({ path: '/catch/' });
+    }
   }
 
   private addHauls() {
