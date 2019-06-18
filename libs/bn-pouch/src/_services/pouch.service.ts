@@ -16,7 +16,6 @@ PouchDB.plugin(pa);
 
 Vue.use(PouchVue, {
   pouch: PouchDB
-  }  
 });
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
