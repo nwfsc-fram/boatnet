@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-h6">Trips</div>
-
+    Selection = {{selected}}
     <q-table
       :data="WcgopTrips"
       :columns="tripColumns"
@@ -60,8 +60,18 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="key" :props="props">{{ props.row.key }}</q-td>
-          <q-td key="tripStatus" :props="props">{{ props.row.tripStatus.description }}</q-td>
-          <q-td key="vessel" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+          <q-td
+            key="tripStatus"
+            :props="props"
+            @click.native="selectRow(props.row.__index,'tripStatus')"
+            :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('tripStatus')!=-1?'bg-grey-2':''"
+          >{{ props.row.tripStatus.description }}</q-td>
+          <q-td
+            key="vessel"
+            :props="props"
+            @click.native="selectRow(props.row.__index,'vessel')"
+            :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('vessel')!=-1?'bg-grey-2':''"
+          >{{ props.row.vessel.vesselName }}</q-td>
           <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
           <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
@@ -118,6 +128,7 @@ export default class DebrieferTrips extends Vue {
   @State('debriefer') private debriefer!: DebrieferState;
 
   private WcgopTrips: WcgopTrip[] = [];
+  private selected: any = {};
   private pagination = { rowsPerPage: 50 };
 
   private visibleTripColumns = [
@@ -356,6 +367,18 @@ export default class DebrieferTrips extends Vue {
     }
 
     return '';
+  }
+
+  private selectRow(index: any, value: any) {
+    if (this.selected.hasOwnProperty(index)) {
+      this.selected[index].indexOf(value) === -1
+        ? this.selected[index].push(value)
+        : this.selected[index].splice(this.selected[index].indexOf(value), 1);
+    } else {
+      this.selected[index] = [];
+      this.selected[index].push(value);
+      this.selected = Object.assign({}, this.selected);
+    }
   }
 
   private addAll() {
