@@ -28,7 +28,7 @@ Step 1
     {
       taxonomy: canary,
       observations { sex: 100, length 100}
-    }, 
+    },
 
 Step 2 - Create new record (is this a subdivision or a new sample?)
 
@@ -36,7 +36,7 @@ protocols: [
     {
       taxonomy: canary,
       observations { sex: 75, length 75}
-    }, 
+    },
     {
       taxonomy: canary
       observations { sex 25, length 25, weight 25}
@@ -79,7 +79,7 @@ ProgramYearVessel {
       }
       count: 75
       observations { sex, length }
-    }, 
+    },
     {
       taxonomy: canary
       name: SL20AW20
@@ -169,8 +169,7 @@ ProgramYearVessel {
           ]
         }
       ]
-    }, 
-
+    },
 }
 
 
@@ -226,10 +225,10 @@ export interface Protocol extends Base {
   // children?: Protocol[];
 
   // Strata
-  fisheries?: Fishery[];  // For survey, could use Scientific Research 
+  fisheries?: Fishery[]; // For survey, could use Scientific Research
   gearTypes?: GearType[];
-  disposition?: CatchDisposition; 
-  strata?: Stratum[];  
+  disposition?: CatchDisposition;
+  strata?: Stratum[];
 
   observationTypes: ObservationType[];    // What
   biostructureTypes: BiostructureType[];  // What
