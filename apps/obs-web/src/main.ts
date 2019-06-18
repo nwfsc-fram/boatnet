@@ -22,7 +22,7 @@ import {
 
 import UserDetails from './views/UserDetails.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
-
+import DebrieferOperations from './views/DebrieferOperations.vue';
 // Vue.use(VueResource);
 
 Vue.use(Quasar, {
@@ -44,6 +44,7 @@ Vue.use(Quasar, {
 
 Vue.component('appUserDetails', UserDetails);
 Vue.component('appDebrieferTrips', DebrieferTrips);
+Vue.component('appDebrieferOperations', DebrieferOperations);
 Vue.config.productionTip = false;
 
 new Vue({

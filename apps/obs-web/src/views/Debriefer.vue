@@ -12,7 +12,7 @@
           narrow-indicator
         >
           <q-tab name="trips" label="Trips"/>
-          <q-tab name="operations" label="Hauls" @click="getOperations"/>
+          <q-tab name="operations" label="Hauls"/>
           <q-tab name="catch" label="Catch" @click="getCatches"/>
           <q-tab name="catchSpecies" label="Catch Species" @click="getCatchSpecies"/>
           <q-tab name="catchBaskets" label="Catch Baskets" @click="getCatchBaskets"/>
@@ -24,6 +24,10 @@
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
             <app-debriefer-trips></app-debriefer-trips>
+          </q-tab-panel>
+
+          <q-tab-panel name="operations">
+            <app-debriefer-operations></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
@@ -673,41 +677,7 @@ export default class Debriefer extends Vue {
   private WcgopCatchBaskets: Basket[] = [];
   private WcgopCatchSpecimens: WcgopSpecimen[] = [];
   private pagination = { rowsPerPage: 50 };
-  private visibleTripColumns = [
-    'key',
-    'tripStatus',
-    'vessel',
-    'program',
-    'departurePort',
-    'departureDate',
-    'returnPort',
-    'returnDate'
-  ];
-  private visibleOperationColumns = [
-    'tripKey',
-    'operationNum',
-    'catches',
-    'position',
-    'location',
-    'observerTotalCatch',
-    'gearType',
-    'gearPerformance',
-    'targetStrategy',
-    'isEfpUsed',
-    'calWeight',
-    'fit',
-    'isGearLost',
-    'isDataQualityPassing',
-    'beaufortValue',
-    'isDeterrentUsed',
-    'excluderType',
-    'avgSoakTime',
-    'totalHooks',
-    'totalHooksLost',
-    'totalGearSegments',
-    'gearSegmentsLost',
-    'hooksSampled'
-  ];
+
 
   private visibleCatchColumns = [
     'tripKey',
@@ -2461,35 +2431,6 @@ private catchSpecimensColumns = [
   ];
 
 
-  private async getOperations() {
-    const masterDB: Client<any> = couchService.masterDB;
-    try {
-      const options: ListOptions = {
-        keys: Object.keys(this.debriefer.WcgopOperationTripDict)
-      };
-
-      const operations = await masterDB.viewWithDocs<any>(
-        'MainDocs',
-        'all-operations',
-        options
-      );
-
-      for (const row of operations.rows) {
-        const operation = row.doc;
-
-        for (const locationRow of operation.locations) {
-          const opLoc = Object.assign({}, row.doc);
-          opLoc.key = row.key;
-          opLoc.trip = this.debriefer.WcgopOperationTripDict[operation._id];
-          opLoc.location = locationRow;
-          this.WcgopOperations.push(opLoc);
-        }
-      }
-    } catch (err) {
-      this.error(err);
-    }
-  }
-
   private async getCatches() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
@@ -2652,6 +2593,5 @@ private catchSpecimensColumns = [
 
     return '';
   }
-
 }
 </script>
