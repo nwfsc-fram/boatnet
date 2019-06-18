@@ -1,22 +1,21 @@
 <template>
   <div>
-    <div class="text-h6">Hauls</div>
-
+    <div class="text-h6">Catch</div>
     <q-table
-      :data="WcgopOperations"
-      :columns="operationColumns"
+      :data="WcgopCatches"
+      :columns="catchColumns"
       dense
       row-key="id"
       :pagination.sync="pagination"
-      :visible-columns="visibleOperationColumns"
+      :visible-columns="visibleCatchColumns"
     >
       <template v-slot:top="props">
         <div v-if="$q.screen.gt.xs" class="col">
           <q-select
             outlined
-            v-model="visibleOperationColumns"
+            v-model="visibleCatchColumns"
             multiple
-            :options="operationColumns"
+            :options="catchColumns"
             label="Visible Columns"
             style="width: 270px"
             option-label="label"
@@ -89,12 +88,6 @@
           <q-td key="waiver" :props="props">{{ props.row.trip.waiver }}</q-td>
           <q-td key="intendedGearType" :props="props">{{ props.row.trip.intendedGearType }}</q-td>
           <q-td key="operationNum" :props="props">{{ props.row.operationNum }}</q-td>
-          <q-td key="catches" :props="props">{{ props.row.catches.length }}</q-td>
-          <q-td key="position" :props="props">{{ props.row.location.position }}</q-td>
-          <q-td
-            key="location"
-            :props="props"
-          >{{ props.row.location.location.coordinates[0].toFixed(2) }} {{ props.row.location.location.coordinates[1].toFixed(2) }}</q-td>
           <q-td
             key="observerTotalCatch"
             :props="props"
@@ -116,6 +109,13 @@
           <q-td key="totalGearSegments" :props="props">{{ props.row.totalGearSegments }}</q-td>
           <q-td key="gearSegmentsLost" :props="props">{{ props.row.gearSegmentsLost }}</q-td>
           <q-td key="hooksSampled" :props="props">{{ props.row.hooksSampled }}</q-td>
+          <q-td key="catchNum" :props="props">{{ props.row.catch.catchNum }}</q-td>
+          <q-td key="disposition" :props="props">{{ props.row.catch.disposition.description }}</q-td>
+          <q-td
+            key="catchWM"
+            :props="props"
+          >{{ nullDescriptionCheck(props.row.catch.weightMethod) }}</q-td>
+          <q-td key="catchWeight" :props="props">{{ nullValueCheck(props.row.catch.weight,true) }}</q-td>
         </q-tr>
       </template>
     </q-table>
@@ -154,35 +154,19 @@ export default class DebrieferOperations extends Vue {
 
   private WcgopTrips: WcgopTrip[] = [];
   private WcgopOperations: WcgopOperation[] = [];
+  private WcgopCatches: WcgopCatch[] = [];
   private pagination = { rowsPerPage: 50 };
 
-  private visibleOperationColumns = [
+  private visibleCatchColumns = [
     'tripKey',
     'operationNum',
-    'catches',
-    'position',
-    'location',
-    'observerTotalCatch',
-    'gearType',
-    'gearPerformance',
-    'targetStrategy',
-    'isEfpUsed',
-    'calWeight',
-    'fit',
-    'isGearLost',
-    'isDataQualityPassing',
-    'beaufortValue',
-    'isDeterrentUsed',
-    'excluderType',
-    'avgSoakTime',
-    'totalHooks',
-    'totalHooksLost',
-    'totalGearSegments',
-    'gearSegmentsLost',
-    'hooksSampled'
+    'catchNum',
+    'disposition',
+    'catchWM',
+    'catchWeight'
   ];
 
-  private operationColumns = [
+  private catchColumns = [
     {
       name: 'tripKey',
       label: 'Trip ID',
@@ -360,27 +344,6 @@ export default class DebrieferOperations extends Vue {
       sortable: true
     },
     {
-      name: 'catches',
-      label: 'Catches',
-      field: 'catches',
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'position',
-      label: 'Position',
-      field: 'position',
-      align: 'left',
-      sortable: true
-    },
-    {
-      name: 'location',
-      label: 'Location',
-      field: 'location',
-      align: 'left',
-      sortable: true
-    },
-    {
       name: 'observerTotalCatch',
       label: 'OTC',
       field: 'observerTotalCatch',
@@ -492,10 +455,38 @@ export default class DebrieferOperations extends Vue {
       field: 'hooksSampled',
       align: 'left',
       sortable: true
+    },
+    {
+      name: 'catchNum',
+      label: 'Catch #',
+      field: 'catchNum',
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'disposition',
+      label: 'Catch Disposition',
+      field: 'disposition',
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'catchWM',
+      label: 'Catch WM',
+      field: 'catchWM',
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'catchWeight',
+      label: 'Catch Weight (lbs)',
+      field: 'catchWeight',
+      align: 'left',
+      sortable: true
     }
   ];
 
-  private async getOperations() {
+  private async getCatches() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
@@ -511,21 +502,23 @@ export default class DebrieferOperations extends Vue {
       for (const row of operations.rows) {
         const operation = row.doc;
 
-        for (const locationRow of operation.locations) {
-          const opLoc = Object.assign({}, row.doc);
-          opLoc.key = row.key;
-          opLoc.trip = this.debriefer.WcgopOperationTripDict[operation._id];
-          opLoc.location = locationRow;
-          this.WcgopOperations.push(opLoc);
+        for (const catchRow of operation.catches) {
+          const opCatch = Object.assign({}, row.doc);
+          opCatch.key = row.key;
+          opCatch.trip = this.debriefer.WcgopOperationTripDict[operation._id];
+          opCatch.catch = catchRow;
+          this.WcgopCatches.push(opCatch);
         }
       }
+
+      console.log(this.WcgopCatches);
     } catch (err) {
       this.error(err);
     }
   }
 
   private created() {
-    this.getOperations();
+    this.getCatches();
   }
 
   private formatDate(inputDate: any) {
@@ -553,13 +546,13 @@ export default class DebrieferOperations extends Vue {
   }
 
   private addAll() {
-    this.visibleOperationColumns = this.operationColumns.map(
-      (operationColumns) => operationColumns.name
+    this.visibleCatchColumns = this.catchColumns.map(
+      (catchColumns) => catchColumns.name
     );
   }
 
   private removeAll() {
-    this.visibleOperationColumns = [];
+    this.visibleCatchColumns = [];
   }
 }
 </script>
