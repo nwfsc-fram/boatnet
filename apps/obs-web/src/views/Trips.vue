@@ -313,14 +313,14 @@ export default class Trips extends Vue {
       }
 
       const newTrip: WcgopTrip = {
-                            createdBy: authService.getCurrentUser()!.username,
+                            createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
                             createdDate: moment().format(),
                             type: 'wcgop-trip',
                             vessel: this.vessel.activeVessel!,
                             // permits: [],
                             // messages: [],
                             departureDate: moment().format(),
-                            departurePort: this.user.activeUser!.port,
+                            departurePort: this.user.activeUser!.port ? this.user.activeUser!.port : {name: 'UNKNOWN'},
                             returnDate: moment().format(),
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,
