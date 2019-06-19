@@ -24,6 +24,8 @@ import UserDetails from './views/UserDetails.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
 import DebrieferCatches from './views/DebrieferCatches.vue';
+import DebrieferCatchSpecies from './views/DebrieferCatchSpecies.vue';
+import DebrieferCatchBaskets from './views/DebrieferCatchBaskets.vue';
 // Vue.use(VueResource);
 
 Vue.use(Quasar, {
@@ -47,6 +49,8 @@ Vue.component('appUserDetails', UserDetails);
 Vue.component('appDebrieferTrips', DebrieferTrips);
 Vue.component('appDebrieferOperations', DebrieferOperations);
 Vue.component('appDebrieferCatches', DebrieferCatches);
+Vue.component('appDebrieferCatchSpecies', DebrieferCatchSpecies);
+Vue.component('appDebrieferCatchBaskets', DebrieferCatchBaskets);
 Vue.config.productionTip = false;
 
 new Vue({
