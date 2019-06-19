@@ -311,26 +311,22 @@ export default class UserDetails extends Vue {
                     pouchService.lookupsDBName,
                     'obs_web/vessel_captains',
                     queryOptions
-                )
+                );
                 for (const row of vesselCaptains.rows) {
                     for (const captain of row.doc.captains) {
                         if (!vesselCaptains[captain.workEmail]) {
                             vesselCaptains[captain.workEmail] = [];
                         }
-                    const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
-                    vesselCaptains[captain.workEmail].push(row.doc);
+                        const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+                        vesselCaptains[captain.workEmail].push(row.doc);
                     }
                 }
 
                 const activeUserEmail = this.user.activeUser!.workEmail;
-                console.log(activeUserEmail)
+
                 if (activeUserEmail) {
                     this.vessels = vesselCaptains[activeUserEmail];
                 }
-                // console.log(this.vessels)
-                console.log('vessel captains:')
-                console.log(vesselCaptains);
-                console.log(this.vessels)
 
             } catch (err) {
                 this.errorAlert(err);

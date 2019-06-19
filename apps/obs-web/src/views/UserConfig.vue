@@ -88,10 +88,7 @@ export default class UserConfig extends Vue {
             if (activeUserEmail) {
                 this.vessels = vesselCaptains[activeUserEmail];
             }
-            // console.log(this.vessels)
-            console.log('vessel captains:')
-            console.log(vesselCaptains);
-            console.log(this.vessels)
+
         } catch (err) {
             this.errorAlert(err);
         }
