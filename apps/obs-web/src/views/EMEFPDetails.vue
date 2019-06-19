@@ -53,6 +53,7 @@
             use-chips
             option-label="permitNumber"
             option-value="permitNumber"
+            emit-value
             :options="permit.permits"
             >
 
@@ -196,17 +197,18 @@ export default class EMEFPDetails extends Vue {
 
   private created() {
       this.getOptions();
-      this.getPermits();
+      // this.getPermits();
+      console.log(this.permit.permits)
   }
 
-  private getPermits() {
-      axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
-          .then( (response) => {
-              // this.$store.dispatch('updatePermits', response.data.items);
-              this.permits = response.data.items;
-              console.log(this.permits);
-          });
-  }
+  // private getPermits() {
+  //     axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
+  //         .then( (response) => {
+  //             // this.$store.dispatch('updatePermits', response.data.items);
+  //             this.permits = response.data.items;
+  //             console.log(this.permits);
+  //         });
+  // }
 
   get efpTypes() {
     if (this.emefp.activeEmefp && this.emefp.activeEmefp.efpTypes) {

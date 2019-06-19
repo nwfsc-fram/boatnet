@@ -71,6 +71,7 @@ export default class Home extends Vue {
     }
 
   private async getPermits() {
+    this.permit.permits = []
     const masterDB: Client<any> = couchService.masterDB;
     try {
         const permits = await masterDB.viewWithDocs<any>(
