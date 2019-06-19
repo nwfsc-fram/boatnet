@@ -66,6 +66,37 @@ export default class UserConfig extends Vue {
           });
         }
 
+    private async getVessels() {
+        const vesselCaptains: any = {};
+        const masterDB: Client<any> = couchService.masterDB;
+        try {
+            const vessels = await masterDB.viewWithDocs<any>(
+                'sethtest',
+                'vessel_captains',
+                );
+            for (const vessel of vessels.rows) {
+                for (const captain of vessel.doc.captains) {
+                    if (!vesselCaptains[captain.workEmail]) {
+                        vesselCaptains[captain.workEmail] = [];
+                    }
+                    const vesselId = vessel.doc.coastGuardNumber ? vessel.doc.coastGuardNumber : vessel.doc.stateRegulationNumber;
+                    vesselCaptains[captain.workEmail].push(vessel.doc);
+                }
+            }
+
+            const activeUserEmail = this.user.activeUser!.workEmail;
+            if (activeUserEmail) {
+                this.vessels = vesselCaptains[activeUserEmail];
+            }
+        } catch (err) {
+            this.errorAlert(err);
+        }
+    }
+
+    private created() {
+        this.getVessels();
+    }
+
 }
 </script>
 
