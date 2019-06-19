@@ -73,14 +73,14 @@ private EM_EFP: EmEfp[] = [];
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vessel', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => ('' + a.vesselName).localeCompare(b.vesselName) },
     {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true, align: 'left', sortable: true, sort: (a: string, b: string) => {
-        var reA = /[^a-zA-Z]/g;
-        var reN = /[^0-9]/g;
+        const reA = /[^a-zA-Z]/g;
+        const reN = /[^0-9]/g;
 
-        var aA = a.replace(reA, "");
-        var bA = b.replace(reA, "");
+        const aA = a.replace(reA, '');
+        const bA = b.replace(reA, '');
         if (aA === bA) {
-            var aN = parseInt(a.replace(reN, ""), 10);
-            var bN = parseInt(b.replace(reN, ""), 10);
+            const aN = parseInt(a.replace(reN, ''), 10);
+            const bN = parseInt(b.replace(reN, ''), 10);
             return aN === bN ? 0 : aN > bN ? 1 : -1;
         } else {
             return aA > bA ? 1 : -1;

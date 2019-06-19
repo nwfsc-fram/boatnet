@@ -198,7 +198,6 @@ export default class EMEFPDetails extends Vue {
   private created() {
       this.getOptions();
       // this.getPermits();
-      console.log(this.permit.permits)
   }
 
   // private getPermits() {

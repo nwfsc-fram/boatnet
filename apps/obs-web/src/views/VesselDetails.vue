@@ -166,7 +166,7 @@ export default class VesselDetails extends Vue {
                         'all_persons',
                         queryOptions
                         );
-                    console.log(captains)
+
                     this.captains = captains.rows.map((row: any) => row.doc);
                 } catch (err) {
                     this.error(err);
