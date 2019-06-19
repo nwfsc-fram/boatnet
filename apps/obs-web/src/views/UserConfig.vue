@@ -74,13 +74,13 @@ export default class UserConfig extends Vue {
                 'sethtest',
                 'vessel_captains',
                 );
-            for (const vessel of vessels.rows) {
-                for (const captain of vessel.doc.captains) {
+            for (const row of vessels.rows) {
+                for (const captain of row.doc.captains) {
                     if (!vesselCaptains[captain.workEmail]) {
                         vesselCaptains[captain.workEmail] = [];
                     }
-                    const vesselId = vessel.doc.coastGuardNumber ? vessel.doc.coastGuardNumber : vessel.doc.stateRegulationNumber;
-                    vesselCaptains[captain.workEmail].push(vessel.doc);
+                    const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+                    vesselCaptains[captain.workEmail].push(row.doc);
                 }
             }
 
@@ -88,6 +88,10 @@ export default class UserConfig extends Vue {
             if (activeUserEmail) {
                 this.vessels = vesselCaptains[activeUserEmail];
             }
+            // console.log(this.vessels)
+            console.log('vessel captains:')
+            console.log(vesselCaptains);
+            console.log(this.vessels)
         } catch (err) {
             this.errorAlert(err);
         }

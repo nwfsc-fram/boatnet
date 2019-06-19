@@ -70,8 +70,18 @@
                     >
                     </q-select>
 
-                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id" use-input fill-input
-                    hide-selected dense >
+                    <q-select
+                    class="col-md q-pa-sm"
+                    outlined label="Active Vessel"
+                    v-model="user.activeUser.activeVessel"
+                    :options="vessels"
+
+                    :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id"
+                    use-input
+                    fill-input
+                    hide-selected
+                    dense
+                    >
                     </q-select>
                 </div>
 
@@ -283,19 +293,45 @@ export default class UserDetails extends Vue {
             try {
                 const db = pouchService.db;
                 const queryOptions = {
-                limit: 5,
+                // limit: 5,
                 start_key: '',
                 inclusive_end: true,
                 descending: false,
                 include_docs: true
                 };
 
-                const vessels = await db.query(
+                // const vessels = await db.query(
+                //     pouchService.lookupsDBName,
+                //     'optecs_trawl/all_vessel_names',
+                //     queryOptions
+                //     );
+                // this.vessels = vessels.rows.map((row: any) => row.doc);
+
+                const vesselCaptains = await db.query(
                     pouchService.lookupsDBName,
-                    'optecs_trawl/all_vessel_names',
+                    'obs_web/vessel_captains',
                     queryOptions
-                    );
-                this.vessels = vessels.rows.map((row: any) => row.doc);
+                )
+                for (const row of vesselCaptains.rows) {
+                    for (const captain of row.doc.captains) {
+                        if (!vesselCaptains[captain.workEmail]) {
+                            vesselCaptains[captain.workEmail] = [];
+                        }
+                    const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+                    vesselCaptains[captain.workEmail].push(row.doc);
+                    }
+                }
+
+                const activeUserEmail = this.user.activeUser!.workEmail;
+                console.log(activeUserEmail)
+                if (activeUserEmail) {
+                    this.vessels = vesselCaptains[activeUserEmail];
+                }
+                // console.log(this.vessels)
+                console.log('vessel captains:')
+                console.log(vesselCaptains);
+                console.log(this.vessels)
+
             } catch (err) {
                 this.errorAlert(err);
             }
