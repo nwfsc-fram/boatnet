@@ -71,7 +71,9 @@ export default class Home extends Vue {
     }
 
   private async getPermits() {
+    console.log('getting permits from masterDB');
     this.permit.permits = [];
+    this.permit.vesselPermits = {};
     const masterDB: Client<any> = couchService.masterDB;
     try {
         const permits = await masterDB.viewWithDocs<any>(
@@ -81,6 +83,14 @@ export default class Home extends Vue {
         console.log(permits);
         for (const row of permits.rows) {
             const permit = row.doc;
+
+            if (permit.vessel && permit.vessel.coastGuardNumber !== 'UNIDENTIFIED' ) {
+              const vesselId = permit.vessel.coastGuardNumber;
+              if (!this.permit.vesselPermits[vesselId]) {
+                this.permit.vesselPermits[vesselId] = [];
+              }
+              this.permit.vesselPermits[vesselId].push(permit);
+            }
             this.permit.permits.push(permit);
         }
 

@@ -94,8 +94,7 @@
                 stack-label
                 :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
                 option-value="permitNumber"
-                @filter = "permitsFilterFn"
-                :options="permits"
+                :options="getVesselPermits"
                 style="width: 100%"
                 >
                     <template v-slot:selected-item="scope">
@@ -411,6 +410,12 @@ export default class TripDetails extends Vue {
         } else {
             return 'Inactive';
         }
+    }
+
+    private get getVesselPermits() {
+        const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+        const vesselPermits = this.permit.vesselPermits[vesselId];
+        return vesselPermits;
     }
 
     private createTrip() {
