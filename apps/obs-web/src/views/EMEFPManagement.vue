@@ -26,8 +26,8 @@
         <template v-slot:body="props">
         <q-tr :props="props" @click.native="emefpDetails(props.row)">
           <q-td key="id"></q-td>
-          <q-td key="vesselName" :props="props">{{ getVesselName(props.row) }}</q-td>
-          <q-td key="vesselCGNumber" :props="props">{{ getVesselId(props.row) }}</q-td>
+          <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName ? props.row.vessel.vesselName : '' }}</q-td>
+          <q-td key="vesselCGNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
           <q-td key="lePermit" :props="props">{{ getLEPermit(props.row) }}</q-td>
           <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
           <q-td key="efpTypes" :props="props">
@@ -66,15 +66,28 @@ export default class EMEFPManagement extends Vue {
     @Action('error', { namespace: 'alert' }) private error: any;
 
 private selected = [];
-private pagination = {rowsPerPage: 50};
+private pagination = {sortBy: 'vesselName', descending: false, rowsPerPage: 50};
 
 private EM_EFP: EmEfp[] = [];
 
 private columns = [
-    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
-    {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
-    sortable: true, align: 'left' },
-    {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true },
+    {name: 'vesselName', label: 'Vessel Name', field: 'vessel', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => ('' + a.vesselName).localeCompare(b.vesselName) },
+    {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true, align: 'left', sortable: true, sort: (a: string, b: string) => {
+        const reA = /[^a-zA-Z]/g;
+        const reN = /[^0-9]/g;
+
+        const aA = a.replace(reA, '');
+        const bA = b.replace(reA, '');
+        if (aA === bA) {
+            const aN = parseInt(a.replace(reN, ''), 10);
+            const bN = parseInt(b.replace(reN, ''), 10);
+            return aN === bN ? 0 : aN > bN ? 1 : -1;
+        } else {
+            return aA > bA ? 1 : -1;
+            }
+        }
+    },
+    {name: 'lePermit', label: 'LE Permit', field: 'lePermit', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.localeCompare(b, 'en', { numeric: true }) },
     {name: 'emEfpNumber', label: 'EM EFP #', field: 'emEfpNumber', required: true, align: 'left', sortable: true },
     {name: 'efpTypes', label: 'EFP Type', field: 'efpTypes', required: true, align: 'left' },
     {name: 'gear', label: 'Gear', field: 'gear', required: true, align: 'left' },
@@ -122,15 +135,13 @@ private getArrayValues(array: any[]) {
     return returnString;
 }
 
-private getVesselName(row: any) {
-    if (row.vesselName) {
-        return row.vesselName;
-    } else if (row.vessel) {
-        return row.vessel.vesselName;
-    } else {
-        return '';
-    }
-}
+// private getVesselName(row: any) {
+//     if (row.vessel) {
+//         return row.vessel.vesselName;
+//     } else {
+//         return '';
+//     }
+// }
 
 private getVesselId(row: any) {
     if (row.vesselCGNumber) {
@@ -144,11 +155,7 @@ private getVesselId(row: any) {
 
 private getLEPermit(row: any) {
     if (row.lePermit) {
-        if (row.lePermit.permit_number) {
-            return row.lePermit.permit_number;
-        } else {
-            return row.lePermit;
-        }
+        return row.lePermit;
     } else {
         return '';
     }

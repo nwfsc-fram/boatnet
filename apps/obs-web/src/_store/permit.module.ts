@@ -12,6 +12,7 @@ Vue.use(Vuex);
 export const state: PermitState = {
   activePermit: null,
   permits: [],
+  vesselPermits: {},
   filterText: ''
 };
 
