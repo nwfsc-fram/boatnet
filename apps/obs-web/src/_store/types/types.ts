@@ -24,6 +24,7 @@ export interface TripState {
 export interface PermitState {
   activePermit: Permit | null;
   permits: Permit[];
+  vesselPermits?: any;
   filterText: string;
 }
 
