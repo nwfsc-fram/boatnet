@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { WcgopAppState, RootState } from '@/_store/types/types';
-import { WcgopTrip, WcgopOperation, BoatnetUser } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, BoatnetUser, WcgopCatch } from '@boatnet/bn-models';
 import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
@@ -9,6 +9,7 @@ Vue.use(Vuex);
 export const state: WcgopAppState = {
   currentTrip: undefined,
   currentHaul: undefined,
+  currentCatch: undefined,
   isKeyboardEnabled: true,
   isSoundEnabled: true
 };
@@ -22,6 +23,9 @@ const actions: ActionTree<WcgopAppState, RootState> = {
   },
   setCurrentHaul({ commit }: any, haul: WcgopOperation) {
     commit('setCurrentHaul', haul);
+  },
+  setCurrentCatch({ commit }: any, wCatch: WcgopCatch) {
+    commit('setCurrentCatch', wCatch);
   },
   clear({ commit }: any) {
     commit('setCurrentTrip', undefined);
@@ -54,6 +58,9 @@ const mutations: MutationTree<WcgopAppState> = {
   setCurrentHaul(newState: any, haul: WcgopOperation) {
     newState.currentHaul = haul;
   },
+  setCurrentCatch(newState: any, wCatch: WcgopCatch) {
+    newState.currentCatch = wCatch;  // catch is a reserved keyword
+  },
   setKeyboardStatus(newState: any, isEnabled: boolean) {
     newState.isKeyboardEnabled = isEnabled;
   },
@@ -68,6 +75,9 @@ const getters: GetterTree<WcgopAppState, RootState> = {
   },
   currentHaul(getState: WcgopAppState) {
     return getState.currentHaul;
+  },
+  currentCatch(getState: WcgopAppState) {
+    return getState.currentCatch;
   },
   isSoundEnabled(getState: WcgopAppState) {
     return getState.isSoundEnabled;

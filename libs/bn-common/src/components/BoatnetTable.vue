@@ -7,6 +7,8 @@
       :columns="settings.columns"
       :row-key="settings.rowKey"
       :selected.sync="selected"
+      :pagination="pagination"
+      separator="vertical"
     >
       <template v-slot:body="props">
         <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer">
@@ -30,6 +32,7 @@ export default class BoatnetTable extends Vue {
   @Prop({ default: false }) public showBottom!: boolean;
   @Prop({ default: false }) public isCondensed!: boolean;
   public selected: any[] = [];
+  private pagination = {rowsPerPage: 9};
 
   private select(row: any) {
     if (this.selected.length > 0 && this.selected[0].__index === row.__index) {

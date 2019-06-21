@@ -50,6 +50,16 @@
 
         </q-table>
 
+            <boatnet-button-toggle
+              title="EFP?"
+
+              :options="[
+                {label: 'Y', value: true},
+                {label: 'N', value: false}
+                ]"
+
+            />
+
         <div v-if="selected.length > 0">{{ selected }}</div>
     </div>
 </template>
