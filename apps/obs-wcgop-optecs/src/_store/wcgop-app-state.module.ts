@@ -59,7 +59,7 @@ const mutations: MutationTree<WcgopAppState> = {
     newState.currentHaul = haul;
   },
   setCurrentCatch(newState: any, wCatch: WcgopCatch) {
-    newState.currentHaul = wCatch;  // catch is a reserved keyword
+    newState.currentCatch = wCatch;  // catch is a reserved keyword
   },
   setKeyboardStatus(newState: any, isEnabled: boolean) {
     newState.isKeyboardEnabled = isEnabled;

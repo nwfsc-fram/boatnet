@@ -85,7 +85,7 @@ export default class BoatnetSummary extends Vue {
     } else if (this.currentScreen === 'Haul') {
       return 'Catch';
     } else if (this.currentScreen === 'Species') {
-      return 'Wts & Cnts'
+      return 'Wts & Cnts';
     }
   }
 
