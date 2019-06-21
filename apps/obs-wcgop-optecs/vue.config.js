@@ -7,5 +7,6 @@ module.exports = {
       treeShake: true
     }
   },
-  transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/]
+  transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
+  publicPath: process.env.NODE_ENV === 'production' ? '/observer-trips/' : '/'
 };
