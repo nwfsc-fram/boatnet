@@ -8,9 +8,7 @@ module.exports = {
     }
   },
   transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
-  publicPath: '/obs-trips/'
-  // Not sure if this will work in our prod environment:
-  // publicPath: process.env.NODE_ENV === 'production'
-  //   ? '/obs-trips/'
-  //   : '/'
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/obs-trips/'
+    : '/'
 };
