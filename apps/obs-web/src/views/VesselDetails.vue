@@ -11,10 +11,10 @@
         <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name"></q-input>
         <div class="row">
             <div class="col-sm q-pa-md">
-                <q-input v-if="vessel.activeVessel.coastGuardNumber || this.$route.params.id === 'new'" v-model="vessel.activeVessel.coastGuardNumber" label="Coast Guard Number"></q-input>
+                <q-input v-model="vessel.activeVessel.coastGuardNumber" label="Coast Guard Number"></q-input>
             </div>
             <div class="col-sm q-pa-md">
-                <q-input v-if="vessel.activeVessel.stateRegulationNumber || this.$route.params.id === 'new'"  v-model="vessel.activeVessel.stateRegulationNumber" label="State Regulation Number"></q-input>
+                <q-input v-model="vessel.activeVessel.stateRegulationNumber" label="State Regulation Number"></q-input>
             </div>
         </div>
         <q-input v-model="vessel.activeVessel.registeredLength.value" label="Registered Length (feet)" type="number"></q-input>
@@ -25,29 +25,31 @@
         <q-input v-model="vessel.activeVessel.notes" label="Notes"></q-input>
 
         <q-select
-        v-model="vessel.activeVessel.port"
-        label="Port"
-        :options="ports"
-        :option-label="opt => opt.name"
-        option-value="_id"
-        @filter="portsFilterFn"
-        stack-label
-        use-input
-        >
+            v-model="vessel.activeVessel.port"
+            label="Port"
+            :options="ports"
+            :option-label="opt => opt.name"
+            option-value="_id"
+            @filter="portsFilterFn"
+            stack-label
+            use-input
+            fill-input
+            hide-selected
+            >
         </q-select>
 
         <q-select
-        v-model="vessel.activeVessel.captains"
-        label="Vessel Captains"
-        :options="captains"
-        :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')' "
-        option-value="_id"
-        @filter="captainsFilterFn"
-        stack-label
-        use-input
-        multiple
-        use-chips
-        >
+            v-model="vessel.activeVessel.captains"
+            label="Vessel Captains"
+            :options="captains"
+            :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')' "
+            option-value="_id"
+            @filter="captainsFilterFn"
+            stack-label
+            use-input
+            multiple
+            use-chips
+            >
         <template v-slot:selected-item="scope">
             <q-chip
                 removable
@@ -62,9 +64,9 @@
                 <span v-else>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
             </q-chip>
         </template>
-                        <template v-slot:append>
-                            <q-btn flat style="font-size: .5em" icon="fa fa-plus-circle" @click="newCaptain" >&nbsp;Add Captain</q-btn>
-                        </template>
+            <template v-slot:append>
+                <q-btn flat style="font-size: .5em" icon="fa fa-plus-circle" @click="newCaptain" >&nbsp;New Captain</q-btn>
+            </template>
         </q-select>
 
         <q-btn label="Cancel" color="red" icon="warning" @click="navigateBack"></q-btn>
@@ -152,7 +154,7 @@ export default class VesselDetails extends Vue {
                 try {
                     const db = couchService.masterDB;
                     const queryOptions = {
-                    limit: 5,
+                    limit: 10,
                     start_key: val.toLowerCase(),
                     inclusive_end: true,
                     descending: false,
@@ -164,6 +166,7 @@ export default class VesselDetails extends Vue {
                         'all_persons',
                         queryOptions
                         );
+
                     this.captains = captains.rows.map((row: any) => row.doc);
                 } catch (err) {
                     this.error(err);

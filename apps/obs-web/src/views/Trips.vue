@@ -16,6 +16,8 @@
       dense
       stack-label
       use-input
+      fill-input
+      hide-selected
       @filter="vesselsFilterFn"
       :options="vessels"
       :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
@@ -27,11 +29,19 @@
   <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
     <div class=" row items-start" >
 
-      <q-card v-for="(trip, i) in openTrips" :key="i" class="my-card bg-primary text-white" style="margin: 10px">
+      <q-card
+      v-for="(trip, i) in openTrips"
+      :key="i"
+      style="margin: 10px"
+      :class="computedTripClass(trip)"
+      >
         <q-card-section>
-          <div class="text-h6">{{ trip.tripNum }}
+          <div class="text-h6">
             <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
-            <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected"></q-icon>
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
+            <q-icon name="check_circle" size="18px"></q-icon>
+            <span class="text-h6">&nbsp;Trip Selected</span>
+            </div>
           </div>
           <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
           <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
@@ -55,9 +65,12 @@
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
 
       <q-card-section>
-        <div class="text-h6">{{ trip.tripNum }}
+        <div class="text-h6">
           <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
-          <q-icon v-if="trip.isSelected" name="check_circle" class="text-white" style="font-size: 32px; float: right"></q-icon>
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
+            <q-icon name="check_circle" size="18px"></q-icon>
+            <span class="text-h6">&nbsp;Trip Selected</span>
+            </div>
         </div>
           <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
           <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
@@ -285,6 +298,7 @@ export default class Trips extends Vue {
         // this.$store.state.activeTrip = this.trips[i];
         this.trip.activeTrip = trip;
         this.trip.newTrip = false;
+        console.log(this.trip.activeTrip);
         this.$router.push({path: '/trips/' + trip.tripNum});
       }
 
@@ -299,15 +313,14 @@ export default class Trips extends Vue {
       }
 
       const newTrip: WcgopTrip = {
-                            createdBy: authService.getCurrentUser()!.username,
+                            createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
                             createdDate: moment().format(),
                             type: 'wcgop-trip',
-                            tripNum: newTripNum,
                             vessel: this.vessel.activeVessel!,
                             // permits: [],
                             // messages: [],
                             departureDate: moment().format(),
-                            departurePort: this.user.activeUser!.port,
+                            departurePort: this.user.activeUser!.port ? this.user.activeUser!.port : this.vessel.activeVessel.port ? this.vessel.activeVessel.port : {name: 'UNDEFINED'},
                             returnDate: moment().format(),
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,
@@ -329,6 +342,14 @@ export default class Trips extends Vue {
   private formatTel(telNum: any) {
     telNum = telNum.toString();
     return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
+}
+
+private computedTripClass(trip: WcgopTrip) {
+  if (trip.isSelected) {
+    return 'my-card bg-green text-white';
+  } else {
+    return 'my-card bg-primary text-white';
+  }
 }
 
 }

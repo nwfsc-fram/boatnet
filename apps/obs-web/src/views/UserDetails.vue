@@ -44,7 +44,8 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" use-input :options="usStates" :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
+                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" use-input fill-input
+                    hide-selected :options="usStates" :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
 
                     <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
@@ -64,10 +65,23 @@
                     dense
                     stack-label
                     use-input
+                    fill-input
+                    hide-selected
                     >
                     </q-select>
 
-                    <q-select class="col-md q-pa-sm" outlined label="Active Vessel" v-model="user.activeUser.activeVessel" :options="vessels" @filter="filterVessels" :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id" use-input dense >
+                    <q-select
+                    class="col-md q-pa-sm"
+                    outlined label="Active Vessel"
+                    v-model="user.activeUser.activeVessel"
+                    :options="vessels"
+
+                    :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id"
+                    use-input
+                    fill-input
+                    hide-selected
+                    dense
+                    >
                     </q-select>
                 </div>
 
@@ -279,19 +293,41 @@ export default class UserDetails extends Vue {
             try {
                 const db = pouchService.db;
                 const queryOptions = {
-                limit: 5,
+                // limit: 5,
                 start_key: '',
                 inclusive_end: true,
                 descending: false,
                 include_docs: true
                 };
 
-                const vessels = await db.query(
+                // const vessels = await db.query(
+                //     pouchService.lookupsDBName,
+                //     'optecs_trawl/all_vessel_names',
+                //     queryOptions
+                //     );
+                // this.vessels = vessels.rows.map((row: any) => row.doc);
+
+                const vesselCaptains = await db.query(
                     pouchService.lookupsDBName,
-                    'optecs_trawl/all_vessel_names',
+                    'obs_web/vessel_captains',
                     queryOptions
-                    );
-                this.vessels = vessels.rows.map((row: any) => row.doc);
+                );
+                for (const row of vesselCaptains.rows) {
+                    for (const captain of row.doc.captains) {
+                        if (!vesselCaptains[captain.workEmail]) {
+                            vesselCaptains[captain.workEmail] = [];
+                        }
+                        const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+                        vesselCaptains[captain.workEmail].push(row.doc);
+                    }
+                }
+
+                const activeUserEmail = this.user.activeUser!.workEmail;
+
+                if (activeUserEmail) {
+                    this.vessels = vesselCaptains[activeUserEmail];
+                }
+
             } catch (err) {
                 this.errorAlert(err);
             }

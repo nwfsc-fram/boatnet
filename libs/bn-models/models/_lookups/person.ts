@@ -4,7 +4,7 @@ import { BoatnetDate } from '../_common/boatnet-date';
 import { CouchID } from '../_common';
 import { Vessel } from './vessel';
 import { Media } from './media';
-import { Permit } from '../_misc/permit';
+import { Permit } from './permit';
 
 // TODO Full implementation
 export const PersonTypeName = 'person';

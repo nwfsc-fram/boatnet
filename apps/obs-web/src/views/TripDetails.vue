@@ -4,7 +4,7 @@
             <q-card-section>
                 <!-- {{ this.$store.state.currentTrip.trip_num }} -->
                 <div class="text-h6" style="margin-bottom: 10px;">
-                    {{ vessel.activeVessel.vesselName }} Trip # {{ trip.activeTrip.tripNum }}
+                    {{ vessel.activeVessel.vesselName }}
                 <q-icon
                     v-if="trip.activeTrip.isSelected"
                     name="check_circle"
@@ -24,6 +24,7 @@
                         <div class="text-subtitle2">Departure Date</div>
                         <q-date
                             v-model="departureDate"
+                            :options="startDateOptionsFn"
                             color="green"
                             dark
                             >
@@ -58,6 +59,8 @@
                 option-value="_id"
                 dense
                 use-input
+                fill-input
+                hide-selected
                 stack-label
                 >
                 </q-select>
@@ -68,6 +71,8 @@
                 label="End Port"
                 @filter="endPortsFilterFn"
                 use-input
+                fill-input
+                hide-selected
                 stack-label
                 :option-label="opt => opt.name"
                 option-value="_id"
@@ -75,7 +80,8 @@
                 >
                 </q-select>
 
-                <q-select v-model="trip.activeTrip.fishery" :dense="true" label="Fishery" stack-label :rules="[val => !!val || 'Field is required']" @filter="fisheriesFilterFn" use-input option-label="name" option-value="_id" :options="fisheryOptions"></q-select>
+                <q-select v-model="trip.activeTrip.fishery" :dense="true" label="Fishery" stack-label :rules="[val => !!val || 'Field is required']" @filter="fisheriesFilterFn" use-input option-label="name" option-value="_id" fill-input
+                hide-selected :options="fisheryOptions"></q-select>
 
                 <p><strong>Permits</strong></p>
 
@@ -85,12 +91,10 @@
                 color="primary"
                 multiple
                 use-chips
-                use-input
                 stack-label
                 :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
                 option-value="permitNumber"
-                @filter = "permitsFilterFn"
-                :options="permits"
+                :options="getVesselPermits"
                 style="width: 100%"
                 >
                     <template v-slot:selected-item="scope">
@@ -189,6 +193,18 @@ import {
   Fishery
 } from '@boatnet/bn-models';
 
+// @Component({
+//   pouch: {
+//     userTrips() { // Also declared in class
+//       return {
+//         database: pouchService.userDBName,
+//         selector: { type: 'wcgop-trip' },
+//         sort: [{ tripNum: 'desc' }]
+//         // limit: 5 // this.resultsPerPage,
+//       };
+//     }
+//   }
+// })
 @Component
 export default class TripDetails extends Vue {
 
@@ -221,6 +237,8 @@ export default class TripDetails extends Vue {
     private permits: Permit[] = [];
     private otsTargets: OTSTarget[] = [];
     private ports: any[] = [];
+    private userTrips!: any;
+    private latestReturnDate = 0;
 
     constructor() {
         super();
@@ -394,6 +412,12 @@ export default class TripDetails extends Vue {
         }
     }
 
+    private get getVesselPermits() {
+        const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+        const vesselPermits = this.permit.vesselPermits[vesselId];
+        return vesselPermits;
+    }
+
     private createTrip() {
         // this is where the pouch code to save the trip goes
         let activeOTSTarget;
@@ -479,6 +503,29 @@ export default class TripDetails extends Vue {
         }
     }
 
+    private async getLatestDepartureDate() {
+        const db = pouchService.db;
+        const docs = await db.allDocs(
+                    pouchService.userDBName,
+                    );
+
+        for (const row of docs.rows) {
+            if (row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName) {
+                if (moment(row.doc.returnDate) > moment(this.latestReturnDate)) {
+                    this.latestReturnDate = row.doc.returnDate;
+                }
+            }
+        }
+    }
+
+    private startDateOptionsFn(val: string) {
+        if (this.trip.newTrip) {
+            return moment(val) > moment(this.latestReturnDate);
+        } else {
+            return true;
+        }
+    }
+
     private returnDateOptionsFn(val: string) {
       if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
           return moment(val) >= moment(this.trip.activeTrip.departureDate);
@@ -499,7 +546,6 @@ export default class TripDetails extends Vue {
             'sethtest',
             'all_ots_targets',
             );
-        console.log(otsTargets);
         for (const row of otsTargets.rows) {
             const target = row.doc;
             this.otsTargets.push(target);
@@ -512,8 +558,8 @@ export default class TripDetails extends Vue {
 
 
     private created() {
-        console.log(this.permit.permits);
         this.getOtsTargets();
+        this.getLatestDepartureDate();
     }
 
 }

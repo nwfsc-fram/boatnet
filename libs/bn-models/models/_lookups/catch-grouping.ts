@@ -3,7 +3,7 @@ import { BoatnetDate } from '../_common';
 import { Taxonomy } from './taxonomy';
 import { Debris } from './debris';
 
-export const CatchGroupingTypeName = 'grouping';
+export const CatchGroupingTypeName = 'catch-grouping';
 declare type MemberType = Taxonomy | Debris;
 
 export interface CatchGrouping extends Base {

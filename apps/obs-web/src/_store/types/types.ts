@@ -11,6 +11,10 @@ export interface AlertState {
   message: string | null;
 }
 
+export interface DebrieferState {
+  WcgopOperationTripDict: any;
+}
+
 export interface TripState {
   activeTrip: WcgopTrip | null;
   trips: WcgopTrip[];
@@ -20,6 +24,7 @@ export interface TripState {
 export interface PermitState {
   activePermit: Permit | null;
   permits: Permit[];
+  vesselPermits?: any;
   filterText: string;
 }
 

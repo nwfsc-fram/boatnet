@@ -11,9 +11,19 @@
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <!-- <div v-if="this.$route.params.id === 'new'"> -->
             <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
-            <q-select v-model="emefp.activeEmefp.vessel" label="Vessel" :options="options" @filter="filterFn" use-input stack-label
-            :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-            option-value="_id"></q-select>
+            <q-select
+              v-model="emefp.activeEmefp.vessel"
+              label="Vessel"
+              :options="options"
+              @filter="filterFn"
+              use-input
+              fill-input
+              hide-selected
+              stack-label
+              :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+              option-value="_id"
+              >
+            </q-select>
           <!-- </div> -->
           <!-- <div v-else> -->
             <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>
@@ -43,6 +53,7 @@
             use-chips
             option-label="permitNumber"
             option-value="permitNumber"
+            emit-value
             :options="permit.permits"
             >
 
@@ -186,17 +197,17 @@ export default class EMEFPDetails extends Vue {
 
   private created() {
       this.getOptions();
-      this.getPermits();
+      // this.getPermits();
   }
 
-  private getPermits() {
-      axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
-          .then( (response) => {
-              // this.$store.dispatch('updatePermits', response.data.items);
-              this.permits = response.data.items;
-              console.log(this.permits);
-          });
-  }
+  // private getPermits() {
+  //     axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500')
+  //         .then( (response) => {
+  //             // this.$store.dispatch('updatePermits', response.data.items);
+  //             this.permits = response.data.items;
+  //             console.log(this.permits);
+  //         });
+  // }
 
   get efpTypes() {
     if (this.emefp.activeEmefp && this.emefp.activeEmefp.efpTypes) {
