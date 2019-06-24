@@ -53,7 +53,7 @@ export interface Message extends Base {
     priority: PriorityLevel;
     subject?: string;
     associatedRecords?: CouchID[]; // Any record with which to associate
-        // Trips, Deployments, Hauls, VesselSelectionResult, etc ...
+        // Trips, Deployments, Hauls, VesselSelectionResult, Waivers, etc ...
     message: string;
     receipt?: Receipt[];
     status?: MessageStatus; // Sent, Unsent, Failed, Retried 1st

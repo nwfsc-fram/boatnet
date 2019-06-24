@@ -2,6 +2,7 @@ import { Base } from '../_base';
 import { Fishery, Vessel, PortGroup, Permit } from '../_lookups';
 import { BoatnetDate } from './boatnet-date';
 import { CouchID } from './couch-id';
+import { Waiver } from './waiver';
 
 declare type RolloverStatus = string; // TODO Lookup
     // Options include:  Vessel Covered, Permit Rollover, Likely not to fish
@@ -18,6 +19,7 @@ export interface VesselSelectionItem {
 
     rolloverStatus?: RolloverStatus; //
     isSelected?: boolean;
+    waiver?: Waiver; // only exists if isSelected = true
 }
 
 declare type LetterEventType = string; // TODO Lookup

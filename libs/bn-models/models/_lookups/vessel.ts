@@ -6,6 +6,7 @@ import { BoatnetDate, Measurement, CouchID } from '../_common/index';
 import { Person, VesselCaptain } from './person';
 import { Media } from './media';
 import { Permit } from './permit';
+import { Fishery } from './fishery';
 
 export const VesselTypeName = 'vessel';
 
@@ -26,6 +27,8 @@ export interface VesselPortAssignment {
 export interface Vessel extends Base {
   vesselName?: string;
   vesselType?: VesselType;
+  permits?: Permit[]; // IPHC will be considered a permit
+    // Note - everyone has access to Federal WC OA FG fishery
   homePort?: Port;
   tempPort?: VesselPortAssignment;
   coastGuardNumber?: string;

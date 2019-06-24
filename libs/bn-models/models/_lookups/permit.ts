@@ -1,8 +1,9 @@
 import { Base } from '../_base';
 import { BoatnetDate, CouchID} from '../_common';
 import { Fishery, Vessel, Organization, Person } from '../_lookups';
+import { GovernmentOrganization } from './fishery';
 
-declare type PermitType = string; // NOAA Fisheres, WDFW, ODFW, CDFW
+declare type PermitOrganization = string; // NOAA Fisheres, WDFW, ODFW, CDFW
 
 /*
 1. Vessel Covered
@@ -43,8 +44,11 @@ Our permits approach:  consume all of the active and inactive
 */
 
 export interface Permit extends Base {
-    permitType: PermitType;
-    permitNumber: string; // ODFW = Number
+    permitOrganization: GovernmentOrganization;
+    fishery: Fishery;  // Federal, State, IPHC
+    permitNumber?: string; // ODFW = Number
+
+    // TODO - Get IPHC point of contact for permits
 
     // TODO what are the certificateStart/End dates?
     // TODO what arethe permitStartDate / permitEndDate?
@@ -69,9 +73,6 @@ export interface Permit extends Base {
     status?: string;
     goid?: string;
     ghid?: string;
-
-    // State General Fields
-    fishery?: Fishery;
 
     // WDFW-specific Fields
 
