@@ -9,7 +9,7 @@ export type GovernmentOrganization = string; // TODO LOOKUPS
 // from lookups table
 export interface Fishery {
     name: string;
-    organization: GovernmentOrganization;
+    organization?: GovernmentOrganization;
     isIfq?: boolean; // CatchShares, Shoreside Hake, Motherside Catcher-Vessel
                         // Trawl Gear Modification EFP (anything program 14 previously)
     isEfp?: boolean;
@@ -21,9 +21,9 @@ export interface Fishery {
     isPermitted?: boolean; // is a permit given for this fishery?
     isActive?: boolean;
 
-    legacy: {
-        lookupValue: number;
-        programId: number;
+    legacy?: {
+        lookupValue?: number;
+        programId?: number;
     };
 }
 
