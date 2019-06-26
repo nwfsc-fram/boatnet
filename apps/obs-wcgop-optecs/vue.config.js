@@ -8,5 +8,5 @@ module.exports = {
     }
   },
   transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
-  publicPath: process.env.NODE_ENV === 'production' ? '/observer-trips/' : '/'
+  // publicPath: process.env.NODE_ENV === 'production' ? '/observer-trips/' : '/'
 };
