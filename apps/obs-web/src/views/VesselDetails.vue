@@ -8,6 +8,14 @@
         </template>
         </q-banner>
 
+        <q-btn
+        v-model="vessel.activeVessel.isActive"
+        :label="vessel.activeVessel.isActive ? 'Active' : 'Inactive'"
+        @click="vessel.activeVessel.isActive = !vessel.activeVessel.isActive"
+        :color="vessel.activeVessel.isActive === true ? 'primary': 'grey-5' "
+        >
+        </q-btn>
+
         <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name"></q-input>
         <div class="row">
             <div class="col-sm q-pa-md">
@@ -205,7 +213,7 @@ export default class VesselDetails extends Vue {
     }
 
     private async deleteVessel() {
-        couchService.masterDB.delete(this.vessel.activeVessel._id, this.vessel.activeVessel._rev).then( () => {
+        couchService.masterDB.delete(this.vessel.activeVessel!._id, this.vessel.activeVessel!._rev).then( () => {
             this.error('Vessel Deleted');
             this.showDialog = false;
             this.navigateBack();
@@ -221,7 +229,7 @@ export default class VesselDetails extends Vue {
             };
             this.user.activeUser = newUser;
             this.user.activeUser.activeVessel = this.vessel.activeVessel;
-            this.user.activeUser.port = this.vessel.activeVessel.port;
+            this.user.activeUser.port = this.vessel.activeVessel!.homePort;
             this.user.newUser = true;
             this.$router.push({path: '/users/' + 'new'});
     }

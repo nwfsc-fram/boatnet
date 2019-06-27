@@ -417,9 +417,9 @@ export default class TripDetails extends Vue {
   }
 
   private get getVesselPermits() {
-    const vesselId = this.vessel.activeVessel.coastGuardNumber
-      ? this.vessel.activeVessel.coastGuardNumber
-      : this.vessel.activeVessel.stateRegulationNumber;
+    const vesselId = this.vessel.activeVessel!.coastGuardNumber ?
+                      this.vessel.activeVessel!.coastGuardNumber : this.vessel.activeVessel!.stateRegulationNumber ?
+                      this.vessel.activeVessel!.stateRegulationNumber : '';
     const vesselPermits = this.permit.vesselPermits[vesselId];
     return vesselPermits;
   }

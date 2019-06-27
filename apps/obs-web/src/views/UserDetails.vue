@@ -448,7 +448,7 @@ export default class UserDetails extends Vue {
             };
             this.user.activeUser = newUser;
             this.user.activeUser.activeVessel = this.vessel.activeVessel;
-            this.user.activeUser.port = this.vessel.activeVessel.port;
+            this.user.activeUser.port = this.vessel.activeVessel!.homePort;
             this.user.newUser = true;
             this.$router.push({path: '/users/' + 'new'});
     }

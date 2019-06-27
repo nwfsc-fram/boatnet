@@ -41,7 +41,7 @@ export interface UserState {
 }
 
 export interface VesselState {
-  activeVessel?: any | null;
+  activeVessel?: any;
   filterText: string;
 }
 

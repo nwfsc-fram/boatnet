@@ -11,7 +11,7 @@ import { VesselState } from '@/_store/types/types';
 Vue.use(Vuex);
 
 export const state: VesselState = {
-  activeVessel: null,
+  activeVessel: undefined,
   filterText: ''
 };
 
