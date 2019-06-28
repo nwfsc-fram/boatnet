@@ -183,7 +183,7 @@ export default class EMEFPDetails extends Vue {
             descending: false
           };
           const vessels = await masterDB.view<any>(
-            'sethtest',
+            'obs-web',
             'all_vessels',
             queryOptions
           );
@@ -235,7 +235,7 @@ export default class EMEFPDetails extends Vue {
 
 
         const vessels = await masterDB.view<any>(
-          'sethtest',
+          'obs-web',
           'all_vessels',
         );
 

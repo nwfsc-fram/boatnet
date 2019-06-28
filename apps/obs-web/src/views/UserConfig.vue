@@ -71,7 +71,7 @@ export default class UserConfig extends Vue {
         const masterDB: Client<any> = couchService.masterDB;
         try {
             const vessels = await masterDB.viewWithDocs<any>(
-                'sethtest',
+                'obs-web',
                 'vessel_captains',
                 );
             for (const row of vessels.rows) {

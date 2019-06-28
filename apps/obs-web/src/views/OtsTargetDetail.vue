@@ -322,7 +322,7 @@ export default class OtsTargetDetail extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
 
       const history = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'all_ots_targets'
       );
 
@@ -336,7 +336,7 @@ export default class OtsTargetDetail extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
 
       const emefpTrips = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'em-efp-trips'
       );
 
@@ -346,7 +346,7 @@ export default class OtsTargetDetail extends Vue {
       }
 
       const emefpRoster = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'all_em_efp'
       );
 
