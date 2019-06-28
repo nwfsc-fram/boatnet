@@ -38,6 +38,7 @@ export interface Vessel extends Base {
   captains?: VesselCaptain[];
   safetyMeasures?: SafetyMeasure[]; // 30+ items
   media?: Media[];
+  isActive?: boolean;
 
   // TODO store crew at Vessel level?
   legacy?: {

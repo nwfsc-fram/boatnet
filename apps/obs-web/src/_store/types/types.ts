@@ -18,7 +18,8 @@ export interface DebrieferState {
 export interface TripState {
   activeTrip: WcgopTrip | null;
   trips: WcgopTrip[];
-  newTrip: boolean;
+  newTrip?: boolean;
+  readOnly?: boolean;
 }
 
 export interface PermitState {
@@ -41,7 +42,7 @@ export interface UserState {
 }
 
 export interface VesselState {
-  activeVessel?: any | null;
+  activeVessel?: any;
   filterText: string;
 }
 

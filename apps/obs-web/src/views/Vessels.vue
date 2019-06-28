@@ -42,23 +42,15 @@
                 <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
                 <q-td key="vesselCGNumber" :props="props">{{ (props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber) }}</q-td>
                 <q-td key="vesselType" :props="props">{{ props.row.vesselType ? props.row.vesselType.description : '' }}</q-td>
-                <q-td key="registeredLength" :props="props">{{ props.row.registeredLength.value ? props.row.registeredLength.value + '\'' : '' }}</q-td>
+                <q-td key="registeredLength" :props="props">{{ props.row.registeredLength.value ? props.row.registeredLength.value : '' }}</q-td>
                 <q-td key="port" :props="props">{{ props.row.port ? props.row.port.name : '' }}</q-td>
+                <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
                 <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
             </q-tr>
         </template>
 
         </q-table>
 
-            <boatnet-button-toggle
-              title="EFP?"
-
-              :options="[
-                {label: 'Y', value: true},
-                {label: 'N', value: false}
-                ]"
-
-            />
 
         <div v-if="selected.length > 0">{{ selected }}</div>
     </div>
@@ -104,9 +96,10 @@ private columns = [
     {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
     sortable: true, align: 'left' },
     {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: true },
-    {name: 'registeredLength', label: 'Registered Length', field: 'registeredLength', required: true, align: 'left', sortable: true },
+    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
     {name: 'port', label: 'Port', field: 'port', required: true, align: 'left', sortable: true },
-    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true},
+    {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: true },
+    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true },
 ];
 
 private async getVessels() {
@@ -186,7 +179,15 @@ private async getVessels() {
             queryOptions
             );
 
+        for (const row of vessels.rows) {
+            console.log(row.doc.isActive);
+            if ( row.doc.isActive === undefined ) {
+                row.doc.isActive = true;
+            }
+        }
+
         this.vessels = vessels.rows.map((row: any) => row.doc);
+
         this.loading = false;
         return this.vessels;
     } catch (err) {
@@ -216,13 +217,14 @@ private newVessel() {
         createdBy: authService.getCurrentUser()!.username,
         createdDate: moment().format(),
         vesselName: '',
-        port: undefined,
+        homePort: undefined,
         vesselType: {},
         registeredLength: {
                 measurementType: 'length',
                 value: undefined,
                 units: 'FT'
-            }
+            },
+        isActive: true
     };
     this.$router.push({path: '/vessels/' + 'new'});
 }
