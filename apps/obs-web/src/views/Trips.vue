@@ -54,7 +54,8 @@
         </q-card-section>
         <q-card-actions>
           <q-btn flat @click="getTripDetails(trip)">Edit</q-btn>
-          <q-btn flat @click="closeTrip(trip)">Close</q-btn>
+          <q-btn flat @click="closeConfirm(trip)">Close</q-btn>
+          <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
     </div>
@@ -62,7 +63,7 @@
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
 
-    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white" style="margin: 10px">
+    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white" style="margin: 10px">
 
       <q-card-section>
         <div class="text-h6">
@@ -74,12 +75,17 @@
         </div>
           <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
           <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+      <div class="text-white">
+          <span style="text-transform: capitalize;" v-if="trip.closingReason">{{ trip.closingReason }}</span>
+          <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ formatDate(trip.captainAffirmedDepartureDate) }} - {{ formatDate(trip.captainAffirmedReturnDate) }} </span>
+      </div>
       </q-card-section>
       <q-card-actions style="float:right">
-        <q-btn flat @click="reOpenTrip(trip)">Reopen</q-btn>
+        <q-btn flat @click="review(trip)">review</q-btn>
       </q-card-actions>
 
     </q-card>
+  </div>
 
     <q-dialog v-model="alert">
       <q-card>
@@ -91,7 +97,64 @@
       </q-card>
     </q-dialog>
 
-  </div>
+    <q-dialog v-model="cancelAlert">
+      <q-card>
+        <q-card-section>
+          <p>Are you sure?  A trip can not be un-cancelled. <br>(You may need to create it again)</p>
+          <div style="float: right">
+            <q-btn color="red" size="md" @click="cancelActiveTrip">yes, cancel trip</q-btn>
+            &nbsp;
+            <q-btn color="primary" size="md" @click="cancelAlert = false">no, keep trip</q-btn>
+          </div>
+          <br><br>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="closeAlert">
+      <q-card>
+        <q-card-section>
+          <div class=" q-pa-md">
+            <strong>I affirm this trip was taken.</strong>
+            <q-toggle
+            v-model="taken"
+            checked-icon="check"
+            unchecked-icon="clear"
+            color="green"
+            />
+          </div>
+
+          <q-list>
+          <div class="row items-start" v-if="activeTrip">
+            <q-item>
+              <q-item-section>
+                <div>
+                  <div class="text-subtitle2"> Affirmed Departure Date</div>
+                  <q-date v-model="activeTrip.captainAffirmedDepartureDate" color="green" dark></q-date>
+                </div>
+              </q-item-section>
+            </q-item>
+
+            <q-item>
+              <q-item-section>
+                <div>
+                  <div class="text-subtitle2"> Affirmed Return Date</div>
+                  <q-date v-model="activeTrip.captainAffirmedReturnDate" color="red" dark></q-date>
+                </div>
+              </q-item-section>
+            </q-item>
+          </div>
+        </q-list>
+        <br>
+        <q-card-actions style="float: right"  class="text-primary">
+          <q-btn color="primary" size="md" @click="closeAlert = false">cancel</q-btn>
+            <q-btn color="red" size="md" @click="closeActiveTrip" :disabled="!taken">close trip</q-btn>
+        </q-card-actions>
+          <br><br>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </div>
 </template>
 
@@ -147,6 +210,10 @@ export default class Trips extends Vue {
   private userTrips!: any;
   private vessels = [];
   private alert = false;
+  private cancelAlert = false;
+  private closeAlert = false;
+  private activeTrip: any = null;
+  private taken: boolean = false;
 
   constructor() {
       super();
@@ -284,20 +351,55 @@ export default class Trips extends Vue {
       pouchService.db.put(pouchService.userDBName, trip);
       }
 
-    private reOpenTrip(trip: any) {
-        if (this.openTrips.length < 2) {
-          trip.tripStatus.description = 'open';
-          pouchService.db.put(pouchService.userDBName, trip);
-        } else {
-          this.alert = true;
-        }
-      }
+    // private reOpenTrip(trip: any) {
+    //     if (this.openTrips.length < 2) {
+    //       trip.tripStatus.description = 'open';
+    //       pouchService.db.put(pouchService.userDBName, trip);
+    //     } else {
+    //       this.alert = true;
+    //     }
+    //   }
+
+    private cancelTrip(trip: any) {
+      this.activeTrip = trip;
+      this.cancelAlert = true;
+    }
+
+    private closeConfirm(trip: any) {
+      this.activeTrip = trip;
+      Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', trip.departureDate);
+      Vue.set(this.activeTrip, 'captainAffirmedReturnDate', trip.returnDate);
+      this.closeAlert = true;
+    }
+
+    private cancelActiveTrip() {
+      this.activeTrip!.closingReason = 'cancelled';
+      this.closeTrip(this.activeTrip);
+      this.cancelAlert = false;
+      this.closeAlert = false;
+    }
+
+    private closeActiveTrip() {
+      this.activeTrip!.closingReason = 'taken';
+      this.closeTrip(this.activeTrip);
+      this.cancelAlert = false;
+      this.closeAlert = false;
+    }
+
+    private review(trip: any) {
+      this.trip.activeTrip = trip;
+      this.trip.newTrip = false;
+      this.trip.readOnly = true;
+      console.log(this.trip.activeTrip);
+      this.$router.push({path: '/trips/' + trip.tripNum});
+    }
 
     private getTripDetails(trip: any) {
         // this.$store.dispatch('updateActiveTrip', trip);
         // this.$store.state.activeTrip = this.trips[i];
         this.trip.activeTrip = trip;
         this.trip.newTrip = false;
+        this.trip.readOnly = false;
         console.log(this.trip.activeTrip);
         this.$router.push({path: '/trips/' + trip.tripNum});
       }
@@ -332,6 +434,7 @@ export default class Trips extends Vue {
       this.trip.activeTrip = newTrip;
 
       this.trip.newTrip = true;
+      this.trip.readOnly = false;
       this.$router.push({path: '/trips/' + newTripNum});
       }
 

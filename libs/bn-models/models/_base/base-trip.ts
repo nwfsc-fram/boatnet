@@ -21,4 +21,8 @@ export interface BaseTrip extends Base {
   isExpanded?: boolean;
   doExpand?: boolean; // should expand or not after manual calculation
 
+  captainAffirmedDepartureDate?: BoatnetDate;
+  captainAffirmedReturnDate?: BoatnetDate;
+  closingReason?: string; // taken | cancelled
+
 }

@@ -18,7 +18,8 @@ export interface DebrieferState {
 export interface TripState {
   activeTrip: WcgopTrip | null;
   trips: WcgopTrip[];
-  newTrip: boolean;
+  newTrip?: boolean;
+  readOnly?: boolean;
 }
 
 export interface PermitState {

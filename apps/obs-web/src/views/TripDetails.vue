@@ -1,9 +1,9 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-    <q-card class="my-card">
-      <q-card-section>
+    <q-card class="my-card" >
+      <q-card-section :disabled="trip.readOnly">
         <!-- {{ this.$store.state.currentTrip.trip_num }} -->
-        <div class="text-h6" style="margin-bottom: 10px;">
+        <div class="text-h6" style="margin-bottom: 10px;" >
           {{ vessel.activeVessel.vesselName }}
           <q-icon
             v-if="trip.activeTrip.isSelected"
@@ -21,8 +21,8 @@
             <q-item>
               <q-item-section>
                 <div>
-                  <div class="text-subtitle2">Departure Date</div>
-                  <q-date v-model="departureDate" :options="startDateOptionsFn" color="green" dark></q-date>
+                  <div class="text-subtitle2" :disabled="trip.readOnly">Departure Date</div>
+                  <q-date v-model="departureDate" :options="startDateOptionsFn" color="green" dark :readonly="trip.readOnly"></q-date>
                 </div>
               </q-item-section>
             </q-item>
@@ -30,8 +30,8 @@
             <q-item>
               <q-item-section>
                 <div>
-                  <div class="text-subtitle2">Return Date</div>
-                  <q-date v-model="returnDate" :options="returnDateOptionsFn" color="red" dark></q-date>
+                  <div class="text-subtitle2" :disabled="trip.readOnly">Return Date</div>
+                  <q-date v-model="returnDate" :options="returnDateOptionsFn" color="red" dark :readonly="trip.readOnly"></q-date>
                 </div>
               </q-item-section>
             </q-item>
@@ -50,6 +50,7 @@
           fill-input
           hide-selected
           stack-label
+          :readonly="trip.readOnly"
         ></q-select>
 
         <q-select
@@ -64,6 +65,7 @@
           :option-label="opt => opt.name"
           option-value="_id"
           :options="ports"
+          :readonly="trip.readOnly"
         ></q-select>
 
         <q-select
@@ -79,10 +81,11 @@
           fill-input
           hide-selected
           :options="fisheryOptions"
+          :readonly="trip.readOnly"
         ></q-select>
 
         <p>
-          <strong>Permits</strong>
+          <strong :disabled="trip.readOnly">Permits</strong>
         </p>
 
         <q-select
@@ -96,6 +99,7 @@
           option-value="permitNumber"
           :options="getVesselPermits"
           style="width: 100%"
+          :readonly="trip.readOnly"
         >
           <template v-slot:selected-item="scope">
             <q-chip
@@ -155,8 +159,9 @@
         <q-btn label="Create Trip" color="primary" @click="createTrip"/>
       </q-card-actions>
       <q-card-actions v-else align="right" class="text-primary">
-        <q-btn label="Cancel" @click="goToTrips"></q-btn>
-        <q-btn label="Update" color="primary" @click="updateTrip"></q-btn>
+        <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
+        <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
+        <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
       </q-card-actions>
     </q-card>
   </div>
@@ -560,6 +565,11 @@ export default class TripDetails extends Vue {
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
     pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
+    this.$router.push({ path: '/trips' });
+  }
+
+  private goBack() {
+    this.trip.readOnly = false;
     this.$router.push({ path: '/trips' });
   }
 
