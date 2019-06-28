@@ -577,7 +577,7 @@ export default class TripDetails extends Vue {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const otsTargets = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'all_ots_targets'
       );
       for (const row of otsTargets.rows) {

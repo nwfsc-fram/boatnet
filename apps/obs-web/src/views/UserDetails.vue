@@ -250,7 +250,7 @@ export default class UserDetails extends Vue {
                 };
 
                 const contacts = await db.viewWithDocs(
-                    'sethtest',
+                    'obs-web',
                     'all_persons',
                     queryOptions
                     );
@@ -398,7 +398,7 @@ export default class UserDetails extends Vue {
             try {
                 const masterDB: Client<any> = couchService.masterDB;
                 const user = await masterDB.viewWithDocs<any>(
-                    'sethtest',
+                    'obs-web',
                     'all_usernames',
                     {key: authService.getCurrentUser()!.username}
                 );

@@ -145,7 +145,7 @@ private async getVessels() {
     //                 };
 
     //                 const vessels = await db.viewWithDocs(
-    //                     'sethtest',
+    //                     'obs-web',
     //                     'all_vessels',
     //                     queryOptions
     //                     );
@@ -174,7 +174,7 @@ private async getVessels() {
         };
 
         const vessels = await db.viewWithDocs(
-            'sethtest',
+            'obs-web',
             'all_vessels',
             queryOptions
             );

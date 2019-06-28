@@ -184,7 +184,7 @@ export default class OtsMangement extends Vue {
         const masterDB: Client<any> = couchService.masterDB;
         try {
             const otsTargets = await masterDB.viewWithDocs<any>(
-                'sethtest',
+                'obs-web',
                 'all_ots_targets',
                 );
             console.log(otsTargets);
@@ -202,7 +202,7 @@ export default class OtsMangement extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
 
       const emefpTrips = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'em-efp-trips'
       );
 
@@ -212,7 +212,7 @@ export default class OtsMangement extends Vue {
       }
 
       const emefpRoster = await masterDB.viewWithDocs<any>(
-        'sethtest',
+        'obs-web',
         'all_em_efp'
       );
 

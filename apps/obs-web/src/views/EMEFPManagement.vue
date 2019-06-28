@@ -102,7 +102,7 @@ private async getEmEfp() {
         };
 
         const emefp = await masterDB.viewWithDocs<any>(
-            'sethtest',
+            'obs-web',
             'all_em_efp',
             queryOptions
             );

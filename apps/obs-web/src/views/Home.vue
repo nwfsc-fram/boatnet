@@ -77,7 +77,7 @@ export default class Home extends Vue {
     const masterDB: Client<any> = couchService.masterDB;
     try {
         const permits = await masterDB.viewWithDocs<any>(
-            'sethtest',
+            'obs-web',
             'all_permits',
             );
         console.log(permits);

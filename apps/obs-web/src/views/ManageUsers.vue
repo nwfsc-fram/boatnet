@@ -97,7 +97,7 @@ export default class ManageUsers extends Vue {
 //             include_docs: true
 //           };
 //           const users = await masterDB.view<any>(
-//             'sethtest',
+//             'obs-web',
 //             'all_persons',
 //             queryOptions
 //           );
@@ -120,7 +120,7 @@ export default class ManageUsers extends Vue {
 
         try {
             const users = await masterDB.viewWithDocs<any>(
-                'sethtest',
+                'obs-web',
                 'all_persons',
                 queryOptions
                 );

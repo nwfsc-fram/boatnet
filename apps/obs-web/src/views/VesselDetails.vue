@@ -170,7 +170,7 @@ export default class VesselDetails extends Vue {
                     };
 
                     const captains = await db.viewWithDocs(
-                        'sethtest',
+                        'obs-web',
                         'all_persons',
                         queryOptions
                         );
