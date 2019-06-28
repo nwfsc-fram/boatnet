@@ -75,7 +75,7 @@
           <b>Last Login Date:</b>
           {{lastLoginDate}}
         </div>
-        v0.0.0</div>
+        v0.0.?</div>
   </q-layout>
 </template>
 
