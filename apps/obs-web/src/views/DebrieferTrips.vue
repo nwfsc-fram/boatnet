@@ -63,13 +63,15 @@
           <q-td
             key="tripStatus"
             :props="props"
-            @click.native="selectRow(props.row.__index,'tripStatus')"
+            @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'tripStatus')"
+            @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'tripStatus')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('tripStatus')!=-1?'bg-grey-2':''"
           >{{ props.row.tripStatus.description }}</q-td>
           <q-td
             key="vessel"
             :props="props"
-            @click.native="selectRow(props.row.__index,'vessel')"
+            @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'vessel')"
+            @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'vessel')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('vessel')!=-1?'bg-grey-2':''"
           >{{ props.row.vessel.vesselName }}</q-td>
           <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
@@ -129,6 +131,7 @@ export default class DebrieferTrips extends Vue {
 
   private WcgopTrips: WcgopTrip[] = [];
   private selected: any = {};
+  private previouslySelectedIndex: any;
   private pagination = { rowsPerPage: 50 };
 
   private visibleTripColumns = [
@@ -370,6 +373,7 @@ export default class DebrieferTrips extends Vue {
   }
 
   private selectRow(index: any, value: any) {
+    console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
       this.selected[index].indexOf(value) === -1
         ? this.selected[index].push(value)
@@ -381,6 +385,45 @@ export default class DebrieferTrips extends Vue {
     }
   }
 
+  // keep track of the row index of the column on mouse down
+  private selectMultipleRowsMousedown(index: any, value: any) {
+    console.log(
+      'selectMultipleRowsMousedown index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
+    this.previouslySelectedIndex = index;
+  }
+
+  // calculate the difference between the last row selected
+  // and the current row and highlight each one separately
+  private selectMultipleRowsMouseup(index: any, value: any) {
+    console.log(
+      'selectMultipleRowsMouseup index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
+
+    if (this.previouslySelectedIndex > index) {
+      console.log('previouslySelectedIndex>index');
+      for (let i = index; i <= this.previouslySelectedIndex; i++) {
+        this.selectRow(i, value);
+      }
+    } else if (this.previouslySelectedIndex < index) {
+      console.log('previouslySelectedIndex<index');
+      for (let i = this.previouslySelectedIndex; i <= index; i++) {
+        this.selectRow(i, value);
+      }
+    }
+
+    this.previouslySelectedIndex = index;
+  }
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
