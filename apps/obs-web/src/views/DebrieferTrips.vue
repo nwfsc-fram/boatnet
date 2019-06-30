@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="text-h6">Trips</div>
-    Selection = {{selected}}
     <q-table
       :data="WcgopTrips"
       :columns="tripColumns"
@@ -55,6 +54,9 @@
             </template>
           </q-select>
         </div>
+        <template>
+          <q-btn color="primary text-white q-ma-md" @click="openDialog()">Edit</q-btn>
+        </template>
       </template>
 
       <template v-slot:body="props">
@@ -104,6 +106,57 @@
         </q-tr>
       </template>
     </q-table>
+
+    <q-dialog v-model="dialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Edit</div>
+        </q-card-section>
+
+        <q-separator></q-separator>
+
+        <q-card-section style="max-height: 50vh" class="scroll">
+          <q-table
+            :data="WcgopDialogTrips"
+            :columns="tripDialogColumns"
+            :pagination.sync="dialogPagination"
+            dense
+            row-key="id"
+          >
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td key="key" :props="props">{{ props.row.key }}</q-td>
+
+                <q-td key="tripStatus" :props="props">
+                  <div class="text-pre-wrap">{{ props.row.tripStatus.description }}</div>
+                  <q-popup-edit v-model="props.row.tripStatus.description">
+                    <q-input
+                      type="textarea"
+                      v-model="props.row.tripStatus.description"
+                      dense
+                      autofocus
+                    ></q-input>
+                  </q-popup-edit>
+                </q-td>
+                <q-td key="vessel" :props="props">
+                  <div class="text-pre-wrap">{{ props.row.vessel.vesselName }}</div>
+                  <q-popup-edit v-model="props.row.vessel.vesselName">
+                    <q-input type="textarea" v-model="props.row.vessel.vesselName" dense autofocus></q-input>
+                  </q-popup-edit>
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
+        </q-card-section>
+
+        <q-separator></q-separator>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup></q-btn>
+          <q-btn flat label="Save" color="primary" v-close-popup></q-btn>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -132,9 +185,14 @@ export default class DebrieferTrips extends Vue {
   @State('debriefer') private debriefer!: DebrieferState;
 
   private WcgopTrips: WcgopTrip[] = [];
+  private WcgopDialogTrips: WcgopTrip[] = [];
   private selected: any = {};
+  private dialog: boolean = false;
+  private tripDialogColumns: any = [];
   private previouslySelectedIndex: any;
   private pagination = { rowsPerPage: 50 };
+  private dialogPagination = { rowsPerPage: 10 };
+  private tripDialogColumnNameSet = new Set();
 
   private visibleTripColumns = [
     'key',
@@ -375,7 +433,7 @@ export default class DebrieferTrips extends Vue {
   }
 
   private selectRow(index: any, value: any) {
-    console.log('selectRow with index=' + index + ' and value=' + value);
+    // console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
       this.selected[index].indexOf(value) === -1
         ? this.selected[index].push(value)
@@ -389,36 +447,36 @@ export default class DebrieferTrips extends Vue {
 
   // keep track of the row index of the column on mouse down
   private selectMultipleRowsMousedown(index: any, value: any) {
-    console.log(
-      'selectMultipleRowsMousedown index=' +
-        index +
-        ' value=' +
-        value +
-        ' previouslySelectedIndex=' +
-        this.previouslySelectedIndex
-    );
+    // console.log(
+    //   'selectMultipleRowsMousedown index=' +
+    //     index +
+    //     ' value=' +
+    //     value +
+    //     ' previouslySelectedIndex=' +
+    //     this.previouslySelectedIndex
+    // );
     this.previouslySelectedIndex = index;
   }
 
   // calculate the difference between the last row selected
   // and the current row and highlight each one separately
   private selectMultipleRowsMouseup(index: any, value: any) {
-    console.log(
-      'selectMultipleRowsMouseup index=' +
-        index +
-        ' value=' +
-        value +
-        ' previouslySelectedIndex=' +
-        this.previouslySelectedIndex
-    );
+    // console.log(
+    //   'selectMultipleRowsMouseup index=' +
+    //     index +
+    //     ' value=' +
+    //     value +
+    //     ' previouslySelectedIndex=' +
+    //     this.previouslySelectedIndex
+    // );
 
     if (this.previouslySelectedIndex > index) {
-      console.log('previouslySelectedIndex>index');
+      // console.log('previouslySelectedIndex>index');
       for (let i = index; i <= this.previouslySelectedIndex; i++) {
         this.selectRow(i, value);
       }
     } else if (this.previouslySelectedIndex < index) {
-      console.log('previouslySelectedIndex<index');
+      // console.log('previouslySelectedIndex<index');
       for (let i = this.previouslySelectedIndex; i <= index; i++) {
         this.selectRow(i, value);
       }
@@ -426,6 +484,39 @@ export default class DebrieferTrips extends Vue {
 
     this.previouslySelectedIndex = index;
   }
+
+  private openDialog() {
+    this.WcgopDialogTrips = [];
+    this.tripDialogColumns = [];
+    let key: any;
+    let j = 0; // index of column that is editable
+    this.dialog = true;
+
+    // create a set containing the column names selected for edit
+    if (this.selected) {
+      // set first column to the key of the row selected
+      this.tripDialogColumns[j] = this.tripColumns[j];
+
+      for (key in this.selected) {
+        if (this.selected.hasOwnProperty(key)) {
+          this.WcgopDialogTrips[key] = this.WcgopTrips[key];
+
+          for (const tripSelected of this.selected[key]) {
+            this.tripDialogColumnNameSet.add(tripSelected);
+          }
+        }
+      }
+
+      // dynamically create an array of column headers to be edited
+      for (const tripColumn of this.tripColumns) {
+        if (this.tripDialogColumnNameSet.has(tripColumn.name)) {
+          j++;
+          this.tripDialogColumns[j] = tripColumn;
+        }
+      }
+    }
+  }
+
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
