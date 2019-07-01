@@ -15,7 +15,7 @@ import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
   QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
-  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable, QPopupEdit,
+  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox,
   QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels, QTabPanel, QSpinner,
   QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace, QTabs, QTab, QRouteTab, QSeparator, QInnerLoading
 } from 'quasar';
@@ -36,7 +36,7 @@ Vue.use(Quasar, {
     QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
-    QChip, QAvatar, QBanner, QTable, QPopupEdit, QTh, QTr, QTd, QToggle, QSplitter,
+    QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, QSplitter,
     QTabPanels, QTabPanel, QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace,
     QTabs, QTab, QRouteTab, QSeparator, QInnerLoading
   },

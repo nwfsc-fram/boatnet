@@ -8,6 +8,9 @@
       row-key="id"
       :pagination.sync="pagination"
       :visible-columns="visibleTripColumns"
+      :selected-rows-label="getSelectedString"
+      selection="multiple"
+      :selected.sync="rowSelected"
     >
       <template v-slot:top="props">
         <div v-if="$q.screen.gt.xs" class="col">
@@ -61,6 +64,9 @@
 
       <template v-slot:body="props">
         <q-tr :props="props">
+          <q-td auto-width>
+            <q-checkbox dense v-model="props.rowSelected" />
+          </q-td>
           <q-td key="key" :props="props">{{ props.row.key }}</q-td>
           <q-td
             key="tripStatus"
@@ -187,6 +193,7 @@ export default class DebrieferTrips extends Vue {
   private WcgopTrips: WcgopTrip[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
   private selected: any = {};
+  private rowSelected: any = [];
   private dialog: boolean = false;
   private tripDialogColumns: any = [];
   private previouslySelectedIndex: any;
@@ -516,7 +523,13 @@ export default class DebrieferTrips extends Vue {
       }
     }
   }
-
+  private getSelectedString() {
+    return this.rowSelected.length === 0
+      ? ''
+      : `${this.rowSelected.length} record${
+          this.rowSelected.length > 1 ? 's' : ''
+        } rowSelected of ${this.WcgopTrips.length}`;
+  }
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
