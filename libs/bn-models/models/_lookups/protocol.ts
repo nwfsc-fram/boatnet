@@ -43,36 +43,50 @@ protocols: [
       biostructures { age 25 }
     },
 
-
 #1
 SL100AW25FiOv5
 
-What are strata?
+What are strata? - Conditional / Context Constraints
 ================
 -- Distributional Constraints
-perHaul
-perLeg
-perDay
-vesselColor (orange v. blue)
+perCruise / perVessel
+vesselColor (orange v. blue) (could translate into spatio-temporal constraint)
+perPass
+passNumber (35 in Pass 1, 33 in Pass 2)
+perLeg (could translate into spatio-temporal constraint)
+legNumber (e.g. 10 in leg 1, 5 in leg 2, etc.)
+perHaul (could translate into spatio-temporal constraint)
+perDay (could translate into spatio-temporal constraint)
 
-minLength, maxLength distribution
-spatio-temporal distribution
+biolistNumber / everyNHauls (equivalent to every nth haul (for WCGOP n = 3), random haul start)
 
--- Spatio-Temporal constraints
+-- Species Characteristics Constraints
+observationRange (e.g. length (min, max, type), width (min, max, type), weight (min, max))
+    [{min: 25, max 29}, {min 30, max 34}, ... ]
+
+categoricalList (e.g. lifestage (eggs, juvenile, adult), sex, size grouping (e.g. small v. large hake) - could be multiple, simultaneous lists)
+
+-- Spatio-Temporal Constraints
 minDate, maxDate - (may be specified as season/pass)
-minLatitude, maxLatitude (spatial, specified as which legs)
+minLatitude, maxLatitude (spatial, specified as which legs or which states (WA, OR, etc.)) (GeoJSON, so probably include longitude)
 minDepth, maxDepth (spatial)
 
--- Management constraints
+-- Management Constraints
 fisheries (WCGOP / A-SHOP)
 gearType (WCGOP / A-SHOP)
 disposition (WCGOP)
 vesselType (mothership v. catcher processor - A-SHOP)
 
+-- No Constraints
+
+PI/Organizations
+For WCGOP (e.g.)
+
+#1
 ProgramYearVessel {
+  taxonomy: canary,
   protocols: [
     {
-      taxonomy: canary,
       name: SL75
       strata: {
         isPerHaul: yes
@@ -81,41 +95,75 @@ ProgramYearVessel {
       observations { sex, length }
     },
     {
-      taxonomy: canary
       name: SL20AW20
       strata: {
         isPerHaul: yes
       }
-      count: 20
+      count: 25
       observations { sex, length, weight }
       biostructures { age }
     },
     {
-      taxonomy: canary
+      name: StTi
+      strata: {
+        cruise: {
+          countType: all
+          children: [
+            childType: pass
+
+          ]
+          pass: all
+            leg: [
+              {count: 5, countType: max, leg: 1},
+              {count: 5, countType: max, leg: 2},
+            ]
+              haul:
+                observationRange
+        }
+      }
+
+      name: StTi
+      strata: {
+        observationRangePerBin: {
+          binType: leg,
+          ranges: [
+            { lengthMin: 0cm, lengthMax: 20cm, lengthType: fork, count: 4, countType: min },
+            { lengthMin: 20cm, lengthMax: 29cm, lengthType: fork, count: 4, countType: min },
+            { lengthMin: 30cm, lengthMax: 39cm, lengthType: fork, count: 4, countType: min },
+            { lengthMin: 40cm, lengthMax: 49cm, lengthType: fork, count: 4, countType: min },
+            { lengthMin: 50cm, lengthType: fork, count: 4, countType: min }
+          ]
+        },
+        legNumber: [
+          {count: 20, countType: max, leg: 1},
+          {count: 20, countType: max, leg: 2},
+        ],
+        perObservationRangePerHaul: { count: 1, countType: max, rangeType: length },
+        perHaul: { count: 2, countType: max },
+      }
+
+    },
+    {
       name: SL2AW2Ov2
       strata: {
         isPerLeg: yes
-        lengthMin: 26cm
-        lenghtMax: 30cm
+        observationRange: { lengthMin: 26cm, lengthMax: 30cm, lengthType: fork }
       }
       count: 2
       observations { sex, length, weight }
       biostructures { age, ovary }
     },
     {
-      taxonomy: canary
       name: SL5AW5FiOv5
       strata: {
         isPerLeg: yes
-        lengthMin: 31cm
-        lenghtMax: 35cm
+        observationRange: { lengthMin: 31cm, lengthMax: 35cm, lengthType: fork }
       }
       count: 5
       observations { sex, length, weight }
       biostructures { age, ovary }
     },
     {
-      taxonomy: canary
       name: SL5AW5FiOv5
       strata: {
         isPerLeg: yes
@@ -127,7 +175,6 @@ ProgramYearVessel {
       biostructures { age, ovary }
     },
     {
-      taxonomy: canary
       name: SL5AW5Fi
       strata: {
         isPerHaul: yes
@@ -146,7 +193,9 @@ ProgramYearVessel {
       taxonomy: canary,
       name: SL100
       count: 100
-      observations { sex, length}
+      countType: target;  // minimum | maximum | target | as many as possible | all
+      observations { sex, length }
+      strata: { isPerHaul: true }
       children: [
         {
           taxonomy: canary,
@@ -154,17 +203,37 @@ ProgramYearVessel {
           name: AW25
           observations { weight }
           biostructures { age }
+          strata: { perHaul: true }
           children: [
             {
               taxonomy: canary,
               name: StTi5
               count: 5,
-              biostructures { stomach, tissue}
+              biostructures { stomach, tissue },
+              strata: {
+                observationRangePerBin: {
+                  binType: leg,
+                  ranges: [
+                    { lengthMin: 0cm, lengthMax: 20cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 20cm, lengthMax: 29cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 30cm, lengthMax: 39cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 40cm, lengthMax: 49cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 50cm, lengthType: fork, count: 4, countType: min }
+                  ]
+                },
+                legNumber: [
+                  {count: 20, countType: max, leg: 1},
+                  {count: 20, countType: max, leg: 2},
+                ],
+                perObservationRangePerHaul: { count: 1, countType: max, rangeType: length },
+                perHaul: { count: 2, countType: max },
+              }
             },
             {
               taxonomy: canary,
               count: 5,
               biostructures { ovaries}
+              strata: { isPerHaul: true, observationRange: { lengthMin: 25cm, lengthMax: 29cm, lengthType: fork }}
             },
           ]
         }
@@ -172,8 +241,7 @@ ProgramYearVessel {
     },
 }
 
-
-#3
+#3 - WCGOP spreadsheet adaptation
 protocols: [
   {
     taxonomy: 'canary',
