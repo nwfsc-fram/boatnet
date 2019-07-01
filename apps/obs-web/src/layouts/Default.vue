@@ -24,7 +24,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing">
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
@@ -229,6 +229,4 @@ export default class DefaultLayout extends Vue {
     .q-field__native {
       font-weight: bold !important;
     }
-
-
 </style>

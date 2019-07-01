@@ -106,7 +106,7 @@ ProgramYearVessel {
     {
       name: StTi
       strata: {
-        cruise: { 
+        cruise: {
           countType: all
           children: [
             childType: pass
@@ -134,7 +134,7 @@ ProgramYearVessel {
             { lengthMin: 50cm, lengthType: fork, count: 4, countType: min }
           ]
         },
-        legNumber: [ 
+        legNumber: [
           {count: 20, countType: max, leg: 1},
           {count: 20, countType: max, leg: 2},
         ],
@@ -221,7 +221,7 @@ ProgramYearVessel {
                     { lengthMin: 50cm, lengthType: fork, count: 4, countType: min }
                   ]
                 },
-                legNumber: [ 
+                legNumber: [
                   {count: 20, countType: max, leg: 1},
                   {count: 20, countType: max, leg: 2},
                 ],

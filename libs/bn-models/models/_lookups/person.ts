@@ -66,7 +66,7 @@ export interface Person extends Base {
   homePhone?: string;
   cellPhone?: string;
   workEmail?: string;
-  homeEmail?: string[];
+  homeEmail?: string;
   birthdate?: BoatnetDate;
   emergencyContacts?: EmergencyContact[];
   organizations?: OrganizationDateRange[];

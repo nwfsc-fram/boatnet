@@ -17,21 +17,21 @@
         </div>
 
         <q-list>
-          <div class="row items-start">
-            <q-item>
+          <div class="row items-start" >
+            <q-item style="padding: 4px 0">
               <q-item-section>
                 <div>
                   <div class="text-subtitle2" :disabled="trip.readOnly">Departure Date</div>
-                  <q-date v-model="departureDate" :options="startDateOptionsFn" color="green" dark :readonly="trip.readOnly"></q-date>
+                  <q-date class="trip-date" v-model="departureDate" :options="startDateOptionsFn" color="green" dark :readonly="trip.readOnly"></q-date>
                 </div>
               </q-item-section>
             </q-item>
-
-            <q-item>
+          <div style="margin: 8px"></div>
+            <q-item style="padding: 4px 0">
               <q-item-section>
                 <div>
                   <div class="text-subtitle2" :disabled="trip.readOnly">Return Date</div>
-                  <q-date v-model="returnDate" :options="returnDateOptionsFn" color="red" dark :readonly="trip.readOnly"></q-date>
+                  <q-date class="trip-date" v-model="returnDate" :options="returnDateOptionsFn" color="red" dark :readonly="trip.readOnly"></q-date>
                 </div>
               </q-item-section>
             </q-item>
