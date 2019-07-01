@@ -5,7 +5,7 @@
       :data="WcgopTrips"
       :columns="tripColumns"
       dense
-      row-key="id"
+      row-key="__index"
       :pagination.sync="pagination"
       :visible-columns="visibleTripColumns"
       :selected-rows-label="getSelectedString"
@@ -65,7 +65,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-checkbox dense v-model="props.rowSelected" />
+            <q-checkbox dense v-model="props.selected" />
           </q-td>
           <q-td key="key" :props="props">{{ props.row.key }}</q-td>
           <q-td
@@ -400,6 +400,7 @@ export default class DebrieferTrips extends Vue {
       for (const row of trips.rows) {
         const trip = row.doc;
         trip.key = row.key;
+        trip.rowSelected = false;
         this.WcgopTrips.push(trip);
 
         for (const operationId of trip.operationIDs) {
