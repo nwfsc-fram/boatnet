@@ -7,7 +7,15 @@
       </template>
     </q-banner>
 
-    <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+    <span v-if='isSyncing' style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+      <span
+      class="text-primary text-h6"
+      style="text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-transform: uppercase; font-weight: bold">Wait<br>Syncing</span>
+      <q-spinner-puff
+      color="primary"
+      size="20em"/>
+    </span>
+    <img v-else alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
 
   </q-page>
 </template>
@@ -16,7 +24,7 @@
 import { mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 import { AlertState, VesselState, PermitState, UserState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
@@ -39,6 +47,8 @@ export default class Home extends Vue {
 
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
+
+  @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
 
   constructor() {
     super();

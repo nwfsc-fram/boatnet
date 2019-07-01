@@ -32,7 +32,6 @@
       <q-card
       v-for="(trip, i) in openTrips"
       :key="i"
-      style="margin: 10px"
       :class="computedTripClass(trip)"
       >
         <q-card-section>
@@ -63,7 +62,7 @@
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
 
-    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white" style="margin: 10px">
+    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white trip-card">
 
       <q-card-section>
         <div class="text-h6">
@@ -114,7 +113,7 @@
     <q-dialog v-model="closeAlert">
       <q-card>
         <q-card-section>
-          <div class=" q-pa-md">
+          <div>
             <strong>I affirm this trip was taken.</strong>
             <q-toggle
             v-model="taken"
@@ -124,26 +123,26 @@
             />
           </div>
 
-          <q-list>
-          <div class="row items-start" v-if="activeTrip">
-            <q-item>
+          <q-list v-if="activeTrip">
+          <!-- <div class="row items-start" > -->
+            <q-item style="padding: 4px 0">
               <q-item-section>
-                <div>
+                <!-- <div> -->
                   <div class="text-subtitle2"> Affirmed Departure Date</div>
                   <q-date v-model="activeTrip.captainAffirmedDepartureDate" color="green" dark></q-date>
-                </div>
+                <!-- </div> -->
               </q-item-section>
             </q-item>
 
-            <q-item>
+            <q-item style="padding: 4px 0">
               <q-item-section>
-                <div>
+                <!-- <div> -->
                   <div class="text-subtitle2"> Affirmed Return Date</div>
                   <q-date v-model="activeTrip.captainAffirmedReturnDate" color="red" dark></q-date>
-                </div>
+                <!-- </div> -->
               </q-item-section>
             </q-item>
-          </div>
+          <!-- </div> -->
         </q-list>
         <br>
         <q-card-actions style="float: right"  class="text-primary">
@@ -449,9 +448,9 @@ export default class Trips extends Vue {
 
 private computedTripClass(trip: WcgopTrip) {
   if (trip.isSelected) {
-    return 'my-card bg-green text-white';
+    return 'trip-card my-card bg-green text-white';
   } else {
-    return 'my-card bg-primary text-white';
+    return 'trip-card my-card bg-primary text-white';
   }
 }
 

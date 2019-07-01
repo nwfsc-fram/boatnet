@@ -314,6 +314,7 @@ export default class UserDetails extends Vue {
                 );
                 for (const row of vesselCaptains.rows) {
                     for (const captain of row.doc.captains) {
+
                         if (!vesselCaptains[captain.workEmail]) {
                             vesselCaptains[captain.workEmail] = [];
                         }
@@ -378,7 +379,7 @@ export default class UserDetails extends Vue {
                 );
 
             for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName !== null) {
                     if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
 
                         this.user.newUser = false;
@@ -403,7 +404,7 @@ export default class UserDetails extends Vue {
                     {key: authService.getCurrentUser()!.username}
                 );
 
-                if (user.rows) {
+                if (user.rows.length > 0) {
                     couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
                     pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
                 }
@@ -429,9 +430,21 @@ export default class UserDetails extends Vue {
                         this.user.newUser = true;
                         this.user.activeUser = {
                             type: 'person',
-                            firstName: undefined,
-                            lastName: undefined,
+                            firstName: '',
+                            lastName: '',
                             apexUserAdminUserName: authService.getCurrentUser()!.username,
+                            addressLine1: '',
+                            addressLine2: '',
+                            city: '',
+                            state: '',
+                            zipCode: '',
+                            country: '',
+                            workPhone: '',
+                            homePhone: '',
+                            cellPhone: '',
+                            workEmail: '',
+                            homeEmail: '',
+                            birthdate: '',
                             createdBy: authService.getCurrentUser()!.username,
                             createdDate: moment().format()
                             };
@@ -443,6 +456,21 @@ export default class UserDetails extends Vue {
     private newContact() {
             const newUser = {
                 type: PersonTypeName,
+                firstName: '',
+                lastName: '',
+                apexUserAdminUserName: authService.getCurrentUser()!.username,
+                addressLine1: '',
+                addressLine2: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: '',
+                workPhone: '',
+                homePhone: '',
+                cellPhone: '',
+                workEmail: '',
+                homeEmail: '',
+                birthdate: '',
                 createdBy: authService.getCurrentUser()!.username,
                 createdDate: moment().format()
             };
