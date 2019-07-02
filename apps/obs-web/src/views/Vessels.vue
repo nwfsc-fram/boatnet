@@ -92,14 +92,14 @@ private vessels: Vessel[] = [];
 private loading: boolean = false;
 
 private columns = [
-    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
+    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: false },
     {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
-    sortable: true, align: 'left' },
-    {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: true },
-    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
-    {name: 'port', label: 'Port', field: 'port', required: true, align: 'left', sortable: true },
-    {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: true },
-    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: true },
+    sortable: false, align: 'left' },
+    {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: false },
+    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: false },
+    {name: 'port', label: 'Port', field: 'port', required: true, align: 'left', sortable: false },
+    {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: false },
+    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: false},
 ];
 
 private async getVessels() {
@@ -168,6 +168,7 @@ private async getVessels() {
         const queryOptions = {
         limit: 20,
         start_key: filter.toLowerCase(),
+        end_key: filter.toLowerCase() + "\u9999" ,
         inclusive_end: true,
         descending: false,
         include_docs: true
@@ -175,6 +176,7 @@ private async getVessels() {
 
         const vessels = await db.viewWithDocs(
             'obs-web',
+            // 'searchable_vessels',
             'all_vessels',
             queryOptions
             );
