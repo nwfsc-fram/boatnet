@@ -168,7 +168,7 @@ private async getVessels() {
         const queryOptions = {
         limit: 20,
         start_key: filter.toLowerCase(),
-        end_key: filter.toLowerCase() + "\u9999" ,
+        end_key: filter.toLowerCase() + '\u9999' ,
         inclusive_end: true,
         descending: false,
         include_docs: true
