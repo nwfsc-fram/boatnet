@@ -65,7 +65,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-checkbox dense v-model="props.selected" />
+            <q-checkbox dense v-model="props.selected"/>
           </q-td>
           <q-td key="key" :props="props">{{ props.row.key }}</q-td>
           <q-td
@@ -116,43 +116,15 @@
     <q-dialog v-model="dialog">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Edit</div>
+          <div class="text-h6">Bulk Editing</div>
         </q-card-section>
 
         <q-separator></q-separator>
 
         <q-card-section style="max-height: 50vh" class="scroll">
-          <q-table
-            :data="WcgopDialogTrips"
-            :columns="tripDialogColumns"
-            :pagination.sync="dialogPagination"
-            dense
-            row-key="id"
-          >
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="key" :props="props">{{ props.row.key }}</q-td>
-
-                <q-td key="tripStatus" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.tripStatus.description }}</div>
-                  <q-popup-edit v-model="props.row.tripStatus.description">
-                    <q-input
-                      type="textarea"
-                      v-model="props.row.tripStatus.description"
-                      dense
-                      autofocus
-                    ></q-input>
-                  </q-popup-edit>
-                </q-td>
-                <q-td key="vessel" :props="props">
-                  <div class="text-pre-wrap">{{ props.row.vessel.vesselName }}</div>
-                  <q-popup-edit v-model="props.row.vessel.vesselName">
-                    <q-input type="textarea" v-model="props.row.vessel.vesselName" dense autofocus></q-input>
-                  </q-popup-edit>
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
+          <q-input label="Column" v-model="bulkEditColumn" readonly/>
+          <q-input label="Previous Value" v-model="bulkEditColumnPreviousValue" readonly/>
+          <q-input label="New Value" v-model="bulkEditColumnNewValue"></q-input>
         </q-card-section>
 
         <q-separator></q-separator>
@@ -190,9 +162,12 @@ export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-  private WcgopTrips: WcgopTrip[] = [];
+  private WcgopTrips: any[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
   private selected: any = {};
+  private bulkEditColumn: any = '';
+  private bulkEditColumnPreviousValue: any = '';
+  private bulkEditColumnNewValue: any = '';
   private rowSelected: any = [];
   private dialog: boolean = false;
   private tripDialogColumns: any = [];
@@ -465,6 +440,15 @@ export default class DebrieferTrips extends Vue {
     // );
     this.previouslySelectedIndex = index;
   }
+  // gets the actual value of the row ("index") and column "value"
+  private getValue(index: any, value: any) {
+    switch (value) {
+      case 'tripStatus':
+        return this.WcgopTrips[index][value].description;
+      case 'vessel':
+        return this.WcgopTrips[index][value].vesselName;
+    }
+  }
 
   // calculate the difference between the last row selected
   // and the current row and highlight each one separately
@@ -477,18 +461,34 @@ export default class DebrieferTrips extends Vue {
     //     ' previouslySelectedIndex=' +
     //     this.previouslySelectedIndex
     // );
+    this.selected = [];
+    this.bulkEditColumnPreviousValue = this.getValue(index, value);
+    let multipleValues = false;
+
+    for (const tripColumn of this.tripColumns) {
+      if (tripColumn.name === value) {
+        this.bulkEditColumn = tripColumn.label;
+      }
+    }
+    console.log(this.bulkEditColumnPreviousValue);
 
     if (this.previouslySelectedIndex > index) {
       // console.log('previouslySelectedIndex>index');
+      multipleValues = true;
       for (let i = index; i <= this.previouslySelectedIndex; i++) {
+        // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
         this.selectRow(i, value);
       }
     } else if (this.previouslySelectedIndex < index) {
+      multipleValues = true;
       // console.log('previouslySelectedIndex<index');
       for (let i = this.previouslySelectedIndex; i <= index; i++) {
+        // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
         this.selectRow(i, value);
       }
     }
+
+    if (multipleValues) {this.bulkEditColumnPreviousValue = 'Multiple'; }
 
     this.previouslySelectedIndex = index;
   }
