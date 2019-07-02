@@ -296,6 +296,7 @@ export default class Trips extends Vue {
                 const queryOptions = {
                 limit: 5,
                 start_key: val.toLowerCase(),
+                end_key: val.toLowerCase() + '\u9999' ,
                 inclusive_end: true,
                 descending: false,
                 include_docs: true
