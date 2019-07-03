@@ -5,7 +5,7 @@
       :data="WcgopTrips"
       :columns="tripColumns"
       dense
-      row-key="__index"
+      row-key="key"
       @mousedown.native.prevent
       :pagination.sync="pagination"
       :visible-columns="visibleTripColumns"
