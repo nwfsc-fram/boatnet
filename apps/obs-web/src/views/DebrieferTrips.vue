@@ -6,6 +6,7 @@
       :columns="tripColumns"
       dense
       row-key="__index"
+      @mousedown.native.prevent
       :pagination.sync="pagination"
       :visible-columns="visibleTripColumns"
       :selected-rows-label="getSelectedString"
