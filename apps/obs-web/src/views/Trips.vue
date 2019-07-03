@@ -377,7 +377,7 @@ export default class Trips extends Vue {
       this.activeTrip!.closingReason = 'cancelled';
 
       // store record of trip selection - for use next time.
-      let tripSelection: TripSelection = {
+      const tripSelection: TripSelection = {
         type: 'trip-selection',
         vessel: this.activeTrip.vessel,
         isSelected: this.activeTrip.isSelected,
@@ -385,9 +385,9 @@ export default class Trips extends Vue {
         permits: this.activeTrip.permits,
         isActive: true,
         notes: this.activeTrip.notes
-      }
+      };
 
-      pouchService.db.post(pouchService.userDBName, tripSelection)
+      pouchService.db.post(pouchService.userDBName, tripSelection);
 
       this.closeTrip(this.activeTrip);
       this.cancelAlert = false;

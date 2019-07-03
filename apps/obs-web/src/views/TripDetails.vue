@@ -453,10 +453,11 @@ export default class TripDetails extends Vue {
     for (const row of docs.rows) {
       const doc = row.doc;
       if (doc.type === 'trip-selection') {
-        let tripSelectionVesselId = doc.vessel.coastGuardNumber ?
+        const tripSelectionVesselId = doc.vessel.coastGuardNumber ?
                                     doc.vessel.coastGuardNumber :
                                     doc.vessel.stateRegulationNumber;
-        if (doc.isActive &&
+        if (
+            doc.isActive &&
             tripSelectionVesselId === vesselId &&
             doc.fishery.name === fishery.name
             ) {
@@ -487,7 +488,7 @@ export default class TripDetails extends Vue {
 
       // apply selection to new trip
       if (tripSelection !== 'none') {
-        console.log("found a trip selection - applying it to the new trip")
+        console.log('found a trip selection - applying it to the new trip');
 
         this.trip.activeTrip!.isSelected = tripSelection.isSelected;
         this.trip.activeTrip!.notes = tripSelection.notes;
@@ -558,14 +559,14 @@ export default class TripDetails extends Vue {
               randomNum +
               ' was NOT less than set rate: ' +
               activeOTSTarget.setRate +
-              ')';;
+              ')';
           }
         }
 
         pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
       }
 
-    this.$router.push({ path: '/trips/' });
+      this.$router.push({ path: '/trips/' });
 
     } else {
         this.missingRequired = true;
