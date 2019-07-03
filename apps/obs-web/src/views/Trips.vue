@@ -179,7 +179,8 @@ import {
   WcgopOperationTypeName,
   LocationEvent,
   Vessel,
-  VesselTypeName
+  VesselTypeName,
+  TripSelection
 } from '@boatnet/bn-models';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
@@ -374,6 +375,20 @@ export default class Trips extends Vue {
 
     private cancelActiveTrip() {
       this.activeTrip!.closingReason = 'cancelled';
+
+      // store record of trip selection - for use next time.
+      let tripSelection: TripSelection = {
+        type: 'trip-selection',
+        vessel: this.activeTrip.vessel,
+        isSelected: this.activeTrip.isSelected,
+        fishery: this.activeTrip.fishery,
+        permits: this.activeTrip.permits,
+        isActive: true,
+        notes: this.activeTrip.notes
+      }
+
+      pouchService.db.post(pouchService.userDBName, tripSelection)
+
       this.closeTrip(this.activeTrip);
       this.cancelAlert = false;
       this.closeAlert = false;
@@ -426,7 +441,7 @@ export default class Trips extends Vue {
                             returnDate: moment().format(),
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,
-                            fishery: {name: 'unknown'},
+                            fishery: {name: ''},
                             tripStatus: {
                               description: 'open'
                             }

@@ -81,7 +81,7 @@
           fill-input
           hide-selected
           :options="fisheryOptions"
-          :readonly="trip.readOnly"
+          :readonly="trip.readOnly || !this.trip.newTrip"
         ></q-select>
 
         <p>
@@ -164,6 +164,19 @@
         <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
       </q-card-actions>
     </q-card>
+
+    <q-dialog v-model="missingRequired">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">
+            You must specify a fishery.
+          </div>
+        </q-card-section>
+        <q-card-actions style="float: right;">
+          <q-btn color="primary" @click="missingRequired = false" label="ok"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -200,7 +213,8 @@ import {
   LocationEvent,
   Vessel,
   VesselTypeName,
-  Fishery
+  Fishery,
+  TripSelection
 } from '@boatnet/bn-models';
 
 // @Component({
@@ -248,6 +262,7 @@ export default class TripDetails extends Vue {
   private ports: any[] = [];
   private userTrips!: any;
   private latestReturnDate = 0;
+  private missingRequired = false;
 
   constructor() {
     super();
@@ -429,67 +444,132 @@ export default class TripDetails extends Vue {
     return vesselPermits;
   }
 
-  private createTrip() {
-    // this is where the pouch code to save the trip goes
-    let activeOTSTarget;
-    for (const otsTarget of this.otsTargets) {
-      if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
-        if (
-          this.getStatus(otsTarget) === 'Active' &&
-          otsTarget.targetType === 'Fishery Wide' &&
-          otsTarget.fishery === this.trip.activeTrip.fishery.name
-        ) {
-          activeOTSTarget = otsTarget;
-        }
+  private async getTripSelection(vesselId: string, fishery: Fishery) {
+    const db = pouchService.db;
+    const docs = await db.allDocs(pouchService.userDBName);
+
+    let tripSelection: any = 'none';
+
+    for (const row of docs.rows) {
+      const doc = row.doc;
+      if (doc.type === 'trip-selection') {
+        let tripSelectionVesselId = doc.vessel.coastGuardNumber ?
+                                    doc.vessel.coastGuardNumber :
+                                    doc.vessel.stateRegulationNumber;
+        if (doc.isActive &&
+            tripSelectionVesselId === vesselId &&
+            doc.fishery.name === fishery.name
+            ) {
+                tripSelection = doc;
+              }
       }
     }
-    for (const otsTarget of this.otsTargets) {
-      if (
-        this.getStatus(otsTarget) === 'Active' &&
-        otsTarget.targetVessel &&
-        this.trip.activeTrip &&
-        this.trip.activeTrip.vessel &&
-        this.trip.activeTrip.fishery
-      ) {
-        const otsVesselId = otsTarget.targetVessel.coastGuardNumber
-          ? otsTarget.targetVessel.coastGuardNumber
-          : otsTarget.targetVessel.stateRegulationNumber;
-        const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber
-          ? this.trip.activeTrip.vessel.coastGuardNumber
-          : this.trip.activeTrip.vessel.stateRegulationNumber;
-        if (
-          otsTarget.targetType === 'Vessel' &&
-          otsTarget.fishery === this.trip.activeTrip.fishery.name &&
-          otsVesselId === tripVesselId
-        ) {
-          activeOTSTarget = otsTarget;
-        }
-      }
+    return tripSelection;
+  }
+
+  private async setTripSelectionInactive(tripSelection: TripSelection) {
+      tripSelection.isActive = false;
+      pouchService.db.put(pouchService.userDBName, tripSelection);
     }
 
-    const randomNum = Math.floor(Math.random() * 100);
+  private async createTrip() {
 
-    if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
-      if (randomNum < activeOTSTarget.setRate) {
-        this.trip.activeTrip.isSelected = true;
-        this.trip.activeTrip.notes =
-          'Trip selected using Target Type: ' +
-          activeOTSTarget.targetType +
-          ', with set rate of ' +
-          activeOTSTarget.setRate +
-          ' (randomly generated number: ' +
-          randomNum +
-          ' was less than set rate: ' +
-          activeOTSTarget.setRate +
-          ')';
+    // REQUIRES A FISHERY!
+    // first check whether there is a stored selection for the vessel and fishery
+
+    if (this.trip.activeTrip!.fishery!.name !== '') {
+
+      const vesselId: any = this.trip.activeTrip!.vessel!.coastGuardNumber ?
+                        this.trip.activeTrip!.vessel!.coastGuardNumber :
+                        this.trip.activeTrip!.vessel!.stateRegulationNumber;
+
+      const tripSelection = await this.getTripSelection(vesselId, this.trip.activeTrip!.fishery!);
+
+      // apply selection to new trip
+      if (tripSelection !== 'none') {
+        console.log("found a trip selection - applying it to the new trip")
+
+        this.trip.activeTrip!.isSelected = tripSelection.isSelected;
+        this.trip.activeTrip!.notes = tripSelection.notes;
+        this.setTripSelectionInactive(tripSelection);
+        pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
+
       } else {
-        this.trip.activeTrip.isSelected = false;
-        this.trip.activeTrip.notes = '';
-      }
-    }
 
-    pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
+        let activeOTSTarget;
+        for (const otsTarget of this.otsTargets) {
+          if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
+            if (
+              this.getStatus(otsTarget) === 'Active' &&
+              otsTarget.targetType === 'Fishery Wide' &&
+              otsTarget.fishery === this.trip.activeTrip.fishery.name
+            ) {
+              activeOTSTarget = otsTarget;
+            }
+          }
+        }
+        for (const otsTarget of this.otsTargets) {
+          if (
+            this.getStatus(otsTarget) === 'Active' &&
+            otsTarget.targetVessel &&
+            this.trip.activeTrip &&
+            this.trip.activeTrip.vessel &&
+            this.trip.activeTrip.fishery
+          ) {
+            const otsVesselId = otsTarget.targetVessel.coastGuardNumber
+              ? otsTarget.targetVessel.coastGuardNumber
+              : otsTarget.targetVessel.stateRegulationNumber;
+            const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber
+              ? this.trip.activeTrip.vessel.coastGuardNumber
+              : this.trip.activeTrip.vessel.stateRegulationNumber;
+            if (
+              otsTarget.targetType === 'Vessel' &&
+              otsTarget.fishery === this.trip.activeTrip.fishery.name &&
+              otsVesselId === tripVesselId
+            ) {
+              activeOTSTarget = otsTarget;
+            }
+          }
+        }
+
+        const randomNum = Math.floor(Math.random() * 100);
+
+        if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
+          if (randomNum < activeOTSTarget.setRate) {
+            this.trip.activeTrip.isSelected = true;
+            this.trip.activeTrip.notes =
+              'Trip selected using Target Type: ' +
+              activeOTSTarget.targetType +
+              ', with set rate of ' +
+              activeOTSTarget.setRate +
+              ' (randomly generated number: ' +
+              randomNum +
+              ' was less than set rate: ' +
+              activeOTSTarget.setRate +
+              ')';
+          } else {
+            this.trip.activeTrip.isSelected = false;
+            this.trip.activeTrip.notes =
+              'Trip NOT selected using Target Type: ' +
+              activeOTSTarget.targetType +
+              ', with set rate of ' +
+              activeOTSTarget.setRate +
+              ' (randomly generated number: ' +
+              randomNum +
+              ' was NOT less than set rate: ' +
+              activeOTSTarget.setRate +
+              ')';;
+          }
+        }
+
+        pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
+      }
+
     this.$router.push({ path: '/trips/' });
+
+    } else {
+        this.missingRequired = true;
+    }
   }
 
   private goToTrips() {
@@ -637,6 +717,7 @@ p {
 .q-field {
   padding-bottom: 5px;
 }
+
 </style>
 
 
