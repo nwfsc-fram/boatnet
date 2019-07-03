@@ -60,6 +60,11 @@
         </div>
         <template>
           <q-btn color="primary text-white q-ma-md" @click="openDialog()">Edit</q-btn>
+          <q-btn
+            color="red text-white"
+            @click="openDeleteDialog()"
+            :disable="deleteButtonDisabled"
+          >Delete</q-btn>
         </template>
       </template>
 
@@ -176,6 +181,7 @@ export default class DebrieferTrips extends Vue {
   private pagination = { rowsPerPage: 50 };
   private dialogPagination = { rowsPerPage: 10 };
   private tripDialogColumnNameSet = new Set();
+  private deleteButtonDisabled = true;
 
   private visibleTripColumns = [
     'key',
@@ -489,12 +495,14 @@ export default class DebrieferTrips extends Vue {
       }
     }
 
-    if (multipleValues) {this.bulkEditColumnPreviousValue = 'Multiple'; }
+    if (multipleValues) {
+      this.bulkEditColumnPreviousValue = 'Multiple';
+    }
 
     this.previouslySelectedIndex = index;
   }
 
-  private openDialog() {
+  private openEditDialog() {
     this.WcgopDialogTrips = [];
     this.tripDialogColumns = [];
     let key: any;
@@ -526,11 +534,15 @@ export default class DebrieferTrips extends Vue {
     }
   }
   private getSelectedString() {
+    // enable Delete button if a row is selected and vice versa
+    if (this.rowSelected.length == 0) {this.deleteButtonDisabled = true; }
+    else {this.deleteButtonDisabled = false; }
+
     return this.rowSelected.length === 0
       ? ''
       : `${this.rowSelected.length} record${
           this.rowSelected.length > 1 ? 's' : ''
-        } rowSelected of ${this.WcgopTrips.length}`;
+        } selected of ${this.WcgopTrips.length}`;
   }
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
