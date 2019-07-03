@@ -535,8 +535,11 @@ export default class DebrieferTrips extends Vue {
   }
   private getSelectedString() {
     // enable Delete button if a row is selected and vice versa
-    if (this.rowSelected.length == 0) {this.deleteButtonDisabled = true; }
-    else {this.deleteButtonDisabled = false; }
+    if (this.rowSelected.length === 0) {
+      this.deleteButtonDisabled = true;
+    } else {
+      this.deleteButtonDisabled = false;
+    }
 
     return this.rowSelected.length === 0
       ? ''
