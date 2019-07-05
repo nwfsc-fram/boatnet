@@ -2,10 +2,10 @@
     <div class='q-pa-md  q-gutter-md'>
 
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-        {{alert.message}}
-        <template v-slot:action>
-            <q-btn flat label="Dismiss" @click="clear"/>
-        </template>
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clear"/>
+            </template>
         </q-banner>
 
         <div class="centered-page-item">

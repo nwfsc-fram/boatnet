@@ -37,7 +37,6 @@ import axios from 'axios';
 
 @Component
 export default class Home extends Vue {
-  @State('alert') private alert!: AlertState;
   @State('auth') private auth!: AuthState;
   @State('user') private user!: UserState;
 
@@ -45,10 +44,12 @@ export default class Home extends Vue {
   @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
   @State('vessel') private vessel!: VesselState;
 
-  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @State('alert') private alert!: AlertState;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
 
   constructor() {
     super();

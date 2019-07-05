@@ -1,7 +1,14 @@
 <template>
     <div>
-        <q-card>
-            <q-card-section>
+
+        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clearAlert"/>
+            </template>
+        </q-banner>
+
+            <div>
                 <q-table
                 title='Un-Assigned Trips'
                 :data='unassignedTrips'
@@ -26,9 +33,9 @@
                 </q-tr>
                 </template>
                 </q-table>
-            </q-card-section>
-
-            <q-card-section>
+            </div>
+            <br>
+            <div>
                 <q-table
                 title='Assigned Trips'
                 :data='assignedTrips'
@@ -54,8 +61,7 @@
                 </q-tr>
                 </template>
                 </q-table>
-            </q-card-section>
-        </q-card>
+            </div>
     </div>
 </template>
 
@@ -65,7 +71,7 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_store/types/types';
+import { TripState, VesselState, UserState, ObserverAssignmentState, AlertState } from '../_store/types/types';
 import moment from 'moment';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -78,8 +84,9 @@ export default class ObserverAssignment extends Vue {
     @State('user') private user!: UserState;
     @State('oa') private oa!: ObserverAssignmentState;
 
-    @Action('clear', { namespace: 'alert' }) private clear: any;
-    @Action('error', { namespace: 'alert' }) private error: any;
+  @State('alert') private alert!: AlertState;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
 private unassignedPagination = {rowsPerPage: 10};
 private assignedPagination = {rowsPerPage: 0};
@@ -206,7 +213,7 @@ private async getEMEFPTrips() {
         }
 
     } catch (err) {
-        this.error(err);
+        this.errorAlert(err);
     }
   }
 

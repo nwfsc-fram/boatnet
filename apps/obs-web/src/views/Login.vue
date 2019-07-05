@@ -8,9 +8,9 @@
 
       </q-toolbar>
     </q-header>
-    <q-page-container class="absolute-center">
+    <q-page-container class="absolute-center"  style="width: 100%">
       <div class="q-pa-sm column justify-center items-center full-height">
-        <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
+        <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="width: 100%; max-width: 500px">
           <div v-show="!!alert.message">
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
