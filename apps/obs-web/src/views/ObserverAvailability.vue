@@ -1,39 +1,42 @@
 <template>
     <div>
-        <q-card>
-            <q-card-section>
 
-                <div class="q-pa-md">
-                    <q-btn
-                    label='New Activity'
-                    color='primary'
-                    @click="newActivity"
-                    />
-                </div>
+        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clearAlert"/>
+            </template>
+        </q-banner>
 
-                <q-table
-                title='My Activities'
-                :data='allActivities'
-                :columns='columns'
-                dense
-                row-key='_id'
-                :pagination.sync = 'pagination'
-                hide-bottom
-                class="bg-blue-grey-1"
-                >
-                <template v-slot:body="props">
-                    <q-tr :props="props" @click.native="editActivity(props.row)" @contextmenu.native="deleteActivity($event, props.row)">
-                        <q-td key="startDate" :props="props">{{ formatDate(props.row.startDate) }}</q-td>
-                        <q-td key="endDate" :props="props">{{ formatDate(props.row.endDate) }}</q-td>
-                        <q-td key="activityType" :props="props">{{ props.row.activityType }}</q-td>
-                        <q-td key="activityDescription" :props="props">{{ props.row.activityDescription }}</q-td>
-                        <q-td key="status" :props="props">{{ props.row.status }}</q-td>
-                    </q-tr>
-                </template>
-                </q-table>
+        <div class="q-pa-md">
+            <q-btn
+            label='New Activity'
+            color='primary'
+            @click="newActivity"
+            />
+        </div>
 
-            </q-card-section>
-        </q-card>
+        <q-table
+        title='My Activities'
+        :data='allActivities'
+        :columns='columns'
+        dense
+        row-key='_id'
+        :pagination.sync = 'pagination'
+        hide-bottom
+        class="bg-blue-grey-1"
+        >
+            <template v-slot:body="props">
+                <q-tr :props="props" @click.native="editActivity(props.row)" @contextmenu.native="deleteActivity($event, props.row)">
+                    <q-td key="startDate" :props="props">{{ formatDate(props.row.startDate) }}</q-td>
+                    <q-td key="endDate" :props="props">{{ formatDate(props.row.endDate) }}</q-td>
+                    <q-td key="activityType" :props="props">{{ props.row.activityType }}</q-td>
+                    <q-td key="activityDescription" :props="props">{{ props.row.activityDescription }}</q-td>
+                    <q-td key="status" :props="props">{{ props.row.status }}</q-td>
+                </q-tr>
+            </template>
+        </q-table>
+
     </div>
 </template>
 
@@ -43,7 +46,7 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TripState, VesselState, UserState, ObserverAssignmentState, ObserverAvailabilityState } from '../_store/types/types';
+import { TripState, VesselState, UserState, ObserverAssignmentState, ObserverAvailabilityState, AlertState } from '../_store/types/types';
 import moment from 'moment';
 
 import { ObserverActivityTypeName } from '@boatnet/bn-models';
@@ -80,11 +83,12 @@ export default class ObserverAssignment extends Vue {
 
     @State('pouchState') private pouchState!: PouchDBState;
 
-    @Action('clear', { namespace: 'alert' }) private clear: any;
-    @Action('error', { namespace: 'alert' }) private error: any;
+  @State('alert') private alert!: AlertState;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+
 
     private pagination = {rowsPerPage: 0};
-    private alert = false;
 
     private userActivities!: any;
     private userTrips!: any;

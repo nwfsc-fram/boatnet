@@ -1,5 +1,13 @@
 <template>
     <div>
+
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
+      </template>
+    </q-banner>
+
         <div class="centered-page-item" style="margin: 10px"><strong>Active Permits</strong></div>
             <div style="background-color: white" class="q-pa-md q-gutter-sm centered-page-item">
                 <q-input v-model="permit.filterText" label="Search" style="width: 100%" autofocus >
@@ -29,13 +37,17 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
-import { PermitState } from '../_store/types/types';
+import { PermitState, AlertState } from '../_store/types/types';
 
 @Component
 export default class Permits extends Vue {
 
     @State('permit') private permit!: PermitState;
     @Action('updatePermits', { namespace: 'permit' }) private updatePermits: any;
+
+    @State('alert') private alert!: AlertState;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
     // private filterText: string = '';
     private keys = ['permit_number', 'vessel_name', 'vessel_registration_number', 'vessel_owner'];

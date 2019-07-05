@@ -1,5 +1,13 @@
 <template>
-    <div class="">
+    <div>
+
+        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clearAlert"/>
+            </template>
+        </q-banner>
+
         <div class="q-pa-md  q-gutter-md centered-page-item">
 
             <q-btn color="primary" @click="newUser">New User</q-btn>
@@ -9,7 +17,7 @@
                 <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
             </template>
         </q-input>
-        
+
         <div style="text-align: center; background-color: white" class="q-pa-md q-gutter-sm">
         </div>
         </div>

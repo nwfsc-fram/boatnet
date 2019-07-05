@@ -2,10 +2,10 @@
     <div class='q-pa-md  q-gutter-md'>
 
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-        {{alert.message}}
-        <template v-slot:action>
-            <q-btn flat label="Dismiss" @click="clear"/>
-        </template>
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clear"/>
+            </template>
         </q-banner>
 
         <div class="centered-page-item">
@@ -73,9 +73,8 @@ import moment from 'moment';
 @Component
 export default class Vessels extends Vue {
     @State('alert') private alert!: AlertState;
-
-    @Action('clear', { namespace: 'alert' }) private clear: any;
-    @Action('error', { namespace: 'alert' }) private error: any;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
     @State('vessel') private vessel!: VesselState;
 
@@ -119,7 +118,7 @@ private async getVessels() {
         this.loading = false;
 
     } catch (err) {
-        this.error(err);
+        this.errorAlert(err);
     }
   }
 
@@ -193,7 +192,7 @@ private async getVessels() {
         this.loading = false;
         return this.vessels;
     } catch (err) {
-        this.error(err);
+        this.errorAlert(err);
     }
 
   }

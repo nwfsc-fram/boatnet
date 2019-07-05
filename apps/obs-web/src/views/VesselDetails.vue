@@ -118,13 +118,13 @@ import moment from 'moment';
 
 @Component
 export default class VesselDetails extends Vue {
-    @State('alert') private alert!: AlertState;
     @State('user') private user!: UserState;
-
-    @Action('clear', { namespace: 'alert' }) private clear: any;
-    @Action('error', { namespace: 'alert' }) private error: any;
-
     @State('vessel') private vessel!: VesselState;
+
+    @State('alert') private alert!: AlertState;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+
 
     private captains = [];
     private ports = [];
@@ -150,7 +150,7 @@ export default class VesselDetails extends Vue {
                         );
                     this.ports = ports.rows.map((row: any) => row.doc);
                 } catch (err) {
-                    this.error(err);
+                    this.errorAlert(err);
                 }
             }
         );
@@ -177,7 +177,7 @@ export default class VesselDetails extends Vue {
 
                     this.captains = captains.rows.map((row: any) => row.doc);
                 } catch (err) {
-                    this.error(err);
+                    this.errorAlert(err);
                 }
             }
         );
@@ -191,7 +191,7 @@ export default class VesselDetails extends Vue {
                     () => this.$router.push({path: '/vessels'})
                 );
             } catch (err) {
-                this.error(err);
+                this.errorAlert(err);
             }
         } else {
             try {
@@ -206,7 +206,7 @@ export default class VesselDetails extends Vue {
                             ).then( () => this.$router.push({path: '/vessels'}));
 
             } catch (err) {
-                this.error(err);
+                this.errorAlert(err);
             }
         }
 
@@ -214,7 +214,7 @@ export default class VesselDetails extends Vue {
 
     private async deleteVessel() {
         couchService.masterDB.delete(this.vessel.activeVessel!._id, this.vessel.activeVessel!._rev).then( () => {
-            this.error('Vessel Deleted');
+            this.errorAlert('Vessel Deleted');
             this.showDialog = false;
             this.navigateBack();
             this.vessel.activeVessel = {};

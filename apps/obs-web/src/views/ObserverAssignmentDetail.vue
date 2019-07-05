@@ -1,9 +1,8 @@
 <template>
     <div>
-        <q-card>
-            <q-card-section>
-                <q-card class="bg-blue-grey-1">
-                    <q-card-section>
+            <div>
+                <div class="bg-blue-grey-1">
+                    <div>
                         <div class="text-h6 text-primary">{{ oa.activeTrip.vessel.vesselName }} - {{ oa.activeTrip.fishery.name }} - {{ oa.activeTrip.departurePort.name }} </div>
                         <sup v-if="oa.activeTrip.vessel.captain" class="text-primary">Skipper: {{ oa.activeTrip.vessel.captain.name }}</sup>
                         <div class="row items-start">
@@ -15,7 +14,7 @@
                         </div>
                         </div>
 
-                        <div class="text-subtitle2">
+                        <div class="text-subtitle2 q-pa-md">
                             Assigned Observer:
                                 <span v-if="oa.activeTrip.observer" class="text-white bg-primary q-pa-sm" style="border-radius: 10px">
                                     {{ oa.activeTrip.observer.firstName }} {{ oa.activeTrip.observer.lastName }}
@@ -26,17 +25,17 @@
                             </span>
                         </div>
 
-                    </q-card-section>
-                    <q-card-actions v-if="!observerAssigned">
+                    </div>
+                    <div v-if="!observerAssigned" class="q-pa-md">
                         <q-btn label="Cancel" color="red" icon="warning" to="/observer-assignment" exact />
                         <q-btn label="Assign Observer" color="primary" @click="updateTrip" :disabled="!oa.activeTrip.observer"/>
-                    </q-card-actions>
-                    <q-card-actions v-else>
+                    </div>
+                    <div v-else>
                         <q-btn label="Re-assign Trip" color="primary" icon="fa fa-redo-alt" @click="observerAssigned = false"/>
-                    </q-card-actions>
-                </q-card>
-            </q-card-section>
-            <q-card-section>
+                    </div>
+                </div>
+            </div>
+            <div>
                         <q-table
                         :data="observers"
                         :columns="columns"
@@ -59,17 +58,14 @@
                             </q-tr>
                             </template>
                         </q-table>
-            </q-card-section>
-        </q-card>
+            </div>
 
                 <q-dialog v-model="alert">
-                <q-card>
-                    <q-card-section>
-                    <div class="text-h6">{{ selectedObserver }} is not available for this date range, please make a different selection.</div>
-                    <q-btn color="primary" size="md" style="float: right" @click="alert = false">OK</q-btn>
-                    <br><br>
-                    </q-card-section>
-                </q-card>
+                    <div>
+                        <div class="text-h6">{{ selectedObserver }} is not available for this date range, please make a different selection.</div>
+                        <q-btn color="primary" size="md" style="float: right" @click="alert = false">OK</q-btn>
+                        <br><br>
+                    </div>
                 </q-dialog>
     </div>
 </template>
@@ -151,12 +147,16 @@ private setObserver(row: any) {
 }
 
 private formatTel(telNum: any) {
-    telNum = telNum.toString();
-    return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
+    if ( telNum ) {
+        telNum = telNum.toString();
+        return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
+    } else {
+        return '';
+    }
 }
 
 private formatDate(date: any) {
-    if (date) {
+    if ( date ) {
         return moment(date).format('MMM Do, YYYY');
     } else {
         return '';

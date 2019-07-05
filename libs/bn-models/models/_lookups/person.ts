@@ -5,6 +5,7 @@ import { CouchID } from '../_common';
 import { Vessel } from './vessel';
 import { Media } from './media';
 import { Permit } from './permit';
+import { UsState } from './us-state';
 
 // TODO Full implementation
 export const PersonTypeName = 'person';
@@ -59,7 +60,7 @@ export interface Person extends Base {
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
-  state?: string;
+  state?: UsState;
   zipCode?: string;
   country?: string;
   workPhone?: string; // Possible TODO: make custom phone number type for standardization purposes

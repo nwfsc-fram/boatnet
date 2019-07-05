@@ -1,13 +1,22 @@
 <template>
+  <div>
+
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
+      </template>
+    </q-banner>
+
   <div class="q-pa-md row items-start q-gutter-md">
-    <q-card class="my-card bg-blue-grey-1">
-      <q-card-section>
+    <div class="my-card bg-blue-grey-1 q-pa-md">
+      <div>
         <div class="text-h6">Vessel: {{ permit.activePermit.vessel.vesselName }}</div>
-        <div style="margin-left: 10px">
+        <div>
           <div>Reg. No.: {{ permit.activePermit.vessel.coastGuardNumber ? permit.activePermit.vessel.coastGuardNumber : permit.activePermit.vessel.stateRegulationNumber }}</div>
           <div>Length: {{ permit.activePermit.vessel.registeredLength.value }}'</div>
           <!-- <div>Owner: {{ permit.activePermit.vessel_owner }}</div> -->
-          <q-select
+          <!-- <q-select
             v-model="permit.activePermit.captains"
             color="primary"
             multiple
@@ -31,11 +40,11 @@
                 {{ scope.opt.label }}
               </q-chip>
             </template>
-          </q-select>
+          </q-select> -->
         </div>
-      </q-card-section>
+      </div>
 
-      <q-card-section>
+      <div>
         <div class="text-h6">Permit: {{ permit.activePermit.permitNumber }}</div>
 
         <div style="margin-left: 10px">Endorsed Length: {{ permit.activePermit.endorsedLength }}'</div>
@@ -61,8 +70,9 @@
           >Whiting Assignment: {{ permit.activePermit.whitingAssignment }}</li>
           <li v-if="permit.activePermit.isOwnerOnBoardExempt === 'Yes'">Owner On Board Exempt</li>
         </ul>
-      </q-card-section>
-    </q-card>
+      </div>
+    </div>
+  </div>
   </div>
 </template>
 
@@ -71,11 +81,15 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { PermitState } from '../_store/types/types';
+import { PermitState, AlertState } from '../_store/types/types';
 
 @Component
 export default class PermitDetails extends Vue {
   @State('permit') private permit!: PermitState;
+
+  @State('alert') private alert!: AlertState;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
   private captains = [
     { label: 'Seth', value: 1234, eggplant: 'eww' },

@@ -1,12 +1,19 @@
 <template>
     <div>
-        <q-card v-if="user.activeUser">
 
-            <q-card-section>
+        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+            {{alert.message}}
+            <template v-slot:action>
+                <q-btn flat label="Dismiss" @click="clearAlert"/>
+            </template>
+        </q-banner>
+
+        <div v-if="user.activeUser">
+            <div>
                 <div class="row">
-                    <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
-                    <q-input class="col-md q-pa-sm" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm" disabled outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" disabled outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
                 </div>
 
                 <q-select class="q-pa-sm" outlined v-model="applicationRoles" label="Roles" multiple :options="roles">
@@ -26,35 +33,35 @@
                 </q-select>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.workEmail" label="Email (Work)" type="email"></q-input>
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.homeEmail" label="Email (Home)" type="email"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workEmail" label="Email (Work)" type="email"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homeEmail" label="Email (Home)" type="email"></q-input>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.homePhone" label="Home Phone" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homePhone" label="Home Phone" type="tel"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.addressLine1" label="Address Line 1" type="street-address"></q-input>
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.addressLine2" label="Address Line 2" type="street-address"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine1" label="Address Line 1" type="street-address"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine2" label="Address Line 2" type="street-address"></q-input>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" use-input fill-input
-                    hide-selected :options="usStates" :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
+                    <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
+                    hide-selected :options="usStates" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
 
-                    <q-input class="col-md q-pa-sm" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
-                    <q-select class="col-md q-pa-sm" outlined dense v-model="user.activeUser.country" label="Country" use-input :options="countryOptions"></q-select>
+                    <q-select class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.country" label="Country" :options="countryOptions"></q-select>
                 </div>
 
                 <div class="row">
                     <q-select
-                    class="col-md q-pa-sm"
+                    class="col-md q-pa-sm wide-field"
                     label="Home Port"
                     v-model="user.activeUser.port"
                     :options="ports"
@@ -71,7 +78,8 @@
                     </q-select>
 
                     <q-select
-                    class="col-md q-pa-sm"
+                    v-if="!user.newUser"
+                    class="col-md q-pa-sm wide-field"
                     outlined label="Active Vessel"
                     v-model="user.activeUser.activeVessel"
                     :options="vessels"
@@ -85,7 +93,7 @@
                     </q-select>
                 </div>
 
-                    <q-select class="q-pa-sm" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
+                    <q-select class="q-pa-sm wide-field" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
 
                     <template v-slot:selected-item="scope">
                         <q-chip
@@ -103,7 +111,7 @@
 
                 </q-select>
 
-                <q-input class="col-md q-pa-sm"
+                <q-input class="col-md q-pa-sm wide-field"
                 outlined
                 dense
                 v-model="user.activeUser.birthdate" label="Birth Date">
@@ -148,12 +156,15 @@
                     </template>
                 </q-select>
 
-            </q-card-section>
-            <q-card-actions align="right">
+            </div>
+            <div align="right">
                 <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
                 <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
-            </q-card-actions>
-        </q-card>
+            </div>
+        </div>
+        <div v-else>
+            no active user
+        </div>
     </div>
 </template>
 
@@ -379,11 +390,14 @@ export default class UserDetails extends Vue {
                 );
 
             for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName !== null) {
+                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
                     if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
 
                         this.user.newUser = false;
                         this.user.activeUser = row.doc;
+                        if (row.doc.activeVessel) {
+                          this.vessel.activeVessel = row.doc.activeVessel;
+                        }
                     }
                 }
             }
@@ -436,7 +450,7 @@ export default class UserDetails extends Vue {
                             addressLine1: '',
                             addressLine2: '',
                             city: '',
-                            state: '',
+                            state: {name: '', abbreviation: ''},
                             zipCode: '',
                             country: '',
                             workPhone: '',
@@ -462,7 +476,7 @@ export default class UserDetails extends Vue {
                 addressLine1: '',
                 addressLine2: '',
                 city: '',
-                state: '',
+                state: {name: '', abbreviation: ''},
                 zipCode: '',
                 country: '',
                 workPhone: '',
@@ -518,7 +532,12 @@ export default class UserDetails extends Vue {
 }
 </script>
 
-<style>
+<style scoped>
+
+.wide-field {
+    width: 100% !important;
+    max-width: 500px !important;
+}
 
 </style>
 

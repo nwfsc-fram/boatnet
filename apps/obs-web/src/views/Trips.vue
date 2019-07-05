@@ -1,10 +1,16 @@
 <template>
   <div class="q-pa-md q-gutter-md">
+    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+      {{alert.message}}
+      <template v-slot:action>
+        <q-btn flat label="Dismiss" @click="clearAlert"/>
+      </template>
+    </q-banner>
 
     <div class="centered-page-item" >
       <div v-if="vessel.activeVessel">
         <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
-        <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="alert = true">New Trip</q-btn>
+        <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
       </div>
       <div v-else>
         <p>No active vessel, please set your active vessel in User Config.</p>
@@ -86,11 +92,11 @@
     </q-card>
   </div>
 
-    <q-dialog v-model="alert">
+    <q-dialog v-model="maxTripsAlert">
       <q-card>
         <q-card-section>
           <div class="text-h6">Only 2 active trips are permitted.  Please close a trip.</div>
-          <q-btn color="primary" size="md" style="float: right" @click="alert = false">OK</q-btn>
+          <q-btn color="primary" size="md" style="float: right" @click="maxTripsAlert = false">OK</q-btn>
           <br><br>
         </q-card-section>
       </q-card>
@@ -111,10 +117,9 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <q-card>
-        <q-card-section>
+      <div style="background-color: white">
           <div>
-            <strong>I affirm this trip was taken.</strong>
+            <strong class="left-pad">I affirm this trip was taken.</strong>
             <q-toggle
             v-model="taken"
             checked-icon="check"
@@ -128,7 +133,7 @@
             <q-item style="padding: 4px 0">
               <q-item-section>
                 <!-- <div> -->
-                  <div class="text-subtitle2"> Affirmed Departure Date</div>
+                  <div class="text-subtitle2 left-pad"> Affirmed Departure Date</div>
                   <q-date v-model="activeTrip.captainAffirmedDepartureDate" color="green" dark></q-date>
                 <!-- </div> -->
               </q-item-section>
@@ -137,7 +142,7 @@
             <q-item style="padding: 4px 0">
               <q-item-section>
                 <!-- <div> -->
-                  <div class="text-subtitle2"> Affirmed Return Date</div>
+                  <div class="text-subtitle2 left-pad"> Affirmed Return Date</div>
                   <q-date v-model="activeTrip.captainAffirmedReturnDate" color="red" dark></q-date>
                 <!-- </div> -->
               </q-item-section>
@@ -145,13 +150,12 @@
           <!-- </div> -->
         </q-list>
         <br>
-        <q-card-actions style="float: right"  class="text-primary">
+        <div style="float: right; padding-right: 15px" class="text-primary">
           <q-btn color="primary" size="md" @click="closeAlert = false">cancel</q-btn>
             <q-btn color="red" size="md" @click="closeActiveTrip" :disabled="!taken">close trip</q-btn>
-        </q-card-actions>
+        </div>
           <br><br>
-        </q-card-section>
-      </q-card>
+      </div>
     </q-dialog>
 
   </div>
@@ -163,7 +167,7 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TripState, VesselState, UserState, WcgopAppState } from '../_store/types/types';
+import { TripState, VesselState, UserState, WcgopAppState, AlertState } from '../_store/types/types';
 
 import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -204,12 +208,13 @@ export default class Trips extends Vue {
     @State('appState') private appState!: WcgopAppState;
     @State('pouchState') private pouchState!: PouchDBState;
 
-    @Action('clear', { namespace: 'alert' }) private clear: any;
-    @Action('error', { namespace: 'alert' }) private error: any;
+  @State('alert') private alert!: AlertState;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
   private userTrips!: any;
   private vessels = [];
-  private alert = false;
+  private maxTripsAlert = false;
   private cancelAlert = false;
   private closeAlert = false;
   private activeTrip: any = null;
@@ -310,7 +315,7 @@ export default class Trips extends Vue {
                     );
                 this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
-                this.error(err);
+                this.errorAlert(err);
             }
         }
     );
@@ -547,6 +552,10 @@ export default{
   .my-card
     width 100%
     max-width 450px
+
+  .left-pad
+    padding-left: 15px
+
 </style>
 
 

@@ -1,8 +1,13 @@
 <template>
-  <div class="q-pa-md q-gutter-md">
-    <q-card class="my-card" >
-      <q-card-section :disabled="trip.readOnly">
-        <!-- {{ this.$store.state.currentTrip.trip_num }} -->
+  <div>
+      <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
+        {{alert.message}}
+        <template v-slot:action>
+          <q-btn flat label="Dismiss" @click="clearAlert"/>
+        </template>
+      </q-banner>
+
+  <div class="q-pa-md q-gutter-md" :disabled="trip.readOnly">
         <div class="text-h6" style="margin-bottom: 10px;" >
           {{ vessel.activeVessel.vesselName }}
           <q-icon
@@ -22,7 +27,15 @@
               <q-item-section>
                 <div>
                   <div class="text-subtitle2" :disabled="trip.readOnly">Departure Date</div>
-                  <q-date class="trip-date" v-model="departureDate" :options="startDateOptionsFn" color="green" dark :readonly="trip.readOnly"></q-date>
+                  <q-date
+                    class="trip-date"
+                    v-model="departureDate"
+                    :options="startDateOptionsFn"
+                    color="green"
+                    dark
+                    :readonly="trip.readOnly"
+                  >
+                  </q-date>
                 </div>
               </q-item-section>
             </q-item>
@@ -31,7 +44,15 @@
               <q-item-section>
                 <div>
                   <div class="text-subtitle2" :disabled="trip.readOnly">Return Date</div>
-                  <q-date class="trip-date" v-model="returnDate" :options="returnDateOptionsFn" color="red" dark :readonly="trip.readOnly"></q-date>
+                  <q-date
+                    class="trip-date"
+                    v-model="returnDate"
+                    :options="returnDateOptionsFn"
+                    color="red"
+                    dark
+                    :readonly="trip.readOnly"
+                  >
+                  </q-date>
                 </div>
               </q-item-section>
             </q-item>
@@ -90,6 +111,7 @@
 
         <q-select
           v-model="trip.activeTrip.permits"
+          :dense="true"
           bg-color="white"
           color="primary"
           multiple
@@ -98,7 +120,6 @@
           :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
           option-value="permitNumber"
           :options="getVesselPermits"
-          style="width: 100%"
           :readonly="trip.readOnly"
         >
           <template v-slot:selected-item="scope">
@@ -152,31 +173,27 @@
                         </q-card-actions>
                     </q-card>
         </q-dialog>-->
-      </q-card-section>
 
-      <q-card-actions v-if="trip.newTrip" align="right" class="text-primary">
+
+      <div v-if="trip.newTrip" align="right" class="text-primary">
         <q-btn label="Cancel" @click="goToTrips"/>
         <q-btn label="Create Trip" color="primary" @click="createTrip"/>
-      </q-card-actions>
-      <q-card-actions v-else align="right" class="text-primary">
+      </div>
+      <div v-else align="right" class="text-primary">
         <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
         <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
         <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
-      </q-card-actions>
-    </q-card>
+      </div>
 
     <q-dialog v-model="missingRequired">
-      <q-card>
-        <q-card-section>
           <div class="text-h6">
             You must specify a fishery.
           </div>
-        </q-card-section>
-        <q-card-actions style="float: right;">
+        <div style="float: right;">
           <q-btn color="primary" @click="missingRequired = false" label="ok"/>
-        </q-card-actions>
-      </q-card>
+        </div>
     </q-dialog>
+  </div>
   </div>
 </template>
 
