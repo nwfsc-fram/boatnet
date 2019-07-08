@@ -302,17 +302,19 @@ export default class UserDetails extends Vue {
 
     private statesFilterFn(val: string, update: any, abort: any) {
         if (val === '') {
-            update(() => {this.usStateOptions = this.usStates})
-            return
+            update(() => {
+                this.usStateOptions = this.usStates;
+                });
+            return;
         }
 
         update( () => {
-            const inputVal = val.toLowerCase()
+            const inputVal = val.toLowerCase();
             this.usStateOptions = this.usStates.filter(
                 (state) => state.name.toLowerCase().indexOf(inputVal) > -1 ||
                 state.abbreviation.toLowerCase().indexOf(inputVal) > -1
-                )
-        })
+                );
+        });
     }
 
     private async getVessels() {
@@ -351,9 +353,9 @@ export default class UserDetails extends Vue {
 
                 if (this.user.activeUser) {
                     const activeUserEmail = this.user.activeUser!.workEmail;
-                if (activeUserEmail) {
-                    this.vessels = vesselCaptains[activeUserEmail];
-                }
+                    if (activeUserEmail) {
+                        this.vessels = vesselCaptains[activeUserEmail];
+                    }
                 }
 
 
@@ -375,7 +377,7 @@ export default class UserDetails extends Vue {
                     );
                 } else {
                     pouchService.db.post(pouchService.userDBName, this.user.activeUser).then(
-                        this.errorAlert("User Config Saved"),
+                        this.errorAlert('User Config Saved'),
                         this.$router.push({path: '/'})
                     );
                 }
@@ -393,13 +395,13 @@ export default class UserDetails extends Vue {
                     );
                 } else {
                     pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
-                        this.errorAlert("User Config Saved"),
+                        this.errorAlert('User Config Saved'),
                         this.$router.push({path: '/'})
                     );
                 }
             }
         } else {
-            this.errorAlert("Work Email and Mobile Number are required fields.")
+            this.errorAlert('Work Email and Mobile Number are required fields.');
         }
 
     }

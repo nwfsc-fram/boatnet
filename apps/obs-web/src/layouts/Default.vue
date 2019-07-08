@@ -306,7 +306,7 @@ export default class DefaultLayout extends Vue {
 
                         Vue.set(this.user, 'activeUser', newUser);
                     }
-                  this.$router.push({path: '/user-config'})
+                    this.$router.push({path: '/user-config'});
                }
               );
     }
