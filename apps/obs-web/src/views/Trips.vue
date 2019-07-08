@@ -119,7 +119,8 @@
     <q-dialog v-model="closeAlert">
       <div style="background-color: white">
           <div>
-            <strong class="left-pad">I affirm this trip was taken.</strong>
+            <br>
+            <strong class="left-pad text-subtitle2">I affirm this trip was taken.</strong>
             <q-toggle
             v-model="taken"
             checked-icon="check"
@@ -554,7 +555,11 @@ export default{
     max-width 450px
 
   .left-pad
-    padding-left: 15px
+    padding-left: 10px
+
+  .q-date--portrait-standard
+    width: auto !important
+    margin: 10px
 
 </style>
 

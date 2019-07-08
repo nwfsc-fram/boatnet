@@ -60,7 +60,7 @@ export interface Person extends Base {
   addressLine1?: string;
   addressLine2?: string;
   city?: string;
-  state?: UsState;
+  state?: string;
   zipCode?: string;
   country?: string;
   workPhone?: string; // Possible TODO: make custom phone number type for standardization purposes
