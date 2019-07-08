@@ -64,11 +64,13 @@ biolistNumber / everyNHauls (equivalent to every nth haul (for WCGOP n = 3), ran
 observationRange (e.g. length (min, max, type), width (min, max, type), weight (min, max))
     [{min: 25, max 29}, {min 30, max 34}, ... ]
 
-categoricalList (e.g. lifestage (eggs, juvenile, adult), sex, size grouping (e.g. small v. large hake) - could be multiple, simultaneous lists)
+categoricalList (e.g. lifestage (eggs, juvenile, adult), sex, size grouping (e.g. small v. large hake)
+  - could be multiple, simultaneous lists)
 
 -- Spatio-Temporal Constraints
 minDate, maxDate - (may be specified as season/pass)
-minLatitude, maxLatitude (spatial, specified as which legs or which states (WA, OR, etc.)) (GeoJSON, so probably include longitude)
+minLatitude, maxLatitude (spatial, specified as which legs or which states (WA, OR, etc.))
+  (GeoJSON, so probably include longitude)
 minDepth, maxDepth (spatial)
 
 -- Management Constraints
