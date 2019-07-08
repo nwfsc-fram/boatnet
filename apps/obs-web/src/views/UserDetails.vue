@@ -7,13 +7,12 @@
                 <q-btn flat label="Dismiss" @click="clearAlert"/>
             </template>
         </q-banner>
-
         <div v-if="user.activeUser">
             <div>
                 <div class="row">
                     <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" disabled outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" disabled readonly outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
                 </div>
 
                 <q-select class="q-pa-sm" outlined v-model="applicationRoles" label="Roles" multiple :options="roles">
@@ -52,7 +51,8 @@
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
                     <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
-                    hide-selected :options="usStates" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" option-value="_id"></q-select>
+                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" 
+                    option-value="_id" emit-label></q-select>
 
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
@@ -300,6 +300,21 @@ export default class UserDetails extends Vue {
           });
         }
 
+    private statesFilterFn(val: string, update: any, abort: any) {
+        if (val === '') {
+            update(() => {this.usStateOptions = this.usStates})
+            return
+        }
+
+        update( () => {
+            const inputVal = val.toLowerCase()
+            this.usStateOptions = this.usStates.filter(
+                (state) => state.name.toLowerCase().indexOf(inputVal) > -1 ||
+                state.abbreviation.toLowerCase().indexOf(inputVal) > -1
+                )
+        })
+    }
+
     private async getVessels() {
             try {
                 const db = pouchService.db;
@@ -334,11 +349,13 @@ export default class UserDetails extends Vue {
                     }
                 }
 
-                const activeUserEmail = this.user.activeUser!.workEmail;
-
+                if (this.user.activeUser) {
+                    const activeUserEmail = this.user.activeUser!.workEmail;
                 if (activeUserEmail) {
                     this.vessels = vesselCaptains[activeUserEmail];
                 }
+                }
+
 
             } catch (err) {
                 this.errorAlert(err);
@@ -349,123 +366,45 @@ export default class UserDetails extends Vue {
         if (this.user.activeUser!.activeVessel) {
             this.vessel.activeVessel = this.user.activeUser!.activeVessel;
         }
-        if (this.user.newUser) {
-            console.log('new user');
-            if (this.$route.name === 'User Details') {
-                couchService.masterDB.post(this.user.activeUser).then(
-                    this.navigateBack()
-                );
+        if (this.user.activeUser!.workEmail !== '' && this.user.activeUser!.cellPhone !== '') {
+            if (this.user.newUser) {
+                console.log('new user');
+                if (this.$route.name === 'User Details') {
+                    couchService.masterDB.post(this.user.activeUser).then(
+                        this.navigateBack()
+                    );
+                } else {
+                    pouchService.db.post(pouchService.userDBName, this.user.activeUser).then(
+                        this.errorAlert("User Config Saved"),
+                        this.$router.push({path: '/'})
+                    );
+                }
             } else {
-                pouchService.db.post(pouchService.userDBName, this.user.activeUser).then(
-                    this.getUser()
-                );
+                console.log('existing user');
+                this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
+                this.user.activeUser!.updatedDate = moment().format();
+                if (this.$route.name === 'User Details') {
+                    couchService.masterDB.put(
+                        this.user.activeUser!._id,
+                        this.user.activeUser!,
+                        this.user.activeUser!._rev
+                    ).then(
+                    this.navigateBack()
+                    );
+                } else {
+                    pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
+                        this.errorAlert("User Config Saved"),
+                        this.$router.push({path: '/'})
+                    );
+                }
             }
         } else {
-            console.log('existing user');
-            this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
-            this.user.activeUser!.updatedDate = moment().format();
-            if (this.$route.name === 'User Details') {
-                couchService.masterDB.put(
-                    this.user.activeUser!._id,
-                    this.user.activeUser!,
-                    this.user.activeUser!._rev
-                ).then(
-                this.navigateBack()
-                );
-            } else {
-                pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
-                    this.getUser()
-                );
-            }
+            this.errorAlert("Work Email and Mobile Number are required fields.")
         }
-    }
 
-    private async getUserFromUserDB() {
-        // get user doc from userDB if exits
-        console.log('getting user from userDB');
-
-        try {
-            const allDocs = await pouchService.db.allDocs(
-                pouchService.userDBName
-                );
-
-            for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
-                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
-
-                        this.user.newUser = false;
-                        this.user.activeUser = row.doc;
-                        if (row.doc.activeVessel) {
-                          this.vessel.activeVessel = row.doc.activeVessel;
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            this.errorAlert(err);
-        }
-    }
-
-    private async getUserFromMasterDB() {
-        // get user doc from master if exists / then put in userDB.
-        if (this.user.activeUser === undefined) {
-            console.log('Getting user from masterDB');
-            try {
-                const masterDB: Client<any> = couchService.masterDB;
-                const user = await masterDB.viewWithDocs<any>(
-                    'obs-web',
-                    'all_usernames',
-                    {key: authService.getCurrentUser()!.username}
-                );
-
-                if (user.rows.length > 0) {
-                    couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
-                    pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
-                }
-            } catch (err) {
-                this.errorAlert(err);
-            }
-        }
     }
 
 
-    private getUser() {
-        this.user.activeUser = undefined;
-
-        this.getUserFromUserDB().then(
-           () => {
-                this.getUserFromMasterDB();
-                console.log('after get user from pouch');
-                console.log(this.user.activeUser);
-            }
-           ).then(
-               () => {
-                    if (this.user.activeUser === undefined) {
-                        this.user.newUser = true;
-                        this.user.activeUser = {
-                            type: 'person',
-                            firstName: '',
-                            lastName: '',
-                            apexUserAdminUserName: authService.getCurrentUser()!.username,
-                            addressLine1: '',
-                            addressLine2: '',
-                            city: '',
-                            state: {name: '', abbreviation: ''},
-                            zipCode: '',
-                            country: '',
-                            workPhone: '',
-                            homePhone: '',
-                            cellPhone: '',
-                            workEmail: '',
-                            homeEmail: '',
-                            birthdate: '',
-                            createdBy: authService.getCurrentUser()!.username,
-                            createdDate: moment().format()
-                            };
-                        }
-                    }
-                );
-    }
 
     private newContact() {
             const newUser = {
@@ -476,7 +415,7 @@ export default class UserDetails extends Vue {
                 addressLine1: '',
                 addressLine2: '',
                 city: '',
-                state: {name: '', abbreviation: ''},
+                state: '',
                 zipCode: '',
                 country: '',
                 workPhone: '',
@@ -485,12 +424,13 @@ export default class UserDetails extends Vue {
                 workEmail: '',
                 homeEmail: '',
                 birthdate: '',
+                activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
+                port: this.vessel.activeVessel!.homePort ? this.vessel.activeVessel!.homePort : '',
                 createdBy: authService.getCurrentUser()!.username,
                 createdDate: moment().format()
             };
-            this.user.activeUser = newUser;
-            this.user.activeUser.activeVessel = this.vessel.activeVessel;
-            this.user.activeUser.port = this.vessel.activeVessel!.homePort;
+
+            Vue.set(this.user, 'activeUser', newUser);
             this.user.newUser = true;
             this.$router.push({path: '/users/' + 'new'});
     }
@@ -519,9 +459,9 @@ export default class UserDetails extends Vue {
     }
 
     private mounted() {
-        if (this.$route.name === 'User Config') {
-            this.getUser();
-        }
+        // if (this.$route.name === 'User Config') {
+        //     this.getUser();
+        // }
         this.getVessels();
         this.getUsStates();
     }
