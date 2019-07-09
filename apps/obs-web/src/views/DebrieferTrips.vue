@@ -69,7 +69,7 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props"   :style="{ color:activeColor }">
           <q-td auto-width>
             <q-checkbox dense v-model="props.selected"/>
           </q-td>
@@ -160,7 +160,7 @@ import {
 } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
+import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
 
 @Component
@@ -182,6 +182,7 @@ export default class DebrieferTrips extends Vue {
   private dialogPagination = { rowsPerPage: 10 };
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
+  private activeColor = 'black';
 
   private visibleTripColumns = [
     'key',
@@ -445,6 +446,8 @@ export default class DebrieferTrips extends Vue {
     //     ' previouslySelectedIndex=' +
     //     this.previouslySelectedIndex
     // );
+    this.activeColor = 'red'; //attempt 1 to disable QTable hover
+    colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
     this.previouslySelectedIndex = index;
   }
   // gets the actual value of the row ("index") and column "value"
@@ -468,6 +471,8 @@ export default class DebrieferTrips extends Vue {
     //     ' previouslySelectedIndex=' +
     //     this.previouslySelectedIndex
     // );
+    this.activeColor = 'black'; //attempt 1 to enable QTable hover
+    colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
     this.selected = [];
     this.bulkEditColumnPreviousValue = this.getValue(index, value);
     let multipleValues = false;
