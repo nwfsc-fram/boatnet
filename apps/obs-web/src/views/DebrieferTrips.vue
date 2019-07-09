@@ -12,6 +12,7 @@
       :selected-rows-label="getSelectedString"
       selection="multiple"
       :selected.sync="rowSelected"
+      table-class="myClass"
     >
       <template v-slot:top="props">
         <div v-if="$q.screen.gt.xs" class="col">
@@ -569,3 +570,9 @@ export default class DebrieferTrips extends Vue {
   }
 }
 </script>
+<style >
+.myClass 
+     tbody:tr:hover
+        {background:none}
+
+        </style>
