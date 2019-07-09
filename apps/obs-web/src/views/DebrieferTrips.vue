@@ -79,6 +79,7 @@
             :props="props"
             @click.native="selectRow(props.row.__index,'tripStatus')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'tripStatus')"
+            @mouseover.native="highlight(props.row.__index,'tripStatus')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'tripStatus')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('tripStatus')!=-1?'bg-grey-2':''"
           >{{ props.row.tripStatus.description }}</q-td>
@@ -87,6 +88,7 @@
             :props="props"
             @click.native="selectRow(props.row.__index,'vessel')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'vessel')"
+            @mouseover.native="highlight(props.row.__index,'vessel')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'vessel')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('vessel')!=-1?'bg-grey-2':''"
           >{{ props.row.vessel.vesselName }}</q-td>
@@ -434,6 +436,10 @@ export default class DebrieferTrips extends Vue {
       this.selected[index].push(value);
       this.selected = Object.assign({}, this.selected);
     }
+  }
+
+    private highlight(index: any, value: any) {
+      console.log('highlight index='+index);
   }
 
   // keep track of the row index of the column on mouse down
