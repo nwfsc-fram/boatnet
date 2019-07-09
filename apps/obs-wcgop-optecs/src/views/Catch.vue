@@ -50,55 +50,122 @@
         </template>
     </boatnet-summary>
 
+    {{ currentCatch }}
+    {{ editSpeciesDialog }}
+
+        <q-dialog v-model="editSpeciesDialog" position="right" v-if="currentCatch" >
+          <q-card style="width: 600px; padding: 4px">
+            <q-card-section>
+              <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="editSpeciesDialog = false"></q-btn>
+                <div class="q-col-gutter-md row q-pa-md">
+                  <div class="col" style="padding: 0 16px">
+                    fish
+                        <div class="text-h6">{{ currentCatch.catchContent.alias }}</div>
+
+                        <b>Disposition</b>
+                        <br>
+                        <q-btn v-if="currentCatch.disposition"
+                        v-model="currentCatch.disposition"
+                        :label="currentCatch.disposition.description"
+                        @click="currentCatch.disposition.description === 'Discarded' ?
+                                    currentCatch.disposition.description = 'Retained' :
+                                    currentCatch.disposition.description = 'Discarded'"
+                        :color="currentCatch.disposition.description === 'Retained' ? 'green': 'primary' " >
+                        </q-btn>
+                      <br><br>
+                      <b>Weight Method</b>
+                      <q-btn-toggle
+                        v-model="currentCatch.weightMethod"
+                        :options="wmOptions"
+                        :value.sync="weightMethod"
+                        dense
+                        spread
+                      />
+                      <p>{{ currentCatch.weightMethod ? discardReasonLookup[currentCatch.weightMethod] : ''}}</p>
+
+                      <b>Catch Weight </b><span v-if="currentCatch.weight">({{currentCatch.weight.units}})</span>
+                      <boatnet-keyboard-input v-if="currentCatch.weight"
+                        v-model="currentCatch.weight.value"
+                        keyboardType="numeric"
+                        />
+
+                      <b>Total # of fish</b>
+                      <boatnet-keyboard-input
+                        v-model="currentCatch.count"
+                        keyboardType="numeric"
+                        />
+
+                      <br>
+                      <b>Discard Reason</b>
+                      <q-btn-toggle
+                        v-model="currentCatch.discardReason"
+                        :options="wmOptions"
+                        :value.sync="discardReason"
+                        dense
+                        spread
+                        />
+                      <p>{{ currentCatch.discardReason ? discardReasonLookup[currentCatch.discardReason] : ''}}</p>
+
+                    </div>
+                  </div>
+                    <q-card-actions style="float: right;">
+                      <q-btn color="primary" label="update"></q-btn>
+                      <br><br>
+                  </q-card-actions>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
         <q-dialog v-model="addSpeciesDialog" position="right" v-if="currentCatch">
             <q-card style="width: 600px; padding: 4px">
                 <q-card-section>
                   <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="addSpeciesDialog = false"></q-btn>
                   <div class="q-col-gutter-md row q-pa-md">
+                    <div class="col" style="padding: 0 16px">
 
-                    <div class="col q-col-gutter-md" style="padding: 0 16px">
-                      <div v-if="currentCatch.catchContent.type === 'grouping'">
-                        <div><b>Disposition</b></div>
-                        <q-btn v-model="currentCatch.disposition" :label="currentCatch.disposition.description" @click="currentCatch.disposition.description === 'Discarded'? currentCatch.disposition.description = 'Retained' : currentCatch.disposition.description = 'Discarded'" :color="currentCatch.disposition.description === 'Retained' ? 'green': 'primary' " @save="saveChanges">
+                        <b>Disposition</b>
+                        <br>
+                        <q-btn
+                        v-model="catchModel.disposition"
+                        :label="catchModel.disposition.description"
+                        @click="catchModel.disposition.description === 'Discarded' ?
+                                    catchModel.disposition.description = 'Retained' :
+                                    catchModel.disposition.description = 'Discarded'"
+                        :color="catchModel.disposition.description === 'Retained' ? 'green': 'primary' " >
                         </q-btn>
-                      </div>
-
-                      <div>
-                        <boatnet-button-toggle
-                        v-if="currentCatch.catchContent.type === 'grouping'"
-                        v-model="currentCatch.weightMethod"
-                        title="Weight Method"
+                      <br><br>
+                      <b>Weight Method</b>
+                      <q-btn-toggle
+                        v-model="catchModel.weightMethod"
+                        :options="wmOptions"
                         :value.sync="weightMethod"
+                        dense
+                        spread
+                      />
+                      <p>{{ catchModel.weightMethod ? discardReasonLookup[catchModel.weightMethod] : ''}}</p>
+
+                      <b>Catch Weight </b><span>(lbs)</span>
+                      <boatnet-keyboard-input
+                        v-model="catchModel.weight"
+                        keyboardType="numeric"
+                        />
+
+                      <b>Total # of fish</b>
+                      <boatnet-keyboard-input
+                        v-model="catchModel.count"
+                        keyboardType="numeric"
+                        />
+
+                      <br>
+                      <b>Discard Reason</b>
+                      <q-btn-toggle
+                        v-model="catchModel.discardReason"
                         :options="wmOptions"
-                        @save="saveChanges"
-                        />
-                      </div>
-
-                      <boatnet-keyboard-input
-                        v-if="currentCatch.catchContent.type === 'taxonomy-alias'"
-                        v-model="currentCatch.weight.value"
-                        label="Catch Weight"
-                        keyboardType="numeric"
-                        @save="saveChanges"
-                        />
-
-                      <boatnet-keyboard-input
-                        v-if="currentCatch.catchContent.type === 'taxonomy-alias'"
-                        v-model="currentCatch.count"
-                        label="Total # of fish"
-                        keyboardType="numeric"
-                        @save="saveChanges"
-                        />
-
-                      <boatnet-button-toggle
-                        v-if="currentCatch.catchContent.type === 'taxonomy-alias'"
-                        v-model="currentCatch.discardReason"
-                        title="Discard Reason"
                         :value.sync="discardReason"
-                        :options="wmOptions"
-                        description="description"
-                        @save="saveChanges"
+                        dense
+                        spread
                         />
+                      <p>{{ catchModel.discardReason ? discardReasonLookup[catchModel.discardReason] : ''}}</p>
 
                   </div>
                   <div class="col" style="min-width: 250px; padding: 0">
@@ -130,12 +197,13 @@
                         </q-item>
                       </q-list>
                     </q-scroll-area>
-
+                        <div>{{ catchModel }}</div>
                   </div>
                 </div>
 
-                  <q-card-actions style="float: right">
+                  <q-card-actions style="float: right;">
                       <q-btn color="primary" label="update"></q-btn>
+                      <br><br>
                   </q-card-actions>
                 </q-card-section>
             </q-card>
@@ -165,15 +233,20 @@ export default class Catch extends Vue {
     private wcgopCatchData: any[] = [];
     private addCatch = false;
     private addSpeciesDialog = false;
+    private editSpeciesDialog = false;
     private frequentList = false;
     private disposition = 'Retained';
     private speciesList = [];
     private options: any[] = [];
-    private weightMethod: any = {label: '1', value: 'Weight method description' };
-    private discardReason: any = {label: '1', value: 'Weight method description' };
     private selectedSpecies: any[] = [];
     private filterText = '';
     private useActiveHaul = false;
+    private discardReason = [];
+    private weightMethod = [];
+
+    private catchModel: WcgopCatch = {
+                                        disposition: {description: 'Discarded'}
+                                      };
 
     private catches: WcgopCatch[] = [
       {
@@ -299,15 +372,26 @@ export default class Catch extends Vue {
     ];
 
     private wmOptions = [
-                        {label: '1', lookupVal: '1', value: 'Weight method description' },
-                        {label: '3', lookupVal: '3', value: 'Weight method description' },
-                        {label: '5', lookupVal: '5', value: 'Weight method description' },
-                        {label: '6', lookupVal: '6', value: 'Weight method description' },
-                        {label: '7', lookupVal: '7', value: 'Weight method description' },
-                        {label: '8', lookupVal: '8', value: 'Weight method description' },
-                        {label: '14', lookupVal: '14', value: 'Weight method description' },
-                        {label: '15', lookupVal: '15', value: 'Weight method description' },
+                        {label: '1', value: 'A' },
+                        {label: '3', value: 'B' },
+                        {label: '5', value: 'C' },
+                        {label: '6', value: 'D' },
+                        {label: '7', value: 'E' },
+                        {label: '8', value: 'F' },
+                        {label: '14', value: 'G' },
+                        {label: '15', value: 'H' },
                         ];
+
+    private discardReasonLookup = {
+      A: "reason 1",
+      B: "reason the second",
+      C: "the C reason",
+      D: "dee",
+      E: "e e e e e",
+      F: "the f reason",
+      G: "big g",
+      H: "the last reason"
+    }
 
     private expanded: any = [];
 
@@ -359,8 +443,26 @@ this.speciesList = species.rows;
 }
 
 private handleSelectCatch(wCatch: any) {
-    if (wCatch) {
+    let wm = undefined;
+    let dist = undefined;
+    if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
+      for (const grouping of this.catches[0].children) {
+        for (const species of grouping.children) {
+          if (species.catchContent.alias === wCatch.catchContent.alias) {
+            wm = grouping.weightMethod;
+            dist = grouping.disposition;
+          }
+        }
+      }
+
       this.setCurrentCatch(wCatch);
+      if (wm) {
+        Vue.set(this.currentCatch, 'weightMethod', wm);
+      }
+      if (dist) {
+        Vue.set(this.currentCatch, 'disposition', dist);
+      }
+
     } else {
       this.setCurrentCatch(undefined);
     }
@@ -413,7 +515,7 @@ private addSpecies() {
 
 private editSpecies() {
   if (this.currentCatch) {
-    this.addSpeciesDialog = true;
+    this.editSpeciesDialog = true;
   }
 }
 
