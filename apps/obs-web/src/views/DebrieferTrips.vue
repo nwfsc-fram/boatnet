@@ -59,7 +59,7 @@
           </q-select>
         </div>
         <template>
-          <q-btn color="primary text-white q-ma-md" @click="openDialog()">Edit</q-btn>
+          <q-btn color="primary text-white q-ma-md" @click="openEditDialog()">Edit</q-btn>
           <q-btn
             color="red text-white"
             @click="openDeleteDialog()"
