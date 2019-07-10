@@ -552,6 +552,9 @@ export default class DebrieferTrips extends Vue {
       (tripColumns) => tripColumns.name
     );
   }
+  private isRowSelected(key:any) {
+      console.log("isRowSelected");
+    }
 
   private removeAll() {
     this.visibleTripColumns = [];
