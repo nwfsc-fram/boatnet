@@ -536,7 +536,7 @@ export default class DebrieferTrips extends Vue {
     }
   }
   
-  private getSelectedString(numRows) {
+  private getSelectedString(numRows: number) {
     return numRows === 0
       ? ''
       : `${numRows} record${
