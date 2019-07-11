@@ -381,8 +381,7 @@ export default class DebrieferTrips extends Vue {
 
       for (const row of trips.rows) {
         const trip = row.doc;
-        trip.key = row.key;
-        trip.rowSelected = false;
+        trip.key = row.key;        
         this.WcgopTrips.push(trip);
 
         for (const operationId of trip.operationIDs) {
