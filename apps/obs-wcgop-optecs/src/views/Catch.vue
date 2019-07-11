@@ -1,6 +1,7 @@
 <template>
     <q-page padding>
       <q-toggle v-model="useActiveHaul" label="Use Active Haul"></q-toggle>
+      <div>{{ catchModel }}</div>
       <!-- <q-tree
       :nodes="catches"
       node-key="label"
@@ -26,6 +27,7 @@
             :data="getCatches"
             :settings="wcgopCatchSettings"
             @select="handleSelectCatch"
+            :showBottom="showBottom"
             >
             <template v-slot:default="rowVals">
               <q-td style="width: 20px;">
@@ -81,8 +83,11 @@
                         dense
                         spread
                       />
-                      <p>{{ currentCatch.weightMethod ? discardReasonLookup[currentCatch.weightMethod] : ''}}</p>
-
+                      <p>{{ currentCatch.weightMethod ? weightMethodLookup[currentCatch.weightMethod] : ''}}</p>
+                      <div v-if="currentCatch.weightMethod">
+                        {{ currentCatch.weightMethod.lookupVal }}
+                        </div>
+                      <div v-if="currentCatch.weightMethod && [6,7,14].includes(currentCatch.weightMethod.lookupVal)"> 
                       <b>Catch Weight </b><span v-if="currentCatch.weight">({{currentCatch.weight.units}})</span>
                       <boatnet-keyboard-input v-if="currentCatch.weight"
                         v-model="currentCatch.weight.value"
@@ -94,7 +99,7 @@
                         v-model="currentCatch.count"
                         keyboardType="numeric"
                         />
-
+                      </div>
                       <br>
                       <b>Discard Reason</b>
                       <q-btn-toggle
@@ -104,7 +109,7 @@
                         dense
                         spread
                         />
-                      <p>{{ currentCatch.discardReason ? discardReasonLookup[currentCatch.discardReason] : ''}}</p>
+                      <p>{{ currentCatch.discardReason ? weightMethodLookup[currentCatch.discardReason] : ''}}</p>
 
                     </div>
                   </div>
@@ -117,7 +122,7 @@
         </q-dialog>
 
         <q-dialog v-model="addSpeciesDialog" position="right" v-if="currentCatch">
-            <q-card style="width: 600px; padding: 4px">
+            <q-card style="width: 600px; padding: 4px" v-if="currentHaul.gearType">
                 <q-card-section>
                   <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="addSpeciesDialog = false"></q-btn>
                   <div class="q-col-gutter-md row q-pa-md">
@@ -142,31 +147,28 @@
                         dense
                         spread
                       />
-                      <p>{{ catchModel.weightMethod ? discardReasonLookup[catchModel.weightMethod] : ''}}</p>
+                      <p>{{ catchModel.weightMethod ? weightMethodLookup[catchModel.weightMethod] : ''}}</p>
 
-                      <b>Catch Weight </b><span>(lbs)</span>
-                      <boatnet-keyboard-input
-                        v-model="catchModel.weight"
-                        keyboardType="numeric"
-                        />
+                      <div v-if="catchModel.weightMethod && [6,7,14].includes(catchModel.weightMethod)">
+                        <div v-if="selectedSpecies.length <= 1">
+                          <b>Catch Weight </b><span>(lbs)</span>
+                          <boatnet-keyboard-input
+                            v-model="catchModel.weight"
+                            keyboardType="numeric"
+                            :readonly="selectedSpecies.length > 1"
+                            />
 
-                      <b>Total # of fish</b>
-                      <boatnet-keyboard-input
-                        v-model="catchModel.count"
-                        keyboardType="numeric"
-                        />
-
-                      <br>
-                      <b>Discard Reason</b>
-                      <q-btn-toggle
-                        v-model="catchModel.discardReason"
-                        :options="wmOptions"
-                        :value.sync="discardReason"
-                        dense
-                        spread
-                        />
-                      <p>{{ catchModel.discardReason ? discardReasonLookup[catchModel.discardReason] : ''}}</p>
-
+                          <b>Total # of fish</b>
+                          <boatnet-keyboard-input
+                            v-model="catchModel.count"
+                            keyboardType="numeric"
+                            :readonly="selectedSpecies.length > 1"
+                            />
+                        </div>
+                        <div v-else>
+                          (Catch Weight and Total # of fish can only be added one at a time.)
+                        </div>
+                      </div>
                   </div>
                   <div class="col" style="min-width: 250px; padding: 0">
                     <q-btn
@@ -197,7 +199,7 @@
                         </q-item>
                       </q-list>
                     </q-scroll-area>
-                        <div>{{ catchModel }}</div>
+
                   </div>
                 </div>
 
@@ -207,7 +209,11 @@
                   </q-card-actions>
                 </q-card-section>
             </q-card>
+          <q-card style="width: 600px; padding: 4px" v-else>
+            <div class="text-h6">You must select a gear type for the haul before you can add catch species -- <span @click="editHaul" style="cursor:pointer">link to haul details</span></div>
+            </q-card>
           </q-dialog>
+
 
     </q-page>
 </template>
@@ -220,7 +226,8 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
   WcgopCatch,
   WcgopCatchTypeName,
-  WcgopOperation
+  WcgopOperation,
+  TaxonomyAlias
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -236,13 +243,14 @@ export default class Catch extends Vue {
     private editSpeciesDialog = false;
     private frequentList = false;
     private disposition = 'Retained';
-    private speciesList = [];
+    private speciesList: any[] = []
     private options: any[] = [];
     private selectedSpecies: any[] = [];
     private filterText = '';
     private useActiveHaul = false;
     private discardReason = [];
     private weightMethod = [];
+    private showBottom = true;
 
     private catchModel: WcgopCatch = {
                                         disposition: {description: 'Discarded'}
@@ -372,26 +380,26 @@ export default class Catch extends Vue {
     ];
 
     private wmOptions = [
-                        {label: '1', value: 'A' },
-                        {label: '3', value: 'B' },
-                        {label: '5', value: 'C' },
-                        {label: '6', value: 'D' },
-                        {label: '7', value: 'E' },
-                        {label: '8', value: 'F' },
-                        {label: '14', value: 'G' },
-                        {label: '15', value: 'H' },
+                        {label: '1', value: 1 },
+                        {label: '3', value: 3 },
+                        {label: '5', value: 5 },
+                        {label: '6', value: 6 },
+                        {label: '7', value: 7 },
+                        {label: '8', value: 8 },
+                        {label: '14', value: 14 },
+                        {label: '15', value: 15 },
                         ];
 
-    private discardReasonLookup = {
-      A: "reason 1",
-      B: "reason the second",
-      C: "the C reason",
-      D: "dee",
-      E: "e e e e e",
-      F: "the f reason",
-      G: "big g",
-      H: "the last reason"
-    }
+    private weightMethodLookup = {
+      1: 'Actual Weight',
+      3: 'Basket Weight Determination',
+      5: 'OTC minus Retained',
+      6: 'Other',
+      7: 'Vessel Estimate',
+      8: 'Extrapolation',
+      14: 'Visual Estimate',
+      15: 'Visual Spatial'
+    };
 
     private expanded: any = [];
 
@@ -428,27 +436,33 @@ export default class Catch extends Vue {
     }
 
 public async populateSpeciesView() {
-const db = pouchService.db;
-const queryOptions = {
-    include_docs: true
-};
+  const db = pouchService.db;
+  const queryOptions = {
+      include_docs: true
+  };
 
-const species = await db.query(
-    pouchService.lookupsDBName,
-    'optecs_trawl/all_tally_species',
-    queryOptions
-);
+  const taxAlias = await db.query(
+      pouchService.lookupsDBName,
+      'optecs_trawl/all_taxonomy_alias',
+      queryOptions
+  );
 
-this.speciesList = species.rows;
+  for (const row of taxAlias.rows) {
+    if (row.value.commonName && row.value.scientificName) {
+      this.speciesList.push(row);
+    }
+  }
+
 }
 
 private handleSelectCatch(wCatch: any) {
-    let wm = undefined;
-    let dist = undefined;
+    let wm;
+    let dist;
     if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
-      for (const grouping of this.catches[0].children) {
-        for (const species of grouping.children) {
-          if (species.catchContent.alias === wCatch.catchContent.alias) {
+      for (const grouping of this.catches[0].children!) {
+        for (const species of grouping.children!) {
+          const txnmyContent = species.catchContent as TaxonomyAlias;
+          if (txnmyContent.alias === wCatch.catchContent.alias) {
             wm = grouping.weightMethod;
             dist = grouping.disposition;
           }
@@ -551,6 +565,7 @@ private async filterFn(val: string, update: any, abort: any) {
     }
 
 private setSelectedSpecies(species: any) {
+  console.log(species);
   if (this.selectedSpecies.indexOf(species) === -1) {
     this.selectedSpecies.push(species);
   } else {
@@ -660,6 +675,10 @@ private get filteredSpecies() {
     } else {
       return '';
     }
+  }
+
+  private editHaul() {
+    this.$router.push({ path: '/hauldetails/' + this.currentHaul.operationNum });
   }
 
   private created() {

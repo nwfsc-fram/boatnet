@@ -1,21 +1,25 @@
 <template>
   <span>
-    <q-table
-      :dense="isCondensed"
-      :hide-bottom="showBottom"
-      :data="data"
-      :columns="settings.columns"
-      :row-key="settings.rowKey"
-      :selected.sync="selected"
-      :pagination="pagination"
-      separator="vertical"
-    >
-      <template v-slot:body="props">
-        <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer">
-          <slot v-bind:row="props.row"/>
-        </q-tr>
-      </template>
-    </q-table>
+    <q-scroll-area style="height: 550px">
+
+      <q-table
+        :dense="isCondensed"
+        :hide-bottom="showBottom"
+        :data="data"
+        :columns="settings.columns"
+        :row-key="settings.rowKey"
+        :selected.sync="selected"
+        :pagination="pagination"
+        separator="vertical"
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer">
+            <slot v-bind:row="props.row"/>
+          </q-tr>
+        </template>
+      </q-table>
+      
+    </q-scroll-area>
   </span>
 </template>
 
@@ -32,7 +36,7 @@ export default class BoatnetTable extends Vue {
   @Prop({ default: false }) public showBottom!: boolean;
   @Prop({ default: false }) public isCondensed!: boolean;
   public selected: any[] = [];
-  private pagination = {rowsPerPage: 9};
+  private pagination = {rowsPerPage: 0};
 
   private select(row: any) {
     if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
