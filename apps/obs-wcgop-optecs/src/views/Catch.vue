@@ -243,7 +243,7 @@ export default class Catch extends Vue {
     private editSpeciesDialog = false;
     private frequentList = false;
     private disposition = 'Retained';
-    private speciesList: any[] = []
+    private speciesList: any[] = [];
     private options: any[] = [];
     private selectedSpecies: any[] = [];
     private filterText = '';
