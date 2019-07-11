@@ -1,18 +1,15 @@
 import { Base } from '../_base/index';
 import { Person } from './person';
 import { TaxonomyAlias } from './taxonomy-alias';
-import { Measurement, BoatnetDate, CouchID } from '../_common';
-import { GearType } from './gear-type';
-import { Fishery } from './fishery';
-import { CatchDisposition } from './catch-disposition';
+import { BoatnetDate } from '../_common';
 
 export const ProtocolTypeName = 'protocol';
 
 declare type ObservationType = string; // TODO - Lookup
 declare type BiostructureType = string; // TODO - Lookup
-declare type Stratum = string; // TODO - Lookup
-declare type SamplingStrategy = string; // TODO - Lookup
-// Simple Random, Stratified Random, Opportunistic/Haphazard, Census
+declare type SamplingStrategy = string; // TODO - Lookup - Simple Random, Stratified Random, Opportunistic/Haphazard, Census
+declare type CountType = string; // LOOKUP
+declare type StratumType = string; // LOOKUP
 
 export const ProgramYearProtocolTypeName = 'program-year-protocol';
 export interface ProgramYearProtocol extends Base {
@@ -20,6 +17,24 @@ export interface ProgramYearProtocol extends Base {
   startDate: BoatnetDate;
   endDate: BoatnetDate;
   protocols: Protocol[];
+}
+
+export interface Protocol extends Base {
+
+  taxonomy: TaxonomyAlias;
+  principalInvestigator?: Person; // Who
+  name: string; // let's review - SL100AW25 StTi+
+  count: number;
+  countType: CountType;
+  strata: StratumType[];
+  observations: ObservationType[];
+  biostructures: BiostructureType[];
+
+  samplingStrategy?: SamplingStrategy; // how data were collected:  random, stratified, strange sampling, etc.
+
+  children?: Protocol[]; // There can be a total of 3 possible depths
+
+  // isSpecialProjectProtocol?: boolean; // Do we want / need this?  Potentially a separate document type for special projects
 }
 
 /*
@@ -61,11 +76,12 @@ perDay (could translate into spatio-temporal constraint)
 biolistNumber / everyNHauls (equivalent to every nth haul (for WCGOP n = 3), random haul start)
 
 -- Species Characteristics Constraints
-observationRange (e.g. length (min, max, type), width (min, max, type), weight (min, max))
+observationRangePerBin (e.g. length (min, max, type), width (min, max, type), weight (min, max))
     [{min: 25, max 29}, {min 30, max 34}, ... ]
 
 categoricalList (e.g. lifestage (eggs, juvenile, adult), sex, size grouping (e.g. small v. large hake)
   - could be multiple, simultaneous lists)
+
 
 -- Spatio-Temporal Constraints
 minDate, maxDate - (may be specified as season/pass)
@@ -75,6 +91,7 @@ minDepth, maxDepth (spatial)
 
 -- Management Constraints
 fisheries (WCGOP / A-SHOP)
+fisheryGroup (WCGOP) - MAYBE, this turns into a depth under the hood (30 ftms splits it)
 gearType (WCGOP / A-SHOP)
 disposition (WCGOP)
 vesselType (mothership v. catcher processor - A-SHOP)
@@ -85,7 +102,7 @@ PI/Organizations
 For WCGOP (e.g.)
 
 #1
-ProgramYearVessel {
+ProgramYearVessel [{
   taxonomy: canary,
   protocols: [
     {
@@ -101,7 +118,7 @@ ProgramYearVessel {
       strata: {
         isPerHaul: yes
       }
-      count: 25
+      count: 20
       observations { sex, length, weight }
       biostructures { age }
     },
@@ -188,7 +205,7 @@ ProgramYearVessel {
   ]
 }
 
-#2
+#2 - Hierachy - Selected Approach
 ProgramYearVessel {
   protocols: [
     {
@@ -227,7 +244,16 @@ ProgramYearVessel {
                   {count: 20, countType: max, leg: 1},
                   {count: 20, countType: max, leg: 2},
                 ],
-                perObservationRangePerHaul: { count: 1, countType: max, rangeType: length },
+                observationRangePerBin: {
+                  binType: haul,
+                  ranges: [
+                    { lengthMin: 0cm, lengthMax: 20cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 20cm, lengthMax: 29cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 30cm, lengthMax: 39cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 40cm, lengthMax: 49cm, lengthType: fork, count: 4, countType: min },
+                    { lengthMin: 50cm, lengthType: fork, count: 4, countType: min }
+                  ]
+                },
                 perHaul: { count: 2, countType: max },
               }
             },
@@ -284,26 +310,6 @@ protocols: [
 ];
 
 */
-export interface Protocol extends Base {
-
-  protocolName?: string; // SL100AW25 StTi+
-  samplingStrategy?: SamplingStrategy;
-
-  taxonomy: TaxonomyAlias;
-  principalInvestigator: Person;      // Who
-
-  // children?: Protocol[];
-
-  // Strata
-  fisheries?: Fishery[]; // For survey, could use Scientific Research
-  gearTypes?: GearType[];
-  disposition?: CatchDisposition;
-  strata?: Stratum[];
-
-  observationTypes: ObservationType[];    // What
-  biostructureTypes: BiostructureType[];  // What
-
-  isSpecialProjectProtocol?: boolean;
 
   // Who, what, when, how
 
@@ -314,5 +320,3 @@ export interface Protocol extends Base {
   //        maybe just need to define a given subsample
   // 3. How to capture a special project PI wanting standard data as well?
   //        Harvey wants a gill, but also FRAM sex, length
-
-}

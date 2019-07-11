@@ -7,16 +7,16 @@ export const TaxonomyTypeName = 'taxonomy';
 declare type TaxonomyLevel = string; // TODO Lookup
 export type TaxonomyId = CouchID;
 
+// Each taxonomic record will be in a different document
 export interface Taxonomy extends Base {
   taxonomyId: TaxonomyId; // Use this instead of _id for clarity except for top level record
   level: TaxonomyLevel;
   taxonomyName: string;
   scientificName?: string; // copy of taxonomyName except for species & subspecies
-  // primaryCommonName?: string;
-  // commonNames?: string[];
   children?: TaxonomyId[];
   parent?: TaxonomyId;
-  // aliases?: TaxonomyAlias[];
+
+  // WCGOP specific usage
   wcgopTallyShortCode?: string;
 
   // Used by EDC + Obs Analysts

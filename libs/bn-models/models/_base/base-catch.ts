@@ -1,8 +1,6 @@
 // Base Catch Class, intended to be subclassed
 import { Base } from './base';
-import { UnsortedCatch } from '../_lookups/unsorted-catch';
-import { TaxonomyAlias } from '../_lookups/taxonomy-alias';
-import { CatchGrouping, Debris, Protocol } from '../_lookups';
+import { CatchGrouping, MarineDebris, Protocol, UnsortedCatch, TaxonomyAlias } from '../_lookups';
 import { Basket } from '../_common';
 
 // Ignore simple interface linting warning
@@ -15,7 +13,7 @@ export interface BaseCatch extends Base {
   catchNum?: number; // Unique per Operation sequential
   // Lookups - TaxonomyAlias, UnsortedCatch (Codend, Pocket Net, Mix, Submix), CatchGrouping, Debris
   catchType?: CatchType;
-  catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | Debris);
+  catchContent?: (UnsortedCatch | TaxonomyAlias | CatchGrouping | MarineDebris);
   baskets?: Basket[];
   protocols?: Protocol[]; // Include sampling strategy (randomly selected, etc.)
 }
