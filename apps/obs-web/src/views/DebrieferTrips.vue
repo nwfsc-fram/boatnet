@@ -12,6 +12,7 @@
       :selected-rows-label="getSelectedString"
       selection="multiple"
       :selected.sync="rowSelected"
+      @update:selected="onRowSelectUpdate"
     >
       <template v-slot:top="props">
         <div v-if="$q.screen.gt.xs" class="col">
@@ -422,6 +423,7 @@ export default class DebrieferTrips extends Vue {
     return '';
   }
 
+  
   private selectRow(index: any, value: any) {
     // console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
@@ -533,20 +535,15 @@ export default class DebrieferTrips extends Vue {
       }
     }
   }
-  private getSelectedString() {
-    // enable Delete button if a row is selected and vice versa
-    if (this.rowSelected.length === 0) {
-      this.deleteButtonDisabled = true;
-    } else {
-      this.deleteButtonDisabled = false;
-    }
-
-    return this.rowSelected.length === 0
+  
+  private getSelectedString(numRows) {
+    return numRows === 0
       ? ''
-      : `${this.rowSelected.length} record${
-          this.rowSelected.length > 1 ? 's' : ''
+      : `${numRows} record${
+          numRows > 1 ? 's' : ''
         } selected of ${this.WcgopTrips.length}`;
   }
+  
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
@@ -558,6 +555,11 @@ export default class DebrieferTrips extends Vue {
 
   private removeAll() {
     this.visibleTripColumns = [];
+  }
+  
+  // update selected row handler
+  private onRowSelectUpdate(val: any[]) {
+    this.deleteButtonDisabled = val.length === 0    
   }
 }
 </script>
