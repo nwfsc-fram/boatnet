@@ -187,6 +187,7 @@ export default class DebrieferTrips extends Vue {
   private activeColor = 'black';
   private mouseDown:boolean = false;
   private currentColumn:string = '';
+  private currentRow:number = -1;
 
   private visibleTripColumns = [
     'key',
@@ -441,12 +442,14 @@ export default class DebrieferTrips extends Vue {
   }
 
     private highlight(index: any, value: any) {
-      // console.log('highlight index='+index+' column='+value);
-     
-      if (this.mouseDown && this.currentColumn==value)
-         this.selectRow(index,value);
+      console.log('highlight index='+index+' column='+value);
+
+      if (this.mouseDown)
+        if (this.currentRow!==index)
+          this.selectRow(index,this.currentColumn);
 
 
+      this.currentRow = index;
   }
 
   // keep track of the row index of the column on mouse down
