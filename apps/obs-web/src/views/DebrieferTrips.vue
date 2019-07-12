@@ -185,7 +185,8 @@ export default class DebrieferTrips extends Vue {
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
   private activeColor = 'black';
-  private mouseDown = false;
+  private mouseDown:boolean = false;
+  private currentColumn:string = '';
 
   private visibleTripColumns = [
     'key',
@@ -442,7 +443,7 @@ export default class DebrieferTrips extends Vue {
     private highlight(index: any, value: any) {
       // console.log('highlight index='+index+' column='+value);
      
-      if (this.mouseDown)
+      if (this.mouseDown && this.currentColumn==value)
          this.selectRow(index,value);
 
 
@@ -460,6 +461,7 @@ export default class DebrieferTrips extends Vue {
     );
 
     this.mouseDown = true;
+    this.currentColumn = value;
     this.selectRow(index,value);
     this.activeColor = 'red'; //attempt 1 to disable QTable hover
     colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
@@ -487,6 +489,7 @@ export default class DebrieferTrips extends Vue {
         this.previouslySelectedIndex
     );
     this.mouseDown = false;
+    this.currentColumn = '';
     this.activeColor = 'black'; //attempt 1 to enable QTable hover
     colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
     this.selected = [];
