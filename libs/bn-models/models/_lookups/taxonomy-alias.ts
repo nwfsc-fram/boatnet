@@ -15,7 +15,7 @@ export interface TaxonomyAlias extends Base {
   alias: string; // Rockfish, Canary
   aliasType: AliasType; // Lookup - Common Name, WCGOP Tally Short Code, etc.
   lifestage?: Lifestage;
-  condition?: Condition;
+  condition?: Condition; // such as Crushed (for urchins)
   isAshop?: boolean;
   isWcgop?: boolean;
   isTrawlSurvey?: boolean;
