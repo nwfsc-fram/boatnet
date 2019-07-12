@@ -428,7 +428,7 @@ export default class DebrieferTrips extends Vue {
 
   
   private selectRow(index: any, value: any) {
-    // console.log('selectRow with index=' + index + ' and value=' + value);
+    console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
       this.selected[index].indexOf(value) === -1
         ? this.selected[index].push(value)
@@ -441,19 +441,20 @@ export default class DebrieferTrips extends Vue {
   }
 
     private highlight(index: any, value: any) {
-      console.log('highlight index='+index);
+      // console.log('highlight index='+index+' column='+value);
+
   }
 
   // keep track of the row index of the column on mouse down
   private selectMultipleRowsMousedown(index: any, value: any) {
-    // console.log(
-    //   'selectMultipleRowsMousedown index=' +
-    //     index +
-    //     ' value=' +
-    //     value +
-    //     ' previouslySelectedIndex=' +
-    //     this.previouslySelectedIndex
-    // );
+    console.log(
+      'selectMultipleRowsMousedown index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
     this.activeColor = 'red'; //attempt 1 to disable QTable hover
     colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
     this.previouslySelectedIndex = index;
@@ -471,14 +472,14 @@ export default class DebrieferTrips extends Vue {
   // calculate the difference between the last row selected
   // and the current row and highlight each one separately
   private selectMultipleRowsMouseup(index: any, value: any) {
-    // console.log(
-    //   'selectMultipleRowsMouseup index=' +
-    //     index +
-    //     ' value=' +
-    //     value +
-    //     ' previouslySelectedIndex=' +
-    //     this.previouslySelectedIndex
-    // );
+    console.log(
+      'selectMultipleRowsMouseup index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
     this.activeColor = 'black'; //attempt 1 to enable QTable hover
     colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
     this.selected = [];
