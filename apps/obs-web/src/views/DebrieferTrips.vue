@@ -459,7 +459,7 @@ export default class DebrieferTrips extends Vue {
         ' previouslySelectedIndex=' +
         this.previouslySelectedIndex
     );
-
+    this.selected = [];
     this.mouseDown = true;
     this.currentColumn = value;
     this.selectRow(index,value);
@@ -490,9 +490,11 @@ export default class DebrieferTrips extends Vue {
     );
     this.mouseDown = false;
     this.currentColumn = '';
+
+    /*
     this.activeColor = 'black'; //attempt 1 to enable QTable hover
     colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
-    this.selected = [];
+
     this.bulkEditColumnPreviousValue = this.getValue(index, value);
     let multipleValues = false;
 
@@ -508,24 +510,25 @@ export default class DebrieferTrips extends Vue {
       multipleValues = true;
       for (let i = index; i <= this.previouslySelectedIndex; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
-        this.selectRow(i, value);
+        this.selectRow(i, this.currentColumn);
       }
     } else if (this.previouslySelectedIndex < index) {
       multipleValues = true;
       // console.log('previouslySelectedIndex<index');
       for (let i = this.previouslySelectedIndex; i <= index; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
-        this.selectRow(i, value);
+        this.selectRow(i, this.currentColumn);
       }
     }
     else
-      this.selectRow(index,value);
+      this.selectRow(index,this.currentColumn);
 
     if (multipleValues) {
       this.bulkEditColumnPreviousValue = 'Multiple';
     }
 
     this.previouslySelectedIndex = index;
+    */
   }
 
   private openEditDialog() {
