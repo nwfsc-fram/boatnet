@@ -79,7 +79,6 @@
           <q-td
             key="tripStatus"
             :props="props"
-            @click.native="selectRow(props.row.__index,'tripStatus')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'tripStatus')"
             @mouseover.native="highlight(props.row.__index,'tripStatus')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'tripStatus')"
@@ -88,7 +87,6 @@
           <q-td
             key="vessel"
             :props="props"
-            @click.native="selectRow(props.row.__index,'vessel')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'vessel')"
             @mouseover.native="highlight(props.row.__index,'vessel')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'vessel')"
@@ -187,6 +185,7 @@ export default class DebrieferTrips extends Vue {
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
   private activeColor = 'black';
+  private mouseDown = false;
 
   private visibleTripColumns = [
     'key',
@@ -442,6 +441,10 @@ export default class DebrieferTrips extends Vue {
 
     private highlight(index: any, value: any) {
       // console.log('highlight index='+index+' column='+value);
+     
+      if (this.mouseDown)
+         this.selectRow(index,value);
+
 
   }
 
@@ -455,6 +458,9 @@ export default class DebrieferTrips extends Vue {
         ' previouslySelectedIndex=' +
         this.previouslySelectedIndex
     );
+
+    this.mouseDown = true;
+    this.selectRow(index,value);
     this.activeColor = 'red'; //attempt 1 to disable QTable hover
     colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
     this.previouslySelectedIndex = index;
@@ -480,6 +486,7 @@ export default class DebrieferTrips extends Vue {
         ' previouslySelectedIndex=' +
         this.previouslySelectedIndex
     );
+    this.mouseDown = false;
     this.activeColor = 'black'; //attempt 1 to enable QTable hover
     colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
     this.selected = [];
@@ -508,6 +515,8 @@ export default class DebrieferTrips extends Vue {
         this.selectRow(i, value);
       }
     }
+    else
+      this.selectRow(index,value);
 
     if (multipleValues) {
       this.bulkEditColumnPreviousValue = 'Multiple';
