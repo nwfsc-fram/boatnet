@@ -12,6 +12,8 @@
       :selected-rows-label="getSelectedString"
       selection="multiple"
       :selected.sync="rowSelected"
+      table-class="myClass"
+      @update:selected="onRowSelectUpdate"
     >
       <template v-slot:top="props">
         <div v-if="$q.screen.gt.xs" class="col">
@@ -69,7 +71,7 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props"   :style="{ color:activeColor }">
           <q-td auto-width>
             <q-checkbox dense v-model="props.selected"/>
           </q-td>
@@ -77,16 +79,16 @@
           <q-td
             key="tripStatus"
             :props="props"
-            @click.native="selectRow(props.row.__index,'tripStatus')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'tripStatus')"
+            @mouseover.native="highlight(props.row.__index,'tripStatus')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'tripStatus')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('tripStatus')!=-1?'bg-grey-2':''"
           >{{ props.row.tripStatus.description }}</q-td>
           <q-td
             key="vessel"
             :props="props"
-            @click.native="selectRow(props.row.__index,'vessel')"
             @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'vessel')"
+            @mouseover.native="highlight(props.row.__index,'vessel')"
             @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'vessel')"
             :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('vessel')!=-1?'bg-grey-2':''"
           >{{ props.row.vessel.vesselName }}</q-td>
@@ -160,7 +162,7 @@ import {
 } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
+import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
 
 @Component
@@ -182,6 +184,10 @@ export default class DebrieferTrips extends Vue {
   private dialogPagination = { rowsPerPage: 10 };
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
+  private activeColor = 'black';
+  private mouseDown:boolean = false;
+  private currentColumn:string = '';
+  private currentRow:number = -1;
 
   private visibleTripColumns = [
     'key',
@@ -381,8 +387,7 @@ export default class DebrieferTrips extends Vue {
 
       for (const row of trips.rows) {
         const trip = row.doc;
-        trip.key = row.key;
-        trip.rowSelected = false;
+        trip.key = row.key;        
         this.WcgopTrips.push(trip);
 
         for (const operationId of trip.operationIDs) {
@@ -422,8 +427,9 @@ export default class DebrieferTrips extends Vue {
     return '';
   }
 
+  
   private selectRow(index: any, value: any) {
-    // console.log('selectRow with index=' + index + ' and value=' + value);
+    console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
       this.selected[index].indexOf(value) === -1
         ? this.selected[index].push(value)
@@ -435,16 +441,33 @@ export default class DebrieferTrips extends Vue {
     }
   }
 
+    private highlight(index: any, value: any) {
+      console.log('highlight index='+index+' column='+value);
+
+      if (this.mouseDown)
+        if (this.currentRow!==index)
+          this.selectRow(index,this.currentColumn);
+
+
+      this.currentRow = index;
+  }
+
   // keep track of the row index of the column on mouse down
   private selectMultipleRowsMousedown(index: any, value: any) {
-    // console.log(
-    //   'selectMultipleRowsMousedown index=' +
-    //     index +
-    //     ' value=' +
-    //     value +
-    //     ' previouslySelectedIndex=' +
-    //     this.previouslySelectedIndex
-    // );
+    console.log(
+      'selectMultipleRowsMousedown index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
+    this.selected = [];
+    this.mouseDown = true;
+    this.currentColumn = value;
+    this.selectRow(index,value);
+    this.activeColor = 'red'; //attempt 1 to disable QTable hover
+    colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
     this.previouslySelectedIndex = index;
   }
   // gets the actual value of the row ("index") and column "value"
@@ -460,15 +483,21 @@ export default class DebrieferTrips extends Vue {
   // calculate the difference between the last row selected
   // and the current row and highlight each one separately
   private selectMultipleRowsMouseup(index: any, value: any) {
-    // console.log(
-    //   'selectMultipleRowsMouseup index=' +
-    //     index +
-    //     ' value=' +
-    //     value +
-    //     ' previouslySelectedIndex=' +
-    //     this.previouslySelectedIndex
-    // );
-    this.selected = [];
+    console.log(
+      'selectMultipleRowsMouseup index=' +
+        index +
+        ' value=' +
+        value +
+        ' previouslySelectedIndex=' +
+        this.previouslySelectedIndex
+    );
+    this.mouseDown = false;
+    this.currentColumn = '';
+
+    /*
+    this.activeColor = 'black'; //attempt 1 to enable QTable hover
+    colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
+
     this.bulkEditColumnPreviousValue = this.getValue(index, value);
     let multipleValues = false;
 
@@ -484,22 +513,25 @@ export default class DebrieferTrips extends Vue {
       multipleValues = true;
       for (let i = index; i <= this.previouslySelectedIndex; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
-        this.selectRow(i, value);
+        this.selectRow(i, this.currentColumn);
       }
     } else if (this.previouslySelectedIndex < index) {
       multipleValues = true;
       // console.log('previouslySelectedIndex<index');
       for (let i = this.previouslySelectedIndex; i <= index; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
-        this.selectRow(i, value);
+        this.selectRow(i, this.currentColumn);
       }
     }
+    else
+      this.selectRow(index,this.currentColumn);
 
     if (multipleValues) {
       this.bulkEditColumnPreviousValue = 'Multiple';
     }
 
     this.previouslySelectedIndex = index;
+    */
   }
 
   private openEditDialog() {
@@ -533,28 +565,38 @@ export default class DebrieferTrips extends Vue {
       }
     }
   }
-  private getSelectedString() {
-    // enable Delete button if a row is selected and vice versa
-    if (this.rowSelected.length === 0) {
-      this.deleteButtonDisabled = true;
-    } else {
-      this.deleteButtonDisabled = false;
-    }
-
-    return this.rowSelected.length === 0
+  
+  private getSelectedString(numRows: number) {
+    return numRows === 0
       ? ''
-      : `${this.rowSelected.length} record${
-          this.rowSelected.length > 1 ? 's' : ''
+      : `${numRows} record${
+          numRows > 1 ? 's' : ''
         } selected of ${this.WcgopTrips.length}`;
   }
+  
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
     );
   }
+  private isRowSelected(key: any) {
+      console.log('isRowSelected');
+    }
 
   private removeAll() {
     this.visibleTripColumns = [];
   }
+  
+  // update selected row handler
+  private onRowSelectUpdate(val: any[]) {
+    this.deleteButtonDisabled = val.length === 0    
+  }
 }
 </script>
+
+<style >
+.myClass 
+     tbody:tr:hover
+        {background:none}
+
+ </style>
