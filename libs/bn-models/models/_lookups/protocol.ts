@@ -7,7 +7,8 @@ export const ProtocolTypeName = 'protocol';
 
 declare type ObservationType = string; // TODO - Lookup
 declare type BiostructureType = string; // TODO - Lookup
-declare type SamplingStrategy = string; // TODO - Lookup - Simple Random, Stratified Random, Opportunistic/Haphazard, Census
+declare type SamplingStrategy = string; // TODO - Lookup - Simple Random, Stratified Random,
+                                        // Opportunistic/Haphazard, Census
 declare type CountType = string; // LOOKUP
 declare type StratumType = string; // LOOKUP
 
@@ -34,7 +35,8 @@ export interface Protocol extends Base {
 
   children?: Protocol[]; // There can be a total of 3 possible depths
 
-  // isSpecialProjectProtocol?: boolean; // Do we want / need this?  Potentially a separate document type for special projects
+  // isSpecialProjectProtocol?: boolean; // Do we want / need this?
+  // Potentially a separate document type for special projects
 }
 
 /*
