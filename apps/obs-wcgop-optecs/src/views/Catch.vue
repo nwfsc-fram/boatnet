@@ -12,7 +12,13 @@
         {{ prop }}
       </template>
       </q-tree> -->
-
+      <div style="float: left;">
+        <span v-if="expanded.length < currentHaul.catches[0].children.length">
+          <q-btn color="primary" @click="expandAll">Expand All</q-btn>
+          &nbsp;
+        </span>
+        <q-btn color="grey" @click="collapseAll" v-if="expanded.length > 0">Collapse All</q-btn>
+      </div>
       <boatnet-summary
         currentScreen="Species"
         :current="currentCatch"
@@ -22,7 +28,6 @@
         @edit="editSpecies"
         @delete="deleteSpecies"
         >
-
         <template v-slot:table>
           <boatnet-table
             :data="getCatches"
@@ -386,6 +391,8 @@ export default class Catch extends Vue {
 
     private expanded: any = [];
 
+
+
     @Action('setCurrentCatch', { namespace: 'appState' })
     private setCurrentCatch: any;
 
@@ -672,6 +679,19 @@ private updateSpecies() {
     if (index > -1) {
       this.expanded.splice(index, 1);
     }
+  }
+
+  private expandAll() {
+    this.expanded = [];
+    if (this.currentHaul.catches![0].children) {
+      for (const grouping of this.currentHaul.catches![0].children) {
+        this.expanded.push(grouping.catchNum);
+      }
+    }
+  }
+
+  private collapseAll() {
+    this.expanded = [];
   }
 
   private get getCatches() {
