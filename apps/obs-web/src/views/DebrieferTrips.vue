@@ -71,7 +71,7 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props"   :style="{ color:activeColor }">
+        <q-tr :props="props" :style="{ color:activeColor }">
           <q-td auto-width>
             <q-checkbox dense v-model="props.selected"/>
           </q-td>
@@ -185,9 +185,9 @@ export default class DebrieferTrips extends Vue {
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
   private activeColor = 'black';
-  private mouseDown:boolean = false;
-  private currentColumn:string = '';
-  private currentRow:number = -1;
+  private mouseDown: boolean = false;
+  private currentColumn: string = '';
+  private currentRow: number = -1;
 
   private visibleTripColumns = [
     'key',
@@ -387,7 +387,7 @@ export default class DebrieferTrips extends Vue {
 
       for (const row of trips.rows) {
         const trip = row.doc;
-        trip.key = row.key;        
+        trip.key = row.key;
         this.WcgopTrips.push(trip);
 
         for (const operationId of trip.operationIDs) {
@@ -427,7 +427,6 @@ export default class DebrieferTrips extends Vue {
     return '';
   }
 
-  
   private selectRow(index: any, value: any) {
     console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
@@ -441,15 +440,16 @@ export default class DebrieferTrips extends Vue {
     }
   }
 
-    private highlight(index: any, value: any) {
-      console.log('highlight index='+index+' column='+value);
+  private highlight(index: any, value: any) {
+    console.log('highlight index=' + index + ' column=' + value);
 
-      if (this.mouseDown)
-        if (this.currentRow!==index)
-          this.selectRow(index,this.currentColumn);
+    if (this.mouseDown) {
+      if (this.currentRow !== index) {
+        this.selectRow(index, this.currentColumn);
+      }
+    }
 
-
-      this.currentRow = index;
+    this.currentRow = index;
   }
 
   // keep track of the row index of the column on mouse down
@@ -465,9 +465,9 @@ export default class DebrieferTrips extends Vue {
     this.selected = [];
     this.mouseDown = true;
     this.currentColumn = value;
-    this.selectRow(index,value);
-    this.activeColor = 'red'; //attempt 1 to disable QTable hover
-    colors.setBrand('primary', '#33F'); //attempt 2 to disable QTable hover
+    this.selectRow(index, value);
+    this.activeColor = 'red'; // attempt 1 to disable QTable hover
+    colors.setBrand('primary', '#33F'); // attempt 2 to disable QTable hover
     this.previouslySelectedIndex = index;
   }
   // gets the actual value of the row ("index") and column "value"
@@ -565,38 +565,37 @@ export default class DebrieferTrips extends Vue {
       }
     }
   }
-  
+
   private getSelectedString(numRows: number) {
     return numRows === 0
       ? ''
-      : `${numRows} record${
-          numRows > 1 ? 's' : ''
-        } selected of ${this.WcgopTrips.length}`;
+      : `${numRows} record${numRows > 1 ? 's' : ''} selected of ${
+          this.WcgopTrips.length
+        }`;
   }
-  
+
   private addAll() {
     this.visibleTripColumns = this.tripColumns.map(
       (tripColumns) => tripColumns.name
     );
   }
   private isRowSelected(key: any) {
-      console.log('isRowSelected');
-    }
+    console.log('isRowSelected');
+  }
 
   private removeAll() {
     this.visibleTripColumns = [];
   }
-  
+
   // update selected row handler
   private onRowSelectUpdate(val: any[]) {
-    this.deleteButtonDisabled = val.length === 0    
+    this.deleteButtonDisabled = val.length === 0;
   }
 }
 </script>
 
 <style >
-.myClass 
-     tbody:tr:hover
-        {background:none}
-
- </style>
+.myClass tbody:tr:hover {
+  background: none;
+}
+</style>
