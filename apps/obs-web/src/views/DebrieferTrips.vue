@@ -179,7 +179,7 @@ export default class DebrieferTrips extends Vue {
   private rowSelected: any = [];
   private dialog: boolean = false;
   private tripDialogColumns: any = [];
-  private previouslySelectedIndex: any;
+  private mouseDownRow: any;
   private pagination = { rowsPerPage: 50 };
   private dialogPagination = { rowsPerPage: 10 };
   private tripDialogColumnNameSet = new Set();
@@ -428,7 +428,7 @@ export default class DebrieferTrips extends Vue {
   }
 
   private selectRow(index: any, value: any) {
-    console.log('selectRow with index=' + index + ' and value=' + value);
+    // console.log('selectRow with index=' + index + ' and value=' + value);
     if (this.selected.hasOwnProperty(index)) {
       this.selected[index].indexOf(value) === -1
         ? this.selected[index].push(value)
@@ -441,7 +441,7 @@ export default class DebrieferTrips extends Vue {
   }
 
   private highlight(index: any, value: any) {
-    console.log('highlight index=' + index + ' column=' + value);
+    // console.log('highlight index=' + index + ' column=' + value);
 
     if (this.mouseDown) {
       if (this.currentRow !== index) {
@@ -454,21 +454,21 @@ export default class DebrieferTrips extends Vue {
 
   // keep track of the row index of the column on mouse down
   private selectMultipleRowsMousedown(index: any, value: any) {
-    console.log(
-      'selectMultipleRowsMousedown index=' +
-        index +
-        ' value=' +
-        value +
-        ' previouslySelectedIndex=' +
-        this.previouslySelectedIndex
-    );
+    // console.log(
+    //   'selectMultipleRowsMousedown index=' +
+    //     index +
+    //     ' value=' +
+    //     value +
+    //     ' mouseDownRow=' +
+    //     this.mouseDownRow
+    // );
     this.selected = [];
     this.mouseDown = true;
     this.currentColumn = value;
     this.selectRow(index, value);
     this.activeColor = 'red'; // attempt 1 to disable QTable hover
     colors.setBrand('primary', '#33F'); // attempt 2 to disable QTable hover
-    this.previouslySelectedIndex = index;
+    this.mouseDownRow = index;
   }
   // gets the actual value of the row ("index") and column "value"
   private getValue(index: any, value: any) {
@@ -483,18 +483,18 @@ export default class DebrieferTrips extends Vue {
   // calculate the difference between the last row selected
   // and the current row and highlight each one separately
   private selectMultipleRowsMouseup(index: any, value: any) {
-    console.log(
-      'selectMultipleRowsMouseup index=' +
-        index +
-        ' value=' +
-        value +
-        ' previouslySelectedIndex=' +
-        this.previouslySelectedIndex
-    );
+    // console.log(
+    //   'selectMultipleRowsMouseup index=' +
+    //     index +
+    //     ' value=' +
+    //     value +
+    //     ' mouseDownRow=' +
+    //     this.mouseDownRow
+    // );
     this.mouseDown = false;
-    this.currentColumn = '';
 
-    /*
+
+    
     this.activeColor = 'black'; //attempt 1 to enable QTable hover
     colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
 
@@ -506,32 +506,37 @@ export default class DebrieferTrips extends Vue {
         this.bulkEditColumn = tripColumn.label;
       }
     }
-    console.log(this.bulkEditColumnPreviousValue);
+    // console.log(this.bulkEditColumnPreviousValue);
 
-    if (this.previouslySelectedIndex > index) {
-      // console.log('previouslySelectedIndex>index');
+    if (this.mouseDownRow > index) {
+      // console.log('mouseDownRow>index');
+      // console.log(this.selected);
       multipleValues = true;
-      for (let i = index; i <= this.previouslySelectedIndex; i++) {
+      for (let i = index; i <= this.mouseDownRow; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
-        this.selectRow(i, this.currentColumn);
+        if(!this.selected.hasOwnProperty(i))
+          this.selectRow(i, this.currentColumn);
       }
-    } else if (this.previouslySelectedIndex < index) {
+    } else if (this.mouseDownRow < index) {
       multipleValues = true;
-      // console.log('previouslySelectedIndex<index');
-      for (let i = this.previouslySelectedIndex; i <= index; i++) {
+      // console.log('mouseDownRow<index');
+      // console.log(this.selected.hasOwnProperty(2));
+      for (let i = this.mouseDownRow; i <= index; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
-        this.selectRow(i, this.currentColumn);
+        if(!this.selected.hasOwnProperty(i))
+          {console.log(this.selected.hasOwnProperty(i));
+          console.log(i);
+          this.selectRow(i, this.currentColumn);}
       }
     }
-    else
-      this.selectRow(index,this.currentColumn);
+    // else
+    //   this.selectRow(index,this.currentColumn);
 
     if (multipleValues) {
       this.bulkEditColumnPreviousValue = 'Multiple';
     }
-
-    this.previouslySelectedIndex = index;
-    */
+    this.currentColumn = '';
+   
   }
 
   private openEditDialog() {
