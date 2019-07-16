@@ -39,9 +39,9 @@ class AuthService {
     const userResponse = await axios
       .post(apiUrl + '/api/v1/login', { username, password })
       .catch((err) => {
-        console.log('[Auth Service]', err);
         if (err.response && err.response.status === 401) {
-          throw new Error('Invalid username or password.');
+          console.error('[Auth Service]', err.response);
+          throw new Error(err.response.data.message);
         }
         // Else - possibly offline - Continue
       });
