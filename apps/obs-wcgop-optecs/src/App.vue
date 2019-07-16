@@ -60,3 +60,9 @@ export default class App extends Vue {
   }
 }
 </script>
+
+<style>
+  .q-page-container {
+    background-color: lightgray;
+  }
+</style>
