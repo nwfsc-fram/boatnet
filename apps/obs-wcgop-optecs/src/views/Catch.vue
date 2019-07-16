@@ -46,7 +46,7 @@
               </q-td>
               <q-td key="disposition" style="width: 60px">{{ getDisposition(rowVals.row) }}</q-td>
               <q-td key="weightMethod" style="width: 60px">{{rowVals.row.weightMethod ? rowVals.row.weightMethod.lookupVal : ''}}</q-td>
-              <q-td key="discardReason" style="width: 80px">{{ rowVals.row.discardReason ? rowVals.row.discardReason: '' }}</q-td>
+              <q-td key="discardReason" style="width: 60px">{{ rowVals.row.discardReason ? rowVals.row.discardReason: '' }}</q-td>
               <q-td key="name">
                 <span v-if="rowVals.row.children.length === 0">&nbsp;&nbsp;</span>
                 {{ rowVals.row.catchContent.type === 'grouping' ? rowVals.row.weightMethod.description : rowVals.row.catchContent.alias }}
@@ -522,7 +522,7 @@ private updateCatch() {
     };
 
     this.currentHaul.catches![0].children!.push(grouping);
-    this.saveChanges();
+    // this.saveChanges();
   }
 
   for (const grouping of this.currentHaul.catches![0].children!) {
@@ -532,6 +532,7 @@ private updateCatch() {
       this.setCurrentCatch(grouping);
     }
   }
+
 
   for (const species of this.selectedSpecies) {
     const newSpeciesCatch: WcgopCatch = {
@@ -551,8 +552,8 @@ private updateCatch() {
       newSpeciesCatch.count = this.catchModel.count;
     }
     this.currentCatch.children!.push(newSpeciesCatch);
-    this.saveChanges();
   }
+  this.saveChanges();
 
   this.selectedSpecies = [];  // reset selected species.
   this.catchModel = {disposition: addDisposition};  // reset catchModel, but retain last disposition.
