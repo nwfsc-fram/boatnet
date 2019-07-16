@@ -1,8 +1,9 @@
 <template>
   <span>
-    <q-scroll-area style="height: 550px">
+    <q-scroll-area style="height: 500px">
 
       <q-table
+        class="my-sticky-header-table"
         :dense="isCondensed"
         :hide-bottom="showBottom"
         :data="data"
@@ -12,8 +13,10 @@
         :pagination="pagination"
         separator="vertical"
       >
+        
+
         <template v-slot:body="props">
-          <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer">
+          <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer" style="font-weight: bold">
             <slot v-bind:row="props.row"/>
           </q-tr>
         </template>
@@ -50,3 +53,29 @@ export default class BoatnetTable extends Vue {
   }
 }
 </script>
+
+<style lang="stylus">
+.my-sticky-header-table
+  /* max height is important */
+  .q-table__middle
+    max-height 500px
+
+  .q-table__top,
+  .q-table__bottom,
+  thead tr:first-child th /* bg color is important for th; just specify one */
+    background-color #DDDDDD
+    font-weight: bolder;
+
+  thead tr:first-child th
+    position sticky
+    top 0
+    opacity 1
+    z-index 1
+
+  tr:nth-child(even) 
+    background-color: #EEEEEE;
+
+.selected
+  background-color: #87CEEB !important;
+
+</style>

@@ -2,6 +2,7 @@
   <span>
     <div class="row justify-end">
       <boatnet-keyboard-input
+        v-if="showSearch"
         :value.sync="searchText"
         label="Search"
         keyboardType="normal"
@@ -69,6 +70,7 @@ export default class BoatnetSummary extends Vue {
   @Prop() public selectionId!: number;
 
   private searchText = '';
+  private showSearch = false;
   private showDeleteDialog = false;
 
   private get showEnd() {
