@@ -41,7 +41,7 @@ class AuthService {
       .catch((err) => {
         console.log('[Auth Service]', err);
         if (err.response && err.response.status === 401) {
-          throw new Error('Invalid username or password.');
+          throw new Error(err.response.message);
         }
         // Else - possibly offline - Continue
       });
