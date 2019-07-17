@@ -77,7 +77,7 @@
               <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
               <div class="text-h6" style="float: right; padding-right: 10px">ADD SPECIES</div>
               <br>
-            
+
               <div class="row">
 
                 <div class="col q-pa-md">
@@ -171,7 +171,7 @@
               </div>
 
             </div>
-            
+
               <div class="q-pa-md" style="float: right;">
                 <q-btn
                   color="primary"
@@ -181,7 +181,7 @@
                 ></q-btn>
                 <br><br>
               </div>
-              
+
             <br>
         </div>
 
@@ -201,20 +201,22 @@
                         spread
                         />
                       <p>{{ speciesModel.discardReason ? weightMethodLookup[speciesModel.discardReason] : '-'}}</p>
-                      <br>                      
-                      <b>Catch Weight </b><span>({{speciesModel.weight.units}})</span>
-                      <boatnet-keyboard-input 
-                        v-model="speciesModel.weight.value"
-                        keyboardType="numeric"
-                        :value.sync="speciesModel.weight.value"
-                        />
                       <br>
-                      <b>Total # of fish</b>
-                      <boatnet-keyboard-input
-                        v-model="speciesModel.count"
-                        keyboardType="numeric"
-                        :value.sync="speciesModel.count"
+                      <div v-if="[6,7,14].includes(speciesModel.weightMethod)">
+                        <b>Catch Weight </b><span>({{speciesModel.weight.units}})</span>
+                        <boatnet-keyboard-input
+                          v-model="speciesModel.weight.value"
+                          keyboardType="numeric"
+                          :value.sync="speciesModel.weight.value"
+                          />
+                        <br>
+                        <b>Total # of fish</b>
+                        <boatnet-keyboard-input
+                          v-model="speciesModel.count"
+                          keyboardType="numeric"
+                          :value.sync="speciesModel.count"
                         />
+                      </div>
 
                     <div style="float: right;">
                       <br><br>
@@ -226,8 +228,6 @@
 
       </q-scroll-area>
     </q-drawer>
-
-      
 
       </div>
 </template>
@@ -374,12 +374,19 @@ private handleSelectCatch(wCatch: any) {
       }
 
       this.setCurrentCatch(wCatch);
+      if (wm) {
+        Vue.set(this.speciesModel,
+                'weightMethod',
+                JSON.parse(JSON.stringify(wm.lookupVal))
+                );
+      }
       this.speciesModel.weight = this.currentCatch.weight ?
                       JSON.parse(JSON.stringify(this.currentCatch.weight)) : {units: 'lbs', value: 0};
       this.speciesModel.count = this.currentCatch.count ?
                       JSON.parse(JSON.stringify(this.currentCatch.count)) : 0;
       this.speciesModel.discardReason = this.currentCatch.discardReason ?
                       JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : '';
+      console.log(JSON.parse(JSON.stringify(this.speciesModel)));
       this.speciesEditing = true;
       this.newSpecies = false;
       // if (wm) {
