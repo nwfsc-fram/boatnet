@@ -12,7 +12,7 @@
       :selected-rows-label="getSelectedString"
       selection="multiple"
       :selected.sync="rowSelected"
-      table-class="myClass"
+      :table-class="computedTableClass"
       @update:selected="onRowSelectUpdate"
     >
       <template v-slot:top="props">
@@ -71,7 +71,13 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props" :style="{ color:activeColor }">
+        <q-tr :props="props"           
+              @[computedNativeHover].native="props.selected = !props.selected"
+              @[computedNativeClick].native="props.selected = !props.selected"
+              @keyup.enter.native.stop.prevent="
+                $refs.myTable.isRowSelected(props.row.__index)
+              "
+            ref="myRef">
           <q-td auto-width>
             <q-checkbox dense v-model="props.selected"/>
           </q-td>
@@ -151,7 +157,7 @@
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { DebrieferState } from '../_store/types/types';
 import {
   WcgopTrip,
@@ -170,6 +176,18 @@ export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
+    @Watch('pagination')
+      handler1(newVal:string, oldVal:string) {
+        console.log('handler1', newVal, oldVal)
+        this.colSelector()
+      }
+      
+  @Watch('paginationController')
+      handler2(newVal:string, oldVal:string) {
+        console.log('hanlder2', newVal, oldVal)
+        this.colSelector()
+      }
+
   private WcgopTrips: any[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
   private selected: any = {};
@@ -184,10 +202,12 @@ export default class DebrieferTrips extends Vue {
   private dialogPagination = { rowsPerPage: 10 };
   private tripDialogColumnNameSet = new Set();
   private deleteButtonDisabled = true;
-  private activeColor = 'black';
+
   private mouseDown: boolean = false;
   private currentColumn: string = '';
   private currentRow: number = -1;
+  private active:boolean = false;
+  private rowSelectionType:string = 'click';
 
   private visibleTripColumns = [
     'key',
@@ -466,8 +486,6 @@ export default class DebrieferTrips extends Vue {
     this.mouseDown = true;
     this.currentColumn = value;
     this.selectRow(index, value);
-    this.activeColor = 'red'; // attempt 1 to disable QTable hover
-    colors.setBrand('primary', '#33F'); // attempt 2 to disable QTable hover
     this.mouseDownRow = index;
   }
   // gets the actual value of the row ("index") and column "value"
@@ -492,12 +510,6 @@ export default class DebrieferTrips extends Vue {
     //     this.mouseDownRow
     // );
     this.mouseDown = false;
-
-
-    
-    this.activeColor = 'black'; //attempt 1 to enable QTable hover
-    colors.setBrand('primary', '#323'); //attempt 2 to enable QTable hover
-
     this.bulkEditColumnPreviousValue = this.getValue(index, value);
     let multipleValues = false;
 
@@ -571,6 +583,67 @@ export default class DebrieferTrips extends Vue {
     }
   }
 
+  private get computedTableClass() {
+    return this.active ? ' myClass' : ''
+  }
+  
+  private get computedNativeHover() {
+      return this.rowSelectionType === 'hover' ||
+        this.rowSelectionType === 'both'
+        ? 'mouseover'
+        : null
+    }
+
+  private get computedNativeClick() {
+      return this.rowSelectionType === 'click' ||
+        this.rowSelectionType === 'both'
+        ? 'click'
+        : null
+    }
+
+  private colSelector() {
+      this.$nextTick(() => {
+        this.active = false
+        const a = [].forEach.call(document.querySelectorAll('td'), el => {
+          el.addEventListener('mousedown', ev => {
+            this.active = true
+            ev.preventDefault()
+            let b = [].forEach.call(
+              document.querySelectorAll('.highlight'),
+              el2 => {
+                el2.classList.remove('highlight')
+              }
+            )
+            el.classList.add('highlight')
+          })
+        })
+
+        const c = [].forEach.call(document.querySelectorAll('td'), el => {
+          el.addEventListener('mousemove', ev => {
+            if (this.active) {
+              el.classList.add('highlight')
+            }
+          })
+        })
+
+        document.addEventListener('mouseup', ev => {
+          this.active = false
+        })
+      })
+    }
+  private mounted (){
+    const tb:any = document.getElementsByClassName('q-table')
+    this.$nextTick(() => {
+      let g = tb[0].rows
+      console.log('tb', g)
+
+      this.colSelector()
+    })
+  }
+
+
+
+
   private getSelectedString(numRows: number) {
     return numRows === 0
       ? ''
@@ -599,8 +672,26 @@ export default class DebrieferTrips extends Vue {
 }
 </script>
 
-<style >
-.myClass tbody:tr:hover {
-  background: none;
+<style lang="stylus" scoped>
+.grid-style-transition {
+  transition: transform 0.3s;
+}
+
+.highlight {
+  background-color: $secondary;
+}
+
+.myClass {
+  tbody tr {
+    &:hover {
+      background: none;
+    }
+  }
+}
+
+.dragClass {
+  tbody td.highlighted {
+    background-color: #999;
+  }
 }
 </style>
