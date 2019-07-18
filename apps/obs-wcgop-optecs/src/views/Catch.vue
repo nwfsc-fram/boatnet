@@ -73,7 +73,7 @@
     >
       <q-scroll-area class="fit">
 
-          <div style="width: 500px; padding: 10px" v-if="currentHaul.gearType && newSpecies">
+          <div style="width: 500px; padding: 10px" v-if="newSpecies">
               <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
               <div class="text-h6" style="float: right; padding-right: 10px">ADD SPECIES</div>
               <br>
