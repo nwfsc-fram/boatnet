@@ -28,7 +28,7 @@
         @goTo="handleGoToWtCnt"
         @add="addSpecies"
         @edit="editSpecies"
-        @delete="deleteSpecies"
+        @modify="modifySpecies"
         >
         <template v-slot:table>
           <boatnet-table
@@ -229,6 +229,81 @@
       </q-scroll-area>
     </q-drawer>
 
+    <q-dialog v-model="modifyDialog">
+          <q-card class="q-pa-md" style="width: 40%">
+            <div v-if="currentCatch">
+              <div class="text-h6">{{ currentCatch.catchContent.alias }} - Discard Reason: {{ currentCatch.discardReason ? currentCatch.discardReason : 'N/A' }}</div>
+              <b>Available Modifications:</b>
+              <q-btn class="q-ma-md" color="primary" label="move" @click="moveModify = !moveModify, deleteModify = false"></q-btn>
+              <q-btn color="red" label="delete" @click="deleteModify = !deleteModify, moveModify = false"></q-btn>
+              <div v-if="moveModify">
+                <q-card>
+                  <q-card-section class="row items-center">
+                    <q-avatar icon="fas fa-exchange-alt" color="primary" text-color="white"/>
+                    <div class="q-pa-md">
+
+                    <b>Disposition</b>
+                    <br>
+                    <q-btn
+                      v-model="speciesModel.disposition"
+                      :label="speciesModel.disposition.description"
+                      @click="speciesModel.disposition.description === 'Discarded' ?
+                                  speciesModel.disposition.description = 'Retained' :
+                                  speciesModel.disposition.description = 'Discarded'"
+                      :color="speciesModel.disposition.description === 'Retained' ? 'green': 'primary' " >
+                    </q-btn>
+                    </div>
+
+                    <div>
+                    <br><br>
+                    <b>Weight Method</b>
+                    <div style="border: 1px solid #B5B5B5; border-radius: 4px">
+                      <q-btn-toggle
+                        v-model="speciesModel.weightMethod"
+                        :options="wmOptions.slice(0,4)"
+                        :value.sync="weightMethod"
+                        spread
+                        unelevated
+
+                      />
+                      <q-btn-toggle
+                        v-model="speciesModel.weightMethod"
+                        :options="wmOptions.slice(4,8)"
+                        :value.sync="weightMethod"
+                        spread
+                        unelevated
+                      />
+                    </div>
+                    <p>{{ catchModel.weightMethod ? weightMethodLookup[catchModel.weightMethod] : ''}}</p>
+                    </div>
+
+                    <q-card-actions align="right">
+                        <q-btn flat label="Cancel" color="primary" @click="resetModify"/>
+                        <q-btn flat label="Move" color="primary" @click="moveSpecies"/>
+                    </q-card-actions>
+                  </q-card-section>
+                </q-card>
+
+              </div>
+              <div class="q-pa-md" v-if="deleteModify">
+                <q-card>
+                  <q-card-section class="row items-center">
+                    <q-avatar icon="warning" color="red" text-color="white"/>
+                    <b>Are you sure you want to permantently delete this species?</b>
+                      <q-card-actions align="right">
+                        <q-btn flat label="Cancel" color="primary" @click="resetModify"/>
+                        <q-btn flat label="Delete" color="primary" @click="deleteSpecies"/>
+                      </q-card-actions>
+                  </q-card-section>
+                </q-card>
+              </div>
+              <br>
+              <q-btn color="primary" label="cancel" @click="resetModify"></q-btn>
+
+            </div>
+          </q-card>
+    </q-dialog>
+
       </div>
 </template>
 
@@ -269,6 +344,10 @@ export default class Catch extends Vue {
     private speciesEditing = false;
 
     private drawerRight = false;
+
+    private modifyDialog = false;
+    private moveModify = false;
+    private deleteModify = false;
 
     private catchModel: any = {
                                 disposition: {description: 'Discarded'}
@@ -476,8 +555,62 @@ private setSelectedSpecies(species: any) {
   }
 }
 
+private modifySpecies() {
+  let activeGrouping: any
+  for (const grouping of this.currentHaul.catches![0].children!) {
+    for (const species of grouping.children!) {
+      if (species === this.currentCatch) {
+        activeGrouping = grouping;
+      }
+    }
+  }
+  Vue.set(this.speciesModel, 'disposition', JSON.parse(JSON.stringify(activeGrouping.disposition)))
+  Vue.set(this.speciesModel, 'weightMethod', JSON.parse(JSON.stringify(activeGrouping.weightMethod.lookupVal)))
+
+  this.modifyDialog = true;
+}
+
+private moveSpecies() {
+  const speciesToMove = JSON.parse(JSON.stringify(this.currentCatch));
+  console.log(speciesToMove);
+
+  console.log(this.speciesModel);
+  this.catchModel = speciesToMove;
+  this.catchModel.disposition = this.speciesModel.disposition;
+  this.catchModel.weightMethod = this.speciesModel.weightMethod;
+
+  console.log(this.catchModel);
+  this.updateCatch();
+
+  for (const grouping of this.currentHaul.catches![0].children!) {
+    for (const species of grouping.children!) {
+      if (species.catchNum === speciesToMove.catchNum) {
+        this.setCurrentCatch(species);
+      }
+    }
+  }
+
+  this.deleteSpecies();
+
+  this.resetModify();
+}
+
 private deleteSpecies() {
-  console.log(this.currentCatch);
+  for (const grouping of this.currentHaul.catches![0].children!) {
+    for (const species of grouping.children!) {
+      if (species === this.currentCatch) {
+        grouping.children!.splice( grouping.children!.indexOf(species) , 1)
+      }
+    }
+  }
+  for (const grouping of this.currentHaul.catches![0].children!) {
+    if (grouping.children!.length === 0) {
+      this.currentHaul.catches![0].children!.splice( this.currentHaul.catches![0].children!.indexOf(grouping), 1)
+    }
+  }
+
+  this.saveChanges();
+  this.resetModify();
 }
 
 
@@ -540,27 +673,48 @@ private updateCatch() {
     }
   }
 
-
-  for (const species of this.selectedSpecies) {
+  if (this.moveModify) {
     const newSpeciesCatch: WcgopCatch = {
-                catchNum: this.getNewCatchNum(),
-                catchContent: JSON.parse(JSON.stringify(species.doc)),
-                disposition: undefined, weightMethod: undefined,
-                discardReason: '',
-                weight: {units: 'lbs', value: 0},
-                count: 0,
-                children: []
-                };
-
-    if (this.selectedSpecies.length === 1 && this.catchModel.weight) {
-      newSpeciesCatch.weight = {value: JSON.parse(JSON.stringify(this.catchModel.weight)), units: 'lbs'};
+      catchNum: this.getNewCatchNum(),
+      catchContent: JSON.parse(JSON.stringify(this.catchModel.catchContent)),
+      disposition: undefined, weightMethod: undefined,
+      discardReason: '',
+      weight: {units: 'lbs', value: 0},
+      count: 0,
+      children: []
     }
-    if (this.selectedSpecies.length === 1 && this.catchModel.count) {
-      newSpeciesCatch.count = this.catchModel.count;
+    if (this.catchModel.discardReason) {
+      newSpeciesCatch.discardReason = JSON.parse(JSON.stringify(this.catchModel.discardReason))
+    }
+    if (this.catchModel.weight) {
+      newSpeciesCatch.weight = JSON.parse(JSON.stringify(this.catchModel.weight))
+    }
+    if (this.catchModel.count) {
+      newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count))
     }
     this.currentCatch.children!.push(newSpeciesCatch);
+  } else {
+    for (const species of this.selectedSpecies) {
+      const newSpeciesCatch: WcgopCatch = {
+                  catchNum: this.getNewCatchNum(),
+                  catchContent: JSON.parse(JSON.stringify(species.doc)),
+                  disposition: undefined, weightMethod: undefined,
+                  discardReason: '',
+                  weight: {units: 'lbs', value: 0},
+                  count: 0,
+                  children: []
+                  };
+
+      if (this.selectedSpecies.length === 1 && this.catchModel.weight) {
+        newSpeciesCatch.weight = {value: JSON.parse(JSON.stringify(this.catchModel.weight)), units: 'lbs'};
+      }
+      if (this.selectedSpecies.length === 1 && this.catchModel.count) {
+        newSpeciesCatch.count = this.catchModel.count;
+      }
+      this.currentCatch.children!.push(newSpeciesCatch);
+    }
+    this.saveChanges();
   }
-  this.saveChanges();
 
   this.selectedSpecies = [];  // reset selected species.
   this.catchModel = {disposition: addDisposition};  // reset catchModel, but retain last disposition.
@@ -713,6 +867,14 @@ private updateSpecies() {
 
   private editHaul() {
     this.$router.push({ path: '/hauldetails/' + this.currentHaul.operationNum });
+  }
+
+  private resetModify() {
+    this.modifyDialog = false;
+    this.moveModify = false;
+    this.deleteModify = false;
+    this.speciesModel = {}
+    this.setCurrentCatch(undefined)
   }
 
   private created() {
