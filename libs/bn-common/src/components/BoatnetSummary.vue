@@ -46,12 +46,22 @@
         :disabled="!current"
       />
       <q-btn
+        v-if="currentScreen !== 'Species'"
         color="primary"
         icon="delete_forever"
         :label="'Delete ' + currentScreen"
         @click="showDeleteDialog = true"
         :disabled="!current"
       />
+      <q-btn
+        v-if="currentScreen === 'Species'"
+        color="primary"
+        icon="fas fa-exchange-alt"
+        :label="'Modify ' + currentScreen"
+        @click="onModify"
+        :disabled="!current"
+      />
+
       <q-space/>
       <slot name="goToButtons"/>
       <q-btn color="primary" icon="play_arrow" :label="'Go To ' + getNextScreen()" @click="goTo"/>
@@ -110,6 +120,10 @@ export default class BoatnetSummary extends Vue {
 
   private onEdit() {
     this.$emit('edit');
+  }
+
+  private onModify() {
+    this.$emit('modify');
   }
 
   private onEnd() {

@@ -138,7 +138,9 @@ export default class BoatnetLocations extends Vue {
   };
 
   private created() {
-    this.locationHolder = this.sortByDate(this.locations);
+    if (this.locations) {
+      this.locationHolder = this.sortByDate(this.locations);
+    }
   }
 
   private sortByDate(locs: FishingLocation[]) {
