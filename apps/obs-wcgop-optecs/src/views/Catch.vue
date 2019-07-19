@@ -556,7 +556,7 @@ private setSelectedSpecies(species: any) {
 }
 
 private modifySpecies() {
-  let activeGrouping: any
+  let activeGrouping: any;
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species === this.currentCatch) {
@@ -564,8 +564,8 @@ private modifySpecies() {
       }
     }
   }
-  Vue.set(this.speciesModel, 'disposition', JSON.parse(JSON.stringify(activeGrouping.disposition)))
-  Vue.set(this.speciesModel, 'weightMethod', JSON.parse(JSON.stringify(activeGrouping.weightMethod.lookupVal)))
+  Vue.set(this.speciesModel, 'disposition', JSON.parse(JSON.stringify(activeGrouping.disposition)));
+  Vue.set(this.speciesModel, 'weightMethod', JSON.parse(JSON.stringify(activeGrouping.weightMethod.lookupVal)));
 
   this.modifyDialog = true;
 }
@@ -599,13 +599,13 @@ private deleteSpecies() {
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species === this.currentCatch) {
-        grouping.children!.splice( grouping.children!.indexOf(species) , 1)
+        grouping.children!.splice( grouping.children!.indexOf(species) , 1);
       }
     }
   }
   for (const grouping of this.currentHaul.catches![0].children!) {
     if (grouping.children!.length === 0) {
-      this.currentHaul.catches![0].children!.splice( this.currentHaul.catches![0].children!.indexOf(grouping), 1)
+      this.currentHaul.catches![0].children!.splice( this.currentHaul.catches![0].children!.indexOf(grouping), 1);
     }
   }
 
@@ -682,15 +682,15 @@ private updateCatch() {
       weight: {units: 'lbs', value: 0},
       count: 0,
       children: []
-    }
+    };
     if (this.catchModel.discardReason) {
-      newSpeciesCatch.discardReason = JSON.parse(JSON.stringify(this.catchModel.discardReason))
+      newSpeciesCatch.discardReason = JSON.parse(JSON.stringify(this.catchModel.discardReason));
     }
     if (this.catchModel.weight) {
-      newSpeciesCatch.weight = JSON.parse(JSON.stringify(this.catchModel.weight))
+      newSpeciesCatch.weight = JSON.parse(JSON.stringify(this.catchModel.weight));
     }
     if (this.catchModel.count) {
-      newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count))
+      newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count));
     }
     this.currentCatch.children!.push(newSpeciesCatch);
   } else {
@@ -873,8 +873,8 @@ private updateSpecies() {
     this.modifyDialog = false;
     this.moveModify = false;
     this.deleteModify = false;
-    this.speciesModel = {}
-    this.setCurrentCatch(undefined)
+    this.speciesModel = {};
+    this.setCurrentCatch(undefined);
   }
 
   private created() {
