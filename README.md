@@ -41,6 +41,10 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 2. Install `yarn`
   * `npm install -g yarn`
+  
+     *NOAA Windows 10 Users may need to set a couple environment variables:*
+     * in System Variables - ```Path``` add: ```C:\Users\\[User.Name]\AppData\Roaming\npm\```
+     * in System Variables - ```NODE_PATH``` set to: ```C:\Users\\[User.Name]\AppData\Roaming\npm\```
 
 3. (OPTIONAL) Install Visual Studio Code - download [here](https://code.visualstudio.com/) (We use and recommend this IDE for development)
 <details><summary>OTHER OPTIONAL STEPS - Not recommended</summary>

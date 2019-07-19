@@ -12,17 +12,17 @@ export const PersonTypeName = 'person';
 export const VesselCaptainTypeName = 'vessel-captain';
 
 // Existing roles:
-// OBSERVER = Application
-//  * observer, debriefer, captain, permit owner, provider,
-//    analyst, lab analyst, data steward, enforcement,
-//    vessel owner, program manager, gear technician, lead observer,
-//    logistical admin, coordinator, trainer, reports user, staff,
-//    development staff
+// BOATNET_OBSERVER = Application
+//  * observer, debriefer, captain, permit_owner, provider,
+//    analyst, lab_analyst, data_steward, enforcement,
+//    vessel_owner, program_manager, gear_technician, lead_observer,
+//    logistical_admin, coordinator, trainer, reports_user, staff,
+//    development_staff
 
-// SURVEY = Application
-//  * FPC, biologist, captain, crew, data steward,
-//    program manager, permit owner, lab analyst,
-//    reports user (PACFIN etc), development staff
+// BOATNET_SURVEY = Application (TODO: Multiple applications on auth server)
+//  * fpc, biologist, captain, crew, data_steward,
+//    program_manager, permit_owner, lab_analyst,
+//    reports_user (PACFIN etc), development_staff
 //
 // Roles used for DataStore access, App Screen access, Widget-level access (divs, etc.)
 
