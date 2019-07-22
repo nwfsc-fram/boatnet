@@ -353,12 +353,12 @@ export default class Trips extends Vue {
 
     private created() {
       if ( authService.getCurrentUser() ) {
-        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles))
+        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
       }
     }
 
-    private isAuthorized(authorized_roles: string[]) {
-      for (const role of authorized_roles) {
+    private isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
         if (this.userRoles.includes(role)) {
           return true;
         }
