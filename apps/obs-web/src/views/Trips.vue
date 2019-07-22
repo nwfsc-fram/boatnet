@@ -17,7 +17,7 @@
       </div>
 
       <q-select
-      v-if="isAuthorized(['staff', 'admin'])"
+      v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])"
       v-model="vessel.activeVessel"
       label="Set Active Vessel (staff role only)"
       dense
