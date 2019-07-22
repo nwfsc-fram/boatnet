@@ -17,6 +17,7 @@
       </div>
 
       <q-select
+      v-if="isAuthorized(['staff', 'admin'])"
       v-model="vessel.activeVessel"
       label="Set Active Vessel (staff role only)"
       dense
@@ -220,6 +221,7 @@ export default class Trips extends Vue {
   private closeAlert = false;
   private activeTrip: any = null;
   private taken: boolean = false;
+  private userRoles: string[] = [];
 
   constructor() {
       super();
@@ -350,7 +352,18 @@ export default class Trips extends Vue {
     // }
 
     private created() {
-      // this.$store.dispatch('updateActiveTrip', '');
+      if ( authService.getCurrentUser() ) {
+        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles))
+      }
+    }
+
+    private isAuthorized(authorized_roles: string[]) {
+      for (const role of authorized_roles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private closeTrip(trip: any) {

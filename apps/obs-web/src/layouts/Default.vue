@@ -58,7 +58,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/vessels" exact>
+        <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="fa fa-ship"/>
           </q-item-section>
@@ -68,7 +68,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management" exact>
+        <q-item to="/em-efp-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="videocam"/>
           </q-item-section>
@@ -78,7 +78,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/ots-management" exact>
+        <q-item to="/ots-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="waves"/>
           </q-item-section>
@@ -88,7 +88,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-assignment" exact>
+        <q-item to="/observer-assignment" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="fa fa-binoculars"/>
           </q-item-section>
@@ -98,7 +98,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-availability" exact>
+        <q-item to="/observer-availability" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="fa fa-calendar-alt"/>
           </q-item-section>
@@ -108,7 +108,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/debriefer" exact>
+        <q-item to="/debriefer" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="beenhere"/>
           </q-item-section>
@@ -120,7 +120,7 @@
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item to="/permits" exact>
+        <q-item to="/permits" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="assignment"/>
           </q-item-section>
@@ -141,7 +141,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/manage-users" exact>
+        <q-item to="/manage-users" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
           <q-item-section avatar>
             <q-icon name="people"/>
           </q-item-section>
@@ -198,6 +198,7 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', {namespace: 'baseCouch'}) private reconnectCouch: any;
   private leftDrawerOpen: boolean = false;
+  private userRoles: string[] = [];
 
   constructor() {
     super();
@@ -216,6 +217,9 @@ export default class DefaultLayout extends Vue {
 
   private created() {
     this.leftDrawerOpen = Platform.is.desktop;
+    if ( authService.getCurrentUser() ) {
+      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles))
+    }
   }
 
   private navigateBack() {
@@ -271,6 +275,14 @@ export default class DefaultLayout extends Vue {
         }
     }
 
+    private isAuthorized(authorized_roles: string[]) {
+      for (const role of authorized_roles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     private getUser() {
         this.user.activeUser = undefined;
