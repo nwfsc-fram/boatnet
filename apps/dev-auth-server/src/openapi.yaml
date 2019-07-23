@@ -11,7 +11,7 @@ tags:
   - name: pubkey
     description: Get RSA public key
 paths:
-  /pet:
+  /login:
     post:
       tags:
         - login
@@ -23,11 +23,29 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
+            examples: # Child of media type
+              Basic: # Example 1
+                value:
+                  username: 'test'
+                  password: 'test'
+              Encoded: # Example 2
+                value:
+                  username: 'test'
+                  passwordEnc: 'dGVzdA=='
         required: true
       responses:
         401:
-          description: Unauthorized
-          content: {}
+          description: 'Authorization information is missing or invalid.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  message:
+                    type: string
+              example:
+                message: 'User not authorized'
+
   /pubkey:
     get:
       tags:
@@ -42,6 +60,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Keys'
+              example:
+                kty: 'RSA'
+                e: '(JWK Encoded Key)'
+                n: 'AQAB'
 components:
   schemas:
     Keys:
@@ -59,6 +81,7 @@ components:
               n:
                 type: string
                 description: JWK Encoded PEM Public Key
+
     Login:
       type: object
       properties:
