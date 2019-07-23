@@ -58,7 +58,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-ship"/>
           </q-item-section>
@@ -68,7 +68,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/em-efp-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="videocam"/>
           </q-item-section>
@@ -78,7 +78,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/ots-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/ots-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="waves"/>
           </q-item-section>
@@ -88,7 +88,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-assignment" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/observer-assignment" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-binoculars"/>
           </q-item-section>
@@ -98,7 +98,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-availability" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/observer-availability" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-calendar-alt"/>
           </q-item-section>
@@ -120,7 +120,7 @@
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item to="/permits" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/permits" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="assignment"/>
           </q-item-section>
@@ -141,7 +141,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/manage-users" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])">
+        <q-item to="/manage-users" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="people"/>
           </q-item-section>
@@ -220,7 +220,7 @@ export default class DefaultLayout extends Vue {
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     } else {
-      this.$router.push({path: '/login'})
+      this.$router.push({path: '/login'});
     }
   }
 
