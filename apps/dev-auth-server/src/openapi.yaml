@@ -1,0 +1,72 @@
+openapi: 3.0.1
+info:
+  title: Dev Auth Server
+  description: This is a development auth server for boatnet.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+tags:
+  - name: login
+    description: Dev Login
+  - name: pubkey
+    description: Get RSA public key
+paths:
+  /pet:
+    post:
+      tags:
+        - login
+      summary: Perform login to get JWT token (Dev Purposes)
+      operationId: postLogin
+      requestBody:
+        description: Need username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        401:
+          description: Unauthorized
+          content: {}
+  /pubkey:
+    get:
+      tags:
+        - pubkey
+      summary: Get RSA key for JWT validation
+      description: Returns public RSA key
+      operationId: getPubkey
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Keys'
+components:
+  schemas:
+    Keys:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: object
+            properties:
+              kty:
+                type: string
+              e:
+                type: string
+              n:
+                type: string
+                description: JWK Encoded PEM Public Key
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          description: Required if passwordEnc not specified
+        passwordEnc:
+          type: string
+          description: Required if password not specified
