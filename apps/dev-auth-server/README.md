@@ -36,6 +36,11 @@ openssl rsa -in temp-priv-key.pem -pubout > temp-pub-key.pem
 openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -subj //CN=localhost
 ```
 
+## OpenAPI Spec
+
+* Use swagger.io to point to https://localhost:9000/spec
+* https://swagger.io/tools/swagger-ui
+
 ## Basic RESTful Testing
 
 POST the following raw JSON to: https://localhost:9000/api/login using a utility such as Postman.
