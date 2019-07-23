@@ -58,7 +58,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/vessels" exact>
+        <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-ship"/>
           </q-item-section>
@@ -68,7 +68,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management" exact>
+        <q-item to="/em-efp-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="videocam"/>
           </q-item-section>
@@ -78,7 +78,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/ots-management" exact>
+        <q-item to="/ots-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="waves"/>
           </q-item-section>
@@ -88,7 +88,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-assignment" exact>
+        <q-item to="/observer-assignment" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-binoculars"/>
           </q-item-section>
@@ -98,7 +98,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-availability" exact>
+        <q-item to="/observer-availability" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="fa fa-calendar-alt"/>
           </q-item-section>
@@ -108,7 +108,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/debriefer" exact>
+        <q-item to="/debriefer" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="beenhere"/>
           </q-item-section>
@@ -120,7 +120,7 @@
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item to="/permits" exact>
+        <q-item to="/permits" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="assignment"/>
           </q-item-section>
@@ -141,7 +141,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/manage-users" exact>
+        <q-item to="/manage-users" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
           <q-item-section avatar>
             <q-icon name="people"/>
           </q-item-section>
@@ -198,6 +198,7 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', {namespace: 'baseCouch'}) private reconnectCouch: any;
   private leftDrawerOpen: boolean = false;
+  private userRoles: string[] = [];
 
   constructor() {
     super();
@@ -216,100 +217,113 @@ export default class DefaultLayout extends Vue {
 
   private created() {
     this.leftDrawerOpen = Platform.is.desktop;
+    if ( authService.getCurrentUser() ) {
+      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+    } else {
+      this.$router.push({path: '/login'});
+    }
   }
 
   private navigateBack() {
     this.$router.back();
   }
 
-    private async getUserFromUserDB() {
-        // get user doc from userDB if exits
-        console.log('getting user from userDB');
+  private async getUserFromUserDB() {
+      // get user doc from userDB if exits
+      console.log('getting user from userDB');
 
-        try {
-            const allDocs = await pouchService.db.allDocs(
-                pouchService.userDBName
-                );
-
-            for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
-                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
-
-                        this.user.newUser = false;
-                        // this.user.activeUser = row.doc;
-                        Vue.set(this.user, 'activeUser', row.doc);
-                        if (row.doc.activeVessel) {
-                          this.vessel.activeVessel = row.doc.activeVessel;
-                        }
-                    }
-                }
-            }
-        } catch (err) {
-            this.errorAlert(err);
-        }
-    }
-
-    private async getUserFromMasterDB() {
-        // get user doc from master if exists / then put in userDB.
-        if (this.user.activeUser === undefined) {
-            console.log('Getting user from masterDB');
-            try {
-                const masterDB: Client<any> = couchService.masterDB;
-                const user = await masterDB.viewWithDocs<any>(
-                    'obs-web',
-                    'all_usernames',
-                    {key: authService.getCurrentUser()!.username}
-                );
-
-                if (user.rows.length > 0) {
-                    couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
-                    pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
-                }
-            } catch (err) {
-                this.errorAlert(err);
-            }
-        }
-    }
-
-
-    private getUser() {
-        this.user.activeUser = undefined;
-
-        this.getUserFromUserDB().then(
-           () => {
-                this.getUserFromMasterDB();
-            }
-           ).then(
-               () => {
-                    if (this.user.activeUser === undefined) {
-                        this.user.newUser = true;
-                        const newUser = {
-                            type: 'person',
-                            firstName: '',
-                            lastName: '',
-                            apexUserAdminUserName: authService.getCurrentUser()!.username,
-                            addressLine1: '',
-                            addressLine2: '',
-                            city: '',
-                            state: '',
-                            zipCode: '',
-                            country: '',
-                            workPhone: '',
-                            homePhone: '',
-                            cellPhone: '',
-                            workEmail: '',
-                            homeEmail: '',
-                            birthdate: '',
-                            createdBy: authService.getCurrentUser()!.username,
-                            createdDate: moment().format()
-                            };
-
-                        Vue.set(this.user, 'activeUser', newUser);
-                    }
-                    this.$router.push({path: '/user-config'});
-               }
+      try {
+          const allDocs = await pouchService.db.allDocs(
+              pouchService.userDBName
               );
+
+          for (const row of allDocs.rows) {
+              if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+                  if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
+
+                      this.user.newUser = false;
+                      // this.user.activeUser = row.doc;
+                      Vue.set(this.user, 'activeUser', row.doc);
+                      if (row.doc.activeVessel) {
+                        this.vessel.activeVessel = row.doc.activeVessel;
+                      }
+                  }
+              }
+          }
+      } catch (err) {
+          this.errorAlert(err);
+      }
+  }
+
+  private async getUserFromMasterDB() {
+      // get user doc from master if exists / then put in userDB.
+      if (this.user.activeUser === undefined) {
+          console.log('Getting user from masterDB');
+          try {
+              const masterDB: Client<any> = couchService.masterDB;
+              const user = await masterDB.viewWithDocs<any>(
+                  'obs-web',
+                  'all_usernames',
+                  {key: authService.getCurrentUser()!.username}
+              );
+
+              if (user.rows.length > 0) {
+                  couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
+                  pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
+              }
+          } catch (err) {
+              this.errorAlert(err);
+          }
+      }
+  }
+
+  private isAuthorized(authorizedRoles: string[]) {
+    for (const role of authorizedRoles) {
+      if (this.userRoles.includes(role)) {
+        return true;
+      }
     }
+    return false;
+  }
+
+  private getUser() {
+      this.user.activeUser = undefined;
+
+      this.getUserFromUserDB().then(
+          () => {
+              this.getUserFromMasterDB();
+          }
+          ).then(
+              () => {
+                  if (this.user.activeUser === undefined) {
+                      this.user.newUser = true;
+                      const newUser = {
+                          type: 'person',
+                          firstName: '',
+                          lastName: '',
+                          apexUserAdminUserName: authService.getCurrentUser()!.username,
+                          addressLine1: '',
+                          addressLine2: '',
+                          city: '',
+                          state: '',
+                          zipCode: '',
+                          country: '',
+                          workPhone: '',
+                          homePhone: '',
+                          cellPhone: '',
+                          workEmail: '',
+                          homeEmail: '',
+                          birthdate: '',
+                          createdBy: authService.getCurrentUser()!.username,
+                          createdDate: moment().format()
+                          };
+
+                      Vue.set(this.user, 'activeUser', newUser);
+                  }
+                  this.$router.push({path: '/user-config'});
+              }
+            );
+  }
 
 }
 </script>
