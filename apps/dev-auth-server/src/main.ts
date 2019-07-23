@@ -8,6 +8,10 @@ import cors from 'cors';
 import { Application } from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
+import { resolve } from 'path';
+
+// 1. Import the express-openapi-validator library
+const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
 import * as bodyParser from 'body-parser';
 
@@ -25,7 +29,16 @@ const optionDefinitions = [{ name: 'secure', type: Boolean }];
 const options = commandLineArgs(optionDefinitions);
 
 app.use(bodyParser.json()); // for parsing application/json
+app.use(express.json());
 app.use(cors());
+
+
+// OpenAPI Spec
+app.use('/spec', express.static(resolve(__dirname, 'openapi.yaml')));
+
+new OpenApiValidator({
+  apiSpecPath: './src/openapi.yaml',
+}).install(app);
 
 const API_VERSION = 'v1';
 // REST API
@@ -33,6 +46,7 @@ const API_VERSION = 'v1';
 app.route('/api/' + API_VERSION + '/login').post(login);
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
+
 
 if (options.secure) {
   const httpsServer = https.createServer(
@@ -53,8 +67,5 @@ if (options.secure) {
   });
 } else {
   // launch an HTTP Server
-  const httpServer = app.listen(3333, () => {
-    const address: any = httpServer.address();
-    console.log('HTTP Server running at http://localhost:' + address.port);
-  });
+ throw new Error('Only HTTPS server is allowed for auth.')
 }
