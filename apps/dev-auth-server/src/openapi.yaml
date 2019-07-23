@@ -34,6 +34,21 @@ paths:
                   passwordEnc: 'dGVzdA=='
         required: true
       responses:
+        200:
+          description: 'User Authorized'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  token:
+                    type: string
+                    description: 'JWT encoded token'
+              example:
+                username: 'test'
+                token: '(JWT Token - decode at jwt.io)'
         401:
           description: 'Authorization information is missing or invalid.'
           content:
@@ -55,7 +70,7 @@ paths:
       operationId: getPubkey
       responses:
         200:
-          description: successful operation
+          description: Retrieved Public RSA Key OK
           content:
             application/json:
               schema:
