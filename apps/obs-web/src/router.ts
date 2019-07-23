@@ -66,84 +66,98 @@ const router = new Router({
       children: [
         { path: '', name: 'Home', component: Home },
         { path: '/about', name: 'About', component: About },
-        { path: '/trips', name: 'Trips', component: Trips},
+        { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-        { path: '/debriefer', name: 'Debriefer', component: Debriefer ,
-          beforeEnter: function(to, from, next) {
+        {
+          path: '/debriefer', name: 'Debriefer', component: Debriefer,
+          beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward',
-                              'program_manager', 'coordinator', 'debriefer']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/permits', name: 'Permits', component: Permits,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/permits/:id', name: 'Permit Details', component: PermitDetails,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/ots-management', name: 'OTS Management', component: OTSManagement,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: 'ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: 'ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
+              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/permits', name: 'Permits', component: Permits,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/permits/:id', name: 'Permit Details', component: PermitDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/ots-management', name: 'OTS Management', component: OTSManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: 'ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: 'ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
         { path: 'user-config', name: 'User Config', component: UserConfig },
-        { path: '/manage-users', name: 'Manage Users', component: ManageUsers,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/users/:id', name: 'User Details', component: UserDetails,
-        beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
+        {
+          path: '/manage-users', name: 'Manage Users', component: ManageUsers,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/users/:id', name: 'User Details', component: UserDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
-        { path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
-        component: ObserverAssignmentDetail,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/observer-availability', name: 'Observer Availability', component: ObserverAvailability},
+        {
+          path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/observer-assignment', name: 'Observer Assignment', component: ObserverAssignment,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/observer-assignment-detail/:id', name: 'Observer Assignment Details',
+          component: ObserverAssignmentDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        { path: '/observer-availability', name: 'Observer Availability', component: ObserverAvailability },
         { path: '/activity-detail', name: 'Activity Detail', component: ActivityDetail },
-        { path: '/vessels', name: 'Vessels', component: Vessels,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
-        { path: '/vessels/:id', name: 'Vessel Details', component: VesselDetails,
-          beforeEnter: function(to, from, next) {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']))
-              { return next(); } else { return next('/login'); }
-        } },
+        {
+          path: '/vessels', name: 'Vessels', component: Vessels,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/vessels/:id', name: 'Vessel Details', component: VesselDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) { return next(); } else { return next('/login'); }
+          }
+        },
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }
