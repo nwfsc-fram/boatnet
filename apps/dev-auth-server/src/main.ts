@@ -9,15 +9,17 @@ import { Application } from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
 import { resolve } from 'path';
+import moment from 'moment';
+import session from 'express-session';
 
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
-
-import * as bodyParser from 'body-parser';
 
 import { login } from './routes/login.route';
 import { pubkey } from './routes/pubkey.route';
 
 import { RSA_PRIVATE_KEY, RSA_CERT } from './util/security';
+import { testauth } from './routes/testauth.route';
+import { validateJwtRequest } from './middleware/get-user.middleware';
 
 const app: Application = express();
 
@@ -27,7 +29,12 @@ const optionDefinitions = [{ name: 'secure', type: Boolean }];
 
 const options = commandLineArgs(optionDefinitions);
 
-app.use(bodyParser.json()); // for parsing application/json
+app.use(session({
+  secret: 'unused',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true }
+}));
 app.use(express.json());
 app.use(cors());
 
@@ -53,9 +60,24 @@ const API_VERSION = 'v1';
 // REST API
 // Login
 app.route('/api/' + API_VERSION + '/login').post(login);
+
+app.route('/api/' + API_VERSION + '/testauth').post(testauth);
+app.use('/api/' + API_VERSION + '/testauth', validateJwtRequest);
+
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
 
+
+
+// Handle bad requests
+app.use((err: any, req: any, res: any, next: any) => {
+  if (!err) return next();
+  console.log(moment().format(), 'Bad request. ', req.ip, err.message);
+  return res.status(400).json({
+    status: 400,
+    error: 'Bad request.',
+  });
+});
 
 if (options.secure) {
   const httpsServer = https.createServer(

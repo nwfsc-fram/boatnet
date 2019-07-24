@@ -73,7 +73,7 @@ paths:
       description: Returns public RSA key
       operationId: getPubkey
       responses:
-        200:
+        '200':
           description: Retrieved Public RSA Key OK
           content:
             application/json:
@@ -83,6 +83,42 @@ paths:
                 kty: 'RSA'
                 e: '(JWK Encoded Key)'
                 n: 'AQAB'
+  /testauth:
+    post:
+      tags:
+        - testauth
+      summary: Checks JWT token validity
+      description: Check JWT auth
+      operationId: getTestAuth
+      requestBody:
+        description: JWT Token
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                token:
+                  type: string
+            example:
+              token: '(jwt value)'
+        required: true
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
 components:
   schemas:
     Keys:
@@ -100,7 +136,6 @@ components:
               n:
                 type: string
                 description: JWK Encoded PEM Public Key
-
     Login:
       type: object
       properties:
@@ -112,3 +147,24 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
+  securitySchemes:
+      bearerAuth:            # Not actually using this yet
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  status:
+                    type: integer
+                    format: int64
+                  message:
+                    type: string
+              example:
+                status: 401
+                message: 'Invalid token.'

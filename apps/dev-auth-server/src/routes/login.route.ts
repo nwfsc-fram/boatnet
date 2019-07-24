@@ -33,12 +33,12 @@ export async function login(req: Request, res: Response) {
 
     console.log('Login successful');
 
-    res.cookie('SESSIONID', sessionToken, {
-      httpOnly: true,
-      secure: true
-    });
+    // res.cookie('SESSIONID', sessionToken, {
+    //   httpOnly: true,
+    //   secure: true
+    // });
 
-    res.cookie('XSRF-TOKEN', csrfToken);
+    // res.cookie('XSRF-TOKEN', csrfToken);
 
     const result = {
       username: validate_result.username,
