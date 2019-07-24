@@ -91,7 +91,7 @@
                       @click="catchModel.disposition.description === 'Discarded' ?
                                   catchModel.disposition.description = 'Retained' :
                                   catchModel.disposition.description = 'Discarded'"
-                      :color="catchModel.disposition.description === 'Retained' ? 'green': 'primary' " >
+                      :color="catchModel.disposition.description === 'Retained' ? 'grey-8': 'primary' " >
                     </q-btn>
 
                     <br><br>
@@ -99,7 +99,7 @@
                     <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
-                        :options="wmOptions.slice(0,4)"
+                        :options="weightMethodOptions.slice(0,4)"
                         :value.sync="weightMethod"
                         spread
                         unelevated
@@ -107,14 +107,21 @@
                       />
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
-                        :options="wmOptions.slice(4,8)"
+                        :options="weightMethodOptions.slice(4,8)"
+                        :value.sync="weightMethod"
+                        spread
+                        unelevated
+                      />
+                      <q-btn-toggle
+                        v-model="catchModel.weightMethod"
+                        :options="weightMethodOptions.slice(9,-1)"
                         :value.sync="weightMethod"
                         spread
                         unelevated
                       />
                     </div>
 
-                    <p>{{ catchModel.weightMethod ? weightMethodLookup[catchModel.weightMethod] : ''}}</p>
+                    <p>{{ weightMethodLookup[catchModel.weightMethod] ? weightMethodLookup[catchModel.weightMethod].value : ''}}</p>
 
                     <div v-if="catchModel.weightMethod && [6,7,14].includes(catchModel.weightMethod)">
                       <div v-if="selectedSpecies.length <= 1">
@@ -136,7 +143,7 @@
                         (Catch Weight and Total # of fish can only be added one at a time.)
                       </div>
                     </div>
-                    <boatnet-custom-keyboard 
+                    <boatnet-custom-keyboard
                     @output="outputKey(char)"
                     >
                     </boatnet-custom-keyboard>
@@ -202,11 +209,11 @@
                       <b>Discard Reason</b><br>
                       <q-btn-toggle
                         v-model="speciesModel.discardReason"
-                        :options="wmOptions"
+                        :options="discardReasonOptions"
                         :value.sync="speciesModel.discardReason"
                         spread
                         />
-                      <p>{{ speciesModel.discardReason ? weightMethodLookup[speciesModel.discardReason] : '-'}}</p>
+                      <p>{{ speciesModel.discardReason ? discardReasonLookup[speciesModel.discardReason].value : '-'}}</p>
                       <br>
                       <div v-if="[6,7,14].includes(speciesModel.weightMethod)">
                         <b>Catch Weight </b><span>({{speciesModel.weight.units}})</span>
@@ -263,7 +270,7 @@
                     <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                       <q-btn-toggle
                         v-model="speciesModel.weightMethod"
-                        :options="wmOptions"
+                        :options="weightMethodOptions"
                         :value.sync="weightMethod"
                         spread
                         unelevated
@@ -271,7 +278,7 @@
                       />
                     </div>
                     </div>
-                    <p style="padding-left: 140px">{{ speciesModel.weightMethod ? weightMethodLookup[speciesModel.weightMethod] : ''}}</p>
+                    <p style="padding-left: 140px">{{ weightMethodLookup[speciesModel.weightMethod] ? weightMethodLookup[speciesModel.weightMethod].value : ''}}</p>
                     </q-card-section><q-card-section>
                     <q-card-actions align="right">
                         <q-btn flat label="Cancel" color="primary" @click="resetModify"/>
@@ -316,12 +323,12 @@ export default class Catch extends Vue {
     private selectedSpecies: any[] = [];
     private filterText = '';
     // private useActiveHaul = false;
-    private discardReason = [];
+    private discardReason: any = [];
     private count: number = 0;
     private weight: number = 0;
-    private weightMethod: any = {};
+    private weightMethod: any = [];
     private showBottom = true;
-    private selectedCatch: any = undefined;
+    private selectedCatch: any = [];
     private newSpecies = false;
     private speciesEditing = false;
 
@@ -337,35 +344,33 @@ export default class Catch extends Vue {
 
     private speciesModel: WcgopCatch = {
                                         weight: {units: 'lbs', value: 0},
-                                        count: 0,
-                                        discardReason: undefined
+                                        count: 0
                                        };
 
-    private wmOptions = [
-                        {label: '1', value: 1 },
-                        {label: '3', value: 3 },
-                        {label: '5', value: 5 },
-                        {label: '6', value: 6 },
-                        {label: '7', value: 7 },
-                        {label: '8', value: 8 },
-                        {label: '14', value: 14 },
-                        {label: '15', value: 15 },
-                        ];
+    private activeWM = [ 1, 3, 5, 6, 7, 8, 14, 15 ];
 
-    private weightMethodLookup: any = {
-      1: 'Actual Weight',
-      3: 'Basket Weight Determination',
-      5: 'OTC minus Retained',
-      6: 'Other',
-      7: 'Vessel Estimate',
-      8: 'Extrapolation',
-      14: 'Visual Estimate',
-      15: 'Visual Spatial'
-    };
+    private weightMethodOptions: any[] = [];
+
+    private weightMethodLookup: any;
+
+    // private weightMethodLookup: any = {
+    //   1: 'Actual Weight',
+    //   3: 'Basket Weight Determination',
+    //   5: 'OTC minus Retained',
+    //   6: 'Other',
+    //   7: 'Vessel Estimate',
+    //   8: 'Extrapolation',
+    //   14: 'Visual Estimate',
+    //   15: 'Visual Spatial'
+    // };
+
+    private drOptions = [];
+
+    private discardReasonOptions: any[] = [];
+
+    private discardReasonLookup: any;
 
     private expanded: any = [];
-
-
 
     @Action('setCurrentCatch', { namespace: 'appState' })
     private setCurrentCatch: any;
@@ -441,16 +446,18 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
     if (wm) {
       Vue.set(this.speciesModel,
               'weightMethod',
-              JSON.parse(JSON.stringify(wm.lookupVal))
+              wm
               );
     }
+
     this.speciesModel.weight = this.currentCatch.weight ?
                     JSON.parse(JSON.stringify(this.currentCatch.weight)) : {units: 'lbs', value: 0};
     this.speciesModel.count = this.currentCatch.count ?
                     JSON.parse(JSON.stringify(this.currentCatch.count)) : 0;
+
+    Vue.set(this.speciesModel, 'discardReason', '');
     this.speciesModel.discardReason = this.currentCatch.discardReason ?
                     JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : '';
-    console.log(JSON.parse(JSON.stringify(this.speciesModel)));
     this.speciesEditing = true;
     this.newSpecies = false;
     // if (wm) {
@@ -463,12 +470,18 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
     } else {
       if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'grouping') {
         // this.catchModel.weightMethod = parseInt(JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal)));
+        // Vue.set(this.catchModel,
+        //         'weightMethod',
+        //         parseInt(JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal)), 10)
+        //         );
+        this.catchModel = {disposition: {description: wCatch.disposition.description}};
+        Vue.set(this.catchModel, 'dispostion', JSON.parse(JSON.stringify(wCatch.disposition)));
+        // this.catchModel.disposition = JSON.parse(JSON.stringify(wCatch.disposition));
+        // this.weightMethod = parseInt(JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal)), 10);
         Vue.set(this.catchModel,
-                'weightMethod',
-                parseInt(JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal)), 10)
-                );
-        this.catchModel.disposition = JSON.parse(JSON.stringify(wCatch.disposition));
-        this.weightMethod = parseInt(JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal)), 10);
+              'weightMethod',
+              JSON.parse(JSON.stringify(wCatch.weightMethod.lookupVal))
+              );
       }
       this.setCurrentCatch(undefined);
       this.speciesEditing = false;
@@ -492,9 +505,12 @@ private addSpecies() {
 
 private editSpecies() {
   if (this.currentCatch) {
-    this.speciesModel.weight = JSON.parse(JSON.stringify(this.currentCatch.weight));
-    this.speciesModel.count = JSON.parse(JSON.stringify(this.currentCatch.count));
-    this.speciesModel.discardReason = JSON.parse(JSON.stringify(this.currentCatch.discardReason));
+    Vue.set(this.speciesModel, 'weight', JSON.parse(JSON.stringify(this.currentCatch.weight)));
+    Vue.set(this.speciesModel, 'count', JSON.parse(JSON.stringify(this.currentCatch.count)));
+    Vue.set(this.speciesModel, 'discardReason', JSON.parse(JSON.stringify(this.currentCatch.discardReason)));
+    // this.speciesModel.weight = JSON.parse(JSON.stringify(this.currentCatch.weight));
+    // this.speciesModel.count = JSON.parse(JSON.stringify(this.currentCatch.count));
+    // this.speciesModel.discardReason = JSON.parse(JSON.stringify(this.currentCatch.discardReason));
 
     this.speciesEditing = true;
     this.drawerRight = true;
@@ -575,10 +591,13 @@ private moveSpecies() {
 
   console.log(this.speciesModel);
   this.catchModel = speciesToMove;
-  this.catchModel.disposition = this.speciesModel.disposition;
-  this.catchModel.weightMethod = this.speciesModel.weightMethod;
+  this.catchModel.disposition = JSON.parse(JSON.stringify(this.speciesModel.disposition));
+  this.catchModel.weightMethod = JSON.parse(JSON.stringify(this.speciesModel.weightMethod));
 
   console.log(this.catchModel);
+  setTimeout( () => {
+    this.moveModify = true;
+  } , 100);
   this.updateCatch();
 
   for (const grouping of this.currentHaul.catches![0].children!) {
@@ -638,105 +657,111 @@ private updateCatch() {
 
   if (this.currentHaul.catches![0].children) {
     for (const grouping of this.currentHaul.catches![0].children) {
+      if (grouping.weightMethod!.lookupVal === this.catchModel.weightMethod
+          &&
+          grouping.disposition!.description === addDisposition.description) {
+            this.setCurrentCatch(grouping);
+      }
+    }
+  }
+
+  setTimeout( () => {
+    if (!this.currentCatch) {
+      const grouping = {
+              catchNum: this.getNewCatchNum(),
+              catchContent: {
+                type: 'grouping',
+                name: JSON.parse(JSON.stringify(this.weightMethodLookup[this.catchModel.weightMethod].value))
+              },
+              disposition:  JSON.parse(JSON.stringify(addDisposition)),
+              weightMethod: {
+                lookupVal: JSON.parse(JSON.stringify(this.catchModel.weightMethod)),
+                description: JSON.parse(JSON.stringify(this.weightMethodLookup[this.catchModel.weightMethod].value)),
+                value: JSON.parse(JSON.stringify(this.catchModel.weightMethod))
+              },
+              weight: {units: 'lbs', value: 0}, count: 0,
+              children: []
+      };
+      newGrouping = true;
+      this.currentHaul.catches![0].children!.unshift(grouping);
+      // this.saveChanges();
+    }
+
+    for (const grouping of this.currentHaul.catches![0].children!) {
       if (grouping.weightMethod!.lookupVal === addWeightMethod
           &&
           grouping.disposition!.description === addDisposition.description) {
         this.setCurrentCatch(grouping);
       }
     }
-  }
 
-  if (!this.currentCatch) {
-    const grouping = {
-            catchNum: this.getNewCatchNum(),
-            catchContent: {
-              type: 'grouping',
-              name: 'what should this be?'
-            },
-            disposition:  JSON.parse(JSON.stringify(addDisposition)),
-            weightMethod: {
-              description: this.weightMethodLookup[addWeightMethod],
-              lookupVal: JSON.parse(JSON.stringify(addWeightMethod))
-            },
-            weight: {units: 'lbs', value: 0}, count: 0, discardReason: undefined,
-            children: []
-    };
-    newGrouping = true;
-    this.currentHaul.catches![0].children!.unshift(grouping);
-    // this.saveChanges();
-  }
-
-  for (const grouping of this.currentHaul.catches![0].children!) {
-    if (grouping.weightMethod!.lookupVal === addWeightMethod
-        &&
-        grouping.disposition!.description === addDisposition.description) {
-      this.setCurrentCatch(grouping);
-    }
-  }
-
-  if (this.moveModify) {
-    const newSpeciesCatch: WcgopCatch = {
-      catchNum: this.getNewCatchNum(),
-      catchContent: JSON.parse(JSON.stringify(this.catchModel.catchContent)),
-      disposition: undefined, weightMethod: undefined,
-      discardReason: '',
-      weight: {units: 'lbs', value: 0},
-      count: 0,
-      children: []
-    };
-    if (this.catchModel.discardReason) {
-      newSpeciesCatch.discardReason = JSON.parse(JSON.stringify(this.catchModel.discardReason));
-    }
-    if (this.catchModel.weight) {
-      newSpeciesCatch.weight = JSON.parse(JSON.stringify(this.catchModel.weight));
-    }
-    if (this.catchModel.count) {
-      newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count));
-    }
-    this.currentCatch.children!.unshift(newSpeciesCatch);
-  } else {
-    for (const species of this.selectedSpecies) {
+    if (this.moveModify) {
       const newSpeciesCatch: WcgopCatch = {
-                  catchNum: this.getNewCatchNum(),
-                  catchContent: JSON.parse(JSON.stringify(species.doc)),
-                  disposition: undefined, weightMethod: undefined,
-                  discardReason: '',
-                  weight: {units: 'lbs', value: 0},
-                  count: 0,
-                  children: []
-                  };
-
-      if (this.selectedSpecies.length === 1 && this.catchModel.weight) {
-        newSpeciesCatch.weight = {value: JSON.parse(JSON.stringify(this.catchModel.weight)), units: 'lbs'};
+        catchNum: this.getNewCatchNum(),
+        catchContent: JSON.parse(JSON.stringify(this.catchModel.catchContent)),
+        disposition: undefined, weightMethod: undefined,
+        discardReason: '',
+        weight: {units: 'lbs', value: 0},
+        count: 0,
+        children: []
+      };
+      if (this.catchModel.discardReason) {
+        newSpeciesCatch.discardReason = JSON.parse(JSON.stringify(this.catchModel.discardReason));
       }
-      if (this.selectedSpecies.length === 1 && this.catchModel.count) {
-        newSpeciesCatch.count = this.catchModel.count;
+      if (this.catchModel.weight) {
+        newSpeciesCatch.weight = JSON.parse(JSON.stringify(this.catchModel.weight));
+      }
+      if (this.catchModel.count) {
+        newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count));
       }
       this.currentCatch.children!.unshift(newSpeciesCatch);
+      this.saveChanges();
+    } else {
+      for (const species of this.selectedSpecies) {
+        const newSpeciesCatch: WcgopCatch = {
+                    catchNum: this.getNewCatchNum(),
+                    catchContent: JSON.parse(JSON.stringify(species.doc)),
+                    disposition: undefined, weightMethod: undefined,
+                    discardReason: '',
+                    weight: {units: 'lbs', value: 0},
+                    count: 0,
+                    children: []
+                    };
+
+        if (this.selectedSpecies.length === 1 && this.catchModel.weight) {
+          newSpeciesCatch.weight = {value: JSON.parse(JSON.stringify(this.catchModel.weight)), units: 'lbs'};
+        }
+        if (this.selectedSpecies.length === 1 && this.catchModel.count) {
+          newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count));
+        }
+        this.currentCatch.children!.unshift(newSpeciesCatch);
+      }
+      this.saveChanges();
     }
-    this.saveChanges();
-  }
 
-  this.selectedSpecies = [];  // reset selected species.
-  this.catchModel = {disposition: addDisposition,
-                    weightMethod: addWeightMethod};  // reset catchModel, but retain last disposition and weightMethod
-  this.expanded = [];
-  this.expand(this.currentCatch);
-  this.selectedCatch = this.currentCatch;
-  this.handleSelectCatch(this.currentCatch, !newGrouping);
+    this.selectedSpecies = [];  // reset selected species.
+    // reset catchModel, but retain last disposition and weightMethod
+    // this.catchModel = {}
+    // Vue.set(this.catchModel, 'disposition', addDisposition);
+    // Vue.set(this.catchModel, 'weightMethod', addWeightMethod);
+    this.expanded = [];
+    this.expand(this.currentCatch);
+    this.selectedCatch = this.currentCatch;
+    this.handleSelectCatch(this.currentCatch, !newGrouping);
 
-  if (newGrouping) {
-    setTimeout( () => {
-      this.selectRow();
-      } , 100 );
-  }
+    if (newGrouping) {
+      setTimeout( () => {
+        this.selectRow();
+        } , 100 );
+    }
+  } , 100);
+
 
 }
 
 private selectRow() {
   const tableBody = document.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
   for (const row of tableBody.getElementsByTagName('tr')) {
-    console.log(row);
     row.classList.remove('selected');
   }
   tableBody.getElementsByTagName('tr')[0].classList.add('selected');
@@ -754,14 +779,14 @@ private updateSpecies() {
   const weight = this.speciesModel.weight as number;
   this.currentCatch.weight = JSON.parse(JSON.stringify(weight));
   this.currentCatch.count = JSON.parse(JSON.stringify(this.speciesModel.count));
-  this.currentCatch.discardReason = JSON.parse(JSON.stringify(this.speciesModel.discardReason));
+  Vue.set(this.currentCatch, 'discardReason', JSON.parse(JSON.stringify(this.speciesModel.discardReason)));
+  // this.currentCatch.discardReason = JSON.parse(JSON.stringify(this.speciesModel.discardReason));
   this.saveChanges();
 
-  this.speciesModel = {
-                        weight: {units: 'lbs', value: 0},
-                        count: 0,
-                        discardReason: 'fish'
-                      };
+  this.speciesModel = {};
+  Vue.set(this.speciesModel, 'weight', {units: 'lbs', value: 0});
+  Vue.set(this.speciesModel, 'count', 0);
+  Vue.set(this.speciesModel, 'discardReason', JSON.parse(JSON.stringify(this.currentCatch.discardReason)));
 }
 
   private getNewCatchNum() {
@@ -911,7 +936,41 @@ private updateSpecies() {
     console.log(char);
   }
 
-  private created() {
+  private async getLookupVals(tableName: string) {
+    let lookupVals;
+    try {
+      const descriptions = await pouchService.db.query(
+        pouchService.lookupsDBName,
+        tableName
+      );
+      lookupVals = descriptions.rows.map((row: any) => row);
+      lookupVals.sort(this.sorter);
+      return lookupVals.reduce(this.reducer, {});
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
+  private getOptions(lookups: any): any[] {
+    const optionsHolder = [];
+    for (const lookup of Object.keys(lookups)) {
+      optionsHolder.push({ label: lookup, value: lookup });
+    }
+    return optionsHolder;
+  }
+
+  private sorter(a: any, b: any) {
+    return a.key - b.key;
+  }
+
+  private reducer(accum: any, curr: any) {
+    const lookup = 'key';
+    accum[curr[lookup]] = curr;
+    return accum;
+  }
+
+
+  private async created() {
     if (!this.currentHaul.catches || this.currentHaul.catches.length === 0) {
       this.currentHaul.catches = [
         {
@@ -926,8 +985,17 @@ private updateSpecies() {
         }];
     }
     this.setCurrentCatch(this.currentHaul.catches[0]);
-    this.selectedCatch = undefined;
+    // this.selectedCatch = undefined;
 
+    this.weightMethodLookup = await this.getLookupVals(
+      'optecs_trawl/all_weight_method_description'
+    );
+    this.weightMethodOptions = this.getOptions(this.weightMethodLookup);
+
+    this.discardReasonLookup = await this.getLookupVals(
+      'optecs_trawl/all_discard_reason_description'
+    );
+    this.discardReasonOptions = this.getOptions(this.discardReasonLookup);
   }
 
 }
