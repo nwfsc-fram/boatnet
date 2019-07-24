@@ -24,11 +24,13 @@
       <boatnet-summary
         currentScreen="Species"
         :current="currentCatch"
+        :hasData="hasData"
         :selectionId="currentCatch ? currentCatch.catchNum : 0"
         @goTo="handleGoToWtCnt"
         @add="addSpecies"
         @edit="editSpecies"
-        @modify="modifySpecies"
+        @remove="deleteSpecies"
+        @move="modifySpecies"
         >
         <template v-slot:table>
           <boatnet-table
@@ -36,7 +38,7 @@
             :settings="wcgopCatchSettings"
             @select="handleSelectCatch"
             :showBottom="showBottom"
-            row-key="name"
+            row-key="catchNum"
             :selection.sync="selectedCatch"
             >
             <template v-slot:default="rowVals">
@@ -134,6 +136,10 @@
                         (Catch Weight and Total # of fish can only be added one at a time.)
                       </div>
                     </div>
+                    <boatnet-custom-keyboard 
+                    @output="outputKey(char)"
+                    >
+                    </boatnet-custom-keyboard>
                 </div>
 
               <div class="col q-pa-md" style="padding-top: 37px">
@@ -175,7 +181,7 @@
               <div class="q-pa-md" style="float: right;">
                 <q-btn
                   color="primary"
-                  label="update"
+                  label="add"
                   @click="updateCatch"
                   :disabled="!catchModel.weightMethod || !catchModel.disposition || selectedSpecies.length < 1"
                 ></q-btn>
@@ -229,17 +235,14 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-dialog v-model="modifyDialog">
-          <q-card class="q-pa-md" style="width: 40%">
+    <q-dialog v-model="moveDialog">
+          <q-card style="width: 50%">
             <div v-if="currentCatch">
-              <div class="text-h6">{{ currentCatch.catchContent.alias }} - Discard Reason: {{ currentCatch.discardReason ? currentCatch.discardReason : 'N/A' }}</div>
-              <b>Available Modifications:</b>
-              <q-btn class="q-ma-md" color="primary" label="move" @click="moveModify = !moveModify, deleteModify = false"></q-btn>
-              <q-btn color="red" label="delete" @click="deleteModify = !deleteModify, moveModify = false"></q-btn>
-              <div v-if="moveModify">
+              <div v-if="speciesModel.disposition">
                 <q-card>
                   <q-card-section class="row items-center">
-                    <q-avatar icon="fas fa-exchange-alt" color="primary" text-color="white"/>
+                  <q-avatar icon="fas fa-exchange-alt" color="primary" text-color="white"/>
+                  <div class="text-h6 q-pa-md">{{ currentCatch.catchContent.alias }} - Discard Reason: {{ currentCatch.discardReason ? currentCatch.discardReason : 'N/A' }}</div>
                     <div class="q-pa-md">
 
                     <b>Disposition</b>
@@ -250,33 +253,26 @@
                       @click="speciesModel.disposition.description === 'Discarded' ?
                                   speciesModel.disposition.description = 'Retained' :
                                   speciesModel.disposition.description = 'Discarded'"
-                      :color="speciesModel.disposition.description === 'Retained' ? 'green': 'primary' " >
+                      :color="speciesModel.disposition.description === 'Retained' ? 'grey-8': 'primary' " >
                     </q-btn>
                     </div>
 
                     <div>
-                    <br><br>
+
                     <b>Weight Method</b>
                     <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                       <q-btn-toggle
                         v-model="speciesModel.weightMethod"
-                        :options="wmOptions.slice(0,4)"
+                        :options="wmOptions"
                         :value.sync="weightMethod"
                         spread
                         unelevated
 
                       />
-                      <q-btn-toggle
-                        v-model="speciesModel.weightMethod"
-                        :options="wmOptions.slice(4,8)"
-                        :value.sync="weightMethod"
-                        spread
-                        unelevated
-                      />
                     </div>
-                    <p>{{ catchModel.weightMethod ? weightMethodLookup[catchModel.weightMethod] : ''}}</p>
                     </div>
-
+                    <p style="padding-left: 140px">{{ speciesModel.weightMethod ? weightMethodLookup[speciesModel.weightMethod] : ''}}</p>
+                    </q-card-section><q-card-section>
                     <q-card-actions align="right">
                         <q-btn flat label="Cancel" color="primary" @click="resetModify"/>
                         <q-btn flat label="Move" color="primary" @click="moveSpecies"/>
@@ -285,20 +281,6 @@
                 </q-card>
 
               </div>
-              <div class="q-pa-md" v-if="deleteModify">
-                <q-card>
-                  <q-card-section class="row items-center">
-                    <q-avatar icon="warning" color="red" text-color="white"/>
-                    <b>Are you sure you want to permantently delete this species?</b>
-                      <q-card-actions align="right">
-                        <q-btn flat label="Cancel" color="primary" @click="resetModify"/>
-                        <q-btn flat label="Delete" color="primary" @click="deleteSpecies"/>
-                      </q-card-actions>
-                  </q-card-section>
-                </q-card>
-              </div>
-              <br>
-              <q-btn color="primary" label="cancel" @click="resetModify"></q-btn>
 
             </div>
           </q-card>
@@ -339,13 +321,13 @@ export default class Catch extends Vue {
     private weight: number = 0;
     private weightMethod: any = {};
     private showBottom = true;
-    private selectedCatch = [];
+    private selectedCatch: any = undefined;
     private newSpecies = false;
     private speciesEditing = false;
 
     private drawerRight = false;
 
-    private modifyDialog = false;
+    private moveDialog = false;
     private moveModify = false;
     private deleteModify = false;
 
@@ -407,13 +389,13 @@ export default class Catch extends Vue {
         columns: [
             { name: 'action', align: 'left', label: ''},
             { name: 'disposition', required: true, label: 'R/D', align: 'left',
-            field: 'disposition', sortable: true },
+            field: 'disposition' },
             { name: 'weightMethod', align: 'left', label: 'WM',
-            field: (row: any) => row.observerTotalCatch.weightMethod, sortable: true },
+            field: (row: any) => row.observerTotalCatch.weightMethod },
             { name: 'discardReason', align: 'left', label: 'Discard Reason', field: 'discardReason' },
-            { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true },
-            { name: 'weight', align: 'left', label: 'Weight', field: 'weigth', sortable: true },
-            { name: 'count', align: 'left', label: 'Count', field: 'count', sortable: true }
+            { name: 'name', align: 'left', label: 'Name', field: 'name' },
+            { name: 'weight', align: 'left', label: 'Weight', field: 'weigth' },
+            { name: 'count', align: 'left', label: 'Count', field: 'count' }
         ]
     };
     }
@@ -438,7 +420,10 @@ public async populateSpeciesView() {
 
 }
 
-private handleSelectCatch(wCatch: any) {
+private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
+  if (!preserveSelection) {
+    this.unselectRow();
+  }
     let wm;
     let dist;
     if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
@@ -526,6 +511,20 @@ private get getDRLabel() {
   return 'Discard Reason: ' + selection;
 }
 
+private get hasData() {
+  if ( this.currentCatch &&
+      (
+        ( this.currentCatch.children && this.currentCatch.children.length > 0 )
+        ||
+        ( this.currentCatch.baskets && this.currentCatch.baskets.length > 0 )
+      )
+    ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 
 
 private async filterFn(val: string, update: any, abort: any) {
@@ -567,7 +566,7 @@ private modifySpecies() {
   Vue.set(this.speciesModel, 'disposition', JSON.parse(JSON.stringify(activeGrouping.disposition)));
   Vue.set(this.speciesModel, 'weightMethod', JSON.parse(JSON.stringify(activeGrouping.weightMethod.lookupVal)));
 
-  this.modifyDialog = true;
+  this.moveDialog = true;
 }
 
 private moveSpecies() {
@@ -611,6 +610,7 @@ private deleteSpecies() {
 
   this.saveChanges();
   this.resetModify();
+  this.speciesEditing = false;
 }
 
 
@@ -630,6 +630,7 @@ private get filteredSpecies() {
 }
 
 private updateCatch() {
+  let newGrouping = false;
   this.setCurrentCatch(undefined);
   // function to check whether the weight method + disposition group exists
   const addWeightMethod: any = this.catchModel.weightMethod;
@@ -660,8 +661,8 @@ private updateCatch() {
             weight: {units: 'lbs', value: 0}, count: 0, discardReason: undefined,
             children: []
     };
-
-    this.currentHaul.catches![0].children!.push(grouping);
+    newGrouping = true;
+    this.currentHaul.catches![0].children!.unshift(grouping);
     // this.saveChanges();
   }
 
@@ -692,7 +693,7 @@ private updateCatch() {
     if (this.catchModel.count) {
       newSpeciesCatch.count = JSON.parse(JSON.stringify(this.catchModel.count));
     }
-    this.currentCatch.children!.push(newSpeciesCatch);
+    this.currentCatch.children!.unshift(newSpeciesCatch);
   } else {
     for (const species of this.selectedSpecies) {
       const newSpeciesCatch: WcgopCatch = {
@@ -711,13 +712,42 @@ private updateCatch() {
       if (this.selectedSpecies.length === 1 && this.catchModel.count) {
         newSpeciesCatch.count = this.catchModel.count;
       }
-      this.currentCatch.children!.push(newSpeciesCatch);
+      this.currentCatch.children!.unshift(newSpeciesCatch);
     }
     this.saveChanges();
   }
 
   this.selectedSpecies = [];  // reset selected species.
-  this.catchModel = {disposition: addDisposition};  // reset catchModel, but retain last disposition.
+  this.catchModel = {disposition: addDisposition,
+                    weightMethod: addWeightMethod};  // reset catchModel, but retain last disposition and weightMethod
+  this.expanded = [];
+  this.expand(this.currentCatch);
+  this.selectedCatch = this.currentCatch;
+  this.handleSelectCatch(this.currentCatch, !newGrouping);
+
+  if (newGrouping) {
+    setTimeout( () => {
+      this.selectRow();
+      } , 100 )
+  }
+
+}
+
+private selectRow() {
+  const tableBody = document.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+  for (const row of tableBody.getElementsByTagName('tr')) {
+    console.log(row);
+    row.classList.remove('selected');
+  }
+  tableBody.getElementsByTagName('tr')[0].classList.add('selected');
+}
+
+private unselectRow() {
+  const tableBody = document.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
+    for (const row of tableBody.getElementsByTagName('tr')) {
+    row.classList.remove('selected');
+  }
+
 }
 
 private updateSpecies() {
@@ -870,11 +900,15 @@ private updateSpecies() {
   }
 
   private resetModify() {
-    this.modifyDialog = false;
+    this.moveDialog = false;
     this.moveModify = false;
     this.deleteModify = false;
     this.speciesModel = {};
     this.setCurrentCatch(undefined);
+  }
+
+  private outputKey(char: any) {
+    console.log(char);
   }
 
   private created() {
@@ -892,6 +926,7 @@ private updateSpecies() {
         }];
     }
     this.setCurrentCatch(this.currentHaul.catches[0]);
+    this.selectedCatch = undefined;
 
   }
 

@@ -1,6 +1,6 @@
 <template>
   <span>
-    <q-scroll-area style="height: 500px">
+    <q-scroll-area style="height: 570px">
 
       <q-table
         class="my-sticky-header-table"
@@ -13,7 +13,6 @@
         :pagination="pagination"
         separator="vertical"
       >
-        
 
         <template v-slot:body="props">
           <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer" style="font-weight: bold">
@@ -21,7 +20,6 @@
           </q-tr>
         </template>
       </q-table>
-      
     </q-scroll-area>
   </span>
 </template>
@@ -58,7 +56,7 @@ export default class BoatnetTable extends Vue {
 .my-sticky-header-table
   /* max height is important */
   .q-table__middle
-    max-height 500px
+    max-height 570px
 
   .q-table__top,
   .q-table__bottom,
@@ -72,7 +70,7 @@ export default class BoatnetTable extends Vue {
     opacity 1
     z-index 1
 
-  tr:nth-child(even) 
+  tr:nth-child(even)
     background-color: #EEEEEE;
 
 .selected
