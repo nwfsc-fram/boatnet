@@ -10,7 +10,6 @@ import * as fs from 'fs';
 import * as https from 'https';
 import { resolve } from 'path';
 
-// 1. Import the express-openapi-validator library
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
 import * as bodyParser from 'body-parser';
@@ -32,9 +31,19 @@ app.use(bodyParser.json()); // for parsing application/json
 app.use(express.json());
 app.use(cors());
 
+const swaggerUi = require('swagger-ui-express');
+
+
+var swaggerOptions = {
+  swaggerOptions: {
+    url: 'https://localhost:9000/spec'
+  }
+}
 
 // OpenAPI Spec
 app.use('/spec', express.static(resolve(__dirname, 'openapi.yaml')));
+// API Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, swaggerOptions));
 
 new OpenApiValidator({
   apiSpecPath: './src/openapi.yaml',

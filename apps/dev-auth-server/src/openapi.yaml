@@ -23,18 +23,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
-            examples: # Child of media type
-              Basic: # Example 1
-                value:
-                  username: 'test'
-                  password: 'test'
-              Encoded: # Example 2
+            examples:
+              Encoded:
                 value:
                   username: 'test'
                   passwordEnc: 'dGVzdA=='
+              Basic:
+                value:
+                  username: 'test'
+                  password: 'test'
         required: true
       responses:
-        200:
+        '200':
           description: 'User Authorized'
           content:
             application/json:
@@ -49,17 +49,21 @@ paths:
               example:
                 username: 'test'
                 token: '(JWT Token - decode at jwt.io)'
-        401:
+        '401':
           description: 'Authorization information is missing or invalid.'
           content:
             application/json:
               schema:
                 type: 'object'
                 properties:
+                  status:
+                    type: integer
+                    format: int64
                   message:
                     type: string
               example:
-                message: 'User not authorized'
+                status: 401
+                message: 'You have not been granted access to this application.'
 
   /pubkey:
     get:
