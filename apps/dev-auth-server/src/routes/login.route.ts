@@ -27,7 +27,7 @@ export async function login(req: Request, res: Response) {
 
   const validate_result = await devValidateUserPw(username, password);
   if (validate_result) {
-    console.log('Valid user result', validate_result);
+    // console.log('Valid user result', validate_result);
     const sessionToken = await createSessionToken(validate_result);
     const csrfToken = await createCsrfToken();
 

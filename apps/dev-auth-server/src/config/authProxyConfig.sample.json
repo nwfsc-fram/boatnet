@@ -4,7 +4,19 @@
       "username": "test",
       "password": "test",
       "userData": {
-        "roles": ["admin", "observer"],
+        "roles": ["observer"],
+        "couchDBInfo": {
+          "urlRoot": "http://<your server>:5984",
+          "lookupsDB": "lookups-dev",
+          "masterDB": "master-dev"
+        }
+      }
+    },
+    {
+      "username": "test-admin",
+      "password": "test",
+      "userData": {
+        "roles": ["debriefer", "observer"],
         "couchDBInfo": {
           "urlRoot": "http://<your server>:5984",
           "lookupsDB": "lookups-dev",

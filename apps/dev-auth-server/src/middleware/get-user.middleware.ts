@@ -1,33 +1,38 @@
 import { decodeJwt } from '../util/security';
 import { Request, Response, NextFunction } from 'express';
+import moment from 'moment';
 
-const invalidResult = {
-  status: 401,
-  message: 'Invalid token.'
-};
-
-export function validateJwtRequest(
+export async function validateJwtRequest(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const jwt = (req.method === 'POST') ? req.body.token : req.query.token
 
-  console.log('AHSDHSHAD');
-  if (jwt) {
-    handleJwtToken(jwt, req)
-      .then(() => next())
-      .catch(err => {
-        console.error(err);
-        res.status(401).json(invalidResult);
-      });
-  } else {
-    res.status(401).json(invalidResult);
+  const jwtEnc = (req.method === 'POST') ? req.body.token : req.query.token
+  if (!jwtEnc) {
+    res.status(401).json({
+      status: 401,
+      message: 'Missing required token.'
+    })
+    return;
+  }
+
+  try {
+    const jwt = await handleJwtToken(jwtEnc, res);
+    // Valid, so continue.
+    next();
+  } catch(err) {
+    res.status(401).json({
+      status: 401,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
   }
 }
 
-async function handleJwtToken(jwt: string, req: any) {
+
+async function handleJwtToken(jwt: string, res: any) {
   const payload = await decodeJwt(jwt);
-  // TODO: below not needed?
-  req['user'] = payload;
+  res['user'] = payload; // TODO Is this used?
+  return payload;
 }

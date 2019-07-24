@@ -61,8 +61,8 @@ const API_VERSION = 'v1';
 // Login
 app.route('/api/' + API_VERSION + '/login').post(login);
 
-app.route('/api/' + API_VERSION + '/testauth').post(testauth);
 app.use('/api/' + API_VERSION + '/testauth', validateJwtRequest);
+app.route('/api/' + API_VERSION + '/testauth').post(testauth);
 
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
