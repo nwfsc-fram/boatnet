@@ -7,13 +7,23 @@ export async function validateJwtRequest(
   res: Response,
   next: NextFunction
 ) {
-
-  const jwtEnc = (req.method === 'POST') ? req.body.token : req.query.token
+  // Get JWT bearer auth (preferred)
+  let jwtEnc = undefined;
+  const header = req.headers['authorization'];
+  if (typeof header !== 'undefined') {
+    const bearer = header.split(' ');
+    const token = bearer[1];
+    jwtEnc = token;
+  }
   if (!jwtEnc) {
+    // If that fails, try to get token from POST.
+    jwtEnc = req.method === 'POST' ? req.body.token : req.query.token;
+  }
+  if (!jwtEnc) { // still undefined, then fail
     res.status(401).json({
       status: 401,
-      message: 'Missing required token.'
-    })
+      message: 'Missing bearer auth token.'
+    });
     return;
   }
 
@@ -21,15 +31,14 @@ export async function validateJwtRequest(
     const jwt = await handleJwtToken(jwtEnc, res);
     // Valid, so continue.
     next();
-  } catch(err) {
+  } catch (err) {
     res.status(401).json({
       status: 401,
       message: err.message
-    })
-    console.log(moment().format(), err.message)
+    });
+    console.log(moment().format(), err.message);
   }
 }
-
 
 async function handleJwtToken(jwt: string, res: any) {
   const payload = await decodeJwt(jwt);

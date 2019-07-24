@@ -6,13 +6,19 @@ import { checkRolesAdmin } from '../util/roles_management';
 
 const authConfig = require('../config/authProxyConfig.json');
 
-export async function testauth(req: Request, res: Response) {
+export async function testauth(req: Request, res: any) {
 
-  // get-user middleware
-  const jwtEnc = (req.method === 'POST') ? req.body.token : req.query.token
-
+  // get-user.middleware will populate res.user
   try {
-    const jwt = await decodeJwtObject(jwtEnc);
+    if (!res.user) {
+      throw new Error('Bearer auth required.');
+    }
+    const jwtStr = res.user.sub;
+    const jwt = JSON.parse(jwtStr);
+    if (!jwt) {
+      throw new Error('Bearer auth required.');
+    }
+
     const result = {
       username: jwt.username,
       roles: jwt.roles
@@ -23,7 +29,7 @@ export async function testauth(req: Request, res: Response) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 401,
+      status: 403,
       message: err.message
     })
     console.log(moment().format(), err.message)

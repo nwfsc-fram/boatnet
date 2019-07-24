@@ -83,10 +83,10 @@ paths:
                 kty: 'RSA'
                 e: '(JWK Encoded Key)'
                 n: 'AQAB'
-  /testauth:
+  /test-auth:
     post:
       tags:
-        - testauth
+        - test-auth
       summary: Checks JWT token validity
       description: Check JWT auth
       operationId: getTestAuth
@@ -101,7 +101,33 @@ paths:
                   type: string
             example:
               token: '(jwt value)'
-        required: true
+        required: false
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /test-auth2:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - test-auth2
+      summary: Check JWT token validity - Bearer
+      description: Check JWT auth
+      operationId: getTestAuth
       responses:
         '200':
           description: JWT OK
@@ -120,6 +146,11 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
   schemas:
     Keys:
       type: object
@@ -147,11 +178,6 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
-  securitySchemes:
-      bearerAuth:            # Not actually using this yet
-        type: http
-        scheme: bearer
-        bearerFormat: JWT
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
