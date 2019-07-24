@@ -424,41 +424,41 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
   if (!preserveSelection) {
     this.unselectRow();
   }
-    let wm;
-    let dist;
-    if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
-      for (const grouping of this.currentHaul.catches![0].children!) {
-        for (const species of grouping.children!) {
-          const txnmyContent = species.catchContent as TaxonomyAlias;
-          if (txnmyContent.alias === wCatch.catchContent.alias) {
-            wm = grouping.weightMethod;
-            dist = grouping.disposition;
-          }
+  let wm;
+  let dist;
+  if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
+    for (const grouping of this.currentHaul.catches![0].children!) {
+      for (const species of grouping.children!) {
+        const txnmyContent = species.catchContent as TaxonomyAlias;
+        if (txnmyContent.alias === wCatch.catchContent.alias) {
+          wm = grouping.weightMethod;
+          dist = grouping.disposition;
         }
       }
+    }
 
-      this.setCurrentCatch(wCatch);
-      if (wm) {
-        Vue.set(this.speciesModel,
-                'weightMethod',
-                JSON.parse(JSON.stringify(wm.lookupVal))
-                );
-      }
-      this.speciesModel.weight = this.currentCatch.weight ?
-                      JSON.parse(JSON.stringify(this.currentCatch.weight)) : {units: 'lbs', value: 0};
-      this.speciesModel.count = this.currentCatch.count ?
-                      JSON.parse(JSON.stringify(this.currentCatch.count)) : 0;
-      this.speciesModel.discardReason = this.currentCatch.discardReason ?
-                      JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : '';
-      console.log(JSON.parse(JSON.stringify(this.speciesModel)));
-      this.speciesEditing = true;
-      this.newSpecies = false;
-      // if (wm) {
-      //   Vue.set(this.currentCatch, 'weightMethod', wm);
-      // }
-      // if (dist) {
-      //   Vue.set(this.currentCatch, 'disposition', dist);
-      // }
+    this.setCurrentCatch(wCatch);
+    if (wm) {
+      Vue.set(this.speciesModel,
+              'weightMethod',
+              JSON.parse(JSON.stringify(wm.lookupVal))
+              );
+    }
+    this.speciesModel.weight = this.currentCatch.weight ?
+                    JSON.parse(JSON.stringify(this.currentCatch.weight)) : {units: 'lbs', value: 0};
+    this.speciesModel.count = this.currentCatch.count ?
+                    JSON.parse(JSON.stringify(this.currentCatch.count)) : 0;
+    this.speciesModel.discardReason = this.currentCatch.discardReason ?
+                    JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : '';
+    console.log(JSON.parse(JSON.stringify(this.speciesModel)));
+    this.speciesEditing = true;
+    this.newSpecies = false;
+    // if (wm) {
+    //   Vue.set(this.currentCatch, 'weightMethod', wm);
+    // }
+    // if (dist) {
+    //   Vue.set(this.currentCatch, 'disposition', dist);
+    // }
 
     } else {
       if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'grouping') {
@@ -728,7 +728,7 @@ private updateCatch() {
   if (newGrouping) {
     setTimeout( () => {
       this.selectRow();
-      } , 100 )
+      } , 100 );
   }
 
 }
@@ -744,7 +744,7 @@ private selectRow() {
 
 private unselectRow() {
   const tableBody = document.getElementsByTagName('table')[0].getElementsByTagName('tbody')[0];
-    for (const row of tableBody.getElementsByTagName('tr')) {
+  for (const row of tableBody.getElementsByTagName('tr')) {
     row.classList.remove('selected');
   }
 
