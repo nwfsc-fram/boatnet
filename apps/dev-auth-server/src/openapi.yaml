@@ -165,6 +165,19 @@ components:
                     format: int64
                   message:
                     type: string
-              example:
-                status: 401
-                message: 'Invalid token.'
+              examples:
+                Malformed:
+                  value:
+                    status: 401
+                    message: 'jwt malformed'
+                  summary: 'JWT malformed'
+                Expired:
+                    value:
+                      status: 401
+                      message: 'jwt expired'
+                    summary: 'JWT lifetime expired'
+                InvalidSignature:
+                    value:
+                      status: 401
+                      message: 'invalid signature'
+                    summary: 'JWT signed with different private key'
