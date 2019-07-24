@@ -347,7 +347,7 @@ export default class Catch extends Vue {
                                         count: 0
                                        };
 
-    private activeWM = [1,3,5,6,7,8,14,15]
+    private activeWM = [ 1, 3, 5, 6, 7, 8, 14, 15 ];
 
     private weightMethodOptions: any[] = [];
 
@@ -455,9 +455,9 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
     this.speciesModel.count = this.currentCatch.count ?
                     JSON.parse(JSON.stringify(this.currentCatch.count)) : 0;
 
-    Vue.set(this.speciesModel, 'discardReason', '')
+    Vue.set(this.speciesModel, 'discardReason', '');
     this.speciesModel.discardReason = this.currentCatch.discardReason ?
-                    JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : ''
+                    JSON.parse(JSON.stringify(this.currentCatch.discardReason)) : '';
     this.speciesEditing = true;
     this.newSpecies = false;
     // if (wm) {
@@ -597,7 +597,7 @@ private moveSpecies() {
   console.log(this.catchModel);
   setTimeout( () => {
     this.moveModify = true;
-  } , 100)
+  } , 100);
   this.updateCatch();
 
   for (const grouping of this.currentHaul.catches![0].children!) {
@@ -657,9 +657,9 @@ private updateCatch() {
 
   if (this.currentHaul.catches![0].children) {
     for (const grouping of this.currentHaul.catches![0].children) {
-      if (grouping.weightMethod!.lookupVal == this.catchModel.weightMethod
+      if (grouping.weightMethod!.lookupVal === this.catchModel.weightMethod
           &&
-          grouping.disposition!.description == addDisposition.description) {
+          grouping.disposition!.description === addDisposition.description) {
             this.setCurrentCatch(grouping);
       }
     }
@@ -696,7 +696,6 @@ private updateCatch() {
     }
 
     if (this.moveModify) {
-      console.log('movemodify is true, making a new species')
       const newSpeciesCatch: WcgopCatch = {
         catchNum: this.getNewCatchNum(),
         catchContent: JSON.parse(JSON.stringify(this.catchModel.catchContent)),
@@ -741,9 +740,10 @@ private updateCatch() {
     }
 
     this.selectedSpecies = [];  // reset selected species.
+    // reset catchModel, but retain last disposition and weightMethod
     // this.catchModel = {}
     // Vue.set(this.catchModel, 'disposition', addDisposition);
-    // Vue.set(this.catchModel, 'weightMethod', addWeightMethod);  // reset catchModel, but retain last disposition and weightMethod
+    // Vue.set(this.catchModel, 'weightMethod', addWeightMethod);
     this.expanded = [];
     this.expand(this.currentCatch);
     this.selectedCatch = this.currentCatch;
@@ -754,7 +754,7 @@ private updateCatch() {
         this.selectRow();
         } , 100 );
     }
-  } , 100)
+  } , 100);
 
 
 }
@@ -779,14 +779,14 @@ private updateSpecies() {
   const weight = this.speciesModel.weight as number;
   this.currentCatch.weight = JSON.parse(JSON.stringify(weight));
   this.currentCatch.count = JSON.parse(JSON.stringify(this.speciesModel.count));
-  Vue.set(this.currentCatch, 'discardReason', JSON.parse(JSON.stringify(this.speciesModel.discardReason)))
+  Vue.set(this.currentCatch, 'discardReason', JSON.parse(JSON.stringify(this.speciesModel.discardReason)));
   // this.currentCatch.discardReason = JSON.parse(JSON.stringify(this.speciesModel.discardReason));
   this.saveChanges();
 
   this.speciesModel = {};
   Vue.set(this.speciesModel, 'weight', {units: 'lbs', value: 0});
   Vue.set(this.speciesModel, 'count', 0);
-  Vue.set(this.speciesModel, 'discardReason', JSON.parse(JSON.stringify(this.currentCatch.discardReason)))
+  Vue.set(this.speciesModel, 'discardReason', JSON.parse(JSON.stringify(this.currentCatch.discardReason)));
 }
 
   private getNewCatchNum() {
