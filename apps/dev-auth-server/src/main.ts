@@ -20,7 +20,7 @@ import { pubkey } from './routes/pubkey.route';
 import { RSA_PRIVATE_KEY, RSA_CERT } from './util/security';
 import { testauth } from './routes/testauth.route';
 import { validateJwtRequest } from './middleware/get-user.middleware';
-import { users } from './routes/users.route';
+import { users, roles } from './routes/role.management.route';
 
 const app: Application = express();
 
@@ -67,14 +67,14 @@ app.use('/api/' + API_VERSION + '/test-auth', validateJwtRequest); // validate f
 app.route('/api/' + API_VERSION + '/test-auth').post(testauth);
 app.route('/api/' + API_VERSION + '/test-auth').get(testauth);
 
-// get OBSERVER_BOATNET users
+// get OBSERVER_BOATNET users / roles
 app.use('/api/' + API_VERSION + '/users', validateJwtRequest); // validate first
 app.route('/api/' + API_VERSION + '/users').get(users);
+app.use('/api/' + API_VERSION + '/roles', validateJwtRequest); // validate first
+app.route('/api/' + API_VERSION + '/roles').get(roles);
 
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
-
-
 
 // Handle bad requests
 app.use((err: any, req: any, res: any, next: any) => {

@@ -1,20 +1,13 @@
 import { Request, Response } from 'express';
-import { decodeJwtObject } from '../util/security';
 
 import moment from 'moment';
 import { checkRolesAdmin } from '../util/roles_management';
-
-const authConfig = require('../config/authProxyConfig.json');
 
 export async function testauth(req: Request, res: any) {
 
   // get-user.middleware will populate res.user
   try {
-    if (!res.user) {
-      throw new Error('Bearer auth required.');
-    }
-    const jwtStr = res.user.sub;
-    const jwt = JSON.parse(jwtStr);
+    const jwt = res.user;
     if (!jwt) {
       throw new Error('Bearer auth required.');
     }

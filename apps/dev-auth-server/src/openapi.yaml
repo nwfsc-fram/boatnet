@@ -152,7 +152,7 @@ paths:
         - users
       summary: Get Users (Roles Admin)
       description: Get application users
-      operationId: users
+      operationId: getUsers
       responses:
         '200':
           description: Users
@@ -165,6 +165,29 @@ paths:
                     type: array
               example:
                 users: ['john.doe', 'seabass.mcgillicutty']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /roles:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - roles
+      summary: Get Roles (Roles Admin)
+      description: Get application roles
+      operationId: getRoles
+      responses:
+        '200':
+          description: Roles
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: array
+              example:
+                roles: ['observer', 'debriefer', 'every-other-role...']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 components:
