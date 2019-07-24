@@ -64,9 +64,7 @@ app.route('/api/' + API_VERSION + '/login').post(login);
 // test-auth - for testing JWT
 app.use('/api/' + API_VERSION + '/test-auth', validateJwtRequest); // validate first
 app.route('/api/' + API_VERSION + '/test-auth').post(testauth);
-
-app.use('/api/' + API_VERSION + '/test-auth2', validateJwtRequest); // validate first
-app.route('/api/' + API_VERSION + '/test-auth2').get(testauth);
+app.route('/api/' + API_VERSION + '/test-auth').get(testauth);
 
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);

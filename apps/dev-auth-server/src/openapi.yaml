@@ -89,7 +89,7 @@ paths:
         - test-auth
       summary: Checks JWT token validity
       description: Check JWT auth
-      operationId: getTestAuth
+      operationId: postTestAuth
       requestBody:
         description: JWT Token
         content:
@@ -119,15 +119,14 @@ paths:
                 roles: ['test']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /test-auth2:
     get:
       security:
         - bearerAuth: []
       tags:
-        - test-auth2
-      summary: Check JWT token validity - Bearer
+        - test-auth
+      summary: Check JWT token validity - Bearer Auth
       description: Check JWT auth
-      operationId: getTestAuth
+      operationId: getTestAuth2
       responses:
         '200':
           description: JWT OK
