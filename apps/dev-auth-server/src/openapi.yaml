@@ -1,0 +1,110 @@
+openapi: 3.0.1
+info:
+  title: Dev Auth Server
+  description: This is a development auth server for boatnet.
+  version: 1.0.0
+servers:
+  - url: /api/v1
+tags:
+  - name: login
+    description: Dev Login
+  - name: pubkey
+    description: Get RSA public key
+paths:
+  /login:
+    post:
+      tags:
+        - login
+      summary: Perform login to get JWT token (Dev Purposes)
+      operationId: postLogin
+      requestBody:
+        description: Need username and password
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+            examples: # Child of media type
+              Basic: # Example 1
+                value:
+                  username: 'test'
+                  password: 'test'
+              Encoded: # Example 2
+                value:
+                  username: 'test'
+                  passwordEnc: 'dGVzdA=='
+        required: true
+      responses:
+        200:
+          description: 'User Authorized'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  token:
+                    type: string
+                    description: 'JWT encoded token'
+              example:
+                username: 'test'
+                token: '(JWT Token - decode at jwt.io)'
+        401:
+          description: 'Authorization information is missing or invalid.'
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  message:
+                    type: string
+              example:
+                message: 'User not authorized'
+
+  /pubkey:
+    get:
+      tags:
+        - pubkey
+      summary: Get RSA key for JWT validation
+      description: Returns public RSA key
+      operationId: getPubkey
+      responses:
+        200:
+          description: Retrieved Public RSA Key OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Keys'
+              example:
+                kty: 'RSA'
+                e: '(JWK Encoded Key)'
+                n: 'AQAB'
+components:
+  schemas:
+    Keys:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: object
+            properties:
+              kty:
+                type: string
+              e:
+                type: string
+              n:
+                type: string
+                description: JWK Encoded PEM Public Key
+
+    Login:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          description: Required if passwordEnc not specified
+        passwordEnc:
+          type: string
+          description: Required if password not specified
