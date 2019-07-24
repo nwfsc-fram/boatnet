@@ -20,6 +20,7 @@ import { pubkey } from './routes/pubkey.route';
 import { RSA_PRIVATE_KEY, RSA_CERT } from './util/security';
 import { testauth } from './routes/testauth.route';
 import { validateJwtRequest } from './middleware/get-user.middleware';
+import { users } from './routes/users.route';
 
 const app: Application = express();
 
@@ -65,6 +66,10 @@ app.route('/api/' + API_VERSION + '/login').post(login);
 app.use('/api/' + API_VERSION + '/test-auth', validateJwtRequest); // validate first
 app.route('/api/' + API_VERSION + '/test-auth').post(testauth);
 app.route('/api/' + API_VERSION + '/test-auth').get(testauth);
+
+// get OBSERVER_BOATNET users
+app.use('/api/' + API_VERSION + '/users', validateJwtRequest); // validate first
+app.route('/api/' + API_VERSION + '/users').get(users);
 
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);

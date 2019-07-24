@@ -144,6 +144,29 @@ paths:
                 roles: ['test']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /users:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Get Users (Roles Admin)
+      description: Get application users
+      operationId: users
+      responses:
+        '200':
+          description: Users
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: array
+              example:
+                users: ['john.doe', 'seabass.mcgillicutty']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
 components:
   securitySchemes:
     bearerAuth:            # arbitrary name for the security scheme
