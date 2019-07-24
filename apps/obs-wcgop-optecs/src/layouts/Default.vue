@@ -129,6 +129,7 @@ import router from '../router';
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component({
   components: {
@@ -168,6 +169,14 @@ export default class DefaultLayout extends Vue {
 
   private navigateBack() {
     this.$router.back();
+  }
+
+  private created() {
+    if ( authService.getCurrentUser() ) {
+      return;
+    } else {
+      this.$router.push({path: '/login'});
+    }
   }
 }
 </script>
