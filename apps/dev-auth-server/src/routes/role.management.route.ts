@@ -124,7 +124,7 @@ export async function getUserRole(req: Request, res: any) {
       username: req.query.username,
       roles: userRoles
     };
-    console.log(moment().format(), '[Dev- fake] Get User Roles', result.username, result, result.roles);
+    console.log(moment().format(), '[Dev- fake] Get User Roles', result.username, result);
 
     res.status(200).json(result);
   } catch(err) {
@@ -138,8 +138,26 @@ export async function getUserRole(req: Request, res: any) {
 
 export async function addUserRole(req: Request, res: any) {
   try {
-    verifyRoleAdmin(res);
-    res.status(501).send();
+    let userRoles: string[] = [];
+    const targetUsername = req.body.username;
+    try {
+      userRoles = getUserRoles(targetUsername)
+    } catch(errUsernameResult) {
+      res.status(404).json({
+        status: 404,
+        message: errUsernameResult.message
+      })
+    }
+    if (!userRoles.includes(req.body.role)) {
+      userRoles.push(req.body.role)
+    }
+    const result = {
+      username: targetUsername,
+      roles: userRoles
+    };
+    console.log(moment().format(), '[Dev- no persist!] Add User Role', result.username, result);
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
       status: 403,

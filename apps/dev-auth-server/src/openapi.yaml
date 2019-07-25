@@ -506,6 +506,9 @@ components:
           type: string
         role:
           type: string
+      example:
+        username: 'jane.doe'
+        role: 'captain'
     UserRoleStatus:
       type: object
       required:
