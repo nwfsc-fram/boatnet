@@ -38,8 +38,7 @@ openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -sub
 
 ## OpenAPI Spec
 
-* Use swagger.io to point to https://localhost:9000/spec
-* https://swagger.io/tools/swagger-ui
+* Served under https://localhost:9000/api-docs/
 
 ## Basic RESTful Testing
 
