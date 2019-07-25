@@ -19,7 +19,7 @@ tags:
   - name: user-role
     description: User Role Management [Dev Only]
   - name: user-role-status
-    description: User Role Enabled/ Disabled Management [Dev Only]
+    description: User Role Enable/ Disable Management [Dev Only]
   - name: test-auth
     description: For testing JWT authorization [Dev Only]
 paths:
@@ -514,14 +514,18 @@ components:
       required:
         - username
         - role
-        - enabled
+        - enable
       properties:
         username:
           type: string
         role:
           type: string
-        enabled:
+        enable:
           type: boolean
+      example:
+        username: 'jane.doe'
+        role: 'captain'
+        enable: false
     Error:
       required:
         - status

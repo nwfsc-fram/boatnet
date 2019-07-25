@@ -78,6 +78,7 @@ export async function addUser(req: Request, res: any) {
       username: req.body.username
     };
     console.log(moment().format(), '[Dev- fake] Add User', result.username);
+    // Doesn't actually create user for Dev
 
     res.status(200).json(result);
   } catch(err) {
@@ -95,8 +96,8 @@ export async function deleteUser(req: Request, res: any) {
     const result = {
       username: req.body.username
     };
-    console.log(moment().format(), '[Dev- fake] Add User', result.username);
-
+    console.log(moment().format(), '[Dev- fake] Delete User', result.username);
+    // Doesn't actually delete user for Dev
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
@@ -138,6 +139,8 @@ export async function getUserRole(req: Request, res: any) {
 
 export async function addUserRole(req: Request, res: any) {
   try {
+    verifyRoleAdmin(res);
+
     let userRoles: string[] = [];
     const targetUsername = req.body.username;
     const targetRole = req.body.role;
@@ -149,14 +152,13 @@ export async function addUserRole(req: Request, res: any) {
         message: errUsernameResult.message
       })
     }
-    if (!userRoles.includes(targetRole)) {
-      userRoles.push(targetRole)
-    }
+    addRole(userRoles, targetRole);
+
     const result = {
       username: targetUsername,
       roles: userRoles
     };
-    console.log(moment().format(), '[Dev- no persist!] Add User Role', result.username, result);
+    console.log(moment().format(), '[Dev- no persist to file] Add User Role', result.username, result);
 
     res.status(200).json(result);
   } catch(err) {
@@ -168,8 +170,16 @@ export async function addUserRole(req: Request, res: any) {
   }
 }
 
+function addRole(userRoles: string[], targetRole: any) {
+  if (!userRoles.includes(targetRole)) {
+    userRoles.push(targetRole);
+  }
+}
+
 export async function deleteUserRole(req: Request, res: any) {
   try {
+    verifyRoleAdmin(res);
+
     let userRoles: string[] = [];
     const targetUsername = req.body.username;
     const targetRole = req.body.role;
@@ -182,16 +192,13 @@ export async function deleteUserRole(req: Request, res: any) {
       })
     }
 
-    if (userRoles.includes(targetRole)) {
-      userRoles.forEach( (item, index) => {
-        if(item === targetRole) userRoles.splice(index,1);
-      });
-    }
+    deleteRole(userRoles, targetRole);
+
     const result = {
       username: targetUsername,
       roles: userRoles
     };
-    console.log(moment().format(), '[Dev- no persist!] Delete User Role', result.username, result);
+    console.log(moment().format(), '[Dev- no persist to file] Delete User Role', result.username, result);
 
     res.status(200).json(result);
   } catch(err) {
@@ -200,13 +207,48 @@ export async function deleteUserRole(req: Request, res: any) {
       message: err.message
     })
     console.log(moment().format(), err.message)
+  }
+}
+
+function deleteRole(userRoles: string[], targetRole: any) {
+  if (userRoles.includes(targetRole)) {
+    userRoles.forEach((item, index) => {
+      if (item === targetRole)
+        userRoles.splice(index, 1);
+    });
   }
 }
 
 export async function putUserRoleStatus(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
-    res.status(501).send();
+    let userRoles: string[] = [];
+    const targetUsername = req.body.username;
+    const targetRole = req.body.role;
+    const enable = req.body.enable;
+    try {
+      userRoles = getUserRoles(targetUsername)
+    } catch(errUsernameResult) {
+      res.status(404).json({
+        status: 404,
+        message: errUsernameResult.message
+      })
+    }
+    // For dev, simply (temp) delete the role if disabled, add if enabled
+    if (enable) {
+      addRole(userRoles, targetRole);
+    } else {
+      deleteRole(userRoles, targetRole);
+    }
+
+    const result = {
+      username: targetUsername,
+      roles: userRoles
+    };
+    console.log(moment().format(), '[Dev- no persist to file] Role \"'+ targetRole + '\" enable=', enable, result);
+
+    res.status(200).json(result);
+
   } catch(err) {
     res.status(401).json({
       status: 403,
