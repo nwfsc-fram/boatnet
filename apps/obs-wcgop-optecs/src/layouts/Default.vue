@@ -22,6 +22,7 @@
         <q-toolbar-title>
           <optecs-breadcrumbs/>
         </q-toolbar-title>
+
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
@@ -142,6 +143,7 @@ export default class DefaultLayout extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;

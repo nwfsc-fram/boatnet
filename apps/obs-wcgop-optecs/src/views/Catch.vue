@@ -122,7 +122,7 @@
 
                     <p>{{ weightMethodLookup[catchModel.weightMethod] ? weightMethodLookup[catchModel.weightMethod].value : ''}}</p>
 
-                    <div v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod.value)">
+                    <div v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod)">
                       <div v-if="selectedSpecies.length <= 1">
                         <b>Catch Weight </b><span>(lbs)</span>
                         <boatnet-keyboard-input
@@ -143,7 +143,9 @@
                       </div>
                     </div>
                     <boatnet-custom-keyboard
-                    @output="outputKey(char)"
+                    @output="outputKey($event)"
+                    @bksp="filterText = filterText.slice(0, -1)"
+                    @clear="filterText = ''"
                     >
                     </boatnet-custom-keyboard>
                 </div>
@@ -158,13 +160,23 @@
                 </q-btn>
 
                 <br><br><br>
-                <boatnet-keyboard-input
+                <!-- <boatnet-keyboard-input
                   v-model="filterText"
                   keyboardType="normal"
                   :value.sync="filterText"
                   label="Search Species"
                 >
-                </boatnet-keyboard-input>
+                </boatnet-keyboard-input> -->
+                <q-input
+                v-model="filterText"
+                :value.sync="filterText"
+                label="Search Species"
+                >
+                <template v-slot:append>
+                  <q-icon name="close" @click="filterText = ''" class="cursor-pointer" />
+                </template>
+                </q-input>
+
                 <q-scroll-area style="height: 435px">
                   <q-list bordered separator>
                     <q-item
@@ -387,6 +399,8 @@ export default class Catch extends Vue {
 
     @Action('save', { namespace: 'appState' })
     private save: any;
+
+    @Prop() public char!: string;
 
     constructor() {
         super(
@@ -982,8 +996,9 @@ private updateSpecies() {
     this.setCurrentCatch(undefined);
   }
 
-  private outputKey(char: any) {
-    console.log(char);
+  private outputKey(event: any) {
+    this.filterText += event;
+    console.log(event);
   }
 
   private async getLookupVals(tableName: string) {

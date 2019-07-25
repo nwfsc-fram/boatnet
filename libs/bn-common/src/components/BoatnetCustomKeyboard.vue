@@ -6,26 +6,26 @@
         v-for="char of selectedCharSet"
         :label="char"
         color="grey-8"
-        class="numSelected? 'numberbuttons': 'letterbuttons'"
+        :class="numSelected? 'numberbuttons': 'letterbuttons'"
         flat
         :no-caps="!capSelected"
         :key="char"
         @click="onClick(char)"
         ></q-btn>
       <span v-if="numSelected">
-      <q-btn label="" color="grey-8" no-caps flat ></q-btn>
-      <q-btn label="" color="grey-8" no-caps flat ></q-btn>
+      <q-btn label="" no-caps flat ></q-btn>
+      <q-btn label="" no-caps flat ></q-btn>
       </span>
       <q-btn label="" color="grey-8" no-caps flat v-if="!numSelected"></q-btn>
       <span v-if="!numSelected && !symSelected">
-        <q-btn label="" color="grey-8" no-caps flat></q-btn>
-        <q-btn label="" color="grey-8" no-caps flat></q-btn>
-        <q-btn label="" color="grey-8" no-caps flat></q-btn>
-        <q-btn label="" color="grey-8" no-caps flat></q-btn>
+        <q-btn label="" no-caps flat></q-btn>
+        <q-btn label="" no-caps flat></q-btn>
+        <q-btn label="" no-caps flat></q-btn>
+        <q-btn label="" no-caps flat></q-btn>
       </span>
       <q-btn label="cap" color="grey-8" :flat="!capSelected" @click="capSelected = !capSelected" v-if="!numSelected"></q-btn>
-      <q-btn icon="backspace"  :class="numSelected? 'numberbuttons': 'letterbuttons'" color="grey-8" no-caps flat></q-btn>
-      <q-btn label="clr" color="grey-8" no-caps flat  :class="numSelected? 'numberbuttons': 'letterbuttons'"></q-btn>
+      <q-btn icon="backspace" @click="$emit('bksp')" :class="numSelected ? 'numberbuttons': 'letterbuttons'" color="grey-8" no-caps flat></q-btn>
+      <q-btn label="clr" @click="$emit('clear')" color="grey-8" no-caps flat  :class="numSelected? 'numberbuttons': 'letterbuttons'"></q-btn>
       <br>
       <q-btn label="" color="grey-8" no-caps flat></q-btn>
       <q-btn :label="capSelected? 'ABC': 'abc'" color="grey-8" no-caps :flat="numSelected || symSelected" @click="numSelected = false, symSelected = false"></q-btn>
@@ -41,7 +41,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class BoatnetCustomKeyboard extends Vue {
-  @Prop() public char!: string;
+  // @Prop() public char!: string;
 
 private letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
                     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
@@ -64,7 +64,11 @@ private numSelected: boolean = false;
 private symSelected: boolean = false;
 
   private onClick(char: string) {
-    this.$emit('output', char);
+    if (this.capSelected) {
+      this.$emit('output', char.toUpperCase());
+    } else {
+      this.$emit('output', char);
+    }
   }
 
 }
