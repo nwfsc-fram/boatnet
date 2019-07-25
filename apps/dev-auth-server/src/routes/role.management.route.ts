@@ -1,7 +1,20 @@
 import { Request, Response } from 'express';
 
 import moment from 'moment';
-import { checkRolesAdmin, getAllApplicationUsers, getAllApplicationRoles } from '../util/roles_management';
+import { checkRolesRead, getAllApplicationUsers, getAllApplicationRoles, checkRolesAdmin } from '../util/roles_management';
+
+function verifyRoleRead(res: any) {
+  // get-user.middleware will populate res.user
+  // Validate that they have a roles-admin role
+  const jwt = res.user;
+  if (!jwt) {
+    throw new Error('Bearer auth required.');
+  }
+  const isRolesAdmin = checkRolesRead(jwt.roles);
+  if (!isRolesAdmin) {
+    throw new Error('User has no roles access.');
+  }
+}
 
 function verifyRoleAdmin(res: any) {
   // get-user.middleware will populate res.user
@@ -12,7 +25,7 @@ function verifyRoleAdmin(res: any) {
   }
   const isRolesAdmin = checkRolesAdmin(jwt.roles);
   if (!isRolesAdmin) {
-    throw new Error('User is not a roles admin.');
+    throw new Error('User has no roles admin access.');
   }
 }
 
@@ -20,7 +33,7 @@ export async function users(req: Request, res: any) {
 
   // get-user.middleware will populate res.user
   try {
-    verifyRoleAdmin(res);
+    verifyRoleRead(res);
 
     const result = {
       users: getAllApplicationUsers()
@@ -41,7 +54,7 @@ export async function users(req: Request, res: any) {
 export async function roles(req: Request, res: any) {
 
   try {
-    verifyRoleAdmin(res);
+    verifyRoleRead(res);
 
     const result = {
       roles: getAllApplicationRoles()

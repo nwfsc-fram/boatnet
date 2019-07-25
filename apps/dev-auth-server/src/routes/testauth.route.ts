@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import moment from 'moment';
-import { checkRolesAdmin } from '../util/roles_management';
+import { checkRolesRead } from '../util/roles_management';
 
 export async function testauth(req: Request, res: any) {
 
@@ -17,7 +17,7 @@ export async function testauth(req: Request, res: any) {
       roles: jwt.roles
     };
 
-    const isRolesAdmin = checkRolesAdmin(jwt.roles);
+    const isRolesAdmin = checkRolesRead(jwt.roles);
     console.log(moment().format(), 'testauth:', result, 'isAdmin:', isRolesAdmin);
     res.status(200).json(result);
   } catch(err) {

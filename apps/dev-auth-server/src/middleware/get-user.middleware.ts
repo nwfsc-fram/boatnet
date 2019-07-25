@@ -9,8 +9,8 @@ export async function validateJwtRequest(
 ) {
   // Get JWT bearer auth (preferred)
   let jwtEnc = undefined;
-  const header = req.headers['authorization'];
-  if (typeof header !== 'undefined') {
+  const header: string = req.headers['authorization'] as string;
+  if (header) {
     const bearer = header.split(' ');
     const token = bearer[1];
     jwtEnc = token;

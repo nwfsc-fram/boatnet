@@ -38,9 +38,9 @@ app.use(session({
 }));
 app.use(express.json());
 app.use(cors());
+app.disable('x-powered-by'); // Disable express version sharing
 
 const swaggerUi = require('swagger-ui-express');
-
 
 var swaggerOptions = {
   swaggerOptions: {

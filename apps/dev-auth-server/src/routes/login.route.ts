@@ -10,10 +10,10 @@ import {
 const authConfig = require('../config/authProxyConfig.json');
 
 export async function login(req: Request, res: Response) {
-  const credentials = req.body;
-
-  const username = req.body.username || '';
+  let username = req.body.username || '';
   const password = req.body.passwordEnc ? decode64(req.body.passwordEnc) : req.body.password || '';
+
+  username = username.toLowerCase(); // fix #671
 
   if (username === '' || password === '') {
     res.status(401);
