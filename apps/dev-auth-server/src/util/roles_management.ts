@@ -9,6 +9,15 @@ const AVAILABLE_ROLES  = ['observer', 'debriefer', 'captain', 'permit_owner', 'p
 
 const authConfig = require('../config/authProxyConfig.json');
 
+// example output from server, for later use
+// {"roles": [{"role_name":"STAFF"}]}
+// GET_APPLICATION_ROLES
+// returns
+//  {"roles": [{"role_name":"STAFF"},{"role_name":"CM_COORDINATOR"}]}
+ // GET_APPLICATION_USERS
+// returns
+// {"users": [{"user_id":"john.public"},{"user_id":"test.user"}]}
+
 export function checkRolesAdmin(roles: string[]) {
     for (let role of roles) {
         if (ROLES_ALLOWED_ACCESS.includes(role)) {
