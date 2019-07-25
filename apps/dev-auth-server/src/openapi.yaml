@@ -7,15 +7,27 @@ servers:
   - url: /api/v1
 tags:
   - name: login
-    description: Dev Login
+    description: Login [Dev Only]
   - name: pubkey
-    description: Get RSA public key
+    description: Get RSA public key [Dev Only]
+  - name: users
+    description: Get All Users [Dev Only]
+  - name: roles
+    description: Get All Roles [Dev Only]
+  - name: user
+    description: User Management [Dev Only]
+  - name: user-role
+    description: User Role Management [Dev Only]
+  - name: user-role-status
+    description: User Role Enabled/ Disabled Management [Dev Only]
+  - name: test-auth
+    description: For testing JWT authorization [Dev Only]
 paths:
   /login:
     post:
       tags:
         - login
-      summary: Perform login to get JWT token (Dev Purposes)
+      summary: Perform login to get JWT token
       operationId: postLogin
       requestBody:
         description: Need username and password
@@ -83,74 +95,13 @@ paths:
                 kty: 'RSA'
                 e: '(JWK Encoded Key)'
                 n: 'AQAB'
-  /test-auth:
-    post:
-      tags:
-        - test-auth
-      summary: Checks JWT token validity
-      description: Check JWT auth
-      operationId: postTestAuth
-      requestBody:
-        description: JWT Token
-        content:
-          application/json:
-            schema:
-              type: 'object'
-              properties:
-                token:
-                  type: string
-            example:
-              token: '(jwt value)'
-        required: false
-      responses:
-        '200':
-          description: JWT OK
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  username:
-                    type: string
-                  roles:
-                    type: array
-              example:
-                user: 'test'
-                roles: ['test']
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-    get:
-      security:
-        - bearerAuth: []
-      tags:
-        - test-auth
-      summary: Check JWT token validity - Bearer Auth
-      description: Check JWT auth
-      operationId: getTestAuth2
-      responses:
-        '200':
-          description: JWT OK
-          content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  username:
-                    type: string
-                  roles:
-                    type: array
-              example:
-                user: 'test'
-                roles: ['test']
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
   /users:
     get:
       security:
         - bearerAuth: []
       tags:
         - users
-      summary: Get Users (Roles Admin)
+      summary: Get Users (Roles Read Access)
       description: Get application users
       operationId: getUsers
       responses:
@@ -173,7 +124,7 @@ paths:
         - bearerAuth: []
       tags:
         - roles
-      summary: Get Roles (Roles Admin)
+      summary: Get Roles (Roles Read Access)
       description: Get application roles
       operationId: getRoles
       responses:
@@ -424,6 +375,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /test-auth:
+    post:
+      tags:
+        - test-auth
+      summary: Checks JWT token validity
+      description: Check JWT auth
+      operationId: postTestAuth
+      requestBody:
+        description: JWT Token
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                token:
+                  type: string
+            example:
+              token: '(jwt value)'
+        required: false
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - test-auth
+      summary: Check JWT token validity - Bearer Auth
+      description: Check JWT auth
+      operationId: getTestAuth2
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -448,6 +461,8 @@ components:
                 description: JWK Encoded PEM Public Key
     Login:
       type: object
+      required:
+        - username
       properties:
         username:
           type: string
@@ -461,6 +476,9 @@ components:
       type: object
       required:
         - username
+        - lastName
+        - firstName
+        - emailAddress
       properties:
         username:
           type: string
@@ -472,6 +490,12 @@ components:
           type: string
         comment:
           type: string
+      example:
+        username: 'jane.doe'
+        lastName: 'Doe'
+        firstName: 'Jane'
+        emailAddress: 'bad@address.xyz'
+        comment: 'This is an example user.'
     AddUserRole:
       type: object
       required:

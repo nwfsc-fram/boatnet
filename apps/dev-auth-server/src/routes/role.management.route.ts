@@ -29,7 +29,7 @@ function verifyRoleAdmin(res: any) {
   }
 }
 
-export async function users(req: Request, res: any) {
+export async function getAllUsers(req: Request, res: any) {
 
   // get-user.middleware will populate res.user
   try {
@@ -51,7 +51,7 @@ export async function users(req: Request, res: any) {
   }
 }
 
-export async function roles(req: Request, res: any) {
+export async function getAllRoles(req: Request, res: any) {
 
   try {
     verifyRoleRead(res);
@@ -62,6 +62,32 @@ export async function roles(req: Request, res: any) {
     console.log(moment().format(), 'GET roles length =', result.roles.length);
 
     res.status(200).json(result);
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
+
+export async function addUser(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
+
+export async function deleteUser(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
   } catch(err) {
     res.status(401).json({
       status: 403,

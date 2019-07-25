@@ -20,7 +20,7 @@ import { pubkey } from './routes/pubkey.route';
 import { RSA_PRIVATE_KEY, RSA_CERT } from './util/security';
 import { testauth } from './routes/testauth.route';
 import { validateJwtRequest } from './middleware/get-user.middleware';
-import { users, roles } from './routes/role.management.route';
+import { getAllUsers, getAllRoles, addUser, deleteUser } from './routes/role.management.route';
 
 const app: Application = express();
 
@@ -68,10 +68,16 @@ app.route('/api/' + API_VERSION + '/test-auth').post(testauth);
 app.route('/api/' + API_VERSION + '/test-auth').get(testauth);
 
 // get OBSERVER_BOATNET users / roles
+// TODO: Refactor to collapse calls to validateJwtRequest?
 app.use('/api/' + API_VERSION + '/users', validateJwtRequest); // validate first
-app.route('/api/' + API_VERSION + '/users').get(users);
-app.use('/api/' + API_VERSION + '/roles', validateJwtRequest); // validate first
-app.route('/api/' + API_VERSION + '/roles').get(roles);
+app.route('/api/' + API_VERSION + '/users').get(getAllUsers);
+
+app.use('/api/' + API_VERSION + '/roles', validateJwtRequest);
+app.route('/api/' + API_VERSION + '/roles').get(getAllRoles);
+
+app.use('/api/' + API_VERSION + '/user', validateJwtRequest);
+app.route('/api/' + API_VERSION + '/user').post(addUser);
+app.route('/api/' + API_VERSION + '/user').delete(deleteUser);
 
 // Public Key (dev use only)
 app.route('/api/' + API_VERSION + '/pubkey').get(pubkey);
