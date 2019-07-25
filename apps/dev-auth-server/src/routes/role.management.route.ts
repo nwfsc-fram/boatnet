@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
 import moment from 'moment';
-import { checkRolesRead, getAllApplicationUsers, getAllApplicationRoles, checkRolesAdmin } from '../util/roles_management';
+import { checkRolesRead, getAllApplicationUsers, getAllApplicationRoles, checkRolesAdmin, getUserRoles } from '../util/roles_management';
 
 function verifyRoleRead(res: any) {
   // get-user.middleware will populate res.user
@@ -110,10 +110,26 @@ export async function deleteUser(req: Request, res: any) {
 export async function getUserRole(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
-    res.status(501).send();
+
+    let userRoles: string[] = [];
+    try {
+      userRoles = getUserRoles(req.query.username)
+    } catch(errUsernameResult) {
+      res.status(404).json({
+        status: 404,
+        message: errUsernameResult.message
+      })
+    }
+    const result = {
+      username: req.query.username,
+      roles: userRoles
+    };
+    console.log(moment().format(), '[Dev- fake] Get User Roles', result.username, result, result.roles);
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
