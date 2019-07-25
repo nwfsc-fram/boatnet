@@ -74,7 +74,12 @@ export async function getAllRoles(req: Request, res: any) {
 export async function addUser(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
-    res.status(501).send();
+    const result = {
+      username: req.body.username
+    };
+    console.log(moment().format(), '[Dev- fake] Add User', result.username);
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
       status: 403,
@@ -87,7 +92,12 @@ export async function addUser(req: Request, res: any) {
 export async function deleteUser(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
-    res.status(501).send();
+    const result = {
+      username: req.body.username
+    };
+    console.log(moment().format(), '[Dev- fake] Add User', result.username);
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
       status: 403,
