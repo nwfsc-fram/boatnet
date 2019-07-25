@@ -96,3 +96,55 @@ export async function deleteUser(req: Request, res: any) {
     console.log(moment().format(), err.message)
   }
 }
+
+export async function getUserRole(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
+
+export async function addUserRole(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
+
+export async function deleteUserRole(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
+
+export async function putUserRoleStatus(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    res.status(501).send();
+  } catch(err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    })
+    console.log(moment().format(), err.message)
+  }
+}
