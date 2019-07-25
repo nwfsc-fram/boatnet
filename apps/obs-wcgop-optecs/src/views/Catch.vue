@@ -626,7 +626,7 @@ private moveSpecies() {
 
   setTimeout( () => {
     this.deleteSpecies();
-  }, 100)
+  }, 100);
 
   this.resetModify();
 }
@@ -1082,7 +1082,7 @@ private updateSpecies() {
     this.discardReasonOptions = this.getOptions(this.discardReasonLookup);
 
     this.getFrequentSpecies();
-    this.handleSelectCatch(undefined)
+    this.handleSelectCatch(undefined);
   }
 
 }
