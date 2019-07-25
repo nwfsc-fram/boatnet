@@ -196,16 +196,16 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - users
+        - user
       summary: Add New User (Roles Admin)
       description: Create a boatnet user
       operationId: postUser
       requestBody:
-        description: JWT Token
+        description: New User info
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewUser'
+              $ref: '#/components/schemas/AddUser'
         required: true
       responses:
         '200':
@@ -227,6 +227,203 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - user
+      summary: Delete User (Roles Admin)
+      description: Delete a boatnet user
+      operationId: delUser
+
+      requestBody:
+        description: Username to delete
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                username:
+                  type: string
+            example:
+              username: 'jane.doe'
+        required: true
+      responses:
+        '200':
+          description: User Deleted
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+              example:
+                username: 'seabass.mcgillicutty'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-role:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Get a User's Roles (Roles Admin)
+      description: Add a role to existing user
+      operationId: postUserRole
+      parameters:
+        - name: username
+          in: query
+          description: Username to get roles for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User Roles
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Add New User Role (Roles Admin)
+      description: Add a role to existing user
+      operationId: postUserRole
+      requestBody:
+        description: User + new Role info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserRole'
+        required: true
+      responses:
+        '200':
+          description: Role Added
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Delete User Role(Roles Admin)
+      description: Remove a role from existing user
+      operationId: delUserRole
+
+      requestBody:
+        description: User + new Role info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserRole'
+        required: true
+      responses:
+        '200':
+          description: Role Deleted
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-role-status:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role-status
+      summary: Enable or Disable User Role (Roles Admin)
+      description: Enable/disable role of existing user
+      operationId: postUserRole
+      requestBody:
+        description: User, Role, enable flag
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleStatus'
+        required: true
+      responses:
+        '200':
+          description: Role Status Updated
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
 components:
   securitySchemes:
     bearerAuth: # arbitrary name for the security scheme
@@ -260,11 +457,10 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
-    NewUser:
+    AddUser:
       type: object
       required:
-        - status
-        - message
+        - username
       properties:
         username:
           type: string
@@ -276,6 +472,29 @@ components:
           type: string
         comment:
           type: string
+    AddUserRole:
+      type: object
+      required:
+        - username
+        - role
+      properties:
+        username:
+          type: string
+        role:
+          type: string
+    UserRoleStatus:
+      type: object
+      required:
+        - username
+        - role
+        - enabled
+      properties:
+        username:
+          type: string
+        role:
+          type: string
+        enabled:
+          type: boolean
     Error:
       required:
         - status
