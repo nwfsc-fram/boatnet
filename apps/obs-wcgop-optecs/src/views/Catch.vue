@@ -103,7 +103,6 @@
                         :value.sync="weightMethod"
                         spread
                         unelevated
-
                       />
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
@@ -123,7 +122,7 @@
 
                     <p>{{ weightMethodLookup[catchModel.weightMethod] ? weightMethodLookup[catchModel.weightMethod].value : ''}}</p>
 
-                    <div v-if="catchModel.weightMethod && [6,7,14].includes(catchModel.weightMethod)">
+                    <div v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod.value)">
                       <div v-if="selectedSpecies.length <= 1">
                         <b>Catch Weight </b><span>(lbs)</span>
                         <boatnet-keyboard-input
@@ -625,7 +624,9 @@ private moveSpecies() {
     }
   }
 
-  this.deleteSpecies();
+  setTimeout( () => {
+    this.deleteSpecies();
+  }, 100)
 
   this.resetModify();
 }
@@ -1068,7 +1069,7 @@ private updateSpecies() {
     }
 
     this.setCurrentCatch(this.currentHaul.catches[0]);
-    // this.selectedCatch = undefined;
+    this.selectedCatch = undefined;
 
     this.weightMethodLookup = await this.getLookupVals(
       'optecs_trawl/all_weight_method_description'
@@ -1081,6 +1082,7 @@ private updateSpecies() {
     this.discardReasonOptions = this.getOptions(this.discardReasonLookup);
 
     this.getFrequentSpecies();
+    this.handleSelectCatch(undefined)
   }
 
 }
