@@ -155,7 +155,7 @@ paths:
       operationId: getUsers
       responses:
         '200':
-          description: Users
+          description: List of users
           content:
             application/json:
               schema:
@@ -190,12 +190,49 @@ paths:
                 roles: ['observer', 'debriefer', 'every-other-role...']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  /user:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Add New User (Roles Admin)
+      description: Create a boatnet user
+      operationId: postUser
+      requestBody:
+        description: JWT Token
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        required: true
+      responses:
+        '200':
+          description: New User Created
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+              example:
+                username: 'seabass.mcgillicutty'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth: # arbitrary name for the security scheme
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
   schemas:
     Keys:
       type: object
@@ -223,32 +260,66 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
+    NewUser:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        username:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        emailAddress:
+          type: string
+        comment:
+          type: string
+    Error:
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+      example:
+        status: 401
+        message: 'Unable to'
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
       content:
-            application/json:
-              schema:
-                type: 'object'
-                properties:
-                  status:
-                    type: integer
-                    format: int64
-                  message:
-                    type: string
-              examples:
-                Malformed:
-                  value:
-                    status: 401
-                    message: 'jwt malformed'
-                  summary: 'JWT malformed'
-                Expired:
-                    value:
-                      status: 401
-                      message: 'jwt expired'
-                    summary: 'JWT lifetime expired'
-                InvalidSignature:
-                    value:
-                      status: 401
-                      message: 'invalid signature'
-                    summary: 'JWT signed with different private key'
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              status:
+                type: integer
+                format: int64
+              message:
+                type: string
+          examples:
+            Malformed:
+              value:
+                status: 401
+                message: 'jwt malformed'
+              summary: 'JWT malformed'
+            Expired:
+              value:
+                status: 401
+                message: 'jwt expired'
+              summary: 'JWT lifetime expired'
+            InvalidSignature:
+              value:
+                status: 401
+                message: 'invalid signature'
+              summary: 'JWT signed with different private key'
+            InsufficientPrivs:
+              value:
+                status: 401
+                message: 'Insufficient role privileges'
+              summary: 'User does not have required role'
