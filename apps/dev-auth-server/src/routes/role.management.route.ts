@@ -64,7 +64,7 @@ export async function getAllRoles(req: Request, res: any) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
@@ -82,7 +82,7 @@ export async function addUser(req: Request, res: any) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
@@ -100,7 +100,7 @@ export async function deleteUser(req: Request, res: any) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
@@ -140,6 +140,7 @@ export async function addUserRole(req: Request, res: any) {
   try {
     let userRoles: string[] = [];
     const targetUsername = req.body.username;
+    const targetRole = req.body.role;
     try {
       userRoles = getUserRoles(targetUsername)
     } catch(errUsernameResult) {
@@ -148,8 +149,8 @@ export async function addUserRole(req: Request, res: any) {
         message: errUsernameResult.message
       })
     }
-    if (!userRoles.includes(req.body.role)) {
-      userRoles.push(req.body.role)
+    if (!userRoles.includes(targetRole)) {
+      userRoles.push(targetRole)
     }
     const result = {
       username: targetUsername,
@@ -160,7 +161,7 @@ export async function addUserRole(req: Request, res: any) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
@@ -169,11 +170,33 @@ export async function addUserRole(req: Request, res: any) {
 
 export async function deleteUserRole(req: Request, res: any) {
   try {
-    verifyRoleAdmin(res);
-    res.status(501).send();
+    let userRoles: string[] = [];
+    const targetUsername = req.body.username;
+    const targetRole = req.body.role;
+    try {
+      userRoles = getUserRoles(targetUsername)
+    } catch(errUsernameResult) {
+      res.status(404).json({
+        status: 404,
+        message: errUsernameResult.message
+      })
+    }
+
+    if (userRoles.includes(targetRole)) {
+      userRoles.forEach( (item, index) => {
+        if(item === targetRole) userRoles.splice(index,1);
+      });
+    }
+    const result = {
+      username: targetUsername,
+      roles: userRoles
+    };
+    console.log(moment().format(), '[Dev- no persist!] Delete User Role', result.username, result);
+
+    res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
