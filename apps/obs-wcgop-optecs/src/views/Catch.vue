@@ -206,16 +206,18 @@
               <div class="q-pa-md" style="width: 100%">
                       <div class="text-h6">{{ currentCatch.catchContent.alias }}</div>
                       <br>
-                      <b>Discard Reason</b><br>
-                      <q-btn-toggle
-                        v-model="speciesModel.discardReason"
-                        :options="discardReasonOptions"
-                        :value.sync="speciesModel.discardReason"
-                        spread
-                        />
-                      <p>{{ speciesModel.discardReason ? discardReasonLookup[speciesModel.discardReason].value : '-'}}</p>
+                      <div v-if="speciesModel.disposition && speciesModel.disposition.description === 'Discarded'">
+                        <b>Discard Reason</b><br>
+                        <q-btn-toggle
+                          v-model="speciesModel.discardReason"
+                          :options="discardReasonOptions"
+                          :value.sync="speciesModel.discardReason"
+                          spread
+                          />
+                        <p>{{ speciesModel.discardReason ? discardReasonLookup[speciesModel.discardReason].value : '-'}}</p>
+                      </div>
                       <br>
-                      <div v-if="[6,7,14].includes(speciesModel.weightMethod)">
+                      <div v-if="speciesModel.weightMethod && ['6','7','14'].includes(speciesModel.weightMethod.lookupVal)">
                         <b>Catch Weight </b><span>({{speciesModel.weight.units}})</span>
                         <boatnet-keyboard-input
                           v-model="speciesModel.weight.value"
@@ -231,7 +233,7 @@
                         />
                       </div>
 
-                    <div style="float: right;">
+                    <div style="float: right;" v-if="(speciesModel.disposition && speciesModel.disposition.description === 'Discarded') || (speciesModel.weightMethod && ['6','7','14'].includes(speciesModel.weightMethod.lookupVal))">
                       <br><br>
                       <q-btn color="primary" label="update" @click="updateSpecies"></q-btn>
                       <br><br>
@@ -309,6 +311,8 @@ import {
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
+import { freemem } from 'os';
+import { disconnect } from 'cluster';
 
 Vue.component(BoatnetSummary);
 
@@ -352,6 +356,7 @@ export default class Catch extends Vue {
     private weightMethodOptions: any[] = [];
 
     private weightMethodLookup: any;
+    private frequentSpecies: any[] = [];
 
     // private weightMethodLookup: any = {
     //   1: 'Actual Weight',
@@ -430,14 +435,23 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
     this.unselectRow();
   }
   let wm;
-  let dist;
+  let disp;
   if (wCatch && wCatch.catchContent && wCatch.catchContent.type === 'taxonomy-alias') {
+    // for (const grouping of this.currentHaul.catches![0].children!) {
+    //   for (const species of grouping.children!) {
+    //     const txnmyContent = species.catchContent as TaxonomyAlias;
+    //     if (txnmyContent.alias === wCatch.catchContent.alias) {
+    //       wm = grouping.weightMethod;
+    //       disp = grouping.disposition;
+    //     }
+    //   }
+    // }
+
     for (const grouping of this.currentHaul.catches![0].children!) {
       for (const species of grouping.children!) {
-        const txnmyContent = species.catchContent as TaxonomyAlias;
-        if (txnmyContent.alias === wCatch.catchContent.alias) {
+        if (species.catchNum === wCatch.catchNum) {
           wm = grouping.weightMethod;
-          dist = grouping.disposition;
+          disp = grouping.disposition;
         }
       }
     }
@@ -448,6 +462,12 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
               'weightMethod',
               wm
               );
+    }
+    if (disp) {
+      Vue.set(this.speciesModel,
+      'disposition',
+      disp
+      );
     }
 
     this.speciesModel.weight = this.currentCatch.weight ?
@@ -587,14 +607,11 @@ private modifySpecies() {
 
 private moveSpecies() {
   const speciesToMove = JSON.parse(JSON.stringify(this.currentCatch));
-  console.log(speciesToMove);
 
-  console.log(this.speciesModel);
   this.catchModel = speciesToMove;
   this.catchModel.disposition = JSON.parse(JSON.stringify(this.speciesModel.disposition));
   this.catchModel.weightMethod = JSON.parse(JSON.stringify(this.speciesModel.weightMethod));
 
-  console.log(this.catchModel);
   setTimeout( () => {
     this.moveModify = true;
   } , 100);
@@ -634,18 +651,43 @@ private deleteSpecies() {
 
 
 private get filteredSpecies() {
+
+  function compare(a: any, b: any) {
+    const commonNameA = a.value.commonName.toUpperCase();
+    const commonNameB = b.value.commonName.toUpperCase();
+
+    let comparison = 0;
+    if (commonNameA > commonNameB) {
+      comparison = 1;
+    } else if (commonNameA < commonNameB) {
+      comparison = -1;
+    }
+    return comparison;
+  }
+
+  let returnSpecies: any[] = this.speciesList.filter( (species: any) => {
+    return this.selectedSpecies.indexOf(species) === -1;
+  });
+
+  if (this.frequentList) {
+    returnSpecies =  this.speciesList.filter( (species: any) => {
+      return this.frequentSpecies.includes(species.value.commonName.toUpperCase())
+      &&
+      this.selectedSpecies.indexOf(species) === -1;
+    });
+  }
+
   if (this.filterText.length > 0) {
-    const filterResults: any[] =  this.speciesList.filter( (species: any) =>
+    returnSpecies = returnSpecies.filter( (species: any) =>
             (
               species.value.commonName.toUpperCase().includes( this.filterText.toUpperCase()) ||
               species.value.scientificName.toUpperCase().includes( this.filterText.toUpperCase())
             )
             && this.selectedSpecies.indexOf(species) === -1
             );
-    return this.selectedSpecies.concat(filterResults);
-  } else {
-    return this.speciesList;
   }
+
+  return this.selectedSpecies.concat(returnSpecies.sort(compare));
 }
 
 private updateCatch() {
@@ -756,6 +798,8 @@ private updateCatch() {
     }
   } , 100);
 
+  this.getFrequentSpecies();
+
 
 }
 
@@ -777,13 +821,18 @@ private unselectRow() {
 
 private updateSpecies() {
   const weight = this.speciesModel.weight as number;
-  this.currentCatch.weight = JSON.parse(JSON.stringify(weight));
-  this.currentCatch.count = JSON.parse(JSON.stringify(this.speciesModel.count));
-  Vue.set(this.currentCatch, 'discardReason', JSON.parse(JSON.stringify(this.speciesModel.discardReason)));
-  // this.currentCatch.discardReason = JSON.parse(JSON.stringify(this.speciesModel.discardReason));
+  if (weight) {
+    this.currentCatch.weight = JSON.parse(JSON.stringify(weight));
+  }
+  if (this.speciesModel.count) {
+    this.currentCatch.count = JSON.parse(JSON.stringify(this.speciesModel.count));
+  }
+  if (this.speciesModel.discardReason) {
+    Vue.set(this.currentCatch, 'discardReason', JSON.parse(JSON.stringify(this.speciesModel.discardReason)));
+    // this.currentCatch.discardReason = JSON.parse(JSON.stringify(this.speciesModel.discardReason));
+  }
   this.saveChanges();
 
-  this.speciesModel = {};
   Vue.set(this.speciesModel, 'weight', {units: 'lbs', value: 0});
   Vue.set(this.speciesModel, 'count', 0);
   Vue.set(this.speciesModel, 'discardReason', JSON.parse(JSON.stringify(this.currentCatch.discardReason)));
@@ -969,6 +1018,39 @@ private updateSpecies() {
     return accum;
   }
 
+  private async getFrequentSpecies() {
+      // get user doc from userDB if exits
+      console.log('getting frequent species');
+
+      const frequentSpecies: any = {};
+
+      try {
+          const allDocs = await pouchService.db.allDocs(
+              pouchService.userDBName
+              );
+
+          for (const row of allDocs.rows) {
+              if (row.doc.type === 'wcgop-operation' && row.doc.catches ) {
+                for (const grouping of row.doc.catches[0].children) {
+                  for (const species of grouping.children) {
+                    if (frequentSpecies[species.catchContent.alias.toUpperCase()]) {
+                      frequentSpecies[species.catchContent.alias.toUpperCase()] += 1;
+                    } else {
+                      frequentSpecies[species.catchContent.alias.toUpperCase()] = 1;
+                    }
+                  }
+                }
+              }
+          }
+          const sorted = Object.keys(frequentSpecies).sort((a, b) => {
+            return frequentSpecies[a] - frequentSpecies[b];
+          });
+
+          this.frequentSpecies = sorted.reverse().slice(0, 20);
+      } catch (err) {
+          console.log(err);
+      }
+  }
 
   private async created() {
     if (!this.currentHaul.catches || this.currentHaul.catches.length === 0) {
@@ -984,6 +1066,7 @@ private updateSpecies() {
           children: []
         }];
     }
+
     this.setCurrentCatch(this.currentHaul.catches[0]);
     // this.selectedCatch = undefined;
 
@@ -996,6 +1079,8 @@ private updateSpecies() {
       'optecs_trawl/all_discard_reason_description'
     );
     this.discardReasonOptions = this.getOptions(this.discardReasonLookup);
+
+    this.getFrequentSpecies();
   }
 
 }
