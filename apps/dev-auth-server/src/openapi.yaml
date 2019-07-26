@@ -7,15 +7,27 @@ servers:
   - url: /api/v1
 tags:
   - name: login
-    description: Dev Login
+    description: Login [Dev Only]
   - name: pubkey
-    description: Get RSA public key
+    description: Get RSA public key [Dev Only]
+  - name: users
+    description: Get All Users [Dev Only]
+  - name: roles
+    description: Get All Roles [Dev Only]
+  - name: user
+    description: User Management [Dev Only]
+  - name: user-role
+    description: User Role Management [Dev Only]
+  - name: user-role-status
+    description: User Role Enable/ Disable Management [Dev Only]
+  - name: test-auth
+    description: For testing JWT authorization [Dev Only]
 paths:
   /login:
     post:
       tags:
         - login
-      summary: Perform login to get JWT token (Dev Purposes)
+      summary: Perform login to get JWT token
       operationId: postLogin
       requestBody:
         description: Need username and password
@@ -23,18 +35,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Login'
-            examples: # Child of media type
-              Basic: # Example 1
-                value:
-                  username: 'test'
-                  password: 'test'
-              Encoded: # Example 2
+            examples:
+              Encoded:
                 value:
                   username: 'test'
                   passwordEnc: 'dGVzdA=='
+              Basic:
+                value:
+                  username: 'test'
+                  password: 'test'
         required: true
       responses:
-        200:
+        '200':
           description: 'User Authorized'
           content:
             application/json:
@@ -49,17 +61,21 @@ paths:
               example:
                 username: 'test'
                 token: '(JWT Token - decode at jwt.io)'
-        401:
+        '401':
           description: 'Authorization information is missing or invalid.'
           content:
             application/json:
               schema:
                 type: 'object'
                 properties:
+                  status:
+                    type: integer
+                    format: int64
                   message:
                     type: string
               example:
-                message: 'User not authorized'
+                status: 401
+                message: 'You have not been granted access to this application.'
 
   /pubkey:
     get:
@@ -69,7 +85,7 @@ paths:
       description: Returns public RSA key
       operationId: getPubkey
       responses:
-        200:
+        '200':
           description: Retrieved Public RSA Key OK
           content:
             application/json:
@@ -79,7 +95,354 @@ paths:
                 kty: 'RSA'
                 e: '(JWK Encoded Key)'
                 n: 'AQAB'
+  /users:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - users
+      summary: Get Users (Roles Read Access)
+      description: Get application users
+      operationId: getUsers
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: array
+              example:
+                users: ['john.doe', 'seabass.mcgillicutty']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /roles:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - roles
+      summary: Get Roles (Roles Read Access)
+      description: Get application roles
+      operationId: getRoles
+      responses:
+        '200':
+          description: Roles
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: array
+              example:
+                roles: ['observer', 'debriefer', 'every-other-role...']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /user:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - user
+      summary: Add New User (Roles Admin)
+      description: Create a boatnet user
+      operationId: postUser
+      requestBody:
+        description: New User info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUser'
+        required: true
+      responses:
+        '200':
+          description: New User Created
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+              example:
+                username: 'seabass.mcgillicutty'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - user
+      summary: Delete User (Roles Admin)
+      description: Delete a boatnet user
+      operationId: delUser
+
+      requestBody:
+        description: Username to delete
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                username:
+                  type: string
+            example:
+              username: 'jane.doe'
+        required: true
+      responses:
+        '200':
+          description: User Deleted
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+              example:
+                username: 'seabass.mcgillicutty'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-role:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Get a User's Roles (Roles Admin)
+      description: Add a role to existing user
+      operationId: postUserRole
+      parameters:
+        - name: username
+          in: query
+          description: Username to get roles for
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User Roles
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Add New User Role (Roles Admin)
+      description: Add a role to existing user
+      operationId: postUserRole
+      requestBody:
+        description: User + new Role info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserRole'
+        required: true
+      responses:
+        '200':
+          description: Role Added
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role
+      summary: Delete User Role(Roles Admin)
+      description: Remove a role from existing user
+      operationId: delUserRole
+
+      requestBody:
+        description: User + new Role info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserRole'
+        required: true
+      responses:
+        '200':
+          description: Role Deleted
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /user-role-status:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - user-role-status
+      summary: Enable or Disable User Role (Roles Admin)
+      description: Enable/disable role of existing user
+      operationId: postUserRole
+      requestBody:
+        description: User, Role, enable flag
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRoleStatus'
+        required: true
+      responses:
+        '200':
+          description: Role Status Updated
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                username: 'seabass.mcgillicutty'
+                roles: ['admin', 'captain']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /test-auth:
+    post:
+      tags:
+        - test-auth
+      summary: Checks JWT token validity
+      description: Check JWT auth
+      operationId: postTestAuth
+      requestBody:
+        description: JWT Token
+        content:
+          application/json:
+            schema:
+              type: 'object'
+              properties:
+                token:
+                  type: string
+            example:
+              token: '(jwt value)'
+        required: false
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - test-auth
+      summary: Check JWT token validity - Bearer Auth
+      description: Check JWT auth
+      operationId: getTestAuth2
+      responses:
+        '200':
+          description: JWT OK
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  roles:
+                    type: array
+              example:
+                user: 'test'
+                roles: ['test']
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
 components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
   schemas:
     Keys:
       type: object
@@ -96,9 +459,10 @@ components:
               n:
                 type: string
                 description: JWK Encoded PEM Public Key
-
     Login:
       type: object
+      required:
+        - username
       properties:
         username:
           type: string
@@ -108,3 +472,104 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
+    AddUser:
+      type: object
+      required:
+        - username
+        - lastName
+        - firstName
+        - emailAddress
+      properties:
+        username:
+          type: string
+        lastName:
+          type: string
+        firstName:
+          type: string
+        emailAddress:
+          type: string
+        comment:
+          type: string
+      example:
+        username: 'jane.doe'
+        lastName: 'Doe'
+        firstName: 'Jane'
+        emailAddress: 'bad@address.xyz'
+        comment: 'This is an example user.'
+    AddUserRole:
+      type: object
+      required:
+        - username
+        - role
+      properties:
+        username:
+          type: string
+        role:
+          type: string
+      example:
+        username: 'jane.doe'
+        role: 'captain'
+    UserRoleStatus:
+      type: object
+      required:
+        - username
+        - role
+        - enable
+      properties:
+        username:
+          type: string
+        role:
+          type: string
+        enable:
+          type: boolean
+      example:
+        username: 'jane.doe'
+        role: 'captain'
+        enable: false
+    Error:
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+        message:
+          type: string
+      example:
+        status: 401
+        message: 'Unable to'
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              status:
+                type: integer
+                format: int64
+              message:
+                type: string
+          examples:
+            Malformed:
+              value:
+                status: 401
+                message: 'jwt malformed'
+              summary: 'JWT malformed'
+            Expired:
+              value:
+                status: 401
+                message: 'jwt expired'
+              summary: 'JWT lifetime expired'
+            InvalidSignature:
+              value:
+                status: 401
+                message: 'invalid signature'
+              summary: 'JWT signed with different private key'
+            InsufficientPrivs:
+              value:
+                status: 401
+                message: 'Insufficient role privileges'
+              summary: 'User does not have required role'

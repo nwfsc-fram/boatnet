@@ -10,16 +10,9 @@ export const randomBytes = promisify(crypto.randomBytes);
 export const signJwt = promisify(jwt.sign);
 
 // TEMPORARY Keys used for signing JWT - NOT SECURE! (Publicly committed)
-export const RSA_CERT = fs.readFileSync(
-
-  'src/keys/temp-cert.pem'
-);
-export const RSA_PRIVATE_KEY = fs.readFileSync(
-  'src/keys/temp-priv-key.pem'
-);
-export const RSA_PUBLIC_KEY = fs.readFileSync(
-  'src/keys/temp-pub-key.pem'
-);
+export const RSA_CERT = fs.readFileSync('src/keys/temp-cert.pem');
+export const RSA_PRIVATE_KEY = fs.readFileSync('src/keys/temp-priv-key.pem');
+export const RSA_PUBLIC_KEY = fs.readFileSync('src/keys/temp-pub-key.pem');
 
 const SESSION_DURATION = 7200;
 
@@ -33,8 +26,21 @@ export async function createSessionToken(userInfo: any) {
 
 export async function decodeJwt(token: string) {
   const payload = await jwt.verify(token, RSA_PUBLIC_KEY);
-  console.log('Decoded JWT payload', payload);
+  // console.log('Decoded JWT payload', payload);
   return payload;
+}
+
+export async function decodeJwtObject(token: string) {
+  if (!token) {
+    console.log('No token passed', token);
+    return undefined;
+  }
+  const payload = await jwt.verify(token, RSA_PUBLIC_KEY);
+  if (payload && payload.sub) {
+    return JSON.parse(payload.sub);
+  } else {
+    return undefined;
+  }
 }
 
 export async function createCsrfToken() {
@@ -67,11 +73,14 @@ function toHex(str: string): string {
   return result;
 }
 
-
 // Encode/decode base64 (not encryption functions)
 // from https://stackoverflow.com/questions/23097928/node-js-btoa-is-not-defined-error
-const btoaUTF8 = function(str: any) { return Buffer.from(str, 'utf8').toString('base64'); }
-const atobUTF8 = function(b64Encoded: any) {return Buffer.from(b64Encoded, 'base64').toString('utf8');}
+const btoaUTF8 = function(str: any) {
+  return Buffer.from(str, 'utf8').toString('base64');
+};
+const atobUTF8 = function(b64Encoded: any) {
+  return Buffer.from(b64Encoded, 'base64').toString('utf8');
+};
 
 export function decode64(encValue: string): string {
   return atobUTF8(encValue);
