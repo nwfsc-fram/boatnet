@@ -268,9 +268,7 @@ export default class Trips extends Vue {
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
               return trip.tripStatus.description === 'open' &&
               tripVesselReg === activeVesselReg;
-            } else {
-              return [];
-            }
+              }
             }
           );
       } else {
@@ -287,8 +285,6 @@ export default class Trips extends Vue {
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
               return trip.tripStatus.description !== 'open' &&
               tripVesselReg === activeVesselReg;
-            } else {
-              return [];
             }
           }
         );
