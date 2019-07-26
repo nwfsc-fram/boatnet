@@ -122,7 +122,7 @@
 
                     <p>{{ weightMethodLookup[catchModel.weightMethod] ? weightMethodLookup[catchModel.weightMethod].value : ''}}</p>
 
-                    <div v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod.value)">
+                    <div v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod)">
                       <div v-if="selectedSpecies.length <= 1">
                         <b>Catch Weight </b><span>(lbs)</span>
                         <boatnet-keyboard-input
@@ -143,7 +143,9 @@
                       </div>
                     </div>
                     <boatnet-custom-keyboard
-                    @output="outputKey(char)"
+                    @output="outputKey($event)"
+                    @bksp="filterText = filterText.slice(0, -1)"
+                    @clear="filterText = ''"
                     >
                     </boatnet-custom-keyboard>
                 </div>
@@ -158,13 +160,23 @@
                 </q-btn>
 
                 <br><br><br>
-                <boatnet-keyboard-input
+                <!-- <boatnet-keyboard-input
                   v-model="filterText"
                   keyboardType="normal"
                   :value.sync="filterText"
                   label="Search Species"
                 >
-                </boatnet-keyboard-input>
+                </boatnet-keyboard-input> -->
+                <q-input
+                v-model="filterText"
+                :value.sync="filterText"
+                label="Search Species"
+                >
+                <template v-slot:append>
+                  <q-icon name="close" @click="filterText = ''" class="cursor-pointer" />
+                </template>
+                </q-input>
+
                 <q-scroll-area style="height: 435px">
                   <q-list bordered separator>
                     <q-item
@@ -317,6 +329,8 @@ Vue.component(BoatnetSummary);
 
 @Component
 export default class Catch extends Vue {
+    @Prop() public char!: string;
+
     private wcgopCatchSettings: any;
     private wcgopCatchData: any[] = [];
     private frequentList = false;
@@ -368,6 +382,7 @@ export default class Catch extends Vue {
     //   15: 'Visual Spatial'
     // };
 
+
     private drOptions = [];
 
     private discardReasonOptions: any[] = [];
@@ -375,6 +390,7 @@ export default class Catch extends Vue {
     private discardReasonLookup: any;
 
     private expanded: any = [];
+
 
     @Action('setCurrentCatch', { namespace: 'appState' })
     private setCurrentCatch: any;
@@ -387,6 +403,7 @@ export default class Catch extends Vue {
 
     @Action('save', { namespace: 'appState' })
     private save: any;
+
 
     constructor() {
         super(
@@ -619,14 +636,15 @@ private moveSpecies() {
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species.catchNum === speciesToMove.catchNum) {
-        this.setCurrentCatch(species);
+        this.setCurrentCatch(species).then(this.deleteSpecies());
       }
     }
   }
 
-  setTimeout( () => {
-    this.deleteSpecies();
-  }, 100);
+  // setTimeout( () => {
+  //   console.log(this.currentCatch);
+  //   this.deleteSpecies();
+  // }, 100);
 
   this.resetModify();
 }
@@ -635,6 +653,8 @@ private deleteSpecies() {
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species === this.currentCatch) {
+        console.log(species);
+        console.log(this.currentCatch);
         grouping.children!.splice( grouping.children!.indexOf(species) , 1);
       }
     }
@@ -694,7 +714,7 @@ private get filteredSpecies() {
 private updateCatch() {
   let newGrouping = false;
   this.setCurrentCatch(undefined);
-  // function to check whether the weight method + disposition group exists
+
   const addWeightMethod: any = this.catchModel.weightMethod;
   const addDisposition: any = this.catchModel.disposition;
 
@@ -982,8 +1002,9 @@ private updateSpecies() {
     this.setCurrentCatch(undefined);
   }
 
-  private outputKey(char: any) {
-    console.log(char);
+  private outputKey(event: any) {
+    this.filterText += event;
+    console.log(event);
   }
 
   private async getLookupVals(tableName: string) {
