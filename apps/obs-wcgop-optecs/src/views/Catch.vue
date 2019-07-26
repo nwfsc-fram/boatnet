@@ -329,6 +329,8 @@ Vue.component(BoatnetSummary);
 
 @Component
 export default class Catch extends Vue {
+    @Prop() public char!: string;
+
     private wcgopCatchSettings: any;
     private wcgopCatchData: any[] = [];
     private frequentList = false;
@@ -380,6 +382,7 @@ export default class Catch extends Vue {
     //   15: 'Visual Spatial'
     // };
 
+
     private drOptions = [];
 
     private discardReasonOptions: any[] = [];
@@ -387,6 +390,7 @@ export default class Catch extends Vue {
     private discardReasonLookup: any;
 
     private expanded: any = [];
+
 
     @Action('setCurrentCatch', { namespace: 'appState' })
     private setCurrentCatch: any;
@@ -400,7 +404,6 @@ export default class Catch extends Vue {
     @Action('save', { namespace: 'appState' })
     private save: any;
 
-    @Prop() public char!: string;
 
     constructor() {
         super(
@@ -633,14 +636,15 @@ private moveSpecies() {
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species.catchNum === speciesToMove.catchNum) {
-        this.setCurrentCatch(species);
+        this.setCurrentCatch(species).then(this.deleteSpecies());
       }
     }
   }
 
-  setTimeout( () => {
-    this.deleteSpecies();
-  }, 100);
+  // setTimeout( () => {
+  //   console.log(this.currentCatch);
+  //   this.deleteSpecies();
+  // }, 100);
 
   this.resetModify();
 }
@@ -649,6 +653,8 @@ private deleteSpecies() {
   for (const grouping of this.currentHaul.catches![0].children!) {
     for (const species of grouping.children!) {
       if (species === this.currentCatch) {
+        console.log(species);
+        console.log(this.currentCatch);
         grouping.children!.splice( grouping.children!.indexOf(species) , 1);
       }
     }
@@ -708,7 +714,7 @@ private get filteredSpecies() {
 private updateCatch() {
   let newGrouping = false;
   this.setCurrentCatch(undefined);
-  // function to check whether the weight method + disposition group exists
+
   const addWeightMethod: any = this.catchModel.weightMethod;
   const addDisposition: any = this.catchModel.disposition;
 
