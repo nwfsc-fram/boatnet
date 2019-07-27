@@ -1,15 +1,24 @@
 import { Base } from '../_base/index';
-import { BoatnetDate } from '../_common';
-import { Taxonomy } from './taxonomy';
 import { MarineDebris } from './marine-debris';
+import { TaxonomyAlias } from './taxonomy-alias';
 
 export const CatchGroupingTypeName = 'catch-grouping';
-declare type MemberType = Taxonomy | MarineDebris;
+declare type GroupDefinition = string; // TODO Lookup - define these
+
+/*
+CatchGrouping Type
+  - Species 
+     -- Management Group - IFQ, FMP, etc
+     -- Multi Species Group - blue/deacon, vermilion/sunset, etc.
+  - Marine Debris
+*/
 
 export interface CatchGrouping extends Base {
   name: string;
   code?: number;
-  members?: MemberType[]; // Could be an empty member list (e.g. sharks)
+  members?: TaxonomyAlias[] | MarineDebris[]; // Could be an empty member list (e.g. sharks)
+  definition?: GroupDefinition;
+
   isInactive?: boolean;
 
   legacy?: {
@@ -17,3 +26,15 @@ export interface CatchGrouping extends Base {
     wcgopCatchCategoryCode?: string;
   };
 }
+
+/*
+Taxonomy Tasks
+1. Categorize the types of potential CatchGroupings (Beth)
+3. ETL Taxonomy records (Nick)
+4. Learn how to ETL in TypeScript + Visual Studio Code (Beth)
+
+Questions
+- TaxonomyAlias - multiple unidentified for both Marine Debris + Taxonomy
+
+
+*/
