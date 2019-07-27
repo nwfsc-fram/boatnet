@@ -526,8 +526,9 @@ export default class DebrieferTrips extends Vue {
       multipleValues = true;
       for (let i = index; i <= this.mouseDownRow; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
-        if(!this.selected.hasOwnProperty(i))
+        if ( !this.selected.hasOwnProperty(i) ) {
           this.selectRow(i, this.currentColumn);
+        }
       }
     } else if (this.mouseDownRow < index) {
       multipleValues = true;
@@ -535,10 +536,11 @@ export default class DebrieferTrips extends Vue {
       // console.log(this.selected.hasOwnProperty(2));
       for (let i = this.mouseDownRow; i <= index; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
-        if(!this.selected.hasOwnProperty(i))
-          {console.log(this.selected.hasOwnProperty(i));
+        if ( !this.selected.hasOwnProperty(i) ) {
+          console.log(this.selected.hasOwnProperty(i));
           console.log(i);
-          this.selectRow(i, this.currentColumn);}
+          this.selectRow(i, this.currentColumn);
+        }
       }
     }
     // else
@@ -548,7 +550,7 @@ export default class DebrieferTrips extends Vue {
       this.bulkEditColumnPreviousValue = 'Multiple';
     }
     this.currentColumn = '';
-   
+
   }
 
   private openEditDialog() {

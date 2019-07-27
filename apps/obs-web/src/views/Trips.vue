@@ -17,6 +17,7 @@
       </div>
 
       <q-select
+      v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])"
       v-model="vessel.activeVessel"
       label="Set Active Vessel (staff role only)"
       dense
@@ -220,6 +221,7 @@ export default class Trips extends Vue {
   private closeAlert = false;
   private activeTrip: any = null;
   private taken: boolean = false;
+  private userRoles: string[] = [];
 
   constructor() {
       super();
@@ -266,9 +268,7 @@ export default class Trips extends Vue {
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
               return trip.tripStatus.description === 'open' &&
               tripVesselReg === activeVesselReg;
-            } else {
-              return [];
-            }
+              }
             }
           );
       } else {
@@ -285,8 +285,6 @@ export default class Trips extends Vue {
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
               return trip.tripStatus.description !== 'open' &&
               tripVesselReg === activeVesselReg;
-            } else {
-              return [];
             }
           }
         );
@@ -350,7 +348,18 @@ export default class Trips extends Vue {
     // }
 
     private created() {
-      // this.$store.dispatch('updateActiveTrip', '');
+      if ( authService.getCurrentUser() ) {
+        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+      }
+    }
+
+    private isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private closeTrip(trip: any) {

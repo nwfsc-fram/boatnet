@@ -10,10 +10,10 @@ import {
 const authConfig = require('../config/authProxyConfig.json');
 
 export async function login(req: Request, res: Response) {
-  const credentials = req.body;
-
-  const username = req.body.username || '';
+  let username = req.body.username || '';
   const password = req.body.passwordEnc ? decode64(req.body.passwordEnc) : req.body.password || '';
+
+  username = username.toLowerCase(); // fix #671
 
   if (username === '' || password === '') {
     res.status(401);
@@ -27,18 +27,18 @@ export async function login(req: Request, res: Response) {
 
   const validate_result = await devValidateUserPw(username, password);
   if (validate_result) {
-    console.log('Valid user result', validate_result);
+    // console.log('Valid user result', validate_result);
     const sessionToken = await createSessionToken(validate_result);
     const csrfToken = await createCsrfToken();
 
     console.log('Login successful');
 
-    res.cookie('SESSIONID', sessionToken, {
-      httpOnly: true,
-      secure: true
-    });
+    // res.cookie('SESSIONID', sessionToken, {
+    //   httpOnly: true,
+    //   secure: true
+    // });
 
-    res.cookie('XSRF-TOKEN', csrfToken);
+    // res.cookie('XSRF-TOKEN', csrfToken);
 
     const result = {
       username: validate_result.username,
