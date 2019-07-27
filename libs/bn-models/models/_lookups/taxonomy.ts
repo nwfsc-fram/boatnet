@@ -11,19 +11,27 @@ export type TaxonomyId = CouchID;
 export interface Taxonomy extends Base {
   taxonomyId: TaxonomyId; // Use this instead of _id for clarity except for top level record
   level: TaxonomyLevel;
-  taxonomyName: string;
-  scientificName?: string; // copy of taxonomyName except for species & subspecies
+  taxonomyName: string; // name at the given level, i.e. Sebastes, etc.
+  scientificName?: string; // species and below concatenation/population (species + subspecies, etc.)
   children?: TaxonomyId[];
   parent?: TaxonomyId;
 
+  // QUESTION - What about for analysis?
+  //   Do we need a flattened view of all of this?  How would that work?
+  //   
+
   // WCGOP specific usage
-  wcgopTallyShortCode?: string;
+  // wcgopTallyShortCode?: string; // moved to TaxonomyAlias
+  // pacfinSpeciesCode?: string;  // This is used by EDC - moved to TaxonomyAlias
 
-  // Used by EDC + Obs Analysts
-  pacfinNomCode?: string; // when a landing does not have species comp
+  // Obs Analysts - might be used by observer analysts, confirm
+  // pacfinNomCode?: string; // when a landing does not have species comp
 
-  // External system references
-  pacfinSpeciesId?: string;
+  // External species ID records / References
+  // Priorities of us
+  // fish - use AFS, everything else use ITIS
+
+  afsId?: number;  // Check if NWFSC has an AFS membership and if so, use this to get the IDs
   itisTSN?: number;
   wormsAphiaId?: number;
 
