@@ -51,10 +51,10 @@
             <template v-slot:option="scope">
               <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                 <q-item-section>
-                  <q-item-label v-html="scope.opt.label"/>
+                  <q-item-label v-html="scope.opt.label" />
                 </q-item-section>
                 <q-item-section avatar v-if="scope.selected">
-                  <q-icon name="fa fa-check-circle"/>
+                  <q-icon name="fa fa-check-circle" />
                 </q-item-section>
               </q-item>
             </template>
@@ -71,15 +71,17 @@
       </template>
 
       <template v-slot:body="props">
-        <q-tr :props="props"           
-              @[computedNativeHover].native="props.selected = !props.selected"
-              @[computedNativeClick].native="props.selected = !props.selected"
-              @keyup.enter.native.stop.prevent="
+        <q-tr
+          :props="props"
+          @[computedNativeHover].native="props.selected = !props.selected"
+          @[computedNativeClick].native="props.selected = !props.selected"
+          @keyup.enter.native.stop.prevent="
                 $refs.myTable.isRowSelected(props.row.__index)
               "
-            ref="myRef">
+          ref="myRef"
+        >
           <q-td auto-width>
-            <q-checkbox dense v-model="props.selected"/>
+            <q-checkbox dense v-model="props.selected" />
           </q-td>
           <q-td key="key" :props="props">{{ props.row.key }}</q-td>
           <q-td
@@ -136,8 +138,8 @@
         <q-separator></q-separator>
 
         <q-card-section style="max-height: 50vh" class="scroll">
-          <q-input label="Column" v-model="bulkEditColumn" readonly/>
-          <q-input label="Previous Value" v-model="bulkEditColumnPreviousValue" readonly/>
+          <q-input label="Column" v-model="bulkEditColumn" readonly />
+          <q-input label="Previous Value" v-model="bulkEditColumnPreviousValue" readonly />
           <q-input label="New Value" v-model="bulkEditColumnNewValue"></q-input>
         </q-card-section>
 
@@ -176,17 +178,17 @@ export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-    @Watch('pagination')
-      handler1(newVal:string, oldVal:string) {
-        console.log('handler1', newVal, oldVal)
-        this.colSelector()
-      }
-      
+  @Watch('pagination')
+  handler1(newVal: string, oldVal: string) {
+    console.log('handler1', newVal, oldVal);
+    this.colSelector();
+  }
+
   @Watch('paginationController')
-      handler2(newVal:string, oldVal:string) {
-        console.log('hanlder2', newVal, oldVal)
-        this.colSelector()
-      }
+  handler2(newVal: string, oldVal: string) {
+    console.log('hanlder2', newVal, oldVal);
+    this.colSelector();
+  }
 
   private WcgopTrips: any[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
@@ -206,8 +208,8 @@ export default class DebrieferTrips extends Vue {
   private mouseDown: boolean = false;
   private currentColumn: string = '';
   private currentRow: number = -1;
-  private active:boolean = false;
-  private rowSelectionType:string = 'click';
+  private active: boolean = false;
+  private rowSelectionType: string = 'click';
 
   private visibleTripColumns = [
     'key',
@@ -526,7 +528,7 @@ export default class DebrieferTrips extends Vue {
       multipleValues = true;
       for (let i = index; i <= this.mouseDownRow; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=this.getValue(index,value))
-        if ( !this.selected.hasOwnProperty(i) ) {
+        if (!this.selected.hasOwnProperty(i)) {
           this.selectRow(i, this.currentColumn);
         }
       }
@@ -536,7 +538,7 @@ export default class DebrieferTrips extends Vue {
       // console.log(this.selected.hasOwnProperty(2));
       for (let i = this.mouseDownRow; i <= index; i++) {
         // if(!multipleValues && this.bulkEditColumnPreviousValue!=value)
-        if ( !this.selected.hasOwnProperty(i) ) {
+        if (!this.selected.hasOwnProperty(i)) {
           console.log(this.selected.hasOwnProperty(i));
           console.log(i);
           this.selectRow(i, this.currentColumn);
@@ -550,7 +552,6 @@ export default class DebrieferTrips extends Vue {
       this.bulkEditColumnPreviousValue = 'Multiple';
     }
     this.currentColumn = '';
-
   }
 
   private openEditDialog() {
@@ -586,65 +587,60 @@ export default class DebrieferTrips extends Vue {
   }
 
   private get computedTableClass() {
-    return this.active ? ' myClass' : ''
+    return this.active ? ' myClass' : '';
   }
-  
+
   private get computedNativeHover() {
-      return this.rowSelectionType === 'hover' ||
-        this.rowSelectionType === 'both'
-        ? 'mouseover'
-        : null
-    }
+    return this.rowSelectionType === 'hover' || this.rowSelectionType === 'both'
+      ? 'mouseover'
+      : null;
+  }
 
   private get computedNativeClick() {
-      return this.rowSelectionType === 'click' ||
-        this.rowSelectionType === 'both'
-        ? 'click'
-        : null
-    }
-
-  private colSelector() {
-      this.$nextTick(() => {
-        this.active = false
-        const a = [].forEach.call(document.querySelectorAll('td'), el => {
-          el.addEventListener('mousedown', ev => {
-            this.active = true
-            ev.preventDefault()
-            let b = [].forEach.call(
-              document.querySelectorAll('.highlight'),
-              el2 => {
-                el2.classList.remove('highlight')
-              }
-            )
-            el.classList.add('highlight')
-          })
-        })
-
-        const c = [].forEach.call(document.querySelectorAll('td'), el => {
-          el.addEventListener('mousemove', ev => {
-            if (this.active) {
-              el.classList.add('highlight')
-            }
-          })
-        })
-
-        document.addEventListener('mouseup', ev => {
-          this.active = false
-        })
-      })
-    }
-  private mounted (){
-    const tb:any = document.getElementsByClassName('q-table')
-    this.$nextTick(() => {
-      let g = tb[0].rows
-      console.log('tb', g)
-
-      this.colSelector()
-    })
+    return this.rowSelectionType === 'click' || this.rowSelectionType === 'both'
+      ? 'click'
+      : null;
   }
 
+  private colSelector() {
+    this.$nextTick(() => {
+      this.active = false;
+      const a = [].forEach.call(document.querySelectorAll('td'), (el: any) => {
+        el.addEventListener('mousedown', (ev: any) => {
+          this.active = true;
+          ev.preventDefault();
+          let b = [].forEach.call(
+            document.querySelectorAll('.highlight'),
+            (el2: any) => {
+              el2.classList.remove('highlight');
+            }
+          );
+          el.classList.add('highlight');
+        });
+      });
 
+      const c = [].forEach.call(document.querySelectorAll('td'), (el: any) => {
+        el.addEventListener('mousemove', (ev: any) => {
+          if (this.active) {
+            el.classList.add('highlight');
+          }
+        });
+      });
 
+      document.addEventListener('mouseup', (ev) => {
+        this.active = false;
+      });
+    });
+  }
+  private mounted() {
+    const tb: any = document.getElementsByClassName('q-table');
+    this.$nextTick(() => {
+      let g = tb[0].rows;
+      console.log('tb', g);
+
+      this.colSelector();
+    });
+  }
 
   private getSelectedString(numRows: number) {
     return numRows === 0
