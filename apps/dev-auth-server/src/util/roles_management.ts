@@ -41,7 +41,7 @@ const authConfig = require('../config/authProxyConfig.json');
 // returns
 // {"users": [{"user_id":"john.public"},{"user_id":"test.user"}]}
 
-export function checkRolesRead(roles: string[]) {
+export function checkRolesRead(roles: string[], applicationName: string) {
   for (let role of roles) {
     if (ROLES_READ_ACCESS.includes(role)) {
       return true;
@@ -50,7 +50,7 @@ export function checkRolesRead(roles: string[]) {
   return false;
 }
 
-export function checkRolesAdmin(roles: string[]) {
+export function checkRolesAdmin(roles: string[], applicationName: string) {
   for (let role of roles) {
     if (ROLES_ADMIN_ACCESS.includes(role)) {
       return true;

@@ -40,6 +40,7 @@ paths:
                 value:
                   username: 'test'
                   passwordEnc: 'dGVzdA=='
+                  applicationName: 'OBSERVER_BOATNET'
               Basic:
                 value:
                   username: 'test'
@@ -472,6 +473,10 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
+        applicationName:
+          type: string
+          description: Application name, determines which roles are returned in JWT
+          default: 'OBSERVER_BOATNET'
     AddUser:
       type: object
       required:

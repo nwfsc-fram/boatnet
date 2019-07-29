@@ -10,7 +10,8 @@ function verifyRoleRead(res: any) {
   if (!jwt) {
     throw new Error('Bearer auth required.');
   }
-  const isRolesAdmin = checkRolesRead(jwt.roles);
+  console.log('JWT', jwt)
+  const isRolesAdmin = checkRolesRead(jwt.roles, jwt.applicationName);
   if (!isRolesAdmin) {
     throw new Error('User has no roles access.');
   }
@@ -23,7 +24,7 @@ function verifyRoleAdmin(res: any) {
   if (!jwt) {
     throw new Error('Bearer auth required.');
   }
-  const isRolesAdmin = checkRolesAdmin(jwt.roles);
+  const isRolesAdmin = checkRolesAdmin(jwt.roles, 'OBSERVER_BOATNET');
   if (!isRolesAdmin) {
     throw new Error('User has no roles admin access.');
   }

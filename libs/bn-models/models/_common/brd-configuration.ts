@@ -1,5 +1,5 @@
 import { Base } from '../_base/base';
-import { CouchID, BoatnetUser } from '.';
+import { CouchID } from '.';
 import {
   BrdLight,
   BrdEscapement,
@@ -15,7 +15,6 @@ import {
   BrdStrategyType,
   BrdLineWeighting
 } from '../_lookups/brd-lookups';
-import { Species } from '../_lookups';
 
 export const BrdConfigurationTypeName = 'brd-configuration';
 export interface BrdConfiguration extends Base {
