@@ -13,11 +13,21 @@ export interface TaxonomyAlias extends Base {
   aliasType: AliasType; // Lookup - Common Name, WCGOP Tally Short Code, Pacfin Species Code, etc.
 
   // Possible for multiple unid's (purple v. blue corals)
-  fieldDefinition?: string; // REVIEW REVIEW REVIEW
+  // fieldDefinition?: string; // REVIEW REVIEW REVIEW
+  isFieldDefinition?: boolean; // custom record added in the field, typically
+
+  // purple v. red anemonae
+  // for unid species, like coral #1, coral #2
+
+
+  // QUESTION - What about those species that don't have a taxonomy?
+
+  wcrIfqSpeciesGroupId?: number;  // From OBSPROD IFQ_SPECIE_GROUPING table
+  // may end different 
 
   // Groupings at the catch level
   lifestage?: Lifestage;
-  condition?: Condition; // such as Crushed (for urchins)
+  condition?: Condition; // such as Crushed (for urchins), decomposed, regurgitated
 
   // Program-specific indicators
   isAshop?: boolean;

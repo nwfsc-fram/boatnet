@@ -24,6 +24,7 @@ export * from './hlfc-mitigation-type';
 export * from './hlfc-product-delivery-state';
 export * from './interaction-outcome';
 export * from './interaction-type';
+export * from './management-area';
 export * from './measurement-device';
 export * from './media';
 export * from './observer-activity-type';
