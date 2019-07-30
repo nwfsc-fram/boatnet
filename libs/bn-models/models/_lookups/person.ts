@@ -81,6 +81,7 @@ export interface Person extends Base {
   // added to person from VesselCaptain as we don't know whether a person is a captain when the person is created.
   isActive?: boolean;
   activeVessel?: Vessel;
+  isLegacy?: boolean;
 
   legacy?: {
     PersonId?: number;
