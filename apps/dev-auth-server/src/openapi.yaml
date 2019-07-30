@@ -105,6 +105,13 @@ paths:
       summary: Get Users (Roles Read Access)
       description: Get application users
       operationId: getUsers
+      parameters:
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'OBSERVER_BOATNET'
+          description: Application Name
       responses:
         '200':
           description: List of users
@@ -119,6 +126,8 @@ paths:
                 users: ['john.doe', 'seabass.mcgillicutty']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /roles:
     get:
       security:
@@ -128,6 +137,13 @@ paths:
       summary: Get Roles (Roles Read Access)
       description: Get application roles
       operationId: getRoles
+      parameters:
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'OBSERVER_BOATNET'
+          description: Application Name
       responses:
         '200':
           description: Roles
@@ -142,6 +158,8 @@ paths:
                 roles: ['observer', 'debriefer', 'every-other-role...']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
 
   /user:
     post:
@@ -193,12 +211,11 @@ paths:
         content:
           application/json:
             schema:
-              type: 'object'
-              properties:
-                username:
-                  type: string
+              schema:
+              $ref: '#/components/schemas/DelUser'
             example:
               username: 'jane.doe'
+              applicationName: 'OBSERVER_BOATNET'
         required: true
       responses:
         '200':
@@ -210,8 +227,11 @@ paths:
                 properties:
                   username:
                     type: string
+                  applicationName:
+                    type: string
               example:
                 username: 'seabass.mcgillicutty'
+                applicationName: 'OBSERVER_BOATNET'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         default:
@@ -230,12 +250,18 @@ paths:
       description: Add a role to existing user
       operationId: postUserRole
       parameters:
-        - name: username
-          in: query
+        - in: query
+          name: username
           description: Username to get roles for
           required: true
           schema:
             type: string
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'OBSERVER_BOATNET'
+          description: Application Name
       responses:
         '200':
           description: User Roles
@@ -244,6 +270,8 @@ paths:
               schema:
                 type: 'object'
                 properties:
+                  applicationName:
+                    type: string
                   username:
                     type: string
                   roles:
@@ -253,12 +281,15 @@ paths:
                 roles: ['admin', 'captain']
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         default:
           description: Unexpected Error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
     post:
       security:
         - bearerAuth: []
@@ -283,6 +314,8 @@ paths:
                 type: 'object'
                 properties:
                   username:
+                    type: string
+                  applicationName:
                     type: string
                   roles:
                     type: array
@@ -325,6 +358,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                  applicationName:
+                    type: string
               example:
                 username: 'seabass.mcgillicutty'
                 roles: ['captain']
@@ -364,6 +399,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                  applicationName:
+                    type: string
               example:
                 username: 'seabass.mcgillicutty'
                 roles: ['admin', 'captain']
@@ -485,6 +522,8 @@ components:
         - firstName
         - emailAddress
       properties:
+        applicationName:
+          type: string
         username:
           type: string
         lastName:
@@ -496,6 +535,7 @@ components:
         comment:
           type: string
       example:
+        applicationName: 'OBSERVER_BOATNET'
         username: 'jane.doe'
         lastName: 'Doe'
         firstName: 'Jane'
@@ -507,6 +547,8 @@ components:
         - username
         - role
       properties:
+        applicationName:
+          type: string
         username:
           type: string
         role:
@@ -514,6 +556,18 @@ components:
       example:
         username: 'jane.doe'
         role: 'captain'
+    DelUser:
+      type: object
+      required:
+        - username
+      properties:
+        applicationName:
+          type: string
+        username:
+          type: string
+      example:
+        username: 'jane.doe'
+
     UserRoleStatus:
       type: object
       required:
@@ -521,6 +575,8 @@ components:
         - role
         - enable
       properties:
+        applicationName:
+          type: string
         username:
           type: string
         role:
@@ -543,7 +599,7 @@ components:
           type: string
       example:
         status: 401
-        message: 'Unable to'
+        message: 'Unauthorized'
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -578,3 +634,18 @@ components:
                 status: 401
                 message: 'Insufficient role privileges'
               summary: 'User does not have required role'
+    NotFoundError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            type: 'object'
+            properties:
+              status:
+                type: integer
+                format: int64
+              message:
+                type: string
+          example:
+            status: 404
+            message: 'Not FOund'

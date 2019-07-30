@@ -62,29 +62,53 @@ export function checkRolesAdmin(roles: string[], applicationName: string) {
 export function getAllApplicationUsers(
   application: string = 'OBSERVER_BOATNET'
 ): string[] {
+  // Dev Mockup
   const users = [];
   for (let user of authConfig.devUsers) {
-    users.push(user.username);
+    if (user.applicationName === application) {
+      users.push(user.username);
+    }
   }
-  return users;
+  if (users.length) {
+    return users;
+  } else {
+    throw new Error('No users for ' + application);
+  }
 }
 
 export function getAllApplicationRoles(
   application: string = 'OBSERVER_BOATNET'
 ): string[] {
+  // Dev Mockup
   return AVAILABLE_ROLES;
 }
 
 export function getUserRoles(
   username: string,
-  application: string = 'OBSERVER_BOATNET'
+  application: string
 ): string[] {
+  // Dev Mockup
   const userRoles = [];
 
   for (let user of authConfig.devUsers) {
-    if (user.username === username) {
+    console.log(user);
+    if (user.username === username && user.applicationName == application) {
       return user.userData.roles;
     }
   }
-  throw new Error('[Dev] No such user');
+  throw new Error('[Dev] No such user under ' + application);
+}
+
+export function addRole(userRoles: string[], targetRole: any, applicationName: string) {
+  if (!userRoles.includes(targetRole)) {
+    userRoles.push(targetRole);
+  }
+}
+
+export function deleteRole(userRoles: string[], targetRole: any, applicationName: string) {
+  if (userRoles.includes(targetRole)) {
+    userRoles.forEach((item, index) => {
+      if (item === targetRole) userRoles.splice(index, 1);
+    });
+  }
 }
