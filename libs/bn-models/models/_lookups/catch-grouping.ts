@@ -17,3 +17,27 @@ CatchGrouping Type
 export interface CatchGrouping extends Base {
   name: string;
   code?: number;
+  members?: TaxonomyAlias[] | MarineDebris[]; // Could be an empty member list (e.g. sharks)
+  definition?: GroupDefinition;
+
+  // managementArea: ManagementArea;
+  wcrIfqSpeciesGroupId?: number;  
+  isInactive?: boolean;
+
+  legacy?: {
+    // ETL Note - Only for multi-species catch categories
+    wcgopCatchCategoryCode?: string;
+  };
+}
+
+/*
+Taxonomy Tasks
+1. Categorize the types of potential CatchGroupings (Beth)
+3. ETL Taxonomy records (Nick)
+4. Learn how to ETL in TypeScript + Visual Studio Code (Beth)
+
+Questions
+- TaxonomyAlias - multiple unidentified for both Marine Debris + Taxonomy
+
+
+*/
