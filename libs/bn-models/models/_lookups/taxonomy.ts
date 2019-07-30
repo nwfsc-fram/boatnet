@@ -35,7 +35,7 @@ export interface Taxonomy extends Base {
   // Priorities of us
   // fish - use AFS, everything else use ITIS
 
-  afsId?: number;  // Check if NWFSC has an AFS membership and if so, use this to get the IDs
+  afsId?: number; // Check if NWFSC has an AFS membership and if so, use this to get the IDs
   itisTSN?: number;
   wormsAphiaId?: number;
 

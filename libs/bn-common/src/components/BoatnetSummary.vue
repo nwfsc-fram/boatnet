@@ -29,7 +29,20 @@
     />
 
     <div class="row q-gutter-sm q-pa-md absolute-bottom">
-      <q-btn color="primary" icon="add" :label="'Add ' + currentScreen" @click="onAdd"/>
+      <q-btn
+        color="primary"
+        icon="add"
+        :label="'Add ' + currentScreen"
+        @click="onAdd"
+      />
+      <q-btn
+        v-if="showRemove && !hasData"
+        color="primary"
+        icon="remove"
+        :label="'Remove'"
+        @click="onRemove"
+        :disabled="!current"
+      />
       <q-btn
         color="primary"
         icon="edit"
@@ -46,7 +59,7 @@
         :disabled="!current"
       />
       <q-btn
-        v-if="currentScreen !== 'Species'"
+        v-if="showDelete"
         color="primary"
         icon="delete_forever"
         :label="'Delete ' + currentScreen"
@@ -54,11 +67,11 @@
         :disabled="!current"
       />
       <q-btn
-        v-if="currentScreen === 'Species'"
+        v-if="showMove"
         color="primary"
         icon="fas fa-exchange-alt"
-        :label="'Modify ' + currentScreen"
-        @click="onModify"
+        :label="'Move ' + currentScreen"
+        @click="onMove"
         :disabled="!current"
       />
 
@@ -76,6 +89,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 @Component
 export default class BoatnetSummary extends Vue {
   @Prop() public current!: any;
+  @Prop() public hasData!: boolean;
   @Prop() public currentScreen!: string;
   @Prop() public selectionId!: number;
 
@@ -85,6 +99,30 @@ export default class BoatnetSummary extends Vue {
 
   private get showEnd() {
     if (this.currentScreen === 'Trip' || this.currentScreen === 'Haul') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private get showRemove() {
+    if (this.currentScreen === 'Species') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private get showDelete() {
+    if (this.currentScreen !== 'Species') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private get showMove() {
+    if (this.currentScreen === 'Species') {
       return true;
     } else {
       return false;
@@ -122,8 +160,12 @@ export default class BoatnetSummary extends Vue {
     this.$emit('edit');
   }
 
-  private onModify() {
-    this.$emit('modify');
+  private onMove() {
+    this.$emit('move');
+  }
+
+  private onRemove() {
+    this.$emit('remove');
   }
 
   private onEnd() {
@@ -156,7 +198,7 @@ li {
 a {
   color: #42b983;
 }
-.q-btn {
-  height: 75px;
-}
+// .q-btn {
+//   height: 75px;
+// }
 </style>

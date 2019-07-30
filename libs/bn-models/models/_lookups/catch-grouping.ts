@@ -8,7 +8,7 @@ declare type GroupDefinition = string; // TODO Lookup - define these
 
 /*
 CatchGrouping Type
-  - Species 
+  - Species
      -- Management Group - IFQ, FMP, etc
      -- Multi Species Group - blue/deacon, vermilion/sunset, etc.
   - Marine Debris

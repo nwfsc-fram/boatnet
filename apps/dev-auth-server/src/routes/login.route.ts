@@ -9,11 +9,18 @@ import {
 
 const authConfig = require('../config/authProxyConfig.json');
 
-export async function login(req: Request, res: Response) {
-  const credentials = req.body;
+const DEFAULT_APPLICATION_NAME = 'OBSERVER_BOATNET';
 
-  const username = req.body.username || '';
-  const password = req.body.passwordEnc ? decode64(req.body.passwordEnc) : req.body.password || '';
+export async function login(req: Request, res: Response) {
+  let username = req.body.username || '';
+  const password = req.body.passwordEnc
+    ? decode64(req.body.passwordEnc)
+    : req.body.password || '';
+  const userAppName = req.body.applicationName
+    ? req.body.applicationName
+    : DEFAULT_APPLICATION_NAME;
+
+  username = username.toLowerCase(); // fix #671
 
   if (username === '' || password === '') {
     res.status(401);
@@ -25,38 +32,54 @@ export async function login(req: Request, res: Response) {
     return;
   }
 
-  const validate_result = await devValidateUserPw(username, password);
-  if (validate_result) {
-    console.log('Valid user result', validate_result);
-    const sessionToken = await createSessionToken(validate_result);
-    const csrfToken = await createCsrfToken();
+  try {
+    const validate_result = await devValidateUserPw(
+      username,
+      password,
+      userAppName
+    );
 
-    console.log('Login successful');
+    if (validate_result) {
+      // console.log('Valid user result', validate_result);
+      const sessionToken = await createSessionToken(validate_result);
+      const csrfToken = await createCsrfToken();
 
-    res.cookie('SESSIONID', sessionToken, {
-      httpOnly: true,
-      secure: true
-    });
+      console.log('Login successful');
 
-    res.cookie('XSRF-TOKEN', csrfToken);
+      // res.cookie('SESSIONID', sessionToken, {
+      //   httpOnly: true,
+      //   secure: true
+      // });
 
-    const result = {
-      username: validate_result.username,
-      token: sessionToken // You can check this token at https://jwt.io/
-    };
+      // res.cookie('XSRF-TOKEN', csrfToken);
 
-    res.status(200).json(result);
-  } else {
-    res.status(401);
-    res.json({
+      const result = {
+        username: validate_result.username,
+        token: sessionToken // You can check this token at https://jwt.io/
+      };
+
+      res.status(200).json(result);
+    } else {
+      res.status(401).json({
+        status: 401,
+        message: 'Invalid credentials'
+      });
+      return;
+    }
+  } catch (authErr) {
+    res.status(401).json({
       status: 401,
-      message: 'Invalid credentials'
+      message: authErr.message
     });
     return;
   }
 }
 
-async function devValidateUserPw(username: string, password: string) {
+async function devValidateUserPw(
+  username: string,
+  password: string,
+  applicationName: string
+) {
   /**
    * Simplified user/pw validation for Development use
    */
@@ -64,7 +87,15 @@ async function devValidateUserPw(username: string, password: string) {
 
   let authedUser: any;
   const isAuthed = users.some((u: any) => {
-    if (u.username === username && u.password === password) {
+    const userApplicationName = u.applicationName
+      ? u.applicationName.toUpperCase()
+      : 'OBSERVER_BOATNET';
+
+    if (
+      u.username === username &&
+      u.password === password &&
+      userApplicationName === applicationName
+    ) {
       authedUser = u;
       return true;
     }
@@ -76,6 +107,7 @@ async function devValidateUserPw(username: string, password: string) {
     return {
       username: authedUser.username,
       hashedPW: hashedPW,
+      applicationName: applicationName,
       roles: authedUser.userData.roles,
       couchDBInfo: {
         ...authedUser.userData.couchDBInfo,
@@ -83,7 +115,6 @@ async function devValidateUserPw(username: string, password: string) {
       }
     };
   } else {
-    console.log('User not authorized: ', username);
-    return null;
+    throw new Error('User not authorized for ' + applicationName);
   }
 }

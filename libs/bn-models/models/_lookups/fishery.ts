@@ -1,45 +1,41 @@
-
-
 // TODO Full implementation
 export const FisheryTypeName = 'fishery';
 export type Sector = string; // WCGOP Obs Analyst Sectors
 export type GovernmentOrganization = string; // TODO LOOKUPS
-    // NOAA Fisheries, ODFW, WDFW, CDFW, IPHC
+// NOAA Fisheries, ODFW, WDFW, CDFW, IPHC
 
 // from lookups table
 export interface Fishery {
-    name: string;
-    organization?: GovernmentOrganization;
-    isIfq?: boolean; // CatchShares, Shoreside Hake, Motherside Catcher-Vessel
-                        // Trawl Gear Modification EFP (anything program 14 previously)
-    isEfp?: boolean;
-    isEm?: boolean; // ETL - anything program ID = 17 in OBSPROD.LOOKUPS.FISHERIES
-    isOpenAccess?: boolean;
-        // true = CA Halibut, WC OA Fixed Gear,
-        // false = Pacific Halibut, because managed by IPHC
-    isLimitedEntry?: boolean; // false = Pacific Halibut
-    isPermitted?: boolean; // is a permit given for this fishery?
-    // WC Open Access Fixed Gear (any vessel can do this)
-    // IPHC Directed Commerical Halibut do not have permits (using vessel number for IPHC)
-    //      we get a yearly list from IPHC
-    //
-    isActive?: boolean;
-    sector?: Sector; // WCGOP Analyst Sectors
-    // For fishery that breaks out into multiple sectors, ends up being based on
-    //  gear + proportional landings (so 50% or more Hake, etc.)
+  name: string;
+  organization?: GovernmentOrganization;
+  isIfq?: boolean; // CatchShares, Shoreside Hake, Motherside Catcher-Vessel
+  // Trawl Gear Modification EFP (anything program 14 previously)
+  isEfp?: boolean;
+  isEm?: boolean; // ETL - anything program ID = 17 in OBSPROD.LOOKUPS.FISHERIES
+  isOpenAccess?: boolean;
+  // true = CA Halibut, WC OA Fixed Gear,
+  // false = Pacific Halibut, because managed by IPHC
+  isLimitedEntry?: boolean; // false = Pacific Halibut
+  isPermitted?: boolean; // is a permit given for this fishery?
+  // WC Open Access Fixed Gear (any vessel can do this)
+  // IPHC Directed Commerical Halibut do not have permits (using vessel number for IPHC)
+  //      we get a yearly list from IPHC
+  //
+  isActive?: boolean;
+  sector?: Sector; // WCGOP Analyst Sectors
+  // For fishery that breaks out into multiple sectors, ends up being based on
+  //  gear + proportional landings (so 50% or more Hake, etc.)
 
-    // We would need to do a check against the fish tickets for this breakout for the lbs landed
-    
-    // EM, Trawl Gear Modification - do checks to see if they're using bottom trawl pelagically
-    //                                  helps them determine if they are fishing midwater
+  // We would need to do a check against the fish tickets for this breakout for the lbs landed
 
-    legacy?: {
-        lookupValue?: number;
-        programId?: number;
-    };
+  // EM, Trawl Gear Modification - do checks to see if they're using bottom trawl pelagically
+  //                                  helps them determine if they are fishing midwater
+
+  legacy?: {
+    lookupValue?: number;
+    programId?: number;
+  };
 }
-
-
 
 /*
 Fisheries

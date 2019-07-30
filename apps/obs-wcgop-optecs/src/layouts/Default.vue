@@ -22,6 +22,7 @@
         <q-toolbar-title>
           <optecs-breadcrumbs/>
         </q-toolbar-title>
+
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
@@ -129,6 +130,7 @@ import router from '../router';
 import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component({
   components: {
@@ -141,6 +143,7 @@ export default class DefaultLayout extends Vue {
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
@@ -168,6 +171,14 @@ export default class DefaultLayout extends Vue {
 
   private navigateBack() {
     this.$router.back();
+  }
+
+  private created() {
+    if ( authService.getCurrentUser() ) {
+      return;
+    } else {
+      this.$router.push({path: '/login'});
+    }
   }
 }
 </script>

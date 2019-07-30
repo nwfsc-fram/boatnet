@@ -1,6 +1,6 @@
 import { CouchID, Measurement } from '../_common';
 import { Media } from '../_lookups/media';
-import { BoatnetUser } from './boatnet-user';
+
 import {
   Beaufort,
   SpecimenTag,
