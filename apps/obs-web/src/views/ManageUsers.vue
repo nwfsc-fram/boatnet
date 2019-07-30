@@ -24,7 +24,14 @@
         <q-list bordered separator>
             <q-item v-for="(user, i) of filteredUsers" :key="i">
                 <q-item-section @click="userDetails(user)">
-                    <q-item-label><strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                    <q-item-label>
+                        <strong>{{ user.firstName }} {{ user.lastName }}
+                        <div style="border-radius: 5px; background-color: blue; color: white; display: inline; padding: 2px 4px;">LINKED</div>
+                        &nbsp;
+                        <div style="border-radius: 5px; background-color: red; color: white; display: inline; padding: 2px 4px;">APEX</div>
+                        &nbsp;
+                        <div class="bg-primary text-white" style="border-radius: 5px; display: inline; padding: 2px 4px;">BOATNET</div>
+                        </strong>
                     </q-item-label>
                 </q-item-section>
             </q-item>
