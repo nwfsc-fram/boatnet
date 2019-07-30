@@ -3,6 +3,7 @@
     {
       "username": "test",
       "password": "test",
+      "applicationName": "OBSERVER_BOATNET",
       "userData": {
         "roles": ["observer"],
         "couchDBInfo": {
@@ -13,8 +14,22 @@
       }
     },
     {
+      "username": "test",
+      "password": "test",
+      "applicationName": "VESSELS",
+      "userData": {
+        "roles": ["vessel_admin"],
+        "couchDBInfo": {
+          "urlRoot": "http://<your server>:5984",
+          "lookupsDB": "lookups-dev",
+          "masterDB": "master-dev"
+        }
+      }
+    },
+    {
       "username": "test-admin",
       "password": "test",
+      "applicationName": "OBSERVER_BOATNET",
       "userData": {
         "roles": ["debriefer", "observer"],
         "couchDBInfo": {

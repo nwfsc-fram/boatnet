@@ -16,9 +16,13 @@ export interface Taxonomy extends Base {
   children?: TaxonomyId[];
   parent?: TaxonomyId;
 
+  // TASK - Survey team investigate: (Beth/Nick to pursue)
+  // 1. non-scientific name species
+  // 2. cf entries - "seem to refer to ..."
+
+
   // QUESTION - What about for analysis?
   //   Do we need a flattened view of all of this?  How would that work?
-  //   
 
   // WCGOP specific usage
   // wcgopTallyShortCode?: string; // moved to TaxonomyAlias
@@ -31,7 +35,7 @@ export interface Taxonomy extends Base {
   // Priorities of us
   // fish - use AFS, everything else use ITIS
 
-  afsId?: number;  // Check if NWFSC has an AFS membership and if so, use this to get the IDs
+  afsId?: number; // Check if NWFSC has an AFS membership and if so, use this to get the IDs
   itisTSN?: number;
   wormsAphiaId?: number;
 

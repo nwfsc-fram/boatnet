@@ -1,7 +1,6 @@
 export * from './basket';
 export * from './biostructure';
 export * from './boatnet-date';
-export * from './boatnet-user';
 export * from './brd-configuration';
 export * from './certificate';
 export * from './couch-id';

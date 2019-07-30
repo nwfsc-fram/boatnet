@@ -10,10 +10,10 @@ export interface CouchDBInfo {
   masterDB: string;
   lookupsDB: string;
 }
-
 export interface BoatnetUser {
   username: string;
   hashedPW: string;
+  applicationName?: string;
   roles: string[];
   couchDBInfo: CouchDBInfo;
 }

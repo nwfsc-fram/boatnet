@@ -1,4 +1,4 @@
-import { BoatnetUser, CouchID, Measurement } from '../_common';
+import { CouchID, Measurement } from '../_common';
 import { Base } from '../_base';
 import { HlfcProductDeliveryState } from '../_lookups/hlfc-product-delivery-state';
 import { HlfcAerialExtent } from '../_lookups/hlfc-aerial-extent';
