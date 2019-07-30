@@ -1,16 +1,17 @@
 // Boatnet Base interface, all stored data should inherit this.
 
-import { BoatnetDate, BoatnetUser, CouchID } from '../_common/index';
+import { BoatnetDate, CouchID } from '../_common/index';
 
+type BoatnetUserName = string;
 export interface Base {
   _id?: CouchID; // UUID, couchDB compatible
   _rev?: string; // Couch revision
   type?: string; // current pattern is to declare a xxxTypeName, see wcgop-haul
-  createdBy?: BoatnetUser; // Username
+  createdBy?: string; // Username
   createdDate?: BoatnetDate; // ISO 8601 date
-  updatedBy?: BoatnetUser; // Username
+  updatedBy?: BoatnetUserName; // Username
   updatedDate?: BoatnetDate; // ISO 8601 date
-  uploadedBy?: BoatnetUser; // ETL User
+  uploadedBy?: BoatnetUserName; // ETL User
   uploadedDate?: BoatnetDate; // uploaded to final CouchDB
   notes?: string; // Notes/ Comments
   dataSource?: string; // hostname available?

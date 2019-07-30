@@ -14,10 +14,11 @@ export async function testauth(req: Request, res: any) {
 
     const result = {
       username: jwt.username,
-      roles: jwt.roles
+      roles: jwt.roles,
+      applicationName: jwt.applicationName
     };
 
-    const isRolesAdmin = checkRolesRead(jwt.roles);
+    const isRolesAdmin = checkRolesRead(jwt.roles, jwt.applicationName);
     console.log(moment().format(), 'testauth:', result, 'isAdmin:', isRolesAdmin);
     res.status(200).json(result);
   } catch(err) {

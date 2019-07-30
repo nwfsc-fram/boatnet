@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { WcgopAppState, RootState } from '@/_store/types/types';
-import { WcgopTrip, WcgopOperation, BoatnetUser, WcgopCatch } from '@boatnet/bn-models';
+import { WcgopTrip, WcgopOperation, WcgopCatch } from '@boatnet/bn-models';
 import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
