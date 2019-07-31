@@ -1,23 +1,30 @@
 import { Base } from "../_base";
 import { BoatnetDate } from "../_common";
-import { MultiLineString } from "geojson";
 import { CatchGrouping } from "./catch-grouping";
 import { TaxonomyAlias } from "./taxonomy-alias";
+import { FishingArea } from "./fishing-area";
 
 declare type ManagementType = string; // TODO - lookup - IFQ, FMP, etc.
-declare type GeographyType = {
-    name: string;
-    geography: MultiLineString;
-}
-
 export const ManagementAreaTypeName = 'management-area';
 
+// Source - OBSPROD.IFQ_SPECIE_GROUPINGS
 export interface ManagementArea extends Base {
-    name: string;
+    name: string; // possibly a concatenation of year + area for this
     year: BoatnetDate;
-    area: GeographyType;  // 2 lines only per management area
+    area: FishingArea;  // 2 lines only per management area
     managementType: ManagementType;
-    members: CatchGrouping | TaxonomyAlias;
+
+    // Consider making TaxonomyAlias an array
+    // i.e. it could be 2018, area = 200, and have arrowtooth + petrale
+    // How is a management area uniquely defined?
+    //  -- year + area combination?
+    //  -- year + area + members combination?
+
+    // Need to see how the expansion code is using this
+    // Idea is:  for this area for a given year, expand all of these members
+    // may or may not want to allow an array of members below, but rather 
+    // just have a CatchGrouping | TaxonomyAlias
+    members: (CatchGrouping | TaxonomyAlias)[];
 }
 
 /*

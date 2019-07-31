@@ -16,6 +16,7 @@ export * from './efp-type';
 export * from './em-efp';
 export * from './first-receiver';
 export * from './fishery';
+export * from './fishing-area';
 export * from './gear-performance';
 export * from './gear-type';
 export * from './hlfc-aerial-extent';
