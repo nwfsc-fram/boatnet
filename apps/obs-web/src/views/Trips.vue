@@ -103,6 +103,26 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="tripNotStartedAlert">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">A trip can not be closed before it is scheduled to start.  Did you mean cancel?</div>
+          <q-btn color="primary" size="md" style="float: right" @click="tripNotStartedAlert = false">OK</q-btn>
+          <br><br>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="earliestTripAlert">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">An earlier trip must be closed before this trip can be closed.</div>
+          <q-btn color="primary" size="md" style="float: right" @click="earliestTripAlert = false">OK</q-btn>
+          <br><br>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="cancelAlert">
       <q-card>
         <q-card-section>
@@ -222,6 +242,8 @@ export default class Trips extends Vue {
   private activeTrip: any = null;
   private taken: boolean = false;
   private userRoles: string[] = [];
+  private tripNotStartedAlert: boolean = false;
+  private earliestTripAlert: boolean = false;
 
   constructor() {
       super();
@@ -382,6 +404,26 @@ export default class Trips extends Vue {
     }
 
     private closeConfirm(trip: any) {
+      if (!moment(trip.departureDate).isSameOrBefore(moment(), 'day')) { // trip hasn't started yet.
+        console.log(moment(trip.departureDate))
+        console.log(moment())
+        console.log(moment(trip.departureDate).isSameOrBefore(moment(), 'day'))
+        // Dialog - warn trip must have started to be closed. did you mean cancel?
+        this.tripNotStartedAlert = true;
+        return;
+      }
+      console.log(trip);
+      console.log(this.openTrips);
+
+      for (const openTrip of this.openTrips) {
+        if (openTrip._id !== trip._id && moment(openTrip.departureDate).isBefore(trip.departureDate, 'day')) {
+          // if there is another open trip, see if its departure date is earlier than trip departure date
+          // Dialog - warn earliest trip must be closed first
+          this.earliestTripAlert = true;
+          return;
+        }
+      }
+
       this.activeTrip = trip;
       Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', trip.departureDate);
       Vue.set(this.activeTrip, 'captainAffirmedReturnDate', trip.returnDate);
