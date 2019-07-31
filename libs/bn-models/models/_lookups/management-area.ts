@@ -1,14 +1,14 @@
-import { Base } from "../_base";
-import { BoatnetDate } from "../_common";
-import { MultiLineString } from "geojson";
-import { CatchGrouping } from "./catch-grouping";
-import { TaxonomyAlias } from "./taxonomy-alias";
+import { Base } from '../_base';
+import { BoatnetDate } from '../_common';
+import { MultiLineString } from 'geojson';
+import { CatchGrouping } from './catch-grouping';
+import { TaxonomyAlias } from './taxonomy-alias';
 
 declare type ManagementType = string; // TODO - lookup - IFQ, FMP, etc.
 declare type GeographyType = {
     name: string;
     geography: MultiLineString;
-}
+};
 
 export const ManagementAreaTypeName = 'management-area';
 
@@ -28,7 +28,7 @@ export interface ManagementArea extends Base {
         area: 200
         year: 2019
     ...
-    
+
     Minor Shelf Rockfish North
         area: 100
         members:  CatchGrouping = Minor Shelf Rockfish North

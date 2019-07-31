@@ -609,7 +609,7 @@ export default class DebrieferTrips extends Vue {
         el.addEventListener('mousedown', (ev: any) => {
           this.active = true;
           ev.preventDefault();
-          let b = [].forEach.call(
+          const b = [].forEach.call(
             document.querySelectorAll('.highlight'),
             (el2: any) => {
               el2.classList.remove('highlight');
@@ -635,7 +635,7 @@ export default class DebrieferTrips extends Vue {
   private mounted() {
     const tb: any = document.getElementsByClassName('q-table');
     this.$nextTick(() => {
-      let g = tb[0].rows;
+      const g = tb[0].rows;
       console.log('tb', g);
 
       this.colSelector();

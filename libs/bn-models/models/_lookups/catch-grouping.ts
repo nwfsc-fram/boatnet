@@ -21,7 +21,7 @@ export interface CatchGrouping extends Base {
   definition?: GroupDefinition;
 
   // managementArea: ManagementArea;
-  wcrIfqSpeciesGroupId?: number;  
+  wcrIfqSpeciesGroupId?: number;
   isInactive?: boolean;
 
   legacy?: {

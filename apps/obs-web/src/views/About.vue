@@ -29,8 +29,6 @@ import axios from 'axios';
 
 @Component
 export default class About extends Vue {
-
-  private variable: any;
   private token: any;
   private users: any[] = [];
   private roleName: any;
@@ -48,8 +46,6 @@ export default class About extends Vue {
     })
         .then( (response) => {
             this.token = response.data.token;
-            // this.variable = response;
-            // console.log(this.variable);
             console.log(this.token);
         });
   }
@@ -105,7 +101,7 @@ export default class About extends Vue {
     axios.delete('https://localhost:9000/api/v1/user-role', {data, headers, params})
     .then((response) => {
       console.log(response);
-    })
+    });
   }
 
   private addUser() {
@@ -119,7 +115,7 @@ export default class About extends Vue {
       })
     .then((response) => {
       console.log(response);
-    })
+    });
   }
 
   constructor() {

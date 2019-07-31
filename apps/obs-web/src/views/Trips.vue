@@ -405,15 +405,10 @@ export default class Trips extends Vue {
 
     private closeConfirm(trip: any) {
       if (!moment(trip.departureDate).isSameOrBefore(moment(), 'day')) { // trip hasn't started yet.
-        console.log(moment(trip.departureDate))
-        console.log(moment())
-        console.log(moment(trip.departureDate).isSameOrBefore(moment(), 'day'))
         // Dialog - warn trip must have started to be closed. did you mean cancel?
         this.tripNotStartedAlert = true;
         return;
       }
-      console.log(trip);
-      console.log(this.openTrips);
 
       for (const openTrip of this.openTrips) {
         if (openTrip._id !== trip._id && moment(openTrip.departureDate).isBefore(trip.departureDate, 'day')) {
