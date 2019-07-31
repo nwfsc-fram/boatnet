@@ -37,6 +37,7 @@
     "pem-jwk": "^2.0.0",
     "quasar": "^1.0.0-rc.4",
     "swagger-ui-express": "^4.0.7",
-    "tsoa": "^2.4.3"
+    "tsoa": "^2.4.3",
+    "yamljs": "^0.3.0"
   }
 }

@@ -40,7 +40,7 @@ paths:
                 value:
                   username: 'test'
                   passwordEnc: 'dGVzdA=='
-                  applicationName: 'OBSERVER_BOATNET'
+                  applicationName: 'BOATNET_OBSERVER'
               Basic:
                 value:
                   username: 'test'
@@ -110,7 +110,7 @@ paths:
           name: applicationName
           schema:
             type: string
-            default: 'OBSERVER_BOATNET'
+            default: 'BOATNET_OBSERVER'
           description: Application Name
       responses:
         '200':
@@ -142,7 +142,7 @@ paths:
           name: applicationName
           schema:
             type: string
-            default: 'OBSERVER_BOATNET'
+            default: 'BOATNET_OBSERVER'
           description: Application Name
       responses:
         '200':
@@ -215,7 +215,7 @@ paths:
               $ref: '#/components/schemas/DelUser'
             example:
               username: 'jane.doe'
-              applicationName: 'OBSERVER_BOATNET'
+              applicationName: 'BOATNET_OBSERVER'
         required: true
       responses:
         '200':
@@ -231,7 +231,7 @@ paths:
                     type: string
               example:
                 username: 'seabass.mcgillicutty'
-                applicationName: 'OBSERVER_BOATNET'
+                applicationName: 'BOATNET_OBSERVER'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         default:
@@ -260,7 +260,7 @@ paths:
           name: applicationName
           schema:
             type: string
-            default: 'OBSERVER_BOATNET'
+            default: 'BOATNET_OBSERVER'
           description: Application Name
       responses:
         '200':
@@ -513,7 +513,7 @@ components:
         applicationName:
           type: string
           description: Application name, determines which roles are returned in JWT
-          default: 'OBSERVER_BOATNET'
+          default: 'BOATNET_OBSERVER'
     AddUser:
       type: object
       required:
@@ -535,7 +535,7 @@ components:
         comment:
           type: string
       example:
-        applicationName: 'OBSERVER_BOATNET'
+        applicationName: 'BOATNET_OBSERVER'
         username: 'jane.doe'
         lastName: 'Doe'
         firstName: 'Jane'

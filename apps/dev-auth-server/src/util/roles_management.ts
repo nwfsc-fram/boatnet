@@ -60,7 +60,7 @@ export function checkRolesAdmin(roles: string[], applicationName: string) {
 }
 
 export function getAllApplicationUsers(
-  application: string = 'OBSERVER_BOATNET'
+  application: string = 'BOATNET_OBSERVER'
 ): string[] {
   // Dev Mockup
   const users = [];
@@ -77,7 +77,7 @@ export function getAllApplicationUsers(
 }
 
 export function getAllApplicationRoles(
-  application: string = 'OBSERVER_BOATNET'
+  application: string = 'BOATNET_OBSERVER'
 ): string[] {
   // Dev Mockup
   return AVAILABLE_ROLES;
