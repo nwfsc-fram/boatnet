@@ -3,7 +3,7 @@
     {
       "username": "test",
       "password": "test",
-      "applicationName": "OBSERVER_BOATNET",
+      "applicationName": "BOATNET_OBSERVER",
       "userData": {
         "roles": ["observer"],
         "couchDBInfo": {
@@ -29,7 +29,7 @@
     {
       "username": "test-admin",
       "password": "test",
-      "applicationName": "OBSERVER_BOATNET",
+      "applicationName": "BOATNET_OBSERVER",
       "userData": {
         "roles": ["debriefer", "observer"],
         "couchDBInfo": {

@@ -9,7 +9,7 @@ import {
 
 const authConfig = require('../config/authProxyConfig.json');
 
-const DEFAULT_APPLICATION_NAME = 'OBSERVER_BOATNET';
+const DEFAULT_APPLICATION_NAME = 'BOATNET_OBSERVER';
 
 export async function login(req: Request, res: Response) {
   let username = req.body.username || '';
@@ -17,7 +17,7 @@ export async function login(req: Request, res: Response) {
     ? decode64(req.body.passwordEnc)
     : req.body.password || '';
   const userAppName = req.body.applicationName
-    ? req.body.applicationName
+    ? req.body.applicationName.toUpperCase()
     : DEFAULT_APPLICATION_NAME;
 
   username = username.toLowerCase(); // fix #671
@@ -89,7 +89,7 @@ async function devValidateUserPw(
   const isAuthed = users.some((u: any) => {
     const userApplicationName = u.applicationName
       ? u.applicationName.toUpperCase()
-      : 'OBSERVER_BOATNET';
+      : 'BOATNET_OBSERVER';
 
     if (
       u.username === username &&

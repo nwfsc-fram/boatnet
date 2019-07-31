@@ -52,17 +52,13 @@ app.use(cors());
 app.disable('x-powered-by'); // Disable express version sharing
 
 const swaggerUi = require('swagger-ui-express');
-
-var swaggerOptions = {
-  swaggerOptions: {
-    url: 'https://localhost:9000/spec'
-  }
-};
+const YAML = require('yamljs');
+const swaggerDocument =  YAML.load(resolve(__dirname, 'openapi.yaml'));
 
 // OpenAPI Spec
 app.use('/spec', express.static(resolve(__dirname, 'openapi.yaml')));
 // API Swagger UI
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, swaggerOptions));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 new OpenApiValidator({
   apiSpecPath: './src/openapi.yaml'
@@ -73,7 +69,7 @@ const API_VERSION = 'v1';
 // Login
 app.route('/api/' + API_VERSION + '/login').post(login);
 
-// get OBSERVER_BOATNET users / roles
+// get BOATNET_OBSERVER users / roles
 // TODO: Refactor to collapse calls to validateJwtRequest?
 app.use('/api/' + API_VERSION + '/users', validateJwtRequest); // validate first
 app.route('/api/' + API_VERSION + '/users').get(getAllUsers);
