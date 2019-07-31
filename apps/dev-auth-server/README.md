@@ -44,12 +44,12 @@ openssl req -new -x509 -key temp-priv-key.pem -out temp-cert.pem -days 3650 -sub
 
 POST the following raw JSON to: https://localhost:9000/api/login using a utility such as Postman.
 
-"applicationName" is optional, defaults to "OBSERVER_BOATNET" (determines which Roles are returned in JWT)
+"applicationName" is optional, defaults to "BOATNET_OBSERVER" (determines which Roles are returned in JWT)
 ```
 {
   "username": "test",
   "password": "test",
-  "applicationName": "OBSERVER_BOATNET"
+  "applicationName": "BOATNET_OBSERVER"
 
 }
 ```

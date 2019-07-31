@@ -32,13 +32,13 @@ function verifyRoleAdmin(res: any) {
   if (!jwt) {
     throw new Error('Bearer auth required.');
   }
-  const isRolesAdmin = checkRolesAdmin(jwt.roles, 'OBSERVER_BOATNET');
+  const isRolesAdmin = checkRolesAdmin(jwt.roles, 'BOATNET_OBSERVER');
   if (!isRolesAdmin) {
     throw new Error('User has no roles admin access.');
   }
 }
 
-const DEFAULT_APPLICATION_NAME = 'OBSERVER_BOATNET';
+const DEFAULT_APPLICATION_NAME = 'BOATNET_OBSERVER';
 
 export async function getAllUsers(req: Request, res: any) {
   // get-user.middleware will populate res.user
