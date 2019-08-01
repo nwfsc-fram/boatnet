@@ -145,10 +145,39 @@ paths:
               schema:
                 type: 'object'
                 properties:
+                  applicationName:
+                    type: string
+                    example: 'BOATNET_OBSERVER'
                   users:
                     type: array
                     items:
-                      type: string
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        email_address:
+                          type: string
+                        phone:
+                          type: string
+                        org:
+                          type: string
+                        division:
+                          type: string
+
+                    example:
+                      user_id: 'seabass.mcgillicutty'
+                      first_name: 'Seabass'
+                      last_name: 'McGillicutty'
+                      email_address: 'test@test.com'
+                      phone: '123-456-7890'
+                      org: null
+                      division: 'FRAM'
+
+
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':

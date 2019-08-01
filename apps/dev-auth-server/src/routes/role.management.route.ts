@@ -8,7 +8,8 @@ import {
   checkRolesAdmin,
   getUserRoles,
   deleteRole,
-  addRole
+  addRole,
+  getUsersDetails
 } from '../util/roles_management';
 
 function verifyRoleRead(res: any) {
@@ -140,6 +141,40 @@ export async function deleteUser(req: Request, res: any) {
     console.log(moment().format(), '[Dev- fake] Delete User', result.username);
     // Doesn't actually delete user for Dev
     res.status(200).json(result);
+  } catch (err) {
+    res.status(401).json({
+      status: 401,
+      message: err.message
+    });
+    console.log(moment().format(), err.message);
+  }
+}
+
+
+export async function getAllUsersDetails(req: Request, res: any) {
+  try {
+    console.log(moment().format(), req.method, req.originalUrl, req.ip);
+    verifyRoleRead(res);
+
+    const applicationName = req.query
+      ? req.query.applicationName
+      : DEFAULT_APPLICATION_NAME;
+
+    try {
+      const usersResult = await getUsersDetails(applicationName);
+      const result = {
+        applicationName,
+        users: usersResult.users
+      };
+
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(404).json({
+        status: 404,
+        message: err.message
+      });
+      return;
+    }
   } catch (err) {
     res.status(401).json({
       status: 401,
