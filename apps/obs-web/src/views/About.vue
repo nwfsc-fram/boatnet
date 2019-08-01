@@ -161,6 +161,11 @@ import axios from 'axios';
 
 @Component
 export default class About extends Vue {
+  @State('alert') private alert!: AlertState;
+
+  @Action('clear', { namespace: 'alert' }) private clear: any;
+  @Action('error', { namespace: 'alert' }) private error: any;
+
   private token: any;
   private users: any[] = [];
   private roleName: any = '';
@@ -175,16 +180,15 @@ export default class About extends Vue {
   private deleteConfirm: boolean = false;
   private newDocType: boolean = false;
 
-  @State('alert') private alert!: AlertState;
-
-  @Action('clear', { namespace: 'alert' }) private clear: any;
-  @Action('error', { namespace: 'alert' }) private error: any;
+  constructor() {
+    super();
+  }
 
   private hitApi() {
     axios.post('https://localhost:9000/api/v1/login', {
-        'username': authService.getCurrentUser()!.username,
-        'password': authService.getCurrentUser()!.hashedPW,
-        'applicationName': 'OBSERVER_BOATNET'
+        username: authService.getCurrentUser()!.username,
+        password: authService.getCurrentUser()!.hashedPW,
+        applicationName: 'OBSERVER_BOATNET'
     })
         .then( (response) => {
             this.token = response.data.token;
@@ -194,51 +198,51 @@ export default class About extends Vue {
 
   private getUsers() {
     axios.get('https://localhost:9000/api/v1/users', {
-      params: {'token': this.token}
+      params: {token: this.token}
     })
   .then((response) => {
     this.users = response.data.users;
     console.log(response.data.users);
-  })
+  });
   }
 
   private getRoles() {
     axios.get('https://localhost:9000/api/v1/user-role', {
       params: {
-        'username': this.users[0],
-        'token': this.token
+        username: this.users[0],
+        token: this.token
         }
     })
     .then((response) => {
       console.log(response.data.roles);
-    })
+    });
   }
 
   private addRole() {
     axios.post('https://localhost:9000/api/v1/user-role', {
-      'token': this.token,
-      'username': this.users[0],
-      'role': this.roleName
+      token: this.token,
+      username: this.users[0],
+      role: this.roleName
     })
     .then((response) => {
       console.log(response.data);
-    })
+    });
   }
 
     private deleteRole() {
     const headers: any = {
       'Content-Type': 'application/json',
       'accept': 'application/json'
-      }
+      };
 
     const data: any = {
-        'username': this.users[0],
-        'role': this.roleName
-    }
+        username: this.users[0],
+        role: this.roleName
+    };
 
     const params: any = {
-      'token': this.token
-    }
+      token: this.token
+    };
 
     axios.delete('https://localhost:9000/api/v1/user-role', {data, headers, params})
     .then((response) => {
@@ -248,12 +252,12 @@ export default class About extends Vue {
 
   private addUser() {
     axios.post('https://localhost:9000/api/v1/user', {
-      'username': 'jane.doe',
-      'lastName': 'Doe',
-      'firstName': 'Janet',
-      'emailAddress': 'bad@address.xyz123',
-      'comment': 'This is an example user.',
-      'token': this.token
+      username: 'jane.doe',
+      lastName: 'Doe',
+      firstName: 'Janet',
+      emailAddress: 'bad@address.xyz123',
+      comment: 'This is an example user.',
+      token: this.token
       })
     .then((response) => {
       console.log(response);
@@ -280,7 +284,7 @@ export default class About extends Vue {
 
         for (const docType of docTypes.rows) {
           if (docType.key) {
-            this.docTypes.push(docType.key)
+            this.docTypes.push(docType.key);
           }
         }
         this.loading = false;
@@ -302,15 +306,15 @@ export default class About extends Vue {
       include_docs: true,
       reduce: false,
       key: docType
-    }
+    };
 
     const docTypeDocs = await masterDB.view<any>(
       'obs-web',
       'all_doc_types',
       queryOptions
-    )
+    );
     for (const row of docTypeDocs.rows) {
-      const doc: any = row.key
+      const doc: any = row.key;
       this.foundDocs.push(row);
     }
 
@@ -353,7 +357,7 @@ export default class About extends Vue {
         this.selectedDoc._rev
       ).then((response) => {
         this.selectedDoc._rev = response.rev;
-      })
+      });
       this.getDocs(this.docType);
       this.editLookup = false;
     } catch (err) {
@@ -391,8 +395,8 @@ export default class About extends Vue {
     for (const lookup of this.foundDocs) {
 
       if (lookup.doc.legacy && lookup.doc.legacy.lookupVal) {
-        if (parseInt(lookup.doc.legacy.lookupVal) > newVal) {
-          newVal = parseInt(lookup.doc.legacy.lookupVal);
+        if (parseInt(lookup.doc.legacy.lookupVal, 10) > newVal) {
+          newVal = parseInt(lookup.doc.legacy.lookupVal, 10);
         }
       }
     }
@@ -417,9 +421,7 @@ export default class About extends Vue {
     }
   }
 
-  constructor() {
-    super();
-  }
+
 
 }
 
