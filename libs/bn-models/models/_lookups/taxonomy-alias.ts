@@ -23,7 +23,7 @@ export interface TaxonomyAlias extends Base {
   // QUESTION - What about those species that don't have a taxonomy?
 
   wcrIfqSpeciesGroupId?: number;  // From OBSPROD IFQ_SPECIE_GROUPING table
-  // may end different 
+  // may end different
 
   // Groupings at the catch level
   lifestage?: Lifestage;

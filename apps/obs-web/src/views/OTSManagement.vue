@@ -225,7 +225,7 @@ export default class OtsMangement extends Vue {
 
     private getActualObserved(otsTarget: OTSTarget) {
         if (otsTarget.targetType === 'Vessel') {
-            return this.getCoveredPercent(otsTarget.targetVessel);
+            return Math.floor(this.getCoveredPercent(otsTarget.targetVessel));
         }
         if (otsTarget.targetType === 'Fishery Wide' && otsTarget.fishery === 'EM EFP') {
             const affectedVessels = [];

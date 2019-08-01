@@ -35,7 +35,7 @@ export interface ManagementArea extends Base {
         area: 200
         year: 2019
     ...
-    
+
     Minor Shelf Rockfish North
         area: 100
         members:  CatchGrouping = Minor Shelf Rockfish North

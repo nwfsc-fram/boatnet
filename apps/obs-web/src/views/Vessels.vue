@@ -181,7 +181,6 @@ private async getVessels() {
             );
 
         for (const row of vessels.rows) {
-            console.log(row.doc.isActive);
             if ( row.doc.isActive === undefined ) {
                 row.doc.isActive = true;
             }
