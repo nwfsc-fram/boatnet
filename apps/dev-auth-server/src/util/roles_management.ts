@@ -92,7 +92,7 @@ export function getUserRoles(
 
   for (let user of authConfig.devUsers) {
     console.log(user);
-    if (user.username === username && user.applicationName == application) {
+    if (user.username === username && user.applicationName === application) {
       return user.userData.roles;
     }
   }
@@ -111,4 +111,30 @@ export function deleteRole(userRoles: string[], targetRole: any, applicationName
       if (item === targetRole) userRoles.splice(index, 1);
     });
   }
+}
+
+export async function getUsersDetails(applicationName: string) {
+ // Dev Mockup
+ const userDetails = [];
+
+ for (let user of authConfig.devUsers) {
+   if ( user.applicationName === applicationName) {
+     userDetails.push({
+       'user_id': user.username,
+       'first_name': 'testing',
+       'last_name': 'testing',
+       'email_address': 'testing@testing.com',
+       'phone': '123-456-1234',
+       'org': null,
+       'division': 'FRAM'
+     })
+   }
+ }
+ if (userDetails.length) {
+  return {
+    users: userDetails
+  }
+ } else {
+   throw new Error('[Dev] No such users under ' + applicationName);
+ }
 }

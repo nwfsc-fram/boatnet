@@ -28,7 +28,8 @@ import {
   getUserRole,
   addUserRole,
   deleteUserRole,
-  putUserRoleStatus
+  putUserRoleStatus,
+  getAllUsersDetails
 } from './routes/role.management.route';
 
 const app: Application = express();
@@ -80,6 +81,9 @@ app.route('/api/' + API_VERSION + '/roles').get(getAllRoles);
 app.use('/api/' + API_VERSION + '/user', validateJwtRequest);
 app.route('/api/' + API_VERSION + '/user').post(addUser);
 app.route('/api/' + API_VERSION + '/user').delete(deleteUser);
+
+app.use('/api/' + API_VERSION + '/users-details', validateJwtRequest);
+app.route('/api/' + API_VERSION + '/users-details').get(getAllUsersDetails);
 
 app.use('/api/' + API_VERSION + '/user-role', validateJwtRequest);
 app.route('/api/' + API_VERSION + '/user-role').get(getUserRole);
