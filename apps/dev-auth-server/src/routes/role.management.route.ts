@@ -9,7 +9,8 @@ import {
   getUserRoles,
   deleteRole,
   addRole,
-  getUsersDetails
+  getUsersDetails,
+  verifyUserExists
 } from '../util/roles_management';
 
 function verifyRoleRead(res: any) {
@@ -178,6 +179,88 @@ export async function getAllUsersDetails(req: Request, res: any) {
   } catch (err) {
     res.status(401).json({
       status: 401,
+      message: err.message
+    });
+    console.log(moment().format(), err.message);
+  }
+}
+
+export async function putUserDetails(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    let userRoles: string[] = [];
+    const username = req.body.username;
+
+    try {
+      verifyUserExists(username);
+    } catch(err) {
+      res.status(404).json({
+        status: 404,
+        message: err.message
+      });
+      return;
+    }
+    console.log('[Dev - No Action]', req.body)
+
+    const modifiedBy = res.user.username;
+
+    const result = {
+      username,
+      keyValues: req.body.keyValues
+    };
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(401).json({
+      status: 403,
+      message: err.message
+    });
+    console.log(moment().format(), err.message);
+  }
+}
+
+export async function getUserDetails(req: Request, res: any) {
+  try {
+    verifyRoleAdmin(res);
+    let userDetails: any = {};
+    const username = req.query.username;
+
+    try {
+      verifyUserExists(username);
+    } catch(err) {
+      res.status(404).json({
+        status: 404,
+        message: err.message
+      });
+      return;
+    }
+
+    const dummyUserDetails = {
+      columns: [
+        {
+          column_name: 'LAST_NAME',
+          value: 'Test'
+        },
+        {
+          column_name: 'FIRST_NAME',
+          value: 'Testing'
+        },
+        {
+          column_name: 'EMAIL_ADDRESS',
+          value: 'test@testing.com'
+        }
+      ]
+    }
+
+    const result = {
+      username,
+      columns: dummyUserDetails.columns
+    };
+
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(401).json({
+      status: 403,
       message: err.message
     });
     console.log(moment().format(), err.message);

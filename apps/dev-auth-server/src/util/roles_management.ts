@@ -113,6 +113,17 @@ export function deleteRole(userRoles: string[], targetRole: any, applicationName
   }
 }
 
+export function verifyUserExists(username: string) {
+  // For dev use
+  for (let user of authConfig.devUsers) {
+    // console.log(user);
+    if (user.username === username) {
+      return;
+    }
+  }
+  throw new Error('No such user');
+}
+
 export async function getUsersDetails(applicationName: string) {
  // Dev Mockup
  const userDetails = [];
