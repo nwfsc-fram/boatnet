@@ -1,32 +1,25 @@
 openapi: 3.0.1
 info:
-  title: Auth Server [DEV ONLY]
+  title: Auth Server [Dev Only]
   description: Auth server for boatnet.
   version: 1.0.0
 servers:
   - url: /api/v1
 tags:
-  - name: login
-    description: Login
-  - name: pubkey
-    description: Get RSA public key
-  - name: users
-    description: Get All Users
-  - name: roles
-    description: Get All Roles
-  - name: user
+  - name: Login
+    description: Login Routines
+  - name: User Info
+    description: Get User Info + Details
+  - name: User Management
     description: User Management
-  - name: user-role
-    description: User Role Management
-  - name: user-role-status
-    description: User Role Enable/ Disable Management
-  - name: test-auth
-    description: For testing JWT authorization
+  - name: Roles
+    description: Roles Management
+
 paths:
   /login:
     post:
       tags:
-        - login
+        - Login
       summary: Perform login to get JWT token
       operationId: postLogin
       requestBody:
@@ -81,7 +74,7 @@ paths:
   /pubkey:
     get:
       tags:
-        - pubkey
+        - Login
       summary: Get RSA key for JWT validation
       description: Returns public RSA key
       operationId: getPubkey
@@ -101,10 +94,42 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - users
+        - User Info
       summary: Get Users (Roles Read Access)
       description: Get application users
       operationId: getUsers
+      parameters:
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'BOATNET_OBSERVER'
+          description: Application Name
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /users-details:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Info
+      summary: Get All User Details (Roles Read Access)
+      description: Get application users details
+      operationId: getUsersDetails
       parameters:
         - in: query
           name: applicationName
@@ -133,9 +158,9 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - roles
-      summary: Get Roles (Roles Read Access)
-      description: Get application roles
+        - Roles
+      summary: Get All Roles (Roles Read Access)
+      description: Get all application roles
       operationId: getRoles
       parameters:
         - in: query
@@ -168,7 +193,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user
+        - User Management
       summary: Add New User (Roles Admin)
       description: Create a boatnet user
       operationId: postUser
@@ -205,7 +230,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user
+        - User Management
       summary: Delete User (Roles Admin)
       description: Delete a boatnet user from one or all applications
       operationId: delUser
@@ -256,8 +281,9 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
-      summary: Get a User's Roles (Roles Admin)
+        - Roles
+        - User Info
+      summary: Get a User's Roles (Roles Read Access)
       description: Get roles for existing user
       operationId: getUserRole
       parameters:
@@ -308,7 +334,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
+        - Roles
       summary: Add New User Role (Roles Admin)
       description: Add a role to existing user
       operationId: postUserRole
@@ -350,7 +376,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
+        - Roles
       summary: Delete User Role(Roles Admin)
       description: Remove a role from existing user
       operationId: delUserRole
@@ -410,7 +436,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role-status
+        - Roles
       summary: Enable or Disable User Role (Roles Admin)
       description: Enable/disable role of existing user
       operationId: postUserRoleStatus
@@ -452,7 +478,7 @@ paths:
   /test-auth:
     post:
       tags:
-        - test-auth
+        - Login
       summary: Checks JWT token validity
       description: Check JWT auth
       operationId: postTestAuth
@@ -491,7 +517,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - test-auth
+        - Login
       summary: Check JWT token validity - Bearer Auth
       description: Check JWT auth
       operationId: getTestAuth2
