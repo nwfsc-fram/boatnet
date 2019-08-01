@@ -237,10 +237,10 @@ export async function deleteUserRole(req: Request, res: any) {
     verifyRoleAdmin(res);
 
     let userRoles: string[] = [];
-    const targetUsername = req.body.username;
-    const targetRole = req.body.role;
-    const applicationName = req.body.applicationName
-      ? req.body.applicationName
+    const targetUsername = req.query.username;
+    const targetRole = req.query.role;
+    const applicationName = req.query.applicationName
+      ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 
     try {

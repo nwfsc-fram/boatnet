@@ -23,7 +23,7 @@ export async function testauth(req: Request, res: any) {
     res.status(200).json(result);
   } catch(err) {
     res.status(401).json({
-      status: 403,
+      status: 401,
       message: err.message
     })
     console.log(moment().format(), err.message)
