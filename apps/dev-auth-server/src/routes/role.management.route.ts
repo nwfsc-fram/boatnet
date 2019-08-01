@@ -8,7 +8,8 @@ import {
   checkRolesAdmin,
   getUserRoles,
   deleteRole,
-  addRole
+  addRole,
+  getUsersDetails
 } from '../util/roles_management';
 
 function verifyRoleRead(res: any) {
@@ -149,6 +150,40 @@ export async function deleteUser(req: Request, res: any) {
   }
 }
 
+
+export async function getAllUsersDetails(req: Request, res: any) {
+  try {
+    console.log(moment().format(), req.method, req.originalUrl, req.ip);
+    verifyRoleRead(res);
+
+    const applicationName = req.query
+      ? req.query.applicationName
+      : DEFAULT_APPLICATION_NAME;
+
+    try {
+      const usersResult = await getUsersDetails(applicationName);
+      const result = {
+        applicationName,
+        users: usersResult.users
+      };
+
+      res.status(200).json(result);
+    } catch (err) {
+      res.status(404).json({
+        status: 404,
+        message: err.message
+      });
+      return;
+    }
+  } catch (err) {
+    res.status(401).json({
+      status: 401,
+      message: err.message
+    });
+    console.log(moment().format(), err.message);
+  }
+}
+
 export async function getUserRole(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
@@ -237,10 +272,10 @@ export async function deleteUserRole(req: Request, res: any) {
     verifyRoleAdmin(res);
 
     let userRoles: string[] = [];
-    const targetUsername = req.body.username;
-    const targetRole = req.body.role;
-    const applicationName = req.body.applicationName
-      ? req.body.applicationName
+    const targetUsername = req.query.username;
+    const targetRole = req.query.role;
+    const applicationName = req.query.applicationName
+      ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 
     try {

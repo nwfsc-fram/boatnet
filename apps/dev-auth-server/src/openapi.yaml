@@ -1,32 +1,25 @@
 openapi: 3.0.1
 info:
-  title: Dev Auth Server
-  description: This is a development auth server for boatnet.
+  title: Auth Server [Dev Only]
+  description: Auth server for boatnet.
   version: 1.0.0
 servers:
   - url: /api/v1
 tags:
-  - name: login
-    description: Login [Dev Only]
-  - name: pubkey
-    description: Get RSA public key [Dev Only]
-  - name: users
-    description: Get All Users [Dev Only]
-  - name: roles
-    description: Get All Roles [Dev Only]
-  - name: user
-    description: User Management [Dev Only]
-  - name: user-role
-    description: User Role Management [Dev Only]
-  - name: user-role-status
-    description: User Role Enable/ Disable Management [Dev Only]
-  - name: test-auth
-    description: For testing JWT authorization [Dev Only]
+  - name: Login
+    description: Login Routines
+  - name: User Info
+    description: Get User Info + Details
+  - name: User Management
+    description: User Management
+  - name: Roles
+    description: Roles Management
+
 paths:
   /login:
     post:
       tags:
-        - login
+        - Login
       summary: Perform login to get JWT token
       operationId: postLogin
       requestBody:
@@ -81,7 +74,7 @@ paths:
   /pubkey:
     get:
       tags:
-        - pubkey
+        - Login
       summary: Get RSA key for JWT validation
       description: Returns public RSA key
       operationId: getPubkey
@@ -101,7 +94,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - users
+        - User Info
       summary: Get Users (Roles Read Access)
       description: Get application users
       operationId: getUsers
@@ -122,8 +115,69 @@ paths:
                 properties:
                   users:
                     type: array
-              example:
-                users: ['john.doe', 'seabass.mcgillicutty']
+                    items:
+                      type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+  /users-details:
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Info
+      summary: Get All User Details (Roles Read Access)
+      description: Get application users details
+      operationId: getUsersDetails
+      parameters:
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'BOATNET_OBSERVER'
+          description: Application Name
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  applicationName:
+                    type: string
+                    example: 'BOATNET_OBSERVER'
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: string
+                        first_name:
+                          type: string
+                        last_name:
+                          type: string
+                        email_address:
+                          type: string
+                        phone:
+                          type: string
+                        org:
+                          type: string
+                        division:
+                          type: string
+
+                    example:
+                      user_id: 'seabass.mcgillicutty'
+                      first_name: 'Seabass'
+                      last_name: 'McGillicutty'
+                      email_address: 'test@test.com'
+                      phone: '123-456-7890'
+                      org: null
+                      division: 'FRAM'
+
+
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
@@ -133,9 +187,9 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - roles
-      summary: Get Roles (Roles Read Access)
-      description: Get application roles
+        - Roles
+      summary: Get All Roles (Roles Read Access)
+      description: Get all application roles
       operationId: getRoles
       parameters:
         - in: query
@@ -154,6 +208,8 @@ paths:
                 properties:
                   users:
                     type: array
+                    items:
+                      type: string
               example:
                 roles: ['observer', 'debriefer', 'every-other-role...']
         '401':
@@ -166,7 +222,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user
+        - User Management
       summary: Add New User (Roles Admin)
       description: Create a boatnet user
       operationId: postUser
@@ -187,6 +243,8 @@ paths:
                 properties:
                   username:
                     type: string
+                  userId:
+                    type: number
               example:
                 username: 'seabass.mcgillicutty'
         '401':
@@ -201,22 +259,26 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user
+        - User Management
       summary: Delete User (Roles Admin)
-      description: Delete a boatnet user
+      description: Delete a boatnet user from one or all applications
       operationId: delUser
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username to delete
+          example: 'jane.doe'
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+          required: false
+          description: Remove access to one specific application (all roles) or 'ALL' to remove user entirely
+          example: 'ALL'
 
-      requestBody:
-        description: Username to delete
-        content:
-          application/json:
-            schema:
-              schema:
-              $ref: '#/components/schemas/DelUser'
-            example:
-              username: 'jane.doe'
-              applicationName: 'BOATNET_OBSERVER'
-        required: true
       responses:
         '200':
           description: User Deleted
@@ -229,9 +291,12 @@ paths:
                     type: string
                   applicationName:
                     type: string
+                  result:
+                    type: string
               example:
                 username: 'seabass.mcgillicutty'
                 applicationName: 'BOATNET_OBSERVER'
+                result: 'User removed from BOATNET_OBSERVER application(s).'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         default:
@@ -245,10 +310,11 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
-      summary: Get a User's Roles (Roles Admin)
-      description: Add a role to existing user
-      operationId: postUserRole
+        - Roles
+        - User Info
+      summary: Get a User's Roles (Roles Read Access)
+      description: Get roles for existing user
+      operationId: getUserRole
       parameters:
         - in: query
           name: username
@@ -256,6 +322,7 @@ paths:
           required: true
           schema:
             type: string
+          example: 'jane.doe'
         - in: query
           name: applicationName
           schema:
@@ -276,6 +343,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
               example:
                 username: 'seabass.mcgillicutty'
                 roles: ['admin', 'captain']
@@ -294,7 +363,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
+        - Roles
       summary: Add New User Role (Roles Admin)
       description: Add a role to existing user
       operationId: postUserRole
@@ -319,6 +388,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
               example:
                 username: 'seabass.mcgillicutty'
                 roles: ['admin', 'captain']
@@ -334,18 +405,34 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role
+        - Roles
       summary: Delete User Role(Roles Admin)
       description: Remove a role from existing user
       operationId: delUserRole
-
-      requestBody:
-        description: User + new Role info
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddUserRole'
-        required: true
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username to delete
+        - in: query
+          name: role
+          schema:
+            type: string
+          required: true
+          description: Role to delete
+        - in: query
+          name: applicationName
+          schema:
+            type: string
+            default: 'BOATNET_OBSERVER'
+          required: false
+          description: Application name to remove role from
+          example:
+            username: 'jane.doe'
+            role: 'captain'
+            applicationName: 'BOATNET_OBSERVER'
       responses:
         '200':
           description: Role Deleted
@@ -358,6 +445,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
                   applicationName:
                     type: string
               example:
@@ -376,10 +465,10 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - user-role-status
+        - Roles
       summary: Enable or Disable User Role (Roles Admin)
       description: Enable/disable role of existing user
-      operationId: postUserRole
+      operationId: postUserRoleStatus
       requestBody:
         description: User, Role, enable flag
         content:
@@ -399,6 +488,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
                   applicationName:
                     type: string
               example:
@@ -416,7 +507,7 @@ paths:
   /test-auth:
     post:
       tags:
-        - test-auth
+        - Login
       summary: Checks JWT token validity
       description: Check JWT auth
       operationId: postTestAuth
@@ -444,6 +535,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
               example:
                 user: 'test'
                 roles: ['test']
@@ -453,7 +546,7 @@ paths:
       security:
         - bearerAuth: []
       tags:
-        - test-auth
+        - Login
       summary: Check JWT token validity - Bearer Auth
       description: Check JWT auth
       operationId: getTestAuth2
@@ -469,6 +562,8 @@ paths:
                     type: string
                   roles:
                     type: array
+                    items:
+                      type: string
               example:
                 user: 'test'
                 roles: ['test']
@@ -522,8 +617,6 @@ components:
         - firstName
         - emailAddress
       properties:
-        applicationName:
-          type: string
         username:
           type: string
         lastName:
@@ -535,7 +628,6 @@ components:
         comment:
           type: string
       example:
-        applicationName: 'BOATNET_OBSERVER'
         username: 'jane.doe'
         lastName: 'Doe'
         firstName: 'Jane'
@@ -556,17 +648,6 @@ components:
       example:
         username: 'jane.doe'
         role: 'captain'
-    DelUser:
-      type: object
-      required:
-        - username
-      properties:
-        applicationName:
-          type: string
-        username:
-          type: string
-      example:
-        username: 'jane.doe'
 
     UserRoleStatus:
       type: object
@@ -635,7 +716,7 @@ components:
                 message: 'Insufficient role privileges'
               summary: 'User does not have required role'
     NotFoundError:
-      description: Access token is missing or invalid
+      description: No data found
       content:
         application/json:
           schema:
@@ -648,4 +729,4 @@ components:
                 type: string
           example:
             status: 404
-            message: 'Not FOund'
+            message: 'Not Found'
