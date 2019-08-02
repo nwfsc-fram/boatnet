@@ -123,6 +123,11 @@
 
             </div>
 
+            <div>
+              <q-input v-model="newFieldName" label="New Field" ></q-input>
+              <q-btn color="primary" label="Add Field" @click="addField"></q-btn>
+            </div>
+
           <q-btn label="update" color="red" style="float: right; margin: 15px" @click="updateDoc"></q-btn>
           <q-btn label="cancel" color="blue" style="float: right; margin: 15px 0" @click="editLookup = false"></q-btn>
         </q-card-section>
@@ -179,6 +184,7 @@ export default class About extends Vue {
   private editLookup: boolean = false;
   private deleteConfirm: boolean = false;
   private newDocType: boolean = false;
+  private newFieldName: string = '';
 
   constructor() {
     super();
@@ -411,6 +417,11 @@ export default class About extends Vue {
     this.docType = '';
     this.newDocType = true;
     this.getNewLookupVal();
+  }
+
+  private addField() {
+    Vue.set(this.selectedDoc, this.newFieldName, '');
+    this.newFieldName = '';
   }
 
   private created() {
