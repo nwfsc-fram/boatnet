@@ -169,13 +169,14 @@ paths:
                           type: string
 
                     example:
-                      user_id: 'seabass.mcgillicutty'
-                      first_name: 'Seabass'
-                      last_name: 'McGillicutty'
-                      email_address: 'test@test.com'
-                      phone: '123-456-7890'
-                      org: null
-                      division: 'FRAM'
+                      -
+                        user_id: 'seabass.mcgillicutty'
+                        first_name: 'Seabass'
+                        last_name: 'McGillicutty'
+                        email_address: 'test@test.com'
+                        phone: '123-456-7890'
+                        org: null
+                        division: 'FRAM'
 
 
         '401':
@@ -504,6 +505,92 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /user-details:
+    put:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Management
+      summary: Update User Details (Roles Admin)
+      description: Update a user's details, either org, phone, or email_address
+      operationId: postUserDetails
+      requestBody:
+        description: Updated User info
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUser'
+        required: true
+      responses:
+        '200':
+          description: User Updated
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                  keyValues:
+                    type: array
+                    items:
+                      type: object
+              example:
+                username: 'seabass.mcgillicutty'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        default:
+          description: Unexpected Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      security:
+        - bearerAuth: []
+      tags:
+        - User Info
+      summary: Get Single User Details (Roles Read Access)
+      description: Get application users details
+      operationId: getUserDetails
+      parameters:
+        - in: query
+          name: username
+          schema:
+            type: string
+          required: true
+          description: Username
+      responses:
+        '200':
+          description: User Details [TBD]
+          content:
+            application/json:
+              schema:
+                type: 'object'
+                properties:
+                  username:
+                    type: string
+                    example: 'seabass.mcgillicutty'
+                  columns:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        column_name:
+                          type: string
+                        value:
+                          type: string
+
+
+                    example:
+                      -
+                        column_name: 'LAST_NAME'
+                        value: 'McGillicutty'
+
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
   /test-auth:
     post:
       tags:
@@ -648,7 +735,28 @@ components:
       example:
         username: 'jane.doe'
         role: 'captain'
-
+    UpdateUser:
+      type: object
+      required:
+        - username
+        - keyValues
+      properties:
+        username:
+          type: string
+        keyValues:
+          type: object
+          properties:
+            org:
+              type: string
+            phone:
+              type: string
+            email_address:
+              type: string
+      example:
+        username: 'jane.doe'
+        keyValues:
+          phone: '123-123-1234'
+          org: 'FRAM'
     UserRoleStatus:
       type: object
       required:
