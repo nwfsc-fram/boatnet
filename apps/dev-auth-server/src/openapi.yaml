@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
-  title: Auth Server [Dev Only]
+  title: Auth Server [DEV ONLY]
   description: Auth server for boatnet.
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: /api/v1
 tags:
@@ -276,6 +276,7 @@ paths:
           name: applicationName
           schema:
             type: string
+            default: 'ALL'
           required: false
           description: Remove access to one specific application (all roles) or 'ALL' to remove user entirely
           example: 'ALL'
@@ -728,6 +729,7 @@ components:
       properties:
         applicationName:
           type: string
+          default: 'BOATNET_OBSERVER'
         username:
           type: string
         role:
@@ -766,6 +768,7 @@ components:
       properties:
         applicationName:
           type: string
+          default: 'BOATNET_OBSERVER'
         username:
           type: string
         role:
