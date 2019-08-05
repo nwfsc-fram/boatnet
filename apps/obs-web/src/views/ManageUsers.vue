@@ -25,12 +25,12 @@
             <q-item v-for="(user, i) of filteredUsers" :key="i">
                 <q-item-section @click="userDetails(user)">
                     <q-item-label>
-                        <strong>{{ user.firstName }} {{ user.lastName }}
-                        <div style="border-radius: 5px; background-color: blue; color: white; display: inline; padding: 2px 4px;">LINKED</div>
-                        &nbsp;
-                        <div style="border-radius: 5px; background-color: red; color: white; display: inline; padding: 2px 4px;">APEX</div>
-                        &nbsp;
-                        <div class="bg-primary text-white" style="border-radius: 5px; display: inline; padding: 2px 4px;">BOATNET</div>
+                        <strong>{{ user.firstName }} {{ user.lastName }} {{ user.apexUserAdminUserName }}
+                        <div v-if="user._id" class="bg-primary text-white" style="border-radius: 5px; display: inline; padding: 2px 4px;">BOATNET</div>
+
+                        <div v-if="user.apexUserAdminUserName && user._id" style="border-radius: 5px; background-color: blue; color: white; display: inline; margin: 4px ;padding: 2px 4px;">LINKED</div>
+
+                        <div v-if="user.type === 'apexUser'" style="border-radius: 5px; background-color: red; color: white; display: inline; margin: 4px; padding: 2px 4px;">APEX</div>
                         </strong>
                     </q-item-label>
                 </q-item-section>
@@ -50,6 +50,7 @@ import { TripState, PermitState, UserState, GeneralState, AlertState } from '../
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { PersonTypeName } from '@boatnet/bn-models';
 import moment from 'moment';
+import axios from 'axios';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -62,6 +63,7 @@ export default class ManageUsers extends Vue {
     @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
     private filterText: string = '';
+    private users: any[] = [];
 
     private get userOptions() {
         return this.user.users;
@@ -90,12 +92,13 @@ export default class ManageUsers extends Vue {
         }
 
     private get filteredUsers() {
+        console.log(this.users)
         if (this.filterText.length > 0) {
-            return this.user.users.filter( (user: any) =>
+            return this.users.filter( (user: any) =>
                 user.firstName.toLowerCase().includes( this.filterText.toLowerCase()) || user.lastName.toLowerCase().includes( this.filterText.toLowerCase() )
                 );
         } else {
-            return this.user.users;
+            return this.users;
             }
     }
 
@@ -136,11 +139,11 @@ export default class ManageUsers extends Vue {
         try {
             const users = await masterDB.viewWithDocs<any>(
                 'obs-web',
-                'all_persons',
+                'all_active_persons',
                 queryOptions
                 );
 
-            this.user.users = users.rows.map( (user) => user.doc );
+            this.users = users.rows.map( (user) => user.doc );
 
 
         } catch (err) {
@@ -148,8 +151,26 @@ export default class ManageUsers extends Vue {
         }
     }
 
+    private async getApexUsers() {
+        axios.get('https://localhost:9000/api/v1/users-details', {
+        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: "VESSELS"}
+        })
+        .then((response) => {
+            for (let user of response.data.users) {
+                user.apexUserAdminUserName = user.user_id;
+                user.firstName = user.first_name;
+                user.lastName = user.last_name;
+                user.workEmail = user.email_address;
+                user.workPhone = user.phone;
+                user.type = 'apexUser';
+                console.log(user)
+                this.users.push(user);
+            }
+        });
+        }
+
     private created() {
-        this.getUsers();
+        this.getUsers().then(() => {this.getApexUsers();});
     }
 
 }

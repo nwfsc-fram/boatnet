@@ -179,6 +179,7 @@ import { GeneralState, UserState, VesselState } from '../_store/types/types';
 import { Vessel, UsState, PersonTypeName, Person } from '@boatnet/bn-models';
 
 import moment from 'moment';
+import axios from 'axios';
 
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -214,7 +215,7 @@ export default class UserDetails extends Vue {
     {label: 'app', value: 'app', icon: 'smartphone'}
     ];
 
-    private roles = ['Captain', 'Observer', 'Staff', 'Provider', 'Permit Owner'];
+    private roles: any[] = [];
 
     constructor() {
         super();
@@ -365,6 +366,7 @@ export default class UserDetails extends Vue {
         }
 
     private saveUser() {
+        this.updateUserRoles();
         if (this.user.activeUser!.activeVessel) {
             this.vessel.activeVessel = this.user.activeUser!.activeVessel;
         }
@@ -458,6 +460,49 @@ export default class UserDetails extends Vue {
         } catch (err) {
         this.errorAlert(err);
         }
+    }
+
+    private async getRoles() {
+        axios.get('https://localhost:9000/api/v1/roles', {
+        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: "BOATNET_OBSERVER"}
+        })
+        .then((response) => {
+            console.log(response);
+            this.roles = response.data.roles.map( (role: any) => role );
+        });
+    }
+
+    private async getUserRoles() {
+        axios.get('https://localhost:9000/api/v1/user-role', {
+        params: {token: authService.getCurrentUser()!.jwtToken, username: this.user.activeUser!.apexUserAdminUserName ,applicationName: "BOATNET_OBSERVER"}
+        })
+        .then((response) => {
+            console.log(response);
+            this.applicationRoles = response.data.roles.map( (role: any) => role);
+        });
+    }
+
+    private async updateUserRoles() {
+        for (const role of this.applicationRoles) {
+            axios.post('https://localhost:9000/api/v1/user-role', {
+                params: {
+                    token: authService.getCurrentUser()!.jwtToken,
+                    username: this.user.activeUser!.apexUserAdminUserName,
+                    applicationName: "BOATNET_OBSERVER",
+                    role: role
+                    }
+            })
+            .then((response) => {
+                console.log(response);
+            })
+        }
+    }
+
+    private created() {
+        console.log(this.user.activeUser);
+        console.log(authService.getCurrentUser());
+        this.getRoles();
+        this.getUserRoles();
     }
 
     private mounted() {
