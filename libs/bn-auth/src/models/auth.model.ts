@@ -16,4 +16,5 @@ export interface BoatnetUser {
   applicationName?: string;
   roles: string[];
   couchDBInfo: CouchDBInfo;
+  jwtToken?: string;
 }

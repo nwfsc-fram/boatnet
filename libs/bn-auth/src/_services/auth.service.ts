@@ -50,8 +50,8 @@ class AuthService {
       const user = userResponse.data;
       const verified: any = jsonwebtoken.verify(user.token, pubKey!); // ! is the non-null assertion operator
       verified.sub = JSON.parse(verified.sub); // parse JSON encoded sub
-      this.storeUserToken(verified);
-      this.setCurrentUser(verified.sub);
+      this.setCurrentUser({...verified.sub,
+        jwtToken: user.token});
       this.setCredentials(username, password);
       return verified.sub;
     } else {
@@ -81,22 +81,19 @@ class AuthService {
   }
 
   public getCurrentUser(): BoatnetUser | null {
-    const isDevMode = process.env.NODE_ENV === 'development';
-
     if (this.currentUser) {
       return this.currentUser;
-    } else if (!isDevMode) {
-      return null; // Do not store user (Production mode)
     }
 
     const userStored = localStorage.getItem('user');
     let user: BoatnetUser | null;
     if (userStored) {
-      console.log('[Auth Service] Dev mode: auto-login using stored user.');
+      console.log('[Auth Service] Auto-login using stored user.');
       user = JSON.parse(userStored);
     } else {
       user = null;
     }
+    this.currentUser = user;
     return user;
   }
 
