@@ -208,6 +208,7 @@ export default class UserDetails extends Vue {
     private ports: any[] = [];
 
     private applicationRoles = [];
+    private storedRoles = [];
 
     private notificationOptions: any[] = [
     {label: 'email', value: 'email', icon: 'mail'},
@@ -479,11 +480,15 @@ export default class UserDetails extends Vue {
         .then((response) => {
             console.log(response);
             this.applicationRoles = response.data.roles.map( (role: any) => role);
+            this.storedRoles = response.data.roles.map( (role: any) => role);
         });
     }
 
     private async updateUserRoles() {
         for (const role of this.applicationRoles) {
+            // compare this.applicationRoles to this.storedRoles...
+            // if role in applicationRoles but not in storedRoles - add it
+            // if role in storedRoles but not in applicationRoles - delete it
             axios.post('https://localhost:9000/api/v1/user-role', {
                 params: {
                     token: authService.getCurrentUser()!.jwtToken,
