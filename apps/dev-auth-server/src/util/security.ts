@@ -14,7 +14,7 @@ export const RSA_CERT = fs.readFileSync('src/keys/temp-cert.pem');
 export const RSA_PRIVATE_KEY = fs.readFileSync('src/keys/temp-priv-key.pem');
 export const RSA_PUBLIC_KEY = fs.readFileSync('src/keys/temp-pub-key.pem');
 
-const SESSION_DURATION = 7200;
+const SESSION_DURATION = '1d';
 
 export async function createSessionToken(userInfo: any) {
   return signJwt({}, RSA_PRIVATE_KEY, {
