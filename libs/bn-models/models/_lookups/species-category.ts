@@ -6,7 +6,7 @@ import { Taxonomy } from './taxonomy';
 export const SpeciesCategoryTypeName = 'species-category';
 
 // Source - OBSPROD.SPECIES_SUB_CATEGORY
-declare type SpeciesSubCategory = {
+declare interface SpeciesSubCategory {
   name: string;
   taxonomy: Taxonomy;
 }
@@ -14,7 +14,7 @@ declare type SpeciesSubCategory = {
 // Source - OBSPROD.SPECIES_CATEGORY
 export interface SpeciesCategory extends Base {
   description?: string;
-  taxonomy?: Taxonomy;  // Beth to track down
+  taxonomy?: Taxonomy; // Beth to track down
   subCategories?: SpeciesSubCategory[]; // Beth to track down
 
   legacy?: {
