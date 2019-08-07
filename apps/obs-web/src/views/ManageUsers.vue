@@ -64,6 +64,7 @@ export default class ManageUsers extends Vue {
 
     private filterText: string = '';
     private users: any[] = [];
+    private userNames: any[] = [];
 
     private get userOptions() {
         return this.user.users;
@@ -84,7 +85,8 @@ export default class ManageUsers extends Vue {
             const newUser = {
                 type: PersonTypeName,
                 createdBy: authService.getCurrentUser()!.username,
-                createdDate: moment().format()
+                createdDate: moment().format(),
+                apexUserAdminUserName: ''
             };
             this.user.activeUser = newUser;
             this.user.newUser = true;
@@ -92,13 +94,15 @@ export default class ManageUsers extends Vue {
         }
 
     private get filteredUsers() {
-        console.log(this.users)
         if (this.filterText.length > 0) {
-            return this.users.filter( (user: any) =>
-                user.firstName.toLowerCase().includes( this.filterText.toLowerCase()) || user.lastName.toLowerCase().includes( this.filterText.toLowerCase() )
-                );
+            return this.user.users.filter( (user: any) => {
+                return user.firstName ? user.firstName.toLowerCase().includes( this.filterText.toLowerCase()) : false ||
+                user.lastName ? user.lastName.toLowerCase().includes( this.filterText.toLowerCase()) : false ||
+                user.apexUserAdminUserName ? user.apexUserAdminUserName.includes(this.filterText.toLowerCase()) : false;
+                }
+            );
         } else {
-            return this.users;
+            return this.user.users;
             }
     }
 
@@ -128,9 +132,9 @@ export default class ManageUsers extends Vue {
 //   }
 
     private async getUsers() {
+        this.user.users = [];
         const masterDB: Client<any> = couchService.masterDB;
         const queryOptions: ListOptions = {
-
           start_key: '',
           inclusive_end: true,
           descending: false
@@ -143,8 +147,8 @@ export default class ManageUsers extends Vue {
                 queryOptions
                 );
 
-            this.users = users.rows.map( (user) => user.doc );
-
+            this.user.users = users.rows.map( (user) => user.doc );
+            this.userNames = users.rows.map( (user) => user.doc.apexUserAdminUserName );
 
         } catch (err) {
             this.errorAlert(err);
@@ -153,24 +157,33 @@ export default class ManageUsers extends Vue {
 
     private async getApexUsers() {
         axios.get('https://localhost:9000/api/v1/users-details', {
-        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: "VESSELS"}
+        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'VESSELS'}
         })
         .then((response) => {
-            for (let user of response.data.users) {
-                user.apexUserAdminUserName = user.user_id;
-                user.firstName = user.first_name;
-                user.lastName = user.last_name;
-                user.workEmail = user.email_address;
-                user.workPhone = user.phone;
-                user.type = 'apexUser';
-                console.log(user)
-                this.users.push(user);
+            for (const user of response.data.users) {
+                if (this.userNames.indexOf(user.user_id) === -1) {
+                    user.apexUserAdminUserName = user.user_id;
+                    delete user.user_id;
+                    user.firstName = user.first_name;
+                    delete user.first_name;
+                    user.lastName = user.last_name;
+                    delete user.last_name;
+                    user.workEmail = user.email_address;
+                    delete user.email_address;
+                    user.workPhone = user.phone;
+                    delete user.phone;
+                    user.type = 'apexUser';
+                    console.log(user);
+                    this.user.users.push(user);
+                }
             }
         });
         }
 
     private created() {
-        this.getUsers().then(() => {this.getApexUsers();});
+        this.getUsers().then(() => {
+            this.getApexUsers();
+            });
     }
 
 }

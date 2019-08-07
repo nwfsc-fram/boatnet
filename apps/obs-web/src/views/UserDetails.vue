@@ -15,7 +15,14 @@
                     <q-input class="col-md q-pa-sm wide-field" disabled readonly outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
                 </div>
 
-                <q-select class="q-pa-sm" outlined v-model="applicationRoles" label="Roles" multiple :options="roles">
+                <q-select
+                    v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])"
+                    class="q-pa-sm"
+                    outlined
+                    v-model="applicationRoles"
+                    label="Roles (staff only)"
+                    multiple :options="roles"
+                    >
                     <template v-slot:selected-item="scope">
                         <q-chip
                             removable
@@ -210,6 +217,8 @@ export default class UserDetails extends Vue {
     private applicationRoles = [];
     private storedRoles = [];
 
+    private userRoles: string[] = [];
+
     private notificationOptions: any[] = [
     {label: 'email', value: 'email', icon: 'mail'},
     {label: 'sms/text', value: 'sms/text', icon: 'sms'},
@@ -220,6 +229,15 @@ export default class UserDetails extends Vue {
 
     constructor() {
         super();
+    }
+
+    private isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     private portsFilterFn(val: string, update: any, abort: any) {
@@ -367,25 +385,35 @@ export default class UserDetails extends Vue {
         }
 
     private saveUser() {
-        this.updateUserRoles();
         if (this.user.activeUser!.activeVessel) {
             this.vessel.activeVessel = this.user.activeUser!.activeVessel;
         }
         if (this.user.activeUser!.workEmail !== '' && this.user.activeUser!.cellPhone !== '') {
             if (this.user.newUser) {
                 console.log('new user');
+                console.log(this.user.newUser);
+                this.user.newUser = false;
+                if (this.user.activeUser!.type === 'apexUser') {
+                    this.user.activeUser!.type = 'person';
+                }
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.post(this.user.activeUser).then(
-                        this.navigateBack()
+                        setTimeout( () => {
+                            this.errorAlert('User Config Saved'),
+                            this.$router.push({path: '/'});
+                        } , 500)
                     );
                 } else {
-                    pouchService.db.post(pouchService.userDBName, this.user.activeUser).then(
-                        this.errorAlert('User Config Saved'),
-                        this.$router.push({path: '/'})
+                    couchService.masterDB.post(this.user.activeUser).then(
+                        setTimeout( () => {
+                            this.errorAlert('User Config Saved'),
+                            this.$router.push({path: '/'});
+                        } , 500)
                     );
                 }
             } else {
                 console.log('existing user');
+                this.updateUserRoles();
                 this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
                 this.user.activeUser!.updatedDate = moment().format();
                 if (this.$route.name === 'User Details') {
@@ -397,7 +425,13 @@ export default class UserDetails extends Vue {
                     this.navigateBack()
                     );
                 } else {
-                    pouchService.db.put(pouchService.userDBName, this.user.activeUser).then(
+                    couchService.masterDB.put(
+                        this.user.activeUser!._id,
+                        this.user.activeUser!,
+                        this.user.activeUser!._rev
+                    )
+                    // pouchService.db.put(pouchService.userDBName, this.user.activeUser)
+                    .then(
                         this.errorAlert('User Config Saved'),
                         this.$router.push({path: '/'})
                     );
@@ -465,7 +499,10 @@ export default class UserDetails extends Vue {
 
     private async getRoles() {
         axios.get('https://localhost:9000/api/v1/roles', {
-        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: "BOATNET_OBSERVER"}
+        params: {
+            token: authService.getCurrentUser()!.jwtToken,
+            applicationName: 'BOATNET_OBSERVER'
+            }
         })
         .then((response) => {
             console.log(response);
@@ -475,11 +512,16 @@ export default class UserDetails extends Vue {
 
     private async getUserRoles() {
         axios.get('https://localhost:9000/api/v1/user-role', {
-        params: {token: authService.getCurrentUser()!.jwtToken, username: this.user.activeUser!.apexUserAdminUserName ,applicationName: "BOATNET_OBSERVER"}
+        params: {
+            token: authService.getCurrentUser()!.jwtToken,
+            username: this.user.activeUser!.apexUserAdminUserName,
+            applicationName: 'BOATNET_OBSERVER'
+            }
         })
         .then((response) => {
             console.log(response);
             this.applicationRoles = response.data.roles.map( (role: any) => role);
+            this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
             this.storedRoles = response.data.roles.map( (role: any) => role);
         });
     }
@@ -487,19 +529,43 @@ export default class UserDetails extends Vue {
     private async updateUserRoles() {
         for (const role of this.applicationRoles) {
             // compare this.applicationRoles to this.storedRoles...
+            if (this.storedRoles.indexOf(role) === -1) {
             // if role in applicationRoles but not in storedRoles - add it
-            // if role in storedRoles but not in applicationRoles - delete it
-            axios.post('https://localhost:9000/api/v1/user-role', {
-                params: {
+                axios.post('https://localhost:9000/api/v1/user-role', {
                     token: authService.getCurrentUser()!.jwtToken,
                     username: this.user.activeUser!.apexUserAdminUserName,
-                    applicationName: "BOATNET_OBSERVER",
-                    role: role
-                    }
-            })
-            .then((response) => {
-                console.log(response);
-            })
+                    applicationName: 'BOATNET_OBSERVER',
+                    role
+                })
+                .then((response) => {
+                    console.log(response);
+                });
+            }
+        }
+
+        for (const role of this.storedRoles) {
+            if (this.applicationRoles.indexOf(role) === -1) {
+                // if role in storedRoles but not in applicationRoles - delete it
+                    const headers: any = {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    };
+
+                    const params: any = {
+                        username: this.user.activeUser!.apexUserAdminUserName,
+                        applicationName: 'BOATNET_OBSERVER',
+                        token: authService.getCurrentUser()!.jwtToken,
+                        role
+                    };
+
+
+                    axios.delete('https://localhost:9000/api/v1/user-role', {
+                        headers, params
+                        })
+                    .then((response) => {
+                    console.log(response);
+                    });
+            }
         }
     }
 
@@ -508,6 +574,9 @@ export default class UserDetails extends Vue {
         console.log(authService.getCurrentUser());
         this.getRoles();
         this.getUserRoles();
+        if (this.user.activeUser && this.user.activeUser.type === 'apexUser') {
+            this.user.newUser = true;
+        }
     }
 
     private mounted() {

@@ -105,7 +105,7 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
-        { path: 'user-config', name: 'User Config', component: UserConfig },
+        { path: '/user-config', name: 'User Config', component: UserConfig },
         {
           path: '/manage-users', name: 'Manage Users', component: ManageUsers,
           beforeEnter: (to, from, next) => {

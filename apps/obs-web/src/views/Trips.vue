@@ -19,7 +19,7 @@
       <q-select
       v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])"
       v-model="vessel.activeVessel"
-      label="Set Active Vessel (staff role only)"
+      label="Set Active Vessel (staff only)"
       dense
       stack-label
       use-input
