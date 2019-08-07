@@ -57,25 +57,49 @@ export default class Home extends Vue {
 
     private async getUserFromUserDB() {
         // get user doc from userDB if exits
-        console.log('getting user from userDB');
+        // console.log('getting user from userDB');
 
+        // try {
+        //     const allDocs = await pouchService.db.allDocs(
+        //         pouchService.userDBName
+        //         );
+
+        //     for (const row of allDocs.rows) {
+        //         if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
+        //             if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
+
+        //                 this.user.newUser = false;
+        //                 this.user.activeUser = row.doc;
+        //                 if (row.doc.activeVessel) {
+        //                   this.vessel.activeVessel = row.doc.activeVessel;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // } catch (err) {
+        //     this.errorAlert(err);
+        // }
+        // get user doc from master-dev if exists
         try {
-            const allDocs = await pouchService.db.allDocs(
-                pouchService.userDBName
-                );
+          const db = couchService.masterDB;
+          const queryOptions = {
+            limit: 1,
+            key: authService.getCurrentUser()!.username,
+            include_docs: true
+            };
 
-            for (const row of allDocs.rows) {
-                if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
-                    if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
+          const userquery = await db.viewWithDocs(
+            'obs-web',
+            'all_active_persons',
+            queryOptions
+          );
 
-                        this.user.newUser = false;
-                        this.user.activeUser = row.doc;
-                        if (row.doc.activeVessel) {
-                          this.vessel.activeVessel = row.doc.activeVessel;
-                        }
-                    }
-                }
-            }
+          console.log(userquery);
+          if (userquery.rows[0]) {
+            this.user.activeUser = userquery.rows[0].doc;
+          }
+          console.log(this.user.activeUser);
+
         } catch (err) {
             this.errorAlert(err);
         }

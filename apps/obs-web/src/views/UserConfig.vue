@@ -12,12 +12,15 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { GeneralState, UserState, VesselState } from '../_store/types/types';
-import { Vessel } from '@boatnet/bn-models';
+import { Vessel, PersonTypeName } from '@boatnet/bn-models';
+
+import moment from 'moment';
 
 // import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 
 @Component
 export default class UserConfig extends Vue {
@@ -25,6 +28,7 @@ export default class UserConfig extends Vue {
     @State('user') private user!: UserState;
     @State('general') private general!: GeneralState;
     @State('vessel') private vessel!: VesselState;
+
 
     @State('alert') private alert!: AlertState;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
@@ -94,8 +98,55 @@ export default class UserConfig extends Vue {
         }
     }
 
+    private async getUser() {
+        const db: Client<any> = couchService.masterDB;
+        const queryOptions = {
+            limit: 1,
+            key: authService.getCurrentUser()!.username,
+            include_docs: true
+        };
+
+        const userquery = await db.viewWithDocs<any>(
+            'obs-web',
+            'all_active_persons',
+            queryOptions
+        );
+
+        if (userquery.rows[0]) {
+            this.user.activeUser = userquery.rows[0].doc;
+        } else {
+            const newUser = {
+                type: PersonTypeName,
+                firstName: '',
+                lastName: '',
+                apexUserAdminUserName: authService.getCurrentUser()!.username,
+                addressLine1: '',
+                addressLine2: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: '',
+                workPhone: '',
+                homePhone: '',
+                cellPhone: '',
+                workEmail: '',
+                homeEmail: '',
+                birthdate: '',
+                activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
+                port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format()
+            };
+
+            Vue.set(this.user, 'activeUser', newUser);
+            this.user.newUser = true;
+        }
+        console.log(this.user.activeUser);
+    }
+
     private created() {
         this.getVessels();
+        this.getUser();
     }
 
 }
