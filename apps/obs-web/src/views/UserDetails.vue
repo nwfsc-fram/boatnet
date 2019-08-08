@@ -190,7 +190,7 @@
                 </q-select> -->
                 <div class="q-pa-sm">
                     <div class="text-h6">Emergency Contacts:</div>
-                    <q-btn v-if="!contactEditing" color="primary" label="add" @click="addEmergencyContact"></q-btn>
+                    <q-btn v-if="!contactEditing" color="primary" label="add" @click="addEmergencyContact" class="q-ma-sm"></q-btn>
                     <q-card v-if="contactEditing">
                         <q-card-section>
                         <span>
@@ -227,33 +227,32 @@
                             </q-card-actions>
                         </q-card-section>
                     </q-card>
-                    <q-list bordered separator style="margin-top: 10px">
-                        <q-item v-for="emergencyContact of user.activeUser.emergencyContacts" :key="user.activeUser.emergencyContacts.indexOf(emergencyContact)">
-                            <q-item-section>
+
+                        <q-card v-for="emergencyContact of user.activeUser.emergencyContacts" :key="user.activeUser.emergencyContacts.indexOf(emergencyContact)">
+                            <q-card-section>
 
                                 <q-item-label class="text-weight-medium">{{ emergencyContact.firstName }} {{ emergencyContact.lastName }}</q-item-label>
                                 <q-item-label class="text-primary" caption>relation: {{ emergencyContact.relation }}</q-item-label>
                                 <q-item-label class="text-primary" caption>phone: {{ emergencyContact.phoneNumber }}</q-item-label>
-                                <span>
 
-                                <q-btn
-                                label="edit"
-                                color="primary"
-                                class="q-ma-sm"
-                                @click="setEditContact(emergencyContact)"
-                                v-if="!contactEditing"
-                                />
-                                <q-btn
-                                label="delete"
-                                color="red"
-                                class="q-ma-sm"
-                                @click="confirmDelete(emergencyContact)"
-                                v-if="!contactEditing"
-                                />
-                                </span>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
+                                <q-card-actions>
+                                    <q-btn
+                                    label="edit"
+                                    color="primary"
+                                    class="q-ma-sm"
+                                    @click="setEditContact(emergencyContact)"
+                                    v-if="!contactEditing"
+                                    />
+                                    <q-btn
+                                    label="delete"
+                                    color="red"
+                                    class="q-ma-sm"
+                                    @click="confirmDelete(emergencyContact)"
+                                    v-if="!contactEditing"
+                                    />
+                                </q-card-actions>
+                            </q-card-section>
+                        </q-card>
 
                 </div>
 
@@ -262,7 +261,7 @@
             <q-dialog v-model="deleteConfirm">
                 <q-card>
                     <q-card-section>
-                        <div class="text-h6">Are you sure you want to delete this emergency contact?</div>
+                        <div class="text-h6">Are you sure you want to remove {{ contactToDelete.firstName }} {{ contactToDelete.lastName }} from your emergency contacts?</div>
                         <q-card-actions class="float-right">
                             <q-btn color="primary" label="cancel" @click="deleteConfirm = false"></q-btn>
                             <q-btn color="red" label="delete" @click="deleteContact"></q-btn>
