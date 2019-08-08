@@ -1,6 +1,5 @@
 <template>
     <div>
-
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
             {{alert.message}}
             <template v-slot:action>
@@ -12,7 +11,33 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
                     <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" disabled readonly outlined dense v-model="user.activeUser.apexUserAdminUserName" label="User Name"></q-input>
+                    <div v-if="user.activeUser.apexUserAdminUserName && user.activeUser.apexUserAdminUserName !== ''" class="q-ma-sm col-md row">
+                        <q-input
+                        class="col2"
+                        style="width: 80%"
+                        v-model="user.activeUser.apexUserAdminUserName"
+                        disabled
+                        readonly
+                        outlined
+                        dense
+                        label="User Name"
+                        >
+                        </q-input>
+                        <q-btn v-if="$route.name === 'User Details' && user.activeUser._id" class="col" color="red-5" size="sm" flat @click.native="confirmUnlink = true">unlink</q-btn>
+                    </div>
+                    <div v-else class="q-ma-sm" style="width: 100%">
+                        <q-select
+                        outlined
+                        class="wide-field"
+                        dense
+                        label="apex UserAdmin UserName"
+                        v-model="user.activeUser.apexUserAdminUserName"
+                        :option-label="opt => opt.apexUserAdminUserName"
+                        :option-value="opt => opt.apexUserAdminUserName"
+                        emit-value
+                        :options="user.unLinkedApexUsers"
+                        ></q-select>
+                    </div>
                 </div>
 
                 <q-select
@@ -21,7 +46,8 @@
                     outlined
                     v-model="applicationRoles"
                     label="Roles (staff only)"
-                    multiple :options="roles"
+                    multiple
+                    :options="roles"
                     >
                     <template v-slot:selected-item="scope">
                         <q-chip
@@ -118,7 +144,7 @@
 
                 </q-select>
 
-                <q-input class="col-md q-pa-sm wide-field"
+                <!-- <q-input class="col-md q-pa-sm wide-field"
                 outlined
                 dense
                 v-model="user.activeUser.birthdate" label="Birth Date">
@@ -129,8 +155,8 @@
                         </q-popup-proxy>
                         </q-icon>
                     </template>
-                </q-input>
-
+                </q-input> -->
+<!--
                 <q-select
                 class="col-md q-pa-sm"
                 label="Emergency Contacts"
@@ -161,13 +187,107 @@
                             <span>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
                         </q-chip>
                     </template>
-                </q-select>
+                </q-select> -->
+                <div class="q-pa-sm">
+                    <div class="text-h6">Emergency Contacts:</div>
+                    <q-btn v-if="!contactEditing" color="primary" label="add" @click="addEmergencyContact"></q-btn>
+                    <q-card v-if="contactEditing">
+                        <q-card-section>
+                        <span>
+                            <q-input
+                            dense
+                            v-model="editContact.firstName"
+                            label="First Name"
+                            >
+                            </q-input>
+                            <q-input
+                            dense
+                            v-model="editContact.lastName"
+                            label="Last Name"
+                            >
+                            </q-input>
+                        </span>
+                        <span>
+                            <q-input
+                            dense
+                            v-model="editContact.relation"
+                            label="Relation"
+                            >
+                            </q-input>
+                            <q-input
+                            dense
+                            v-model="editContact.phoneNumber"
+                            label="Phone"
+                            >
+                            </q-input>
+                        </span>
+                            <q-card-actions>
+                                <q-btn label="done" color="primary" @click="addContact"></q-btn>
+                                <q-btn v-if="isNewContact" label="cancel" color="red" @click="discardEntry"></q-btn>
+                            </q-card-actions>
+                        </q-card-section>
+                    </q-card>
+                    <q-list bordered separator style="margin-top: 10px">
+                        <q-item v-for="emergencyContact of user.activeUser.emergencyContacts" :key="user.activeUser.emergencyContacts.indexOf(emergencyContact)">
+                            <q-item-section>
+
+                                <q-item-label class="text-weight-medium">{{ emergencyContact.firstName }} {{ emergencyContact.lastName }}</q-item-label>
+                                <q-item-label class="text-primary" caption>relation: {{ emergencyContact.relation }}</q-item-label>
+                                <q-item-label class="text-primary" caption>phone: {{ emergencyContact.phoneNumber }}</q-item-label>
+                                <span>
+
+                                <q-btn
+                                label="edit"
+                                color="primary"
+                                class="q-ma-sm"
+                                @click="setEditContact(emergencyContact)"
+                                v-if="!contactEditing"
+                                />
+                                <q-btn
+                                label="delete"
+                                color="red"
+                                class="q-ma-sm"
+                                @click="confirmDelete(emergencyContact)"
+                                v-if="!contactEditing"
+                                />
+                                </span>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+
+                </div>
 
             </div>
-            <div align="right">
+
+            <q-dialog v-model="deleteConfirm">
+                <q-card>
+                    <q-card-section>
+                        <div class="text-h6">Are you sure you want to delete this emergency contact?</div>
+                        <q-card-actions class="float-right">
+                            <q-btn color="primary" label="cancel" @click="deleteConfirm = false"></q-btn>
+                            <q-btn color="red" label="delete" @click="deleteContact"></q-btn>
+                        </q-card-actions>
+                    </q-card-section>
+                </q-card>
+            </q-dialog>
+
+            <q-dialog v-model="confirmUnlink">
+                <q-card>
+                    <q-card-section>
+                        <div class="text-h6">Are you sure you want to unlink this boatnet account from apexUserAdminUserName: <br>{{ user.activeUser.apexUserAdminUserName }}?</div>
+                        <q-card-actions class="float-right">
+                            <q-btn color="primary" label="cancel" @click="confirmUnlink = false"></q-btn>
+                            <q-btn color="red" label="unlink" @click="unlinkApexUserName"></q-btn>
+                        </q-card-actions>
+                    </q-card-section>
+                </q-card>
+            </q-dialog>
+
+            <div class="q-pa-md  q-gutter-md" align="right">
                 <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
                 <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
             </div>
+
         </div>
         <div v-else>
             no active user
@@ -226,6 +346,13 @@ export default class UserDetails extends Vue {
     ];
 
     private roles: any[] = [];
+    private editContact: any = {};
+    private contactEditing: boolean = false;
+    private deleteConfirm: boolean = false;
+    private contactToDelete: any = {};
+    private isNewContact: boolean = false;
+
+    private confirmUnlink = false;
 
     constructor() {
         super();
@@ -240,30 +367,88 @@ export default class UserDetails extends Vue {
       return false;
     }
 
-    private portsFilterFn(val: string, update: any, abort: any) {
-    update(
-        async () => {
-            try {
-                const db = pouchService.db;
-                const queryOptions = {
-                limit: 5,
-                start_key: val.toLowerCase(),
-                inclusive_end: true,
-                descending: false,
-                include_docs: true
-                };
+    private unlinkApexUserName() {
+        this.user.activeUser!.apexUserAdminUserName = '';
+        this.confirmUnlink = false;
+    }
 
-                const ports = await db.query(
-                    pouchService.lookupsDBName,
-                    'optecs_trawl/all_port_names',
-                    queryOptions
-                    );
-                this.ports = ports.rows.map((row: any) => row.doc);
-            } catch (err) {
-                this.errorAlert(err);
-            }
+    private setEditContact(emergencyContact: any) {
+        Vue.set(this.editContact, 'firstName', emergencyContact.firstName);
+        Vue.set(this.editContact, 'lastName', emergencyContact.lastName);
+        Vue.set(this.editContact, 'relation', emergencyContact.relation);
+        Vue.set(this.editContact, 'phoneNumber', emergencyContact.phoneNumber);
+
+        this.contactEditing = true;
+        this.user.activeUser!.emergencyContacts!.splice(this.user.activeUser!.emergencyContacts!.indexOf(emergencyContact), 1);
+    }
+
+    private addEmergencyContact() {
+        const newContact = {
+            firstName: '',
+            lastName: '',
+            relation: '',
+            phoneNumber: ''
+        };
+
+        Vue.set(this.editContact, 'firstName', '');
+        Vue.set(this.editContact, 'lastName', '');
+        Vue.set(this.editContact, 'relation', '');
+        Vue.set(this.editContact, 'phoneNumber', '');
+
+        this.contactEditing = true;
+        this.isNewContact = true;
+    }
+
+    private addContact() {
+        if (!this.user.activeUser!.emergencyContacts) {
+            this.user.activeUser!.emergencyContacts = [];
         }
-    );
+        this.user.activeUser!.emergencyContacts.unshift(this.editContact);
+        this.editContact = {};
+        this.contactEditing = false;
+    }
+
+    private confirmDelete(emergencyContact: any) {
+        this.contactToDelete = emergencyContact;
+        this.deleteConfirm = true;
+    }
+
+    private deleteContact() {
+        this.user.activeUser!.emergencyContacts!.splice(this.user.activeUser!.emergencyContacts!.indexOf(this.contactToDelete), 1);
+        this.deleteConfirm = false;
+    }
+
+    private discardEntry() {
+        this.editContact = {};
+        this.contactEditing = false;
+        this.isNewContact = false;
+    }
+
+    private portsFilterFn(val: string, update: any, abort: any) {
+
+        update(
+            async () => {
+                try {
+                    const db = pouchService.db;
+                    const queryOptions = {
+                    limit: 5,
+                    start_key: val.toLowerCase(),
+                    inclusive_end: true,
+                    descending: false,
+                    include_docs: true
+                    };
+
+                    const ports = await db.query(
+                        pouchService.lookupsDBName,
+                        'optecs_trawl/all_port_names',
+                        queryOptions
+                        );
+                    this.ports = ports.rows.map((row: any) => row.doc);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        );
     }
 
 
@@ -289,7 +474,7 @@ export default class UserDetails extends Vue {
                 this.contacts = contacts.rows.map((row: any) => row.doc);
 
             } catch (err) {
-                this.errorAlert(err);
+                console.log(err);
             }
         }
     );
@@ -315,7 +500,7 @@ export default class UserDetails extends Vue {
 
               this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
-              this.errorAlert(err);
+              console.log(err);
             }
           });
         }
@@ -380,7 +565,7 @@ export default class UserDetails extends Vue {
 
 
             } catch (err) {
-                this.errorAlert(err);
+                console.log(err);
             }
         }
 
@@ -464,7 +649,7 @@ export default class UserDetails extends Vue {
                 homeEmail: '',
                 birthdate: '',
                 activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
-                port: this.vessel.activeVessel!.homePort ? this.vessel.activeVessel!.homePort : '',
+                port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
                 createdBy: authService.getCurrentUser()!.username,
                 createdDate: moment().format()
             };
@@ -493,7 +678,7 @@ export default class UserDetails extends Vue {
         }
 
         } catch (err) {
-        this.errorAlert(err);
+            console.log(err);
         }
     }
 

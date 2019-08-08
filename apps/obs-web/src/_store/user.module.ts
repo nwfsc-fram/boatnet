@@ -12,7 +12,8 @@ Vue.use(Vuex);
 export const state: UserState = {
   users: [],
   newUser: false,
-  activeUser: undefined
+  activeUser: undefined,
+  unLinkedApexUsers: []
 };
 
 export const user: Module<UserState, RootState> = {

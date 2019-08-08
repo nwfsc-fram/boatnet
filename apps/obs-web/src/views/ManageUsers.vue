@@ -12,7 +12,7 @@
 
             <q-btn color="primary" @click="newUser">New User</q-btn>
 
-        <q-input v-model="filterText" label="Search" style="width: 100%" autofocus>
+        <q-input v-model="filterText" label="Search" style="width: 95%" autofocus>
             <template v-if="filterText">
                 <q-avatar dense icon="clear" @click="filterText = ''"></q-avatar>
             </template>
@@ -132,7 +132,6 @@ export default class ManageUsers extends Vue {
 //   }
 
     private async getUsers() {
-        this.user.users = [];
         const masterDB: Client<any> = couchService.masterDB;
         const queryOptions: ListOptions = {
           start_key: '',
@@ -156,6 +155,7 @@ export default class ManageUsers extends Vue {
     }
 
     private async getApexUsers() {
+        this.user.unLinkedApexUsers = [];
         axios.get('https://localhost:9000/api/v1/users-details', {
         params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'VESSELS'}
         })
@@ -175,12 +175,15 @@ export default class ManageUsers extends Vue {
                     user.type = 'apexUser';
                     console.log(user);
                     this.user.users.push(user);
+                    this.user.unLinkedApexUsers.push(user);
                 }
             }
+            console.log(this.user.unLinkedApexUsers);
         });
         }
 
     private created() {
+        this.user.users = [];
         this.getUsers().then(() => {
             this.getApexUsers();
             });

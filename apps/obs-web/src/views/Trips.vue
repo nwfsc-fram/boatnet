@@ -336,7 +336,7 @@ export default class Trips extends Vue {
                     );
                 this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
-                this.errorAlert(err);
+                console.log(err);
             }
         }
     );
