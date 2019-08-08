@@ -101,7 +101,7 @@ export default class Home extends Vue {
           console.log(this.user.activeUser);
 
         } catch (err) {
-            this.errorAlert(err);
+            console.log(err);
         }
     }
 
@@ -130,7 +130,7 @@ export default class Home extends Vue {
         }
 
         } catch (err) {
-            this.errorAlert(err);
+            console.log(err);
         }
     // axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500' )
     //     .then( (response) => {

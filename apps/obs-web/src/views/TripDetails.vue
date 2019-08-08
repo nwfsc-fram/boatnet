@@ -327,7 +327,7 @@ export default class TripDetails extends Vue {
         );
         this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
       } catch (err) {
-        this.errorAlert(err);
+        console.log(err);
       }
     });
   }
@@ -371,7 +371,7 @@ export default class TripDetails extends Vue {
         );
         this.ports = ports.rows.map((row: any) => row.doc);
       } catch (err) {
-        this.errorAlert(err);
+        console.log(err);
       }
     });
   }
@@ -396,7 +396,7 @@ export default class TripDetails extends Vue {
         this.ports = ports.rows.map((row: any) => row.doc);
         this.ports.unshift({ name: 'SAME AS START' });
       } catch (err) {
-        this.errorAlert(err);
+        console.log(err);
       }
     });
   }
@@ -672,18 +672,20 @@ export default class TripDetails extends Vue {
   }
 
   private async getOtsTargets() {
-    const masterDB: Client<any> = couchService.masterDB;
+    const db = pouchService.db;
+    const queryOptions = {
+      include_docs: true
+    };
     try {
-      const otsTargets = await masterDB.viewWithDocs<any>(
-        'obs-web',
-        'all_ots_targets'
+      const otsTargets = await db.query(
+        pouchService.lookupsDBName,
+        'obs_web/all_ots_targets',
+        queryOptions
       );
-      for (const row of otsTargets.rows) {
-        const target = row.doc;
-        this.otsTargets.push(target);
-      }
+
+      this.otsTargets = otsTargets.rows.map((row: any) => row.value);
     } catch (err) {
-      this.errorAlert(err);
+      console.log(err);
     }
   }
 

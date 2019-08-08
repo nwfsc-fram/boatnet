@@ -1,7 +1,11 @@
 <template>
-
-    <div class="q-pa-md  q-gutter-md">
+    <div v-if="!offline" class="q-pa-md  q-gutter-md">
         <app-user-details></app-user-details>
+    </div>
+    <div v-else class="q-pa-md  q-gutter-md">
+        <div class="text-h6">
+            Network connection not detected - user config disabled.
+        </div>
     </div>
 </template>
 
@@ -42,6 +46,8 @@ export default class UserConfig extends Vue {
         {label: 'app', value: 'app', icon: 'smartphone'}
     ];
 
+    private offline: boolean = false;
+
     constructor() {
         super();
     }
@@ -65,7 +71,7 @@ export default class UserConfig extends Vue {
 
               this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
-              this.errorAlert(err);
+              console.log(err);
             }
           });
         }
@@ -94,7 +100,7 @@ export default class UserConfig extends Vue {
             }
 
         } catch (err) {
-            this.errorAlert(err);
+            console.log(err);
         }
     }
 
@@ -106,45 +112,49 @@ export default class UserConfig extends Vue {
             include_docs: true
         };
 
-        const userquery = await db.viewWithDocs<any>(
+        try {
+            const userquery = await db.viewWithDocs<any>(
             'obs-web',
             'all_active_persons',
             queryOptions
-        );
+            );
 
-        if (userquery.rows[0]) {
-            this.user.activeUser = userquery.rows[0].doc;
-        } else {
-            const newUser = {
-                type: PersonTypeName,
-                firstName: '',
-                lastName: '',
-                apexUserAdminUserName: authService.getCurrentUser()!.username,
-                addressLine1: '',
-                addressLine2: '',
-                city: '',
-                state: '',
-                zipCode: '',
-                country: '',
-                workPhone: '',
-                homePhone: '',
-                cellPhone: '',
-                workEmail: '',
-                homeEmail: '',
-                birthdate: '',
-                activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
-                port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
-                createdBy: authService.getCurrentUser()!.username,
-                createdDate: moment().format()
-            };
+            if (userquery.rows[0]) {
+                this.user.activeUser = userquery.rows[0].doc;
+            } else {
+                const newUser = {
+                    type: PersonTypeName,
+                    firstName: '',
+                    lastName: '',
+                    apexUserAdminUserName: authService.getCurrentUser()!.username,
+                    addressLine1: '',
+                    addressLine2: '',
+                    city: '',
+                    state: '',
+                    zipCode: '',
+                    country: '',
+                    workPhone: '',
+                    homePhone: '',
+                    cellPhone: '',
+                    workEmail: '',
+                    homeEmail: '',
+                    birthdate: '',
+                    activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
+                    port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
+                    createdBy: authService.getCurrentUser()!.username,
+                    createdDate: moment().format()
+                };
 
-            Vue.set(this.user, 'activeUser', newUser);
-            this.user.newUser = true;
+                Vue.set(this.user, 'activeUser', newUser);
+                this.user.newUser = true;
+            }
+        } catch (err) {
+            this.offline = true;
         }
-        console.log(this.user.activeUser);
     }
 
     private created() {
+
         this.getVessels();
         this.getUser();
     }
@@ -171,7 +181,6 @@ export default {
         },
         activeUser: {
             get() {
-                return this.$store.getters.activeUser
             },
             set(value) {
                 this.$store.dispatch('updateActiveUser', value)

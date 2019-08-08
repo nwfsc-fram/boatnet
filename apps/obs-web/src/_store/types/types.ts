@@ -39,6 +39,7 @@ export interface UserState {
   activeUser?: Person;
   users: Person[];
   newUser: boolean;
+  unLinkedApexUsers: any[];
 }
 
 export interface VesselState {
