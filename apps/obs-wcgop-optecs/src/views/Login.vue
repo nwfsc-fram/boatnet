@@ -156,7 +156,7 @@ export default class Login extends Vue {
     if (authService.apiUrl) {
       console.log('Api URL', authService.apiUrl);
     } else {
-      console.log('Api URL not defined.'); // Use dev URL here
+      console.log('Api URL not defined. Auth proxy will be used');
     }
 
   }

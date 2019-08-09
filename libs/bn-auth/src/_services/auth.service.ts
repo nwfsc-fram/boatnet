@@ -75,7 +75,7 @@ class AuthService {
   }
 
   public get apiUrl(): string | undefined {
-    return dbConfig.apiUrl; // If undefined, you'll want to fall back to a hardcoded dev URL
+    return dbConfig.apiUrl; // If undefined, dev auth proxy will kick in -- see vue.config.js
   }
 
   public logout() {
