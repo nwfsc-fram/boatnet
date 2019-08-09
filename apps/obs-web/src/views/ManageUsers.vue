@@ -164,7 +164,7 @@ export default class ManageUsers extends Vue {
             url = '';
         }
         axios.get(url + '/api/v1/users-details', {
-        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'VESSELS'}
+        params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'IFQ'}
         })
         .then((response) => {
             for (const user of response.data.users) {
