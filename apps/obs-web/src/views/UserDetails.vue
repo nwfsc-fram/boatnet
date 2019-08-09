@@ -683,12 +683,16 @@ export default class UserDetails extends Vue {
     }
 
     private async getRoles() {
-        axios.get(this.url + '/api/v1/roles', {
-        params: {
-            token: authService.getCurrentUser()!.jwtToken,
-            applicationName: 'BOATNET_OBSERVER'
+        let config = {
+            headers: {
+                authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+                },
+            params: {
+                applicationName: 'BOATNET_OBSERVER',
+                }
             }
-        })
+
+        axios.get(this.url + '/api/v1/roles', config)
         .then((response) => {
             console.log(response);
             this.roles = response.data.roles.map( (role: any) => role );
@@ -696,13 +700,17 @@ export default class UserDetails extends Vue {
     }
 
     private async getUserRoles() {
-        axios.get(this.url + '/api/v1/user-role', {
-        params: {
-            token: authService.getCurrentUser()!.jwtToken,
-            username: this.user.activeUser!.apexUserAdminUserName,
-            applicationName: 'BOATNET_OBSERVER'
+        let config = {
+            headers: {
+                authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+                },
+            params: {
+                username: this.user.activeUser!.apexUserAdminUserName,
+                applicationName: 'BOATNET_OBSERVER',
+                }
             }
-        })
+
+        axios.get(this.url + '/api/v1/user-role', config)
         .then((response) => {
             console.log(response);
             this.applicationRoles = response.data.roles.map( (role: any) => role);
@@ -716,12 +724,19 @@ export default class UserDetails extends Vue {
             // compare this.applicationRoles to this.storedRoles...
             if (this.storedRoles.indexOf(role) === -1) {
             // if role in applicationRoles but not in storedRoles - add it
-                axios.post(this.url + '/api/v1/user-role', {
-                    token: authService.getCurrentUser()!.jwtToken,
-                    username: this.user.activeUser!.apexUserAdminUserName,
-                    applicationName: 'BOATNET_OBSERVER',
-                    role
-                })
+
+                let config = {
+                    headers: {
+                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+                        },
+                    params: {
+                        username: this.user.activeUser!.apexUserAdminUserName,
+                        applicationName: 'BOATNET_OBSERVER',
+                        role
+                        }
+                    }
+
+                axios.post(this.url + '/api/v1/user-role', config)
                 .then((response) => {
                     console.log(response);
                 });
@@ -730,23 +745,21 @@ export default class UserDetails extends Vue {
 
         for (const role of this.storedRoles) {
             if (this.applicationRoles.indexOf(role) === -1) {
-                // if role in storedRoles but not in applicationRoles - delete it
-                    const headers: any = {
-                        'Content-Type': 'application/json',
-                        'accept': 'application/json'
-                    };
 
-                    const params: any = {
-                        username: this.user.activeUser!.apexUserAdminUserName,
-                        applicationName: 'BOATNET_OBSERVER',
-                        token: authService.getCurrentUser()!.jwtToken,
-                        role
-                    };
+                    let config = {
+                        headers: {
+                            authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                            'Content-Type': 'application/json',
+                            'accept': 'application/json'
+                            },
+                        params: {
+                            username: this.user.activeUser!.apexUserAdminUserName,
+                            applicationName: 'BOATNET_OBSERVER',
+                            role
+                            }
+                        }
 
-
-                    axios.delete(this.url + '/api/v1/user-role', {
-                        headers, params
-                        })
+                    axios.delete(this.url + '/api/v1/user-role', config)
                     .then((response) => {
                     console.log(response);
                     });
