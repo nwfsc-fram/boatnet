@@ -156,7 +156,14 @@ export default class ManageUsers extends Vue {
 
     private async getApexUsers() {
         this.user.unLinkedApexUsers = [];
-        axios.get('https://localhost:9000/api/v1/users-details', {
+        let url = '';
+
+        if (authService.apiUrl) {
+            url = authService.apiUrl;
+        } else {
+            url = '';
+        }
+        axios.get(url + '/api/v1/users-details', {
         params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'VESSELS'}
         })
         .then((response) => {

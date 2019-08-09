@@ -352,6 +352,7 @@ export default class UserDetails extends Vue {
     private isNewContact: boolean = false;
 
     private confirmUnlink = false;
+    private url: string = '';
 
     constructor() {
         super();
@@ -682,7 +683,7 @@ export default class UserDetails extends Vue {
     }
 
     private async getRoles() {
-        axios.get('https://localhost:9000/api/v1/roles', {
+        axios.get(this.url + '/api/v1/roles', {
         params: {
             token: authService.getCurrentUser()!.jwtToken,
             applicationName: 'BOATNET_OBSERVER'
@@ -695,7 +696,7 @@ export default class UserDetails extends Vue {
     }
 
     private async getUserRoles() {
-        axios.get('https://localhost:9000/api/v1/user-role', {
+        axios.get(this.url + '/api/v1/user-role', {
         params: {
             token: authService.getCurrentUser()!.jwtToken,
             username: this.user.activeUser!.apexUserAdminUserName,
@@ -715,7 +716,7 @@ export default class UserDetails extends Vue {
             // compare this.applicationRoles to this.storedRoles...
             if (this.storedRoles.indexOf(role) === -1) {
             // if role in applicationRoles but not in storedRoles - add it
-                axios.post('https://localhost:9000/api/v1/user-role', {
+                axios.post(this.url + '/api/v1/user-role', {
                     token: authService.getCurrentUser()!.jwtToken,
                     username: this.user.activeUser!.apexUserAdminUserName,
                     applicationName: 'BOATNET_OBSERVER',
@@ -743,7 +744,7 @@ export default class UserDetails extends Vue {
                     };
 
 
-                    axios.delete('https://localhost:9000/api/v1/user-role', {
+                    axios.delete(this.url + '/api/v1/user-role', {
                         headers, params
                         })
                     .then((response) => {
@@ -756,6 +757,13 @@ export default class UserDetails extends Vue {
     private created() {
         console.log(this.user.activeUser);
         console.log(authService.getCurrentUser());
+
+        if (authService.apiUrl) {
+            this.url = authService.apiUrl;
+        } else {
+            this.url = '';
+        }
+
         this.getRoles();
         this.getUserRoles();
         if (this.user.activeUser && this.user.activeUser.type === 'apexUser') {
