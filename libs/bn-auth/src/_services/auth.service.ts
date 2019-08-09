@@ -74,6 +74,10 @@ class AuthService {
     }
   }
 
+  public get apiUrl(): string | undefined {
+    return dbConfig.apiUrl; // If undefined, you'll want to fall back to a hardcoded dev URL
+  }
+
   public logout() {
     localStorage.removeItem('user');
     this.currentUser = null;

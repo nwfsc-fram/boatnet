@@ -152,6 +152,13 @@ export default class Login extends Vue {
           break;
       }
     });
+
+    if (authService.apiUrl) {
+      console.log('Api URL', authService.apiUrl);
+    } else {
+      console.log('Api URL not defined.'); // Use dev URL here
+    }
+
   }
 
   private beforeDestroy() {
