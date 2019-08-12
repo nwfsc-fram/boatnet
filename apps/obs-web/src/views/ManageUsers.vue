@@ -164,12 +164,15 @@ export default class ManageUsers extends Vue {
             url = '';
         }
 
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
-            params: {applicationName: 'IFQ'}
-            }
+            params: {
+                applicationName: 'IFQ',
+                role: 'VA'
+                    }
+            };
 
         // axios.get(url + '/api/v1/users-details', {
         // params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'IFQ'}

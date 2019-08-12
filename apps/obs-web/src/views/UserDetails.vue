@@ -31,11 +31,14 @@
                         class="wide-field"
                         dense
                         label="apex UserAdmin UserName"
+                        use-input
+                        hide-selected
+                        @filter="apexUsersFilterFn"
                         v-model="user.activeUser.apexUserAdminUserName"
-                        :option-label="opt => opt.apexUserAdminUserName"
+                        :option-label="opt => opt.firstName + opt.lastName"
                         :option-value="opt => opt.apexUserAdminUserName"
                         emit-value
-                        :options="user.unLinkedApexUsers"
+                        :options="apexUserOptions"
                         ></q-select>
                     </div>
                 </div>
@@ -126,7 +129,15 @@
                     </q-select>
                 </div>
 
-                    <q-select class="q-pa-sm wide-field" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
+                    <q-select
+                    class="q-pa-sm wide-field"
+                    outlined
+                    label="Notification Preferences"
+                    v-model="user.activeUser.notificationPreferences"
+                    :options="notificationOptions"
+                    multiple
+                    stack-label
+                    >
 
                     <template v-slot:selected-item="scope">
                         <q-chip
@@ -312,6 +323,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { Notify } from 'quasar';
 
 @Component
 export default class UserDetails extends Vue {
@@ -353,6 +365,8 @@ export default class UserDetails extends Vue {
 
     private confirmUnlink = false;
     private url: string = '';
+
+    private apexUserOptions: any[] = [];
 
     constructor() {
         super();
@@ -448,6 +462,21 @@ export default class UserDetails extends Vue {
                     console.log(err);
                 }
             }
+        );
+    }
+
+    private apexUsersFilterFn(val: string, update: any, abort: any) {
+        update( () => {
+            if (val.length > 0) {
+                this.apexUserOptions = this.user.unLinkedApexUsers.map(
+                    (user: any) => {
+                        console.log("USER:" + user.firstName)
+                        user.firstName.toLowerCase().indexOf(val.toLowerCase()) !== -1
+                    })
+            } else {
+                this.apexUserOptions = this.user.unLinkedApexUsers;
+            }
+        }
         );
     }
 
@@ -584,14 +613,14 @@ export default class UserDetails extends Vue {
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.post(this.user.activeUser).then(
                         setTimeout( () => {
-                            this.errorAlert('User Config Saved'),
+                            this.notifySuccess('User Config Saved'),
                             this.$router.push({path: '/'});
                         } , 500)
                     );
                 } else {
                     couchService.masterDB.post(this.user.activeUser).then(
                         setTimeout( () => {
-                            this.errorAlert('User Config Saved'),
+                            this.notifySuccess('User Config Saved'),
                             this.$router.push({path: '/'});
                         } , 500)
                     );
@@ -607,6 +636,7 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!,
                         this.user.activeUser!._rev
                     ).then(
+                    this.notifySuccess('User Config Saved'),
                     this.navigateBack()
                     );
                 } else {
@@ -616,9 +646,10 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!._rev
                     )
                     // pouchService.db.put(pouchService.userDBName, this.user.activeUser)
-                    .then(
-                        this.errorAlert('User Config Saved'),
+                    .then( () => {
+                        this.notifySuccess('User Config Saved'),
                         this.$router.push({path: '/'})
+                    }
                     );
                 }
             }
@@ -683,14 +714,14 @@ export default class UserDetails extends Vue {
     }
 
     private async getRoles() {
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
             params: {
                 applicationName: 'BOATNET_OBSERVER',
                 }
-            }
+            };
 
         axios.get(this.url + '/api/v1/roles', config)
         .then((response) => {
@@ -700,7 +731,7 @@ export default class UserDetails extends Vue {
     }
 
     private async getUserRoles() {
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
@@ -708,7 +739,7 @@ export default class UserDetails extends Vue {
                 username: this.user.activeUser!.apexUserAdminUserName,
                 applicationName: 'BOATNET_OBSERVER',
                 }
-            }
+            };
 
         axios.get(this.url + '/api/v1/user-role', config)
         .then((response) => {
@@ -725,16 +756,16 @@ export default class UserDetails extends Vue {
             if (this.storedRoles.indexOf(role) === -1) {
             // if role in applicationRoles but not in storedRoles - add it
 
-                let config = {
-                    headers: {
-                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
-                        },
-                    params: {
+                const config = {
+                    body: {
                         username: this.user.activeUser!.apexUserAdminUserName,
                         applicationName: 'BOATNET_OBSERVER',
                         role
+                        },
+                    headers: {
+                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
-                    }
+                    };
 
                 axios.post(this.url + '/api/v1/user-role', config)
                 .then((response) => {
@@ -746,9 +777,9 @@ export default class UserDetails extends Vue {
         for (const role of this.storedRoles) {
             if (this.applicationRoles.indexOf(role) === -1) {
 
-                    let config = {
+                    const config = {
                         headers: {
-                            authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                            'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                             'Content-Type': 'application/json',
                             'accept': 'application/json'
                             },
@@ -757,7 +788,7 @@ export default class UserDetails extends Vue {
                             applicationName: 'BOATNET_OBSERVER',
                             role
                             }
-                        }
+                        };
 
                     axios.delete(this.url + '/api/v1/user-role', config)
                     .then((response) => {
@@ -767,7 +798,19 @@ export default class UserDetails extends Vue {
         }
     }
 
+    private notifySuccess(message: string) {
+        Notify.create({
+            message: 'Success: ' + message,
+            position: 'top-right',
+            color: 'green',
+            timeout: 2000,
+            icon: 'check',
+            multiLine: true
+        })
+    }
+
     private created() {
+
         console.log(this.user.activeUser);
         console.log(authService.getCurrentUser());
 

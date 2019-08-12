@@ -180,6 +180,7 @@ import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import moment from 'moment';
+import { Notify } from 'quasar';
 
 @Component
 export default class DefaultLayout extends Vue {
