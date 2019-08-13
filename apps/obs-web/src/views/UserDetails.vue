@@ -35,7 +35,7 @@
                         hide-selected
                         @filter="apexUsersFilterFn"
                         v-model="user.activeUser.apexUserAdminUserName"
-                        :option-label="opt => opt.firstName + opt.lastName"
+                        :option-label="opt => opt.firstName + ' ' + opt.lastName"
                         :option-value="opt => opt.apexUserAdminUserName"
                         emit-value
                         :options="apexUserOptions"
@@ -72,10 +72,94 @@
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homeEmail" label="Email (Home)" type="email"></q-input>
                 </div>
 
+                    <q-btn
+                    v-if="!editPhoneNumber"
+                    label="add phone number"
+                    icon="phone"
+                    color="primary"
+                    class="q-ma-sm"
+                    @click="addPhone"></q-btn>
+
+                    <q-card v-if="editPhoneNumber" style="width: 100%; max-width: 450px">
+                        <q-card-section>
+                            <q-select
+                            v-model="activePhoneNumber.type"
+                            label="type"
+                            outlined
+                            dense
+                            class="q-pa-sm wide-field"
+                            :options="phoneNumberTypes"
+                            :option-label="opt => opt.description"
+                            option-value="_id"
+                            ></q-select>
+                            <q-input
+                            v-model="activePhoneNumber.number"
+                            type="number"
+                            :rules="[
+                            val => !!val || '* Required',
+                            val => val.length === 10 || 'phone number must be exactly 10 digits (no dashes)'
+                            ]"
+                            label="phone number"
+                            outlined
+                            dense
+                            class="q-pa-sm wide-field"
+                            ></q-input>
+                            <q-toggle
+                            label="active"
+                            v-model="activePhoneNumber.isActive"
+                            ></q-toggle>
+                            <q-card-actions class="float-right">
+                                <q-btn
+                                :disabled="activePhoneNumber.number.length !== 10 || activePhoneNumber.type.description === ''"
+                                label="save"
+                                color="primary"
+                                @click="editPhoneNumber = false"
+                                ></q-btn>
+                                <q-btn
+                                v-if="newPhoneNumber"
+                                label="cancel"
+                                color="red-5"
+                                @click="cancelEditPhone"
+                                ></q-btn>
+                            </q-card-actions>
+                        </q-card-section>
+                    </q-card>
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
+                    <q-card
+                    style="width: 100%; max-width: 450px"
+                    class="q-ma-sm"
+                    v-for="number of user.activeUser.phoneNumbers"
+                    :key="user.activeUser.phoneNumbers.indexOf(number)">
+                            <q-card-section>
+                                <div class="text-h6">
+                                    {{ number.type.description? number.type.description:'' }} number
+                                </div>
+                                <div class="text-subtitle2">
+                                    ({{ number.number.slice(0,3) }}) {{ number.number.slice(3,6) }}-{{ number.number.slice(6,10)}}
+                                </div>
+                                <div class="text-subtitle2">
+                                    status: {{ number.isActive ? 'Active':'Inactive' }}
+                                </div>
+                                <q-card-actions class="float-right">
+                                    <q-btn
+                                    label="edit"
+                                    icon="edit"
+                                    color="primary"
+                                    @click="editPhone(number)"
+                                    ></q-btn>
+                                    <q-btn
+                                    label="delete"
+                                    icon="delete"
+                                    color="red-5"
+                                    @click="deletePhone(number)"
+                                    ></q-btn>
+                                </q-card-actions>
+                            </q-card-section>
+
+                    </q-card>
+                    <!-- <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homePhone" label="Home Phone" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input> -->
                 </div>
 
                 <div class="row">
@@ -87,7 +171,7 @@
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
                     <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
-                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" 
+                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'"
                     option-value="_id" emit-label></q-select>
 
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
@@ -368,6 +452,11 @@ export default class UserDetails extends Vue {
 
     private apexUserOptions: any[] = [];
 
+    private editPhoneNumber: boolean = false;
+    private newPhoneNumber: boolean = false;
+    private activePhoneNumber: any;
+    private phoneNumberTypes: any[] = [];
+
     constructor() {
         super();
     }
@@ -466,17 +555,21 @@ export default class UserDetails extends Vue {
     }
 
     private apexUsersFilterFn(val: string, update: any, abort: any) {
-        update( () => {
-            if (val.length > 0) {
-                this.apexUserOptions = this.user.unLinkedApexUsers.map(
-                    (user: any) => {
-                        console.log("USER:" + user.firstName)
-                        user.firstName.toLowerCase().indexOf(val.toLowerCase()) !== -1
-                    })
-            } else {
-                this.apexUserOptions = this.user.unLinkedApexUsers;
-            }
+        update(
+            () => {
+                try {
+                    this.apexUserOptions = this.user.unLinkedApexUsers.filter(
+                        (user: any) => {
+                            return (
+                                user.firstName.toLowerCase().includes(val.toLowerCase()) ||
+                                user.lastName.toLowerCase().includes(val.toLowerCase())
+                            )
+                            });
+                } catch (err) {
         }
+
+        }
+
         );
     }
 
@@ -713,6 +806,30 @@ export default class UserDetails extends Vue {
         }
     }
 
+    private async getPhoneTypes() {
+            try {
+              const db = pouchService.db;
+              const queryOptions = {
+                start_key: '',
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+              };
+
+              const phoneTypes = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/all_phone_number_types',
+                queryOptions
+              );
+
+              console.log(phoneTypes);
+
+              this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
+            } catch (err) {
+              console.log(err);
+            }
+    }
+
     private async getRoles() {
         const config = {
             headers: {
@@ -809,6 +926,49 @@ export default class UserDetails extends Vue {
         })
     }
 
+    private addPhone() {
+        if (!this.user.activeUser!.phoneNumbers) {
+            this.user.activeUser!.phoneNumbers = [];
+        }
+        this.user.activeUser!.phoneNumbers.unshift(
+            {
+                number: '',
+                type: {description: ''},
+                isActive: true
+            }
+        )
+        this.editPhoneNumber = true;
+        this.newPhoneNumber = true;
+        this.activePhoneNumber = this.user.activeUser!.phoneNumbers[0];
+    }
+
+    private editPhone(number: any) {
+        this.editPhoneNumber = true;
+        this.newPhoneNumber = false;
+        this.activePhoneNumber = JSON.parse(JSON.stringify(number));
+        this.user.activeUser!.phoneNumbers!.unshift(this.activePhoneNumber);
+        number.isActive = false;
+    }
+
+    private cancelEditPhone() {
+        this.editPhoneNumber = false;
+        if (this.newPhoneNumber) {
+            this.user.activeUser!.phoneNumbers!.shift()
+        }
+    }
+
+    private deletePhone(number: any) {
+        number.isActive = false;
+    }
+
+    private get userPhoneNumbers() {
+        if (this.$route.name === "User Config") {
+            return this.user.activeUser!.phoneNumbers.map( (number) => number.isActive );
+        } else {
+            return this.user.activeUser!.phoneNumbers;
+        }
+    }
+
     private created() {
 
         console.log(this.user.activeUser);
@@ -833,6 +993,7 @@ export default class UserDetails extends Vue {
         // }
         this.getVessels();
         this.getUsStates();
+        this.getPhoneTypes();
     }
 
     private navigateBack() {

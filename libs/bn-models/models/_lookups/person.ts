@@ -6,6 +6,8 @@ import { Vessel } from './vessel';
 import { Media } from './media';
 import { Permit } from './permit';
 import { UsState } from './us-state';
+import { PhoneNumberType } from './phone-number-type'
+
 
 // TODO Full implementation
 export const PersonTypeName = 'person';
@@ -50,6 +52,11 @@ ContactsDB, replcating from MasterDB that includes:
     ApexUserAdminUserName
 
 */
+export interface PhoneNumber {
+  number?: string;
+  type?: PhoneNumberType;
+  isActive?: boolean;
+}
 
 // Originally CONTACTS
 export interface Person extends Base {
@@ -63,6 +70,7 @@ export interface Person extends Base {
   state?: string;
   zipCode?: string;
   country?: string;
+  phoneNumbers?: PhoneNumber[]
   workPhone?: string; // Possible TODO: make custom phone number type for standardization purposes
   homePhone?: string;
   cellPhone?: string;

@@ -58,3 +58,4 @@ export * from './protocol';
 export * from './unsorted-catch';
 export * from './taxonomy-alias';
 export * from './us-state';
+export * from './phone-number-type';
