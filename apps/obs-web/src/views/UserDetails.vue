@@ -31,11 +31,14 @@
                         class="wide-field"
                         dense
                         label="apex UserAdmin UserName"
+                        use-input
+                        hide-selected
+                        @filter="apexUsersFilterFn"
                         v-model="user.activeUser.apexUserAdminUserName"
-                        :option-label="opt => opt.apexUserAdminUserName"
+                        :option-label="opt => opt.firstName + ' ' + opt.lastName"
                         :option-value="opt => opt.apexUserAdminUserName"
                         emit-value
-                        :options="user.unLinkedApexUsers"
+                        :options="apexUserOptions"
                         ></q-select>
                     </div>
                 </div>
@@ -65,26 +68,154 @@
                 </q-select>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workEmail" label="Email (Work)" type="email"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homeEmail" label="Email (Home)" type="email"></q-input>
+                    <q-input
+                        label="Email (Work)"
+                        v-model="user.activeUser.workEmail"
+                        type="email"
+                        outlined
+                        dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
+
+                    <q-input
+                        label="Email (Home)"
+                        v-model="user.activeUser.homeEmail"
+                        type="email"
+                        outlined
+                        dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
+                </div>
+
+                <q-btn
+                    v-if="!editPhoneNumber"
+                    label="add phone number"
+                    icon="phone"
+                    color="primary"
+                    class="q-ma-sm"
+                    @click="addPhone"
+                ></q-btn>
+
+                <q-card v-if="editPhoneNumber" style="width: 100%; max-width: 450px">
+                    <q-card-section>
+                        <q-select
+                            label="type"
+                            v-model="activePhoneNumber.phoneNumberType"
+                            :options="phoneNumberTypes"
+                            :option-label="opt => opt.description"
+                            option-value="_id"
+                            outlined
+                            dense
+                            class="q-pa-sm wide-field"
+                        ></q-select>
+
+                        <q-input
+                            label="phone number"
+                            v-model="activePhoneNumber.number"
+                            type="number"
+                            :rules="[
+                            val => !!val || '* Required',
+                            val => val.length === 10 || 'phone number must be exactly 10 digits (no dashes)'
+                            ]"
+                            outlined
+                            dense
+                            class="q-pa-sm wide-field"
+                        ></q-input>
+
+                        <q-toggle
+                            label="active"
+                            v-model="activePhoneNumber.isActive"
+                        ></q-toggle>
+
+                        <q-card-actions class="float-right">
+                            <q-btn
+                                :disabled="activePhoneNumber.number.length !== 10 || activePhoneNumber.phoneNumberType.description === ''"
+                                label="save"
+                                color="primary"
+                                @click="editPhoneNumber = false"
+                            ></q-btn>
+                            <q-btn
+                                v-if="newPhoneNumber"
+                                label="cancel"
+                                color="red-5"
+                                @click="cancelEditPhone"
+                            ></q-btn>
+                        </q-card-actions>
+                    </q-card-section>
+                </q-card>
+
+                <div class="row">
+
+                    <q-card
+                        v-for="number of userPhoneNumbers"
+                        :key="userPhoneNumbers.indexOf(number)"
+                        class="q-ma-sm my-card"
+                    >
+                        <q-card-section>
+                            <div v-if="number.createdBy && $route.name === 'User Details'" class="float-right">
+                                <sub>added by: <b>{{ number.createdBy }}</b>&nbsp;</sub>
+                                <sub>on: <b>{{ getDate(number.createdDate) }}</b></sub>
+                            </div>
+                            <div v-if="number.updatedBy && $route.name === 'User Details'" class="float-right">
+                                <sub>edited by: <b>{{ number.updatedBy }}</b>&nbsp;</sub>
+                                <sub>on: <b>{{ getDate(number.updatedDate) }}</b></sub>
+                            </div>
+                            <div class="text-h6">
+                                {{ number.phoneNumberType.description? number.phoneNumberType.description:'' }} number
+                            </div>
+                            <div class="text-subtitle2">
+                                ({{ number.number.slice(0,3) }}) {{ number.number.slice(3,6) }}-{{ number.number.slice(6,10)}}
+                            </div>
+                            <div class="text-subtitle2">
+                                status: {{ number.isActive ? 'Active':'Inactive' }}
+                            </div>
+                            <q-card-actions class="float-right">
+                                <q-btn
+                                    label="edit"
+                                    icon="edit"
+                                    color="primary"
+                                    @click="editPhone(number)"
+                                ></q-btn>
+                                <q-btn
+                                    label="delete"
+                                    icon="delete"
+                                    color="red-5"
+                                    @click="deletePhone(number)"
+                                ></q-btn>
+                            </q-card-actions>
+                        </q-card-section>
+                    </q-card>
+
+                    <div v-if="$route.name === 'User Details' && (user.activeUser.cellPhone || user.activeUser.homePhone || user.activeUser.workPhone)">
+                        <div class="text-h6">Legacy Phone Numbers</div>
+                        Mobile: {{ user.activeUser.cellPhone }}
+                        Home: {{ user.activeUser.homePhone }}
+                        Work: {{ user.activeUser.workPhone }}
+                    </div>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homePhone" label="Home Phone" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input>
-                </div>
-
-                <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine1" label="Address Line 1" type="street-address"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine2" label="Address Line 2" type="street-address"></q-input>
+                    <q-input
+                        label="Address Line 1"
+                        v-model="user.activeUser.addressLine1"
+                        type="street-address"
+                        outlined dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
+                    <q-input
+                        label="Address Line 2"
+                        v-model="user.activeUser.addressLine2"
+                        type="street-address"
+                        outlined dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
                 </div>
 
                 <div class="row">
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
                     <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
-                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'" 
+                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'"
                     option-value="_id" emit-label></q-select>
 
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
@@ -94,54 +225,55 @@
 
                 <div class="row">
                     <q-select
-                    class="col-md q-pa-sm wide-field"
-                    label="Home Port"
-                    v-model="user.activeUser.port"
-                    :options="ports"
-                    @filter="portsFilterFn"
-                    :option-label="opt => opt.name"
-                    option-value="_id"
-                    outlined
-                    dense
-                    stack-label
-                    use-input
-                    fill-input
-                    hide-selected
-                    >
-                    </q-select>
+                        label="Home Port"
+                        v-model="user.activeUser.port"
+                        :options="ports"
+                        :option-label="opt => opt.name"
+                        option-value="_id"
+                        @filter="portsFilterFn"
+                        outlined dense stack-label
+                        use-input fill-input hide-selected
+                        class="col-md q-pa-sm wide-field"
+                    ></q-select>
 
                     <q-select
-                    v-if="!user.newUser"
-                    class="col-md q-pa-sm wide-field"
-                    outlined label="Active Vessel"
-                    v-model="user.activeUser.activeVessel"
-                    :options="vessels"
-
-                    :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id"
-                    use-input
-                    fill-input
-                    hide-selected
-                    dense
-                    >
-                    </q-select>
+                        v-if="!user.newUser"
+                        label="Active Vessel"
+                        v-model="user.activeUser.activeVessel"
+                        :options="vessels"
+                        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+                        option-value="_id"
+                        outlined dense
+                        use-input fill-input hide-selected
+                        class="col-md q-pa-sm wide-field"
+                    ></q-select>
                 </div>
 
-                    <q-select class="q-pa-sm wide-field" outlined label="Notification Preferences" v-model="user.activeUser.notificationPreferences" :options="notificationOptions" multiple use-input stack-label >
-
-                    <template v-slot:selected-item="scope">
-                        <q-chip
-                            @remove="scope.removeAtIndex(scope.index)"
-                            :tabindex="scope.tabindex"
-                            removable
-                            dense
-                            color="primary"
-                            text-color="white"
+                    <q-select
+                        label="Notification Preferences"
+                        v-model="user.activeUser.notificationPreferences"
+                        :options="notificationOptions"
+                        outlined stack-label
+                        multiple
+                        class="q-pa-sm wide-field"
+                    >
+                        <template v-slot:selected-item="scope">
+                            <q-chip
+                                @remove="scope.removeAtIndex(scope.index)"
+                                :tabindex="scope.tabindex"
+                                removable
+                                dense
+                                color="primary"
+                                text-color="white"
                             >
-                            <q-avatar color="primary" text-color="white" :icon="scope.opt.icon" />
-                            {{ scope.opt.label }}
-                        </q-chip>
-                    </template>
-
+                                <q-avatar
+                                    color="primary"
+                                    text-color="white"
+                                    :icon="scope.opt.icon"
+                                />
+                                {{ scope.opt.label }}
+                            </q-chip>
+                        </template>
                 </q-select>
 
                 <!-- <q-input class="col-md q-pa-sm wide-field"
@@ -253,7 +385,7 @@
                                 </q-card-actions>
                             </q-card-section>
                         </q-card>
-
+                        <br><br><br><br>
                 </div>
 
             </div>
@@ -282,9 +414,23 @@
                 </q-card>
             </q-dialog>
 
-            <div class="q-pa-md  q-gutter-md" align="right">
-                <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
-                <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
+            <div
+                class="q-pa-md q-gutter-md fixed-bottom"
+                align="right"
+                style="background-color: white;"
+            >
+                <q-btn
+                    v-if="this.$route.name === 'User Details'"
+                    label="Cancel"
+                    color="red"
+                    @click="navigateBack"
+                ></q-btn>
+
+                <q-btn
+                    label="Save"
+                    color="primary"
+                    @click="saveUser"
+                ></q-btn>
             </div>
 
         </div>
@@ -312,6 +458,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { Notify } from 'quasar';
 
 @Component
 export default class UserDetails extends Vue {
@@ -353,6 +500,13 @@ export default class UserDetails extends Vue {
 
     private confirmUnlink = false;
     private url: string = '';
+
+    private apexUserOptions: any[] = [];
+
+    private editPhoneNumber: boolean = false;
+    private newPhoneNumber: boolean = false;
+    private activePhoneNumber: any;
+    private phoneNumberTypes: any[] = [];
 
     constructor() {
         super();
@@ -449,6 +603,24 @@ export default class UserDetails extends Vue {
                 }
             }
         );
+    }
+
+    private apexUsersFilterFn(val: string, update: any, abort: any) {
+        update(
+            () => {
+                try {
+                    this.apexUserOptions = this.user.unLinkedApexUsers.filter(
+                        (user: any) => {
+                            return (
+                                user.firstName.toLowerCase().includes(val.toLowerCase()) ||
+                                user.lastName.toLowerCase().includes(val.toLowerCase())
+                            );
+                            });
+                } catch (err) {
+                    console.log(err);
+                }
+
+            });
     }
 
 
@@ -584,14 +756,14 @@ export default class UserDetails extends Vue {
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.post(this.user.activeUser).then(
                         setTimeout( () => {
-                            this.errorAlert('User Config Saved'),
+                            this.notifySuccess('User Config Saved'),
                             this.$router.push({path: '/'});
                         } , 500)
                     );
                 } else {
                     couchService.masterDB.post(this.user.activeUser).then(
                         setTimeout( () => {
-                            this.errorAlert('User Config Saved'),
+                            this.notifySuccess('User Config Saved'),
                             this.$router.push({path: '/'});
                         } , 500)
                     );
@@ -607,6 +779,7 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!,
                         this.user.activeUser!._rev
                     ).then(
+                    this.notifySuccess('User Config Saved'),
                     this.navigateBack()
                     );
                 } else {
@@ -616,9 +789,10 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!._rev
                     )
                     // pouchService.db.put(pouchService.userDBName, this.user.activeUser)
-                    .then(
-                        this.errorAlert('User Config Saved'),
-                        this.$router.push({path: '/'})
+                    .then( () => {
+                        this.notifySuccess('User Config Saved'),
+                        this.$router.push({path: '/'});
+                    }
                     );
                 }
             }
@@ -682,15 +856,39 @@ export default class UserDetails extends Vue {
         }
     }
 
+    private async getPhoneTypes() {
+            try {
+              const db = pouchService.db;
+              const queryOptions = {
+                start_key: '',
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
+              };
+
+              const phoneTypes = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/all_phone_number_types',
+                queryOptions
+              );
+
+              console.log(phoneTypes);
+
+              this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
+            } catch (err) {
+              console.log(err);
+            }
+    }
+
     private async getRoles() {
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
             params: {
                 applicationName: 'BOATNET_OBSERVER',
                 }
-            }
+            };
 
         axios.get(this.url + '/api/v1/roles', config)
         .then((response) => {
@@ -700,7 +898,7 @@ export default class UserDetails extends Vue {
     }
 
     private async getUserRoles() {
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
@@ -708,7 +906,7 @@ export default class UserDetails extends Vue {
                 username: this.user.activeUser!.apexUserAdminUserName,
                 applicationName: 'BOATNET_OBSERVER',
                 }
-            }
+            };
 
         axios.get(this.url + '/api/v1/user-role', config)
         .then((response) => {
@@ -725,16 +923,16 @@ export default class UserDetails extends Vue {
             if (this.storedRoles.indexOf(role) === -1) {
             // if role in applicationRoles but not in storedRoles - add it
 
-                let config = {
-                    headers: {
-                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
-                        },
-                    params: {
+                const config = {
+                    body: {
                         username: this.user.activeUser!.apexUserAdminUserName,
                         applicationName: 'BOATNET_OBSERVER',
                         role
+                        },
+                    headers: {
+                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
-                    }
+                    };
 
                 axios.post(this.url + '/api/v1/user-role', config)
                 .then((response) => {
@@ -746,9 +944,9 @@ export default class UserDetails extends Vue {
         for (const role of this.storedRoles) {
             if (this.applicationRoles.indexOf(role) === -1) {
 
-                    let config = {
+                    const config = {
                         headers: {
-                            authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                            'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                             'Content-Type': 'application/json',
                             'accept': 'application/json'
                             },
@@ -757,7 +955,7 @@ export default class UserDetails extends Vue {
                             applicationName: 'BOATNET_OBSERVER',
                             role
                             }
-                        }
+                        };
 
                     axios.delete(this.url + '/api/v1/user-role', config)
                     .then((response) => {
@@ -767,7 +965,73 @@ export default class UserDetails extends Vue {
         }
     }
 
+    private notifySuccess(message: string) {
+        Notify.create({
+            message: 'Success: ' + message,
+            position: 'top-right',
+            color: 'green',
+            timeout: 2000,
+            icon: 'check',
+            multiLine: true
+        });
+    }
+
+    private addPhone() {
+        if (!this.user.activeUser!.phoneNumbers) {
+            Vue.set(this.user.activeUser!, 'phoneNumbers', []);
+        }
+        this.user.activeUser!.phoneNumbers!.unshift(
+            {
+                number: '',
+                phoneNumberType: {description: ''},
+                isActive: true,
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format()
+            }
+        );
+        this.editPhoneNumber = true;
+        this.newPhoneNumber = true;
+        this.activePhoneNumber = this.user.activeUser!.phoneNumbers![0];
+    }
+
+    private editPhone(phoneNumber: any) {
+        this.editPhoneNumber = true;
+        this.newPhoneNumber = false;
+        this.activePhoneNumber = JSON.parse(JSON.stringify(phoneNumber));
+        this.activePhoneNumber.updatedBy = authService.getCurrentUser()!.username;
+        this.activePhoneNumber.updatedDate = moment().format();
+        this.activePhoneNumber.isActive = true;
+        this.user.activeUser!.phoneNumbers!.unshift(this.activePhoneNumber);
+        phoneNumber.isActive = false;
+    }
+
+    private cancelEditPhone() {
+        this.editPhoneNumber = false;
+        if (this.newPhoneNumber) {
+            this.user.activeUser!.phoneNumbers!.shift();
+        }
+    }
+
+    private deletePhone(phoneNumber: any) {
+        phoneNumber.isActive = false;
+        phoneNumber.updatedBy = authService.getCurrentUser()!.username;
+        phoneNumber.updatedDate = moment().format();
+    }
+
+    private get userPhoneNumbers() {
+        if (this.$route.name === 'User Config') {
+            return this.user.activeUser!.phoneNumbers!.filter( (phoneNumber: any) => phoneNumber.isActive );
+        } else {
+            return this.user.activeUser!.phoneNumbers;
+        }
+    }
+
+    private getDate(date: string) {
+        return moment(date).format('LL');
+    }
+
     private created() {
+
         console.log(this.user.activeUser);
         console.log(authService.getCurrentUser());
 
@@ -790,6 +1054,7 @@ export default class UserDetails extends Vue {
         // }
         this.getVessels();
         this.getUsStates();
+        this.getPhoneTypes();
     }
 
     private navigateBack() {

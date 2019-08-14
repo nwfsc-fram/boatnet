@@ -77,6 +77,22 @@ export default class ManageUsers extends Vue {
     private userDetails(user: any) {
             this.user.activeUser = user;
             this.user.newUser = false;
+
+            // move legacy phone numbers?
+            // if (!this.user.activeUser!.phoneNumbers) {
+            //     Vue.set(this.user.activeUser!, 'phoneNumbers', []);
+            // }
+            // if (this.user.activeUser!.workPhone) {
+            //     const workPhone = {
+            //         number: this.user.activeUser!.workPhone,
+            //         phoneNumberType: {description: 'work'},
+            //         isActive: true,
+            //         createdBy: 'legacy',
+            //         createdDate: moment().format()
+            //     }
+            //     this.user.activeUser!.phoneNumbers!.push(workPhone);
+            // }
+
             const index = this.user.users.indexOf(user);
             this.$router.push({path: '/users/' + index});
         }
@@ -164,12 +180,15 @@ export default class ManageUsers extends Vue {
             url = '';
         }
 
-        let config = {
+        const config = {
             headers: {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
-            params: {applicationName: 'IFQ'}
-            }
+            params: {
+                applicationName: 'IFQ',
+                role: 'VA'
+                    }
+            };
 
         // axios.get(url + '/api/v1/users-details', {
         // params: {token: authService.getCurrentUser()!.jwtToken, applicationName: 'IFQ'}
@@ -188,7 +207,14 @@ export default class ManageUsers extends Vue {
                     delete user.last_name;
                     user.workEmail = user.email_address;
                     delete user.email_address;
-                    user.workPhone = user.phone;
+                    Vue.set(user, 'phoneNumbers', []);
+                    user.phoneNumbers.push({
+                        number: user.phone,
+                        phoneNumberType: {description: 'work'},
+                        isActive: true,
+                        createdBy: 'apex',
+                        createdDate: moment().format()
+                    });
                     delete user.phone;
                     user.type = 'apexUser';
                     console.log(user);
