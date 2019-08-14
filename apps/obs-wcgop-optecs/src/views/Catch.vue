@@ -462,7 +462,7 @@ private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
     //     }
     //   }
     // }
-
+    this.drawerRight = false;
     for (const grouping of this.currentHaul.catches![0].children!) {
       for (const species of grouping.children!) {
         if (species.catchNum === wCatch.catchNum) {

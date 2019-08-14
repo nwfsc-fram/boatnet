@@ -97,6 +97,7 @@ const getters: GetterTree<PouchDBState, any> = {
     // return pouchService.db.allDocs('lookups-dev');
   },
   syncStatus(getState: PouchDBState) {
+    // return getState.syncStatus.dbInfo.info;
     return getState.syncStatus.dbInfo;
   }
 };

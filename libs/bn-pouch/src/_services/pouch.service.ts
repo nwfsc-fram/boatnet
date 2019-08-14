@@ -41,6 +41,7 @@ Vue.use(PouchVue, {
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBSyncStatus } from '../_store/types/types';
+import { pouchState } from '@/_store';
 
 class PouchService extends Vue {
   private currentCredentials: CouchDBCredentials | null = null;
@@ -219,6 +220,7 @@ class PouchService extends Vue {
       this.syncDeactive(dbInfo);
     });
     this.$on('pouchdb-sync-change', (dbInfo: any) => {
+
       console.log(
         '[PouchDB Service] Sync: ',
         dbInfo.db,
