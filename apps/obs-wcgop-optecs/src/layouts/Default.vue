@@ -22,7 +22,7 @@
         <q-toolbar-title>
           <optecs-breadcrumbs/>
         </q-toolbar-title>
-
+              {{ syncStatus }}
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
@@ -117,6 +117,7 @@
     </q-drawer>
 
     <q-page-container>
+
       <router-view/>
     </q-page-container>
   </q-layout>

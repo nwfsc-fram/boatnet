@@ -16,35 +16,35 @@ interface EstimatedDiscard {
 }
 
 export interface AshopHaul extends BaseOperation {
-  haulNum?: number;
+  haulNum?: number; // column
 
-  startFishingLocation?: LocationEvent; // ETL from Deploy
-  endFishingLocation?: LocationEvent; // ETL from Retrieval
+  startFishingLocation?: LocationEvent; // ETL from Deploy // column - date (including time)
+  endFishingLocation?: LocationEvent; // ETL from Retrieval // column - date (including time)
 
   bottomDepth?: Measurement;
   fishingDepth?: Measurement;
   // ETL units from DEPTH_METER_FATHOM
   // TODO Keep units in Fathoms - convert from Meters if needed
 
-  observerEstimatedCatch?: {
+  observerEstimatedCatch?: {  // column
     measurement: Measurement; // kg
     weightMethod: string; // TODO lookup AshopWeightMethod
   };
 
-  vesselEstimatedCatch?: {
+  vesselEstimatedCatch?: {  // column 
     measurement: Measurement; // MT
     weightMethod: string; // TODO lookup AshopWeightMethod
   };
 
-  officialTotalCatch?: Measurement;
+  officialTotalCatch?: Measurement; // column
   // Calculated -
   // use observerEstimatedCatch if available,
   // otherwise vesselEstimatedCatch
 
-  observerEstimatedDiscards?: EstimatedDiscard[];
+  observerEstimatedDiscards?: EstimatedDiscard[]; // column
 
   // Calculated- sum of observerEstimatedDiscards
-  totalEstimatedDiscard?: Measurement;
+  totalEstimatedDiscard?: Measurement;  // column
 
   gearType?: GearType;
   gearPerformance?: AshopGearPerformance; // TODO Lookup
@@ -54,7 +54,7 @@ export interface AshopHaul extends BaseOperation {
   tribalDelivery?: string; // TODO name of tribe LOOKUP
   sampleDesignType?: string; // TODO lookup
 
-  samples?: AshopCatch[];
+  samples?: AshopCatch[];  // column
 
   legacy?: {
     haulSeq?: number;

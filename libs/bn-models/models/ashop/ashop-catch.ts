@@ -7,24 +7,24 @@ export const AshopCatchTypeName = 'ashop-catch';
 export interface AshopCatch extends BaseCatch {
   // Catch = Sample in A-SHOP terminology, use sample for the UI
 
-  sampleNum?: number; // unique/sequential within Haul
+  sampleNum?: number; // unique/sequential within Haul  // column  (subsable number - if sameple is subsample - 101, 102, 103 etc in sample 1)
   isSubsample?: boolean; // for flattening convenience
   isPresorted?: boolean;
   isTruncated?: boolean; // Indicate a sample that was stopped (e.g. high species diversity)
 
-  isPredominantSpecies?: boolean;
-  isNotFlowScaleWeighed?: boolean; // not weighed by flow scale
-  percentRetained?: number;
+  isPredominantSpecies?: boolean;  // column (drives which scale to use)
+  isNotFlowScaleWeighed?: boolean; // not weighed by flow scale  // column
+  percentRetained?: number;  // column
   sightingEventIds?: CouchID[];
 
   // species?: AshopSampleSpecies[];
   // subsamples?: AshopSample[];
 
   // Calculated from flowScale* + items not flowscale weighed
-  totalSampleWeight?: Measurement;
+  totalSampleWeight?: Measurement;  // column
 
-  flowScaleStart?: Measurement;
-  flowScaleEnd?: Measurement;
+  flowScaleStart?: Measurement;  // column
+  flowScaleEnd?: Measurement; // column
 
   children?: AshopCatch[];
 
