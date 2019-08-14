@@ -208,21 +208,21 @@ export default class ManageUsers extends Vue {
                     user.workEmail = user.email_address;
                     delete user.email_address;
                     Vue.set(user, 'phoneNumbers', []);
-                    user.phoneNumbers.push({
-                        number: user.phone,
-                        phoneNumberType: {description: 'work'},
-                        isActive: true,
-                        createdBy: 'apex',
-                        createdDate: moment().format()
-                    });
-                    delete user.phone;
+                    if (user.phone) {
+                        user.phoneNumbers.push({
+                            number: user.phone,
+                            phoneNumberType: {description: 'work'},
+                            isActive: true,
+                            createdBy: 'apex',
+                            createdDate: moment().format()
+                        });
+                        delete user.phone;
+                    }
                     user.type = 'apexUser';
-                    console.log(user);
                     this.user.users.push(user);
                     this.user.unLinkedApexUsers.push(user);
                 }
             }
-            console.log(this.user.unLinkedApexUsers);
         });
         }
 

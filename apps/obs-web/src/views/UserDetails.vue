@@ -1019,10 +1019,12 @@ export default class UserDetails extends Vue {
     }
 
     private get userPhoneNumbers() {
-        if (this.$route.name === 'User Config') {
+        if (this.user.activeUser!.phoneNumbers && this.$route.name === 'User Config') {
             return this.user.activeUser!.phoneNumbers!.filter( (phoneNumber: any) => phoneNumber.isActive );
-        } else {
+        } else if (this.user.activeUser!.phoneNumbers) {
             return this.user.activeUser!.phoneNumbers;
+        } else {
+            return [];
         }
     }
 

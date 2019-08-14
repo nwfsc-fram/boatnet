@@ -41,7 +41,6 @@ Vue.use(PouchVue, {
 
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBSyncStatus } from '../_store/types/types';
-import { pouchState } from '@/_store';
 
 class PouchService extends Vue {
   private currentCredentials: CouchDBCredentials | null = null;

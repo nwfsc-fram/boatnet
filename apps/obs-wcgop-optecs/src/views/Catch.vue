@@ -99,21 +99,21 @@
                     <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
-                        :options="weightMethodOptions.slice(0,4)"
+                        :options="getWeightMethods.slice(0,4)"
                         :value.sync="weightMethod"
                         spread
                         unelevated
                       />
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
-                        :options="weightMethodOptions.slice(4,8)"
+                        :options="getWeightMethods.slice(4,8)"
                         :value.sync="weightMethod"
                         spread
                         unelevated
                       />
                       <q-btn-toggle
                         v-model="catchModel.weightMethod"
-                        :options="weightMethodOptions.slice(9,-1)"
+                        :options="getWeightMethods.slice(9,-1)"
                         :value.sync="weightMethod"
                         spread
                         unelevated
@@ -283,7 +283,7 @@
                     <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                       <q-btn-toggle
                         v-model="speciesModel.weightMethod"
-                        :options="weightMethodOptions"
+                        :options="getWeightMethods"
                         :value.sync="weightMethod"
                         spread
                         unelevated
@@ -318,12 +318,14 @@ import {
   WcgopCatch,
   WcgopCatchTypeName,
   WcgopOperation,
+  WcgopTrip,
   TaxonomyAlias
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
 import { freemem } from 'os';
 import { disconnect } from 'cluster';
+import { get } from 'http';
 
 Vue.component(BoatnetSummary);
 
@@ -400,6 +402,9 @@ export default class Catch extends Vue {
 
     @Getter('currentHaul', { namespace: 'appState' })
     private currentHaul!: WcgopOperation;
+
+    @Getter('currentTrip', { namespace: 'appState' })
+    private currentTrip!: WcgopTrip;
 
     @Action('save', { namespace: 'appState' })
     private save: any;
@@ -917,6 +922,7 @@ private updateSpecies() {
     this.expanded = [];
   }
 
+
   private get getCatches() {
       const returnCatches: any = [];
       // if (this.useActiveHaul) {
@@ -1072,6 +1078,17 @@ private updateSpecies() {
       } catch (err) {
           console.log(err);
       }
+  }
+
+  private getWeightMethods() {
+    console.log(this.weightMethodOptions)
+    if (this.currentTrip.gearType === 'trawl') {
+      return this.weightMethodOptions
+    } else if (this.currentTrip.gearType === 'fixed') {
+      return this.weightMethodOptions
+    } else {
+      return this.weightMethodOptions
+    }
   }
 
   private async created() {
