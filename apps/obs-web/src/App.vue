@@ -31,6 +31,11 @@
   width: auto !important;
 }
 
+.my-card {
+  width: 100%;
+  max-width: 450px;
+}
+
 @media screen and ( min-width: 500px) {
   .centered-page-item {
     text-align: left;

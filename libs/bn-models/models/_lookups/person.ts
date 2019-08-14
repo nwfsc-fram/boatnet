@@ -6,7 +6,7 @@ import { Vessel } from './vessel';
 import { Media } from './media';
 import { Permit } from './permit';
 import { UsState } from './us-state';
-import { PhoneNumberType } from './phone-number-type'
+import { PhoneNumberType } from './phone-number-type';
 
 
 // TODO Full implementation
@@ -52,9 +52,9 @@ ContactsDB, replcating from MasterDB that includes:
     ApexUserAdminUserName
 
 */
-export interface PhoneNumber {
+export interface PhoneNumber extends Base {
   number?: string;
-  type?: PhoneNumberType;
+  phoneNumberType?: PhoneNumberType;
   isActive?: boolean;
 }
 
@@ -70,7 +70,7 @@ export interface Person extends Base {
   state?: string;
   zipCode?: string;
   country?: string;
-  phoneNumbers?: PhoneNumber[]
+  phoneNumbers?: PhoneNumber[];
   workPhone?: string; // Possible TODO: make custom phone number type for standardization purposes
   homePhone?: string;
   cellPhone?: string;

@@ -68,103 +68,147 @@
                 </q-select>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workEmail" label="Email (Work)" type="email"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homeEmail" label="Email (Home)" type="email"></q-input>
+                    <q-input
+                        label="Email (Work)"
+                        v-model="user.activeUser.workEmail"
+                        type="email"
+                        outlined
+                        dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
+
+                    <q-input
+                        label="Email (Home)"
+                        v-model="user.activeUser.homeEmail"
+                        type="email"
+                        outlined
+                        dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
                 </div>
 
-                    <q-btn
+                <q-btn
                     v-if="!editPhoneNumber"
                     label="add phone number"
                     icon="phone"
                     color="primary"
                     class="q-ma-sm"
-                    @click="addPhone"></q-btn>
+                    @click="addPhone"
+                ></q-btn>
 
-                    <q-card v-if="editPhoneNumber" style="width: 100%; max-width: 450px">
-                        <q-card-section>
-                            <q-select
-                            v-model="activePhoneNumber.type"
+                <q-card v-if="editPhoneNumber" style="width: 100%; max-width: 450px">
+                    <q-card-section>
+                        <q-select
                             label="type"
-                            outlined
-                            dense
-                            class="q-pa-sm wide-field"
+                            v-model="activePhoneNumber.phoneNumberType"
                             :options="phoneNumberTypes"
                             :option-label="opt => opt.description"
                             option-value="_id"
-                            ></q-select>
-                            <q-input
+                            outlined
+                            dense
+                            class="q-pa-sm wide-field"
+                        ></q-select>
+
+                        <q-input
+                            label="phone number"
                             v-model="activePhoneNumber.number"
                             type="number"
                             :rules="[
                             val => !!val || '* Required',
                             val => val.length === 10 || 'phone number must be exactly 10 digits (no dashes)'
                             ]"
-                            label="phone number"
                             outlined
                             dense
                             class="q-pa-sm wide-field"
-                            ></q-input>
-                            <q-toggle
+                        ></q-input>
+
+                        <q-toggle
                             label="active"
                             v-model="activePhoneNumber.isActive"
-                            ></q-toggle>
-                            <q-card-actions class="float-right">
-                                <q-btn
-                                :disabled="activePhoneNumber.number.length !== 10 || activePhoneNumber.type.description === ''"
+                        ></q-toggle>
+
+                        <q-card-actions class="float-right">
+                            <q-btn
+                                :disabled="activePhoneNumber.number.length !== 10 || activePhoneNumber.phoneNumberType.description === ''"
                                 label="save"
                                 color="primary"
                                 @click="editPhoneNumber = false"
-                                ></q-btn>
-                                <q-btn
+                            ></q-btn>
+                            <q-btn
                                 v-if="newPhoneNumber"
                                 label="cancel"
                                 color="red-5"
                                 @click="cancelEditPhone"
-                                ></q-btn>
-                            </q-card-actions>
-                        </q-card-section>
-                    </q-card>
+                            ></q-btn>
+                        </q-card-actions>
+                    </q-card-section>
+                </q-card>
+
                 <div class="row">
+
                     <q-card
-                    style="width: 100%; max-width: 450px"
-                    class="q-ma-sm"
-                    v-for="number of user.activeUser.phoneNumbers"
-                    :key="user.activeUser.phoneNumbers.indexOf(number)">
-                            <q-card-section>
-                                <div class="text-h6">
-                                    {{ number.type.description? number.type.description:'' }} number
-                                </div>
-                                <div class="text-subtitle2">
-                                    ({{ number.number.slice(0,3) }}) {{ number.number.slice(3,6) }}-{{ number.number.slice(6,10)}}
-                                </div>
-                                <div class="text-subtitle2">
-                                    status: {{ number.isActive ? 'Active':'Inactive' }}
-                                </div>
-                                <q-card-actions class="float-right">
-                                    <q-btn
+                        v-for="number of userPhoneNumbers"
+                        :key="userPhoneNumbers.indexOf(number)"
+                        class="q-ma-sm my-card"
+                    >
+                        <q-card-section>
+                            <div v-if="number.createdBy && $route.name === 'User Details'" class="float-right">
+                                <sub>added by: <b>{{ number.createdBy }}</b>&nbsp;</sub>
+                                <sub>on: <b>{{ getDate(number.createdDate) }}</b></sub>
+                            </div>
+                            <div v-if="number.updatedBy && $route.name === 'User Details'" class="float-right">
+                                <sub>edited by: <b>{{ number.updatedBy }}</b>&nbsp;</sub>
+                                <sub>on: <b>{{ getDate(number.updatedDate) }}</b></sub>
+                            </div>
+                            <div class="text-h6">
+                                {{ number.phoneNumberType.description? number.phoneNumberType.description:'' }} number
+                            </div>
+                            <div class="text-subtitle2">
+                                ({{ number.number.slice(0,3) }}) {{ number.number.slice(3,6) }}-{{ number.number.slice(6,10)}}
+                            </div>
+                            <div class="text-subtitle2">
+                                status: {{ number.isActive ? 'Active':'Inactive' }}
+                            </div>
+                            <q-card-actions class="float-right">
+                                <q-btn
                                     label="edit"
                                     icon="edit"
                                     color="primary"
                                     @click="editPhone(number)"
-                                    ></q-btn>
-                                    <q-btn
+                                ></q-btn>
+                                <q-btn
                                     label="delete"
                                     icon="delete"
                                     color="red-5"
                                     @click="deletePhone(number)"
-                                    ></q-btn>
-                                </q-card-actions>
-                            </q-card-section>
-
+                                ></q-btn>
+                            </q-card-actions>
+                        </q-card-section>
                     </q-card>
-                    <!-- <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.cellPhone" label="Mobile Number" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.homePhone" label="Home Phone" type="tel"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.workPhone" label="Work Phone" type="tel"></q-input> -->
+
+                    <div v-if="$route.name === 'User Details' && (user.activeUser.cellPhone || user.activeUser.homePhone || user.activeUser.workPhone)">
+                        <div class="text-h6">Legacy Phone Numbers</div>
+                        Mobile: {{ user.activeUser.cellPhone }}
+                        Home: {{ user.activeUser.homePhone }}
+                        Work: {{ user.activeUser.workPhone }}
+                    </div>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine1" label="Address Line 1" type="street-address"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.addressLine2" label="Address Line 2" type="street-address"></q-input>
+                    <q-input
+                        label="Address Line 1"
+                        v-model="user.activeUser.addressLine1"
+                        type="street-address"
+                        outlined dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
+                    <q-input
+                        label="Address Line 2"
+                        v-model="user.activeUser.addressLine2"
+                        type="street-address"
+                        outlined dense
+                        class="col-md q-pa-sm wide-field"
+                    ></q-input>
                 </div>
 
                 <div class="row">
@@ -181,62 +225,55 @@
 
                 <div class="row">
                     <q-select
-                    class="col-md q-pa-sm wide-field"
-                    label="Home Port"
-                    v-model="user.activeUser.port"
-                    :options="ports"
-                    @filter="portsFilterFn"
-                    :option-label="opt => opt.name"
-                    option-value="_id"
-                    outlined
-                    dense
-                    stack-label
-                    use-input
-                    fill-input
-                    hide-selected
-                    >
-                    </q-select>
+                        label="Home Port"
+                        v-model="user.activeUser.port"
+                        :options="ports"
+                        :option-label="opt => opt.name"
+                        option-value="_id"
+                        @filter="portsFilterFn"
+                        outlined dense stack-label
+                        use-input fill-input hide-selected
+                        class="col-md q-pa-sm wide-field"
+                    ></q-select>
 
                     <q-select
-                    v-if="!user.newUser"
-                    class="col-md q-pa-sm wide-field"
-                    outlined label="Active Vessel"
-                    v-model="user.activeUser.activeVessel"
-                    :options="vessels"
-
-                    :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'" option-value="_id"
-                    use-input
-                    fill-input
-                    hide-selected
-                    dense
-                    >
-                    </q-select>
+                        v-if="!user.newUser"
+                        label="Active Vessel"
+                        v-model="user.activeUser.activeVessel"
+                        :options="vessels"
+                        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+                        option-value="_id"
+                        outlined dense
+                        use-input fill-input hide-selected
+                        class="col-md q-pa-sm wide-field"
+                    ></q-select>
                 </div>
 
                     <q-select
-                    class="q-pa-sm wide-field"
-                    outlined
-                    label="Notification Preferences"
-                    v-model="user.activeUser.notificationPreferences"
-                    :options="notificationOptions"
-                    multiple
-                    stack-label
+                        label="Notification Preferences"
+                        v-model="user.activeUser.notificationPreferences"
+                        :options="notificationOptions"
+                        outlined stack-label
+                        multiple
+                        class="q-pa-sm wide-field"
                     >
-
-                    <template v-slot:selected-item="scope">
-                        <q-chip
-                            @remove="scope.removeAtIndex(scope.index)"
-                            :tabindex="scope.tabindex"
-                            removable
-                            dense
-                            color="primary"
-                            text-color="white"
+                        <template v-slot:selected-item="scope">
+                            <q-chip
+                                @remove="scope.removeAtIndex(scope.index)"
+                                :tabindex="scope.tabindex"
+                                removable
+                                dense
+                                color="primary"
+                                text-color="white"
                             >
-                            <q-avatar color="primary" text-color="white" :icon="scope.opt.icon" />
-                            {{ scope.opt.label }}
-                        </q-chip>
-                    </template>
-
+                                <q-avatar
+                                    color="primary"
+                                    text-color="white"
+                                    :icon="scope.opt.icon"
+                                />
+                                {{ scope.opt.label }}
+                            </q-chip>
+                        </template>
                 </q-select>
 
                 <!-- <q-input class="col-md q-pa-sm wide-field"
@@ -348,7 +385,7 @@
                                 </q-card-actions>
                             </q-card-section>
                         </q-card>
-
+                        <br><br><br><br>
                 </div>
 
             </div>
@@ -377,9 +414,23 @@
                 </q-card>
             </q-dialog>
 
-            <div class="q-pa-md  q-gutter-md" align="right">
-                <q-btn v-if="this.$route.name === 'User Details'" color="red" label="Cancel" @click="navigateBack"></q-btn>
-                <q-btn color="primary" label="Save" @click="saveUser"></q-btn>
+            <div
+                class="q-pa-md q-gutter-md fixed-bottom"
+                align="right"
+                style="background-color: white;"
+            >
+                <q-btn
+                    v-if="this.$route.name === 'User Details'"
+                    label="Cancel"
+                    color="red"
+                    @click="navigateBack"
+                ></q-btn>
+
+                <q-btn
+                    label="Save"
+                    color="primary"
+                    @click="saveUser"
+                ></q-btn>
             </div>
 
         </div>
@@ -563,14 +614,13 @@ export default class UserDetails extends Vue {
                             return (
                                 user.firstName.toLowerCase().includes(val.toLowerCase()) ||
                                 user.lastName.toLowerCase().includes(val.toLowerCase())
-                            )
+                            );
                             });
                 } catch (err) {
-        }
+                    console.log(err);
+                }
 
-        }
-
-        );
+            });
     }
 
 
@@ -741,7 +791,7 @@ export default class UserDetails extends Vue {
                     // pouchService.db.put(pouchService.userDBName, this.user.activeUser)
                     .then( () => {
                         this.notifySuccess('User Config Saved'),
-                        this.$router.push({path: '/'})
+                        this.$router.push({path: '/'});
                     }
                     );
                 }
@@ -880,7 +930,7 @@ export default class UserDetails extends Vue {
                         role
                         },
                     headers: {
-                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
                     };
 
@@ -923,50 +973,61 @@ export default class UserDetails extends Vue {
             timeout: 2000,
             icon: 'check',
             multiLine: true
-        })
+        });
     }
 
     private addPhone() {
         if (!this.user.activeUser!.phoneNumbers) {
-            this.user.activeUser!.phoneNumbers = [];
+            Vue.set(this.user.activeUser!, 'phoneNumbers', []);
         }
-        this.user.activeUser!.phoneNumbers.unshift(
+        this.user.activeUser!.phoneNumbers!.unshift(
             {
                 number: '',
-                type: {description: ''},
-                isActive: true
+                phoneNumberType: {description: ''},
+                isActive: true,
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format()
             }
-        )
+        );
         this.editPhoneNumber = true;
         this.newPhoneNumber = true;
-        this.activePhoneNumber = this.user.activeUser!.phoneNumbers[0];
+        this.activePhoneNumber = this.user.activeUser!.phoneNumbers![0];
     }
 
-    private editPhone(number: any) {
+    private editPhone(phoneNumber: any) {
         this.editPhoneNumber = true;
         this.newPhoneNumber = false;
-        this.activePhoneNumber = JSON.parse(JSON.stringify(number));
+        this.activePhoneNumber = JSON.parse(JSON.stringify(phoneNumber));
+        this.activePhoneNumber.updatedBy = authService.getCurrentUser()!.username;
+        this.activePhoneNumber.updatedDate = moment().format();
+        this.activePhoneNumber.isActive = true;
         this.user.activeUser!.phoneNumbers!.unshift(this.activePhoneNumber);
-        number.isActive = false;
+        phoneNumber.isActive = false;
     }
 
     private cancelEditPhone() {
         this.editPhoneNumber = false;
         if (this.newPhoneNumber) {
-            this.user.activeUser!.phoneNumbers!.shift()
+            this.user.activeUser!.phoneNumbers!.shift();
         }
     }
 
-    private deletePhone(number: any) {
-        number.isActive = false;
+    private deletePhone(phoneNumber: any) {
+        phoneNumber.isActive = false;
+        phoneNumber.updatedBy = authService.getCurrentUser()!.username;
+        phoneNumber.updatedDate = moment().format();
     }
 
     private get userPhoneNumbers() {
-        if (this.$route.name === "User Config") {
-            return this.user.activeUser!.phoneNumbers.map( (number) => number.isActive );
+        if (this.$route.name === 'User Config') {
+            return this.user.activeUser!.phoneNumbers!.filter( (phoneNumber: any) => phoneNumber.isActive );
         } else {
             return this.user.activeUser!.phoneNumbers;
         }
+    }
+
+    private getDate(date: string) {
+        return moment(date).format('LL');
     }
 
     private created() {
