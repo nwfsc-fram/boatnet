@@ -123,7 +123,7 @@ Vue.use(Quasar, {
     QList,
     QItem,
     QItemSection,
-    QItemLabel,
+    QItemLabel
   },
   directives: {
     ClosePopup

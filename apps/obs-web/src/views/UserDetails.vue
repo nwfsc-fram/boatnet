@@ -930,7 +930,7 @@ export default class UserDetails extends Vue {
                         role
                         },
                     headers: {
-                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
                     };
 
