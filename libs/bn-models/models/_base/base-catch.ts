@@ -6,7 +6,7 @@ import { Basket } from '../_common';
 // Ignore simple interface linting warning
 // https://github.com/palantir/tslint/blob/master/docs/usage/rule-flags/index.md
 /* tslint:disable:no-empty-interface */
-declare type CatchType = string; /// TODO Lookups - codend, pocket net, mix, submix
+declare type CatchType = string; /// TODO Lookups - codend, pocket net, mix, submix, sample, subsample
 
 export interface BaseCatch extends Base {
   // use createdDate for sequential ordering
