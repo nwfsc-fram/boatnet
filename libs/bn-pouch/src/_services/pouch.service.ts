@@ -227,6 +227,8 @@ class PouchService extends Vue {
         dbInfo.info.change.docs_read,
         dbInfo.info.change.pending
       );
+      const syncStatus: PouchDBSyncStatus = { syncActive: true, dbInfo };
+      this.$emit('syncProgress', syncStatus);
     });
     this.$on('pouchdb-sync-denied', (dbInfo: any) => {
       console.log('[PouchDB Service]Sync Denied!', dbInfo);
