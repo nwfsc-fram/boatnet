@@ -924,17 +924,18 @@ export default class UserDetails extends Vue {
             // if role in applicationRoles but not in storedRoles - add it
 
                 const config = {
-                    body: {
-                        username: this.user.activeUser!.apexUserAdminUserName,
-                        applicationName: 'BOATNET_OBSERVER',
-                        role
-                        },
                     headers: {
-                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
                     };
 
-                axios.post(this.url + '/api/v1/user-role', config)
+                const bodyParameters = {
+                        username: this.user.activeUser!.apexUserAdminUserName,
+                        applicationName: 'BOATNET_OBSERVER',
+                        role
+                        };
+
+                axios.post(this.url + '/api/v1/user-role', bodyParameters, config)
                 .then((response) => {
                     console.log(response);
                 });
@@ -1019,7 +1020,10 @@ export default class UserDetails extends Vue {
     }
 
     private get userPhoneNumbers() {
-        if (this.user.activeUser!.phoneNumbers && this.$route.name === 'User Config') {
+        if (this.$route.name === 'User Config') {
+            if (!this.user.activeUser!.phoneNumbers) {
+                Vue.set(this.user.activeUser!, 'phoneNumbers', []);
+            }
             return this.user.activeUser!.phoneNumbers!.filter( (phoneNumber: any) => phoneNumber.isActive );
         } else if (this.user.activeUser!.phoneNumbers) {
             return this.user.activeUser!.phoneNumbers;
