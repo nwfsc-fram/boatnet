@@ -925,7 +925,7 @@ export default class UserDetails extends Vue {
 
                 const config = {
                     headers: {
-                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
                     };
 
@@ -933,7 +933,7 @@ export default class UserDetails extends Vue {
                         username: this.user.activeUser!.apexUserAdminUserName,
                         applicationName: 'BOATNET_OBSERVER',
                         role
-                        }
+                        };
 
                 axios.post(this.url + '/api/v1/user-role', bodyParameters, config)
                 .then((response) => {
