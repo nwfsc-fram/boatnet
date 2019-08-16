@@ -1,6 +1,7 @@
 <template>
   <div>
     <q-page padding>
+
       <!-- <q-toggle v-model="useActiveHaul" label="Use Active Haul"></q-toggle> -->
 
       <!-- <q-tree
@@ -324,6 +325,18 @@
         </div>
       </q-card>
     </q-dialog>
+
+      <!-- <tree-table :value="nodes">
+        <column field="name" header="Name" :expander="true"></column>
+        <column field="size" header="Size"></column>
+        <column field="type" header="Type"></column>
+      </tree-table>
+
+      <prime-input
+      type="text" label="test prime text input" v-model="testText">
+
+      </prime-input> -->
+
   </div>
 </template>
 
@@ -344,6 +357,15 @@ import moment from 'moment';
 import { freemem } from 'os';
 import { disconnect } from 'cluster';
 import { get } from 'http';
+
+import TreeTable from 'primevue/treetable';
+Vue.component('TreeTable', TreeTable);
+
+// import Column from 'primevue/column';
+// Vue.component('Column', Column);
+
+// import InputText from 'primevue/inputtext';
+// Vue.component('PrimeInput', InputText);
 
 Vue.component(BoatnetSummary);
 
@@ -409,6 +431,41 @@ export default class Catch extends Vue {
   private discardReasonLookup: any;
 
   private expanded: any = [];
+
+  // private testText: string = '';
+
+  // private nodes = {
+  //   root: [
+  //     {
+  //       key: '0',
+  //       data: {
+  //         name: 'Applications',
+  //         size: '100kb',
+  //         type: 'Folder'
+  //       },
+  //       children: [
+  //         {
+  //           key: '0-0',
+  //           data: {
+  //             name: 'Vue',
+  //             size: '25kb',
+  //             type: 'Folder'
+  //           },
+  //           children: [
+  //             {
+  //               key: '0-0-0',
+  //               data: {
+  //                 name: 'Vue.app',
+  //                 size: '10kb',
+  //                 type: 'Application'
+  //               }
+  //             }
+  //           ]
+  //         }
+  //       ]
+  //     }
+  //   ]
+  // };
 
   @Action('setCurrentCatch', { namespace: 'appState' })
   private setCurrentCatch: any;
@@ -1186,7 +1243,7 @@ export default class Catch extends Vue {
     }
   }
 
-  private getWeightMethods() {
+  private get getWeightMethods() {
     console.log(this.weightMethodOptions);
     if (this.currentTrip.gearType === 'trawl') {
       return this.weightMethodOptions;

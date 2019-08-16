@@ -22,7 +22,7 @@
         <q-toolbar-title>
           <optecs-breadcrumbs/>
         </q-toolbar-title>
-              {{ syncStatus }}
+
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
@@ -118,6 +118,15 @@
 
     <q-page-container>
 
+      <q-dialog v-model="syncStatusExists">
+        <q-card>
+          <q-card-section>
+              <div class="text-h6">SYNCING DATA</div>
+              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 20px" :value="getPercent" color="warning" class="q-mt-sm"></q-linear-progress>
+              <sub v-if="syncStatus">{{ syncStatus.db === 'lookups-Dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</sub>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
       <router-view/>
     </q-page-container>
   </q-layout>
@@ -172,6 +181,18 @@ export default class DefaultLayout extends Vue {
 
   private navigateBack() {
     this.$router.back();
+  }
+
+  private get getPercent() {
+    return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+  }
+
+  private get syncStatusExists() {
+    if (this.syncStatus) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private created() {
