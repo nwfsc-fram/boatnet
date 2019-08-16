@@ -38,6 +38,7 @@ import {
   QDialog,
   QDrawer,
   QLayout,
+  QLinearProgress,
   QHeader,
   QInput,
   QMarkupTable,
@@ -91,6 +92,7 @@ Vue.use(Quasar, {
     QCheckbox,
     QDate,
     QLayout,
+    QLinearProgress,
     QHeader,
     QInput,
     QDialog,
@@ -123,7 +125,7 @@ Vue.use(Quasar, {
     QList,
     QItem,
     QItemSection,
-    QItemLabel,
+    QItemLabel
   },
   directives: {
     ClosePopup

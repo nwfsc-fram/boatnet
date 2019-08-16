@@ -65,4 +65,8 @@ export default class App extends Vue {
   .q-page-container {
     background-color: lightgray;
   }
+
+  .q-dialog__inner--minimized {
+  padding: 0 !important;
+  }
 </style>

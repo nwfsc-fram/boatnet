@@ -4,6 +4,9 @@ import { BaseSpecimen } from '../_base';
 
 export const AshopSpecimenTypeName = 'ashop-specimen';
 
+// column notes : sex, length, weight, biostructures, tags
+// species specific: salmon - isAdiposePresent, halibut - viability
+
 export interface AshopSpecimen extends BaseSpecimen {
     legacy?: {
         cruiseNum?: number;

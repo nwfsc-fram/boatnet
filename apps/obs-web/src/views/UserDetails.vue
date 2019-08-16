@@ -925,7 +925,7 @@ export default class UserDetails extends Vue {
 
                 const config = {
                     headers: {
-                        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken,
+                        'authorization': 'Bearer ' + authService.getCurrentUser()!.jwtToken,
                         }
                     };
 
@@ -1025,8 +1025,10 @@ export default class UserDetails extends Vue {
                 Vue.set(this.user.activeUser!, 'phoneNumbers', []);
             }
             return this.user.activeUser!.phoneNumbers!.filter( (phoneNumber: any) => phoneNumber.isActive );
-        } else {
+        } else if (this.user.activeUser!.phoneNumbers) {
             return this.user.activeUser!.phoneNumbers;
+        } else {
+            return [];
         }
     }
 

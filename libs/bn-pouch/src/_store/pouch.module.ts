@@ -21,34 +21,38 @@ function activateSyncListener(commit: any) {
   // console.log('[PouchDB Module] Activate Sync Listener');
   // pouchService.$off('syncChanged');
   // pouchService.$off('syncCompleted');
+  // pouchService.$off('syncProgress');
   pouchService.$on('syncChanged', (sync: PouchDBSyncStatus) => {
     commit('syncChanged', sync);
   });
   pouchService.$on('syncCompleted', (sync: PouchDBSyncStatus) => {
     commit('syncCompleted', sync);
   });
+  pouchService.$on('syncProgress', (sync: PouchDBSyncStatus) => {
+    commit('syncProgress', sync);
+  });
 }
 
 const actions: ActionTree<PouchDBState, any> = {
   // Mutations are asynchronous
   async connect({ commit }: any, credentials: CouchDBCredentials) {
-    activateSyncListener( commit );
+    activateSyncListener(commit);
     commit('connectRequest', credentials);
   },
   async reconnect({ commit }: any) {
     // will fail if credentials not already set
-    activateSyncListener( commit );
+    activateSyncListener(commit);
     commit('reconnectRequest');
   },
   async disconnect({ commit }: any) {
     pouchService.$off('syncChanged');
     pouchService.$off('syncCompleted');
+    pouchService.$off('syncProgress');
     commit('disconnect');
   },
   async addTest({ commit }: any, todoMsg: { message: string }) {
     commit('addTest', todoMsg);
   }
-
 };
 
 const mutations: MutationTree<PouchDBState> = {
@@ -65,7 +69,7 @@ const mutations: MutationTree<PouchDBState> = {
     }
   },
   disconnect(newState: PouchDBState) {
-    newState.syncStatus = { syncActive: false};
+    newState.syncStatus = { syncActive: false };
     pouchService.disconnect();
   },
   syncCompleted(newState: PouchDBState, status: PouchDBSyncStatus) {
@@ -78,6 +82,9 @@ const mutations: MutationTree<PouchDBState> = {
     const date = moment().format();
     localStorage.setItem(LS_LAST_SYNC_DATE, date);
     newState.lastSyncDate = date;
+    newState.syncStatus = status;
+  },
+  syncProgress(newState: PouchDBState, status: PouchDBSyncStatus) {
     newState.syncStatus = status;
   }
 };
@@ -97,7 +104,15 @@ const getters: GetterTree<PouchDBState, any> = {
     // return pouchService.db.allDocs('lookups-dev');
   },
   syncStatus(getState: PouchDBState) {
-    return getState.syncStatus.dbInfo;
+    // return getState.syncStatus.dbInfo.info;
+    const info = getState.syncStatus.dbInfo
+      ? getState.syncStatus.dbInfo.info
+      : undefined;
+    const db = getState.syncStatus.dbInfo ? getState.syncStatus.dbInfo.db : undefined;
+    if (info) {
+      // return info.direction + ': ' + info.change.docs_read + ' Pending: ' + info.change.pending;
+      return {docs_read: info.change.docs_read, pending: info.change.pending, db};
+    }
   }
 };
 
