@@ -124,14 +124,7 @@
                   v-model="catchModel.weightMethod"
                   :options="getWeightMethods.slice(4,8)"
                   :value.sync="weightMethod"
-                  spread
-                  unelevated
-                />
-                <q-btn-toggle
-                  v-model="catchModel.weightMethod"
-                  :options="getWeightMethods.slice(9,-1)"
-                  :value.sync="weightMethod"
-                  spread
+                  :spread="getWeightMethods.slice(4,8).length > 1"
                   unelevated
                 />
               </div>
@@ -374,6 +367,9 @@ export default class Catch extends Vue {
   @Prop() public char!: string;
 
   private wcgopCatchSettings: any;
+  private wcgopTrawlDiscardedWeightMethods: any[] = ['1','3','5','6','8','9','14','15','19'];
+  private wcgopTrawlRetainedWeightMethods: any[] = ['1','3','6','7','9','14','15','19'];
+  private wcgopFixedGearWeightMethods: any[] = ['6','9','13','14','19'];
   private wcgopCatchData: any[] = [];
   private frequentList = false;
   private disposition = 'Retained';
@@ -1244,11 +1240,15 @@ export default class Catch extends Vue {
   }
 
   private get getWeightMethods() {
-    console.log(this.weightMethodOptions);
-    if (this.currentTrip.gearType === 'trawl') {
-      return this.weightMethodOptions;
-    } else if (this.currentTrip.gearType === 'fixed') {
-      return this.weightMethodOptions;
+    if (this.catchModel && this.currentTrip.gearType === 'trawl') {
+      if (this.catchModel.disposition.description === 'Retained') {
+        return this.weightMethodOptions.filter( (weightMethod) => this.wcgopTrawlRetainedWeightMethods.includes(weightMethod.value));
+      } else {
+        return this.weightMethodOptions.filter( (weightMethod) => this.wcgopTrawlDiscardedWeightMethods.includes(weightMethod.value));
+      }
+
+    } else if (this.catchModel && this.currentTrip.gearType === 'fixed') {
+      return this.weightMethodOptions.filter( (weightMethod) => this.wcgopFixedGearWeightMethods.includes(weightMethod.value));
     } else {
       return this.weightMethodOptions;
     }

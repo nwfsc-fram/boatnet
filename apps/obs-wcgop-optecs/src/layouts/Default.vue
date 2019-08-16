@@ -118,12 +118,15 @@
 
     <q-page-container>
 
-      <q-dialog v-model="syncStatusExists">
+      <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
         <q-card>
-          <q-card-section>
-              <div class="text-h6">SYNCING DATA</div>
-              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 20px" :value="getPercent" color="warning" class="q-mt-sm"></q-linear-progress>
-              <sub v-if="syncStatus">{{ syncStatus.db === 'lookups-Dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</sub>
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
+              <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/>
+              <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">SYNCING DATA
+                <span v-if="syncStatus" style=" font-size: 11px; margin-left: 20px; color: black"> {{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
+                </div>
+              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
+              <br>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -188,11 +191,15 @@ export default class DefaultLayout extends Vue {
   }
 
   private get syncStatusExists() {
-    if (this.syncStatus) {
+    if (this.syncStatus && this.syncStatus.pending > 2) {
       return true;
     } else {
       return false;
     }
+  }
+
+  private set syncStatusExists(boolean: boolean) {
+    console.log(boolean);
   }
 
   private created() {
@@ -204,3 +211,11 @@ export default class DefaultLayout extends Vue {
   }
 }
 </script>
+
+<style scoped>
+
+.close-button {
+  padding: 0 !important;
+}
+
+</style>
