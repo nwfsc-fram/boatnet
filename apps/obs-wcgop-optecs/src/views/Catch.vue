@@ -361,11 +361,11 @@ import { get } from 'http';
 import TreeTable from 'primevue/treetable';
 Vue.component('TreeTable', TreeTable);
 
-import Column from 'primevue/column';
-Vue.component('Column', Column);
+// import Column from 'primevue/column';
+// Vue.component('Column', Column);
 
-import InputText from 'primevue/inputtext';
-Vue.component('PrimeInput', InputText);
+// import InputText from 'primevue/inputtext';
+// Vue.component('PrimeInput', InputText);
 
 Vue.component(BoatnetSummary);
 

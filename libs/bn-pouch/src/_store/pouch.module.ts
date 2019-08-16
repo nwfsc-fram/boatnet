@@ -108,8 +108,10 @@ const getters: GetterTree<PouchDBState, any> = {
     const info = getState.syncStatus.dbInfo
       ? getState.syncStatus.dbInfo.info
       : undefined;
+    const db = getState.syncStatus.dbInfo ? getState.syncStatus.dbInfo.db : undefined;
     if (info) {
-      return info.direction + ': ' + info.change.docs_read + ' Pending: ' + info.change.pending;
+      // return info.direction + ': ' + info.change.docs_read + ' Pending: ' + info.change.pending;
+      return {docs_read: info.change.docs_read, pending: info.change.pending, db};
     }
   }
 };
