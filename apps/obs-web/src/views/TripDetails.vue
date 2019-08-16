@@ -357,7 +357,7 @@ export default class TripDetails extends Vue {
       try {
         const db = pouchService.db;
         const queryOptions = {
-          limit: 5,
+          // limit: 5,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false,
@@ -381,7 +381,7 @@ export default class TripDetails extends Vue {
       try {
         const db = pouchService.db;
         const queryOptions = {
-          limit: 5,
+          // limit: 5,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false,
