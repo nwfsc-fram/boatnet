@@ -1,6 +1,7 @@
 
 <template>
   <div id="app">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="../public/img/icons/apple-icon-120x120.png">
     <link rel="apple-touch-icon" sizes="152x152" href="../public/img/icons/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="../public/img/icons/apple-icon-180x180.png">
