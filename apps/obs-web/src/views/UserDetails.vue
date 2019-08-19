@@ -744,7 +744,7 @@ export default class UserDetails extends Vue {
         if (this.user.activeUser!.activeVessel) {
             this.vessel.activeVessel = this.user.activeUser!.activeVessel;
         }
-        if (this.user.activeUser!.workEmail !== '' && this.user.activeUser!.cellPhone !== '') {
+        if (this.user.activeUser!.workEmail !== '') {
             if (this.user.newUser) {
                 console.log('new user');
                 console.log(this.user.newUser);
@@ -796,7 +796,7 @@ export default class UserDetails extends Vue {
                 }
             }
         } else {
-            this.errorAlert('Work Email and Mobile Number are required fields.');
+            this.errorAlert('Work Email is a required field.');
         }
 
     }
