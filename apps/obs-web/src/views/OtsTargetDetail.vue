@@ -618,6 +618,10 @@ export default class OtsTargetDetail extends Vue {
       this.getOptions();
       this.getHistory();
       this.getEMEFP();
+
+      this.ots.activeOTSTarget.effectiveDate = moment().format();
+      this.ots.activeOTSTarget.expirationDate = moment().format('YYYY') + '-12-31';
+
     }
 
 }
