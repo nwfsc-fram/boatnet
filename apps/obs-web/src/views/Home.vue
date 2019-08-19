@@ -7,15 +7,7 @@
       </template>
     </q-banner>
 
-    <span v-if='isSyncing' style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-      <span
-      class="text-primary text-h6"
-      style="text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-transform: uppercase; font-weight: bold">Wait<br>Syncing</span>
-      <q-spinner-puff
-      color="primary"
-      size="20em"/>
-    </span>
-    <img v-else alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+    <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
 
   </q-page>
 </template>
@@ -97,6 +89,9 @@ export default class Home extends Vue {
           console.log(userquery);
           if (userquery.rows[0]) {
             this.user.activeUser = userquery.rows[0].doc;
+            if (userquery.rows[0].doc.activeVessel) {
+              this.vessel.activeVessel = userquery.rows[0].doc.activeVessel;
+            }
           }
           console.log(this.user.activeUser);
 
