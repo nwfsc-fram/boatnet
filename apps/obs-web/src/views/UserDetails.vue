@@ -214,9 +214,19 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
-                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'"
-                    option-value="_id" emit-label></q-select>
+                    <q-select
+                    v-model="user.activeUser.state"
+                    label="State"
+                    type="address-level1"
+                    :options="usStateOptions"
+                    :option-label="opt => opt.abbreviation ? opt.abbreviation + ' (' + opt.name + ')' : ''"
+                    option-value="_id"
+                    @filter="statesFilterFn"
+                    outlined dense
+                    fill-input use-input hide-selected
+                    emit-label
+                    class="col-md q-pa-sm  wide-field"
+                    ></q-select>
 
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 

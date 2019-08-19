@@ -243,8 +243,8 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-  private set syncStatusExists(boolean: boolean) {
-    console.log(boolean);
+  private set syncStatusExists(statusExists: boolean) {
+    console.log(statusExists);
   }
 
   private created() {

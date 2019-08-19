@@ -343,7 +343,6 @@ export default class TripDetails extends Vue {
       pouchService.lookupsDBName,
       'obs_web/all_fisheries'
     );
-    console.log(fisheries.rows)
     this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
   }
 
@@ -730,7 +729,7 @@ export default class TripDetails extends Vue {
       if (this.fisheryOptions.length === 1) {
         Vue.set(this.trip.activeTrip!, 'fishery', this.fisheryOptions[0]);
       }
-    })
+    });
   }
 }
 </script>
