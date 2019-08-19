@@ -1,7 +1,7 @@
 {
-    "_id": "_design/validation",
-    "validate_doc_update": "function(newDoc, oldDoc, userCtx, secObj) {\r\n  var ddoc = this;\r\n\r\n  secObj.admins = secObj.admins || {};\r\n  secObj.admins.names = secObj.admins.names || [];\r\n  secObj.admins.roles = secObj.admins.roles || [];\r\n\r\n  var IS_DB_ADMIN = false;\r\n  var IS_DB_WRITER = false;\r\n  if(~ userCtx.roles.indexOf('_admin'))\r\n    IS_DB_ADMIN = true;\r\n if(~ secObj.admins.names.indexOf(userCtx.name))\r\n    IS_DB_ADMIN = true;\r\n  for(var i = 0; i < userCtx.roles; i++) {\r\n    if(~ secObj.admins.roles.indexOf(userCtx.roles[i]))\r\n      IS_DB_ADMIN = true;\r\n    if(~ secObj.members.roles.indexOf(userCtx.roles[i]))\r\n      IS_DB_WRITER = true;\r\n  }\r\n\r\n  if(ddoc.access && ddoc.access.read_only)\r\n    if(IS_DB_ADMIN || IS_DB_WRITER )\r\n      log('Admin/writer change on read-only db: ' + newDoc._id);\r\n    else\r\n      throw {'forbidden':'This database is read-only'};\r\n}",
-    "access": {
-      "read_only": "true"
-    }
+  "_id": "_design/validation",
+  "validate_doc_update": "function(newDoc, oldDoc, userCtx, secObj) {\r\n  var ddoc = this;\r\n\r\n  secObj.admins = secObj.admins || {};\r\n  secObj.admins.names = secObj.admins.names || [];\r\n  secObj.admins.roles = secObj.admins.roles || [];\r\n\r\n  secObj.members= secObj.members|| {};\r\n  secObj.members.names = secObj.members.names || [];\r\n  secObj.members.roles = secObj.members.roles || [];\r\n\r\n  var IS_DB_ADMIN = false;\r\n  var IS_DB_WRITER = false;\r\n\r\n  if(~ userCtx.roles.indexOf('_admin'))\r\n    IS_DB_ADMIN = true;\r\n if(~ secObj.admins.names.indexOf(userCtx.name))\r\n    IS_DB_ADMIN = true;\r\n  for(var i = 0; i < userCtx.roles.length; i++) {\r\n    if(~ secObj.admins.roles.indexOf(userCtx.roles[i]))\r\n      IS_DB_ADMIN = true;\r\n    if(~ secObj.members.roles.indexOf(userCtx.roles[i]))\r\n      IS_DB_WRITER = true;\r\n  }\r\n\r\n  if(ddoc.access && ddoc.access.read_only)\r\n    if(IS_DB_ADMIN || IS_DB_WRITER )\r\n      log('Admin/writer change on read-only db: ' + newDoc._id);\r\n    else\r\n      throw {'forbidden':'This database is read-only.'};\r\n}",
+  "access": {
+    "read_only": "true"
   }
+}
