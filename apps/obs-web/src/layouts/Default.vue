@@ -162,6 +162,20 @@
     </q-drawer>
 
     <q-page-container>
+
+      <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
+        <q-card>
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
+              <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/>
+              <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">SYNCING DATA
+                <span v-if="syncStatus" style=" font-size: 11px; margin-left: 20px; color: black"> {{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
+                </div>
+              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
+              <br>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
       <router-view/>
     </q-page-container>
   </q-layout>
@@ -193,6 +207,7 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
+  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
@@ -214,6 +229,22 @@ export default class DefaultLayout extends Vue {
         this.errorAlert(err);
       });
     }
+  }
+
+  private get getPercent() {
+    return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+  }
+
+  private get syncStatusExists() {
+    if (this.syncStatus && this.syncStatus.pending > 2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private set syncStatusExists(statusExists: boolean) {
+    console.log(statusExists);
   }
 
   private created() {

@@ -369,12 +369,6 @@ export default class Trips extends Vue {
     //   this.$store.dispatch('updateTrips', value);
     // }
 
-    private created() {
-      if ( authService.getCurrentUser() ) {
-        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
-      }
-    }
-
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
         if (this.userRoles.includes(role)) {
@@ -519,6 +513,19 @@ private computedTripClass(trip: WcgopTrip) {
     return 'trip-card my-card bg-green text-white';
   } else {
     return 'trip-card my-card bg-primary text-white';
+  }
+}
+
+private setActiveVessel() {
+  if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
+    this.vessel.activeVessel = this.user.activeUser.activeVessel;
+  }
+}
+
+private created() {
+  this.setActiveVessel();
+  if ( authService.getCurrentUser() ) {
+    this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
   }
 }
 

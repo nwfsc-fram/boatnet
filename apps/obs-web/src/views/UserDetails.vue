@@ -214,9 +214,19 @@
                 <div class="row">
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
 
-                    <q-select class="col-md q-pa-sm  wide-field" outlined dense v-model="user.activeUser.state" label="State" type="address-level1" fill-input
-                    hide-selected @filter="statesFilterFn" :options="usStateOptions" use-input :option-label="opt => opt.abbreviation + ' (' + opt.name + ')'"
-                    option-value="_id" emit-label></q-select>
+                    <q-select
+                    v-model="user.activeUser.state"
+                    label="State"
+                    type="address-level1"
+                    :options="usStateOptions"
+                    :option-label="opt => opt.abbreviation ? opt.abbreviation + ' (' + opt.name + ')' : ''"
+                    option-value="_id"
+                    @filter="statesFilterFn"
+                    outlined dense
+                    fill-input use-input hide-selected
+                    emit-label
+                    class="col-md q-pa-sm  wide-field"
+                    ></q-select>
 
                     <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
 
@@ -585,7 +595,6 @@ export default class UserDetails extends Vue {
                 try {
                     const db = pouchService.db;
                     const queryOptions = {
-                    limit: 5,
                     start_key: val.toLowerCase(),
                     inclusive_end: true,
                     descending: false,
@@ -745,7 +754,7 @@ export default class UserDetails extends Vue {
         if (this.user.activeUser!.activeVessel) {
             this.vessel.activeVessel = this.user.activeUser!.activeVessel;
         }
-        if (this.user.activeUser!.workEmail !== '' && this.user.activeUser!.cellPhone !== '') {
+        if (this.user.activeUser!.workEmail !== '') {
             if (this.user.newUser) {
                 console.log('new user');
                 console.log(this.user.newUser);
@@ -797,7 +806,7 @@ export default class UserDetails extends Vue {
                 }
             }
         } else {
-            this.errorAlert('Work Email and Mobile Number are required fields.');
+            this.errorAlert('Work Email is a required field.');
         }
 
     }

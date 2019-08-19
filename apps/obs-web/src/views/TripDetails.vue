@@ -314,7 +314,6 @@ export default class TripDetails extends Vue {
       try {
         const db = pouchService.db;
         const queryOptions: ListOptions = {
-          limit: 5,
           start_key: val.toLowerCase(),
           inclusive_end: true,
           descending: false
@@ -330,6 +329,21 @@ export default class TripDetails extends Vue {
         console.log(err);
       }
     });
+  }
+
+  private async getFisheryOptions() {
+    const db = pouchService.db;
+    // const queryOptions: ListOptions = {
+    //   start_key: '',
+    //   inclusive_end: true,
+    //   descending: false
+    // };
+
+    const fisheries = await db.query(
+      pouchService.lookupsDBName,
+      'obs_web/all_fisheries'
+    );
+    this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
   }
 
   private permitsFilterFn(val: string, update: any, abort: any) {
@@ -689,9 +703,33 @@ export default class TripDetails extends Vue {
     }
   }
 
+  private async getPorts() {
+        const db = pouchService.db;
+        const queryOptions = {
+          // limit: 5,
+          start_key: '',
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+
+        const ports = await db.query(
+          pouchService.lookupsDBName,
+          'optecs_trawl/all_port_names',
+          queryOptions
+        );
+        this.ports = ports.rows.map((row: any) => row.doc);
+  }
+
   private created() {
     this.getOtsTargets();
     this.getLatestDepartureDate();
+    this.getPorts();
+    this.getFisheryOptions().then( () => {
+      if (this.fisheryOptions.length === 1) {
+        Vue.set(this.trip.activeTrip!, 'fishery', this.fisheryOptions[0]);
+      }
+    });
   }
 }
 </script>

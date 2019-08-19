@@ -178,17 +178,7 @@ export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-  @Watch('pagination')
-  handler1(newVal: string, oldVal: string) {
-    console.log('handler1', newVal, oldVal);
-    this.colSelector();
-  }
 
-  @Watch('paginationController')
-  handler2(newVal: string, oldVal: string) {
-    console.log('hanlder2', newVal, oldVal);
-    this.colSelector();
-  }
 
   private WcgopTrips: any[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
@@ -667,6 +657,19 @@ export default class DebrieferTrips extends Vue {
   private onRowSelectUpdate(val: any[]) {
     this.deleteButtonDisabled = val.length === 0;
   }
+
+  @Watch('pagination')
+  private handler1(newVal: string, oldVal: string) {
+    console.log('handler1', newVal, oldVal);
+    this.colSelector();
+  }
+
+  @Watch('paginationController')
+  private handler2(newVal: string, oldVal: string) {
+    console.log('hanlder2', newVal, oldVal);
+    this.colSelector();
+  }
+
 }
 </script>
 

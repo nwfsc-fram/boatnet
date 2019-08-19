@@ -130,7 +130,7 @@ export default class UserConfig extends Vue {
                     addressLine1: '',
                     addressLine2: '',
                     city: '',
-                    state: '',
+                    state: {abbreviation: '', name: ''},
                     zipCode: '',
                     country: '',
                     workPhone: '',
