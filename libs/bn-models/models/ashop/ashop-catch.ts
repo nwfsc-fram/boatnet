@@ -7,6 +7,13 @@ export const AshopCatchTypeName = 'ashop-catch';
 export interface AshopCatch extends BaseCatch {
   // Catch = Sample in A-SHOP terminology, use sample for the UI
 
+  /* Column items to show on the Ashop Catch screen from baseCatch
+     catchNum
+     catchContent - e.g. Pacific hake, Canary rockfish
+     baskets - give a count of how many have been taken
+     protocol 
+  */
+
   sampleNum?: number; // unique/sequential within Haul  // column  (subsable number - if sameple is subsample - 101, 102, 103 etc in sample 1)
   isSubsample?: boolean; // for flattening convenience
   isPresorted?: boolean;

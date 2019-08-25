@@ -26,7 +26,13 @@ interface ObserverRange {
 }
 
 export interface AshopTrip extends BaseTrip {
-  tripNum?: number; // by Vessel sequence
+
+  /*  From BaseTrip, show the following columns:
+      tripNum
+      vessel
+      departureDate
+      returnDate
+  */
   observers?: ObserverRange[];
   fishingDays?: number; // calculated
   fishery?: Fishery; // default to A-SHOP

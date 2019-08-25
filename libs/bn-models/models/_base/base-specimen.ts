@@ -39,6 +39,7 @@ export interface SpecialProject {
 }
 
 export interface BaseSpecimen extends Base {
+  specimenNumber: number;
   sex?: Sex; // TODO Lookup
   length?: LinealMeasurement;
   width?: LinealMeasurement;
