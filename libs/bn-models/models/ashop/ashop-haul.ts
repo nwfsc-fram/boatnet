@@ -21,8 +21,8 @@ export interface AshopHaul extends BaseOperation {
   startFishingLocation?: LocationEvent; // ETL from Deploy // column - date (including time)
   endFishingLocation?: LocationEvent; // ETL from Retrieval // column - date (including time)
 
-  bottomDepth?: Measurement;
-  fishingDepth?: Measurement;
+  bottomDepth?: Measurement; // column
+  fishingDepth?: Measurement; // column
   // ETL units from DEPTH_METER_FATHOM
   // TODO Keep units in Fathoms - convert from Meters if needed
 
