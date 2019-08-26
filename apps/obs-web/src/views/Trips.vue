@@ -321,7 +321,7 @@ export default class Trips extends Vue {
             try {
                 const db = pouchService.db;
                 const queryOptions = {
-                limit: 5,
+                // limit: 5,
                 start_key: val.toLowerCase(),
                 end_key: val.toLowerCase() + '\u9999' ,
                 inclusive_end: true,
