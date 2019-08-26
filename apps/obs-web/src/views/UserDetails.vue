@@ -253,7 +253,8 @@
                         :options="vessels"
                         :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
                         option-value="_id"
-                        outlined dense
+                        @filter="filterVessels"
+                        outlined dense stack-label
                         use-input fill-input hide-selected
                         class="col-md q-pa-sm wide-field"
                     ></q-select>
@@ -866,27 +867,29 @@ export default class UserDetails extends Vue {
     }
 
     private async getPhoneTypes() {
-            try {
-              const db = pouchService.db;
-              const queryOptions = {
-                start_key: '',
-                inclusive_end: true,
-                descending: false,
-                include_docs: true
-              };
+        try {
+            console.log(moment().format());
+            const db = pouchService.db;
+            const queryOptions = {
+            start_key: '',
+            inclusive_end: true,
+            descending: false,
+            include_docs: true
+            };
 
-              const phoneTypes = await db.query(
-                pouchService.lookupsDBName,
-                'obs_web/all_phone_number_types',
-                queryOptions
-              );
+            const phoneTypes = await db.query(
+            pouchService.lookupsDBName,
+            'obs_web/all_phone_number_types',
+            queryOptions
+            );
 
-              console.log(phoneTypes);
+            console.log(phoneTypes);
+            console.log(moment().format());
 
-              this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
-            } catch (err) {
-              console.log(err);
-            }
+            this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
     private async getRoles() {
