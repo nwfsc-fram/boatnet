@@ -253,9 +253,8 @@
                         :options="vessels"
                         :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
                         option-value="_id"
-                        @filter="filterVessels"
                         outlined dense stack-label
-                        use-input fill-input hide-selected
+                        fill-input
                         class="col-md q-pa-sm wide-field"
                     ></q-select>
                 </div>
@@ -662,30 +661,53 @@ export default class UserDetails extends Vue {
     );
     }
 
-    private filterVessels(val: string, update: any, abort: any) {
-      update(async () => {
-            try {
-              const db = pouchService.db;
-              const queryOptions = {
-                limit: 5,
-                start_key: val.toLowerCase(),
-                inclusive_end: true,
-                descending: false,
-                include_docs: true
-              };
+    // private filterVessels(val: string, update: any, abort: any) {
+    //   update(async () => {
+    //         try {
+    //             const db = pouchService.db;
+    //             const queryOptions = {
+    //             // limit: 5,
+    //             inclusive_end: true,
+    //             descending: false,
+    //             include_docs: true
+    //             };
 
-              const vessels = await db.query(
-                pouchService.lookupsDBName,
-                'optecs_trawl/all_vessel_names',
-                queryOptions
-              );
+    //             // const vessels = await db.query(
+    //             //     pouchService.lookupsDBName,
+    //             //     'optecs_trawl/all_vessel_names',
+    //             //     queryOptions
+    //             //     );
+    //             // this.vessels = vessels.rows.map((row: any) => row.doc);
 
-              this.vessels = vessels.rows.map((row: any) => row.doc);
-            } catch (err) {
-              console.log(err);
-            }
-          });
-        }
+    //             const vesselCaptains = await db.query(
+    //                 pouchService.lookupsDBName,
+    //                 'obs_web/vessel_captains',
+    //                 queryOptions
+    //             );
+    //             for (const row of vesselCaptains.rows) {
+    //                 for (const captain of row.doc.captains) {
+
+    //                     if (!vesselCaptains[captain.workEmail]) {
+    //                         vesselCaptains[captain.workEmail] = [];
+    //                     }
+    //                     const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+    //                     vesselCaptains[captain.workEmail].push(row.doc);
+    //                 }
+    //             }
+
+    //             if (this.user.activeUser) {
+    //                 const activeUserEmail = this.user.activeUser!.workEmail;
+    //                 if (activeUserEmail) {
+    //                     this.vessels = vesselCaptains[activeUserEmail];
+    //                 }
+    //             }
+
+
+    //         } catch (err) {
+    //             console.log(err);
+    //         }
+    //       });
+    //     }
 
     private statesFilterFn(val: string, update: any, abort: any) {
         if (val === '') {
