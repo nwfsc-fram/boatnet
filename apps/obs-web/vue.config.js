@@ -8,6 +8,7 @@ module.exports = {
     }
   },
   pwa: {
+    appleMobileWebAppCapable: 'yes' ,
     workboxOptions: {
       skipWaiting: true,
       clientsClaim: true,
