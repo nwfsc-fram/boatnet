@@ -31,6 +31,7 @@
                     class="trip-date"
                     v-model="departureDate"
                     :options="startDateOptionsFn"
+                    :default-year-month="startYearMonth"
                     color="green"
                     dark
                     :readonly="trip.readOnly"
@@ -48,6 +49,7 @@
                     class="trip-date"
                     v-model="returnDate"
                     :options="returnDateOptionsFn"
+                    :default-year-month="endYearMonth"
                     color="red"
                     dark
                     :readonly="trip.readOnly"
@@ -201,7 +203,7 @@
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { date } from 'quasar';
 import {
   TripState,
@@ -280,6 +282,11 @@ export default class TripDetails extends Vue {
   private userTrips!: any;
   private latestReturnDate = 0;
   private missingRequired = false;
+
+  private existingTripStart: string = '';
+  private existingTripEnd: string = '';
+  private startYearMonth: string = moment().format('YYYY/MM');
+  private endYearMonth: string = moment().format('YYYY/MM');
 
   constructor() {
     super();
@@ -643,17 +650,33 @@ export default class TripDetails extends Vue {
     }
   }
 
-  private async getLatestDepartureDate() {
+  // private async getLatestDepartureDate() {
+  //   const db = pouchService.db;
+  //   const docs = await db.allDocs(pouchService.userDBName);
+
+  //   for (const row of docs.rows) {
+  //     if (
+  //       row.doc.type === 'wcgop-trip' && row.doc.tripStatus.description === 'open' &&
+  //       row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName
+  //     ) {
+  //       if (moment(row.doc.returnDate) > moment(this.latestReturnDate)) {
+  //         this.latestReturnDate = row.doc.returnDate;
+  //       }
+  //     }
+  //   }
+  // }
+
+  private async getBookedDates() {
     const db = pouchService.db;
     const docs = await db.allDocs(pouchService.userDBName);
 
     for (const row of docs.rows) {
-      if (
-        row.doc.type === 'wcgop-trip' &&
-        row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName
-      ) {
-        if (moment(row.doc.returnDate) > moment(this.latestReturnDate)) {
-          this.latestReturnDate = row.doc.returnDate;
+      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName ) {
+        if (row.doc.tripStatus.description === 'open') {
+          {
+             this.existingTripStart = row.doc.departureDate;
+             this.existingTripEnd = row.doc.returnDate;
+          }
         }
       }
     }
@@ -661,7 +684,8 @@ export default class TripDetails extends Vue {
 
   private startDateOptionsFn(val: string) {
     if (this.trip.newTrip) {
-      return moment(val) > moment(this.latestReturnDate);
+      return moment(val) >= moment() &&
+      (moment(val) < moment(this.existingTripStart) || moment(val) > moment(this.existingTripEnd));
     } else {
       return true;
     }
@@ -669,7 +693,16 @@ export default class TripDetails extends Vue {
 
   private returnDateOptionsFn(val: string) {
     if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
-      return moment(val) >= moment(this.trip.activeTrip.departureDate);
+      if (moment(this.trip.activeTrip.departureDate) < moment(this.existingTripEnd)) {
+        return moment(val) >= moment(this.trip.activeTrip.departureDate) &&
+        moment(val) < moment(this.existingTripStart);
+      } else {
+        return moment(val) >= moment(this.trip.activeTrip.departureDate) &&
+        moment(val) > moment(this.existingTripEnd);
+      }
+    } else {
+      return moment(val) >= moment() &&
+      (moment(val) < moment(this.existingTripStart) || moment(val) > moment(this.existingTripEnd));
     }
   }
 
@@ -723,7 +756,8 @@ export default class TripDetails extends Vue {
 
   private created() {
     this.getOtsTargets();
-    this.getLatestDepartureDate();
+    // this.getLatestDepartureDate();
+    this.getBookedDates();
     this.getPorts();
     this.getFisheryOptions().then( () => {
       if (this.fisheryOptions.length === 1) {
@@ -731,6 +765,19 @@ export default class TripDetails extends Vue {
       }
     });
   }
+
+  @Watch('departureDate')
+  private handler1(newVal: string, oldVal: string) {
+    this.endYearMonth = moment(newVal).format('YYYY/MM');
+    if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
+      this.returnDate = newVal;
+    }
+    console.log(this.returnDate);
+    if (this.returnDate === 'Invalid date') {
+      Vue.set(this, 'returnDate', newVal)
+      };
+  }
+
 }
 </script>
 
