@@ -14,8 +14,14 @@
           <div v-show="!!alert.message">
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
-          <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="width: 30%; position: relative; left: 33.33%">
-          <div class="text-h6 text-primary" style="text-align: center; font-size: 24px; border-bottom: 2px solid">OBSERVER WEB</div>
+
+              <div class="q-ma-md" style="text-align: center">
+                <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="height: 100px">
+                &nbsp;
+                <div class="text-h6 text-primary" style="font-size: 24px; display: inline; line-height: 100px; vertical-align: top">OBSERVER WEB</div>
+
+              </div>
+
           <q-input
             outlined
             ref="username"
