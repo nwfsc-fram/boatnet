@@ -52,30 +52,6 @@
         </div>
       </div>
     </q-page-container>
-    <vue-touch-keyboard
-      :options="options"
-      v-if="visible"
-      :layout="layout"
-      :cancel="hide"
-      :accept="accept"
-      :input="input"
-    />
-
-            <div style="text-align: center;"
-            class="absolute-bottom">
-                    <div>
-          <b>Last Software Update Date:</b>
-          {{lastSoftwareUpdateDate}}
-        </div>
-        <div>
-          <b>Last Data Sync:</b>
-          {{lastDataSyncDate}}
-        </div>
-        <div>
-          <b>Last Login Date:</b>
-          {{lastLoginDate}}
-        </div>
-        v0.0.?</div>
   </q-layout>
 </template>
 
@@ -90,6 +66,8 @@ import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
+
+import { Notify } from 'quasar';
 
 @Component
 export default class Login extends Vue {
@@ -158,11 +136,29 @@ export default class Login extends Vue {
     this.visible = false;
   }
 
+  private statusNotify() {
+    const message =
+          "Last Software Update Date: " + this.lastSoftwareUpdateDate +
+          "<br>Last Data Sync: " + this.lastDataSyncDate +
+          "<br>Last Login Date: " + this.lastLoginDate
+
+    Notify.create({
+      message: message,
+      position: 'bottom',
+      color: 'white',
+      textColor: 'black',
+      html: true,
+      timeout: 5000,
+      multiLine: true
+    });
+  }
+
   private mounted() {
     this.logout(); // reset login status
     this.disconnectPouch();
     this.clear(); // clear errors
     this.clearAppState(); // clear trips etc
+    this.statusNotify();
 
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
