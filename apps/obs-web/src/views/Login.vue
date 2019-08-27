@@ -1,21 +1,27 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="basic">
+    <!-- <q-header elevated class="basic">
       <q-toolbar>
         <q-btn flat dense round/>
 
         <q-toolbar-title>Observer Web Login</q-toolbar-title>
 
       </q-toolbar>
-    </q-header>
+    </q-header> -->
     <q-page-container class="absolute-center"  style="width: 100%">
       <div class="q-pa-sm column justify-center items-center full-height">
-        <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="width: 100%; max-width: 500px">
+        <form @submit.prevent.stop="handleSubmit" class="q-gutter-xs" style="width: 100%; max-width: 500px">
           <div v-show="!!alert.message">
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
-
-          <q-input outlined ref="username" v-model="username" label="Username"/>
+          <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="width: 30%; position: relative; left: 33.33%">
+          <div class="text-h6 text-primary" style="text-align: center; font-size: 24px; border-bottom: 2px solid">OBSERVER WEB</div>
+          <q-input
+            outlined
+            ref="username"
+            v-model="username"
+            dense
+            label="Username"/>
 
           <q-input
             outlined
@@ -23,6 +29,7 @@
             :type="isPwd ? 'password' : 'text'"
             v-model="password"
             label="Password"
+            dense
             autocomplete="boatnet password"
           >
             <template v-slot:append>
@@ -40,13 +47,14 @@
               :disable="!password || !username"
               :loading="auth.status.isLoggingIn"
               label="Login"
+              dense
               type="submit"
               align="center"
             />
           </div>
         </form>
         <br>
-        <div class="column justify-center q-gutter-md" style="text-align: center">
+        <div class="column justify-center" style="text-align: center">
           <router-link to="/" disabled="true">Forgot Password</router-link>
           <router-link to="/" disabled="true">Change Password</router-link>
         </div>
@@ -144,7 +152,7 @@ export default class Login extends Vue {
 
     Notify.create({
       message: message,
-      position: 'bottom',
+      position: 'top',
       color: 'white',
       textColor: 'black',
       html: true,
