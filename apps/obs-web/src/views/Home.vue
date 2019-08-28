@@ -6,8 +6,8 @@
         <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
-
     <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+    <div class="fixed-bottom-right">fish fish fish</div>
 
   </q-page>
 </template>
