@@ -12,8 +12,8 @@ module.exports = {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: 'service-worker.js',
-      skipWaiting: true,
-      clientsClaim: true,
+      // skipWaiting: true,
+      // clientsClaim: true,
     }
   },
   transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
