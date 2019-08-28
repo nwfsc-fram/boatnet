@@ -7,7 +7,6 @@
       </template>
     </q-banner>
     <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
-    <div class="fixed-bottom-right">one more test</div>
 
   </q-page>
 </template>
