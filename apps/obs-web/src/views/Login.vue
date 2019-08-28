@@ -82,6 +82,7 @@ import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 
 import { Notify } from 'quasar';
+import moment from 'moment';
 
 @Component
 export default class Login extends Vue {
@@ -168,6 +169,7 @@ export default class Login extends Vue {
   }
 
   private mounted() {
+    this.refreshPage();
     this.logout(); // reset login status
     this.disconnectPouch();
     this.clear(); // clear errors
@@ -209,6 +211,19 @@ export default class Login extends Vue {
     } else {
       return 'Never';
     }
+  }
+
+  public refreshPage() {
+    console.log('refresh started')
+    const pageVersion = moment().format('HHMM');
+    const path = window.location.href.split('?')[0] + '?v=' + pageVersion;
+    const func = 'window.location.replace(\"' + path + '\")'
+    var timeout = 60000;
+    if (window.location.href.indexOf('?v=') === -1) {
+        timeout = 0;
+    }
+    const mytimeout = setTimeout(func, timeout);
+    console.log('refresh completed')
   }
 
 }
