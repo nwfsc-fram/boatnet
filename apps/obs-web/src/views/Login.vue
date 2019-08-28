@@ -169,7 +169,7 @@ export default class Login extends Vue {
   }
 
   private mounted() {
-    this.refreshPage();
+    // this.refreshPage();
     this.logout(); // reset login status
     this.disconnectPouch();
     this.clear(); // clear errors
@@ -213,18 +213,18 @@ export default class Login extends Vue {
     }
   }
 
-  public refreshPage() {
-    console.log('refresh started')
-    const pageVersion = moment().format('HHMM');
-    const path = window.location.href.split('?')[0] + '?v=' + pageVersion;
-    const func = 'window.location.replace(\"' + path + '\")'
-    var timeout = 60000;
-    if (window.location.href.indexOf('?v=') === -1) {
-        timeout = 0;
-    }
-    const mytimeout = setTimeout(func, timeout);
-    console.log('refresh completed')
-  }
+  // public refreshPage() {
+  //   console.log('refresh started')
+  //   const pageVersion = moment().format('HHMM');
+  //   const path = window.location.href.split('?')[0] + '?v=' + pageVersion;
+  //   const func = 'window.location.replace(\"' + path + '\")'
+  //   var timeout = 60000;
+  //   if (window.location.href.indexOf('?v=') === -1) {
+  //       timeout = 0;
+  //   }
+  //   const mytimeout = setTimeout(func, timeout);
+  //   console.log('refresh completed')
+  // }
 
 }
 </script>

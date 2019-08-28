@@ -9,7 +9,9 @@ module.exports = {
   },
   pwa: {
     appleMobileWebAppCapable: 'yes' ,
+    workboxPluginMode: 'InjectManifest',
     workboxOptions: {
+      swSrc: 'service-worker.js',
       skipWaiting: true,
       clientsClaim: true,
     }
