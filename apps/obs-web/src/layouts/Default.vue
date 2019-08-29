@@ -283,7 +283,7 @@ export default class DefaultLayout extends Vue {
     this.isIndexing = true;
     this.toIndex = 5;
 
-    const db = await pouchService.db;
+    const db = pouchService.db;
     const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
 
     const phoneTypes = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);

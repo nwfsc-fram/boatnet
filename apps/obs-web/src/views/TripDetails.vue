@@ -774,8 +774,8 @@ export default class TripDetails extends Vue {
     }
     console.log(this.returnDate);
     if (this.returnDate === 'Invalid date') {
-      Vue.set(this, 'returnDate', newVal)
-      };
+      Vue.set(this, 'returnDate', newVal);
+      }
   }
 
 }
