@@ -249,7 +249,7 @@ export default class DefaultLayout extends Vue {
   }
 
   private get getPercent() {
-    if (this.syncStatus.pending < 100 && !this.isIndexing && this.syncStatus.db === 'lookups-dev') {
+    if (this.syncStatus.pending < 150 && !this.isIndexing && this.syncStatus.db === 'lookups-dev') {
       this.buildIndexes();
     }
     return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
@@ -301,8 +301,6 @@ export default class DefaultLayout extends Vue {
     const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
     this.decrementToIndex(vessels);
 
-    // const phoneTypes2 = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
-
     this.isIndexing = false;
   }
 
@@ -313,6 +311,7 @@ export default class DefaultLayout extends Vue {
     } else {
       this.$router.push({path: '/login'});
     }
+    this.buildIndexes();
   }
 
   private navigateBack() {
