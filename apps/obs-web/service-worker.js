@@ -1,4 +1,4 @@
-import { general } from './src/_store/general.module'
+import general from './src/_store/general.module'
 
 workbox.core.setCacheNameDetails({ prefix: 'd4' })
 //Change this value every time before you build
