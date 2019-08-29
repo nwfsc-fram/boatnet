@@ -12,6 +12,7 @@ import {
 Vue.use(Vuex);
 
 export const state: GeneralState = {
+  appVersion: '42',
   portDecoder
 };
 
