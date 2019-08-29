@@ -68,7 +68,7 @@
     </q-page-container>
         <div class="absolute-bottom" style="text-align: center; font-size: 12px; font-weight: bold">
           <br>
-          Software Version #: todo
+          Software Version #: {{general.appVersion}}
           <br>Last Software Update Date: {{this.lastSoftwareUpdateDate}}
           <br>Last Data Sync: {{this.lastDataSyncDate}}
           <br>Last Login Date: {{this.lastLoginDate}}
@@ -82,7 +82,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 
 import router from '../router';
-import { AlertState, WcgopAppState } from '../_store/types/types';
+import { AlertState, WcgopAppState, GeneralState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
@@ -97,6 +97,7 @@ export default class Login extends Vue {
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
   @State('appState') private appState!: WcgopAppState;
+  @State('general') private general!: GeneralState;
 
   @Action('login', { namespace: 'auth' }) private login: any;
   @Action('logout', { namespace: 'auth' }) private logout: any;
