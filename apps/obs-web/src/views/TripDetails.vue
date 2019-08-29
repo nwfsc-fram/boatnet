@@ -283,8 +283,8 @@ export default class TripDetails extends Vue {
   private latestReturnDate = 0;
   private missingRequired = false;
 
-  private existingTripStart: string = '';
-  private existingTripEnd: string = '';
+  private existingTripStart: string = '0';
+  private existingTripEnd: string = '0';
   private startYearMonth: string = moment().format('YYYY/MM');
   private endYearMonth: string = moment().format('YYYY/MM');
 

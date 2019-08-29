@@ -66,6 +66,13 @@
         </div>
       </div>
     </q-page-container>
+        <div class="absolute-bottom" style="text-align: center; font-size: 12px; font-weight: bold">
+          <br>
+          Software Version #: todo
+          <br>Last Software Update Date: {{this.lastSoftwareUpdateDate}}
+          <br>Last Data Sync: {{this.lastDataSyncDate}}
+          <br>Last Login Date: {{this.lastLoginDate}}
+        </div>
   </q-layout>
 </template>
 
@@ -151,22 +158,22 @@ export default class Login extends Vue {
     this.visible = false;
   }
 
-  private statusNotify() {
-    const message =
-          "Last Software Update Date: " + this.lastSoftwareUpdateDate +
-          "<br>Last Data Sync: " + this.lastDataSyncDate +
-          "<br>Last Login Date: " + this.lastLoginDate
+  // private statusNotify() {
+  //   const message =
+  //         "Last Software Update Date: " + this.lastSoftwareUpdateDate +
+  //         "<br>Last Data Sync: " + this.lastDataSyncDate +
+  //         "<br>Last Login Date: " + this.lastLoginDate
 
-    Notify.create({
-      message: message,
-      position: 'top',
-      color: 'white',
-      textColor: 'black',
-      html: true,
-      timeout: 5000,
-      multiLine: true
-    });
-  }
+  //   Notify.create({
+  //     message: message,
+  //     position: 'top',
+  //     color: 'white',
+  //     textColor: 'black',
+  //     html: true,
+  //     timeout: 5000,
+  //     multiLine: true
+  //   });
+  // }
 
   private mounted() {
     // this.refreshPage();
@@ -174,7 +181,7 @@ export default class Login extends Vue {
     this.disconnectPouch();
     this.clear(); // clear errors
     this.clearAppState(); // clear trips etc
-    this.statusNotify();
+    // this.statusNotify();
 
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
       switch (mutation.type) {
