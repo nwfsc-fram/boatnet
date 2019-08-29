@@ -24,7 +24,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing">
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing && !isIndexing">
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
@@ -166,11 +166,24 @@
       <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
         <q-card>
           <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
-              <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/>
+              <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
               <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">SYNCING DATA
                 <span v-if="syncStatus" style=" font-size: 11px; margin-left: 20px; color: black"> {{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
                 </div>
               <q-linear-progress v-if="syncStatus" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
+              <br>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="isIndexing" full-width seamless position="bottom">
+        <q-card>
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
+              <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
+              <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">INDEXING DATA
+                <span v-if="isIndexing" style=" font-size: 11px; margin-left: 20px; color: black"> {{ toIndex }} remaining.</span>
+                </div>
+              <q-linear-progress v-if="isIndexing" stripe rounded style="height: 10px;" :value="getIndexedPercent" color="primary"></q-linear-progress>
               <br>
           </q-card-section>
         </q-card>
@@ -215,6 +228,10 @@ export default class DefaultLayout extends Vue {
   @Action('reconnect', {namespace: 'baseCouch'}) private reconnectCouch: any;
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
+  private syncIsComplete: boolean = false;
+  private isIndexing: boolean = false;
+  private toIndex: number = 0;
+  private indexed: number = 0;
 
   constructor() {
     super();
@@ -232,7 +249,14 @@ export default class DefaultLayout extends Vue {
   }
 
   private get getPercent() {
+    if (this.syncStatus.pending < 100 && !this.isIndexing && this.syncStatus.db === 'lookups-dev') {
+      this.buildIndexes();
+    }
     return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+  }
+
+  private get getIndexedPercent() {
+    return this.indexed / (this.indexed + this.toIndex);
   }
 
   private get syncStatusExists() {
@@ -245,6 +269,41 @@ export default class DefaultLayout extends Vue {
 
   private set syncStatusExists(statusExists: boolean) {
     console.log(statusExists);
+  }
+
+  private decrementToIndex(indexed: any) {
+    console.log(indexed);
+    console.log(moment().format('MMSS'));
+    this.toIndex--;
+    this.indexed++;
+    console.log(this.toIndex);
+  }
+
+  private async buildIndexes() {
+    this.isIndexing = true;
+    this.toIndex = 5;
+
+    const db = await pouchService.db;
+    const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
+
+    const phoneTypes = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
+    this.decrementToIndex(phoneTypes);
+
+    const fisheries = await db.query(pouchService.lookupsDBName, 'obs_web/all_fisheries');
+    this.decrementToIndex(fisheries);
+
+    const ports = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_port_names', queryOptions);
+    this.decrementToIndex(ports);
+
+    const vesselCaptains = await db.query(pouchService.lookupsDBName, 'obs_web/vessel_captains', queryOptions);
+    this.decrementToIndex(vesselCaptains);
+
+    const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
+    this.decrementToIndex(vessels);
+
+    // const phoneTypes2 = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
+
+    this.isIndexing = false;
   }
 
   private created() {
