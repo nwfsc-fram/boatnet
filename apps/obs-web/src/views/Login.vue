@@ -66,10 +66,10 @@
         </div>
       </div>
     </q-page-container>
-        <div class="absolute-bottom" style="text-align: center; font-size: 12px; font-weight: bold">
+        <div class="absolute-bottom" style="text-align: center; font-size: 10px; font-weight: bold">
           <br>
-          Software Version #: {{general.appVersion}}
-          <br>Last Software Update Date: {{this.lastSoftwareUpdateDate}}
+          <!-- Version: {{general.appVersion}} -->
+          Version: todo | Updated: {{this.lastSoftwareUpdateDate}}
           <br>Last Data Sync: {{this.lastDataSyncDate}}
           <br>Last Login Date: {{this.lastLoginDate}}
         </div>

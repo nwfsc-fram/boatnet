@@ -1,9 +1,8 @@
-import general from './src/_store/general.module'
+// service-worker.js
 
 workbox.core.setCacheNameDetails({ prefix: 'd4' })
 //Change this value every time before you build
-const LATEST_VERSION = 'v0.14'
-general.appVersion = LATEST_VERSION
+const LATEST_VERSION = 'v0.15'
 self.addEventListener('activate', (event) => {
   console.log(`%c ${LATEST_VERSION} `, 'background: #ddd; color: #0000ff')
   if (caches) {
