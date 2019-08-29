@@ -21,6 +21,10 @@ import {
   QInnerLoading, QSpinnerPuff, Notify, QLinearProgress
 } from 'quasar';
 
+import 'primevue/resources/themes/nova-light/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+
 import UserDetails from './views/UserDetails.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
