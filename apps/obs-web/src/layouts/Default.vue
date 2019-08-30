@@ -246,7 +246,7 @@
               <span
                 v-if="isIndexing"
                 style=" font-size: 11px; margin-left: 20px; color: black"
-              >{{ toIndex }} remaining.</span>
+              >{{ toIndex / 2 }} remaining.</span>
             </div>
             <q-linear-progress
               v-if="isIndexing"
@@ -354,7 +354,7 @@ export default class DefaultLayout extends Vue {
   private buildIndexes() {
     setTimeout( async() => {
       this.isIndexing = true;
-      this.toIndex = 5;
+      this.toIndex = 10;
 
       const db = pouchService.db;
       const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
