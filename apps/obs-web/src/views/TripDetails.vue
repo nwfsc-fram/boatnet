@@ -26,7 +26,14 @@
             <strong :disabled="trip.readOnly">Trip Dates</strong>
           </p>
           <span class="p-fluid">
-            <pCalendar v-model="tripDates" :minDate="minDate" :disabledDates="invalidDates" placeholder="start / end" selectionMode="range" style="width: 100%;">
+            <pCalendar
+              v-model="tripDates"
+              :minDate="minDate"
+              :disabledDates="invalidDates"
+              :touchUI="true"
+              placeholder="start / end"
+              selectionMode="range"
+              style="width: 100%;">
             </pCalendar>
           </span>
         <!-- <br>
