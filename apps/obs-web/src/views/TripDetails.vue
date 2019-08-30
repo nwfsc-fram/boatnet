@@ -259,6 +259,8 @@ import {
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
+import { Notify } from 'quasar';
+
 // @Component({
 //   pouch: {
 //     userTrips() { // Also declared in class
@@ -545,6 +547,19 @@ export default class TripDetails extends Vue {
 
     // REQUIRES A FISHERY!
     // first check whether there is a stored selection for the vessel and fishery
+
+    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
+        Notify.create({
+            message: '<b>A trip must have a start and end date</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+        return;
+    }
 
     if (this.trip.activeTrip!.fishery!.name !== '') {
 
