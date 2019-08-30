@@ -33,7 +33,7 @@
               :touchUI="true"
               placeholder="start / end"
               selectionMode="range"
-              readonly
+              onfocus="blur();"
               style="width: 100%;">
             </pCalendar>
           </span>
