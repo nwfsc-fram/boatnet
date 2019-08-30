@@ -1,7 +1,6 @@
 <template>
   <div>
     <q-page padding>
-
       <!-- <q-toggle v-model="useActiveHaul" label="Use Active Haul"></q-toggle> -->
 
       <!-- <q-tree
@@ -319,7 +318,7 @@
       </q-card>
     </q-dialog>
 
-      <!-- <tree-table :value="nodes">
+    <!-- <tree-table :value="nodes">
         <column field="name" header="Name" :expander="true"></column>
         <column field="size" header="Size"></column>
         <column field="type" header="Type"></column>
@@ -328,8 +327,7 @@
       <prime-input
       type="text" label="test prime text input" v-model="testText">
 
-      </prime-input> -->
-
+    </prime-input>-->
   </div>
 </template>
 
@@ -367,9 +365,28 @@ export default class Catch extends Vue {
   @Prop() public char!: string;
 
   private wcgopCatchSettings: any;
-  private wcgopTrawlDiscardedWeightMethods: any[] = ['1','3','5','6','8','9','14','15','19'];
-  private wcgopTrawlRetainedWeightMethods: any[] = ['1','3','6','7','9','14','15','19'];
-  private wcgopFixedGearWeightMethods: any[] = ['6','9','13','14','19'];
+  private wcgopTrawlDiscardedWeightMethods: any[] = [
+    '1',
+    '3',
+    '5',
+    '6',
+    '8',
+    '9',
+    '14',
+    '15',
+    '19'
+  ];
+  private wcgopTrawlRetainedWeightMethods: any[] = [
+    '1',
+    '3',
+    '6',
+    '7',
+    '9',
+    '14',
+    '15',
+    '19'
+  ];
+  private wcgopFixedGearWeightMethods: any[] = ['6', '9', '13', '14', '19'];
   private wcgopCatchData: any[] = [];
   private frequentList = false;
   private disposition = 'Retained';
@@ -1242,13 +1259,18 @@ export default class Catch extends Vue {
   private get getWeightMethods() {
     if (this.catchModel && this.currentTrip.gearType === 'trawl') {
       if (this.catchModel.disposition.description === 'Retained') {
-        return this.weightMethodOptions.filter( (weightMethod) => this.wcgopTrawlRetainedWeightMethods.includes(weightMethod.value));
+        return this.weightMethodOptions.filter((weightMethod) =>
+          this.wcgopTrawlRetainedWeightMethods.includes(weightMethod.value)
+        );
       } else {
-        return this.weightMethodOptions.filter( (weightMethod) => this.wcgopTrawlDiscardedWeightMethods.includes(weightMethod.value));
+        return this.weightMethodOptions.filter((weightMethod) =>
+          this.wcgopTrawlDiscardedWeightMethods.includes(weightMethod.value)
+        );
       }
-
     } else if (this.catchModel && this.currentTrip.gearType === 'fixed') {
-      return this.weightMethodOptions.filter( (weightMethod) => this.wcgopFixedGearWeightMethods.includes(weightMethod.value));
+      return this.weightMethodOptions.filter((weightMethod) =>
+        this.wcgopFixedGearWeightMethods.includes(weightMethod.value)
+      );
     } else {
       return this.weightMethodOptions;
     }
