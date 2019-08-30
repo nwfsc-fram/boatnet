@@ -201,7 +201,6 @@
       <div v-else align="right" class="text-primary">
         <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
         <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
-        <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
       </div>
 
     <q-dialog v-model="missingRequired">
@@ -213,6 +212,9 @@
         </div>
     </q-dialog>
   </div>
+        <div align="right" class="q-pa-md q-gutter-md">
+          <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
+        </div>
   </div>
 </template>
 
