@@ -11,7 +11,15 @@
           icon="menu"
         />
 
-        <q-btn v-if="this.$router.currentRoute.name !== 'Home'" flat dense round @click="navigateBack" aria-label="Back" icon="chevron_left"/>
+        <q-btn
+          v-if="this.$router.currentRoute.name !== 'Home'"
+          flat
+          dense
+          round
+          @click="navigateBack"
+          aria-label="Back"
+          icon="chevron_left"
+        />
 
         <q-toolbar-title>
           <span
@@ -20,17 +28,22 @@
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
-        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
+        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing && !isIndexing">
+    <q-drawer
+      v-model="leftDrawerOpen"
+      bordered
+      content-class="bg-grey-2"
+      v-if="!isSyncing && !isIndexing"
+    >
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
         <q-item to="/" exact>
           <q-item-section avatar>
-            <q-icon name="home"/>
+            <q-icon name="home" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Home</q-item-label>
@@ -40,7 +53,7 @@
 
         <q-item to="/trips" exact>
           <q-item-section avatar>
-            <q-icon name="directions"/>
+            <q-icon name="directions" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Trips</q-item-label>
@@ -50,7 +63,7 @@
 
         <q-item to="/log-book-capture" exact>
           <q-item-section avatar>
-            <q-icon name="camera_alt"/>
+            <q-icon name="camera_alt" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Log Book Capture</q-item-label>
@@ -58,9 +71,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/vessels"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="fa fa-ship"/>
+            <q-icon name="fa fa-ship" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Vessel Management</q-item-label>
@@ -68,9 +85,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/em-efp-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/em-efp-management"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="videocam"/>
+            <q-icon name="videocam" />
           </q-item-section>
           <q-item-section>
             <q-item-label>EM EFP Management</q-item-label>
@@ -78,9 +99,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/ots-management" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/ots-management"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="waves"/>
+            <q-icon name="waves" />
           </q-item-section>
           <q-item-section>
             <q-item-label>OTS Management</q-item-label>
@@ -88,9 +113,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-assignment" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/observer-assignment"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="fa fa-binoculars"/>
+            <q-icon name="fa fa-binoculars" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Observer Assignment</q-item-label>
@@ -98,9 +127,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/observer-availability" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/observer-availability"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="fa fa-calendar-alt"/>
+            <q-icon name="fa fa-calendar-alt" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Observer Availability</q-item-label>
@@ -108,9 +141,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/debriefer" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/debriefer"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="beenhere"/>
+            <q-icon name="beenhere" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Debriefer</q-item-label>
@@ -120,9 +157,13 @@
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item to="/permits" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/permits"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="assignment"/>
+            <q-icon name="assignment" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Permits</q-item-label>
@@ -133,7 +174,7 @@
         <!-- <q-item to="/user-config" exact> -->
         <q-item style="cursor:pointer" to="/user-config" exact>
           <q-item-section avatar>
-            <q-icon name="person"/>
+            <q-icon name="person" />
           </q-item-section>
           <q-item-section>
             <q-item-label>User Config</q-item-label>
@@ -141,9 +182,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/manage-users" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])">
+        <q-item
+          to="/manage-users"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+        >
           <q-item-section avatar>
-            <q-icon name="people"/>
+            <q-icon name="people" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Manage Users</q-item-label>
@@ -151,10 +196,10 @@
           </q-item-section>
         </q-item>
 
-        <br>
+        <br />
         <q-item to="/login" exact>
           <q-item-section avatar>
-            <q-icon name="exit_to_app"/>
+            <q-icon name="exit_to_app" />
           </q-item-section>
           <q-item-section>Logout</q-item-section>
         </q-item>
@@ -162,34 +207,61 @@
     </q-drawer>
 
     <q-page-container>
-
       <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
-              <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
-              <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">SYNCING DATA
-                <span v-if="syncStatus" style=" font-size: 11px; margin-left: 20px; color: black"> {{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
-                </div>
-              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
-              <br>
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0">
+            <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
+            <div
+              style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
+              class="text-primary"
+            >
+              SYNCING DATA
+              <span
+                v-if="syncStatus"
+                style=" font-size: 11px; margin-left: 20px; color: black"
+              >{{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
+            </div>
+            <q-linear-progress
+              v-if="syncStatus"
+              stripe
+              rounded
+              style="height: 10px;"
+              :value="getPercent"
+              color="primary"
+            ></q-linear-progress>
+            <br />
           </q-card-section>
         </q-card>
       </q-dialog>
 
       <q-dialog v-model="isIndexing" full-width seamless position="bottom">
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
-              <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
-              <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">INDEXING DATA
-                <span v-if="isIndexing" style=" font-size: 11px; margin-left: 20px; color: black"> {{ toIndex }} remaining.</span>
-                </div>
-              <q-linear-progress v-if="isIndexing" stripe rounded style="height: 10px;" :value="getIndexedPercent" color="primary"></q-linear-progress>
-              <br>
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0">
+            <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
+            <div
+              style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
+              class="text-primary"
+            >
+              INDEXING DATA
+              <span
+                v-if="isIndexing"
+                style=" font-size: 11px; margin-left: 20px; color: black"
+              >{{ toIndex }} remaining.</span>
+            </div>
+            <q-linear-progress
+              v-if="isIndexing"
+              stripe
+              rounded
+              style="height: 10px;"
+              :value="getIndexedPercent"
+              color="primary"
+            ></q-linear-progress>
+            <br />
           </q-card-section>
         </q-card>
       </q-dialog>
 
-      <router-view/>
+      <router-view />
     </q-page-container>
   </q-layout>
 </template>
@@ -279,29 +351,32 @@ export default class DefaultLayout extends Vue {
     console.log(this.toIndex);
   }
 
-  private async buildIndexes() {
-    this.isIndexing = true;
-    this.toIndex = 5;
+  private buildIndexes() {
+    setTimeout( async() => {
+      this.isIndexing = true;
+      this.toIndex = 5;
 
-    const db = pouchService.db;
-    const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
+      const db = pouchService.db;
+      const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
 
-    const phoneTypes = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
-    this.decrementToIndex(phoneTypes);
+      const phoneTypes = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
+      this.decrementToIndex(phoneTypes);
 
-    const fisheries = await db.query(pouchService.lookupsDBName, 'obs_web/all_fisheries');
-    this.decrementToIndex(fisheries);
+      const fisheries = await db.query(pouchService.lookupsDBName, 'obs_web/all_fisheries');
+      this.decrementToIndex(fisheries);
 
-    const ports = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_port_names', queryOptions);
-    this.decrementToIndex(ports);
+      const ports = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_port_names', queryOptions);
+      this.decrementToIndex(ports);
 
-    const vesselCaptains = await db.query(pouchService.lookupsDBName, 'obs_web/vessel_captains', queryOptions);
-    this.decrementToIndex(vesselCaptains);
+      const vesselCaptains = await db.query(pouchService.lookupsDBName, 'obs_web/vessel_captains', queryOptions);
+      this.decrementToIndex(vesselCaptains);
 
-    const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
-    this.decrementToIndex(vessels);
+      const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
+      this.decrementToIndex(vessels);
 
-    this.isIndexing = false;
+      this.isIndexing = false;
+    }, 1500)
+
   }
 
   private created() {
@@ -311,7 +386,6 @@ export default class DefaultLayout extends Vue {
     } else {
       this.$router.push({path: '/login'});
     }
-    this.buildIndexes();
   }
 
   private navigateBack() {
@@ -419,11 +493,11 @@ export default class DefaultLayout extends Vue {
 </script>
 
 <style>
-    .q-field__label {
-        color: #027be3 !important;
-    }
+.q-field__label {
+  color: #027be3 !important;
+}
 
-    .q-field__native {
-      font-weight: bold !important;
-    }
+.q-field__native {
+  font-weight: bold !important;
+}
 </style>
