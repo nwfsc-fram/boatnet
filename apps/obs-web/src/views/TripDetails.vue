@@ -34,7 +34,7 @@
               placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="width: 100%;">
+              style="">
             </pCalendar>
           </span>
         <!-- <br>
@@ -90,9 +90,7 @@
           :option-label="opt => opt.name"
           option-value="_id"
           dense
-          use-input
           fill-input
-          hide-selected
           stack-label
           :readonly="trip.readOnly"
         ></q-select>
@@ -102,9 +100,7 @@
           :dense="true"
           label="End Port"
           @filter="endPortsFilterFn"
-          use-input
           fill-input
-          hide-selected
           stack-label
           :option-label="opt => opt.name"
           option-value="_id"
@@ -724,7 +720,7 @@ export default class TripDetails extends Vue {
              this.existingTripStart = row.doc.departureDate;
              this.existingTripEnd = row.doc.returnDate;
              const days = moment(row.doc.returnDate).diff(row.doc.departureDate, 'days');
-             for (i = 0; i < days; i++) {
+             for (i = 0; i <= days; i++) {
                 const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
                 invalidDay.add(i, 'days');
                 this.invalidDates.push(new Date(invalidDay.format()));
