@@ -39,7 +39,6 @@ export default class BoatnetTreeTable extends Vue {
   public selected: any[] = [];
 
   private select(row: any) {
-    console.log('this happens');
     if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
       this.selected = [];
       this.$emit('select', undefined);
