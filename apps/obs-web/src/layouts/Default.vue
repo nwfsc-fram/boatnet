@@ -352,7 +352,7 @@ export default class DefaultLayout extends Vue {
   }
 
   private buildIndexes() {
-    setTimeout( async() => {
+    setTimeout( async () => {
       this.isIndexing = true;
       this.toIndex = 10;
 
@@ -375,7 +375,7 @@ export default class DefaultLayout extends Vue {
       this.decrementToIndex(vessels);
 
       this.isIndexing = false;
-    }, 1500)
+    }, 1500);
 
   }
 

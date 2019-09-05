@@ -398,7 +398,6 @@ export default class Trips extends Vue {
     }
 
     private closeConfirm(trip: any) {
-      console.log(trip)
       if (!moment(trip.departureDate).isSameOrBefore(moment(), 'day')) { // trip hasn't started yet.
         // Dialog - warn trip must have started to be closed. did you mean cancel?
         this.tripNotStartedAlert = true;
@@ -418,7 +417,7 @@ export default class Trips extends Vue {
       Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(trip.departureDate));
       Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(trip.returnDate));
       this.closeAlert = true;
-      console.log(this.activeTrip.captainAffirmedDepartureDate)
+      console.log(this.activeTrip.captainAffirmedDepartureDate);
       this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
       this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
     }
