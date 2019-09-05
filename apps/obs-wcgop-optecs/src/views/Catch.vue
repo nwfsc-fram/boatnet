@@ -1,31 +1,11 @@
 <template>
   <div>
-    <!-- <div class="q-pa-md q-ma-md">
-      <pTreeTable :value="nodes">
-        <pColumn field="name" header="Name" :expander="true"></pColumn>
-        <pColumn field="size" header="Size"></pColumn>
-        <pColumn field="type" header="Type"></pColumn>
-      </pTreeTable>
-    </div>-->
-
     <q-page padding>
-      <!-- <q-toggle v-model="useActiveHaul" label="Use Active Haul"></q-toggle> -->
-
-      <!-- <q-tree
-      :nodes="catches"
-      node-key="label"
-      :expanded-sync="expanded"
-      default-expand-all
-      >
-      <template v-slot="prop">
-        {{ prop }}
-      </template>
-      </q-tree>-->
       <div style="float: left;">
-        <span v-if="expanded.length < currentHaul.catches[0].children.length">
+        <span>
           <q-btn color="primary" @click="expandAll">Expand All</q-btn>&nbsp;
         </span>
-        <q-btn color="grey" @click="collapseAll" v-if="expanded.length > 0">Collapse All</q-btn>
+        <q-btn color="grey" @click="collapseAll" >Collapse All</q-btn>
       </div>
       <br />
       <br />
@@ -41,46 +21,13 @@
         @move="modifySpecies"
       >
         <template v-slot:table>
-          <boatnet-table
-            :data="getCatches"
-            :settings="wcgopCatchSettings"
+          <boatnet-tree-table
+            :nodes="getNodes"
+            :settings="wcgopCatchTreeSettings"
+            :expandedKeys="expandedKeys"
             @select="handleSelectCatch"
-            :showBottom="showBottom"
-            row-key="catchNum"
-            :selection.sync="selectedCatch"
           >
-            <template v-slot:default="rowVals">
-              <q-td style="width: 20px;">
-                <q-icon
-                  v-if="expanded.indexOf(rowVals.row.catchNum) === -1 && rowVals.row.children.length > 0"
-                  name="chevron_right"
-                  style="font-size: 26px;"
-                  @click="expand(rowVals.row)"
-                ></q-icon>
-                <q-icon
-                  v-if="expanded.indexOf(rowVals.row.catchNum) !== -1 && rowVals.row.children.length > 0"
-                  name="expand_more"
-                  style="font-size: 26px;"
-                  @click="collapse(rowVals.row)"
-                ></q-icon>
-              </q-td>
-              <q-td key="disposition" style="width: 60px">{{ getDisposition(rowVals.row) }}</q-td>
-              <q-td
-                key="weightMethod"
-                style="width: 60px"
-              >{{rowVals.row.weightMethod ? rowVals.row.weightMethod.lookupVal : ''}}</q-td>
-              <q-td
-                key="discardReason"
-                style="width: 60px"
-              >{{ rowVals.row.discardReason ? rowVals.row.discardReason: '' }}</q-td>
-              <q-td key="name">
-                <span v-if="rowVals.row.children.length === 0">&nbsp;&nbsp;</span>
-                {{ rowVals.row.catchContent.type === 'grouping' ? rowVals.row.weightMethod.description : rowVals.row.catchContent.alias }}
-              </q-td>
-              <q-td key="weight">{{ getWeight(rowVals.row) }}</q-td>
-              <q-td key="count">{{ getCount(rowVals.row) }}</q-td>
-            </template>
-          </boatnet-table>
+          </boatnet-tree-table>
         </template>
         <template v-slot:goToButtons>
           <q-btn color="primary" icon="play_arrow" label="Go To Tallies" />
@@ -329,7 +276,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Action, Getter } from 'vuex-class';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
@@ -338,7 +285,8 @@ import {
   WcgopCatchTypeName,
   WcgopOperation,
   WcgopTrip,
-  TaxonomyAlias
+  TaxonomyAlias,
+  CatchGrouping
 } from '@boatnet/bn-models';
 
 import moment from 'moment';
@@ -359,6 +307,7 @@ export default class Catch extends Vue {
   @Prop() public char!: string;
 
   private wcgopCatchSettings: any;
+  private wcgopCatchTreeSettings: any;
   private wcgopTrawlDiscardedWeightMethods: any[] = [
     '1',
     '3',
@@ -403,6 +352,8 @@ export default class Catch extends Vue {
   private moveDialog = false;
   private moveModify = false;
   private deleteModify = false;
+  private expandedKeys: any = [];
+  private selectionKeys: any = [];
 
   private catchModel: any = {
     disposition: { description: 'Discarded' }
@@ -439,356 +390,95 @@ export default class Catch extends Vue {
 
   private expanded: any = [];
 
-  private nodes = [
-    {
-      key: '0',
-      data: {
-        name: 'Applications',
-        size: '100kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '0-0',
-          data: {
-            name: 'Vue',
-            size: '25kb',
-            type: 'Folder'
-          },
-          children: [
+  private get getNodes() {
+    const nodes: any = [];
+    for (const grouping of this.currentHaul!.catches![0].children!) {
+      const groupingCatchContent: CatchGrouping = grouping.catchContent as CatchGrouping;
+      const children = [];
+      if (grouping.children) {
+        for (const species of grouping.children!) {
+          const speciesCatchContent: TaxonomyAlias = species.catchContent as TaxonomyAlias;
+          children.push(
             {
-              key: '0-0-0',
+              key: (this.currentHaul!.catches![0].children!.indexOf(grouping) +
+                '-' + grouping.children.indexOf(species)).toString(),
               data: {
-                name: 'Vue.app',
-                size: '10kb',
-                type: 'Application'
-              }
-            },
-            {
-              key: '0-0-1',
-              data: {
-                name: 'native.app',
-                size: '10kb',
-                type: 'Application'
-              }
-            },
-            {
-              key: '0-0-2',
-              data: {
-                name: 'mobile.app',
-                size: '5kb',
-                type: 'Application'
-              }
+                name: speciesCatchContent.alias,
+                weight: species.weight!.value,
+                count: species.count,
+                discardReason: species.discardReason
+              },
+              catch: species
             }
-          ]
-        },
-        {
-          key: '0-1',
-          data: {
-            name: 'editor.app',
-            size: '25kb',
-            type: 'Application'
-          }
-        },
-        {
-          key: '0-2',
-          data: {
-            name: 'settings.app',
-            size: '50kb',
-            type: 'Application'
-          }
+          );
         }
-      ]
-    },
-    {
-      key: '1',
-      data: {
-        name: 'Cloud',
-        size: '20kb',
-        type: 'Folder'
-      },
-      children: [
+      }
+
+      nodes.push(
         {
-          key: '1-0',
+          key: this.currentHaul!.catches![0].children!.indexOf(grouping).toString(),
           data: {
-            name: 'backup-1.zip',
-            size: '10kb',
-            type: 'Zip'
-          }
-        },
-        {
-          key: '1-1',
-          data: {
-            name: 'backup-2.zip',
-            size: '10kb',
-            type: 'Zip'
-          }
-        }
-      ]
-    },
-    {
-      key: '2',
-      data: {
-        name: 'Desktop',
-        size: '150kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '2-0',
-          data: {
-            name: 'note-meeting.txt',
-            size: '50kb',
-            type: 'Text'
-          }
-        },
-        {
-          key: '2-1',
-          data: {
-            name: 'note-todo.txt',
-            size: '100kb',
-            type: 'Text'
-          }
-        }
-      ]
-    },
-    {
-      key: '3',
-      data: {
-        name: 'Documents',
-        size: '75kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '3-0',
-          data: {
-            name: 'Work',
-            size: '55kb',
-            type: 'Folder'
+            name: groupingCatchContent.name,
+            disposition: grouping.disposition!.description === 'Retained' ? 'R' : 'D',
+            weightMethod: grouping.weightMethod!.lookupVal
           },
-          children: [
-            {
-              key: '3-0-0',
-              data: {
-                name: 'Expenses.doc',
-                size: '30kb',
-                type: 'Document'
-              }
-            },
-            {
-              key: '3-0-1',
-              data: {
-                name: 'Resume.doc',
-                size: '25kb',
-                type: 'Resume'
-              }
-            }
-          ]
-        },
-        {
-          key: '3-1',
-          data: {
-            name: 'Home',
-            size: '20kb',
-            type: 'Folder'
-          },
-          children: [
-            {
-              key: '3-1-0',
-              data: {
-                name: 'Invoices',
-                size: '20kb',
-                type: 'Text'
-              }
-            }
-          ]
+          children: [...children],
+          catch: grouping
         }
-      ]
-    },
-    {
-      key: '4',
-      data: {
-        name: 'Downloads',
-        size: '25kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '4-0',
-          data: {
-            name: 'Spanish',
-            size: '10kb',
-            type: 'Folder'
-          },
-          children: [
-            {
-              key: '4-0-0',
-              data: {
-                name: 'tutorial-a1.txt',
-                size: '5kb',
-                type: 'Text'
-              }
-            },
-            {
-              key: '4-0-1',
-              data: {
-                name: 'tutorial-a2.txt',
-                size: '5kb',
-                type: 'Text'
-              }
-            }
-          ]
-        },
-        {
-          key: '4-1',
-          data: {
-            name: 'Travel',
-            size: '15kb',
-            type: 'Text'
-          },
-          children: [
-            {
-              key: '4-1-0',
-              data: {
-                name: 'Hotel.pdf',
-                size: '10kb',
-                type: 'PDF'
-              }
-            },
-            {
-              key: '4-1-1',
-              data: {
-                name: 'Flight.pdf',
-                size: '5kb',
-                type: 'PDF'
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      key: '5',
-      data: {
-        name: 'Main',
-        size: '50kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '5-0',
-          data: {
-            name: 'bin',
-            size: '50kb',
-            type: 'Link'
-          }
-        },
-        {
-          key: '5-1',
-          data: {
-            name: 'etc',
-            size: '100kb',
-            type: 'Link'
-          }
-        },
-        {
-          key: '5-2',
-          data: {
-            name: 'var',
-            size: '100kb',
-            type: 'Link'
-          }
-        }
-      ]
-    },
-    {
-      key: '6',
-      data: {
-        name: 'Other',
-        size: '5kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '6-0',
-          data: {
-            name: 'todo.txt',
-            size: '3kb',
-            type: 'Text'
-          }
-        },
-        {
-          key: '6-1',
-          data: {
-            name: 'logo.png',
-            size: '2kb',
-            type: 'Picture'
-          }
-        }
-      ]
-    },
-    {
-      key: '7',
-      data: {
-        name: 'Pictures',
-        size: '150kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '7-0',
-          data: {
-            name: 'barcelona.jpg',
-            size: '90kb',
-            type: 'Picture'
-          }
-        },
-        {
-          key: '7-1',
-          data: {
-            name: 'primeng.png',
-            size: '30kb',
-            type: 'Picture'
-          }
-        },
-        {
-          key: '7-2',
-          data: {
-            name: 'prime.jpg',
-            size: '30kb',
-            type: 'Picture'
-          }
-        }
-      ]
-    },
-    {
-      key: '8',
-      data: {
-        name: 'Videos',
-        size: '1500kb',
-        type: 'Folder'
-      },
-      children: [
-        {
-          key: '8-0',
-          data: {
-            name: 'primefaces.mkv',
-            size: '1000kb',
-            type: 'Video'
-          }
-        },
-        {
-          key: '8-1',
-          data: {
-            name: 'intro.avi',
-            size: '500kb',
-            type: 'Video'
-          }
-        }
-      ]
+      );
+
     }
-  ];
+
+    return nodes;
+  }
+
+  // private nodes = [
+  //   {
+  //     key: '0',
+  //     data: {
+  //       disposition: 'retained',
+  //       discardReason: 'blah',
+  //       name: 'fish',
+  //       weight: 7,
+  //       count: 7
+  //     },
+  //     children: [
+  //       {
+  //         key: '0-0',
+  //         data: {
+  //           disposition: 'retained',
+  //           discardReason: 'halp',
+  //           name: 'dewa',
+  //           weight: 8,
+  //           count: 3
+  //         },
+  //         children: [
+  //           {
+  //             key: '0-0-0',
+  //             data: {
+  //               disposition: 'retained',
+  //               discardReason: 'halp',
+  //               name: 'dewa',
+  //               weight: 8,
+  //               count: 3
+  //             }
+  //           }
+  //         ]
+  //       }
+
+  //     ]
+  //   },
+  //   {
+  //     key: '1',
+  //     data: {
+  //       disposition: 'retained',
+  //       discardReason: 'blah',
+  //       name: 'fish',
+  //       weight: 7,
+  //       count: 7
+  //     }
+  //   },
+  // ];
 
   @Action('setCurrentCatch', { namespace: 'appState' })
   private setCurrentCatch: any;
@@ -809,34 +499,37 @@ export default class Catch extends Vue {
     super();
     this.populateSpeciesView();
 
-    this.wcgopCatchSettings = {
+    this.wcgopCatchTreeSettings = {
       rowKey: 'catchNum',
       columns: [
-        { name: 'action', align: 'left', label: '' },
         {
           name: 'disposition',
           required: true,
           label: 'R/D',
           align: 'left',
-          field: 'disposition'
+          field: 'disposition',
+          width: '8%'
         },
         {
           name: 'weightMethod',
           align: 'left',
           label: 'WM',
-          field: (row: any) => row.observerTotalCatch.weightMethod
+          field: 'weightMethod',
+          width: '8%'
         },
+        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '44%', expander: true },
         {
           name: 'discardReason',
           align: 'left',
           label: 'Discard Reason',
-          field: 'discardReason'
+          field: 'discardReason',
+          width: '16%'
         },
-        { name: 'name', align: 'left', label: 'Name', field: 'name' },
-        { name: 'weight', align: 'left', label: 'Weight', field: 'weigth' },
-        { name: 'count', align: 'left', label: 'Count', field: 'count' }
+        { name: 'weight', align: 'left', label: 'Weight', field: 'weight', width: '12%' },
+        { name: 'count', align: 'left', label: 'Count', field: 'count', width: '12%' }
       ]
     };
+
   }
 
   public async populateSpeciesView() {
@@ -1393,16 +1086,17 @@ export default class Catch extends Vue {
   }
 
   private expandAll() {
-    this.expanded = [];
-    if (this.currentHaul.catches![0].children) {
-      for (const grouping of this.currentHaul.catches![0].children) {
-        this.expanded.push(grouping.catchNum);
-      }
+    this.expandedKeys = [];
+    const catches = this.currentHaul.catches![0].children;
+    for (const row of catches!) {
+      this.expandedKeys[catches!.indexOf(row)] = true;
     }
+
+    this.expandedKeys = {...this.expandedKeys};
   }
 
   private collapseAll() {
-    this.expanded = [];
+    this.expandedKeys = [];
   }
 
   private get getCatches() {
@@ -1621,6 +1315,7 @@ export default class Catch extends Vue {
     this.getFrequentSpecies();
     this.handleSelectCatch(undefined);
   }
+
 }
 </script>
 

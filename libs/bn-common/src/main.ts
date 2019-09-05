@@ -15,6 +15,7 @@ import BoatnetTable from './components/BoatnetTable.vue';
 import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
 import BoatnetAddSpeciesDialog from './components/BoatnetAddSpeciesDialog.vue';
 import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
+import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
 
 const Components: any = {
   BoatnetButtonToggle,
@@ -32,7 +33,8 @@ const Components: any = {
   BoatnetTable,
   BoatnetTabPanel,
   BoatnetAddSpeciesDialog,
-  BoatnetCustomKeyboard
+  BoatnetCustomKeyboard,
+  BoatnetTreeTable
 };
 
 Object.keys(Components).forEach((name) => {
