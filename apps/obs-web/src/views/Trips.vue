@@ -29,6 +29,7 @@
       :options="vessels"
       :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
       option-value="_id"
+      @click.native="selectText"
       ></q-select>
 
     </div>
@@ -367,6 +368,10 @@ export default class Trips extends Vue {
     // private set closedTrips(value) {
     //   this.$store.dispatch('updateTrips', value);
     // }
+
+    private selectText(event: any) {
+      event.target.select();
+    }
 
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {

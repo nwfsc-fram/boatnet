@@ -16,21 +16,21 @@
         >
         </q-btn>
 
-        <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name"></q-input>
+        <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name" @click.native="selectText"></q-input>
         <div class="row">
             <div class="col-sm q-pa-md">
-                <q-input v-model="vessel.activeVessel.coastGuardNumber" label="Coast Guard Number"></q-input>
+                <q-input v-model="vessel.activeVessel.coastGuardNumber" label="Coast Guard Number" @click.native="selectText"></q-input>
             </div>
             <div class="col-sm q-pa-md">
-                <q-input v-model="vessel.activeVessel.stateRegulationNumber" label="State Regulation Number"></q-input>
+                <q-input v-model="vessel.activeVessel.stateRegulationNumber" label="State Regulation Number" @click.native="selectText"></q-input>
             </div>
         </div>
-        <q-input v-model="vessel.activeVessel.registeredLength.value" label="Registered Length (feet)" type="number"></q-input>
+        <q-input v-model="vessel.activeVessel.registeredLength.value" label="Registered Length (feet)" type="number" @click.native="selectText"></q-input>
 
         <!-- <q-input v-model="vessel.activeVessel.vesselType.description" label="Vessel Type"></q-input> -->
         <p class='text-primary'>To Do: vessel type - is this a lookup?</p>
 
-        <q-input v-model="vessel.activeVessel.notes" label="Notes"></q-input>
+        <q-input v-model="vessel.activeVessel.notes" label="Notes" @click.native="selectText"></q-input>
 
         <q-select
             v-model="vessel.activeVessel.port"
@@ -43,6 +43,7 @@
             use-input
             fill-input
             hide-selected
+            @click.native="selectText"
             >
         </q-select>
 
@@ -72,9 +73,6 @@
                 <span v-else>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
             </q-chip>
         </template>
-            <template v-slot:append>
-                <q-btn flat style="font-size: .5em" icon="fa fa-plus-circle" @click="newCaptain" >&nbsp;New Captain</q-btn>
-            </template>
         </q-select>
 
         <q-btn label="Cancel" color="red" icon="warning" @click="navigateBack"></q-btn>
@@ -129,6 +127,10 @@ export default class VesselDetails extends Vue {
     private captains = [];
     private ports = [];
     private showDialog = false;
+
+    private selectText(event: any) {
+      event.target.select();
+    }
 
     private portsFilterFn(val: string, update: any, abort: any) {
         update(
