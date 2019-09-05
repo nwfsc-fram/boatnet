@@ -138,7 +138,7 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <div style="background-color: white">
+      <div style="background-color: white; height: 480px; width: 100%">
           <div>
             <br>
             <strong class="left-pad text-subtitle2">I affirm this trip was taken.</strong>
@@ -150,29 +150,18 @@
             />
           </div>
 
-          <q-list v-if="activeTrip">
-          <!-- <div class="row items-start" > -->
-            <q-item style="padding: 4px 0">
-              <q-item-section>
-                <!-- <div> -->
-                  <div class="text-subtitle2 left-pad"> Affirmed Departure Date</div>
-                  <q-date v-model="activeTrip.captainAffirmedDepartureDate" color="green" dark></q-date>
-                <!-- </div> -->
-              </q-item-section>
-            </q-item>
 
-            <q-item style="padding: 4px 0">
-              <q-item-section>
-                <!-- <div> -->
-                  <div class="text-subtitle2 left-pad"> Affirmed Return Date</div>
-                  <q-date v-model="activeTrip.captainAffirmedReturnDate" color="red" dark></q-date>
-                <!-- </div> -->
-              </q-item-section>
-            </q-item>
-          <!-- </div> -->
-        </q-list>
+            <pCalendar
+              v-model="tripDates"
+              :touchUI="true"
+              :inline="true"
+              selectionMode="range"
+              onfocus="blur();"
+              style="height: 300px">
+            </pCalendar>
+
         <br>
-        <div style="float: right; padding-right: 15px" class="text-primary">
+        <div style="position: relative; bottom: -60px; left: 20px" class="text-primary">
           <q-btn color="primary" size="md" @click="closeAlert = false">cancel</q-btn>
             <q-btn color="red" size="md" @click="closeActiveTrip" :disabled="!taken">close trip</q-btn>
         </div>
@@ -188,7 +177,7 @@
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, WcgopAppState, AlertState } from '../_store/types/types';
 
 import moment from 'moment';
@@ -210,6 +199,9 @@ import {
 } from '@boatnet/bn-models';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
 
 @Component({
   pouch: {
@@ -244,6 +236,14 @@ export default class Trips extends Vue {
   private userRoles: string[] = [];
   private tripNotStartedAlert: boolean = false;
   private earliestTripAlert: boolean = false;
+
+  private existingTripStart: string = '0';
+  private existingTripEnd: string = '0';
+  private startYearMonth: string = moment().format('YYYY/MM');
+  private endYearMonth: string = moment().format('YYYY/MM');
+  private tripDates: any = [];
+  private invalidDates: any[] = [];
+  private minDate: any = new Date();
 
   constructor() {
       super();
@@ -398,6 +398,7 @@ export default class Trips extends Vue {
     }
 
     private closeConfirm(trip: any) {
+      console.log(trip)
       if (!moment(trip.departureDate).isSameOrBefore(moment(), 'day')) { // trip hasn't started yet.
         // Dialog - warn trip must have started to be closed. did you mean cancel?
         this.tripNotStartedAlert = true;
@@ -414,9 +415,12 @@ export default class Trips extends Vue {
       }
 
       this.activeTrip = trip;
-      Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', trip.departureDate);
-      Vue.set(this.activeTrip, 'captainAffirmedReturnDate', trip.returnDate);
+      Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(trip.departureDate));
+      Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(trip.returnDate));
       this.closeAlert = true;
+      console.log(this.activeTrip.captainAffirmedDepartureDate)
+      this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
+      this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
     }
 
     private cancelActiveTrip() {
@@ -519,6 +523,28 @@ private computedTripClass(trip: WcgopTrip) {
 private setActiveVessel() {
   if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
     this.vessel.activeVessel = this.user.activeUser.activeVessel;
+  }
+}
+
+// @Watch('departureDate')
+// private handler1(newVal: string, oldVal: string) {
+//   this.endYearMonth = moment(newVal).format('YYYY/MM');
+//   if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
+//     this.returnDate = newVal;
+//   }
+//   console.log(this.returnDate);
+//   if (this.returnDate === 'Invalid date') {
+//     Vue.set(this, 'returnDate', newVal);
+//     }
+// }
+
+@Watch('tripDates')
+private handler2(newVal: string, oldVal: string) {
+  if (newVal[0]) {
+    this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
+  }
+  if (newVal[1]) {
+    this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
   }
 }
 
