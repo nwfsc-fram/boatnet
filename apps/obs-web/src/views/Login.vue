@@ -8,7 +8,7 @@
 
       </q-toolbar>
     </q-header> -->
-    <q-page-container class="absolute-center"  style="width: 100%">
+    <q-page-container class="absolute-center"  style="width: 100%; height: 100%">
       <div class="q-pa-sm column justify-center items-center full-height">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-xs" style="width: 100%; max-width: 500px">
           <div v-show="!!alert.message">
@@ -65,14 +65,14 @@
           <router-link to="/" disabled="true">Change Password</router-link>
         </div>
       </div>
-    </q-page-container>
-        <div class="absolute-bottom" style="text-align: center; font-size: 10px; font-weight: bold">
+        <div style="text-align: center; font-size: 10px; font-weight: bold; position: relative; bottom: 70px;">
           <br>
           <!-- Version: {{general.appVersion}} -->
           Version: todo | Updated: {{this.lastSoftwareUpdateDate}}
           <br>Last Data Sync: {{this.lastDataSyncDate}}
           <br>Last Login Date: {{this.lastLoginDate}}
         </div>
+    </q-page-container>
   </q-layout>
 </template>
 
