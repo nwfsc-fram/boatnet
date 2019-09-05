@@ -49,9 +49,9 @@ export default class BoatnetTreeTable extends Vue {
   @Prop() public expandedKeys!: any;
   @Prop() public selectionKeys!: any;
 
-  private selectedKey1: any = null;
-
   public selected: any[] = [];
+
+  private selectedKey1: any = null;
 
   private select(node: any) {
     // if (this.selected.length > 0 && this.selected[0].__index === row.__index) {

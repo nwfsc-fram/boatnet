@@ -1074,16 +1074,16 @@ export default class Catch extends Vue {
     this.save(this.currentHaul);
   }
 
-  // private expand(row: any) {
-  //   this.expanded.push(row.catchNum);
-  // }
+  private expand(row: any) {
+    this.expanded.push(row.catchNum);
+  }
 
-  // private collapse(row: any) {
-  //   const index = this.expanded.indexOf(row.catchNum);
-  //   if (index > -1) {
-  //     this.expanded.splice(index, 1);
-  //   }
-  // }
+  private collapse(row: any) {
+    const index = this.expanded.indexOf(row.catchNum);
+    if (index > -1) {
+      this.expanded.splice(index, 1);
+    }
+  }
 
   private expandAll() {
     this.expandedKeys = [];
@@ -1316,10 +1316,6 @@ export default class Catch extends Vue {
     this.handleSelectCatch(undefined);
   }
 
-  @Watch('selectionKeys')
-  private handler1(newVal: string, oldVal: string) {
-    console.log(newVal)
-  }
 }
 </script>
 
