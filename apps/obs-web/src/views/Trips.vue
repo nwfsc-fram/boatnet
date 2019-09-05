@@ -138,10 +138,10 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <div style="background-color: white; height: 480px; width: 100%">
-          <div>
+      <div style="background-color: white; height: 480px">
+          <div style="padding-left: 20px">
             <br>
-            <strong class="left-pad text-subtitle2">I affirm this trip was taken.</strong>
+            <strong class="text-subtitle2">I affirm this trip was taken.</strong>
             <q-toggle
             v-model="taken"
             checked-icon="check"
@@ -153,7 +153,6 @@
 
             <pCalendar
               v-model="tripDates"
-              :touchUI="true"
               :inline="true"
               selectionMode="range"
               onfocus="blur();"
@@ -161,7 +160,7 @@
             </pCalendar>
 
         <br>
-        <div style="position: relative; bottom: -60px; left: 20px" class="text-primary">
+        <div style="position: relative; bottom: -60px; padding-left: 20px" class="text-primary">
           <q-btn color="primary" size="md" @click="closeAlert = false">cancel</q-btn>
             <q-btn color="red" size="md" @click="closeActiveTrip" :disabled="!taken">close trip</q-btn>
         </div>
@@ -627,7 +626,7 @@ export default{
 </script>
 -->
 
-<style lang="stylus" scoped>
+<style lang="stylus">
   .my-card
     width 100%
     max-width 450px
@@ -638,6 +637,9 @@ export default{
   .q-date--portrait-standard
     width: auto !important
     margin: 10px
+
+  .p-datepicker
+    border: none !important
 
 </style>
 
