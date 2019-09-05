@@ -4,13 +4,24 @@
     <div>
 
       <pTreeTable
-      :value="nodes"
-      :expandedKeys="expandedKeys"
-      selectionMode="single"
-      :selected.sync="selected"
+        :value="nodes"
+        :expandedKeys="expandedKeys"
+        selectionMode="single"
+        :selectionKeys.sync="selectedKey1"
+        @node-select="select"
+        @node-unselect="unSelect"
+        sortMode="single"
       >
-        <pColumn v-for="col of settings.columns" :key="settings.columns[col]"
-        :field="col.field" :header="col.label" :expander="col.expander" :headerStyle="'width: ' + col.width"></pColumn>
+        <pColumn
+          v-for="col of settings.columns"
+          :key="settings.columns[col]"
+          :field="col.field"
+          :header="col.label"
+          :expander="col.expander"
+          :headerStyle="'width: ' + col.width"
+          :sortable="true"
+        >
+        </pColumn>
 
       </pTreeTable>
     </div>
@@ -36,18 +47,31 @@ export default class BoatnetTreeTable extends Vue {
   @Prop() public nodes!: any[];
   @Prop() public settings!: any;
   @Prop() public expandedKeys!: any;
+  @Prop() public selectionKeys!: any;
+
+  private selectedKey1: any = null;
+
   public selected: any[] = [];
 
-  private select(row: any) {
-    if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
-      this.selected = [];
-      this.$emit('select', undefined);
-    } else {
-      this.selected = [row];
-      // delete row.__index; // This was here because __index is not in our models
-      this.$emit('select', row);
-    }
+  private select(node: any) {
+    // if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
+    //   this.selected = [];
+    //   this.$emit('select', undefined);
+    // } else {
+    //   this.selected = [row.catch];
+    //   // delete row.__index; // This was here because __index is not in our models
+    //   this.$emit('select', row.catch);
+    // }
+    console.log(node.catch);
+    this.selected = [node.catch];
+    this.$emit('select', node.catch);
   }
+
+  private unSelect(node: any) {
+    this.selected = [];
+    this.$emit('select', undefined);
+  }
+
 }
 </script>
 
@@ -56,14 +80,6 @@ export default class BoatnetTreeTable extends Vue {
 tr {
   font-weight: bold;
   height: 40px !important;
-}
-
-tr:nth-child(even) {
-  background-color: #EEEEEE !important;
-}
-
-.selected {
-  background-color: #87CEEB !important;
 }
 
 </style>

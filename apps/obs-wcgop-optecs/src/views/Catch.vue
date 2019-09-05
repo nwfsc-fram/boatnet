@@ -24,43 +24,9 @@
           <boatnet-tree-table
             :nodes="getNodes"
             :settings="wcgopCatchTreeSettings"
-            @node-select="handleSelectCatch"
-            @select="handleSelectCatch"
-            :selection.sync="selectedCatch"
             :expandedKeys="expandedKeys"
+            @select="handleSelectCatch"
           >
-            <!-- <template v-slot:default="rowVals">
-              <q-td style="width: 20px;">
-                <q-icon
-                  v-if="expanded.indexOf(rowVals.row.catchNum) === -1 && rowVals.row.children.length > 0"
-                  name="chevron_right"
-                  style="font-size: 26px;"
-                  @click="expand(rowVals.row)"
-                ></q-icon>
-                <q-icon
-                  v-if="expanded.indexOf(rowVals.row.catchNum) !== -1 && rowVals.row.children.length > 0"
-                  name="expand_more"
-                  style="font-size: 26px;"
-                  @click="collapse(rowVals.row)"
-                ></q-icon>
-              </q-td>
-              <q-td key="disposition" style="width: 60px">{{ getDisposition(rowVals.row) }}</q-td>
-              <q-td
-                key="weightMethod"
-                style="width: 60px"
-              >{{rowVals.row.weightMethod ? rowVals.row.weightMethod.lookupVal : ''}}</q-td>
-              <q-td
-                key="discardReason"
-                style="width: 60px"
-              >{{ rowVals.row.discardReason ? rowVals.row.discardReason: '' }}</q-td>
-              <q-td key="name">
-                <span v-if="rowVals.row.children.length === 0">&nbsp;&nbsp;</span>
-                {{ rowVals.row.catchContent.type === 'grouping' ? rowVals.row.weightMethod.description : rowVals.row.catchContent.alias }}
-              </q-td>
-              <q-td key="weight">{{ getWeight(rowVals.row) }}</q-td>
-              <q-td key="count">{{ getCount(rowVals.row) }}</q-td>
-            </template> -->
-
           </boatnet-tree-table>
         </template>
         <template v-slot:goToButtons>
@@ -310,7 +276,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Action, Getter } from 'vuex-class';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
@@ -387,6 +353,7 @@ export default class Catch extends Vue {
   private moveModify = false;
   private deleteModify = false;
   private expandedKeys: any = [];
+  private selectionKeys: any = [];
 
   private catchModel: any = {
     disposition: { description: 'Discarded' }
@@ -440,7 +407,8 @@ export default class Catch extends Vue {
                 weight: species.weight!.value,
                 count: species.count,
                 discardReason: species.discardReason
-              }
+              },
+              catch: species
             }
           );
         }
@@ -454,7 +422,8 @@ export default class Catch extends Vue {
             disposition: grouping.disposition!.description === 'Retained' ? 'R' : 'D',
             weightMethod: grouping.weightMethod!.lookupVal
           },
-          children: [...children]
+          children: [...children],
+          catch: grouping
         }
       );
 
@@ -539,24 +508,24 @@ export default class Catch extends Vue {
           label: 'R/D',
           align: 'left',
           field: 'disposition',
-          width: '12%'
+          width: '8%'
         },
         {
           name: 'weightMethod',
           align: 'left',
           label: 'WM',
           field: 'weightMethod',
-          width: '12%'
+          width: '8%'
         },
-        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '40%', expander: true },
+        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '44%', expander: true },
         {
           name: 'discardReason',
           align: 'left',
           label: 'Discard Reason',
           field: 'discardReason',
-          width: '12%'
+          width: '16%'
         },
-        { name: 'weight', align: 'left', label: 'Weight', field: 'weigth', width: '12%' },
+        { name: 'weight', align: 'left', label: 'Weight', field: 'weight', width: '12%' },
         { name: 'count', align: 'left', label: 'Count', field: 'count', width: '12%' }
       ]
     };
@@ -1105,16 +1074,16 @@ export default class Catch extends Vue {
     this.save(this.currentHaul);
   }
 
-  private expand(row: any) {
-    this.expanded.push(row.catchNum);
-  }
+  // private expand(row: any) {
+  //   this.expanded.push(row.catchNum);
+  // }
 
-  private collapse(row: any) {
-    const index = this.expanded.indexOf(row.catchNum);
-    if (index > -1) {
-      this.expanded.splice(index, 1);
-    }
-  }
+  // private collapse(row: any) {
+  //   const index = this.expanded.indexOf(row.catchNum);
+  //   if (index > -1) {
+  //     this.expanded.splice(index, 1);
+  //   }
+  // }
 
   private expandAll() {
     this.expandedKeys = [];
@@ -1345,6 +1314,11 @@ export default class Catch extends Vue {
 
     this.getFrequentSpecies();
     this.handleSelectCatch(undefined);
+  }
+
+  @Watch('selectionKeys')
+  private handler1(newVal: string, oldVal: string) {
+    console.log(newVal)
   }
 }
 </script>
