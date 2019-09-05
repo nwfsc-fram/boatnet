@@ -9,8 +9,8 @@
         <div v-if="user.activeUser">
             <div>
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name"></q-input>
-                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.firstName" label="First Name" @click.native="selectText"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" :rules="[val => !!val || 'Field is required']" outlined dense v-model="user.activeUser.lastName" label="Last Name" @click.native="selectText"></q-input>
                     <div v-if="user.activeUser.apexUserAdminUserName && user.activeUser.apexUserAdminUserName !== ''" class="q-ma-sm col-md row">
                         <q-input
                         class="col2"
@@ -75,6 +75,7 @@
                         outlined
                         dense
                         class="col-md q-pa-sm wide-field"
+                        @click.native="selectText"
                     ></q-input>
 
                     <q-input
@@ -84,6 +85,7 @@
                         outlined
                         dense
                         class="col-md q-pa-sm wide-field"
+                        @click.native="selectText"
                     ></q-input>
                 </div>
 
@@ -201,6 +203,7 @@
                         type="street-address"
                         outlined dense
                         class="col-md q-pa-sm wide-field"
+                        @click.native="selectText"
                     ></q-input>
                     <q-input
                         label="Address Line 2"
@@ -208,11 +211,12 @@
                         type="street-address"
                         outlined dense
                         class="col-md q-pa-sm wide-field"
+                        @click.native="selectText"
                     ></q-input>
                 </div>
 
                 <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2" @click.native="selectText"></q-input>
 
                     <q-select
                     v-model="user.activeUser.state"
@@ -226,9 +230,10 @@
                     fill-input use-input hide-selected
                     emit-label
                     class="col-md q-pa-sm  wide-field"
+                    @click.native="selectText"
                     ></q-select>
 
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code"></q-input>
+                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code" @click.native="selectText"></q-input>
 
                     <q-select class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.country" label="Country" :options="countryOptions"></q-select>
                 </div>
@@ -244,6 +249,7 @@
                         outlined dense stack-label
                         use-input fill-input hide-selected
                         class="col-md q-pa-sm wide-field"
+                        @click.native="selectText"
                     ></q-select>
 
                     <q-select
@@ -529,6 +535,10 @@ export default class UserDetails extends Vue {
         }
       }
       return false;
+    }
+
+    private selectText(event: any) {
+      event.target.select();
     }
 
     private unlinkApexUserName() {

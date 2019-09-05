@@ -21,7 +21,8 @@
                     <q-input
                         v-model="obact.activeActivity.activityDescription"
                         label="Description"
-                        dense>
+                        dense
+                         @click.native="selectText">
                     </q-input>
                 </div>
             </div>
@@ -104,6 +105,10 @@ private activityTypes = [
                         'Vacation',
                         'Unpaid Leave'
                         ];
+
+private selectText(event: any) {
+    event.target.select();
+}
 
 private startOptionsFn(val: string) {
     return moment(val) >= moment().subtract(1, 'days');

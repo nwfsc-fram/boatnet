@@ -10,7 +10,7 @@
 
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <!-- <div v-if="this.$route.params.id === 'new'"> -->
-            <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer"></q-input>
+            <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer" @click.native="selectText"></q-input>
             <q-select
               v-model="emefp.activeEmefp.vessel"
               label="Vessel"
@@ -22,6 +22,7 @@
               stack-label
               :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
               option-value="_id"
+               @click.native="selectText"
               >
             </q-select>
           <!-- </div> -->
@@ -135,6 +136,10 @@ export default class EMEFPDetails extends Vue {
 
     constructor() {
         super();
+    }
+
+    private selectText(event: any) {
+      event.target.select();
     }
 
     private async getOptions() {
