@@ -30,8 +30,11 @@
           </boatnet-tree-table>
         </template>
         <template v-slot:goToButtons>
-          <q-btn color="primary" icon="play_arrow" label="Go To Tallies" />
-          <q-btn color="primary" icon="play_arrow" label="Go To Biospec" />
+          <span style="position: relative; right: 8px">
+            <q-btn color="primary" icon="play_arrow" label="Go To Tallies" />
+            &nbsp;
+            <q-btn color="primary" icon="play_arrow" label="Go To Biospec" />
+          </span>
         </template>
       </boatnet-summary>
     </q-page>
@@ -106,11 +109,11 @@
 
                 <div v-else>(Catch Weight and Total # of fish can only be added one at a time.)</div>
               </div>
-              <boatnet-custom-keyboard
+              <!-- <boatnet-custom-keyboard
                 @output="outputKey($event)"
                 @bksp="filterText = filterText.slice(0, -1)"
                 @clear="filterText = ''"
-              ></boatnet-custom-keyboard>
+              ></boatnet-custom-keyboard> -->
             </div>
 
             <div class="col q-pa-md" style="padding-top: 37px">
@@ -136,7 +139,7 @@
                 </template>
               </q-input>
 
-              <q-scroll-area style="height: 435px">
+              <q-scroll-area style="height: 355px">
                 <q-list bordered separator>
                   <q-item
                     v-for="(option, i) of filteredSpecies"

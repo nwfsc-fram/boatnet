@@ -29,7 +29,9 @@
         </boatnet-table>
       </template>
       <template v-slot:goToButtons>
+        <span style="position: relative; right: 10px">
         <q-btn color="primary" icon="play_arrow" label="Go To Logbook Mode"/>
+        </span>
       </template>
     </boatnet-summary>
   </q-page>
