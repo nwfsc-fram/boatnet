@@ -8,9 +8,12 @@ module.exports = {
     }
   },
   pwa: {
+    appleMobileWebAppCapable: 'yes' ,
+    workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      skipWaiting: true,
-      clientsClaim: true,
+      swSrc: 'service-worker.js',
+      // skipWaiting: true,
+      // clientsClaim: true,
     }
   },
   transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
