@@ -139,7 +139,7 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <div style="background-color: white; width: 100%">
+      <div style="background-color: white">
           <div style="padding-left: 20px">
             <br>
             <strong class="text-subtitle2">I affirm this trip was taken.</strong>

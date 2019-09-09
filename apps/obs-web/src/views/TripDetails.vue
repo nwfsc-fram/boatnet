@@ -7,9 +7,11 @@
         </template>
       </q-banner>
 
-  <div class="q-pa-md q-gutter-md" :disabled="trip.readOnly">
-        <div class="text-h6" style="margin-bottom: 10px;" >
+  <div :disabled="trip.readOnly">
+        <div class="text-h6 q-pa-md" style="margin-bottom: 10px;" >
           {{ vessel.activeVessel.vesselName }}
+          <span v-if="trip.activeTrip.fishery.name">: {{ trip.activeTrip.fishery.name }}</span>
+
           <q-icon
             v-if="trip.activeTrip.isSelected"
             name="check_circle"
@@ -17,12 +19,11 @@
             style="font-size: 32px; float: right"
             title="Trip is Selected"
           ></q-icon>
-          <br>
-          <span v-if="trip.activeTrip.fishery.name">{{ trip.activeTrip.fishery.name }}</span>
+
         </div>
 
         <div>
-          <p>
+          <p style="padding-left: 20px">
             <strong :disabled="trip.readOnly">Trip Dates (start to end)</strong>
           </p>
           <span>
@@ -83,6 +84,7 @@
             </q-item>
           </div>
         </q-list> -->
+      <div class="q-pa-md">
 
         <q-select
           label="Start Port"
@@ -99,7 +101,7 @@
 
         <q-select
           v-model="trip.activeTrip.returnPort"
-          :dense="true"
+          dense
           label="End Port"
           @filter="endPortsFilterFn"
           fill-input
@@ -112,7 +114,7 @@
 
         <q-select
           v-model="trip.activeTrip.fishery"
-          :dense="true"
+          dense
           label="Fishery"
           stack-label
           :rules="[val => !!val || 'Field is required']"
@@ -124,15 +126,16 @@
           hide-selected
           :options="fisheryOptions"
           :readonly="trip.readOnly || !this.trip.newTrip"
+          style="padding-bottom: 5px"
         ></q-select>
 
-        <p>
+        <p style="margin: 0">
           <strong :disabled="trip.readOnly">Permits</strong>
         </p>
 
         <q-select
           v-model="trip.activeTrip.permits"
-          :dense="true"
+          dense
           bg-color="white"
           color="primary"
           multiple
@@ -158,6 +161,7 @@
             </q-chip>
           </template>
         </q-select>
+      </div>
 
         <!-- <q-btn round color="primary" icon="add" size="sm" @click="prompt=true" style="float:right"/> -->
 
@@ -196,12 +200,14 @@
         </q-dialog>-->
 
 
-      <div v-if="trip.newTrip" align="right" class="text-primary">
+      <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
         <q-btn label="Cancel" @click="goToTrips"/>
+        &nbsp;
         <q-btn label="Create Trip" color="primary" @click="createTrip"/>
       </div>
-      <div v-else align="right" class="text-primary">
+      <div v-else align="right" class="text-primary" style="padding-right: 10px">
         <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
+        &nbsp;
         <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
       </div>
 
