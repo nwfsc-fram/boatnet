@@ -118,7 +118,14 @@ export default class Home extends Vue {
               if (!this.permit.vesselPermits[vesselId]) {
                 this.permit.vesselPermits[vesselId] = [];
               }
-              this.permit.vesselPermits[vesselId].push(permit);
+              // TODO: below is a hack to remove duplicate permits
+              // there should only be one active federal permit
+              // for a given permit number.
+              // so doing this hack until I've figured out
+              // what's wrong with the permits.
+              if (this.permit.vesselPermits[vesselId].length < 1) {
+                this.permit.vesselPermits[vesselId].push(permit);
+              }
             }
             this.permit.permits.push(permit);
         }
