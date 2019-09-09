@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="this.$router.currentRoute.name !== 'Home'"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details'].includes($route.name)"
           flat
           dense
           round

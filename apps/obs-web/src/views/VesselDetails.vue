@@ -164,7 +164,7 @@ export default class VesselDetails extends Vue {
                 try {
                     const db = couchService.masterDB;
                     const queryOptions = {
-                    limit: 10,
+                    limit: 20,
                     start_key: val.toLowerCase(),
                     inclusive_end: true,
                     descending: false,
@@ -173,7 +173,7 @@ export default class VesselDetails extends Vue {
 
                     const captains = await db.viewWithDocs(
                         'obs-web',
-                        'all_persons',
+                        'all_active_persons',
                         queryOptions
                         );
 
