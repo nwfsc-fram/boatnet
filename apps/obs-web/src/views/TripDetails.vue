@@ -23,18 +23,20 @@
 
         <div>
           <p>
-            <strong :disabled="trip.readOnly">Trip Dates</strong>
+            <strong :disabled="trip.readOnly">Trip Dates (start to end)</strong>
           </p>
-          <span class="p-fluid">
+          <span>
             <pCalendar
               v-model="tripDates"
               :minDate="minDate"
               :disabledDates="invalidDates"
-              :touchUI="true"
+              :inline="true"
+              :touchUI="false"
               placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="">
+              style="width: 100%;"
+              >
             </pCalendar>
           </span>
         <!-- <br>
@@ -852,10 +854,14 @@ export default class TripDetails extends Vue {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
 .my-card {
   width: 95%;
 }
+.p-datepicker {
+  padding: 0 !important
+}
+
 </style>
 
 <!--
