@@ -43,14 +43,15 @@ export default class Home extends Vue {
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
 
+  private userRoles: string[] = [];
+
   constructor() {
     super();
   }
 
-    private userRoles: string[] = [];
 
     private enableCaptainMode(input: boolean) {
-      this.user.captainMode = input
+      this.user.captainMode = input;
     }
 
     private isAuthorized(authorizedRoles: string[]) {
