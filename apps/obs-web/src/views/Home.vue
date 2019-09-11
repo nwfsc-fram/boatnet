@@ -7,6 +7,7 @@
       </template>
     </q-banner>
     <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+    <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode"/>
 
   </q-page>
 </template>
@@ -42,9 +43,25 @@ export default class Home extends Vue {
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
 
+  private userRoles: string[] = [];
+
   constructor() {
     super();
   }
+
+
+    private enableCaptainMode(input: boolean) {
+      this.user.captainMode = input;
+    }
+
+    private isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     private async getUserFromUserDB() {
         // get user doc from userDB if exits
@@ -185,6 +202,9 @@ export default class Home extends Vue {
     // this.couch();
     this.getPermits();
     this.getUserFromUserDB();
+    if ( authService.getCurrentUser() ) {
+      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+    }
   }
 
 }

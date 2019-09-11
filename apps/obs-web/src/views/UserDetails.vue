@@ -44,7 +44,7 @@
                 </div>
 
                 <q-select
-                    v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])"
+                    v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])  && !user.captainMode"
                     class="q-pa-sm"
                     outlined
                     v-model="applicationRoles"

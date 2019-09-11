@@ -74,7 +74,7 @@
         <q-item
           to="/vessels"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="fa fa-ship" />
@@ -88,7 +88,7 @@
         <q-item
           to="/em-efp-management"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="videocam" />
@@ -102,7 +102,7 @@
         <q-item
           to="/ots-management"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="waves" />
@@ -116,7 +116,7 @@
         <q-item
           to="/observer-assignment"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="fa fa-binoculars" />
@@ -130,7 +130,7 @@
         <q-item
           to="/observer-availability"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="fa fa-calendar-alt" />
@@ -144,7 +144,7 @@
         <q-item
           to="/debriefer"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="beenhere" />
@@ -160,7 +160,7 @@
         <q-item
           to="/permits"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="assignment" />
@@ -185,7 +185,7 @@
         <q-item
           to="/manage-users"
           exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
             <q-icon name="people" />
