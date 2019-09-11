@@ -13,7 +13,8 @@ export const state: UserState = {
   users: [],
   newUser: false,
   activeUser: undefined,
-  unLinkedApexUsers: []
+  unLinkedApexUsers: [],
+  captainMode: false
 };
 
 export const user: Module<UserState, RootState> = {

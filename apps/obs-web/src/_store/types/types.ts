@@ -40,6 +40,7 @@ export interface UserState {
   users: Person[];
   newUser: boolean;
   unLinkedApexUsers: any[];
+  captainMode: boolean;
 }
 
 export interface VesselState {
