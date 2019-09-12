@@ -294,7 +294,17 @@ export default class Trips extends Vue {
               tripVesselReg === activeVesselReg;
               }
             }
-          );
+          ).sort((a: any, b: any) => {
+            const keyA = moment(a.departureDate);
+            const keyB = moment(a.returnDate);
+            if (keyA < keyB) {
+              return -1
+            }
+            if (keyA > keyB) {
+              return 1
+            }
+            return 0;
+          });
       } else {
         return [];
       }
@@ -311,7 +321,17 @@ export default class Trips extends Vue {
               tripVesselReg === activeVesselReg;
             }
           }
-        );
+        ).sort((a: any, b: any) => {
+            const keyA = moment(a.departureDate);
+            const keyB = moment(a.returnDate);
+            if (keyA < keyB) {
+              return -1
+            }
+            if (keyA > keyB) {
+              return 1
+            }
+            return 0;
+          });
       } else {
         return [];
       }
