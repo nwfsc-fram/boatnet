@@ -298,10 +298,10 @@ export default class Trips extends Vue {
             const keyA = moment(a.departureDate);
             const keyB = moment(a.returnDate);
             if (keyA < keyB) {
-              return -1
+              return -1;
             }
             if (keyA > keyB) {
-              return 1
+              return 1;
             }
             return 0;
           });
@@ -325,10 +325,10 @@ export default class Trips extends Vue {
             const keyA = moment(a.departureDate);
             const keyB = moment(a.returnDate);
             if (keyA < keyB) {
-              return -1
+              return -1;
             }
             if (keyA > keyB) {
-              return 1
+              return 1;
             }
             return 0;
           });
