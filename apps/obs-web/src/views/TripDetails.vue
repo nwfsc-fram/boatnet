@@ -737,6 +737,16 @@ export default class TripDetails extends Vue {
              }
           }
         }
+        if (row.doc.tripStatus.description === 'closed' && row.doc.closingReason === 'Taken') {
+          const closedTripStart = row.doc.captainAffirmedDepartureDate;
+          const closedTripEnd = row.doc.captainAffirmedReturnDate;
+          const days = moment(row.doc.captainAffirmedReturnDate).diff(row.doc.captainAffirmedDepartureDate, 'days');
+          for (i = 0; i <= days; i++) {
+            const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.captainAffirmedDepartureDate)));
+            invalidDay.add(i, 'days');
+            this.invalidDates.push(new Date(invalidDay.format()));
+          }
+        }
       }
     }
   }
