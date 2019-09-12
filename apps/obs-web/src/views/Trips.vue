@@ -155,6 +155,7 @@
             <pCalendar
               v-model="tripDates"
               :inline="true"
+              :maxDate="maxDate"
               selectionMode="range"
               onfocus="blur();"
               style="padding: 5px">
@@ -243,8 +244,8 @@ export default class Trips extends Vue {
   private startYearMonth: string = moment().format('YYYY/MM');
   private endYearMonth: string = moment().format('YYYY/MM');
   private tripDates: any = [];
-  private invalidDates: any[] = [];
   private minDate: any = new Date();
+  private maxDate = new Date();
 
   constructor() {
       super();
@@ -339,7 +340,8 @@ export default class Trips extends Vue {
             } catch (err) {
                 console.log(err);
             }
-        }
+
+          }
     );
     }
 

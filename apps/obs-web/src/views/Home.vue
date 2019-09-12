@@ -6,8 +6,19 @@
         <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
-    <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
-    <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode"/>
+
+    <div class="flex flex-center">
+      <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+    </div>
+    <div style="display: block; text-align: center" >
+      <q-btn label="Manage Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+
+      <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
+
+      <q-btn label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
+    <br>
+    <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
+    </div>
 
   </q-page>
 </template>
@@ -48,7 +59,6 @@ export default class Home extends Vue {
   constructor() {
     super();
   }
-
 
     private enableCaptainMode(input: boolean) {
       this.user.captainMode = input;
@@ -217,7 +227,7 @@ export default class Home extends Vue {
 
 @media screen and (orientation: portrait) {
   .hero-logo {
-    width: 80%;
+    width: 50%;
   }
 }
 
