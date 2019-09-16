@@ -6,7 +6,7 @@
         <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
-    <q-page padding>
+    <q-page>
       <boatnet-tab-panel :size="2">
         <template v-slot:title1>
           <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
@@ -366,4 +366,5 @@ a {
 .example-flexbox-row {
   flex-direction: row;
 }
+
 </style>

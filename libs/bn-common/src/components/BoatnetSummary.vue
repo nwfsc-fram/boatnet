@@ -28,54 +28,54 @@
       @confirmDelete="onDelete"
     />
 
-    <div class="row q-gutter-sm q-pa-md relative-bottom">
+    <div class="row q-gutter-sm relative-bottom">
       <q-btn
+        round
         color="primary"
         icon="add"
-        :label="'Add ' + currentScreen"
         @click="onAdd"
-
-      />
+      >
+      </q-btn>
+      
       <q-btn
         v-if="showRemove && !hasData"
+        round
         color="primary"
         icon="remove"
-        :label="'Remove'"
         @click="onRemove"
         :disabled="!current"
-
       />
       <q-btn
+        round
         color="primary"
         icon="edit"
-        :label="'Edit ' + currentScreen"
         @click="onEdit"
         :disabled="!current"
 
       />
       <q-btn
         v-if="showEnd"
+        round
         color="primary"
         icon="done"
-        :label="'End ' + currentScreen"
         @click="onEnd"
         :disabled="!current"
 
       />
       <q-btn
         v-if="showDelete"
+        round
         color="primary"
         icon="delete_forever"
-        :label="'Delete ' + currentScreen"
         @click="showDeleteDialog = true"
         :disabled="!current"
 
       />
       <q-btn
         v-if="showMove"
+        round
         color="primary"
         icon="fas fa-exchange-alt"
-        :label="'Move ' + currentScreen"
         @click="onMove"
         :disabled="!current"
 
@@ -84,7 +84,7 @@
       <q-space/>
       <slot name="goToButtons"/>
       <span style="position: relative; right: 5px">
-        <q-btn color="primary" icon="play_arrow" :label="'Go To ' + getNextScreen()" @click="goTo"/>
+        <q-btn color="primary" icon="navigate_next" :label="getNextScreen()" @click="goTo"/>
       </span>
     </div>
   </span>
@@ -209,7 +209,8 @@ a {
 
 @media only screen {
 .relative-bottom {
-  width: 98%;
+  padding-left: 1%;
+  width: 100%;
   position: absolute;
   bottom: 8vh;
   background-color: lightgray !important

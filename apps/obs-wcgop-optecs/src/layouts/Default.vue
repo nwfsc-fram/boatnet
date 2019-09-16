@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="basic">
+    <q-header class="basic">
       <q-toolbar>
         <q-btn
           flat
@@ -144,6 +144,7 @@ import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { colors } from 'quasar';
 
 @Component({
   components: {
@@ -160,12 +161,12 @@ export default class DefaultLayout extends Vue {
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
-  private leftDrawerOpen: boolean;
+  private leftDrawerOpen: boolean = false;
   private miniState = true;
 
   constructor() {
     super();
-    this.leftDrawerOpen = Platform.is.desktop;
+    // this.leftDrawerOpen = Platform.is.desktop;
     if (!pouchService.isConnected) {
       // Reconnect PouchDB if page refreshed but still logged in
       this.reconnect().catch((err: any) => {
@@ -203,6 +204,8 @@ export default class DefaultLayout extends Vue {
   }
 
   private created() {
+    // colors.setBrand('primary', '#000000')
+    // colors.setBrand('secondary', '#f900bf')
     if ( authService.getCurrentUser() ) {
       return;
     } else {
