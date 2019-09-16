@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page>
     <boatnet-summary
       currentScreen="Haul"
       :current="currentHaul"
@@ -30,7 +30,7 @@
       </template>
       <template v-slot:goToButtons>
         <span style="position: relative; right: 10px">
-        <q-btn color="primary" icon="play_arrow" label="Go To Logbook Mode"/>
+        <q-btn color="primary" icon="fa fa-th-list" label="Logbook Mode"/>
         </span>
       </template>
     </boatnet-summary>

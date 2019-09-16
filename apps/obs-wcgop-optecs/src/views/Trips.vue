@@ -1,6 +1,6 @@
 <template>
   <span>
-    <q-page padding>
+    <q-page>
       <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
         {{alert.message}}
         <template v-slot:action>

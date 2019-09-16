@@ -1,5 +1,5 @@
 <template>
-  <q-page padding>
+  <q-page>
     <boatnet-tab-panel :size="4">
       <template v-slot:title1>
         <div class="text-h5 row justify-center">Haul #{{haulNum}} Info Part 1</div>

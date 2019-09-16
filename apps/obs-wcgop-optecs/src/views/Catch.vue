@@ -1,7 +1,7 @@
 <template>
   <div>
-    <q-page padding>
-      <div style="float: left;">
+    <q-page>
+      <div style="float: left; padding: 10px">
         <span>
           <q-btn color="primary" @click="expandAll">Expand All</q-btn>&nbsp;
         </span>
@@ -31,9 +31,9 @@
         </template>
         <template v-slot:goToButtons>
           <span style="position: relative; right: 8px">
-            <q-btn color="primary" icon="play_arrow" label="Go To Tallies" />
+            <q-btn color="primary" icon="dialpad" label="Tallies" />
             &nbsp;
-            <q-btn color="primary" icon="play_arrow" label="Go To Biospec" />
+            <q-btn color="primary" icon="fa fa-fish" label="Biospec" />
           </span>
         </template>
       </boatnet-summary>
@@ -50,7 +50,7 @@
       <q-scroll-area class="fit">
         <div style="width: 500px; padding: 10px" v-if="newSpecies">
           <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
-          <div class="text-h6" style="float: right; padding-right: 10px">ADD SPECIES</div>
+          <div class="text-h6" style="float: right; padding-right: 7%">ADD SPECIES</div>
           <br />
 
           <div class="row">
@@ -116,7 +116,7 @@
               ></boatnet-custom-keyboard> -->
             </div>
 
-            <div class="col q-pa-md" style="padding-top: 37px">
+            <div class="col q-pa-md" style="padding-right: 7%">
               <q-btn
                 label="Frequent List"
                 @click="frequentList = !frequentList"
@@ -139,8 +139,8 @@
                 </template>
               </q-input>
 
-              <q-scroll-area style="height: 355px">
-                <q-list bordered separator>
+              <q-scroll-area style="height: 386px">
+                <q-list bordered separator dense>
                   <q-item
                     v-for="(option, i) of filteredSpecies"
                     :key="i"
@@ -155,7 +155,7 @@
             </div>
           </div>
 
-          <div class="q-pa-md" style="float: right;">
+          <div class="q-pa-md" style="float: right; padding-right: 7%">
             <q-btn
               color="primary"
               label="add"
@@ -171,7 +171,7 @@
 
         <div style="width: 500px; padding: 10px" v-if="currentCatch && speciesEditing">
           <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
-          <div class="text-h6" style="float: right; padding-right: 10px">EDIT SPECIES</div>
+          <div class="text-h6" style="float: right; padding-right: 7%">EDIT SPECIES</div>
           <br />
 
           <div class="q-pa-md" style="width: 100%">
@@ -179,6 +179,7 @@
             <br />
             <div
               v-if="speciesModel.disposition && speciesModel.disposition.description === 'Discarded'"
+              style="width: 95%"
             >
               <b>Discard Reason</b>
               <br />
@@ -211,7 +212,7 @@
             </div>
 
             <div
-              style="float: right;"
+              style="float: right; padding-right: 3%"
               v-if="(speciesModel.disposition && speciesModel.disposition.description === 'Discarded') || (speciesModel.weightMethod && ['6','7','14'].includes(speciesModel.weightMethod.lookupVal))"
             >
               <br />
