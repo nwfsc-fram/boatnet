@@ -11,6 +11,7 @@
         @node-select="select"
         @node-unselect="unSelect"
         sortMode="single"
+        style="height: 470px"
       >
         <pColumn
           v-for="col of settings.columns"

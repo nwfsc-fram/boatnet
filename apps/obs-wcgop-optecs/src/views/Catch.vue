@@ -140,7 +140,7 @@
                 </template>
               </q-input>
 
-              <q-scroll-area style="height: 322px">
+              <q-scroll-area style="height: 280px">
                 <q-list bordered separator dense>
                   <q-item
                     v-for="(option, i) of filteredSpecies"
