@@ -22,7 +22,7 @@
         <q-toolbar-title>
           <optecs-breadcrumbs/>
         </q-toolbar-title>
-
+        <q-btn icon="keyboard" @click="toggleKeyboard" flat size="lg"></q-btn>
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
       </q-toolbar>
@@ -145,6 +145,7 @@ import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '../_store/index';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { colors } from 'quasar';
+import { WcgopAppState } from '../_store/types/types';
 
 @Component({
   components: {
@@ -161,8 +162,12 @@ export default class DefaultLayout extends Vue {
   @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
+  @State('appState') private appState!: WcgopAppState;
+  @Action('setKeyboardStatus', { namespace: 'appState' })
+  private setKeyboardStatus: any;
   private leftDrawerOpen: boolean = false;
   private miniState = true;
+  private isKeyboardEnabled: boolean = false;
 
   constructor() {
     super();
@@ -201,6 +206,16 @@ export default class DefaultLayout extends Vue {
 
   private set syncStatusExists(statusExists: boolean) {
     console.log(statusExists);
+  }
+
+  private toggleKeyboard() {
+    this.isKeyboardEnabled = !this.isKeyboardEnabled;
+    this.setKeyboardStatus(this.isKeyboardEnabled);
+    console.log(this.appState.isKeyboardEnabled);
+  }
+
+  private mounted() {
+    this.isKeyboardEnabled = this.appState.isKeyboardEnabled;
   }
 
   private created() {
