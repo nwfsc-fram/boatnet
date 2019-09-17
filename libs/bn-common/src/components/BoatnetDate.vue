@@ -7,6 +7,7 @@
       mask="date"
       fill-mask
       @focus="show"
+      dense
     >
       <template min-width="290px">
         <q-popup-proxy v-if="status" :breakpoint="1024">

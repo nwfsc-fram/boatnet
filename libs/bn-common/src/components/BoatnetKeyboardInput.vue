@@ -11,6 +11,7 @@
     :fill-mask="showMask"
     :hint="hint"
     :data-layout="keyboardType"
+    dense
   >
   <template v-slot:append>
       <slot name="after"/>
