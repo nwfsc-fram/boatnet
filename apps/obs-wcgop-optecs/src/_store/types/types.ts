@@ -26,6 +26,6 @@ export interface WcgopAppState {
   currentTrip?: WcgopTrip;
   currentHaul?: WcgopOperation;
   currentCatch?: WcgopCatch;
-  isKeyboardEnabled?: boolean;
+  isKeyboardEnabled: boolean;
   isSoundEnabled?: boolean;
 }

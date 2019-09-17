@@ -40,6 +40,14 @@
       </boatnet-summary>
     </q-page>
 
+    <div v-if="appState.isKeyboardEnabled" style="position: absolute; bottom: 12%; left: 2%; z-index: 10000">
+        <boatnet-custom-keyboard
+          @output="outputKey($event)"
+          @bksp="filterText = filterText.slice(0, -1)"
+          @clear="filterText = ''"
+        ></boatnet-custom-keyboard>
+    </div>
+
     <q-drawer
       side="right"
       v-model="drawerRight"
@@ -110,11 +118,7 @@
 
                 <div v-else>(Catch Weight and Total # of fish can only be added one at a time.)</div>
               </div>
-              <!-- <boatnet-custom-keyboard
-                @output="outputKey($event)"
-                @bksp="filterText = filterText.slice(0, -1)"
-                @clear="filterText = ''"
-              ></boatnet-custom-keyboard> -->
+
             </div>
 
             <div class="col q-pa-md" style="padding-right: 7%">
@@ -283,8 +287,9 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
-import { Action, Getter } from 'vuex-class';
+import { Action, Getter, State } from 'vuex-class';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { WcgopAppState } from '../_store/types/types';
 import {
   WcgopCatch,
   WcgopCatchTypeName,
@@ -293,6 +298,7 @@ import {
   TaxonomyAlias,
   CatchGrouping
 } from '@boatnet/bn-models';
+
 
 import moment from 'moment';
 import { freemem } from 'os';
@@ -310,6 +316,7 @@ Vue.component(BoatnetSummary);
 @Component
 export default class Catch extends Vue {
   @Prop() public char!: string;
+  @State('appState') private appState!: WcgopAppState;
 
   private wcgopCatchSettings: any;
   private wcgopCatchTreeSettings: any;
