@@ -1,6 +1,6 @@
 <template>
   <span>
-    <q-scroll-area style="height: 570px">
+    <q-scroll-area style="height: 470px">
     <div>
 
       <pTreeTable

@@ -29,9 +29,10 @@
           >
           </boatnet-tree-table>
         </template>
-        <template v-slot:goToButtons>
+        <template v-slot:goToButtons v-if="currentCatch">
           <span style="position: relative; right: 8px">
-            <q-btn color="primary" icon="dialpad" label="Tallies" />
+            <q-btn
+            color="primary" icon="dialpad" label="Tallies" />
             &nbsp;
             <q-btn color="primary" icon="fa fa-fish" label="Biospec" />
           </span>
@@ -139,7 +140,7 @@
                 </template>
               </q-input>
 
-              <q-scroll-area style="height: 386px">
+              <q-scroll-area style="height: 322px">
                 <q-list bordered separator dense>
                   <q-item
                     v-for="(option, i) of filteredSpecies"

@@ -30,25 +30,31 @@
                 :options="options"
                 @filter="getVesselNames"
                 @save="saveOnUpdate"
+                dense
               />
               <boatnet-keyboard-input
                 :value.sync="currentTrip.captainName"
                 label="Skipper's Name"
                 keyboardType="normal"
                 @save="saveOnUpdate"
+                dense
               />
               <boatnet-keyboard-input
                 :value.sync="currentTrip.crewSize"
                 label="# of Crew"
                 keyboardType="numeric"
                 @save="saveOnUpdate"
+                dense
               />
               <boatnet-keyboard-input
                 :value.sync="currentTrip.logbookNum"
                 label="Observer Logbook #"
                 keyboardType="numeric"
                 @save="saveOnUpdate"
+                dense
               />
+            </div>
+            <div class="col q-col-gutter-md">
               <boatnet-datetime
                 dateLabel="Departure Date"
                 timeLabel="Departure Time"
@@ -64,8 +70,6 @@
                 @filter="getPorts"
                 @save="saveOnUpdate"
               />
-            </div>
-            <div class="col">
               <boatnet-licenses
                 :certificates.sync="currentTrip.certificates"
                 @error="handleError"
@@ -81,7 +85,10 @@
         <template v-slot:content2>
           <div class="q-col-gutter-md row">
             <div class="col q-col-gutter-md">
-              <div class="col-2">
+
+              <div class="row">
+
+              <div class="col">
                 <div class="text-h8 col-3">Partial Trip</div>
                 <q-btn-toggle
                   class="col-auto"
@@ -90,7 +97,8 @@
                   :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
                 />
               </div>
-              <div class="col-2">
+
+              <div class="col">
                 <div class="text-h8 col-3">Fish Processed During Trip</div>
                 <q-btn-toggle
                   class="col-auto"
@@ -99,6 +107,8 @@
                   :options="[{label: 'Y', value: true}, {label: 'N', value: false}]"
                 />
               </div>
+              </div>
+
               <boatnet-keyboard-input
                 :value.sync="currentTrip.logbookType"
                 label="Vessel Logbook Name"
@@ -118,17 +128,17 @@
                 @save="saveOnUpdate"
                 @error="handleError"
               />
-              <boatnet-keyboard-select
-                :value.sync="currentTrip.returnPort.name"
-                label="Return Port"
-                keyboardType="normal"
-                :options="options"
-                @filter="getPorts"
-                @save="saveOnUpdate"
-              />
             </div>
             <div class="col q-col-gutter-md">
               <div class="column q-col-gutter-md">
+                <boatnet-keyboard-select
+                  :value.sync="currentTrip.returnPort.name"
+                  label="Return Port"
+                  keyboardType="normal"
+                  :options="options"
+                  @filter="getPorts"
+                  @save="saveOnUpdate"
+                />
                 <boatnet-keyboard-input
                   :value.sync="firstReceiverName"
                   label="First Receiver"

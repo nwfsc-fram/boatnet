@@ -118,7 +118,7 @@
 
     <q-page-container>
 
-      <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
+      <q-dialog v-model="syncStatusExists" full-width seamless position="top">
         <q-card>
           <q-card-section style="padding: 0 5px 0 5px; margin: 0" >
               <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/>
