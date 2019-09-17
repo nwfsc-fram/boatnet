@@ -56,7 +56,7 @@ export default class BoatnetTable extends Vue {
 .my-sticky-header-table
   /* max height is important */
   .q-table__middle
-    max-height 480px
+    max-height 470px
 
   .q-table__top,
   .q-table__bottom,

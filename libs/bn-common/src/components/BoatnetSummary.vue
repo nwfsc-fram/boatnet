@@ -217,7 +217,7 @@ a {
   padding-left: 1%;
   width: 100%;
   position: absolute;
-  bottom: 20vh;
+  bottom: 4vh;
   background-color: lightgray !important
   }
 }

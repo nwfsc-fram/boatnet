@@ -14,6 +14,7 @@
     @filter="filter"
     @focus="displayKeyboard"
     :data-layout="keyboardType"
+    dense
   >
     <template v-slot:no-option>
       <q-item>
