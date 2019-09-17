@@ -30,23 +30,28 @@
 
     <div class="row q-gutter-sm relative-bottom">
       <q-btn
-        round
+        :label="currentScreen"
+        color="secondary"
+        >
+        </q-btn>
+      <q-btn
+        label="Add"
         color="primary"
         icon="add"
         @click="onAdd"
       >
       </q-btn>
-      
+
       <q-btn
         v-if="showRemove && !hasData"
-        round
+        label="Remove"
         color="primary"
         icon="remove"
         @click="onRemove"
         :disabled="!current"
       />
       <q-btn
-        round
+        label="Edit"
         color="primary"
         icon="edit"
         @click="onEdit"
@@ -55,7 +60,7 @@
       />
       <q-btn
         v-if="showEnd"
-        round
+        label="End"
         color="primary"
         icon="done"
         @click="onEnd"
@@ -64,7 +69,7 @@
       />
       <q-btn
         v-if="showDelete"
-        round
+        label="Delete"
         color="primary"
         icon="delete_forever"
         @click="showDeleteDialog = true"
@@ -73,7 +78,7 @@
       />
       <q-btn
         v-if="showMove"
-        round
+        label="Move"
         color="primary"
         icon="fas fa-exchange-alt"
         @click="onMove"
@@ -84,7 +89,7 @@
       <q-space/>
       <slot name="goToButtons"/>
       <span style="position: relative; right: 5px">
-        <q-btn color="primary" icon="navigate_next" :label="getNextScreen()" @click="goTo"/>
+        <q-btn v-if="current" color="primary" icon="navigate_next" :label="getNextScreen()" @click="goTo"/>
       </span>
     </div>
   </span>
@@ -212,7 +217,7 @@ a {
   padding-left: 1%;
   width: 100%;
   position: absolute;
-  bottom: 8vh;
+  bottom: 20vh;
   background-color: lightgray !important
   }
 }
@@ -223,4 +228,5 @@ a {
 // .q-btn {
 //   height: 75px;
 // }
+
 </style>

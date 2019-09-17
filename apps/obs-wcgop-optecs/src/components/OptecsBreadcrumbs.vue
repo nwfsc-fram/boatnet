@@ -4,8 +4,8 @@
       <q-btn
         v-if="i == 0"
         class="btn-arrow-right-only"
-        color="white"
-        text-color="primary"
+        :color="i != breadcrumbs.length-1 ? 'white' : 'secondary'"
+        :text-color="i != breadcrumbs.length-1 ? 'primary' : 'white'"
         label="Trips"
         icon="home"
         to="/"
