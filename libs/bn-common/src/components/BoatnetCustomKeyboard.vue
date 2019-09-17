@@ -85,6 +85,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component
 export default class BoatnetCustomKeyboard extends Vue {
   // @Prop() public char!: string;
+  public inputText: string = '';
 
 private letters = [
     ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
@@ -116,7 +117,6 @@ private get selectedCharSet() {
 private capSelected: boolean = false;
 private numSelected: boolean = false;
 private symSelected: boolean = false;
-public inputText: string = '';
 
   private onClick(char: string) {
     if (this.capSelected) {
@@ -129,13 +129,13 @@ public inputText: string = '';
   }
 
   private backspace() {
-    this.$emit('bksp')
+    this.$emit('bksp');
     this.inputText = this.inputText.substring(0, this.inputText.length - 1);
   }
 
   private clear() {
-    this.$emit('clear')
-    this.inputText = ''
+    this.$emit('clear');
+    this.inputText = '';
   }
 
 }
