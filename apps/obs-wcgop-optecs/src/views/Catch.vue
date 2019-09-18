@@ -40,14 +40,6 @@
       </boatnet-summary>
     </q-page>
 
-    <div v-if="appState.isKeyboardEnabled" style="position: absolute; bottom: 12%; left: 2%; z-index: 10000">
-        <boatnet-custom-keyboard
-          @output="outputKey($event)"
-          @bksp="filterText = filterText.slice(0, -1)"
-          @clear="filterText = ''"
-        ></boatnet-custom-keyboard>
-    </div>
-
     <q-drawer
       side="right"
       v-model="drawerRight"
@@ -1200,11 +1192,6 @@ export default class Catch extends Vue {
     this.deleteModify = false;
     this.speciesModel = {};
     this.setCurrentCatch(undefined);
-  }
-
-  private outputKey(event: any) {
-    this.filterText += event;
-    console.log(event);
   }
 
   private async getLookupVals(tableName: string) {

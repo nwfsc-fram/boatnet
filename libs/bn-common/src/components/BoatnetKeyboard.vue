@@ -20,6 +20,16 @@
       :input="input"
       :next="next"
     />
+    <vue-touch-keyboard
+      v-else-if="layout === 'compact'"
+      :class="{ keyboard: true, numeric: true }"
+      :options="keyboardOptions"
+      :layout="layout"
+      :cancel="hide"
+      :accept="accept"
+      :input="input"
+      :next="next"
+    />
   </div>
 </template>
 

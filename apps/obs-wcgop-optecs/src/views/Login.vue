@@ -5,7 +5,6 @@
         <q-btn flat dense round/>
 
         <q-toolbar-title>Boatnet WCGOP OPTECS Login</q-toolbar-title>
-
         <div>v0.0.0</div>
       </q-toolbar>
     </q-header>
@@ -98,6 +97,7 @@ export default class Login extends Vue {
 
   @Action('connect', { namespace: 'pouchState' }) private connectPouch: any;
   @Action('disconnect', { namespace: 'pouchState' })
+
   private disconnectPouch: any;
 
   @Action('clear', { namespace: 'appState' }) private clearAppState: any;

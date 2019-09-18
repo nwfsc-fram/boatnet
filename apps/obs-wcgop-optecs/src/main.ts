@@ -76,7 +76,7 @@ import 'primevue/resources/themes/nova-light/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
-// Vue.use(VueTouchKeyboard);
+Vue.use(VueTouchKeyboard);
 
 Vue.use(Quasar, {
   config: {},
