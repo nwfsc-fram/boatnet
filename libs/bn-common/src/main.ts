@@ -43,4 +43,5 @@ Object.keys(Components).forEach((name) => {
 
 export * from './models/BoatnetHaulsSettings';
 export * from './models/BoatnetTripsSettings';
+export * from './_store/';
 export default Components;
