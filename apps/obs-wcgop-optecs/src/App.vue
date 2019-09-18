@@ -7,14 +7,21 @@
       :input="keyboard.keyboardInputTarget"
       @next="next"
     />
+
+    <!-- <div v-if="appState.isKeyboardEnabled" style="position: absolute; bottom: 12%; left: 2%; z-index: 10000">
+      <boatnet-custom-keyboard
+        :input="keyboard.keyboardInputTarget"
+      ></boatnet-custom-keyboard>
+    </div> -->
+
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import { WcgopAppState } from '@/_store/types';
 import { KeyboardState } from './_store';
+import { WcgopAppState } from './_store/types/types';
 
 @Component
 export default class App extends Vue {
@@ -41,6 +48,15 @@ export default class App extends Vue {
 
   set keyboardStatus(status: boolean) {
     this.setKeyboard(status);
+  }
+
+  // private outputKey(event: any) {
+  //   this.filterText += event;
+  //   console.log(event);
+  // }
+
+  private setInput(event: any) {
+    console.log(event)
   }
 
   private next() {
@@ -70,5 +86,8 @@ export default class App extends Vue {
   padding: 0 !important;
   }
 
-  
+.vue-touch-keyboard {
+  background-color: grey;
+  border-radius: 10px;
+}
 </style>

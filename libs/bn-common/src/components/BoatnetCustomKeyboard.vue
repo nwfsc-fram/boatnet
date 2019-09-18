@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 10px; background-color: white; border: 2px solid grey; border-radius: 5px; padding: 10px">
-    <q-input filled v-model="inputText" style="margin-bottom: 10px">
+    <q-input filled v-model="inputValue" style="margin-bottom: 10px">
       <template v-slot:append>
           <q-btn dense round color="grey-7" size="sm" icon="clear" @click="clear"/>
       </template>
@@ -84,58 +84,70 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class BoatnetCustomKeyboard extends Vue {
-  // @Prop() public char!: string;
-  public inputText: string = '';
+  @Prop() public input!: any;
+  @Prop() public attribute!: any;
 
-private letters = [
-    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-    ['z', 'x', 'c', 'v', 'b', 'n', 'm']
-  ];
-private numbers = [
-    ['7', '8', '9'],
-    ['4', '5', '6'],
-    ['1', '2', '3'],
-    ['0', '.']
-  ];
-private symbols = [
-    ['~', '!', '@', '#', '$', '%', '^', '&', '*', '/'],
-    ['(', ')', '_', '+', '-', '{', '}', '[', ']', '\''],
-    ['\\', '|', ';', ':', '"', ',', '<', '.', '>', '?']
-  ];
+  private letters = [
+      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+      ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+    ];
+  private numbers = [
+      ['7', '8', '9'],
+      ['4', '5', '6'],
+      ['1', '2', '3'],
+      ['0', '.']
+    ];
+  private symbols = [
+      ['~', '!', '@', '#', '$', '%', '^', '&', '*', '/'],
+      ['(', ')', '_', '+', '-', '{', '}', '[', ']', '\''],
+      ['\\', '|', ';', ':', '"', ',', '<', '.', '>', '?']
+    ];
 
-private get selectedCharSet() {
-  if (this.numSelected) {
-    return this.numbers;
+  private get inputValue() {
+    return this.input.value;
   }
-  if (this.symSelected) {
-    return this.symbols;
-  }
-  return this.letters;
-}
 
-private capSelected: boolean = false;
-private numSelected: boolean = false;
-private symSelected: boolean = false;
+  private set inputValue(char) {
+    this.input.value += char;
+  }
+
+  private get selectedCharSet() {
+    if (this.numSelected) {
+      return this.numbers;
+    }
+    if (this.symSelected) {
+      return this.symbols;
+    }
+    return this.letters;
+  }
+
+  private capSelected: boolean = false;
+  private numSelected: boolean = false;
+  private symSelected: boolean = false;
 
   private onClick(char: string) {
     if (this.capSelected) {
-      this.inputText += char.toUpperCase();
-      this.$emit('output', char.toUpperCase());
+      this.inputValue = char.toUpperCase();
+      // this.inputValue = this.inputValue + char.toUpperCase();
+      // this.$emit('output', char.toUpperCase());
+      // this.input = text + char.toUpperCase()
     } else {
-      this.inputText += char;
-      this.$emit('output', char);
+      this.inputValue = char;
+      // this.inputValue = this.inputValue + char;
+      // this.input = text + char;
+      // this.$emit('output', char);
     }
   }
 
   private backspace() {
-    this.$emit('bksp');
-    this.inputText = this.inputText.substring(0, this.inputText.length - 1);
+    this.inputValue = this.inputValue.substring(0, this.inputValue.length - 1)
+    // this.$emit('bksp');
   }
 
   private clear() {
-    this.$emit('clear');
-    this.inputText = '';
+    // this.$emit('clear');
+    this.inputValue = '';
   }
 
 }

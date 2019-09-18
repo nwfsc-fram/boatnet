@@ -26,7 +26,7 @@
              <boatnet-keyboard-select
                 :value.sync="currentTrip.vessel.vesselName"
                 label="Vessel Name/ Registration"
-                keyboardType="normal"
+                keyboardType="compact"
                 :options="options"
                 @filter="getVesselNames"
                 @save="saveOnUpdate"
