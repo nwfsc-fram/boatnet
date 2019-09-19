@@ -24,15 +24,16 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
+import { BaseTrip, BaseOperation } from '@boatnet/bn-models';
 
 @Component
-export default class OptecsBreadcrumbs extends Vue {
+export default class BoatnetBreadcrumb extends Vue {
   private breadcrumbs: any[] = [];
   @Getter('currentTrip', { namespace: 'appState' })
-  private currentTrip!: WcgopTrip;
+  private currentTrip!: BaseTrip;
   @Getter('currentHaul', { namespace: 'appState' })
-  private currentHaul!: WcgopOperation;
+  private currentHaul!: BaseOperation;
+
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {

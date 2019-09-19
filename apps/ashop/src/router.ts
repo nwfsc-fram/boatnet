@@ -22,12 +22,22 @@ const router = new Router({
         {
           path: '',
           name: 'home',
-          component: Home
+          component: Home,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip'}
+            ]
+          }
         },
         {
           path: '/about',
           name: 'about',
-          component: About
+          component: About,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip'}
+            ]
+          }
         }
       ]
     }
@@ -40,9 +50,7 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
-  console.log('authReq: ' + authRequired + ' logged ' + logged);
   if (authRequired && !logged) {
-    console.log('redirecting to login');
     return next('/login');
   }
   next();
