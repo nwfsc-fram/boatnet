@@ -28,16 +28,6 @@ const router = new Router({
               { name: 'Trip'}
             ]
           }
-        },
-        {
-          path: '/about',
-          name: 'about',
-          component: About,
-          meta: {
-            breadcrumb: [
-              { name: 'Trip'}
-            ]
-          }
         }
       ]
     }
