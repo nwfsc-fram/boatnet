@@ -20,7 +20,7 @@
           size="1.5em"
         />
         <q-toolbar-title>
-          <boatnet-breadcrumbs/>
+          <slot name="breadcrumb"></slot>
         </q-toolbar-title>
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
         <!-- <q-icon name="save" />-->
@@ -135,14 +135,8 @@ import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '@boatnet/bn-common';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { colors } from 'quasar';
-import BoatnetBreadcrumb from './BoatnetBreadcrumb.vue';
 
-
-@Component({
-  components: {
-    'boatnet-breadcrumbs': BoatnetBreadcrumb
-  }
-})
+@Component
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;

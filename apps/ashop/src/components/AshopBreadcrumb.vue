@@ -24,15 +24,15 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { BaseTrip, BaseOperation } from '@boatnet/bn-models';
+import { BaseTrip, AshopHaul } from '@boatnet/bn-models';
 
 @Component
-export default class BoatnetBreadcrumb extends Vue {
+export default class AshopBreadcrumb extends Vue {
   private breadcrumbs: any[] = [];
   @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: BaseTrip;
   @Getter('currentHaul', { namespace: 'appState' })
-  private currentHaul!: BaseOperation;
+  private currentHaul!: AshopHaul;
 
 
   @Watch('$route', { immediate: true, deep: true })
@@ -50,7 +50,7 @@ export default class BoatnetBreadcrumb extends Vue {
         this.breadcrumbs[i].name = String(tripNum);
         this.breadcrumbs[i].link = '/tripdetails/' + String(tripNum);
       } else if (this.$route.meta.breadcrumb[i].name === 'haulIdPlaceholder') {
-        const haulNum = this.currentHaul ? this.currentHaul.operationNum : 0;
+        const haulNum = this.currentHaul ? this.currentHaul.haulNum : 0;
         this.breadcrumbs[i].name = String(haulNum);
         this.breadcrumbs[i].link = '/hauldetails/' + String(haulNum);
       } else {

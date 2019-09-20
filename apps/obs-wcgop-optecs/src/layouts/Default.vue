@@ -10,14 +10,22 @@
         </q-item-section>
       </q-item>
     </template>
+    <template v-slot:breadcrumb>
+      <optecs-breadcrumbs/>
+    </template>
   </default-layout>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import router from '../router';
+import OptecsBreadcrumbs from '../components/OptecsBreadcrumbs.vue';
 
-@Component
+@Component({
+  components: {
+    'optecs-breadcrumbs': OptecsBreadcrumbs
+  }
+})
 export default class Default extends Vue {
   private router = router;
 }
