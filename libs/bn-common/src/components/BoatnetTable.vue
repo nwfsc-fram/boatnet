@@ -1,6 +1,6 @@
 <template>
   <span>
-    <q-scroll-area style="height: 570px">
+    <!-- <q-scroll-area style="height: 570px"> -->
 
       <q-table
         class="my-sticky-header-table"
@@ -16,11 +16,12 @@
 
         <template v-slot:body="props">
           <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer" style="font-weight: bold">
-            <slot v-bind:row="props.row"/>
+              <slot v-bind:row="props.row"/>
           </q-tr>
         </template>
       </q-table>
-    </q-scroll-area>
+
+    <!-- </q-scroll-area> -->
   </span>
 </template>
 
@@ -34,8 +35,8 @@ import { BaseTrip } from '@boatnet/bn-models';
 export default class BoatnetTable extends Vue {
   @Prop() public data!: any[];
   @Prop() public settings!: any;
-  @Prop({ default: false }) public showBottom!: boolean;
-  @Prop({ default: false }) public isCondensed!: boolean;
+  @Prop({ default: true }) public showBottom!: boolean;
+  @Prop({ default: true }) public isCondensed!: boolean;
   public selected: any[] = [];
   private pagination = {rowsPerPage: 0};
 

@@ -55,9 +55,16 @@
           mask="###"
           :showMask="false"
         />
+        {{ geolocation }}
       </div>
       <div class="col q-pl-md self-start">
-        <q-date v-model="dateVal" minimal :default-year-month="defaultYearMonth"/>
+        <!-- <q-date v-model="dateVal" minimal :default-year-month="defaultYearMonth"/> -->
+        <pCalendar
+          v-model="dateVal"
+          :inline="true"
+          :showTime="true" hourFormat="12"
+        >
+        </pCalendar>
       </div>
     </boatnet-input-dialog>
   </span>
@@ -68,6 +75,9 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { WcgopFishTicket } from '@boatnet/bn-models';
 import moment from 'moment';
 import { FishingLocation } from '@boatnet/bn-models/models/_common/fishing-location';
+
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
 
 @Component
 export default class BoatnetLocations extends Vue {
@@ -83,6 +93,8 @@ export default class BoatnetLocations extends Vue {
 
   private dateVal: any = null;
   private timeVal: string = '';
+
+  private geolocation = this.getGeolocation();
 
   private current: FishingLocation = {
     location: {
@@ -141,6 +153,21 @@ export default class BoatnetLocations extends Vue {
     if (this.locations) {
       this.locationHolder = this.sortByDate(this.locations);
     }
+
+  }
+
+  private getGeolocation() {
+        navigator.geolocation.getCurrentPosition(
+        (position) => {
+          return position.coords.longitude + ' ' + position.coords.latitude;
+        },
+        (error) => {
+            alert(error.message);
+        }, {
+            enableHighAccuracy: true
+            , timeout: 5000
+        }
+    );
   }
 
   private sortByDate(locs: FishingLocation[]) {
