@@ -159,7 +159,7 @@ export default class BoatnetLocations extends Vue {
   private getGeolocation() {
         navigator.geolocation.getCurrentPosition(
         (position) => {
-          return position.coords.longitude + position.coords.latitude;
+          return position.coords.longitude + ' ' + position.coords.latitude;
         },
         (error) => {
             alert(error.message);
