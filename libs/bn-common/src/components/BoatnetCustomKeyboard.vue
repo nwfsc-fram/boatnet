@@ -141,7 +141,7 @@ export default class BoatnetCustomKeyboard extends Vue {
   }
 
   private backspace() {
-    this.inputValue = this.inputValue.substring(0, this.inputValue.length - 1)
+    this.inputValue = this.inputValue.substring(0, this.inputValue.length - 1);
     // this.$emit('bksp');
   }
 

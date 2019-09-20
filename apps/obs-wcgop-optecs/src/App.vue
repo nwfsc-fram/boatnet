@@ -55,9 +55,9 @@ export default class App extends Vue {
   //   console.log(event);
   // }
 
-  private setInput(event: any) {
-    console.log(event)
-  }
+  // private setInput(event: any) {
+  //   console.log(event);
+  // }
 
   private next() {
     const inputs = document.querySelectorAll('input');
