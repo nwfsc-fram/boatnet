@@ -19,11 +19,9 @@ import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
 
 import BoatnetLogin from './views/BoatnetLogin.vue';
 
-import BoatnetBreadcrumb from './layouts/BoatnetBreadcrumb.vue';
 import DefaultLayout from './layouts/Default.vue';
 
 const Components: any = {
-  BoatnetBreadcrumb,
   BoatnetButtonToggle,
   BoatnetDate,
   BoatnetDatetime,
