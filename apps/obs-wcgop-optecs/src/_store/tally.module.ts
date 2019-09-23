@@ -3,7 +3,6 @@ import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { Base } from '@boatnet/bn-models';
 import {
   TallyState,
-  RootState,
   TallyButtonLayoutData,
   TallyLayoutRecordTypeName,
   TallyLayoutRecord,
@@ -18,6 +17,7 @@ import {
 import { pouchService } from '@boatnet/bn-pouch';
 
 import moment from 'moment';
+import { RootState } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth';
 
 /* tslint:disable:no-var-requires  */

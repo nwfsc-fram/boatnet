@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import DefaultLayout from './layouts/Default.vue'
-import Home from './views/Home.vue'
-import About from './views/About.vue'
+import Trips from './views/Trips.vue'
+import TripDetails from './views/TripDetails.vue';
 import Login from './views/Login.vue'
 
 import { authService, auth } from '@boatnet/bn-auth';
@@ -21,11 +21,23 @@ const router = new Router({
       children: [
         {
           path: '',
-          name: 'home',
-          component: Home,
+          name: 'trips',
+          component: Trips,
           meta: {
             breadcrumb: [
               { name: 'Trip'}
+            ]
+          }
+        },
+        {
+          path: '/tripdetails/:tripNum',
+          name: 'tripdetails',
+          component: TripDetails,
+          props: (route) => ({ tripNum: Number(route.params.tripNum) }),
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: ''}
             ]
           }
         }

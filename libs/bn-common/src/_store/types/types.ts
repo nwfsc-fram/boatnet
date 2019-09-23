@@ -15,3 +15,14 @@ export interface TripState {
     currentHaul?: BaseOperation;
     currentCatch?: BaseCatch;
 }
+
+export interface AppSettings {
+    isKeyboardEnabled: boolean;
+    isSoundEnabled?: boolean;
+}
+
+export interface KeyboardState {
+    showKeyboard?: boolean;
+    keyboardType?: string;
+    keyboardInputTarget?: any;
+}

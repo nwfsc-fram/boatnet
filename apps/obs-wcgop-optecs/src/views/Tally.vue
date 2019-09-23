@@ -96,9 +96,8 @@ import TallyAllTalliesControls from '../components/tally/TallyAllTalliesControls
 import TallyAddExistingControls from '../components/tally/TallyAddExistingControls.vue';
 import TallyAddNewButton from '../components/tally/TallyAddNewButton.vue';
 
-import { WcgopAppState } from '../_store/types';
 import { TallyState } from '../_store/types';
-import { AlertState } from '../_store/index';
+import { AlertState } from '@boatnet/bn-common';
 import { Species } from '@boatnet/bn-models';
 import TallyWeightsForDialog from '../components/tally/TallyWeightsForDialog.vue';
 import TallyHistoryDialog from '../components/tally/TallyHistoryDialog.vue';
@@ -137,7 +136,6 @@ Vue.component(BoatnetAddSpeciesDialog);
 })
 export default class Tally extends Vue {
   @State('alert') private alert!: AlertState;
-  @State('appState') private appState!: WcgopAppState;
   @State('pouchState') private pouchState!: PouchDBState;
   @State('tallyState') private tallyState!: TallyState;
 

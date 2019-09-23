@@ -28,10 +28,11 @@ import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
 @Component
 export default class OptecsBreadcrumbs extends Vue {
   private breadcrumbs: any[] = [];
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip;
-  @Getter('currentHaul', { namespace: 'appState' })
+  @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaul!: WcgopOperation;
+
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     if (!this.$route.meta.breadcrumb) {

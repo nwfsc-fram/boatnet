@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated class="basic">
       <q-toolbar>
-        <q-btn flat dense round/>
+        <q-btn flat dense round />
 
         <q-toolbar-title>{{appName}}</q-toolbar-title>
 
@@ -26,30 +26,21 @@
           <div v-show="!!alert.message">
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
-           <q-input
-            outlined
-            ref="username"
-            v-model="username"
-            dense
-            label="Username"/>
-
-          <q-input
-            outlined
-            ref="password"
-            :type="isPwd ? 'password' : 'text'"
-            v-model="password"
+          <boatnet-keyboard-input :value.sync="username" label="Username" keyboardType="normal" />
+          <boatnet-keyboard-input
+            :value.sync="password"
             label="Password"
-            dense
-            autocomplete="boatnet password"
+            keyboardType="normal"
+            :encodingType="isPwd ? 'password' : 'text'"
           >
-            <template v-slot:append>
+            <template v-slot:after>
               <q-icon
                 :name="isPwd ? 'visibility_off' : 'visibility'"
                 class="cursor-pointer"
                 @click="isPwd = !isPwd"
               />
             </template>
-          </q-input>
+          </boatnet-keyboard-input>
           <div style="text-align: center">
             <q-btn
               class="full-width"
@@ -62,7 +53,7 @@
             />
           </div>
         </form>
-        <br>
+        <br />
         <div class="column justify-center q-gutter-md" style="text-align: center">
           <router-link to="/" disabled="true">Forgot Password</router-link>
           <router-link to="/" disabled="true">Change Password</router-link>
@@ -88,7 +79,7 @@ import { Quasar } from 'quasar';
 @Component
 export default class BoatnetLogin extends Vue {
   @Prop() private router!: any;
-  @Prop() private appName!: string; 
+  @Prop() private appName!: string;
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
@@ -136,7 +127,7 @@ export default class BoatnetLogin extends Vue {
   }
 
   private mounted() {
-       //   console.log('hello here ' + JSON.stringify(this.router));
+    //   console.log('hello here ' + JSON.stringify(this.router));
 
     this.logout(); // reset login status
     this.disconnectPouch();
@@ -151,7 +142,7 @@ export default class BoatnetLogin extends Vue {
           this.router.push('/'); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
-         // this.errorAlert(state.auth.status.error.message);
+          // this.errorAlert(state.auth.status.error.message);
           break;
       }
     });
@@ -161,7 +152,6 @@ export default class BoatnetLogin extends Vue {
     } else {
       console.log('Api URL not defined. Auth proxy will be used');
     }
-
   }
 
   private beforeDestroy() {

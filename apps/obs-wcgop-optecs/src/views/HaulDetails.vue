@@ -235,15 +235,15 @@ export default class Trips extends Vue {
   @Prop(Number) private haulNum!: number; // Passed by router
   private tab!: string; // Current tab (start or end)
 
-  @Getter('currentHaul', { namespace: 'appState' })
+  @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaulState!: WcgopOperation;
-  @Action('setCurrentHaul', { namespace: 'appState' })
+  @Action('setCurrentHaul', { namespace: 'tripsState' })
   private setCurrentHaul: any;
 
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip;
 
-  @Action('save', { namespace: 'appState' })
+  @Action('save', { namespace: 'tripsState' })
   private save: any;
 
   private currentHaul: WcgopOperation = {
