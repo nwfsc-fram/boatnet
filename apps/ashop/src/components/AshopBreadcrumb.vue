@@ -34,7 +34,6 @@ export default class AshopBreadcrumb extends Vue {
   @Getter('currentHaul', { namespace: 'appState' })
   private currentHaul!: AshopHaul;
 
-
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
     if (!this.$route.meta.breadcrumb) {

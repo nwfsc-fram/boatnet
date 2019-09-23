@@ -8,6 +8,8 @@ import { pouchState } from '@boatnet/bn-pouch';
 import { tripsState } from '@boatnet/bn-common';
 import { alert } from '@boatnet/bn-common';
 import { RootState } from '@boatnet/bn-common';
+import { keyboard } from '@boatnet/bn-common';
+import { appSettings } from '@boatnet/bn-common';
 
 // Primary app store: following examples at:
 // https://codeburst.io/vuex-and-typescript-3427ba78cfa8
@@ -18,7 +20,7 @@ Vue.use(Vuex);
 // Preserves state between page refreshes.
 const vuexLocalStorage = new VuexPersist({
   key: 'obs-ashop',
-  modules: ['alert', 'auth', 'pouchState', 'tripsState']
+  modules: ['alert', 'auth', 'appSettings', 'keyboard', 'pouchState', 'tripsState']
 });
 
 const store: StoreOptions<RootState> = {
@@ -27,7 +29,9 @@ const store: StoreOptions<RootState> = {
   },
   modules: {
     alert,
+    appSettings,
     auth,
+    keyboard,
     pouchState,
     tripsState
   },
