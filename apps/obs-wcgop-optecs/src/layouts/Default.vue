@@ -108,6 +108,15 @@
 
         <q-separator/>
 
+        <q-item to="/dynamicTripDetails" exact>
+          <q-item-section avatar>
+            <q-icon name="error"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>dynamicTripDetails</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/" exact>
           <q-item-section>
             <q-item-label>Last Sync: {{syncDate}}</q-item-label>
