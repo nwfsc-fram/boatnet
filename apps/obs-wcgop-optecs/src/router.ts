@@ -9,6 +9,7 @@ import Hauls from './views/Hauls.vue';
 import HaulDetails from './views/HaulDetails.vue';
 import Tally from './views/Tally.vue';
 import Catch from './views/Catch.vue';
+import DynamicTripDetails from './views/DynamicTripDetails.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -44,6 +45,19 @@ const router = new Router({
             breadcrumb: [
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: ''}
+            ]
+          }
+        },
+        {
+          path: '/dynamictripdetails',
+          name: 'dynamictripdetails',
+          component: DynamicTripDetails,
+          props: (route) => ({ tripNum: Number(route.params.tripNum) }),
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: '4', link: '' },
+              { name: 'Dynamic Trip Details', link: ''}
             ]
           }
         },

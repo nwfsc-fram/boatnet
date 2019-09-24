@@ -90,4 +90,8 @@ export default class App extends Vue {
   background-color: grey;
   border-radius: 10px;
 }
+
+.q-layout {
+  background-color: lightgray;
+}
 </style>
