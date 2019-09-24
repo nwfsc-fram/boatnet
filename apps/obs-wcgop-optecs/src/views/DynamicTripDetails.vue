@@ -139,11 +139,16 @@
         <div>{{ attribute.value }}</div>
       </q-card>
 
+      <q-card v-if="attribute.displayAs === 'slider' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <q-slider v-model="trip[attribute.modelName]" :min="attribute.min" :max="attribute.max" label-always></q-slider>
+      </q-card>
+
       <q-card v-if="attribute.displayAs === 'fishTickets' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
-                 <boatnet-fish-tickets
-                  :fishTickets.sync="trip.fishTickets"
-                />
+          <boatnet-fish-tickets
+          :fishTickets.sync="trip.fishTickets"
+          />
       </q-card>
 
     </div>
@@ -203,6 +208,7 @@ interface Trip {
   logbookType?: string;
   firstReceiverName?: string;
   fishTickets?: any[];
+  sliderNumber?: number;
   [key: string]: any;
 }
 
@@ -224,7 +230,8 @@ export default class DynamicTripDetails extends Vue {
 
   private trip: Trip = {
     crewSize: 0,
-    logbookNum: 0
+    logbookNum: 0,
+    sliderValue: 0
   };
   private start = true;
 
@@ -407,6 +414,18 @@ export default class DynamicTripDetails extends Vue {
         modelName: 'firstReceiverName',
         type: 'text',
         displayAs: 'text',
+        isDisplayColumn: 'false',
+        required: 'true',
+        validations: '',
+        phase: 'end'
+      },
+      {
+        displayName: 'Slider',
+        modelName: 'sliderValue',
+        min: 0,
+        max: 15,
+        type: 'number',
+        displayAs: 'slider',
         isDisplayColumn: 'false',
         required: 'true',
         validations: '',

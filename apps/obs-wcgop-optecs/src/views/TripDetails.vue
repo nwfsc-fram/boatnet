@@ -6,14 +6,14 @@
         <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
-    <q-page>
+    <q-page :class="{ pushUp: lowInput }">
       <boatnet-tab-panel :size="2">
         <template v-slot:title1>
           <div class="text-h5 test-flexbox-row justify-center">Trip #{{tripNum}} Start</div>
         </template>
         <template v-slot:content1>
           <div class="q-col-gutter-md row">
-            <div class="col q-col-gutter-md">
+            <div class="col q-col-gutter-md" @click="getPos">
               <boatnet-button-toggle
                 title="Gear Type:"
                 :value.sync="currentTrip.gearType"
@@ -53,7 +53,9 @@
                 @save="saveOnUpdate"
                 dense
               />
+
             </div>
+
             <div class="col q-col-gutter-md">
               <boatnet-datetime
                 dateLabel="Departure Date"
@@ -220,6 +222,7 @@ export default class Trips extends Vue {
   private ph = ''; // TEMP
 
   private options: string[] = [];
+  private lowInput = false;
 
   constructor() {
     super();
@@ -239,6 +242,15 @@ export default class Trips extends Vue {
       return this.currentTrip.vessel.coastGuardNumber
         ? this.currentTrip.vessel.coastGuardNumber
         : this.currentTrip.vessel.stateRegulationNumber;
+    }
+  }
+
+  private getPos() {
+    console.log(event!.target!.getBoundingClientRect().bottom)
+    if (event!.target!.getBoundingClientRect().bottom > 200) {
+      this.lowInput = true;
+    } else {
+      this.lowInput = false;
     }
   }
 
@@ -377,4 +389,8 @@ a {
   flex-direction: row;
 }
 
+.pushUp {
+  position: relative;
+  bottom: 200px;
+}
 </style>
