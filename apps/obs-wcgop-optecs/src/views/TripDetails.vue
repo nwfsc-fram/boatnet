@@ -246,8 +246,8 @@ export default class Trips extends Vue {
   }
 
   private getPos() {
-    console.log(event!.target!.getBoundingClientRect().bottom)
-    if (event!.target!.getBoundingClientRect().bottom > 200) {
+    const position: any = event!.target!
+    if (position.getBoundingClientRect().bottom > 200) {
       this.lowInput = true;
     } else {
       this.lowInput = false;
