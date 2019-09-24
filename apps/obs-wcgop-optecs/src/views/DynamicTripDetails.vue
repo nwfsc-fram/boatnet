@@ -32,7 +32,11 @@
 
       <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
-        <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
+        <q-input v-model="trip[attribute.modelName]" dense outlined>
+          <template slot="append"><q-icon flat name="add_circle" @click="trip[attribute.modelName] += 1"></q-icon></template>
+          <template slot="append"><q-icon flat name="remove_circle" @click="trip[attribute.modelName] -= 1"></q-icon></template>
+
+        </q-input>
       </q-card>
 
       <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px;">
