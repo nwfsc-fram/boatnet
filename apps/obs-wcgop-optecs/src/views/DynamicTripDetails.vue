@@ -65,7 +65,7 @@
         &nbsp;
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 104px">
+      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <div>{{ attribute.value }}</div>
       </q-card>
