@@ -1,14 +1,19 @@
 <template>
 <div>
-  <div style="margin: 2px; display: flex; flex-wrap: wrap; justify-content: center">
-    <q-card
-      style="min-width: 350px; max-width: 400px; margin: 1px"
-      class="q-pa-sm"
-      v-for="attribute in tripDoc.tripAttributes"
-      :key="tripDoc.tripAttributes.indexOf(attribute)"
+  <q-expansion-item
+    v-model="start"
+    expand-separator
+    label="Trip Start"
+    header-class="bg-primary text-white text-bold"
+    expand-icon-class="text-white"
+    icon="far fa-clock"
     >
-      <div v-if="attribute.displayAs === 'buttons'">
-        <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
+  <div style="margin: 2px; display: flex; flex-wrap: wrap; justify-content: center">
+    <div v-for="attribute in tripDoc.tripAttributes"
+      :key="tripDoc.tripAttributes.indexOf(attribute)">
+
+      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style=" white-space: nowrap;">{{ attribute.displayName }}</div>
         <q-btn-toggle
           :options="attribute.options"
           v-model="trip[attribute.modelName]"
@@ -18,45 +23,129 @@
           color="grey-6"
           style="height: 40px"
         ></q-btn-toggle>
-      </div>
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'text'">
-            <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
-            <q-input v-model="trip[attribute.modelName]" outlined dense></q-input>
-      </div>
+      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+            <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+            <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'number'">
-        <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
-        <q-input v-model="trip[attribute.modelName]" outlined dense></q-input>
-      </div>
+      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'select'">
-        <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
+      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px;">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-select :options="attribute.options" v-model="trip[attribute.modelName]" outlined dense></q-select>
-      </div>
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'datetime'">
-        <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
+      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <pCalendar v-model="trip[attribute.modelName]" :showTime="true" onfocus="blur()"></pCalendar>
-      </div>
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'stringArray'">
-        <div style="font-weight: bold; white-space: nowrap">{{ attribute.displayName }}</div>
-          <boatnet-licenses
-            :certificates.sync="trip.certificates"
-          />
-      </div>
+      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; min-height: 70px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <boatnet-licenses
+          :certificates.sync="trip.certificates"
+        />
+      </q-card>
 
-      <div v-if="attribute.displayAs === 'spacer'">
+      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <div>{{ getCalculatedValue(attribute) }}</div>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
         &nbsp;
-      </div>
-    </q-card>
+      </q-card>
 
-    <div style="position: absolute; bottom: 10%" v-if="tripDoc.tripAttributes.length > 10">
-        <q-btn flat dense round icon="chevron_left" size="3em"/>
-        <q-btn flat dense round icon="chevron_right" size="3em"/>
+      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 104px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <div>{{ attribute.value }}</div>
+      </q-card>
     </div>
+
   </div>
+  </q-expansion-item>
+  <q-expansion-item
+  v-model="end"
+  expand-separator
+  label="Trip End"
+  header-class="bg-primary text-white text-bold"
+  expand-icon-class="text-white"
+  icon="fas fa-clock"
+  >
+  <div style="margin: 2px; display: flex; flex-wrap: wrap; justify-content: center">
+    <div v-for="attribute in tripDoc.tripAttributes"
+      :key="tripDoc.tripAttributes.indexOf(attribute)">
+
+      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style=" white-space: nowrap;">{{ attribute.displayName }}</div>
+        <q-btn-toggle
+          :options="attribute.options"
+          v-model="trip[attribute.modelName]"
+          outlined
+          spread
+          unelevated
+          color="grey-6"
+          style="height: 40px"
+        ></q-btn-toggle>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+            <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+            <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <q-select :options="attribute.options" v-model="trip[attribute.modelName]" outlined dense></q-select>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <pCalendar v-model="trip[attribute.modelName]" :showTime="true" onfocus="blur()"></pCalendar>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-h6" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <boatnet-licenses
+          :certificates.sync="trip.certificates"
+        />
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <div>{{ getCalculatedValue(attribute) }}</div>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        &nbsp;
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+        <div>{{ attribute.value }}</div>
+      </q-card>
+
+      <q-card v-if="attribute.displayAs === 'fishTickets' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+        <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
+                 <boatnet-fish-tickets
+                  :fishTickets.sync="trip.fishTickets"
+                />
+      </q-card>
+
+    </div>
+
+  </div>
+  </q-expansion-item>
 
   </div>
 </template>
@@ -82,7 +171,8 @@ import {
   Person,
   PersonTypeName,
   VesselTypeName,
-  Certificate
+  Certificate,
+  Permit
 } from '@boatnet/bn-models';
 
 import { couchService } from '@boatnet/bn-couch';
@@ -92,6 +182,25 @@ import BoatnetFishTickets from '@boatnet/bn-common';
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
+
+interface Trip {
+  gearType?: string;
+  vessel?: any;
+  captainName?: string;
+  crewSize?: number;
+  logbookNum?: number;
+  departureDate?: any;
+  departurePort?: Port;
+  certificates?: Permit[];
+  isPartialTrip?: boolean;
+  isFishProcessed?: boolean;
+  returnDate?: any;
+  returnPort?: Port;
+  logbookType?: string;
+  firstReceiverName?: string;
+  fishTickets?: any[];
+  [key: string]: any;
+}
 
 @Component
 export default class DynamicTripDetails extends Vue {
@@ -109,10 +218,14 @@ export default class DynamicTripDetails extends Vue {
 
   private options: string[] = ['ace', 'joy ann', 'fishwish', 'fishbuster'];
 
-  private trip = {};
+  private trip: Trip = {
+    crewSize: 0,
+    logbookNum: 0
+  };
+  private start = true;
 
   private tripDoc = {
-    name: 'Wcgop',
+    name: 'WCGOP',
     tripAttributes: [
       {
         displayName: 'Gear Type',
@@ -125,7 +238,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'buttons',
         isDisplayColumn: 'false',
         required: 'false',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'Vessel Name / Registration',
@@ -136,7 +250,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'select',
         isDisplayColumn: 'true',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'Skipper\'s Name',
@@ -145,7 +260,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'text',
         isDisplayColumn: 'false',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: '# of Crew',
@@ -154,7 +270,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'number',
         isDisplayColumn: 'false',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'Observer Logbook #',
@@ -163,7 +280,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'number',
         isDisplayColumn: 'false',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'spacer',
@@ -172,7 +290,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'spacer',
         isDisplayColumn: 'false',
         required: 'false',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'Departure Date / Time',
@@ -181,26 +300,8 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'datetime',
         isDisplayColumn: 'false',
         required: 'true',
-        validations: ''
-      },
-      {
-        displayName: 'Return Date / Time',
-        modelName: 'returnDate',
-        type: 'datetime',
-        displayAs: 'datetime',
-        isDisplayColumn: 'false',
-        required: 'true',
-        validations: ''
-      },
-      {
-        displayName: 'Partial Trip',
-        modelName: 'isPartialTrip',
-        type: 'lookup',
-        options: [{ label: 'Yes', value: true }, { label: 'No', value: false }],
-        displayAs: 'buttons',
-        isDisplayColumn: 'false',
-        required: 'false',
-        validations: ''
+        validations: '',
+        phase: 'start'
       },
       {
         displayName: 'Departure Port',
@@ -210,7 +311,71 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'select',
         isDisplayColumn: 'true',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'start'
+      },
+      {
+        displayName: 'Permit / License Number',
+        modelName: 'certificates',
+        type: 'string array',
+        displayAs: 'stringArray',
+        isDisplayColumn: 'false',
+        required: 'false',
+        validations: '',
+        phase: 'start'
+      },
+      {
+        displayName: 'Calculated Value',
+        modelNames: ['crewSize', 'logbookNum'],
+        operation: 'multiply',
+        type: 'calculated',
+        displayAs: 'calculated',
+        isDisplayColumn: 'false',
+        required: 'false',
+        validations: '',
+        phase: 'start'
+      },
+      {
+        displayName: 'Display Only',
+        value: 'Some on screen guidance',
+        type: 'display',
+        displayAs: 'display',
+        isDisplayColumn: 'false',
+        required: 'false',
+        validations: '',
+        phase: 'start'
+      },
+      {
+        displayName: 'Partial Trip',
+        modelName: 'isPartialTrip',
+        type: 'lookup',
+        options: [{ label: 'Yes', value: true }, { label: 'No', value: false }],
+        displayAs: 'buttons',
+        isDisplayColumn: 'false',
+        required: 'false',
+        validations: '',
+        phase: 'end'
+      },
+      {
+        displayName: 'Fish Processed During Trip',
+        modelName: 'isFishProcessed',
+        type: 'lookup',
+        options: [{ label: 'Yes', value: true }, { label: 'No', value: false }],
+        displayAs: 'buttons',
+        isDisplayColumn: 'false',
+        required: 'false',
+        validations: '',
+        phase: 'end'
+      },
+      {
+        displayName: 'Return Date / Time',
+        modelName: 'returnDate',
+        type: 'datetime',
+        displayAs: 'datetime',
+        isDisplayColumn: 'false',
+        required: 'true',
+        validations: '',
+        phase: 'end'
       },
       {
         displayName: 'Return Port',
@@ -220,22 +385,63 @@ export default class DynamicTripDetails extends Vue {
         displayAs: 'select',
         isDisplayColumn: 'true',
         required: 'true',
-        validations: ''
+        validations: '',
+        phase: 'end'
       },
       {
-        displayName: 'Permit / License Number',
-        modelName: 'certificates',
-        type: 'string array',
-        displayAs: 'stringArray',
+        displayName: 'Logbook Name',
+        modelName: 'logbookType',
+        type: 'text',
+        displayAs: 'text',
         isDisplayColumn: 'false',
-        required: 'false',
-        validations: ''
+        required: 'true',
+        validations: '',
+        phase: 'end'
+      },
+      {
+        displayName: 'First Receiver',
+        modelName: 'firstReceiverName',
+        type: 'text',
+        displayAs: 'text',
+        isDisplayColumn: 'false',
+        required: 'true',
+        validations: '',
+        phase: 'end'
+      },
+      {
+        displayName: 'Fish Tickets',
+        modelName: 'fishTickets',
+        type: 'fishTickets',
+        displayAs: 'fishTickets',
+        isDisplayColumn: 'false',
+        required: 'true',
+        validations: '',
+        phase: 'end'
       },
     ]
   };
 
   constructor() {
     super();
+  }
+
+  private getCalculatedValue(attribute: any) {
+    const a: string = attribute.modelNames[0];
+    const b: string = attribute.modelNames[1];
+    switch (attribute.operation) {
+      case 'multiply':
+        return this.trip[a] * this.trip[b];
+        break;
+    }
+
+    }
+
+  private get end() {
+    return !this.start;
+  }
+
+  private set end(start) {
+    this.start = !this.start;
   }
 }
 </script>
