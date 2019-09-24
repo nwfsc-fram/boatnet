@@ -67,7 +67,6 @@
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
-//import router from '../router';
 import { AlertState, TripState } from '@boatnet/bn-common';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
@@ -78,7 +77,6 @@ import { Quasar } from 'quasar';
 
 @Component
 export default class BoatnetLogin extends Vue {
-  @Prop() private router!: any;
   @Prop() private appName!: string;
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
@@ -139,7 +137,7 @@ export default class BoatnetLogin extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connectPouch(creds);
-          this.router.push('/'); // On successful login, navigate to home
+          this.$router.push({path: '/'}); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
           // this.errorAlert(state.auth.status.error.message);
