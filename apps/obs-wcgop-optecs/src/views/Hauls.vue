@@ -63,15 +63,15 @@ export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
   private wcgopHaulsData: any[] = [];
 
-  @Action('setCurrentHaul', { namespace: 'appState' })
+  @Action('setCurrentHaul', { namespace: 'tripsState' })
   private setCurrentHaul: any;
-  @Getter('currentHaul', { namespace: 'appState' })
+  @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaul!: WcgopOperation;
 
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip;
 
-  @Action('save', { namespace: 'appState' })
+  @Action('save', { namespace: 'tripsState' })
   private save: any;
 
   constructor() {

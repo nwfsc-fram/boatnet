@@ -7,13 +7,6 @@
       :input="keyboard.keyboardInputTarget"
       @next="next"
     />
-
-    <!-- <div v-if="appState.isKeyboardEnabled" style="position: absolute; bottom: 12%; left: 2%; z-index: 10000">
-      <boatnet-custom-keyboard
-        :input="keyboard.keyboardInputTarget"
-      ></boatnet-custom-keyboard>
-    </div> -->
-
   </div>
 </template>
 
@@ -55,9 +48,9 @@ export default class App extends Vue {
   //   console.log(event);
   // }
 
-  // private setInput(event: any) {
-  //   console.log(event);
-  // }
+  private setInput(event: any) {
+    console.log(event);
+  }
 
   private next() {
     const inputs = document.querySelectorAll('input');
@@ -78,9 +71,6 @@ export default class App extends Vue {
 </script>
 
 <style>
-  .q-page-container {
-    background-color: lightgray;
-  }
 
   .q-dialog__inner--minimized {
   padding: 0 !important;
@@ -89,9 +79,5 @@ export default class App extends Vue {
 .vue-touch-keyboard {
   background-color: grey;
   border-radius: 10px;
-}
-
-.q-layout {
-  background-color: lightgray;
 }
 </style>

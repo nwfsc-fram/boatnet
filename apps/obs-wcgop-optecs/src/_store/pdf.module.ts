@@ -7,7 +7,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 import moment from 'moment';
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { RootState, PdfState } from '@/_store/types/types';
+import { RootState } from '@boatnet/bn-common';
+import { PdfState } from '@/_store/types/types';
 import { TallyCountData } from './types';
 
 Vue.use(Vuex);

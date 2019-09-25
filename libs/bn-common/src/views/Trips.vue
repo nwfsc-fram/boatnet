@@ -45,8 +45,7 @@ import { Point } from 'geojson';
 import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import { TripState } from '@boatnet/bn-common';
-import { AlertState } from '@boatnet/bn-common';
+import { AlertState, TripState } from '@boatnet/bn-common';
 import BoatnetSummary, { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import {
@@ -80,13 +79,13 @@ Vue.component(BoatnetSummary);
 export default class Trips extends Vue {
   public message = '';
   @State('alert') private alert!: AlertState;
-  @State('tripsState') private tripState!: TripState;
+  @State('appState') private appState!: TripState;
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('clear', { namespace: 'alert' }) private clear: any;
   @Action('error', { namespace: 'alert' }) private error: any;
-  @Action('setCurrentTrip', { namespace: 'tripsState' })
+  @Action('setCurrentTrip', { namespace: 'appState' })
   private setCurrentTrip: any;
-  @Getter('currentTrip', { namespace: 'tripsState' })
+  @Getter('currentTrip', { namespace: 'appState' })
   private currentTrip!: WcgopTrip;
   @Action('addTest', { namespace: 'pouchState' })
   private addTest: any;

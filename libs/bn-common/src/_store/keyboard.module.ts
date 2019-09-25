@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { KeyboardState, RootState } from '@/_store/types/types';
+import { KeyboardState, RootState } from './types/types';
 
 Vue.use(Vuex);
 
-export const state: KeyboardState = {
+const state: KeyboardState = {
     showKeyboard: false,
     keyboardType: 'normal',
     keyboardInputTarget: undefined

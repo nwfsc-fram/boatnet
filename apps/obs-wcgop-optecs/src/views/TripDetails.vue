@@ -170,7 +170,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import { AlertState } from '../_store/types/types';
+import { AlertState } from '@boatnet/bn-common';
 import { pouchService } from '@boatnet/bn-pouch';
 import {
   WcgopTrip,
@@ -204,11 +204,11 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
-  @Action('save', { namespace: 'appState' })
+  @Action('save', { namespace: 'tripsState' })
   private saveTrip: any;
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTripState!: WcgopTrip;
-  @Action('setCurrentTrip', { namespace: 'appState' })
+  @Action('setCurrentTrip', { namespace: 'tripsState' })
   private setCurrentTrip: any;
 
   private currentTrip: WcgopTrip = {

@@ -17,6 +17,10 @@ import BoatnetAddSpeciesDialog from './components/BoatnetAddSpeciesDialog.vue';
 import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
 
+import BoatnetLogin from './views/BoatnetLogin.vue';
+
+import DefaultLayout from './layouts/Default.vue';
+
 const Components: any = {
   BoatnetButtonToggle,
   BoatnetDate,
@@ -29,12 +33,14 @@ const Components: any = {
   BoatnetKeyboard,
   BoatnetLicenses,
   BoatnetLocations,
+  BoatnetLogin,
   BoatnetSummary,
   BoatnetTable,
   BoatnetTabPanel,
   BoatnetAddSpeciesDialog,
   BoatnetCustomKeyboard,
-  BoatnetTreeTable
+  BoatnetTreeTable,
+  DefaultLayout
 };
 
 Object.keys(Components).forEach((name) => {
@@ -43,4 +49,5 @@ Object.keys(Components).forEach((name) => {
 
 export * from './models/BoatnetHaulsSettings';
 export * from './models/BoatnetTripsSettings';
+export * from './_store/';
 export default Components;
