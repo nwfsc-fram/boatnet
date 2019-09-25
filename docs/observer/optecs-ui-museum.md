@@ -10,7 +10,7 @@ For your consideration in future touchscreen/ "bad stylus" friendly components:
 
 ## Keyboard Exhibit
 
-- User clicks on field, keyboard and prepopulated choices appear (cannot select arbitrary text, can only OK on nothing or one of the items on the right is selected.):
+- User clicks on field, keyboard and prepopulated choices appear (cannot select arbitrary text, can only OK on nothing or simply click on one of the items on the right to select it):
 
 ![Prepopulated Keyboard](optecs_ui_img/keyboard-prepopulated.png)
 
