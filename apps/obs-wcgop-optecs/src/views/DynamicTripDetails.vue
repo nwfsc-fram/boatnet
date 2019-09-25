@@ -12,7 +12,7 @@
     <div v-for="attribute in tripDoc.tripAttributes"
       :key="tripDoc.tripAttributes.indexOf(attribute)">
 
-      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style=" white-space: nowrap;">{{ attribute.displayName }}</div>
         <q-btn-toggle
           :options="attribute.options"
@@ -25,12 +25,12 @@
         ></q-btn-toggle>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px">
             <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
             <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-input v-model="trip[attribute.modelName]" dense outlined>
           <template slot="append"><q-icon flat name="add_circle" @click="trip[attribute.modelName] += 1"></q-icon></template>
@@ -39,33 +39,33 @@
         </q-input>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px;">
+      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px;">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-select :options="attribute.options" v-model="trip[attribute.modelName]" outlined dense></q-select>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <pCalendar v-model="trip[attribute.modelName]" :showTime="true" onfocus="blur()"></pCalendar>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; min-height: 70px">
+      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px; min-height: 70px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <boatnet-licenses
           :certificates.sync="trip.certificates"
         />
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
+      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px; height: 76px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <div>{{ getCalculatedValue(attribute) }}</div>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
+      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px; height: 76px">
         &nbsp;
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'start'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px; height: 76px">
+      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'start'" class="q-pa-sm" style="width: 250px; margin: 1px; height: 76px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <div>{{ attribute.value }}</div>
       </q-card>
@@ -85,7 +85,7 @@
     <div v-for="attribute in tripDoc.tripAttributes"
       :key="tripDoc.tripAttributes.indexOf(attribute)">
 
-      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'buttons' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style=" white-space: nowrap;">{{ attribute.displayName }}</div>
         <q-btn-toggle
           :options="attribute.options"
@@ -98,53 +98,53 @@
         ></q-btn-toggle>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'text' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
             <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
             <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'number' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-input v-model="trip[attribute.modelName]" dense outlined></q-input>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'select' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-select :options="attribute.options" v-model="trip[attribute.modelName]" outlined dense></q-select>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'datetime' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <pCalendar v-model="trip[attribute.modelName]" :showTime="true" onfocus="blur()"></pCalendar>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'stringArray' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-h6" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <boatnet-licenses
           :certificates.sync="trip.certificates"
         />
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'calculated' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <div>{{ getCalculatedValue(attribute) }}</div>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'spacer' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         &nbsp;
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'display' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <div>{{ attribute.value }}</div>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'slider' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'slider' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
         <q-slider v-model="trip[attribute.modelName]" :min="attribute.min" :max="attribute.max" label-always></q-slider>
       </q-card>
 
-      <q-card v-if="attribute.displayAs === 'fishTickets' && attribute.phase === 'end'" class="q-pa-sm" style="min-width: 350px; max-width: 400px; margin: 1px">
+      <q-card v-if="attribute.displayAs === 'fishTickets' && attribute.phase === 'end'" class="q-pa-sm" style="width: 250px; margin: 1px">
         <div class="text-bold" style="white-space: nowrap">{{ attribute.displayName }}</div>
           <boatnet-fish-tickets
           :fishTickets.sync="trip.fishTickets"
