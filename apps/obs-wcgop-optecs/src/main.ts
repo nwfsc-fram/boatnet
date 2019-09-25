@@ -69,7 +69,9 @@ import {
   QList,
   QItem,
   QItemSection,
-  QItemLabel
+  QItemLabel,
+  QExpansionItem,
+  QSlider
 } from 'quasar';
 
 import 'primevue/resources/themes/nova-light/theme.css';
@@ -129,7 +131,9 @@ Vue.use(Quasar, {
     QList,
     QItem,
     QItemSection,
-    QItemLabel
+    QItemLabel,
+    QExpansionItem,
+    QSlider
   },
   directives: {
     ClosePopup

@@ -55,9 +55,9 @@ export default class App extends Vue {
   //   console.log(event);
   // }
 
-  private setInput(event: any) {
-    console.log(event);
-  }
+  // private setInput(event: any) {
+  //   console.log(event);
+  // }
 
   private next() {
     const inputs = document.querySelectorAll('input');
@@ -89,5 +89,9 @@ export default class App extends Vue {
 .vue-touch-keyboard {
   background-color: grey;
   border-radius: 10px;
+}
+
+.q-layout {
+  background-color: lightgray;
 }
 </style>
