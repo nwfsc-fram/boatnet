@@ -20,7 +20,7 @@ For your consideration in future touchscreen/ "bad stylus" friendly components:
 
 - Temporarily appear embedded directly in the UI, disappear after entry
 
-## ![Search on 4-letter code or substring](optecs_ui_img/keyboard-vanishing)
+## ![Search on 4-letter code or substring](optecs_ui_img/keyboard-vanishing.png)
 
 ## Numpad Exhibit
 
