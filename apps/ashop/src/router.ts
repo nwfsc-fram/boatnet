@@ -1,15 +1,17 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import DefaultLayout from './layouts/Default.vue'
-import Trips from './views/Trips.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+import DefaultLayout from './layouts/Default.vue';
+import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
-import Login from './views/Login.vue'
+import Login from './views/Login.vue';
+import Hauls from './views/Hauls.vue';
 
 import { authService, auth } from '@boatnet/bn-auth';
 
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '/login',
@@ -38,6 +40,18 @@ const router = new Router({
             breadcrumb: [
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: ''}
+            ]
+          }
+        },
+        {
+          path: '/hauls',
+          name: 'Hauls',
+          component: Hauls,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: ''},
+              { name: 'Hauls', link: ''}
             ]
           }
         }
