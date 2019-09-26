@@ -28,18 +28,6 @@ const router = new Router({
               { name: 'Trip'}
             ]
           }
-        },
-        {
-          path: '/tripdetails/:tripNum',
-          name: 'tripdetails',
-          component: TripDetails,
-          props: (route) => ({ tripNum: Number(route.params.tripNum) }),
-          meta: {
-            breadcrumb: [
-              { name: 'Trip', link: '' },
-              { name: 'tripIdPlaceholder', link: ''}
-            ]
-          }
         }
       ]
     }
