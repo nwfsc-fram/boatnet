@@ -15,7 +15,9 @@ export interface AshopCatch extends BaseCatch {
   */
 
   sampleNum?: number; // unique/sequential within Haul
-                      // column  (subsable number - if sameple is subsample - 101, 102, 103 etc in sample 1)
+                      // column  (subsable number - if
+                      // sameple is subsample - 101, 102,
+                      // 103 etc in sample 1)
   isSubsample?: boolean; // for flattening convenience
   isPresorted?: boolean;
   isTruncated?: boolean; // Indicate a sample that was stopped (e.g. high species diversity)
