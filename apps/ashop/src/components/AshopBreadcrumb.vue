@@ -32,7 +32,7 @@ export default class AshopBreadcrumb extends Vue {
   @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: BaseTrip;
   @Getter('currentHaul', { namespace: 'tripsState' })
-  private currentHaul!: AshopHaul | WcgopOperation;
+  private currentHaul!: any;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {

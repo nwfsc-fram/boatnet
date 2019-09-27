@@ -7,7 +7,7 @@ Vue.use(Vuex);
 const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
-  appMode: ''
+  appMode: 'wcgop'
 };
 
 const actions: ActionTree<AppSettings, RootState> = {

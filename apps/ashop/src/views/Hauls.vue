@@ -1,7 +1,7 @@
 <template>
   <q-page>
+    {{ appMode }}
 
-    {{ tripState.currentTrip }}
     <boatnet-summary
       currentScreen="Haul"
       :current="currentHaul"
@@ -12,19 +12,21 @@
       @goTo="handleGoToCatch"
     >
       <template v-slot:table>
-        <boatnet-table :data="haulsData" :settings="wcgopHaulsSettings" @select="handleSelectHaul">
+        <boatnet-table v-if="haulsSettings.columns" :data="haulsData[appMode]" :settings="haulsSettings" @select="handleSelectHaul">
           <template v-slot:default="rowVals">
-            <q-td v-for="column of wcgopHaulsSettings.columns" :align="column.align" :key="column.name">
+            <q-td v-for="column of haulsSettings.columns" :align="column.align" :key="column.name">
               {{ getValue(rowVals.row.doc, column) }}
             </q-td>
           </template>
         </boatnet-table>
       </template>
+
       <template v-slot:goToButtons>
         <span style="position: relative; right: 10px">
           <q-btn color="primary" icon="fa fa-th-list" label="Logbook Mode" />
         </span>
       </template>
+
     </boatnet-summary>
   </q-page>
 </template>
@@ -34,6 +36,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Point } from 'geojson';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 import { pouchService } from '@boatnet/bn-pouch';
 import { Action, Getter, State } from 'vuex-class';
 import {
@@ -49,7 +52,7 @@ import {
   AshopHaul,
   AshopDiscardReason
 } from '@boatnet/bn-models';
-import { TripState } from '@boatnet/bn-common';
+import { TripState, AppSettings } from '@boatnet/bn-common';
 
 import moment from 'moment';
 
@@ -59,14 +62,14 @@ Vue.component(BoatnetSummary);
 export default class Hauls extends Vue {
   private wcgopHaulsSettings: BoatnetHaulsSettings;
   private ashopHaulsSettings: BoatnetHaulsSettings;
-  private haulsData: any[] = [];
+  private haulsData: any = {};
 
   @State('tripsState') private tripState!: TripState;
 
   @Action('setCurrentHaul', { namespace: 'tripsState' })
   private setCurrentHaul: any;
   @Getter('currentHaul', { namespace: 'tripsState' })
-  private currentHaul!: WcgopOperation | AshopHaul;
+  private currentHaul!: any;
 
   @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip | AshopTrip;
@@ -77,7 +80,13 @@ export default class Hauls extends Vue {
   @Action('save', { namespace: 'tripsState' })
   private save: any;
 
-  constructor() {
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
+
+  private haulsSettings: any = {};
+  private mode: string = '';
+
+    constructor() {
     super();
 
     this.wcgopHaulsSettings = {
@@ -189,8 +198,8 @@ export default class Hauls extends Vue {
         }
       ]
     };
-  }
 
+  }
 
   private async getHauls() {
     // if (this.currentTrip && this.currentTrip.operationIDs) {
@@ -208,30 +217,8 @@ export default class Hauls extends Vue {
     //     console.log('error fetching hauls');
     //   }
     // }
-
-    this.haulsData = [
-      // {
-        // doc: {
-        //     haulNum: 17,
-        //     observerEstimatedCatch: {
-        //       measurement: {
-        //         value: 99
-        //       }
-        //     },
-        //     vesselEstimatedCatch: {
-        //       measurement: {
-        //         value: 634
-        //       }
-        //     },
-        //     totalEstimatedDiscard: {
-        //       value: 234
-        //     },
-        //     startFishingLocation: {
-        //       date: '2019-05-29T12:13:00-07:00'
-        //     }
-        //   }
-        // }
-
+    this.haulsData = {
+      wcgop: [
         {
           doc: {
               operationNum: 17,
@@ -247,10 +234,76 @@ export default class Hauls extends Vue {
               setTime: '2019-05-29T12:13:00-07:00',
               upDate: '2019-05-29T12:13:00-011:00',
               errors: 99
+          }
+        }
+        ],
+      ashop: [
+        {
+        doc: {
+            haulNum: 44,
+            observerEstimatedCatch: {
+              measurement: {
+                value: 99
+              }
+            },
+            vesselEstimatedCatch: {
+              measurement: {
+                value: 634
+              }
+            },
+            totalEstimatedDiscard: {
+              value: 234
+            },
+            startFishingLocation: {
+              date: '2019-05-29T12:13:00-07:00'
             }
           }
-      ];
+        }
+      ]
+    };
 
+    // this.haulsData = [
+    //   {
+    //     doc: {
+    //         haulNum: 17,
+    //         observerEstimatedCatch: {
+    //           measurement: {
+    //             value: 99
+    //           }
+    //         },
+    //         vesselEstimatedCatch: {
+    //           measurement: {
+    //             value: 634
+    //           }
+    //         },
+    //         totalEstimatedDiscard: {
+    //           value: 234
+    //         },
+    //         startFishingLocation: {
+    //           date: '2019-05-29T12:13:00-07:00'
+    //         }
+    //       }
+    //     }
+
+    //     {
+    //       doc: {
+    //           operationNum: 17,
+    //           observerTotalCatch: {
+    //             weightMethod: 12,
+    //             value: 42
+    //           },
+    //           gearPerformance: 5,
+    //           targetStrategy: {
+    //             code: 'URK1'
+    //           },
+    //           gearType: 'Pot',
+    //           setTime: '2019-05-29T12:13:00-07:00',
+    //           upDate: '2019-05-29T12:13:00-011:00',
+    //           errors: 99
+    //       }
+    //     }
+
+    // ];
   }
 
   private created() {
@@ -289,6 +342,7 @@ export default class Hauls extends Vue {
       }
     });
     this.getHauls();
+    this.getColumns();
   }
 
   private handleSelectHaul(haul: any) {
@@ -306,20 +360,41 @@ export default class Hauls extends Vue {
   }
 
   private addHauls() {
-    
-    let operationNum = 1;
-    if (this.haulsData[0]) {
-      operationNum = this.haulsData[0].doc.operationNum + 1;
+    this.mode = JSON.parse(JSON.stringify(this.appMode));
+    let num = 1;
+
+    if (this.haulsData[this.mode][0]) { // remove modes - early dev only
+      num = this.haulsData[this.mode][0].doc[this.haulsSettings.itemNumName] + 1; // remove modes - early dev only
     }
-    const haul: WcgopOperation = { operationNum };
-    this.setCurrentHaul(haul);
-    this.$router.push({ path: '/hauldetails/' + haul.operationNum });
+
+    if (this.mode === 'wcgop') {
+      const haul: WcgopOperation = { operationNum: num };
+
+      this.setCurrentHaul(haul);
+      this.$router.push({ path: '/hauldetails/' + haul.operationNum });
+    }
+
+    if (this.mode === 'ashop') {
+        const haul: AshopHaul = { haulNum: num };
+        this.setCurrentHaul(haul);
+        this.$router.push({ path: '/hauldetails/' + haul.haulNum });
+    }
+
   }
 
   private editHauls() {
-    this.$router.push({
-      path: '/hauldetails/' + this.currentHaul.operationNum
-    });
+    this.mode = JSON.parse(JSON.stringify(this.appMode));
+    if (this.mode === 'wcgop') {
+      this.$router.push({
+        path: '/hauldetails/' + this.currentHaul.operationNum
+      });
+    }
+
+    if (this.mode === 'ashop') {
+      this.$router.push({
+        path: '/hauldetails/' + this.currentHaul.haulNum
+      });
+    }
   }
 
   private deleteHauls() {
@@ -340,13 +415,38 @@ export default class Hauls extends Vue {
   }
 
   private getValue(row: any, attribute: any) {
-    const fields = attribute.field.split('.')
-    let value = row
-      for (const field of fields) {
-        value = value[field]
-      }
-      return value
+    const fields = attribute.field.split('.');
+    let value = row;
+    for (const field of fields) {
+      value = value[field];
+    }
+    return value;
   }
+
+  private async getColumns() {
+    if (this.appMode) {
+      try {
+        const db = pouchService.db;
+        const queryOptions = {
+          limit: 1,
+          start_key: this.appMode,
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+        const columns = await db.query(
+          pouchService.lookupsDBName,
+          'LookupDocs/boatnet-config-lookup',
+          queryOptions
+        );
+        console.log(columns.rows[0].doc.hauls);
+        this.haulsSettings = columns.rows[0].doc.hauls;
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
 }
 </script>
 

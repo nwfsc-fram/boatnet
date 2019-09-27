@@ -9,7 +9,7 @@ import Settings from './views/Settings.vue';
 
 import { authService, auth } from '@boatnet/bn-auth';
 
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
@@ -64,7 +64,7 @@ const router = new Router({
       ]
     }
   ]
-})
+});
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page

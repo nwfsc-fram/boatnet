@@ -13,7 +13,7 @@
       {label: 'trawl', value: 'trawl'},
       {label: 'hake', value: 'hake'},
       {label: 'hook + line', value: 'hookline'},
-      ]" @change="setMode"></q-btn-toggle>
+      ]" @input="setMode"></q-btn-toggle>
     </div>
   </q-page>
 </template>
@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AppSettings } from '@boatnet/bn-common';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 
 @Component
 export default class PageSettings extends Vue {
@@ -36,6 +36,9 @@ export default class PageSettings extends Vue {
   private setSoundEnabled: any;
   @Action('setAppMode', { namespace: 'appSettings' })
   private setAppMode: any;
+
+  @Getter('appMode', { namespace: 'appSettings' })
+  private currentMode!: AppSettings;
 
 
   private mounted() {

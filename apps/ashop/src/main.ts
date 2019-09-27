@@ -2,7 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './_store';
-import './quasar'
+import './quasar';
 
 import 'quasar/dist/quasar.min.css';
 import './styles/quasar.styl';
