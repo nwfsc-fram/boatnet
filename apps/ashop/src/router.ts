@@ -5,6 +5,7 @@ import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Login from './views/Login.vue';
 import Hauls from './views/Hauls.vue';
+import Settings from './views/Settings.vue';
 
 import { authService, auth } from '@boatnet/bn-auth';
 
@@ -30,6 +31,11 @@ const router = new Router({
               { name: 'Trip'}
             ]
           }
+        },
+        {
+          path: '/settings',
+          name: 'settings',
+          component: Settings
         },
         {
           path: '/tripdetails/:tripNum',

@@ -6,7 +6,8 @@ Vue.use(Vuex);
 
 const state: AppSettings = {
   isKeyboardEnabled: true,
-  isSoundEnabled: true
+  isSoundEnabled: true,
+  appMode: ''
 };
 
 const actions: ActionTree<AppSettings, RootState> = {
@@ -15,6 +16,9 @@ const actions: ActionTree<AppSettings, RootState> = {
   },
   setSoundEnabled({ commit }: any, isEnabled: boolean) {
     commit('setSoundEnabled', isEnabled);
+  },
+  setAppMode({ commit }: any, appMode: string) {
+    commit('setAppMode', appMode);
   }
 };
 
@@ -24,12 +28,18 @@ const mutations: MutationTree<AppSettings> = {
   },
   setSoundEnabled(newState: any, isEnabled: boolean) {
     newState.isSoundEnabled = isEnabled;
+  },
+  setAppMode(newState: any, appMode: string) {
+    newState.appMode = appMode;
   }
 };
 
 const getters: GetterTree<AppSettings, RootState> = {
   isSoundEnabled(getState: AppSettings) {
     return getState.isSoundEnabled;
+  },
+  appMode(getState: AppSettings) {
+    return getState.appMode;
   }
 };
 

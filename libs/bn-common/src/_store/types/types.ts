@@ -19,6 +19,7 @@ export interface TripState {
 export interface AppSettings {
     isKeyboardEnabled: boolean;
     isSoundEnabled?: boolean;
+    appMode: string;
 }
 
 export interface KeyboardState {

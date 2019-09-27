@@ -83,11 +83,11 @@ export default class Hauls extends Vue {
     this.wcgopHaulsSettings = {
       columns: [
         {
-          name: 'haulNum',
+          name: 'operationNum',
           required: true,
           label: 'Haul #',
           align: 'left',
-          field: 'haulNum',
+          field: 'operationNum',
           sortable: true
         },
         {
@@ -211,44 +211,44 @@ export default class Hauls extends Vue {
 
     this.haulsData = [
       // {
-      //   doc: {
-      //       haulNum: 17,
-      //       observerEstimatedCatch: {
-      //         measurement: {
-      //           value: 99
-      //         }
-      //       },
-      //       vesselEstimatedCatch: {
-      //         measurement: {
-      //           value: 634
-      //         }
-      //       },
-      //       totalEstimatedDiscard: {
-      //         value: 234
-      //       },
-      //       startFishingLocation: {
-      //         date: 'datetime'
-      //       }
-      //     }
-      //   }
+        // doc: {
+        //     haulNum: 17,
+        //     observerEstimatedCatch: {
+        //       measurement: {
+        //         value: 99
+        //       }
+        //     },
+        //     vesselEstimatedCatch: {
+        //       measurement: {
+        //         value: 634
+        //       }
+        //     },
+        //     totalEstimatedDiscard: {
+        //       value: 234
+        //     },
+        //     startFishingLocation: {
+        //       date: '2019-05-29T12:13:00-07:00'
+        //     }
+        //   }
+        // }
 
-      {
-        doc: {
-            haulNum: 17,
-            observerTotalCatch: {
-              weightMethod: 12,
-              value: 42
-            },
-            gearPerformance: 5,
-            targetStrategy: {
-              code: 'URK1'
-            },
-            gearType: 'Pot',
-            setTime: 'datetime',
-            upDate: 'date',
-            errors: 99
+        {
+          doc: {
+              operationNum: 17,
+              observerTotalCatch: {
+                weightMethod: 12,
+                value: 42
+              },
+              gearPerformance: 5,
+              targetStrategy: {
+                code: 'URK1'
+              },
+              gearType: 'Pot',
+              setTime: '2019-05-29T12:13:00-07:00',
+              upDate: '2019-05-29T12:13:00-011:00',
+              errors: 99
+            }
           }
-        }
       ];
 
   }
@@ -306,6 +306,7 @@ export default class Hauls extends Vue {
   }
 
   private addHauls() {
+    
     let operationNum = 1;
     if (this.haulsData[0]) {
       operationNum = this.haulsData[0].doc.operationNum + 1;
