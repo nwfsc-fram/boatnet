@@ -3,7 +3,18 @@
     <template v-slot:breadcrumb>
       <ashop-breadcrumbs/>
     </template>
+        <template v-slot:menu_item>
+      <q-item to="/hauls" exact>
+        <q-item-section avatar>
+          <q-icon name="add" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Hauls</q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
   </default-layout>
+
 </template>
 
 <script lang="ts">

@@ -1,11 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import DefaultLayout from './layouts/Default.vue';
-import Trips from './views/Trips.vue';
-import TripDetails from './views/TripDetails.vue';
-import Login from './views/Login.vue';
-import Hauls from './views/Hauls.vue';
-import Settings from './views/Settings.vue';
+// import DefaultLayout from './layouts/Default.vue';
+// import Trips from './views/Trips.vue';
+// import TripDetails from './views/TripDetails.vue';
+// import Login from './views/Login.vue';
+// import Hauls from './views/Hauls.vue';
+// import Settings from './views/Settings.vue';
 import { config } from './configs/ashopConfig';
 
 import { authService } from '@boatnet/bn-auth';

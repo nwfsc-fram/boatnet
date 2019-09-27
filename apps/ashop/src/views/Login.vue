@@ -105,7 +105,7 @@ export default class Login extends Vue {
   private isPwd = true;
   private submitted = false;
 
-  //private quasarVersion = Quasar.version;
+  // private quasarVersion = Quasar.version;
   private stat = {
     value: '22'
   };
@@ -117,7 +117,7 @@ export default class Login extends Vue {
 
   private unsubscribe: any;
 
-  get quasarVersion() : number {
+  get quasarVersion(): number {
     return Quasar.version;
   }
 
