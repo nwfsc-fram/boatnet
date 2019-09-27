@@ -31,7 +31,7 @@ export interface AshopHaul extends BaseOperation {
     weightMethod: string; // TODO lookup AshopWeightMethod
   };
 
-  vesselEstimatedCatch?: {  // column 
+  vesselEstimatedCatch?: {  // column
     measurement: Measurement; // MT
     weightMethod: string; // TODO lookup AshopWeightMethod
   };
