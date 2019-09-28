@@ -24,15 +24,15 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
-import { BaseTrip, AshopHaul } from '@boatnet/bn-models';
+import { BaseTrip, AshopHaul, WcgopOperation } from '@boatnet/bn-models';
 
 @Component
 export default class AshopBreadcrumb extends Vue {
   private breadcrumbs: any[] = [];
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: BaseTrip;
-  @Getter('currentHaul', { namespace: 'appState' })
-  private currentHaul!: AshopHaul;
+  @Getter('currentHaul', { namespace: 'tripsState' })
+  private currentHaul!: any;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
