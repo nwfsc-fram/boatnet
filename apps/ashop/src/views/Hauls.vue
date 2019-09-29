@@ -1,7 +1,5 @@
 <template>
   <q-page>
-    {{ appMode }}
-
     <boatnet-summary
       currentScreen="Haul"
       :current="currentHaul"
@@ -28,6 +26,8 @@
       </template>
 
     </boatnet-summary>
+
+    <div class="bg-primary text-white" style="padding: .5em; text-align: center; font-weight: bold; text-transform: uppercase">app mode : {{ appMode }}</div>
   </q-page>
 </template>
 
@@ -55,13 +55,13 @@ import {
 import { TripState, AppSettings } from '@boatnet/bn-common';
 
 import moment from 'moment';
+import { sampleData, sampleTrip } from '../data/data';
 
 Vue.component(BoatnetSummary);
 
 @Component
 export default class Hauls extends Vue {
-  private wcgopHaulsSettings: BoatnetHaulsSettings;
-  private ashopHaulsSettings: BoatnetHaulsSettings;
+
   private haulsData: any = {};
 
   @State('tripsState') private tripState!: TripState;
@@ -86,122 +86,13 @@ export default class Hauls extends Vue {
   private haulsSettings: any = {};
   private mode: string = '';
 
-    constructor() {
+  constructor() {
     super();
-
-    this.wcgopHaulsSettings = {
-      columns: [
-        {
-          name: 'operationNum',
-          required: true,
-          label: 'Haul #',
-          align: 'left',
-          field: 'operationNum',
-          sortable: true
-        },
-        {
-          name: 'weightMethod',
-          align: 'center',
-          label: 'WM',
-          field: 'observerTotalCatch.weightMethod',
-          sortable: true
-        },
-        {
-          name: 'gearPerf',
-          align: 'center',
-          label: 'Gear Perf',
-          field: 'gearPerformance',
-          sortable: true
-        },
-        {
-          name: 'targetStrategy',
-          align: 'center',
-          label: 'Strat',
-          field: 'targetStrategy.code',
-          sortable: true
-        },
-        {
-          name: 'gearType',
-          align: 'center',
-          label: 'Gear Type',
-          field: 'gearType',
-          sortable: true
-        },
-        {
-          name: 'setDate',
-          align: 'center',
-          label: 'Set Time', // TODO: this needs logic to get first and last
-          field: 'setTime',
-          sortable: true
-        },
-        {
-          name: 'upDate',
-          align: 'center',
-          label: 'Up Time', // TODO: this needs logic to get first and last
-          field: 'upDate',
-          sortable: true
-        },
-        {
-          name: 'otcWeight',
-          align: 'center',
-          label: 'OTC Wt',
-          field: 'observerTotalCatch.value',
-          sortable: true
-        },
-        {
-          name: 'errors',
-          align: 'center',
-          label: 'Errors',
-          field: 'errors', // TODO Error calc
-          sortable: true
-        }
-      ]
-    };
-
-    this.ashopHaulsSettings = {
-      columns: [
-        {
-          name: 'haulNum',
-          required: true,
-          label: 'Haul #',
-          align: 'left',
-          field: 'haulNum',
-          sortable: true
-        },
-        {
-          name: 'obsEstCatch',
-          align: 'center',
-          label: 'Obs Est. Catch',
-          field: 'observerEstimatedCatch.measurement.value',
-          sortable: true
-        },
-        {
-          name: 'vesselEstCatch',
-          align: 'center',
-          label: 'Vessel Est. Catch',
-          field: 'vesselEstimatedCatch.measurement.value',
-          sortable: true
-        },
-        {
-          name: 'cvEstDisc',
-          align: 'center',
-          label: 'C.V. Est Disc',
-          field: 'totalEstimatedDiscard.value',
-          sortable: true
-        },
-        {
-          name: 'startDate',
-          align: 'center',
-          label: 'Start Date',
-          field: 'startFishingLocation.date', // Is this correct?
-          sortable: true
-        }
-      ]
-    };
-
   }
 
   private async getHauls() {
+    this.haulsData = sampleData;  // get sampleData
+
     // if (this.currentTrip && this.currentTrip.operationIDs) {
     //   const queryOptions = {
     //     keys: this.currentTrip.operationIDs,
@@ -217,130 +108,11 @@ export default class Hauls extends Vue {
     //     console.log('error fetching hauls');
     //   }
     // }
-    this.haulsData = {
-      wcgop: [
-        {
-          doc: {
-              operationNum: 17,
-              observerTotalCatch: {
-                weightMethod: 12,
-                value: 42
-              },
-              gearPerformance: 5,
-              targetStrategy: {
-                code: 'URK1'
-              },
-              gearType: 'Pot',
-              setTime: '2019-05-29T12:13:00-07:00',
-              upDate: '2019-05-29T12:13:00-011:00',
-              errors: 99
-          }
-        }
-        ],
-      ashop: [
-        {
-        doc: {
-            haulNum: 44,
-            observerEstimatedCatch: {
-              measurement: {
-                value: 99
-              }
-            },
-            vesselEstimatedCatch: {
-              measurement: {
-                value: 634
-              }
-            },
-            totalEstimatedDiscard: {
-              value: 234
-            },
-            startFishingLocation: {
-              date: '2019-05-29T12:13:00-07:00'
-            }
-          }
-        }
-      ]
-    };
 
-    // this.haulsData = [
-    //   {
-    //     doc: {
-    //         haulNum: 17,
-    //         observerEstimatedCatch: {
-    //           measurement: {
-    //             value: 99
-    //           }
-    //         },
-    //         vesselEstimatedCatch: {
-    //           measurement: {
-    //             value: 634
-    //           }
-    //         },
-    //         totalEstimatedDiscard: {
-    //           value: 234
-    //         },
-    //         startFishingLocation: {
-    //           date: '2019-05-29T12:13:00-07:00'
-    //         }
-    //       }
-    //     }
-
-    //     {
-    //       doc: {
-    //           operationNum: 17,
-    //           observerTotalCatch: {
-    //             weightMethod: 12,
-    //             value: 42
-    //           },
-    //           gearPerformance: 5,
-    //           targetStrategy: {
-    //             code: 'URK1'
-    //           },
-    //           gearType: 'Pot',
-    //           setTime: '2019-05-29T12:13:00-07:00',
-    //           upDate: '2019-05-29T12:13:00-011:00',
-    //           errors: 99
-    //       }
-    //     }
-
-    // ];
   }
 
   private created() {
-    this.setCurrentTrip({
-      type: 'ashop-trip',
-      uploadedBy: 'nicholas.shaffer@noaa.gov',
-      uploadedDate: '2019-05-29T12:13:00-07:00',
-      operationIDs: [],
-      vessel: 4487,
-      departureDate: '2008-05-13T08:00:00-07:00',
-      returnDate: '2008-06-17T12:00:00-07:00',
-      departurePort: {
-        _id: '800f861a2dbf141f75a309dfe06e3792',
-        _rev: '1-eafacc4bbcd478edf413445d48c02c86',
-        type: 'ashop-port',
-        portCode: 15,
-        name: 'Seattle',
-        state: 'WA'
-      },
-      returnPort: {
-        _id: '800f861a2dbf141f75a309dfe06e3792',
-        _rev: '1-eafacc4bbcd478edf413445d48c02c86',
-        type: 'ashop-port',
-        portCode: 15,
-        name: 'Seattle',
-        state: 'WA'
-      },
-      tripNum: 1,
-      observers: [11889, [11889], [11956]],
-      crewSize: 212,
-      didFishingOccur: true,
-      legacy: {
-        cruiseNum: 11889,
-        tripSeq: 61,
-        cruiseVesselSeq: 41
-      }
-    });
+    this.setCurrentTrip(sampleTrip);
     this.getHauls();
     this.getColumns();
   }

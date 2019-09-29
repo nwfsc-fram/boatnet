@@ -42,7 +42,7 @@ export const config = {
             path: '/tripdetails/:tripNum',
             name: 'tripdetails',
             component: TripDetails,
-            props: (route) => ({ tripNum: Number(route.params.tripNum) }),
+            props: (route: any) => ({ tripNum: Number(route.params.tripNum) }),
             meta: {
               breadcrumb: [
                 { name: 'Trip', link: '' },
