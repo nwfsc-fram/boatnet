@@ -139,34 +139,18 @@ export default class Hauls extends Vue {
       num = this.haulsData[this.mode][0].doc[this.haulsSettings.itemNumName] + 1; // remove modes - early dev only
     }
 
-    if (this.mode === 'wcgop') {
-      const haul: WcgopOperation = { operationNum: num };
+    const haul: any = { operationNum: num };
+    haul[this.haulsSettings.itemNumName] = num;
 
-      this.setCurrentHaul(haul);
-      this.$router.push({ path: '/hauldetails/' + haul.operationNum });
-    }
-
-    if (this.mode === 'ashop') {
-        const haul: AshopHaul = { haulNum: num };
-        this.setCurrentHaul(haul);
-        this.$router.push({ path: '/hauldetails/' + haul.haulNum });
-    }
-
+    this.setCurrentHaul(haul);
+    this.$router.push({ path: '/hauldetails/' + haul[this.haulsSettings.itemNumName] });
   }
 
   private editHauls() {
     this.mode = JSON.parse(JSON.stringify(this.appMode));
-    if (this.mode === 'wcgop') {
       this.$router.push({
-        path: '/hauldetails/' + this.currentHaul.operationNum
+        path: '/hauldetails/' + this.currentHaul[this.haulsSettings.itemNumName]
       });
-    }
-
-    if (this.mode === 'ashop') {
-      this.$router.push({
-        path: '/hauldetails/' + this.currentHaul.haulNum
-      });
-    }
   }
 
   private deleteHauls() {
