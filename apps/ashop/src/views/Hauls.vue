@@ -114,7 +114,7 @@ export default class Hauls extends Vue {
   private created() {
     this.setCurrentTrip(sampleTrip);
     this.getHauls();
-    this.getColumns();
+    this.getHaulsSettings();
   }
 
   private handleSelectHaul(haul: any) {
@@ -179,7 +179,7 @@ export default class Hauls extends Vue {
     return value;
   }
 
-  private async getColumns() {
+  private async getHaulsSettings() {
     if (this.appMode) {
       try {
         const db = pouchService.db;
