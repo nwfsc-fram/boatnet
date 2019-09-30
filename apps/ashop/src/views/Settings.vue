@@ -22,6 +22,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AppSettings } from '@boatnet/bn-common';
 import { State, Action, Getter } from 'vuex-class';
+import { pouchService } from '@boatnet/bn-pouch';
 
 @Component
 export default class PageSettings extends Vue {
@@ -36,6 +37,8 @@ export default class PageSettings extends Vue {
   private setSoundEnabled: any;
   @Action('setAppMode', { namespace: 'appSettings' })
   private setAppMode: any;
+  @Action('setValidAppViews', { namespace: 'appSettings' })
+  private setValidAppViews: any;
 
   @Getter('appMode', { namespace: 'appSettings' })
   private currentMode!: AppSettings;
@@ -55,8 +58,28 @@ export default class PageSettings extends Vue {
     this.setSoundEnabled(this.isSoundEnabled);
   }
 
-  private setMode() {
+  private async setMode() {
     this.setAppMode(this.appMode);
+
+    try {
+        const db = pouchService.db;
+        const queryOptions = {
+          limit: 1,
+          start_key: this.appMode,
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+        const columns = await db.query(
+          pouchService.lookupsDBName,
+          'LookupDocs/boatnet-config-lookup',
+          queryOptions
+        );
+        console.log('views ' + columns.rows[0].doc.validAppViews);
+        this.setValidAppViews(columns.rows[0].doc.validAppViews);
+      } catch (err) {
+        console.log(err);
+      }
   }
 }
 </script>

@@ -7,7 +7,8 @@ Vue.use(Vuex);
 const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
-  appMode: 'wcgop'
+  appMode: 'wcgop',
+  validAppViews: undefined
 };
 
 const actions: ActionTree<AppSettings, RootState> = {
@@ -19,6 +20,9 @@ const actions: ActionTree<AppSettings, RootState> = {
   },
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
+  },
+  setValidAppViews({ commit }: any, validAppViews: string[]) {
+    commit('setValidAppViews', validAppViews);
   }
 };
 
@@ -31,6 +35,9 @@ const mutations: MutationTree<AppSettings> = {
   },
   setAppMode(newState: any, appMode: string) {
     newState.appMode = appMode;
+  },
+  setValidAppViews(newState: any, validAppViews: string[]) {
+    newState.validAppViews = validAppViews;
   }
 };
 
@@ -40,6 +47,9 @@ const getters: GetterTree<AppSettings, RootState> = {
   },
   appMode(getState: AppSettings) {
     return getState.appMode;
+  },
+  validAppViews(getState: AppSettings) {
+    return getState.validAppViews;
   }
 };
 

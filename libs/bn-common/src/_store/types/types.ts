@@ -20,6 +20,7 @@ export interface AppSettings {
     isKeyboardEnabled: boolean;
     isSoundEnabled?: boolean;
     appMode: string;
+    validAppViews?: string[];
 }
 
 export interface KeyboardState {

@@ -148,9 +148,9 @@ export default class Hauls extends Vue {
 
   private editHauls() {
     this.mode = JSON.parse(JSON.stringify(this.appMode));
-      this.$router.push({
-        path: '/hauldetails/' + this.currentHaul[this.haulsSettings.itemNumName]
-      });
+    this.$router.push({
+      path: '/hauldetails/' + this.currentHaul[this.haulsSettings.itemNumName]
+    });
   }
 
   private deleteHauls() {
@@ -195,7 +195,7 @@ export default class Hauls extends Vue {
           'LookupDocs/boatnet-config-lookup',
           queryOptions
         );
-        console.log(columns.rows[0].doc.hauls);
+        console.log('hello ' + JSON.stringify(columns.rows[0].doc.hauls));
         this.haulsSettings = columns.rows[0].doc.hauls;
       } catch (err) {
         console.log(err);

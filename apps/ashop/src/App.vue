@@ -15,6 +15,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { KeyboardState } from '@boatnet/bn-common';
 import { AppSettings } from '@boatnet/bn-common';
+import { pouchService } from '@boatnet/bn-pouch';
 
 @Component
 export default class App extends Vue {
@@ -22,13 +23,36 @@ export default class App extends Vue {
   @State('keyboard') private keyboard!: KeyboardState;
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
+  @Action('setValidAppViews', { namespace: 'appSettings' })
+  private setValidAppViews: any;
 
-  private mounted() {
+  private async mounted() {
     document.addEventListener('click', () => {
       if (document.activeElement && Object.keys(document.activeElement).length === 0) {
         this.setKeyboard(false);
       }
     });
+    try {
+        const db = pouchService.db;
+        const queryOptions = {
+          limit: 1,
+          start_key: this.appMode,
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+        const columns = await db.query(
+          pouchService.lookupsDBName,
+          'LookupDocs/boatnet-config-lookup',
+          queryOptions
+        );
+        console.log('views ' + columns.rows[0].doc.validAppViews);
+        this.setValidAppViews(columns.rows[0].doc.validAppViews);
+      } catch (err) {
+        console.log(err);
+      }
   }
 
   get keyboardStatus() {
