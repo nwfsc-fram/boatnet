@@ -38,18 +38,18 @@ export const sampleData = {
         [
             {
                 doc: {
-                    operationNum: 17,
+                    operationNum: 19,
                     observerTotalCatch: {
-                    weightMethod: 12,
-                    value: 42
+                    weightMethod: {lookupVal: 12},
+                    value: 42.234534536524563456
                     },
-                    gearPerformance: 5,
+                    gearPerformance: {lookupVal: 12, description: 'not good'},
                     targetStrategy: {
                     code: 'URK1'
                     },
-                    gearType: 'Pot',
+                    gearType: 'Trawl',
                     setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-011:00',
+                    upDate: '2019-05-29T12:13:00-11:00',
                     errors: 99
                 }
             },
@@ -57,33 +57,33 @@ export const sampleData = {
                 doc: {
                     operationNum: 18,
                     observerTotalCatch: {
-                    weightMethod: 10,
-                    value: 32
+                    weightMethod: {lookupVal: 10},
+                    value: 32.23453463456356
                     },
-                    gearPerformance: 2,
+                    gearPerformance: {lookupVal: 2, description: 'a ok'},
                     targetStrategy: {
                     code: 'URK1'
                     },
-                    gearType: 'Trap',
+                    gearType: 'Fixed Gear',
                     setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-011:00',
+                    upDate: '2019-05-29T12:13:00-11:00',
                     errors: 12
                 }
             },
             {
                 doc: {
-                    operationNum: 19,
+                    operationNum: 17,
                     observerTotalCatch: {
-                    weightMethod: 9,
-                    value: 3
+                    weightMethod: {lookupVal: 9},
+                    value: 3.1415926
                     },
-                    gearPerformance: 7,
+                    gearPerformance: {lookupVal: 7, description: 'meh'},
                     targetStrategy: {
                     code: 'URK1'
                     },
-                    gearType: 'Pot',
+                    gearType: 'Trawl',
                     setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-011:00',
+                    upDate: '2019-05-29T12:13:00-11:00',
                     errors: 0
                 }
             },
@@ -92,19 +92,19 @@ export const sampleData = {
         [
             {
             doc: {
-                haulNum: 44,
+                haulNum: 46,
                 observerEstimatedCatch: {
                     measurement: {
-                    value: 99
+                    value: 99.999999999
                     }
                 },
                 vesselEstimatedCatch: {
                     measurement: {
-                    value: 634
+                    value: 634.452345342
                     }
                 },
                 totalEstimatedDiscard: {
-                    value: 234
+                    value: 234.23453452345
                 },
                 startFishingLocation: {
                     date: '2019-05-29T12:13:00-07:00'
@@ -116,16 +116,16 @@ export const sampleData = {
                 haulNum: 45,
                 observerEstimatedCatch: {
                     measurement: {
-                    value: 34
+                    value: 34.343452345234
                     }
                 },
                 vesselEstimatedCatch: {
                     measurement: {
-                    value: 444
+                    value: 444.23456345634653
                     }
                 },
                 totalEstimatedDiscard: {
-                    value: 123
+                    value: 123.555555
                 },
                 startFishingLocation: {
                     date: '2019-05-29T12:13:00-07:00'
@@ -134,19 +134,19 @@ export const sampleData = {
             },
             {
             doc: {
-                haulNum: 46,
+                haulNum: 44,
                 observerEstimatedCatch: {
                     measurement: {
-                    value: 17
+                    value: 17.345634563456345
                     }
                 },
                 vesselEstimatedCatch: {
                     measurement: {
-                    value: 999
+                    value: 999.532453452342
                     }
                 },
                 totalEstimatedDiscard: {
-                    value: 333
+                    value: 33.3333333333333
                 },
                 startFishingLocation: {
                     date: '2019-05-29T12:13:00-07:00'

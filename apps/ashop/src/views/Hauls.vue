@@ -3,7 +3,7 @@
     <boatnet-summary
       currentScreen="Haul"
       :current="currentHaul"
-      :selectionId="currentHaul ? currentHaul.operationNum : 0"
+      :selectionId="currentHaul ? currentHaul[haulsSettings.itemNumName] : 0"
       @edit="editHauls"
       @add="addHauls"
       @delete="deleteHauls"
@@ -56,6 +56,7 @@ import { TripState, AppSettings } from '@boatnet/bn-common';
 
 import moment from 'moment';
 import { sampleData, sampleTrip } from '../data/data';
+import { getFormattedValue } from '../helpers/helpers';
 
 Vue.component(BoatnetSummary);
 
@@ -139,7 +140,7 @@ export default class Hauls extends Vue {
       num = this.haulsData[this.mode][0].doc[this.haulsSettings.itemNumName] + 1; // remove modes - early dev only
     }
 
-    const haul: any = { operationNum: num };
+    let haul: WcgopOperation | AshopHaul = {};
     haul[this.haulsSettings.itemNumName] = num;
 
     this.setCurrentHaul(haul);
@@ -176,8 +177,15 @@ export default class Hauls extends Vue {
     for (const field of fields) {
       value = value[field];
     }
-    return value;
-  }
+
+    if (attribute.type) {
+      return getFormattedValue(value, attribute.type, attribute.displayFormat);
+    }
+    else {
+      return value;
+    }
+   }
+
 
   private async getHaulsSettings() {
     if (this.appMode) {
