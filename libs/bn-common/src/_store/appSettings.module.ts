@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
-import { RootState, AppSettings } from './types/types';
+import { RootState, AppSettings, BoatnetConfig } from './types/types';
 
 Vue.use(Vuex);
 
@@ -8,7 +8,7 @@ const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
   appMode: 'wcgop',
-  validAppViews: undefined
+  appConfig: undefined
 };
 
 const actions: ActionTree<AppSettings, RootState> = {
@@ -21,8 +21,8 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
-  setValidAppViews({ commit }: any, validAppViews: string[]) {
-    commit('setValidAppViews', validAppViews);
+  setAppConfig({ commit }: any, appConfig: BoatnetConfig) {
+    commit('setAppConfig', appConfig);
   }
 };
 
@@ -36,8 +36,8 @@ const mutations: MutationTree<AppSettings> = {
   setAppMode(newState: any, appMode: string) {
     newState.appMode = appMode;
   },
-  setValidAppViews(newState: any, validAppViews: string[]) {
-    newState.validAppViews = validAppViews;
+  setAppConfig(newState: any, appConfig: BoatnetConfig) {
+    newState.appConfig = appConfig;
   }
 };
 
@@ -48,8 +48,8 @@ const getters: GetterTree<AppSettings, RootState> = {
   appMode(getState: AppSettings) {
     return getState.appMode;
   },
-  validAppViews(getState: AppSettings) {
-    return getState.validAppViews;
+  appConfig(getState: AppSettings) {
+    return getState.appConfig;
   }
 };
 

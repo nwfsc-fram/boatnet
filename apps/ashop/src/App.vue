@@ -25,8 +25,8 @@ export default class App extends Vue {
   private setKeyboard: any;
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: AppSettings;
-  @Action('setValidAppViews', { namespace: 'appSettings' })
-  private setValidAppViews: any;
+  @Action('setAppConfig', { namespace: 'appSettings' })
+  private setAppConfig: any;
 
   private async mounted() {
     document.addEventListener('click', () => {
@@ -43,13 +43,12 @@ export default class App extends Vue {
           descending: false,
           include_docs: true
         };
-        const columns = await db.query(
+        const config = await db.query(
           pouchService.lookupsDBName,
           'LookupDocs/boatnet-config-lookup',
           queryOptions
         );
-        console.log('views ' + columns.rows[0].doc.validAppViews);
-        this.setValidAppViews(columns.rows[0].doc.validAppViews);
+        this.setAppConfig(config.rows[0].doc);
       } catch (err) {
         console.log(err);
       }

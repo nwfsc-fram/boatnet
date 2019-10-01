@@ -20,11 +20,21 @@ export interface AppSettings {
     isKeyboardEnabled: boolean;
     isSoundEnabled?: boolean;
     appMode: string;
-    validAppViews?: string[];
+    appConfig?: BoatnetConfig;
 }
 
 export interface KeyboardState {
     showKeyboard?: boolean;
     keyboardType?: string;
     keyboardInputTarget?: any;
+}
+
+// TODO represents overall structure of config file
+export interface BoatnetConfig {
+    validAppViews?: string[];
+    navigationDrawerItems?: [];
+    login?: any;
+    trips?: any;
+    hauls?: any;
+    catch?: any;
 }

@@ -195,7 +195,7 @@ export default class Hauls extends Vue {
           'LookupDocs/boatnet-config-lookup',
           queryOptions
         );
-        console.log('hello ' + JSON.stringify(columns.rows[0].doc.hauls));
+        console.log(JSON.stringify(columns.rows[0].doc.hauls));
         this.haulsSettings = columns.rows[0].doc.hauls;
       } catch (err) {
         console.log(err);
