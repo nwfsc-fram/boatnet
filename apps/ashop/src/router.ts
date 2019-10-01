@@ -67,7 +67,6 @@ const router = new Router({
   ]
 });
 
-
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   // redirect to previous page if trying to access page not listed in config for that app
