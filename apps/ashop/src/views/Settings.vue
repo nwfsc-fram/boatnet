@@ -75,7 +75,6 @@ export default class PageSettings extends Vue {
           'LookupDocs/boatnet-config-lookup',
           queryOptions
         );
-        console.log('views in settings ' + JSON.stringify(columns.rows[0].doc));
         this.setAppConfig(columns.rows[0].doc);
       } catch (err) {
         console.log(err);

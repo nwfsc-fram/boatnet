@@ -107,7 +107,7 @@ export default class DefaultLayout extends Vue {
 
   @Getter('appConfig', { namespace: 'appSettings' })
   private appConfig!: BoatnetConfig;
-  
+
   private leftDrawerOpen: boolean = false;
   private miniState = true;
   constructor() {

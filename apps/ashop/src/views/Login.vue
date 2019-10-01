@@ -130,9 +130,9 @@ export default class Login extends Vue {
 
   private mounted() {
     this.appConfig.login.statInfo['Last Software Update Date'] = '-';
-    this.appConfig.login.statInfo["Last Data Sync"] = this.lastDataSyncDate;
-    this.appConfig.login.statInfo["Last Login Date"] = '-';
-    this.appConfig.login.statInfo["Quasar Version"] = Quasar.version;
+    this.appConfig.login.statInfo['Last Data Sync'] = this.lastDataSyncDate;
+    this.appConfig.login.statInfo['Last Login Date'] = '-';
+    this.appConfig.login.statInfo['Quasar Version'] = Quasar.version;
 
     this.logout(); // reset login status
     this.disconnectPouch();

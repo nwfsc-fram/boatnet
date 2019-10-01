@@ -52,7 +52,7 @@ import {
   AshopHaul,
   AshopDiscardReason
 } from '@boatnet/bn-models';
-import { TripState, AppSettings } from '@boatnet/bn-common';
+import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import moment from 'moment';
 import { sampleData, sampleTrip } from '../data/data';
@@ -82,6 +82,9 @@ export default class Hauls extends Vue {
 
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: AppSettings;
+
+  @Getter('appConfig', { namespace: 'appSettings' })
+  private appConfig!: BoatnetConfig;
 
   private haulsSettings: any = {};
   private mode: string = '';
@@ -181,25 +184,7 @@ export default class Hauls extends Vue {
 
   private async getHaulsSettings() {
     if (this.appMode) {
-      try {
-        const db = pouchService.db;
-        const queryOptions = {
-          limit: 1,
-          start_key: this.appMode,
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-        const columns = await db.query(
-          pouchService.lookupsDBName,
-          'LookupDocs/boatnet-config-lookup',
-          queryOptions
-        );
-        console.log(JSON.stringify(columns.rows[0].doc.hauls));
-        this.haulsSettings = columns.rows[0].doc.hauls;
-      } catch (err) {
-        console.log(err);
-      }
+      this.haulsSettings = this.appConfig.hauls;
     }
   }
 
