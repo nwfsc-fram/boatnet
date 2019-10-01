@@ -12,7 +12,7 @@
       <template v-slot:table>
         <boatnet-table v-if="haulsSettings.columns" :data="haulsData[appMode]" :settings="haulsSettings" @select="handleSelectHaul">
           <template v-slot:default="rowVals">
-            <q-td v-for="column of haulsSettings.columns" :align="column.align" :key="column.name">
+            <q-td v-for="column of haulsSettings.columns" :align="column.align" :key="column.name" :style="{ width: column.width, whiteSpace: 'normal' }">
               {{ getValue(rowVals.row.doc, column) }}
             </q-td>
           </template>

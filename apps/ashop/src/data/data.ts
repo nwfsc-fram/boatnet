@@ -48,8 +48,8 @@ export const sampleData = {
                     code: 'URK1'
                     },
                     gearType: 'Trawl',
-                    setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-11:00',
+                    setTime: '2019-03-08T12:13:00-07:00',
+                    upDate: '2019-07-08T12:13:00-11:00',
                     errors: 99
                 }
             },
@@ -65,8 +65,8 @@ export const sampleData = {
                     code: 'URK1'
                     },
                     gearType: 'Fixed Gear',
-                    setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-11:00',
+                    setTime: '2019-12-19T12:13:00-07:00',
+                    upDate: '2019-12-20T12:13:00-11:00',
                     errors: 12
                 }
             },
@@ -82,8 +82,8 @@ export const sampleData = {
                     code: 'URK1'
                     },
                     gearType: 'Trawl',
-                    setTime: '2019-05-29T12:13:00-07:00',
-                    upDate: '2019-05-29T12:13:00-11:00',
+                    setTime: '2019-08-03T09:08:00-07:00',
+                    upDate: '2019-12-02T09:07:00-07:00',
                     errors: 0
                 }
             },
@@ -149,7 +149,7 @@ export const sampleData = {
                     value: 33.3333333333333
                 },
                 startFishingLocation: {
-                    date: '2019-05-29T12:13:00-07:00'
+                    date: '2019-05-29T12:08:00-07:00'
                 }
                 }
             },
