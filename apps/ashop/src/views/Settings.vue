@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
+import { AppSettings } from '@boatnet/bn-common';
 import { State, Action, Getter } from 'vuex-class';
 import { pouchService } from '@boatnet/bn-pouch';
 
