@@ -74,7 +74,7 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
-  const validPages = store.state.appSettings.appConfig.validAppViews;
+  const validPages = store.getters['appSettings/appConfig'].validAppViews;
 
   if (authRequired && !logged) {
     return next('/login');

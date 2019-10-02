@@ -30,6 +30,7 @@ export interface KeyboardState {
 }
 
 // TODO represents overall structure of config file
+// add on as needed, this is not fixed yet
 export interface BoatnetConfig {
     validAppViews?: string[];
     navigationDrawerItems?: [];

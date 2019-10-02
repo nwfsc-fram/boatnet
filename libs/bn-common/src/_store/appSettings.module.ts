@@ -1,6 +1,7 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree, GetterTree, Store } from 'vuex';
 import { RootState, AppSettings, BoatnetConfig } from './types/types';
+import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
 
@@ -21,8 +22,8 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
-  setAppConfig({ commit }: any, appConfig: BoatnetConfig) {
-    commit('setAppConfig', appConfig);
+  setAppConfig({ commit }: any) {
+    commit('setAppConfig');
   }
 };
 
@@ -36,8 +37,25 @@ const mutations: MutationTree<AppSettings> = {
   setAppMode(newState: any, appMode: string) {
     newState.appMode = appMode;
   },
-  setAppConfig(newState: any, appConfig: BoatnetConfig) {
-    newState.appConfig = appConfig;
+  async setAppConfig(newState: any) {
+    try {
+      const db = pouchService.db;
+      const queryOptions = {
+        limit: 1,
+        start_key: newState.appMode,
+        inclusive_end: true,
+        descending: false,
+        include_docs: true
+      };
+      const config = await db.query(
+        pouchService.lookupsDBName,
+        'LookupDocs/boatnet-config-lookup',
+        queryOptions
+      );
+      newState.appConfig = config.rows[0].doc;
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 

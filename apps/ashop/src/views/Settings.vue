@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AppSettings } from '@boatnet/bn-common';
+import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { State, Action, Getter } from 'vuex-class';
 import { pouchService } from '@boatnet/bn-pouch';
 
@@ -43,7 +43,6 @@ export default class PageSettings extends Vue {
   @Getter('appMode', { namespace: 'appSettings' })
   private currentMode!: AppSettings;
 
-
   private mounted() {
     this.isKeyboardEnabled = this.appSettings.isKeyboardEnabled;
     this.isSoundEnabled = this.appSettings.isSoundEnabled;
@@ -58,27 +57,9 @@ export default class PageSettings extends Vue {
     this.setSoundEnabled(this.isSoundEnabled);
   }
 
-  private async setMode() {
+  private setMode() {
     this.setAppMode(this.appMode);
-
-    try {
-        const db = pouchService.db;
-        const queryOptions = {
-          limit: 1,
-          start_key: this.appMode,
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-        const columns = await db.query(
-          pouchService.lookupsDBName,
-          'LookupDocs/boatnet-config-lookup',
-          queryOptions
-        );
-        this.setAppConfig(columns.rows[0].doc);
-      } catch (err) {
-        console.log(err);
-      }
+    this.setAppConfig();
   }
 }
 </script>
