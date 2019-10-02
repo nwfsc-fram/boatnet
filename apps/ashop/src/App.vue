@@ -22,16 +22,13 @@ export default class App extends Vue {
   @State('keyboard') private keyboard!: KeyboardState;
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
-  @Action('setAppConfig', { namespace: 'appSettings' })
-  private setAppConfig: any;
 
   private mounted() {
     document.addEventListener('click', () => {
       if (document.activeElement && Object.keys(document.activeElement).length === 0) {
         this.setKeyboard(false);
       }
-    });
-    this.setAppConfig();
+    }); 
   }
 
   get keyboardStatus() {

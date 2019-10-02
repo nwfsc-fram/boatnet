@@ -22,8 +22,8 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
-  setAppConfig({ commit }: any) {
-    commit('setAppConfig');
+ async setAppConfig({ commit }: any) {
+    await commit('setAppConfig');
   }
 };
 

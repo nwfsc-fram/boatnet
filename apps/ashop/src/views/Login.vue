@@ -4,15 +4,15 @@
       <q-toolbar>
         <q-btn flat dense round />
 
-        <q-toolbar-title>{{appConfig.login.appName}}</q-toolbar-title>
+        <q-toolbar-title>{{loginConfig.appName}}</q-toolbar-title>
 
         <div>v0.0.0</div>
       </q-toolbar>
     </q-header>
     <q-page-container>
       <div class="q-pa-md">
-        <div v-for="(value, name) in appConfig.login.statInfo" :key="name">
-          <b>{{name}}: </b>{{value}}
+        <div v-for="(value, name) in loginConfig.statInfo" :key="name">
+          <b>{{name}}:</b> {{value}}
         </div>
       </div>
       <div class="q-pa-xl column justify-center items-center full-height">
@@ -67,6 +67,7 @@ import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
+import { loginConfig } from '../helpers/loginConfig';
 
 import { Quasar } from 'quasar';
 
@@ -89,8 +90,13 @@ export default class Login extends Vue {
 
   @Action('clear', { namespace: 'tripsState' }) private clearTripsState: any;
 
-  @Getter('appConfig', { namespace: 'appSettings' })
-  private appConfig!: BoatnetConfig;
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
+
+  @Action('setAppConfig', { namespace: 'appSettings' })
+  private setAppConfig: any;
+  
+  private loginConfig!: any;
 
   private username = '';
   private password = '';
@@ -128,22 +134,26 @@ export default class Login extends Vue {
     this.clearAlert();
   }
 
-  private mounted() {
-    this.appConfig.login.statInfo['Last Software Update Date'] = '-';
-    this.appConfig.login.statInfo['Last Data Sync'] = this.lastDataSyncDate;
-    this.appConfig.login.statInfo['Last Login Date'] = '-';
-    this.appConfig.login.statInfo['Quasar Version'] = Quasar.version;
+  private created() {
+    this.loginConfig = loginConfig.wcgop;
+    this.loginConfig.statInfo['Last Software Update Date'] = '-';
+    this.loginConfig.statInfo['Last Data Sync'] = this.lastDataSyncDate;
+    this.loginConfig.statInfo['Last Login Date'] = '-';
+    this.loginConfig.statInfo['Quasar Version'] = Quasar.version;
+  }
 
+  private mounted() {
     this.logout(); // reset login status
     this.disconnectPouch();
     this.clearAlert(); // clear errors
     this.clearTripsState(); // clear trips etc
 
     this.unsubscribe = this.$store.subscribe((mutation: any, state: any) => {
-      switch (mutation.type) {
+     switch (mutation.type) {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connectPouch(creds);
+          this.setAppConfig(); 
           this.$router.push({ path: '/' }); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
