@@ -34,24 +34,7 @@ export default class App extends Vue {
         this.setKeyboard(false);
       }
     });
-    try {
-        const db = pouchService.db;
-        const queryOptions = {
-          limit: 1,
-          start_key: this.appMode,
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-        const config = await db.query(
-          pouchService.lookupsDBName,
-          'LookupDocs/boatnet-config-lookup',
-          queryOptions
-        );
-        this.setAppConfig(config.rows[0].doc);
-      } catch (err) {
-        console.log(err);
-      }
+    this.setAppConfig();
   }
 
   get keyboardStatus() {
