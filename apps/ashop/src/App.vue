@@ -15,7 +15,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { KeyboardState } from '@boatnet/bn-common';
 import { AppSettings } from '@boatnet/bn-common';
-import { pouchService } from '@boatnet/bn-pouch';
 
 @Component
 export default class App extends Vue {
@@ -23,8 +22,6 @@ export default class App extends Vue {
   @State('keyboard') private keyboard!: KeyboardState;
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
-  @Getter('appMode', { namespace: 'appSettings' })
-  private appMode!: AppSettings;
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 

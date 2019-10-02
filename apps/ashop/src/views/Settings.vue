@@ -22,7 +22,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AppSettings } from '@boatnet/bn-common';
 import { State, Action, Getter } from 'vuex-class';
-import { pouchService } from '@boatnet/bn-pouch';
 
 @Component
 export default class PageSettings extends Vue {
