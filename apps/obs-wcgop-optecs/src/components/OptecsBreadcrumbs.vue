@@ -25,13 +25,12 @@
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
 import { WcgopTrip, WcgopOperation } from '@boatnet/bn-models';
-
 @Component
 export default class OptecsBreadcrumbs extends Vue {
   private breadcrumbs: any[] = [];
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip;
-  @Getter('currentHaul', { namespace: 'appState' })
+  @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaul!: WcgopOperation;
 
   @Watch('$route', { immediate: true, deep: true })
@@ -42,7 +41,6 @@ export default class OptecsBreadcrumbs extends Vue {
     // make a deep copy
     const temp = JSON.stringify(this.$route.meta.breadcrumb);
     this.breadcrumbs = JSON.parse(temp);
-
     for (let i = 0; i < this.$route.meta.breadcrumb.length; i++) {
       if (this.$route.meta.breadcrumb[i].name === 'tripIdPlaceholder') {
         const tripNum = this.currentTrip ? this.currentTrip.tripNum : 0;

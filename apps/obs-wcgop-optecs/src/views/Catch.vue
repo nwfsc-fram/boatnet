@@ -281,7 +281,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import BoatnetSummary, { BoatnetHaulsSettings } from '@boatnet/bn-common';
 import { Action, Getter, State } from 'vuex-class';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { WcgopAppState } from '../_store/types/types';
+import { TripState } from '@boatnet/bn-common';
 import {
   WcgopCatch,
   WcgopCatchTypeName,
@@ -308,7 +308,7 @@ Vue.component(BoatnetSummary);
 @Component
 export default class Catch extends Vue {
   @Prop() public char!: string;
-  @State('appState') private appState!: WcgopAppState;
+  @State('tripsState') private tripsState!: TripState;
 
   private wcgopCatchSettings: any;
   private wcgopCatchTreeSettings: any;
@@ -484,19 +484,19 @@ export default class Catch extends Vue {
   //   },
   // ];
 
-  @Action('setCurrentCatch', { namespace: 'appState' })
+  @Action('setCurrentCatch', { namespace: 'tripsState' })
   private setCurrentCatch: any;
 
-  @Getter('currentCatch', { namespace: 'appState' })
+  @Getter('currentCatch', { namespace: 'tripsState' })
   private currentCatch!: WcgopCatch;
 
-  @Getter('currentHaul', { namespace: 'appState' })
+  @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaul!: WcgopOperation;
 
-  @Getter('currentTrip', { namespace: 'appState' })
+  @Getter('currentTrip', { namespace: 'tripsState' })
   private currentTrip!: WcgopTrip;
 
-  @Action('save', { namespace: 'appState' })
+  @Action('save', { namespace: 'tripsState' })
   private save: any;
 
   constructor() {

@@ -93,7 +93,6 @@
 <script lang="ts">
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import {
-  WcgopAppState,
   TallyOperationMode,
   TallyButtonLayoutData,
   TallyCountData,
@@ -101,6 +100,7 @@ import {
   TallyState,
   TallyHistory
 } from '../../_store/types';
+import { AppSettings } from '@boatnet/bn-common';
 import { State, Getter, Action } from 'vuex-class';
 import { QBtn } from 'quasar';
 
@@ -136,7 +136,7 @@ export default class TallyBtn extends Vue {
   private tallyMode!: TallyOperationMode;
   @Getter('currentButtonIdx', { namespace: 'tallyState' })
   private currentButtonIdx!: number;
-  @Getter('isSoundEnabled', { namespace: 'appState' })
+  @Getter('isSoundEnabled', { namespace: 'appSettings' })
   private isSoundEnabled!: boolean;
 
   private selectLocationMode = TallyOperationMode.AddNamedSpeciesSelectLocation;

@@ -20,12 +20,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import { KeyboardState } from './_store';
-import { WcgopAppState } from './_store/types/types';
+import { KeyboardState } from '@boatnet/bn-common';
+import { AppSettings } from '@boatnet/bn-common';
 
 @Component
 export default class App extends Vue {
-  @State('appState') private appState!: WcgopAppState;
+  @State('appSettings') private appState!: AppSettings;
   @State('keyboard') private keyboard!: KeyboardState;
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;

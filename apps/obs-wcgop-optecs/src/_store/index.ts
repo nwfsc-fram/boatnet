@@ -2,15 +2,16 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import VuexPersist from 'vuex-persist';
 
-import { appState } from '@/_store/wcgop-app-state.module';
-import { alert } from '@/_store/alert.module';
+import { alert } from '@boatnet/bn-common';
 import { auth } from '@boatnet/bn-auth';
 import { pouchState } from '@boatnet/bn-pouch';
 import { tallyState } from '@/_store/tally.module';
 import { pdfState } from '@/_store/pdf.module';
-import { keyboard } from '@/_store/keyboard.module';
+import { keyboard } from '@boatnet/bn-common';
 
-import { RootState } from '@/_store/types/types';
+import { RootState } from '@boatnet/bn-common';
+import { tripsState } from '@boatnet/bn-common';
+import { appSettings } from '@boatnet/bn-common';
 
 // Primary app store: following examples at:
 // https://codeburst.io/vuex-and-typescript-3427ba78cfa8
@@ -21,7 +22,7 @@ Vue.use(Vuex);
 // Preserves state between page refreshes.
 const vuexLocalStorage = new VuexPersist({
   key: 'obs-wcgop-optecs',
-  modules: ['appState', 'auth', 'pouchState', 'tallyState', 'pdfState']
+  modules: ['alert', 'appSettings', 'auth', 'keyboard', 'pouchState', 'pdfState', 'tallyState', 'tripsState']
 });
 
 const store: StoreOptions<RootState> = {
@@ -29,13 +30,14 @@ const store: StoreOptions<RootState> = {
     version: '1.0.0'
   },
   modules: {
-    appState,
     alert,
+    appSettings,
     auth,
+    keyboard,
     pouchState,
-    tallyState,
     pdfState,
-    keyboard
+    tallyState,
+    tripsState
   },
   plugins: [vuexLocalStorage.plugin]
 };

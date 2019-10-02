@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { WcgopAppState } from '../_store/types/types';
+import { AppSettings } from '@boatnet/bn-common';
 import { State, Action } from 'vuex-class';
 
 @Component
@@ -19,16 +19,16 @@ export default class PageSettings extends Vue {
   public isKeyboardEnabled?: boolean = false;
   public isSoundEnabled?: boolean = false;
 
-  @State('appState') private appState!: WcgopAppState;
-  @Action('setKeyboardStatus', { namespace: 'appState' })
+  @State('appSettings') private appSettings!: AppSettings;
+  @Action('setKeyboardStatus', { namespace: 'appSettings' })
   private setKeyboardStatus: any;
-  @Action('setSoundEnabled', { namespace: 'appState' })
+  @Action('setSoundEnabled', { namespace: 'appSettings' })
   private setSoundEnabled: any;
 
 
   private mounted() {
-    this.isKeyboardEnabled = this.appState.isKeyboardEnabled;
-    this.isSoundEnabled = this.appState.isSoundEnabled;
+    this.isKeyboardEnabled = this.appSettings.isKeyboardEnabled;
+    this.isSoundEnabled = this.appSettings.isSoundEnabled;
   }
 
   private enableKeyboard(input: boolean) {

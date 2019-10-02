@@ -1,10 +1,10 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
-import { AlertState, RootState } from '@/_store/types/types';
+import { AlertState, RootState } from './types/types';
 
 Vue.use(Vuex);
 
-export const state: AlertState = {
+const state: AlertState = {
   type: null,
   message: null
 };
