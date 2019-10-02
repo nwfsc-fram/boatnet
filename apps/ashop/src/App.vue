@@ -25,7 +25,7 @@ export default class App extends Vue {
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 
-  private async mounted() {
+  private mounted() {
     document.addEventListener('click', () => {
       if (document.activeElement && Object.keys(document.activeElement).length === 0) {
         this.setKeyboard(false);
