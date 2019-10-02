@@ -1,13 +1,15 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
-import { RootState, AppSettings } from './types/types';
+import Vuex, { Module, ActionTree, MutationTree, GetterTree, Store } from 'vuex';
+import { RootState, AppSettings, BoatnetConfig } from './types/types';
+import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
 
 const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
-  appMode: 'wcgop'
+  appMode: 'wcgop',
+  appConfig: undefined
 };
 
 const actions: ActionTree<AppSettings, RootState> = {
@@ -19,6 +21,9 @@ const actions: ActionTree<AppSettings, RootState> = {
   },
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
+  },
+  setAppConfig({ commit }: any) {
+    commit('setAppConfig');
   }
 };
 
@@ -31,6 +36,26 @@ const mutations: MutationTree<AppSettings> = {
   },
   setAppMode(newState: any, appMode: string) {
     newState.appMode = appMode;
+  },
+  async setAppConfig(newState: any) {
+    try {
+      const db = pouchService.db;
+      const queryOptions = {
+        limit: 1,
+        start_key: newState.appMode,
+        inclusive_end: true,
+        descending: false,
+        include_docs: true
+      };
+      const config = await db.query(
+        pouchService.lookupsDBName,
+        'LookupDocs/boatnet-config-lookup',
+        queryOptions
+      );
+      newState.appConfig = config.rows[0].doc;
+    } catch (err) {
+      console.log(err);
+    }
   }
 };
 
@@ -40,6 +65,9 @@ const getters: GetterTree<AppSettings, RootState> = {
   },
   appMode(getState: AppSettings) {
     return getState.appMode;
+  },
+  appConfig(getState: AppSettings) {
+    return getState.appConfig;
   }
 };
 

@@ -4,25 +4,15 @@
       <q-toolbar>
         <q-btn flat dense round />
 
-        <q-toolbar-title>{{loginConfig.appName}}</q-toolbar-title>
+        <q-toolbar-title>{{appConfig.login.appName}}</q-toolbar-title>
 
         <div>v0.0.0</div>
       </q-toolbar>
     </q-header>
     <q-page-container>
       <div class="q-pa-md">
-        <!--<slot name="stat_info"></slot>
-        <div>
-          <b>Last Data Sync:</b>
-          {{lastDataSyncDate}}
-        </div>
-        <div>
-          <b>Quasar version:</b>
-          {{quasarVersion}}
-        </div>-->
-        <div v-for="(stat) in loginConfig.statInfo" :key="stat.name">
-          <b>{{stat.name}}</b>
-          {{stat.value}}
+        <div v-for="(value, name) in appConfig.login.statInfo" :key="name">
+          <b>{{name}}: </b>{{value}}
         </div>
       </div>
       <div class="q-pa-xl column justify-center items-center full-height">
@@ -76,13 +66,12 @@ import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
+import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import { Quasar } from 'quasar';
-import { config } from '../configs/ashopConfig';
 
 @Component
 export default class Login extends Vue {
-  private loginConfig: any = config.login;
   @State('auth') private auth!: AuthState;
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
@@ -99,6 +88,9 @@ export default class Login extends Vue {
   private disconnectPouch: any;
 
   @Action('clear', { namespace: 'tripsState' }) private clearTripsState: any;
+
+  @Getter('appConfig', { namespace: 'appSettings' })
+  private appConfig!: BoatnetConfig;
 
   private username = '';
   private password = '';
@@ -137,8 +129,10 @@ export default class Login extends Vue {
   }
 
   private mounted() {
-
-    console.log('helllo ' + this.loginConfig.statInfo[2].value);
+    this.appConfig.login.statInfo['Last Software Update Date'] = '-';
+    this.appConfig.login.statInfo['Last Data Sync'] = this.lastDataSyncDate;
+    this.appConfig.login.statInfo['Last Login Date'] = '-';
+    this.appConfig.login.statInfo['Quasar Version'] = Quasar.version;
 
     this.logout(); // reset login status
     this.disconnectPouch();

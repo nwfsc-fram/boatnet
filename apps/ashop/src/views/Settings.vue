@@ -36,10 +36,11 @@ export default class PageSettings extends Vue {
   private setSoundEnabled: any;
   @Action('setAppMode', { namespace: 'appSettings' })
   private setAppMode: any;
+  @Action('setAppConfig', { namespace: 'appSettings' })
+  private setAppConfig: any;
 
   @Getter('appMode', { namespace: 'appSettings' })
   private currentMode!: AppSettings;
-
 
   private mounted() {
     this.isKeyboardEnabled = this.appSettings.isKeyboardEnabled;
@@ -57,6 +58,7 @@ export default class PageSettings extends Vue {
 
   private setMode() {
     this.setAppMode(this.appMode);
+    this.setAppConfig();
   }
 }
 </script>
