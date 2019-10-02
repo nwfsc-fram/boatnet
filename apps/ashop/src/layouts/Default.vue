@@ -13,6 +13,16 @@
         </q-item-section>
       </q-item>
     </template>
+        <template v-slot:menu_item>
+      <q-item to="/tripDetails/:tripId" exact>
+        <q-item-section avatar>
+          <q-icon name="edit" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Trip Details</q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
   </default-layout>
 
 </template>
