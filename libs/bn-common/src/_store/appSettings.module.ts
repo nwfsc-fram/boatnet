@@ -9,7 +9,12 @@ const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
   appMode: 'wcgop',
-  appConfig: undefined
+  appConfig: {
+    login:
+    {
+      statInfo: {}
+    }
+  }
 };
 
 const actions: ActionTree<AppSettings, RootState> = {

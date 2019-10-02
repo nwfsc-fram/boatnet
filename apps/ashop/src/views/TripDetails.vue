@@ -1,6 +1,20 @@
 <template>
-  <div>Trip Details
-    {{ tripDetailsSettings }}
+  <div>
+
+  <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+      <div v-for="config of appConfig.tripAttributes" :key="appConfig.tripAttributes.indexOf(config)">
+        <boatnet-datetime-prime
+          v-if="config.type === 'dateTime'"
+          :date.sync="trip[config.modelName]"
+          :config="config"
+          class="q-ma-sm">
+        </boatnet-datetime-prime>
+      </div>
+    </div>
+
+    <div class="bg-primary text-white" style="padding: .5em; text-align: center; font-weight: bold">
+      Trip Details: {{ trip }}
+    </div>
 
   </div>
 </template>
@@ -26,7 +40,7 @@ import {
   AshopHaul,
   AshopDiscardReason
 } from '@boatnet/bn-models';
-import { TripState, AppSettings } from '@boatnet/bn-common';
+import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import { sampleData, sampleTrip } from '../data/data';
 
@@ -55,8 +69,13 @@ export default class Trips extends Vue {
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: AppSettings;
 
+ @Getter('appConfig', { namespace: 'appSettings' })
+  private appConfig!: BoatnetConfig;
+
   private tripDetailsSettings: any = {};
   private mode: string = '';
+
+  private trip = {};
 
   constructor() {
     super();
@@ -64,32 +83,8 @@ export default class Trips extends Vue {
 
   private created() {
     this.setCurrentTrip(sampleTrip);
-    this.getTripDetailsSettings();
   }
 
-  private async getTripDetailsSettings() {
-    if (this.appMode) {
-      try {
-        const db = pouchService.db;
-        const queryOptions = {
-          limit: 1,
-          start_key: this.appMode,
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-        const columns = await db.query(
-          pouchService.lookupsDBName,
-          'LookupDocs/boatnet-config-lookup',
-          queryOptions
-        );
-        console.log(columns.rows[0].doc.tripAttributes);
-        this.tripDetailsSettings = columns.rows[0].doc.tripAttributes;
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
 }
 
 </script>

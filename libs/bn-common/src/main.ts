@@ -21,6 +21,12 @@ import BoatnetLogin from './views/BoatnetLogin.vue';
 
 import DefaultLayout from './layouts/Default.vue';
 
+import BoatnetDatetimePrime from './components/BoatnetDatetimePrime.vue';
+
+import 'primevue/resources/themes/nova-light/theme.css';
+import 'primevue/resources/primevue.min.css';
+import 'primeicons/primeicons.css';
+
 const Components: any = {
   BoatnetButtonToggle,
   BoatnetDate,
@@ -40,7 +46,8 @@ const Components: any = {
   BoatnetAddSpeciesDialog,
   BoatnetCustomKeyboard,
   BoatnetTreeTable,
-  DefaultLayout
+  DefaultLayout,
+  BoatnetDatetimePrime
 };
 
 Object.keys(Components).forEach((name) => {

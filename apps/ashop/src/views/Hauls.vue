@@ -143,7 +143,7 @@ export default class Hauls extends Vue {
       num = this.haulsData[this.mode][0].doc[this.haulsSettings.itemNumName] + 1; // remove modes - early dev only
     }
 
-    let haul: WcgopOperation | AshopHaul = {};
+    const haul: WcgopOperation | AshopHaul = {};
     haul[this.haulsSettings.itemNumName] = num;
 
     this.setCurrentHaul(haul);
@@ -183,8 +183,7 @@ export default class Hauls extends Vue {
 
     if (attribute.type) {
       return getFormattedValue(value, attribute.type, attribute.displayFormat);
-    }
-    else {
+    } else {
       return value;
     }
    }
