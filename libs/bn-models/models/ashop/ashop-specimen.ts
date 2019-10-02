@@ -1,6 +1,7 @@
 
 // tslint:disable no-empty-interface
 import { BaseSpecimen } from '../_base';
+import { Condition, SampleSystem } from '../_lookups';
 
 export const AshopSpecimenTypeName = 'ashop-specimen';
 
@@ -18,6 +19,9 @@ export interface AshopSpecimen extends BaseSpecimen {
     salmon - isAdiposePresent
     halibut - viability
     */
+
+    condition?: Condition;
+    sampleSystem?: SampleSystem;
 
     legacy?: {
         cruiseNum?: number;

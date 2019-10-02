@@ -1,5 +1,5 @@
 import { Base } from '../_base/base';
-import { BoatnetDate, Measurement } from '.';
+import { BoatnetDate, Measurement, CouchID } from '.';
 import { Point } from 'geojson'; // GeoJSON https://tools.ietf.org/html/rfc7946
 import {
   Beaufort,
@@ -9,7 +9,8 @@ import {
   Species,
   BodyLength,
   SightingCondition,
-  Behavior
+  Behavior,
+  TaxonomyAlias
 } from '../_lookups/index';
 
 declare type DescriptorIcon = any; // TODO Pick-list images of Cetacea and Pinniped Descriptions (Silhouettes)
@@ -27,7 +28,8 @@ interface GearPresentComment {
 export declare const SightingEventTypeName = 'sighting-event';
 
 export interface SightingEvent extends Base {
-  species?: Species;
+  operationIDs?: CouchID[];
+  species?: TaxonomyAlias;
   confidentOfSpecies?: Confidence; // Y/N/? Might be useful?
   sightingDate?: BoatnetDate;
   location?: Point;

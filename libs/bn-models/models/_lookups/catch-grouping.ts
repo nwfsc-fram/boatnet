@@ -15,7 +15,7 @@ CatchGrouping Type
 
 export interface CatchGrouping extends Base {
   name: string;
-  code?: number;
+  code?: number | string;
   members?: TaxonomyAlias[] | MarineDebris[]; // Could be an empty member list (e.g. sharks)
   parentTaxonomy?: TaxonomyAlias;
   definition?: GroupDefinition;

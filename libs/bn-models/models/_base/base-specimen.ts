@@ -50,7 +50,7 @@ export interface BaseSpecimen extends Base {
   isAdiposePresent?: boolean; // Hatchery v. Wild
 
   biostructures?: Biostructure[];
-  tags: Tag[];
+  tags?: Tag[];
 
   numSpecimensInBag?: number; // TODO ?? We think this is a bag of specimens
   location?: LocationEvent; // where was the boat when the specimen was collected

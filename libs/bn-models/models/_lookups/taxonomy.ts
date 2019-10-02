@@ -35,6 +35,7 @@ export interface Taxonomy extends Base {
   // Priorities of us
   // fish - use AFS, everything else use ITIS
 
+  pacfinSpeciesCode?: string;
   afsId?: number; // Check if NWFSC has an AFS membership and if so, use this to get the IDs
   itisTSN?: number;
   wormsAphiaId?: number;
@@ -48,7 +49,7 @@ export interface Taxonomy extends Base {
     ashopSpeciesId?: number; // NORPAC ID
     obsAnalystCode?: string; // ToDo - Kayleigh spreadsheet
     edcCode?: number;
-    dwId?: number;
+    dwId?: number[];
     raceBaseCodeNW?: number; // AFSC RaceBase code + 1 digit
   };
 }

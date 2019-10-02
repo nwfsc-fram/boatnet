@@ -35,9 +35,16 @@ export interface Biostructure extends Base {
     age?: number;
     ageReader?: string;
     ageDate?: string;
-    ageLocation: string;
-    ageMethod: string;
+    ageLocation?: string;
+    ageMethod?: string;
 
     bandId?: string;
-  };
+
+    // ashop related items
+    cruiseNum?: number,
+    permit?: number,
+    specimenSequence?: number,
+    lengthSequence?: number,
+    specimenNum?: number
+  }
 }

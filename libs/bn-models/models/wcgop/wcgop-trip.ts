@@ -10,8 +10,7 @@ import {
 
 import { WcgopFishTicket } from './index';
 import { BrdConfiguration } from '../_common/brd-configuration';
-import { Program } from 'typescript';
-import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType } from '../_lookups/index';
+import { Person, Fishery, FirstReceiver, VesselLogbookType, TripStatus, GearType, Program } from '../_lookups/index';
 
 export const WcgopTripTypeName = 'wcgop-trip';
 

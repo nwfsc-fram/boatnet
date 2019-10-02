@@ -35,4 +35,5 @@ export interface TaxonomyAlias extends Base {
   isTrawlSurvey?: boolean;
   isHakeSurvey?: boolean;
   isHookAndLineSurvey?: boolean;
+  isPacfin?: boolean;
 }

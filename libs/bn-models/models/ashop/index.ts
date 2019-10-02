@@ -3,3 +3,4 @@ export * from './ashop-cruise';
 export * from './ashop-discard-reason';
 export * from './ashop-haul';
 export * from './ashop-trip';
+export * from './ashop-specimen'

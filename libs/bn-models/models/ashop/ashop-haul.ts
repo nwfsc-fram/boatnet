@@ -1,6 +1,6 @@
 // Ashop Haul
 import { LocationEvent, Measurement, CouchID } from '../_common/index';
-import { GearType } from '../_lookups/index';
+import { GearType, VesselType } from '../_lookups/index';
 import { BaseOperation, BaseCatch } from '../_base/index';
 import { AshopCatch } from './ashop-catch';
 
@@ -53,10 +53,13 @@ export interface AshopHaul extends BaseOperation {
   isGearLost?: boolean;
   tribalDelivery?: string; // TODO name of tribe LOOKUP
   sampleDesignType?: string; // TODO lookup
-
+  vesselType?: VesselType;
   samples?: AshopCatch[];  // column
 
   legacy?: {
+    cruiseNum?: number;
+    permit?: number;
+    tripSeq?: number;
     haulSeq?: number;
     deliveryVesselAdfg?: string;
     locationCode?: string; // R (Retrieval) or N (Noon)

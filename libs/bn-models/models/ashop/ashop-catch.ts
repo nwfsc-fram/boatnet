@@ -1,6 +1,7 @@
 // A-SHOP Catch
 import { BaseCatch } from '../_base/base-catch';
 import { Measurement, CouchID, Specimen } from '../_common/index';
+import { AshopSpecimen } from '.';
 
 export const AshopCatchTypeName = 'ashop-catch';
 
@@ -24,6 +25,8 @@ export interface AshopCatch extends BaseCatch {
   percentRetained?: number;  // column
   sightingEventIds?: CouchID[];
 
+  sex?: string; // stored in norpac as "F" or "M" in species comp level, no lookup
+
   // species?: AshopSampleSpecies[];
   // subsamples?: AshopSample[];
 
@@ -35,11 +38,12 @@ export interface AshopCatch extends BaseCatch {
 
   children?: AshopCatch[];
 
-  specimens?: Specimen[];
+  specimens?: AshopSpecimen[];
 
   legacy?: {
     sampleSequence?: number;
     parentSequence?: number;
+    speciesCompSequence?: number;
     cruiseNum?: number;
     permit?: string;
     // Omit combined sample flag

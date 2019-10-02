@@ -47,6 +47,7 @@ export interface AshopTrip extends BaseTrip {
 
   vesselType?: VesselType;
   legacy?: {
+    cruiseNum?: number;
     tripSeq?: number;
     cruiseVesselSeq?: number;
     portCode?: number;
