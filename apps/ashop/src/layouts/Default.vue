@@ -67,7 +67,7 @@
               <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-primary">SYNCING DATA
                 <span v-if="syncStatus" style=" font-size: 11px; margin-left: 20px; color: black"> {{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
                 </div>
-              <q-linear-progress v-if="syncStatus" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
+              <q-linear-progress v-if="syncStatusExists" stripe rounded style="height: 10px;" :value="getPercent" color="primary"></q-linear-progress>
               <br>
           </q-card-section>
         </q-card>
@@ -94,14 +94,14 @@ import { colors } from 'quasar';
     'ashop-breadcrumbs': AshopBreadcrumb
   }
 })
-
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
-  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
-  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
+  @Getter('syncStatus', { namespace: 'pouchState' }) private syncStatus: any;
+  @Getter('syncDateFormatted', { namespace: 'pouchState' })
+  private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
@@ -131,10 +131,21 @@ export default class DefaultLayout extends Vue {
     this.$router.back();
   }
   private get getPercent() {
-    return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+    if (this.syncStatus) {
+      return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+    } 
+    // continue showing progress bar as we wait for app config to load. 
+    else {
+      return 1;
+    }
   }
+
   private get syncStatusExists() {
     if (this.syncStatus && this.syncStatus.pending > 2) {
+      return true;
+    } 
+    // continue showing loading bar as we are waiting for app config the load and navigation drawer to populate
+    else if (this.appConfig.navigationDrawerItems && this.appConfig.navigationDrawerItems.length === 0) {
       return true;
     } else {
       return false;
@@ -147,10 +158,10 @@ export default class DefaultLayout extends Vue {
   private created() {
     // colors.setBrand('primary', '#000000')
     // colors.setBrand('secondary', '#f900bf')
-    if ( authService.getCurrentUser() ) {
+    if (authService.getCurrentUser()) {
       return;
     } else {
-      this.$router.push({path: '/login'});
+      this.$router.push({ path: '/login' });
     }
   }
 }

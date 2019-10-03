@@ -29,7 +29,7 @@ const router = new Router({
           component: Trips,
           meta: {
             breadcrumb: [
-              { name: 'Trip'}
+              { name: 'Trip' }
             ]
           }
         },
@@ -46,7 +46,7 @@ const router = new Router({
           meta: {
             breadcrumb: [
               { name: 'Trip', link: '' },
-              { name: 'tripIdPlaceholder', link: ''}
+              { name: 'tripIdPlaceholder', link: '' }
             ]
           }
         },
@@ -57,8 +57,8 @@ const router = new Router({
           meta: {
             breadcrumb: [
               { name: 'Trip', link: '' },
-              { name: 'tripIdPlaceholder', link: ''},
-              { name: 'Hauls', link: ''}
+              { name: 'tripIdPlaceholder', link: '' },
+              { name: 'Hauls', link: '' }
             ]
           }
         }
@@ -73,15 +73,14 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
-
   const validPages = store.getters['appSettings/appConfig'].validAppViews;
 
   if (authRequired && !logged) {
     return next('/login');
-  } else if (to.name && !validPages.includes(to.name)) {
+  } else if (to.name && validPages.length !== 0 && !validPages.includes(to.name)) {
     next(false);
   } else {
-     next();
+    next();
   }
 });
 

@@ -31,7 +31,14 @@ export default class App extends Vue {
         this.setKeyboard(false);
       }
     });
-    this.setAppConfig();
+
+    this.$store.subscribe((mutation: any, state: any) => {
+      switch (mutation.type) {
+        case 'pouchState/syncCompleted':
+          this.setAppConfig();
+          break;
+      }
+    });
   }
 
   get keyboardStatus() {

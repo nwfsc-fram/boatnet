@@ -9,7 +9,14 @@ const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
   appMode: 'wcgop',
-  appConfig: undefined
+  appConfig: {
+    validAppViews: [],
+    navigationDrawerItems: [],
+    login: {},
+    trips: {},
+    hauls: {},
+    catch: {}
+  }
 };
 
 const actions: ActionTree<AppSettings, RootState> = {
@@ -22,7 +29,7 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
-  setAppConfig({ commit }: any) {
+ setAppConfig({ commit }: any) {
     commit('setAppConfig');
   }
 };
