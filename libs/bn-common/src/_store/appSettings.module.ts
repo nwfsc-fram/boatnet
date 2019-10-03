@@ -52,6 +52,7 @@ const mutations: MutationTree<AppSettings> = {
         'LookupDocs/boatnet-config-lookup',
         queryOptions
       );
+      console.log('got the goods ' + config.rows[0].doc);
       newState.appConfig = config.rows[0].doc;
     } catch (err) {
       console.log(err);

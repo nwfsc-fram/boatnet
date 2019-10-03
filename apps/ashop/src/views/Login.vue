@@ -89,12 +89,6 @@ export default class Login extends Vue {
   private disconnectPouch: any;
 
   @Action('clear', { namespace: 'tripsState' }) private clearTripsState: any;
-
-  @Getter('appMode', { namespace: 'appSettings' })
-  private appMode!: AppSettings;
-
-  @Action('setAppConfig', { namespace: 'appSettings' })
-  private setAppConfig: any;
   
   private loginConfig!: any;
 
@@ -153,7 +147,6 @@ export default class Login extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connectPouch(creds);
-          this.setAppConfig(); 
           this.$router.push({ path: '/' }); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
