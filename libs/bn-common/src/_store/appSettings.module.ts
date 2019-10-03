@@ -22,13 +22,8 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
-<<<<<<< HEAD
  async setAppConfig({ commit }: any) {
     await commit('setAppConfig');
-=======
-  setAppConfig({ commit }: any) {
-    commit('setAppConfig');
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   }
 };
 
@@ -57,10 +52,7 @@ const mutations: MutationTree<AppSettings> = {
         'LookupDocs/boatnet-config-lookup',
         queryOptions
       );
-<<<<<<< HEAD
       console.log('got the goods ' + config.rows[0].doc);
-=======
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
       newState.appConfig = config.rows[0].doc;
     } catch (err) {
       console.log(err);

@@ -11,13 +11,8 @@
     </q-header>
     <q-page-container>
       <div class="q-pa-md">
-<<<<<<< HEAD
         <div v-for="(value, name) in loginConfig.statInfo" :key="name">
           <b>{{name}}:</b> {{value}}
-=======
-        <div v-for="(value, name) in appConfig.login.statInfo" :key="name">
-          <b>{{name}}: </b>{{value}}
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
         </div>
       </div>
       <div class="q-pa-xl column justify-center items-center full-height">
@@ -72,10 +67,7 @@ import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
-<<<<<<< HEAD
 import { loginConfig } from '../helpers/loginConfig';
-=======
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
 
 import { Quasar } from 'quasar';
 
@@ -139,7 +131,6 @@ export default class Login extends Vue {
     this.clearAlert();
   }
 
-<<<<<<< HEAD
   private created() {
     this.loginConfig = loginConfig.wcgop;
     this.loginConfig.statInfo['Last Software Update Date'] = '-';
@@ -147,13 +138,6 @@ export default class Login extends Vue {
     this.loginConfig.statInfo['Last Login Date'] = '-';
     this.loginConfig.statInfo['Quasar Version'] = Quasar.version;
   }
-=======
-  private mounted() {
-    this.appConfig.login.statInfo['Last Software Update Date'] = '-';
-    this.appConfig.login.statInfo['Last Data Sync'] = this.lastDataSyncDate;
-    this.appConfig.login.statInfo['Last Login Date'] = '-';
-    this.appConfig.login.statInfo['Quasar Version'] = Quasar.version;
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
 
   private mounted() {
     this.logout(); // reset login status

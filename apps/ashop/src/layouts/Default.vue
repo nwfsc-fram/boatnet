@@ -20,58 +20,25 @@
           size="1.5em"
         />
         <q-toolbar-title>
-<<<<<<< HEAD
-          <ashop-breadcrumbs />
-        </q-toolbar-title>
-        <q-spinner-radio v-if="isSyncing" color="green-2" size="2em" />
-=======
           <ashop-breadcrumbs/>
         </q-toolbar-title>
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em"/>
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
         <!-- <q-icon name="save" />-->
       </q-toolbar>
     </q-header>
 
-<<<<<<< HEAD
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      content-class="bg-grey-2"
-      :mini="miniState"
-      :breakpoint="500"
-    >
-      <q-list>
-        <q-item exact @click="toggleMiniState">
-          <q-item-section avatar @click="toggleMiniState" style="cursor: pointer;">
-            <q-icon
-              :name="miniState === true ? 'fas fa-angle-double-right' : 'fas fa-angle-double-left'"
-            />
-=======
     <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" :mini="miniState"
         :breakpoint="500">
       <q-list>
         <q-item exact @click="toggleMiniState">
           <q-item-section avatar @click="toggleMiniState" style="cursor: pointer;">
             <q-icon :name="miniState === true ? 'fas fa-angle-double-right' : 'fas fa-angle-double-left'"/>
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
           </q-item-section>
           <q-item-section @click="toggleMiniState" style="cursor: pointer;">
             <q-item-label>{{miniState === true ? '' : 'Minimize menu'}}</q-item-label>
           </q-item-section>
         </q-item>
 
-<<<<<<< HEAD
-        <div v-for="(item) in setting.navigationDrawerItems" :key="item.label">
-          <q-item :to="item.to" exact>
-            <q-item-section avatar>
-              <q-icon :name="item.icon" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>{{item.label}}</q-item-label>
-            </q-item-section>
-          </q-item>
-=======
         <div v-for="(item) in appConfig.navigationDrawerItems" :key="item.label">
           <q-item :to="item.to" exact>
           <q-item-section avatar>
@@ -81,7 +48,6 @@
             <q-item-label>{{item.label}}</q-item-label>
           </q-item-section>
         </q-item>
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
         </div>
 
         <q-item to="/" exact>
@@ -93,36 +59,6 @@
     </q-drawer>
 
     <q-page-container>
-<<<<<<< HEAD
-      <q-dialog v-model="syncStatusExists" full-width seamless position="top">
-        <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0">
-            <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button" />
-            <div
-              style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-primary"
-            >
-              SYNCING DATA
-              <span
-                v-if="syncStatus"
-                style=" font-size: 11px; margin-left: 20px; color: black"
-              >{{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
-            </div>
-            <q-linear-progress
-              v-if="syncStatus"
-              stripe
-              rounded
-              style="height: 10px;"
-              :value="getPercent"
-              color="primary"
-            ></q-linear-progress>
-            <br />
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-      <router-view />
-    </q-page-container>
-=======
 
       <q-dialog v-model="syncStatusExists" full-width seamless position="top">
         <q-card>
@@ -139,7 +75,6 @@
       <router-view/>
     </q-page-container>
 
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   </q-layout>
 </template>
 
@@ -159,34 +94,22 @@ import { colors } from 'quasar';
     'ashop-breadcrumbs': AshopBreadcrumb
   }
 })
-<<<<<<< HEAD
-=======
-
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
   @State('pouchState') private pouchState!: PouchDBState;
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
-<<<<<<< HEAD
   @Getter('syncStatus', { namespace: 'pouchState' }) private syncStatus: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' })
   private syncDate!: string;
-=======
-  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
-  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
   @Getter('appConfig', { namespace: 'appSettings' })
   private appConfig!: BoatnetConfig;
 
-<<<<<<< HEAD
   private setting: any;
 
-=======
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   private leftDrawerOpen: boolean = false;
   private miniState = true;
   constructor() {
@@ -210,14 +133,7 @@ export default class DefaultLayout extends Vue {
     this.$router.back();
   }
   private get getPercent() {
-<<<<<<< HEAD
-    return (
-      this.syncStatus.docs_read /
-      (this.syncStatus.docs_read + this.syncStatus.pending)
-    );
-=======
     return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   }
   private get syncStatusExists() {
     if (this.syncStatus && this.syncStatus.pending > 2) {
@@ -230,7 +146,6 @@ export default class DefaultLayout extends Vue {
     console.log(statusExists);
   }
 
-<<<<<<< HEAD
   private mounted() {
     this.$store.subscribe((mutation: any, state: any) => {
       switch(mutation.type) {
@@ -259,15 +174,6 @@ export default class DefaultLayout extends Vue {
       return;
     } else {
       this.$router.push({ path: '/login' });
-=======
-  private created() {
-    // colors.setBrand('primary', '#000000')
-    // colors.setBrand('secondary', '#f900bf')
-    if ( authService.getCurrentUser() ) {
-      return;
-    } else {
-      this.$router.push({path: '/login'});
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
     }
   }
 }

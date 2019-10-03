@@ -34,7 +34,6 @@ export default class App extends Vue {
         this.setKeyboard(false);
       }
     });
-<<<<<<< HEAD
 
     this.$store.subscribe((mutation: any, state: any) => {
       switch(mutation.type) {
@@ -44,9 +43,6 @@ export default class App extends Vue {
           break;
       }
     })
-=======
-    this.setAppConfig();
->>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   }
 
   get keyboardStatus() {
