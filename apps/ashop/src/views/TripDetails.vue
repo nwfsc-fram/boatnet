@@ -7,6 +7,7 @@
           v-if="config.type === 'dateTime'"
           :date.sync="trip[config.modelName]"
           :config="config"
+          :model="trip"
           class="q-ma-sm">
         </boatnet-datetime-prime>
       </div>

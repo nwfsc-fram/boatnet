@@ -26,6 +26,7 @@ Vue.component('pCalendar', Calendar);
 export default class BoatnetDatetimePrime extends Vue {
   @Prop() private config!: string;
   @Prop() private date!: string;
+  @Prop() private model!: string;
 
   get dateVal() {
     if (this.date) {
@@ -42,8 +43,10 @@ export default class BoatnetDatetimePrime extends Vue {
   private getDate(value: string) {
     if (value === 'today') {
       return new Date();
+    } else if (value === ('departureDate' || 'returnDate') && this.model[value]) {
+        return new Date(this.model[value])
     } else {
-      return null;
+        return null;
     }
   }
 }
