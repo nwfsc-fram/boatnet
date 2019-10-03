@@ -1,6 +1,11 @@
-export const loginConfig = {
+export const loginConfigValues: {
+    [appType: string]: {
+        appName: string,
+        statInfo: {}
+    }
+} = {
     ashop: {
-        appName: 'ASHOP',
+        appName: 'At Sea Hake Observer Program Login',
         statInfo: {
             'Last Software Update Date': '',
             'Last Data Sync': '',

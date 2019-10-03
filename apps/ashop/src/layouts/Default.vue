@@ -133,9 +133,7 @@ export default class DefaultLayout extends Vue {
   private get getPercent() {
     if (this.syncStatus) {
       return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
-    } 
-    // continue showing progress bar as we wait for app config to load. 
-    else {
+    } else {
       return 1;
     }
   }
@@ -143,9 +141,7 @@ export default class DefaultLayout extends Vue {
   private get syncStatusExists() {
     if (this.syncStatus && this.syncStatus.pending > 2) {
       return true;
-    } 
-    // continue showing loading bar as we are waiting for app config the load and navigation drawer to populate
-    else if (this.appConfig.navigationDrawerItems && this.appConfig.navigationDrawerItems.length === 0) {
+    } else if (this.appConfig.navigationDrawerItems && this.appConfig.navigationDrawerItems.length === 0) {
       return true;
     } else {
       return false;
