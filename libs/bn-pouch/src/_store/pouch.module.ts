@@ -77,6 +77,7 @@ const mutations: MutationTree<PouchDBState> = {
     localStorage.setItem(LS_LAST_SYNC_DATE, date);
     newState.lastSyncDate = date;
     newState.syncStatus = status;
+    console.log('sync complete');
   },
   syncChanged(newState: PouchDBState, status: PouchDBSyncStatus) {
     const date = moment().format();

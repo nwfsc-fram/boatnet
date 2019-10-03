@@ -25,9 +25,6 @@ export default class App extends Vue {
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 
-  @Action('setAppConfig', { namespace: 'appSettings' })
-  private setAppConfig: any;
-
   private mounted() {
     document.addEventListener('click', () => {
       if (document.activeElement && Object.keys(document.activeElement).length === 0) {
@@ -36,13 +33,12 @@ export default class App extends Vue {
     });
 
     this.$store.subscribe((mutation: any, state: any) => {
-      switch(mutation.type) {
+      switch (mutation.type) {
         case 'pouchState/syncCompleted':
           this.setAppConfig();
-          console.log('done setting that');
           break;
       }
-    })
+    });
   }
 
   get keyboardStatus() {

@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn flat dense round />
 
-        <q-toolbar-title>{{appConfig.login.appName}}</q-toolbar-title>
+        <q-toolbar-title>{{loginConfig.appName}}</q-toolbar-title>
 
         <div>v0.0.0</div>
       </q-toolbar>
@@ -89,7 +89,7 @@ export default class Login extends Vue {
   private disconnectPouch: any;
 
   @Action('clear', { namespace: 'tripsState' }) private clearTripsState: any;
-  
+
   private loginConfig!: any;
 
   @Getter('appConfig', { namespace: 'appSettings' })
