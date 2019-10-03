@@ -155,7 +155,7 @@ export default class DefaultLayout extends Vue {
     console.log(statusExists);
   }
 
-  private async created() {
+  private created() {
     // colors.setBrand('primary', '#000000')
     // colors.setBrand('secondary', '#f900bf')
     if (authService.getCurrentUser()) {
