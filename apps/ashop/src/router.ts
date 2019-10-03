@@ -29,7 +29,11 @@ const router = new Router({
           component: Trips,
           meta: {
             breadcrumb: [
+<<<<<<< HEAD
               { name: 'Trip' }
+=======
+              { name: 'Trip'}
+>>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
             ]
           }
         },
@@ -46,7 +50,11 @@ const router = new Router({
           meta: {
             breadcrumb: [
               { name: 'Trip', link: '' },
+<<<<<<< HEAD
               { name: 'tripIdPlaceholder', link: '' }
+=======
+              { name: 'tripIdPlaceholder', link: ''}
+>>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
             ]
           }
         },
@@ -57,8 +65,13 @@ const router = new Router({
           meta: {
             breadcrumb: [
               { name: 'Trip', link: '' },
+<<<<<<< HEAD
               { name: 'tripIdPlaceholder', link: '' },
               { name: 'Hauls', link: '' }
+=======
+              { name: 'tripIdPlaceholder', link: ''},
+              { name: 'Hauls', link: ''}
+>>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
             ]
           }
         }
@@ -74,6 +87,7 @@ router.beforeEach((to, from, next) => {
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
+<<<<<<< HEAD
   const validPages = store.getters['appSettings/appConfig'] ?
     store.getters['appSettings/appConfig'].validAppViews : null;
 
@@ -83,6 +97,16 @@ router.beforeEach((to, from, next) => {
     next(false);
   } else {
     next();
+=======
+  const validPages = store.getters['appSettings/appConfig'].validAppViews;
+
+  if (authRequired && !logged) {
+    return next('/login');
+  } else if (to.name && !validPages.includes(to.name)) {
+    next(false);
+  } else {
+     next();
+>>>>>>> 0cf2898d9a728d7d68a97a417fb3c34e3e52c283
   }
 });
 
