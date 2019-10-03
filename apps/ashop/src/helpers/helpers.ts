@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-export var getFormattedValue = function(value: any, type: string, format: string = 'none') {
-    switch(type) {
+export const getFormattedValue: any = (value: any, type: string, format: string = 'none') => {
+    switch (type) {
         case 'number':
             return value;
         case 'float':
@@ -13,4 +13,4 @@ export var getFormattedValue = function(value: any, type: string, format: string
         default:
             return value;
     }
-}
+};
