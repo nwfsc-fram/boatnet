@@ -148,14 +148,24 @@
 
       <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'EM EFP' && !ots.newTarget">
         <q-table
-        title="Affected Vessels"
-        :data="affectedVessels"
-        :columns="vesselColumns"
-        dense
-        row_key="_id"
-        :pagination.sync="pagination"
-        :hide-bottom="this.ots.activeOTSTarget.targetType === 'Vessel'"
+          title="Affected Vessels"
+          :data="affectedVessels"
+          :columns="vesselColumns"
+          dense
+          row_key="_id"
+          :pagination.sync="pagination"
+          :hide-bottom="this.ots.activeOTSTarget.targetType === 'Vessel'"
+          :filter="filter"
         >
+
+        <template v-slot:top-right>
+            <q-input outlined dense debounce="300" color="primary" v-model="filter" label="vessel | id">
+                <template v-slot:append>
+                    <q-icon name="search" />
+                </template>
+            </q-input>
+        </template>
+
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
@@ -265,7 +275,7 @@ export default class OtsTargetDetail extends Vue {
 
   private vesselColumns = [
     { name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
-    { name: 'coastGuardNumber', label: 'Vessel Id', field: 'coastGuardNumber', required: true, align: 'left', sortable: true },
+    { name: 'coastGuardNumber', label: 'Reg #', field: 'coastGuardNumber', required: true, align: 'left', sortable: true },
     { name: 'vesselTrips', label: 'Trips Taken', field: 'vesselTrips', required: true, align: 'left', sortable: true },
     { name: 'selectedTrips', label: 'Selected Trips', field: 'selectedTrips', required: true, align: 'left', sortable: true },
     { name: 'coveredYTD', label: 'Covered YTD (%)', field: 'coveredYTD', required: true, align: 'left', sortable: true },
@@ -277,6 +287,8 @@ export default class OtsTargetDetail extends Vue {
   private otsTargetHistory: any[] = [];
   private emEfpTrips: WcgopTrip[] = [];
   private emEfpRoster: EmEfp[] = [];
+
+  private filter: string = '';
 
   @Watch('ots.activeOTSTarget.targetType')
   private onChange(newVal: any, oldVal: any) {
