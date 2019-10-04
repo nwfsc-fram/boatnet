@@ -44,7 +44,7 @@ export default class BoatnetDatetimePrime extends Vue {
     if (value === 'today') {
       return new Date();
     } else if (value === ('departureDate' || 'returnDate') && this.model[value]) {
-        return new Date(this.model[value])
+        return new Date(this.model[value]);
     } else {
         return null;
     }

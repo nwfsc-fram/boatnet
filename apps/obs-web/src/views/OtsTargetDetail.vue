@@ -105,33 +105,31 @@
                 </q-slider>
               </q-item-section>
             </q-item>
-
           <div class="row items-start">
 
               <q-item>
                 <q-item-section>
 
                   <div class="text-subtitle2" >Effective Date</div>
-                  <q-date
-                      v-model="effectiveDate"
-                      :options="optionsFn"
-                      color="green"
-                      dark
-                      >
-                  </q-date>
+
+                  <pCalendar
+                    v-model="effectiveDate"
+                    :inline="true"
+                  >
+                  </pCalendar>
                 </q-item-section>
               </q-item>
 
               <q-item>
                 <q-item-section>
                   <div class="text-subtitle2">Expiration Date</div>
-                  <q-date
-                      v-model="expirationDate"
-                      color="red"
-                      dark
-                      :options="expirationDateOptionsFn"
-                      >
-                  </q-date>
+
+                  <pCalendar
+                    v-model="expirationDate"
+                    :inline="true"
+                    :minDate="getMinExpiration"
+                  >
+                  </pCalendar>
                   </q-item-section>
               </q-item>
           </div>
@@ -232,6 +230,9 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
 
 @Component
 export default class OtsTargetDetail extends Vue {
@@ -547,37 +548,39 @@ export default class OtsTargetDetail extends Vue {
       }
     }
 
-    get effectiveDate(): string {
+    get effectiveDate(): Date | undefined {
         if (this.ots.activeOTSTarget) {
-            return moment(this.ots.activeOTSTarget.effectiveDate).format('YYYY/MM/DD');
+            return new Date(this.ots.activeOTSTarget.effectiveDate);
         } else {
-          return '';
+          return undefined;
         }
     }
 
-    set effectiveDate(value: string) {
+    set effectiveDate(value) {
         if (this.ots.activeOTSTarget) {
-            this.ots.activeOTSTarget.effectiveDate = value;
+            this.ots.activeOTSTarget.effectiveDate = moment(value).format();
         }
     }
 
-    get expirationDate(): string {
+    get expirationDate(): Date | undefined {
         if (this.ots.activeOTSTarget) {
-            return moment(this.ots.activeOTSTarget.expirationDate).format('YYYY/MM/DD');
+            return new Date(this.ots.activeOTSTarget.expirationDate);
         } else {
-          return '';
+          return undefined;
         }
     }
 
-    set expirationDate(value: string) {
+    set expirationDate(value) {
         if (this.ots.activeOTSTarget) {
-            this.ots.activeOTSTarget.expirationDate = value;
+            this.ots.activeOTSTarget.expirationDate = moment(value).format();
         }
     }
 
-    private expirationDateOptionsFn(val: string) {
+    private get getMinExpiration() {
       if (this.ots.activeOTSTarget && this.ots.activeOTSTarget.effectiveDate) {
-          return moment(val) >= moment(this.ots.activeOTSTarget.effectiveDate);
+        return new Date(this.ots.activeOTSTarget.effectiveDate);
+      } else {
+        return new Date();
       }
     }
 
@@ -620,7 +623,7 @@ export default class OtsTargetDetail extends Vue {
       this.getEMEFP();
 
       this.ots.activeOTSTarget.effectiveDate = moment().format();
-      this.ots.activeOTSTarget.expirationDate = moment().format('YYYY') + '-12-31';
+      this.ots.activeOTSTarget.expirationDate = moment().format('YYYY') + '-12-31T00:00:00-08:00';
 
     }
 
