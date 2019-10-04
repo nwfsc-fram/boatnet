@@ -149,26 +149,6 @@ export default class OtsMangement extends Vue {
 
     private pagination = {rowsPerPage: 0};
 
-    private filter: string = '';
-    private vesselsFilter(rows: any, terms: any, cols: any, cellValue: any) {
-        const lowerFilter = this.filter.toLowerCase();
-        return rows.filter(
-            (row: any) => cols.some( (col: any) => (
-                    console.log(row.targetVessel.vesselName),
-                    (
-                        ( row.targetVessel.vesselName + '' ).toLowerCase().indexOf(lowerFilter) !== -1
-                    )
-                    ||
-                    (
-                        row.targetVessel.coastGuardNumber ?
-                        row.targetVessel.coastGuardNumber.indexOf(lowerFilter) !== -1 :
-                        row.targetVessel.stateRegulationNumber.indexOf(lowerFilter) !== -1
-                    )
-                )
-            )
-        )
-    }
-
     private fisheryColumns: any[] = [
         {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true },
         // {name: 'targetType' ,label: 'Target Type', field: 'targetType', required: true, align: 'left', sortable: true},
@@ -210,6 +190,27 @@ export default class OtsMangement extends Vue {
         {name: 'portExpirationDate', label: 'expirationDate', field: 'expirationDate', required: true, align: 'left', sortable: true},
         {name: 'portStatus', label: 'Status', field: 'status', required: true, align: 'left', sortable: true}
     ];
+
+    private filter: string = '';
+
+    private vesselsFilter(rows: any, terms: any, cols: any, cellValue: any) {
+        const lowerFilter = this.filter.toLowerCase();
+        return rows.filter(
+            (row: any) => cols.some( (col: any) => (
+                    console.log(row.targetVessel.vesselName),
+                    (
+                        ( row.targetVessel.vesselName + '' ).toLowerCase().indexOf(lowerFilter) !== -1
+                    )
+                    ||
+                    (
+                        row.targetVessel.coastGuardNumber ?
+                        row.targetVessel.coastGuardNumber.indexOf(lowerFilter) !== -1 :
+                        row.targetVessel.stateRegulationNumber.indexOf(lowerFilter) !== -1
+                    )
+                )
+            )
+        );
+    }
 
     private async getOtsTargets() {
         const masterDB: Client<any> = couchService.masterDB;

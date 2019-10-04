@@ -20,6 +20,7 @@ export interface TripState {
   trips: WcgopTrip[];
   newTrip?: boolean;
   readOnly?: boolean;
+  index?: any;
 }
 
 export interface PermitState {

@@ -30,6 +30,7 @@
             <pCalendar
               v-model="tripDates"
               :minDate="minDate"
+              :maxDate="maxDate"
               :disabledDates="invalidDates"
               :inline="true"
               :touchUI="false"
@@ -40,50 +41,8 @@
               >
             </pCalendar>
           </span>
-        <!-- <br>
-        Start: {{ getDate(tripDates[0]) }}<br>
-        End: {{ getDate(tripDates[1]) }} -->
         </div>
 
-        <!-- <q-list>
-          <div class="row items-start" >
-            <q-item style="padding: 4px 0">
-              <q-item-section>
-                <div>
-                  <div class="text-subtitle2" :disabled="trip.readOnly">Departure Date</div>
-                  <q-date
-                    class="trip-date"
-                    v-model="departureDate"
-                    :options="startDateOptionsFn"
-                    :default-year-month="startYearMonth"
-                    color="green"
-                    dark
-                    :readonly="trip.readOnly"
-                  >
-                  </q-date>
-                </div>
-              </q-item-section>
-            </q-item>
-          <div style="margin: 8px"></div>
-            <q-item style="padding: 4px 0">
-              <q-item-section>
-                <div>
-                  <div class="text-subtitle2" :disabled="trip.readOnly">Return Date</div>
-                  <q-date
-                    class="trip-date"
-                    v-model="returnDate"
-                    :options="returnDateOptionsFn"
-                    :default-year-month="endYearMonth"
-                    color="red"
-                    dark
-                    :readonly="trip.readOnly"
-                  >
-                  </q-date>
-                </div>
-              </q-item-section>
-            </q-item>
-          </div>
-        </q-list> -->
       <div class="q-pa-md">
 
         <q-select
@@ -219,6 +178,19 @@
           <q-btn color="primary" @click="missingRequired = false" label="ok"/>
         </div>
     </q-dialog>
+
+    <q-dialog v-model="daysWarn">
+      <q-card>
+        <q-card-section>
+        <div class="text-h6">
+          WARNING: Trip start date is less than 48 hours from now!  Observer availability can not be guaranteed.
+        </div>
+        </q-card-section>
+        <q-card-section class="float-right">
+          <q-btn color="primary" @click="daysWarn = false" label="OK"/>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
         <div align="right" class="q-pa-md q-gutter-md">
           <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
@@ -321,35 +293,13 @@ export default class TripDetails extends Vue {
   private endYearMonth: string = moment().format('YYYY/MM');
   private tripDates: any = [];
   private invalidDates: any[] = [];
-  private minDate: any = new Date();
+  private minDate: any = null;
+  private maxDate: any = null;
+  private daysWarn: boolean = false;
 
   constructor() {
     super();
   }
-
-  // private addMessage() {
-  //     if (this.trip.activeTrip) {
-  //         this.trip.activeTrip.messages.push({
-  //                             author: this.user.activeUser ,
-  //                             datetime: moment().format() ,
-  //                             text: this.newMessage
-  //                             });
-  //         this.newMessage = '';
-  //         this.prompt = false;
-  //     }
-  //     }
-
-  // private get tripMessages() {
-  //     if (this.trip.activeTrip) {
-  //         if (this.trip.activeTrip.messages) {
-  //             return this.trip.activeTrip.messages.reverse();
-  //         } else {
-  //             return [];
-  //             }
-  //         } else {
-  //             return [];
-  //         }
-  //     }
 
   private getDate(myDate: string) {
     return moment(myDate).format();
@@ -678,27 +628,27 @@ export default class TripDetails extends Vue {
   //     }
   // }
 
-  get departureDate(): string | undefined {
+  get departureDate(): Date | undefined {
     if (this.trip.activeTrip) {
-      return moment(this.trip.activeTrip.departureDate).format('YYYY/MM/DD');
+      return new Date(moment(this.trip.activeTrip.departureDate).format());
     }
   }
 
   set departureDate(value) {
     if (this.trip.activeTrip) {
-      this.trip.activeTrip.departureDate = moment(this.tripDates[0]).format('YYYY/MM/DD');
+      this.trip.activeTrip.departureDate = moment(this.tripDates[0]).format();
     }
   }
 
-  get returnDate(): string | undefined {
+  get returnDate(): Date | undefined {
     if (this.trip.activeTrip) {
-      return moment(this.trip.activeTrip.returnDate).format('YYYY/MM/DD');
+      return new Date(moment(this.trip.activeTrip.returnDate).format());
     }
   }
 
   set returnDate(value) {
     if (this.trip.activeTrip) {
-      this.trip.activeTrip.returnDate = moment(this.tripDates[1]).format('YYYY/MM/DD');
+      this.trip.activeTrip.returnDate = moment(this.tripDates[1]).format();
     }
   }
 
@@ -717,6 +667,40 @@ export default class TripDetails extends Vue {
   //     }
   //   }
   // }
+
+  private async getMaxDate() {
+    if (this.trip.index === 0) {
+    const db = pouchService.db;
+    const docs = await db.allDocs(pouchService.userDBName);
+
+    for (const row of docs.rows) {
+      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+        if (row.doc.tripStatus.description === 'open') {
+          this.maxDate = new Date(moment(row.doc.departureDate).add(1, 'days').format());
+        }
+      }
+    }
+  }
+}
+
+private async getMinDate() {
+  if (this.trip.index === 1) {
+    const db = pouchService.db;
+    const docs = await db.allDocs(pouchService.userDBName);
+
+    for (const row of docs.rows) {
+      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+        if (row.doc.tripStatus.description === 'open') {
+          this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
+        }
+      }
+    }
+  } else if (this.trip.newTrip) {
+    this.minDate = new Date();
+  } else {
+    this.minDate = undefined;
+  }
+}
 
   private async getBookedDates() {
     const db = pouchService.db;
@@ -824,6 +808,8 @@ export default class TripDetails extends Vue {
   }
 
   private created() {
+    this.getMaxDate();
+    this.getMinDate();
     this.getOtsTargets();
     // this.getLatestDepartureDate();
     this.getBookedDates();
@@ -839,27 +825,31 @@ export default class TripDetails extends Vue {
     if (this.trip.activeTrip!.returnDate) {
       this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
     }
+
   }
 
-  @Watch('departureDate')
-  private handler1(newVal: string, oldVal: string) {
-    this.endYearMonth = moment(newVal).format('YYYY/MM');
-    if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
-      this.returnDate = newVal;
-    }
-    console.log(this.returnDate);
-    if (this.returnDate === 'Invalid date') {
-      Vue.set(this, 'returnDate', newVal);
-      }
-  }
+  // @Watch('departureDate')
+  // private handler1(newVal: string, oldVal: string) {
+  //   this.endYearMonth = moment(newVal).format('YYYY/MM');
+  //   if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
+  //     this.returnDate = newVal;
+  //   }
+  //   console.log(this.returnDate);
+  //   if (this.returnDate === 'Invalid date') {
+  //     Vue.set(this, 'returnDate', newVal);
+  //     }
+  // }
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
     if (newVal[0]) {
-      this.trip.activeTrip!.departureDate = newVal[0];
+      if (moment(newVal[0]).diff(moment(), 'days') < 2 && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()) {
+        this.daysWarn = true;
+      }
+      this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
     }
     if (newVal[1]) {
-      this.trip.activeTrip!.returnDate = newVal[1];
+      this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
     }
     if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
       this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
