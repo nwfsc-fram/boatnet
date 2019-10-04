@@ -67,7 +67,7 @@ import { CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
-import { loginConfig } from '../helpers/loginConfig';
+import { loginConfigValues } from '../helpers/loginConfig';
 
 import { Quasar } from 'quasar';
 
@@ -91,9 +91,8 @@ export default class Login extends Vue {
   @Action('clear', { namespace: 'tripsState' }) private clearTripsState: any;
 
   private loginConfig!: any;
-
-  @Getter('appConfig', { namespace: 'appSettings' })
-  private appConfig!: BoatnetConfig;
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
 
   private username = '';
   private password = '';
@@ -132,7 +131,7 @@ export default class Login extends Vue {
   }
 
   private created() {
-    this.loginConfig = loginConfig.wcgop;
+    this.loginConfig = loginConfigValues[this.appMode.toString()];
     this.loginConfig.statInfo['Last Software Update Date'] = '-';
     this.loginConfig.statInfo['Last Data Sync'] = this.lastDataSyncDate;
     this.loginConfig.statInfo['Last Login Date'] = '-';
