@@ -32,28 +32,26 @@
                 <q-item>
                     <q-item-section>
                     <div class="text-subtitle2" >Start Date</div>
-                    <q-date
-                        style="width: 100%"
-                        v-model="obact.activeActivity.startDate"
-                        :options="startOptionsFn"
-                        color="green"
-                        dark
-                        >
-                    </q-date>
+
+                    <pCalendar
+                        v-model="activityStartDate"
+                        :inline="true"
+                        :minDate="minStartDate"
+                    >
+                    </pCalendar>
                     </q-item-section>
                 </q-item>
 
                 <q-item>
                     <q-item-section>
                     <div class="text-subtitle2">End Date</div>
-                    <q-date
-                        style="width: 100%"
-                        v-model="obact.activeActivity.endDate"
-                        :options="endOptionsFn"
-                        color="red"
-                        dark
-                        >
-                    </q-date>
+                    <pCalendar
+                        v-model="activityEndDate"
+                        :inline="true"
+                        :minDate="minEndDate"
+                    >
+                    </pCalendar>
+
                     </q-item-section>
                 </q-item>
                 </div>
@@ -80,6 +78,9 @@ import moment from 'moment';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
 
 @Component
 export default class ActivityDetail extends Vue {
@@ -110,12 +111,43 @@ private selectText(event: any) {
     event.target.select();
 }
 
-private startOptionsFn(val: string) {
-    return moment(val) >= moment().subtract(1, 'days');
+private get activityStartDate() {
+    if (this.obact.activeActivity.startDate) {
+        return new Date(this.obact.activeActivity.startDate);
+    } else {
+        return undefined;
+    }
 }
 
-private endOptionsFn(val: string) {
-    return moment(val) >= moment().subtract(1, 'days') && moment(val) >= moment(this.obact.activeActivity.startDate);
+private set activityStartDate(startDate) {
+    this.obact.activeActivity.startDate = startDate;
+    if (moment(this.obact.activeActivity.startDate) > moment(this.obact.activeActivity.endDate)) {
+        this.obact.activeActivity.endDate = undefined;
+    }
+}
+
+private get activityEndDate() {
+    if (this.obact.activeActivity.endDate) {
+        return new Date(this.obact.activeActivity.endDate);
+    } else {
+        return undefined;
+    }
+}
+
+private set activityEndDate(endDate) {
+    this.obact.activeActivity.endDate = endDate;
+}
+
+private get minStartDate() {
+    return new Date();
+}
+
+private get minEndDate() {
+    if (this.obact.activeActivity.startDate) {
+        return new Date(this.obact.activeActivity.startDate);
+    } else {
+        return undefined;
+    }
 }
 
 private updateActivity() {

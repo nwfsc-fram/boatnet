@@ -180,6 +180,8 @@ export default class ObserverAssignment extends Vue {
             type: ObserverActivityTypeName,
             createdBy: authService.getCurrentUser()!.username,
             createdDate: moment().format(),
+            startDate: undefined,
+            endDate: undefined
             };
         this.obact.activeActivity = newActivity;
         this.obact.isNewActivity = true;
