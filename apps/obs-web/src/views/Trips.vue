@@ -60,9 +60,9 @@
           </div>
         </q-card-section>
         <q-card-actions>
-          <q-btn flat @click="getTripDetails(trip)">Edit</q-btn>
-          <q-btn flat @click="closeConfirm(trip)">Close</q-btn>
-          <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
+          <q-btn flat @click="getTripDetails(trip, i)">Edit</q-btn>
+          <q-btn v-if="i === 0" flat @click="closeConfirm(trip)">Close</q-btn>
+          <q-btn v-if="i === 0" flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
     </div>
@@ -127,7 +127,8 @@
     <q-dialog v-model="cancelAlert">
       <q-card>
         <q-card-section>
-          <p>Are you sure?  A trip can not be un-cancelled. <br>(You may need to create it again)</p>
+          <p>Are you sure?  A trip can not be un-cancelled. (You may need to create it again)
+          <br><br>Note: Cancelled trip selection will be applied to the next trip in the same fishery.</p>
           <div style="float: right">
             <q-btn color="red" size="md" @click="cancelActiveTrip">yes, cancel trip</q-btn>
             &nbsp;
@@ -205,30 +206,31 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
-@Component({
-  pouch: {
-    userTrips() { // Also declared in class
-      return {
-        database: pouchService.userDBName,
-        selector: { type: 'wcgop-trip' },
-        sort: [{ tripNum: 'desc' }]
-        // limit: 5 // this.resultsPerPage,
-      };
-    }
-  }
-})
+@Component
+// ({
+//   pouch: {
+//     userTrips() { // Also declared in class
+//       return {
+//         database: pouchService.userDBName,
+//         selector: { type: 'wcgop-trip' },
+//         sort: [{ tripNum: 'desc' }]
+//         // limit: 5 // this.resultsPerPage,
+//       };
+//     }
+//   }
+// })
 export default class Trips extends Vue {
   @State('trip') private trip!: TripState;
-    @State('vessel') private vessel!: VesselState;
-    @State('user') private user!: UserState;
-    @State('appState') private appState!: WcgopAppState;
-    @State('pouchState') private pouchState!: PouchDBState;
+  @State('vessel') private vessel!: VesselState;
+  @State('user') private user!: UserState;
+  @State('appState') private appState!: WcgopAppState;
+  @State('pouchState') private pouchState!: PouchDBState;
 
   @State('alert') private alert!: AlertState;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
-  private userTrips!: any;
+  private userTrips: any = [];
   private vessels = [];
   private maxTripsAlert = false;
   private cancelAlert = false;
@@ -251,15 +253,15 @@ export default class Trips extends Vue {
       super();
   }
 
-  public get userDBTrips() {
-    // TODO: This seems to block the UI - handle asyn
-    // console.log('Called userDBTrips');
-    if (this.userTrips) {
-      return this.userTrips;
-    } else {
-      return [];
-    }
-  }
+  // public get userDBTrips() {
+  //   // TODO: This seems to block the UI - handle asyn
+  //   // console.log('Called userDBTrips');
+  //   if (this.userTrips) {
+  //     return this.userTrips;
+  //   } else {
+  //     return [];
+  //   }
+  // }
   private get currentReadonlyDB(): string {
     if (!this.pouchState.credentials) {
       console.warn('WARNING: current RO db is undefined');
@@ -285,18 +287,22 @@ export default class Trips extends Vue {
 
     private get openTrips() {
       if (this.vessel.activeVessel) {
-        return this.userDBTrips.filter(
+        console.log(this.vessel.activeVessel);
+        return this.userTrips
+        .filter(
           (trip: any) => {
             if (trip.vessel && trip.tripStatus && this.vessel.activeVessel) {
+
               const tripVesselReg = trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-              return trip.tripStatus.description === 'open' &&
+              return trip.tripStatus.description === 'open'
+              &&
               tripVesselReg === activeVesselReg;
               }
-            }
-          ).sort((a: any, b: any) => {
+            })
+            .sort((a: any, b: any) => {
             const keyA = moment(a.departureDate);
-            const keyB = moment(a.returnDate);
+            const keyB = moment(b.returnDate);
             if (keyA < keyB) {
               return -1;
             }
@@ -304,7 +310,7 @@ export default class Trips extends Vue {
               return 1;
             }
             return 0;
-          });
+            });
       } else {
         return [];
       }
@@ -312,9 +318,10 @@ export default class Trips extends Vue {
 
     private get closedTrips() {
       if (this.vessel.activeVessel) {
-        return this.userDBTrips.filter(
+        return this.userTrips.filter(
           (trip: any) => {
             if (trip.vessel && trip.tripStatus && this.vessel.activeVessel) {
+
               const tripVesselReg = trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
               const activeVesselReg = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
               return trip.tripStatus.description !== 'open' &&
@@ -323,7 +330,7 @@ export default class Trips extends Vue {
           }
         ).sort((a: any, b: any) => {
             const keyA = moment(a.departureDate);
-            const keyB = moment(a.returnDate);
+            const keyB = moment(b.returnDate);
             if (keyA < keyB) {
               return -1;
             }
@@ -452,18 +459,23 @@ export default class Trips extends Vue {
     private cancelActiveTrip() {
       this.activeTrip!.closingReason = 'cancelled';
 
-      // store record of trip selection - for use next time.
-      const tripSelection: TripSelection = {
-        type: 'trip-selection',
-        vessel: this.activeTrip.vessel,
-        isSelected: this.activeTrip.isSelected,
-        fishery: this.activeTrip.fishery,
-        permits: this.activeTrip.permits,
-        isActive: true,
-        notes: this.activeTrip.notes
-      };
+      if (this.openTrips.length > 1) {
+        this.openTrips[1].isSelected = this.activeTrip.isSelected;
+        pouchService.db.post(pouchService.userDBName, this.openTrips[1]);
+      } else {
+        // store record of trip selection - for use next time.
+        const tripSelection: TripSelection = {
+          type: 'trip-selection',
+          vessel: this.activeTrip.vessel,
+          isSelected: this.activeTrip.isSelected,
+          fishery: this.activeTrip.fishery,
+          permits: this.activeTrip.permits,
+          isActive: true,
+          notes: this.activeTrip.notes
+        };
 
-      pouchService.db.post(pouchService.userDBName, tripSelection);
+        pouchService.db.post(pouchService.userDBName, tripSelection);
+      }
 
       this.closeTrip(this.activeTrip);
       this.cancelAlert = false;
@@ -485,13 +497,13 @@ export default class Trips extends Vue {
       this.$router.push({path: '/trips/' + trip.tripNum});
     }
 
-    private getTripDetails(trip: any) {
+    private getTripDetails(trip: any, index = null) {
         // this.$store.dispatch('updateActiveTrip', trip);
         // this.$store.state.activeTrip = this.trips[i];
         this.trip.activeTrip = trip;
         this.trip.newTrip = false;
         this.trip.readOnly = false;
-        console.log(this.trip.activeTrip);
+        this.trip.index = index;
         this.$router.push({path: '/trips/' + trip.tripNum});
       }
 
@@ -499,8 +511,11 @@ export default class Trips extends Vue {
       let newTripNum = 1;
 
       try {
-        newTripNum = this.userDBTrips[0].tripNum + 1;
-
+        for (const userTrip of this.userTrips) {
+          if (userTrip.tripnum > newTripNum) {
+            newTripNum = userTrip.tripNum + 1;
+          }
+        }
       } catch (err) {
         newTripNum = 1;
       }
@@ -509,6 +524,7 @@ export default class Trips extends Vue {
                             createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
                             createdDate: moment().format(),
                             type: 'wcgop-trip',
+                            tripNum: newTripNum,
                             vessel: this.vessel.activeVessel!,
                             // permits: [],
                             // messages: [],
@@ -547,8 +563,10 @@ private computedTripClass(trip: WcgopTrip) {
 }
 
 private setActiveVessel() {
-  if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
-    this.vessel.activeVessel = this.user.activeUser.activeVessel;
+  if (!this.vessel.activeVessel) {
+    if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
+      this.vessel.activeVessel = this.user.activeUser.activeVessel;
+    }
   }
 }
 
@@ -564,6 +582,11 @@ private setActiveVessel() {
 //     }
 // }
 
+@Watch('vessel.activeVessel')
+private handler3(newVal: string, oldVal: string) {
+  this.getUserTrips();
+}
+
 @Watch('tripDates')
 private handler2(newVal: string, oldVal: string) {
   if (newVal[0]) {
@@ -574,8 +597,19 @@ private handler2(newVal: string, oldVal: string) {
   }
 }
 
+private async getUserTrips() {
+    const db = pouchService.db;
+    const docs = await db.allDocs(pouchService.userDBName);
+    const rows = docs.rows;
+
+    this.userTrips = rows.filter( (row: any) => row.doc.type === 'wcgop-trip' );
+    this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
+    console.log(this.userTrips);
+}
+
 private created() {
   this.setActiveVessel();
+  this.getUserTrips();
   if ( authService.getCurrentUser() ) {
     this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
   }
