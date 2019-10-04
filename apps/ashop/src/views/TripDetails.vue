@@ -22,6 +22,7 @@
                 label="Skipper's Name"
                 keyboardType="compact"
                 dense
+                :list="list"
               />
 
   </div>
@@ -80,12 +81,14 @@ export default class Trips extends Vue {
  @Getter('appConfig', { namespace: 'appSettings' })
   private appConfig!: BoatnetConfig;
 
-  private name:string = '';
+  private name: string = '';
 
   private tripDetailsSettings: any = {};
   private mode: string = '';
 
   private trip = {};
+
+  private list: string[] = ['baby shark', 'mama shark', 'daddy shark', 'nemo', 'dori', 'whale'];
 
   constructor() {
     super();

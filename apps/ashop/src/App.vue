@@ -5,6 +5,7 @@
       :visible.sync="keyboardStatus"
       :layout="keyboard.keyboardType"
       :input="keyboard.keyboardInputTarget"
+      :list="list"
       @next="next"
     />
   </div>
@@ -24,6 +25,8 @@ export default class App extends Vue {
   private setKeyboard: any;
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
+  @Getter('list', { namespace: 'keyboard' })
+  private list!: string;
 
   private mounted() {
     document.addEventListener('click', () => {

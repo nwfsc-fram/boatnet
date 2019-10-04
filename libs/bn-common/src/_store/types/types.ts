@@ -27,6 +27,7 @@ export interface KeyboardState {
     showKeyboard?: boolean;
     keyboardType?: string;
     keyboardInputTarget?: any;
+    list?: string[];
     input?: string;
 }
 

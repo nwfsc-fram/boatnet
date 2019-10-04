@@ -20,10 +20,7 @@ import { Action, Getter } from 'vuex-class';
 
 @Component
 export default class BoatnetKeyboard extends Vue {
-  @Prop({ default: function() {
-    return ['fish1', 'shark', 'fish3', 'fish4', 'nemo', 'dori'];
-  }}) public list!: string[];
-
+  @Prop() public list!: string[];
   @Action('setInput', { namespace: 'keyboard' })
   private setInput: any;
   @Getter('input', { namespace: 'keyboard' })
@@ -52,7 +49,7 @@ export default class BoatnetKeyboard extends Vue {
 
 .list {
   position: absolute;
-  right: 210px;
+  right: 100px;
   bottom: 0;
   z-index: 10000;
   height: 200px;

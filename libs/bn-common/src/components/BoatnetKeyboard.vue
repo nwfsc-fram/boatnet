@@ -30,7 +30,9 @@
       :input="input"
       :next="next"
     />
-    <boatnet-keyboard-list  />
+    <div v-if="list != null">
+      <boatnet-keyboard-list :list="list"/>
+    </div>
   </div>
 </template>
 
@@ -42,6 +44,7 @@ export default class BoatnetKeyboard extends Vue {
   @Prop({ default: 'normal' }) public layout!: string;
   @Prop({ default: true }) public visible!: boolean;
   @Prop() public input!: any;
+  @Prop() public list!: string[];
 
   private keyboardOptions = {
     useKbEvents: false,
@@ -65,7 +68,7 @@ export default class BoatnetKeyboard extends Vue {
 <style scoped>
 .keyboard {
   position: absolute;
-  left: 250px;
+  left: 100px;
   bottom: 0;
 
   z-index: 10000;
