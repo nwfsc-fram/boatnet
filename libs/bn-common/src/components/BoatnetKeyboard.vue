@@ -30,6 +30,7 @@
       :input="input"
       :next="next"
     />
+    <boatnet-keyboard-list  />
   </div>
 </template>
 
@@ -63,13 +64,13 @@ export default class BoatnetKeyboard extends Vue {
 
 <style scoped>
 .keyboard {
-  position: fixed;
-  left: 0;
-  right: 0;
+  position: absolute;
+  left: 250px;
   bottom: 0;
 
   z-index: 10000;
   width: 100%;
+  height: 200px;
 
   margin: 0 auto;
   padding: 1em;

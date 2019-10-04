@@ -17,6 +17,13 @@
       Trip Details: {{ trip }}
     </div>
 
+    <boatnet-keyboard-input
+                :value.sync="name"
+                label="Skipper's Name"
+                keyboardType="compact"
+                dense
+              />
+
   </div>
 </template>
 
@@ -72,6 +79,8 @@ export default class Trips extends Vue {
 
  @Getter('appConfig', { namespace: 'appSettings' })
   private appConfig!: BoatnetConfig;
+
+  private name:string = '';
 
   private tripDetailsSettings: any = {};
   private mode: string = '';

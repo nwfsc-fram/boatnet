@@ -1,20 +1,21 @@
 import Vue from 'vue';
+import BoatnetAddSpeciesDialog from './components/BoatnetAddSpeciesDialog.vue';
 import BoatnetButtonToggle from './components/BoatnetButtonToggle.vue';
+import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
 import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
 import BoatnetFishTickets from './components/BoatnetFishTickets.vue';
-import BoatnetKeyboardInput from './components/BoatnetKeyboardInput.vue';
-import BoatnetKeyboardSelect from './components/BoatnetKeyboardSelect.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
+import BoatnetKeyboardInput from './components/BoatnetKeyboardInput.vue';
+import BoatnetKeyboardList from './components/BoatnetKeyboardList.vue';
+import BoatnetKeyboardSelect from './components/BoatnetKeyboardSelect.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
 import BoatnetLocations from './components/BoatnetLocations.vue';
 import BoatnetSummary from './components/BoatnetSummary.vue';
 import BoatnetTable from './components/BoatnetTable.vue';
 import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
-import BoatnetAddSpeciesDialog from './components/BoatnetAddSpeciesDialog.vue';
-import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
 
 import BoatnetLogin from './views/BoatnetLogin.vue';
@@ -28,23 +29,24 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
 const Components: any = {
+  BoatnetAddSpeciesDialog,
   BoatnetButtonToggle,
+  BoatnetCustomKeyboard,
   BoatnetDate,
   BoatnetDatetime,
   BoatnetDeleteDialog,
   BoatnetFishTickets,
-  BoatnetKeyboardInput,
-  BoatnetKeyboardSelect,
   BoatnetInputDialog,
   BoatnetKeyboard,
+  BoatnetKeyboardInput,
+  BoatnetKeyboardList,
+  BoatnetKeyboardSelect,
   BoatnetLicenses,
   BoatnetLocations,
   BoatnetLogin,
   BoatnetSummary,
   BoatnetTable,
   BoatnetTabPanel,
-  BoatnetAddSpeciesDialog,
-  BoatnetCustomKeyboard,
   BoatnetTreeTable,
   DefaultLayout,
   BoatnetDatetimePrime

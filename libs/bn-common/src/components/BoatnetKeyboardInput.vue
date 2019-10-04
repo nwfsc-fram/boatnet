@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action } from 'vuex-class';
+import { State, Action, Getter } from 'vuex-class';
 
 @Component
 export default class BoatnetKeyboardInput extends Vue {
@@ -37,20 +37,26 @@ export default class BoatnetKeyboardInput extends Vue {
   private setKeyboard: any;
   @Action('setKeyboardType', { namespace: 'keyboard' })
   private setKeyboardType: any;
-  @Action('setKeyboardInput', { namespace: 'keyboard' })
-  private setKeyboardInput: any;
+  @Action('setKeyboardInputTarget', { namespace: 'keyboard' })
+  private setKeyboardInputTarget: any;
+  @Action('setInput', { namespace: 'keyboard' })
+  private setInput: any;
+  @Getter('input', { namespace: 'keyboard' })
+  private input!: string;
 
   get valueHolder() {
+    this.value = this.input;
     return this.value;
   }
   set valueHolder(val: any) {
+    this.setInput(val);
     this.$emit('update:value', val);
   }
 
   private displayKeyboard(event: any) {
     this.setKeyboard(true);
     this.setKeyboardType(this.keyboardType);
-    this.setKeyboardInput(event.target);
+    this.setKeyboardInputTarget(event.target);
   }
 
   private save() {

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { KeyboardState, RootState } from './types/types';
 
 Vue.use(Vuex);
@@ -7,7 +7,8 @@ Vue.use(Vuex);
 const state: KeyboardState = {
     showKeyboard: false,
     keyboardType: 'normal',
-    keyboardInputTarget: undefined
+    keyboardInputTarget: undefined,
+    input: ''
 };
 
 const actions: ActionTree<KeyboardState, RootState> = {
@@ -17,8 +18,12 @@ const actions: ActionTree<KeyboardState, RootState> = {
       setKeyboardType({ commit }: any, type: string) {
         commit('setKeyboardType', type);
       },
-      setKeyboardInput({ commit }: any, input: any) {
-        commit('setKeyboardInput', input);
+      setKeyboardInputTarget({ commit }: any, target: any) {
+        commit('setKeyboardInputTarget', target);
+        commit('setInput', '');
+      },
+      setInput({ commit }: any, input: string) {
+        commit('setInput', input);
       },
 };
 
@@ -29,14 +34,24 @@ const mutations: MutationTree<KeyboardState> = {
     setKeyboardType(newState: any, type: string) {
         newState.keyboardType = type;
     },
-    setKeyboardInput(newState: any, input: any) {
-        newState.keyboardInputTarget = input;
+    setKeyboardInputTarget(newState: any, target: any) {
+        newState.keyboardInputTarget = target;
     },
+    setInput(newState: any, input: string) {
+        newState.input = input;
+    },
+};
+
+const getters: GetterTree<KeyboardState, RootState> = {
+    input(getState: KeyboardState) {
+      return getState.input;
+    }
 };
 
 export const keyboard: Module<KeyboardState, RootState> = {
     namespaced: true,
     state,
     actions,
-    mutations
+    mutations,
+    getters
 };
