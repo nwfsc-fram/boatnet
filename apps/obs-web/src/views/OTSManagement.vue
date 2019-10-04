@@ -61,7 +61,18 @@
         :pagination.sync='pagination'
         hide-bottom
         class="bg-blue-grey-1"
+        :filter="filter"
+        :filter-method="vesselsFilter"
         >
+
+        <template v-slot:top-right>
+            <q-input outlined dense debounce="300" color="primary" v-model="filter" label="vessel | reg">
+                <template v-slot:append>
+                    <q-icon name="search" />
+                </template>
+            </q-input>
+        </template>
+
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
                 <q-td key='vesselFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
@@ -137,6 +148,26 @@ export default class OtsMangement extends Vue {
     private otsTargets: OTSTarget[] = [];
 
     private pagination = {rowsPerPage: 0};
+
+    private filter: string = '';
+    private vesselsFilter(rows: any, terms: any, cols: any, cellValue: any) {
+        const lowerFilter = this.filter.toLowerCase();
+        return rows.filter(
+            (row: any) => cols.some( (col: any) => (
+                    console.log(row.targetVessel.vesselName),
+                    (
+                        ( row.targetVessel.vesselName + '' ).toLowerCase().indexOf(lowerFilter) !== -1
+                    )
+                    ||
+                    (
+                        row.targetVessel.coastGuardNumber ?
+                        row.targetVessel.coastGuardNumber.indexOf(lowerFilter) !== -1 :
+                        row.targetVessel.stateRegulationNumber.indexOf(lowerFilter) !== -1
+                    )
+                )
+            )
+        )
+    }
 
     private fisheryColumns: any[] = [
         {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true },
