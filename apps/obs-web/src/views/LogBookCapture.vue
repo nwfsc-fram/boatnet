@@ -10,8 +10,18 @@
         </q-banner>
 
         <div>
-            <input type="file" accept="image/*" capture>
+            <input @change="handleImage($event)" type="file" accept="image/*" capture>
         </div>
+
+        <div>
+            <img v-if="file" :src="fileUrl" style="width: 300px">
+        </div>
+
+        <q-btn v-if="file" color="primary" label="submit" @click="submitImage"></q-btn>
+
+
+        <q-btn label="get images" @click="getImages"></q-btn>
+        <div id="imagesholder"></div>
 
     </div>
 
@@ -22,8 +32,15 @@
 import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { TripState, PermitState, UserState, VesselState, AlertState } from '../_store/types/types';
+
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+
+import moment from 'moment';
 
 @Component
 export default class LogBookCapture extends Vue {
@@ -36,6 +53,67 @@ export default class LogBookCapture extends Vue {
     @Action('error', { namespace: 'alert' }) private errorAlert: any;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
+    private file: any = null;
+    private fileUrl: any = null;
+
+    private dbImage: any = null;
+    private dbImageUrl: any = null;
+
+    private handleImage(event: any) {
+        this.file = event!.target!.files[0];
+        this.fileUrl = URL.createObjectURL(this.file);
+        console.log(this.file);
+    }
+
+    private submitImage() {
+
+        const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
+
+        const newImage = {
+            createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+            createdDate: moment().format(),
+            type: 'logbook-capture',
+            _attachments: {
+                [fileName] : {
+                    content_type: this.file.type,
+                    data: this.file
+                }
+            }
+        };
+
+        pouchService.db.post(pouchService.userDBName, newImage);
+
+    }
+
+    private async getImages() {
+        const docs = await pouchService.db.allDocs(pouchService.userDBName, {attachments: true} );
+        for (const row of docs.rows) {
+            if (row.doc.type === 'logbook-capture') {
+                const filename = Object.keys(row.doc._attachments)[0];
+                console.log(row.doc._attachments[filename].data);
+
+                const byteCharacters = atob(row.doc._attachments[filename].data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: row.doc._attachments[filename].content_type});
+
+                // this.dbImage = blob;
+                // this.dbImageUrl = URL.createObjectURL(blob);
+
+                const url = URL.createObjectURL(blob);
+                const img = document.createElement('img');
+                img.width = 300;
+                img.src = url;
+
+                document.getElementById('imagesholder')!.appendChild(img);
+
+                // this.dbImageUrl = URL.createObjectURL(this.dbImage);
+            }
+        }
+    }
 
 }
 </script>
