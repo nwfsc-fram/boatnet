@@ -25,7 +25,7 @@ A dev-only auth server for use with developing boatnet apps without connecting t
     }
 }
 ```
-Note that you can create multiple users since devUsers is an array.
+Note that you can create multiple users since devUsers is an array. In order to talk to CouchDB, you will want to replace "test" with a real CouchDB user (e.g. seabass-test)
 
 For NWFSC intranet dev,
 ```
