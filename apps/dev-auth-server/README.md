@@ -6,22 +6,34 @@ A dev-only auth server for use with developing boatnet apps without connecting t
 ### Getting Started
 - Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file.
 - Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials.
-- You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g.
+- You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g. 
 ```
-"couchDBInfo": {
-  "urlRoot": "http://localhost:5984",
-  "lookupsDB": "my-lookups-db",
-  "masterDB": "my-big-db",
-
+{
+  "devUsers": [
+    {
+      "username": "test",
+      "password": "test",
+      "applicationName": "BOATNET_OBSERVER",
+      "userData": {
+        "roles": ["observer"],
+        "couchDBInfo": {
+          "urlRoot": "http://localhost:5984",
+          "lookupsDB": "lookups-dev",
+          "masterDB": "master-dev"
+        }
+      }
+    }
 }
 ```
-or for intranet dev,
+Note that you can create multiple users since devUsers is an array.
+
+For NWFSC intranet dev,
 ```
-"couchDBInfo": {
+...
   "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
   "lookupsDB": "lookups-dev",
   "masterDB": "master-dev"
-}
+...
 ```
 - Launch the auth server by navigating to apps/dev-auth-server directory and run `yarn serve`. This will start an HTTPS (self-signed) dev auth server running on port 9000.
 
