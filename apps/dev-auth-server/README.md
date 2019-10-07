@@ -4,6 +4,7 @@
 A dev-only auth server for use with developing boatnet apps without connecting to a live auth server.
 
 ### Getting Started
+- ```yarn install``` from the apps/dev-auth-server folder
 - Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file.
 - Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials.
 - You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g. 
