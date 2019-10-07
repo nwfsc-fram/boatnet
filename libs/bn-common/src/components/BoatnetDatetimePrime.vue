@@ -24,9 +24,9 @@ Vue.component('pCalendar', Calendar);
 
 @Component
 export default class BoatnetDatetimePrime extends Vue {
-  @Prop() private config!: string;
+  @Prop() private config!: any;
   @Prop() private date!: string;
-  @Prop() private model!: string;
+  @Prop() private model!: any;
 
   get dateVal() {
     if (this.date) {
