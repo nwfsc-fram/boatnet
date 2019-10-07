@@ -62,7 +62,7 @@
         <q-card-actions>
           <q-btn flat @click="getTripDetails(trip, i)">Edit</q-btn>
           <q-btn v-if="i === 0" flat @click="closeConfirm(trip)">Close</q-btn>
-          <q-btn v-if="i === 0" flat @click="cancelTrip(trip)">Cancel</q-btn>
+          <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
     </div>
