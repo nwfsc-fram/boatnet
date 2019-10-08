@@ -17,12 +17,29 @@
       Trip Details: {{ trip }}
     </div>
 
+<div>
     <boatnet-keyboard-input
                 :value.sync="name"
                 label="Skipper's Name"
                 keyboardType="compact"
                 dense
                 :list="list"
+              />
+              </div>
+
+               <boatnet-keyboard-input
+                :value.sync="name2"
+                label="Name"
+                keyboardType="numeric"
+                dense
+                :list="numericList"
+              />
+
+              <boatnet-keyboard-input
+                :value.sync="name23"
+                label="Name again"
+                keyboardType="numeric"
+                dense
               />
 
   </div>
@@ -82,6 +99,8 @@ export default class Trips extends Vue {
   private appConfig!: BoatnetConfig;
 
   private name: string = '';
+  private name2: string = '';
+  private name23: string = '';
 
   private tripDetailsSettings: any = {};
   private mode: string = '';
@@ -89,6 +108,7 @@ export default class Trips extends Vue {
   private trip = {};
 
   private list: string[] = ['baby shark', 'mama shark', 'daddy shark', 'nemo', 'dori', 'whale'];
+  private numericList: string[] = ['1', 'two', 'three', '4', 'five', 'six'];
 
   constructor() {
     super();

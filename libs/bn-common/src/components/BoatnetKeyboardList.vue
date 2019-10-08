@@ -19,23 +19,23 @@ import { stringify } from 'querystring';
 import { Action, Getter } from 'vuex-class';
 
 @Component
-export default class BoatnetKeyboard extends Vue {
+export default class BoatnetKeyboardList extends Vue {
   @Prop() public list!: string[];
-  @Action('setInput', { namespace: 'keyboard' })
-  private setInput: any;
-  @Getter('input', { namespace: 'keyboard' })
-  private input!: string;
+  @Prop() public value!: string;
+  private selectedValue: string = '';
 
-  private selectedValue: string = 'inbox';
+  @Action('setValueSelected', { namespace: 'keyboard' })
+  private setValueSelected: any;
 
   private setSelected(value: string) {
     this.selectedValue = value;
-    this.setInput(value);
+    this.$emit('selected', value);
+    this.setValueSelected(true);
   }
 
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
-      item.toLowerCase().includes(this.input.toLowerCase())
+      item.toLowerCase().includes(this.value.toLowerCase())
     ).slice(0, 4);
   }
 }

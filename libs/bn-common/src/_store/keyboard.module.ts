@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { KeyboardState, RootState } from './types/types';
 
 Vue.use(Vuex);
@@ -8,8 +8,9 @@ const state: KeyboardState = {
   showKeyboard: false,
   keyboardType: 'normal',
   keyboardInputTarget: undefined,
-  list: undefined,
-  input: ''
+  activeFieldName: '',
+  valueSelected: false,
+  next: undefined
 };
 
 const actions: ActionTree<KeyboardState, RootState> = {
@@ -21,13 +22,15 @@ const actions: ActionTree<KeyboardState, RootState> = {
   },
   setKeyboardInputTarget({ commit }: any, target: any) {
     commit('setKeyboardInputTarget', target);
-    commit('setInput', '');
   },
-  setList({ commit }: any, list: string[]) {
-    commit('setList', list);
+  setActiveFieldName({ commit }: any, activeFieldName: string) {
+    commit('setActiveFieldName', activeFieldName);
   },
-  setInput({ commit }: any, input: string) {
-    commit('setInput', input);
+  setValueSelected({ commit }: any, selectedValue: boolean) {
+    commit('setValueSelected', selectedValue);
+  },
+  setNext({ commit }: any, next: any) {
+    commit('setNext', next);
   },
 };
 
@@ -41,20 +44,14 @@ const mutations: MutationTree<KeyboardState> = {
   setKeyboardInputTarget(newState: any, target: any) {
     newState.keyboardInputTarget = target;
   },
-  setList(newState: any, list: string[]) {
-    newState.list = list;
+  setActiveFieldName(newState: any, activeFieldName: string) {
+    newState.activeFieldName = activeFieldName;
   },
-  setInput(newState: any, input: string) {
-    newState.input = input;
+  setValueSelected(newState: any, selectedValue: boolean) {
+    newState.valueSelected = selectedValue;
   },
-};
-
-const getters: GetterTree<KeyboardState, RootState> = {
-  list(getState: KeyboardState) {
-    return getState.list;
-  },
-  input(getState: KeyboardState) {
-    return getState.input;
+  setNext(newState: any, next: any) {
+    newState.next = next;
   }
 };
 
@@ -62,6 +59,5 @@ export const keyboard: Module<KeyboardState, RootState> = {
   namespaced: true,
   state,
   actions,
-  mutations,
-  getters
+  mutations
 };

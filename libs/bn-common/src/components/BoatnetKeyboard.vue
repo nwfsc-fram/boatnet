@@ -7,7 +7,7 @@
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
     <vue-touch-keyboard
@@ -17,7 +17,7 @@
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
     <vue-touch-keyboard
@@ -27,11 +27,14 @@
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
-    <div v-if="list != null">
-      <boatnet-keyboard-list :list="list"/>
+    <div v-if="list && list.length != 0">
+      <boatnet-keyboard-list
+        v-on:selected="select"
+        :list="list"
+        :value="inputValue"/>
     </div>
   </div>
 </template>
@@ -43,13 +46,18 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 export default class BoatnetKeyboard extends Vue {
   @Prop({ default: 'normal' }) public layout!: string;
   @Prop({ default: true }) public visible!: boolean;
-  @Prop() public input!: any;
-  @Prop() public list!: string[];
+  @Prop() public inputTarget!: any;
+  @Prop({ default: () => [] }) public list!: string[];
+  @Prop() public inputValue!: string;
 
   private keyboardOptions = {
     useKbEvents: false,
     preventClickEvent: true
   };
+
+  private select(value: string) {
+    this.$emit('selected', value);
+  }
 
   private accept(text: string) {
     this.hide();
