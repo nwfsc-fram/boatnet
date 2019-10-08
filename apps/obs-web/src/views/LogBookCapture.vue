@@ -9,9 +9,9 @@
             </template>
         </q-banner>
 
-        <div>
-            <input @change="handleImage($event)" type="file" accept="image/*" capture>
-        </div>
+        <label class="cameraButton shadow-2 bg-primary text-white">Capture Logbook Image
+            <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+        </label>
 
         <div>
             <img v-if="file" :src="fileUrl" style="width: 300px">
@@ -117,3 +117,20 @@ export default class LogBookCapture extends Vue {
 
 }
 </script>
+
+<style scoped>
+
+label.cameraButton {
+  display: inline-block;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+label.cameraButton input[accept*="camera"] {
+  display: none;
+}
+
+</style>
