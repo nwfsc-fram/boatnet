@@ -27,6 +27,9 @@ export interface KeyboardState {
     showKeyboard?: boolean;
     keyboardType?: string;
     keyboardInputTarget?: any;
+    activeFieldName?: string;
+    valueSelected?: boolean;
+    next?: any;
 }
 
 // TODO represents overall structure of config file

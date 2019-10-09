@@ -1,12 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
-    <boatnet-keyboard
-      :visible.sync="keyboardStatus"
-      :layout="keyboard.keyboardType"
-      :input="keyboard.keyboardInputTarget"
-      @next="next"
-    />
+    <router-view />
   </div>
 </template>
 
@@ -19,16 +13,29 @@ import { AppSettings } from '@boatnet/bn-common';
 @Component
 export default class App extends Vue {
   @State('appSettings') private appState!: AppSettings;
-  @State('keyboard') private keyboard!: KeyboardState;
-  @Action('setKeyboard', { namespace: 'keyboard' })
-  private setKeyboard: any;
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 
+  @State('keyboard') private keyboard!: KeyboardState;
+  @Action('setKeyboard', { namespace: 'keyboard' })
+  private setKeyboard: any;
+  @Action('setActiveFieldName', { namespace: 'keyboard' })
+  private setActiveFieldName: any;
+  @Action('setValueSelected', { namespace: 'keyboard' })
+  private setValueSelected: any;
+  @Action('setNext', { namespace: 'keyboard' })
+  private setNext: any;
+
   private mounted() {
+    this.setNext(this.next);
     document.addEventListener('click', () => {
-      if (document.activeElement && Object.keys(document.activeElement).length === 0) {
+      if ( document.activeElement &&
+        Object.keys(document.activeElement).length === 0 &&
+        !this.keyboard.valueSelected) {
         this.setKeyboard(false);
+        this.setActiveFieldName('');
+      } else {
+        this.setValueSelected(false);
       }
     });
 
@@ -39,18 +46,6 @@ export default class App extends Vue {
           break;
       }
     });
-  }
-
-  get keyboardStatus() {
-    if (this.appState.isKeyboardEnabled && this.keyboard.showKeyboard) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  set keyboardStatus(status: boolean) {
-    this.setKeyboard(status);
   }
 
   // private outputKey(event: any) {
@@ -66,7 +61,8 @@ export default class App extends Vue {
     const inputs = document.querySelectorAll('input');
     let found = false;
     for (let i = 0; i < inputs.length; i++) {
-      if (!found && inputs[i] === this.keyboard.keyboardInputTarget && i < inputs.length - 1) {
+      if (!found && inputs[i] === this.keyboard.keyboardInputTarget &&
+          i < inputs.length - 1) {
         found = true;
         this.$nextTick(() => {
           inputs[i + 1].focus();
@@ -74,17 +70,16 @@ export default class App extends Vue {
       }
     }
     if (!found) {
-      this.keyboardStatus = false;
+      this.setKeyboard(false);
     }
   }
 }
 </script>
 
 <style>
-
-  .q-dialog__inner--minimized {
+.q-dialog__inner--minimized {
   padding: 0 !important;
-  }
+}
 
 .vue-touch-keyboard {
   background-color: grey;

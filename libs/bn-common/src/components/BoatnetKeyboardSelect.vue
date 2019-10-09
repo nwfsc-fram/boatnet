@@ -39,8 +39,8 @@ export default class BoatnetKeyboardInput extends Vue {
   private setKeyboard: any;
   @Action('setKeyboardType', { namespace: 'keyboard' })
   private setKeyboardType: any;
-  @Action('setKeyboardInput', { namespace: 'keyboard' })
-  private setKeyboardInput: any;
+  @Action('setKeyboardInputTarget', { namespace: 'keyboard' })
+  private setKeyboardInputTarget: any;
 
   get valueHolder() {
     return this.value;
@@ -52,7 +52,7 @@ export default class BoatnetKeyboardInput extends Vue {
   private displayKeyboard(event: any) {
     this.setKeyboard(true);
     this.setKeyboardType(this.keyboardType);
-    this.setKeyboardInput(event.target);
+    this.setKeyboardInputTarget(event.target);
   }
 
   private save() {

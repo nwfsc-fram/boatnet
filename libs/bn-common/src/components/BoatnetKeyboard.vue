@@ -2,34 +2,54 @@
   <div v-if="visible">
     <vue-touch-keyboard
       v-if="layout === 'normal'"
-      :class="{ keyboard: true, normal: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'normal': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
     <vue-touch-keyboard
       v-else-if="layout === 'numeric'"
-      :class="{ keyboard: true, numeric: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'numeric': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
     <vue-touch-keyboard
       v-else-if="layout === 'compact'"
-      :class="{ keyboard: true, numeric: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'numeric': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
+      class="popover keyboard keyboardWithList numeric"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
       :accept="accept"
-      :input="input"
+      :input="inputTarget"
       :next="next"
     />
+    <div v-if="list && list.length != 0">
+      <boatnet-keyboard-list
+        class="popover list"
+        v-on:selected="select"
+        :list="list"
+        :value="inputValue"/>
+    </div>
   </div>
 </template>
 
@@ -40,12 +60,18 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 export default class BoatnetKeyboard extends Vue {
   @Prop({ default: 'normal' }) public layout!: string;
   @Prop({ default: true }) public visible!: boolean;
-  @Prop() public input!: any;
+  @Prop() public inputTarget!: any;
+  @Prop({ default: () => [] }) public list!: string[];
+  @Prop() public inputValue!: string;
 
   private keyboardOptions = {
     useKbEvents: false,
     preventClickEvent: true
   };
+
+  private select(value: string) {
+    this.$emit('selected', value);
+  }
 
   private accept(text: string) {
     this.hide();
@@ -62,17 +88,29 @@ export default class BoatnetKeyboard extends Vue {
 </script>
 
 <style scoped>
-.keyboard {
-  position: fixed;
-  left: 0;
-  right: 0;
+.popover {
+  position: absolute;
   bottom: 0;
 
   z-index: 10000;
+  height: 200px;
+}
+.keyboard {
   width: 100%;
-
   margin: 0 auto;
   padding: 1em;
+}
+.keyboardWithoutList {
+  right: 0;
+  left: 0;
+}
+.keyboardWithList {
+  right: 25%;
+}
+.list {
+  left: 75%;
+  height: 200px;
+  background-color: grey;
 }
 .normal {
   max-width: 1000px;
