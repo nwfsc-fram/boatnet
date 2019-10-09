@@ -1,40 +1,27 @@
 <template>
-  <div>
-    <q-input
-      outlined
-      v-model="valueHolder"
-      :type="encodingType"
-      :mask="mask"
-      :label="label"
-      debounce="500"
-      @input="save"
-      @focus="displayKeyboard"
-      :fill-mask="showMask"
-      :hint="hint"
-      :data-layout="keyboardType"
-      dense
-    >
-      <template v-slot:append>
-        <slot name="after" />
-      </template>
-    </q-input>
-
-    <boatnet-keyboard v-on:selected="select"
-      :visible.sync="isActive"
-      :layout="keyboardType"
-      :inputTarget="target"
-      :list="list"
-      :inputValue="valueHolder"
-      @next="keyboard.next"
-    />
-  </div>
+  <q-input
+    outlined
+    v-model="valueHolder"
+    :type="encodingType"
+    :mask="mask"
+    :label="label"
+    debounce="500"
+    @input="save"
+    @focus="displayKeyboard"
+    :fill-mask="showMask"
+    :hint="hint"
+    :data-layout="keyboardType"
+    dense
+  >
+  <template v-slot:append>
+      <slot name="after"/>
+  </template>
+  </q-input>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action, Getter } from 'vuex-class';
-import { KeyboardState } from '@boatnet/bn-common';
-
+import { State, Action } from 'vuex-class';
 @Component
 export default class BoatnetKeyboardInput extends Vue {
   @Prop() private value!: any;
@@ -44,37 +31,23 @@ export default class BoatnetKeyboardInput extends Vue {
   @Prop() private mask!: string;
   @Prop({ default: true }) private showMask!: boolean;
   @Prop() private hint!: string;
-  @Prop({ default: () => [] }) private list!: string[];
-
-  private target: any = {};
-  @Action('setActiveFieldName', { namespace: 'keyboard' })
-  private setActiveFieldName: any;
-  @State('keyboard') private keyboard!: KeyboardState;
-
+  @Action('setKeyboard', { namespace: 'keyboard' })
+  private setKeyboard: any;
+  @Action('setKeyboardType', { namespace: 'keyboard' })
+  private setKeyboardType: any;
+  @Action('setKeyboardInput', { namespace: 'keyboard' })
+  private setKeyboardInput: any;
   get valueHolder() {
     return this.value;
   }
   set valueHolder(val: any) {
     this.$emit('update:value', val);
   }
-
-  get isActive() {
-    if (this.label === this.keyboard.activeFieldName) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private select(value: string) {
-    this.$emit('update:value', value);
-  }
-
   private displayKeyboard(event: any) {
-    this.target = event.target;
-    this.setActiveFieldName(this.label);
+    this.setKeyboard(true);
+    this.setKeyboardType(this.keyboardType);
+    this.setKeyboardInput(event.target);
   }
-
   private save() {
     this.$emit('save');
   }

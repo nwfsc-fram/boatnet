@@ -18,7 +18,7 @@
     </div>
 
 <div>
-    <boatnet-keyboard-input
+    <boatnet-keyboard-select-list
                 :value.sync="name"
                 label="Skipper's Name"
                 keyboardType="compact"
@@ -27,7 +27,7 @@
               />
               </div>
 
-               <boatnet-keyboard-input
+               <boatnet-keyboard-select-list
                 :value.sync="name2"
                 label="Name"
                 keyboardType="numeric"
@@ -35,7 +35,7 @@
                 :list="numericList"
               />
 
-              <boatnet-keyboard-input
+              <boatnet-keyboard-select-list
                 :value.sync="name23"
                 label="Name again"
                 keyboardType="numeric"
