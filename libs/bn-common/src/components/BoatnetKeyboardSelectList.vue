@@ -22,9 +22,10 @@
     <boatnet-keyboard v-on:selected="select"
       :visible.sync="isActive"
       :layout="keyboardType"
-      :inputTarget="target"
+      :inputTarget="keyboard.keyboardInputTarget"
       :list="list"
       :inputValue="valueHolder"
+      @next="keyboard.next"
     />
   </div>
 </template>
@@ -45,12 +46,13 @@ export default class BoatnetKeyboardSelectList extends Vue {
   @Prop() private hint!: string;
   @Prop({ default: () => [] }) private list!: string[];
 
-  private target: any = {};
+  @State('keyboard') private keyboard!: KeyboardState;
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
   @Action('setActiveFieldName', { namespace: 'keyboard' })
   private setActiveFieldName: any;
-  @State('keyboard') private keyboard!: KeyboardState;
+  @Action('setKeyboardInputTarget', { namespace: 'keyboard' })
+  private setKeyboardInputTarget: any;
 
   get valueHolder() {
     return this.value;
@@ -76,7 +78,7 @@ export default class BoatnetKeyboardSelectList extends Vue {
   }
 
   private displayKeyboard(event: any) {
-    this.target = event.target;
+    this.setKeyboardInputTarget(event.target);
     this.setActiveFieldName(this.label);
     if (!this.keyboard.showKeyboard) {
         this.setKeyboard(true);

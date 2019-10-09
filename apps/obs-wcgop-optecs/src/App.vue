@@ -4,7 +4,7 @@
     <boatnet-keyboard
       :visible.sync="keyboardStatus"
       :layout="keyboard.keyboardType"
-      :input="keyboard.keyboardInputTarget"
+      :inputTarget="keyboard.keyboardInputTarget"
       @next="next"
     />
 
