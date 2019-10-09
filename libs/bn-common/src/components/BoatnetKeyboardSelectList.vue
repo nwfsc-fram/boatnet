@@ -25,7 +25,6 @@
       :inputTarget="target"
       :list="list"
       :inputValue="valueHolder"
-      @next="keyboard.next"
     />
   </div>
 </template>
@@ -47,6 +46,8 @@ export default class BoatnetKeyboardSelectList extends Vue {
   @Prop({ default: () => [] }) private list!: string[];
 
   private target: any = {};
+  @Action('setKeyboard', { namespace: 'keyboard' })
+  private setKeyboard: any;
   @Action('setActiveFieldName', { namespace: 'keyboard' })
   private setActiveFieldName: any;
   @State('keyboard') private keyboard!: KeyboardState;
@@ -59,11 +60,15 @@ export default class BoatnetKeyboardSelectList extends Vue {
   }
 
   get isActive() {
-    if (this.label === this.keyboard.activeFieldName) {
-      return true;
+    if (this.label === this.keyboard.activeFieldName && this.keyboard.showKeyboard) {
+        return true;
     } else {
-      return false;
+        return false;
     }
+  }
+
+  set isActive(status: boolean) {
+      this.setKeyboard(status);
   }
 
   private select(value: string) {
@@ -73,6 +78,9 @@ export default class BoatnetKeyboardSelectList extends Vue {
   private displayKeyboard(event: any) {
     this.target = event.target;
     this.setActiveFieldName(this.label);
+    if (!this.keyboard.showKeyboard) {
+        this.setKeyboard(true);
+    }
   }
 
   private save() {
