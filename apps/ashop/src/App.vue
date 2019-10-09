@@ -59,7 +59,6 @@ export default class App extends Vue {
 
   private next() {
     const inputs = document.querySelectorAll('input');
-    console.log('the length is ' + inputs.length);
     let found = false;
     for (let i = 0; i < inputs.length; i++) {
       if (

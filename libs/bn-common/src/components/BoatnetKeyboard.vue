@@ -110,6 +110,7 @@ export default class BoatnetKeyboard extends Vue {
 .list {
   left: 75%;
   height: 200px;
+  background-color: grey;
 }
 .normal {
   max-width: 1000px;

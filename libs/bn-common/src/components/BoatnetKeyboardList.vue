@@ -1,6 +1,6 @@
 <template>
   <q-list bordered padding class="rounded-borders">
-    <div v-for="(name) in getSortedAndCuratedList" :key="name">
+    <div v-for="(name) in getSortedAndCuratedList" :key="name" class="item">
       <q-item
         clickable
         :active="selectedValue === name"
@@ -22,7 +22,7 @@ import { Action, Getter } from 'vuex-class';
 export default class BoatnetKeyboardList extends Vue {
   @Prop() public list!: string[];
   @Prop() public value!: string;
-  private selectedValue: string = '';
+  private selectedValue: string = this.value;
 
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
@@ -44,6 +44,9 @@ export default class BoatnetKeyboardList extends Vue {
 <style scoped>
 .my-menu-link {
   color: white;
-  background: #f2c037;
+  background: #027be3;
+}
+.item {
+  background: white;
 }
 </style>
