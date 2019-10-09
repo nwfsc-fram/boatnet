@@ -1,5 +1,5 @@
 <template>
-  <q-list bordered padding class="rounded-borders list">
+  <q-list bordered padding class="rounded-borders">
     <div v-for="(name) in getSortedAndCuratedList" :key="name">
       <q-item
         clickable
@@ -45,13 +45,5 @@ export default class BoatnetKeyboardList extends Vue {
 .my-menu-link {
   color: white;
   background: #f2c037;
-}
-
-.list {
-  position: absolute;
-  right: 100px;
-  bottom: 0;
-  z-index: 10000;
-  height: 200px;
 }
 </style>

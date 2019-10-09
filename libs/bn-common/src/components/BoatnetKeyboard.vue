@@ -2,7 +2,11 @@
   <div v-if="visible">
     <vue-touch-keyboard
       v-if="layout === 'normal'"
-      :class="{ keyboard: true, normal: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'normal': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -12,7 +16,11 @@
     />
     <vue-touch-keyboard
       v-else-if="layout === 'numeric'"
-      :class="{ keyboard: true, numeric: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'numeric': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -22,7 +30,12 @@
     />
     <vue-touch-keyboard
       v-else-if="layout === 'compact'"
-      :class="{ keyboard: true, numeric: true }"
+      :class="{'popover':true,
+               'keyboard': true,
+               'numeric': true,
+               'keyboardWithList':(list && list.length != 0),
+               'keyboardWithoutList': (list && list.length == 0)}"
+      class="popover keyboard keyboardWithList numeric"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -32,6 +45,7 @@
     />
     <div v-if="list && list.length != 0">
       <boatnet-keyboard-list
+        class="popover list"
         v-on:selected="select"
         :list="list"
         :value="inputValue"/>
@@ -74,17 +88,28 @@ export default class BoatnetKeyboard extends Vue {
 </script>
 
 <style scoped>
-.keyboard {
+.popover {
   position: absolute;
-  left: 100px;
   bottom: 0;
 
   z-index: 10000;
-  width: 100%;
   height: 200px;
-
+}
+.keyboard {
+  width: 100%;
   margin: 0 auto;
   padding: 1em;
+}
+.keyboardWithoutList {
+  right: 0;
+  left: 0;
+}
+.keyboardWithList {
+  right: 25%;
+}
+.list {
+  left: 75%;
+  height: 200px;
 }
 .normal {
   max-width: 1000px;
