@@ -22,6 +22,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
+
 @Component
 export default class BoatnetKeyboardInput extends Vue {
   @Prop() private value!: any;
@@ -31,23 +32,27 @@ export default class BoatnetKeyboardInput extends Vue {
   @Prop() private mask!: string;
   @Prop({ default: true }) private showMask!: boolean;
   @Prop() private hint!: string;
+
   @Action('setKeyboard', { namespace: 'keyboard' })
   private setKeyboard: any;
   @Action('setKeyboardType', { namespace: 'keyboard' })
   private setKeyboardType: any;
   @Action('setKeyboardInput', { namespace: 'keyboard' })
   private setKeyboardInput: any;
+
   get valueHolder() {
     return this.value;
   }
   set valueHolder(val: any) {
     this.$emit('update:value', val);
   }
+
   private displayKeyboard(event: any) {
     this.setKeyboard(true);
     this.setKeyboardType(this.keyboardType);
     this.setKeyboardInput(event.target);
   }
+
   private save() {
     this.$emit('save');
   }
