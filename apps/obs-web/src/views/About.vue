@@ -10,7 +10,6 @@
     <q-btn label='delete role' @click='deleteRole'></q-btn>
     <q-btn label='add user' @click='addUser'></q-btn> -->
 
-
     <q-btn label="get doc types" @click="getDocTypes"></q-btn>
     <br><br>
 
@@ -35,8 +34,11 @@
               <div v-if="doc.doc.legacy && doc.doc.description">
                 {{ doc.doc.legacy.lookupVal }} - {{ doc.doc.description }}
               </div>
-              <div v-else>
+              <div v-else-if="doc.doc.description">
                 {{ doc.doc.description }}
+              </div>
+              <div v-else>
+                {{ doc.doc.type }}
               </div>
               <div v-if="'isActive' in doc.doc && !doc.doc.isActive" style="margin-left: 25px; position: relative; top: 0; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em">INACTIVE</div>
               <div v-else style="margin-left: 25px; position: relative; top: 0; right: 0; background-color: teal; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em">ACTIVE</div>
@@ -156,7 +158,7 @@
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { UsState, UsStateTypeName } from '@boatnet/bn-models';
+import { WcgopTrip } from '@boatnet/bn-models';
 
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
@@ -302,6 +304,34 @@ export default class About extends Vue {
 
   }
 
+  private async getTrips() {
+    const start = moment();
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+      this.loading = true;
+      const queryOptions: any = {
+        include_docs: false
+      };
+
+      const allTrips = await masterDB.view<any>(
+        'MainDocs',
+        'all-trips',
+        queryOptions
+      );
+
+      this.loading = false;
+      const end = moment();
+      console.log(end.diff(start, 'seconds'));
+
+      // for (const row of allTrips.rows) {
+      //   this.allTrips.push(row.doc)
+      // }
+      // console.log(this.allTrips);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   private async getDocs(docType: any) {
     this.selectDoc(null);
     this.foundDocs = [];
@@ -424,7 +454,9 @@ export default class About extends Vue {
     this.newFieldName = '';
   }
 
-  private created() {
+  private async created() {
+    console.log( await this.getTrips());
+
     if (!authService.getCurrentUser()) {
       this.$router.push({path: '/login'});
     } else {
