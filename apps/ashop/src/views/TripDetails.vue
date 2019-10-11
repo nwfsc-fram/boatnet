@@ -1,47 +1,49 @@
 <template>
   <div>
-
-  <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-      <div v-for="config of appConfig.tripAttributes" :key="appConfig.tripAttributes.indexOf(config)">
+    <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+      <div
+        v-for="config of appConfig.tripAttributes"
+        :key="appConfig.tripAttributes.indexOf(config)"
+      >
         <boatnet-datetime-prime
           v-if="config.type === 'dateTime'"
           :date.sync="trip[config.modelName]"
           :config="config"
           :model="trip"
-          class="q-ma-sm">
-        </boatnet-datetime-prime>
+          class="q-ma-sm"
+        ></boatnet-datetime-prime>
       </div>
     </div>
 
-    <div class="bg-primary text-white" style="padding: .5em; text-align: center; font-weight: bold">
-      Trip Details: {{ trip }}
+    <div
+      class="bg-primary text-white"
+      style="padding: .5em; text-align: center; font-weight: bold"
+    >Trip Details: {{ trip }}</div>
+
+    <div>
+      <boatnet-keyboard-select-list
+        :value.sync="name"
+        label="Skipper's Name"
+        keyboardType="compact"
+        dense
+        :list="list"
+      />
     </div>
 
-<div>
     <boatnet-keyboard-select-list
-                :value.sync="name"
-                label="Skipper's Name"
-                keyboardType="compact"
-                dense
-                :list="list"
-              />
-              </div>
+      :value.sync="name2"
+      label="Name"
+      keyboardType="numeric"
+      dense
+      :list="numericList"
+    />
 
-               <boatnet-keyboard-select-list
-                :value.sync="name2"
-                label="Name"
-                keyboardType="numeric"
-                dense
-                :list="numericList"
-              />
-
-              <boatnet-keyboard-select-list
-                :value.sync="name23"
-                label="Name again"
-                keyboardType="numeric"
-                dense
-              />
-
+    <boatnet-keyboard-select-list
+      :value.sync="name23"
+      label="Name again"
+      keyboardType="numeric"
+      dense
+    />
   </div>
 </template>
 
@@ -66,58 +68,29 @@ import {
   AshopHaul,
   AshopDiscardReason
 } from '@boatnet/bn-models';
-import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
-
+import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { sampleData, sampleTrip } from '../data/data';
-
 import moment from 'moment';
 
-@Component
-export default class Trips extends Vue {
+import { createComponent, ref, reactive } from '@vue/composition-api';
 
-  @State('tripsState') private tripState!: TripState;
+export default createComponent({
+  setup(props, context) {
+    context.root.$store._actions['tripsState/setCurrentTrip'][0](sampleTrip);
+    const appConfig = context.root.$store.state.appSettings.appConfig;
 
-  @Action('setCurrentHaul', { namespace: 'tripsState' })
-  private setCurrentHaul: any;
+    const name = ref('');
+    const name2 = ref('');
+    const name23 = ref('');
 
-  @Getter('currentHaul', { namespace: 'tripsState' })
-  private currentHaul!: any;
+    const trip = ref({});
 
-  @Getter('currentTrip', { namespace: 'tripsState' })
-  private currentTrip!: WcgopTrip | AshopTrip;
+    const list = ['baby shark', 'mama shark', 'daddy shark', 'nemo', 'whale'];
+    const numericList = ['1', 'two', '333', 'four', '5', 'six'];
 
-  @Action('setCurrentTrip', { namespace: 'tripsState' })
-  private setCurrentTrip: any;
-
-  @Action('save', { namespace: 'tripsState' })
-  private save: any;
-
-  @Getter('appMode', { namespace: 'appSettings' })
-  private appMode!: AppSettings;
-
- @Getter('appConfig', { namespace: 'appSettings' })
-  private appConfig!: BoatnetConfig;
-
-  private name: string = '';
-  private name2: string = '';
-  private name23: string = '';
-
-  private tripDetailsSettings: any = {};
-  private mode: string = '';
-
-  private trip = {};
-
-  private list: string[] = ['baby shark', 'mama shark', 'daddy shark', 'nemo', 'dori', 'whale'];
-  private numericList: string[] = ['1', 'two', 'three', '4', 'five', 'six'];
-
-  constructor() {
-    super();
+    return {
+      appConfig, name, name2, name23, trip, list, numericList
+    };
   }
-
-  private created() {
-    this.setCurrentTrip(sampleTrip);
-  }
-
-}
-
+});
 </script>

@@ -13,8 +13,12 @@ import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 
 import VueTouchKeyboard from 'vue-touch-keyboard';
 import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
+import VueCompositionApi from '@vue/composition-api';
+
 
 Vue.use(VueTouchKeyboard);
+Vue.use(VueCompositionApi);
+
 
 Vue.config.productionTip = false;
 
