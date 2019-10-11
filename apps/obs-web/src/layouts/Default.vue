@@ -71,6 +71,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/e-logbook" exact>
+          <q-item-section avatar>
+            <q-icon name="notes" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>E Logbook</q-item-label>
+            <q-item-label caption>digital logbook</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item
           to="/vessels"
           exact

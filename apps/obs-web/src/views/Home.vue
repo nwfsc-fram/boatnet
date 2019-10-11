@@ -16,6 +16,8 @@
       <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
 
       <q-btn label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
+
+      <q-btn label="E Logbook" to="/e-logbook" color="primary" exact style="margin: 5px"></q-btn>
     <br>
     <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
     </div>

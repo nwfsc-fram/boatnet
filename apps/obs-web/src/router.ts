@@ -23,6 +23,8 @@ import ObserverAvailability from './views/ObserverAvailability.vue';
 import ActivityDetail from './views/ActivityDetail.vue';
 import Vessels from './views/Vessels.vue';
 import VesselDetails from './views/VesselDetails.vue';
+import ELogbook from './views/ELogbook.vue';
+import CouchViews from './views/CouchViews.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -65,7 +67,18 @@ const router = new Router({
       component: DefaultLayout,
       children: [
         { path: '', name: 'Home', component: Home },
-        { path: '/about', name: 'About', component: About },
+        { path: '/about', name: 'About', component: About,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward',
+              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        { path: '/couch-views', name: 'Couch Views', component: CouchViews,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward',
+              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
         {
@@ -119,6 +132,7 @@ const router = new Router({
           }
         },
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
+        { path: '/e-logbook', name: 'E Logbook', component: ELogbook },
         {
           path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
           beforeEnter: (to, from, next) => {
