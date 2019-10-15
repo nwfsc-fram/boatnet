@@ -2,8 +2,8 @@
     <q-page padding>
         <div style="display: flex">
 
-            <q-select v-model="selectedDoc" :options="designDocs" label="Design Doc" @input="getViews(selectedDoc)" :option-label="(doc) => doc.replace('_design/', '')" style="width: 200px; margin: 10px"></q-select>
-            <q-select v-model="selectedView" :options="views" label="View" @input="getView(selectedView)" style="width: 200px; margin: 10px"></q-select>
+            <q-select v-model="selectedDoc" outlined dense :options="designDocs" label="Design Doc" @input="getViews(selectedDoc)" :option-label="(doc) => doc.replace('_design/', '')" style="width: 200px; margin: 10px"></q-select>
+            <q-select v-model="selectedView" outlined dense :options="views" label="View" @input="getView(selectedView)" style="width: 200px; margin: 10px"></q-select>
 
         </div>
 
@@ -33,6 +33,7 @@
                 </div>
 
                 <q-btn class="view-button" label="run" color="primary" @click="runView"></q-btn>
+                <q-toggle v-model="includeDocs" color="primary" label="include docs"></q-toggle>
                 <q-btn v-if="viewDocs[selectedView].reduce" class="view-button" label="run with reduce" @click="runWithReduce"></q-btn>
                 <q-select v-if="options.length > 0" v-model="viewKey" :options="options" label="key" emit-value outlined style="width: 200px"></q-select>
                 <q-btn v-if="options.length > 0" class="view-button" label="run with key" @click="runWithKey(viewKey)"></q-btn>
@@ -114,6 +115,7 @@ export default class CouchViews extends Vue {
     private viewDocs: any = {};
     private viewResults: any = [];
     private viewKey: string = '';
+    private includeDocs: boolean = false;
     private options: any = [];
     private fisheryOptions: any[] = [];
     private vesselOptions: any[] = [];
@@ -178,7 +180,7 @@ export default class CouchViews extends Vue {
         this.viewResults = [];
 
         const queryOptions: any = {
-            include_docs: false
+            include_docs: this.includeDocs
         };
 
         try {
