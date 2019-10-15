@@ -51,26 +51,7 @@
 </style>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { pouchService } from '@boatnet/bn-pouch';
-import { Action, Getter, State } from 'vuex-class';
-import {
-  WcgopTrip,
-  WcgopOperation,
-  WcgopOperationTypeName,
-  LocationEvent,
-  WcgopCatch,
-  WcgopCatchTypeName,
-  SpeciesTypeName,
-  AshopTrip,
-  AshopCatch,
-  AshopHaul,
-  AshopDiscardReason
-} from '@boatnet/bn-models';
-import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { sampleData, sampleTrip } from '../data/data';
-import moment from 'moment';
 
 import { createComponent, ref, reactive } from '@vue/composition-api';
 

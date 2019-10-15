@@ -19,7 +19,8 @@
       </template>
     </q-input>
 
-    <boatnet-keyboard v-on:selected="select"
+    <boatnet-keyboard
+      v-on:selected="select"
       :visible.sync="isActive"
       :layout="keyboardType"
       :inputTarget="keyboard.keyboardInputTarget"
@@ -35,58 +36,66 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { KeyboardState } from '@boatnet/bn-common';
 
-@Component
-export default class BoatnetKeyboardSelectList extends Vue {
-  @Prop() private value!: any;
-  @Prop() private label!: string;
-  @Prop() private keyboardType!: string;
-  @Prop({ default: 'text' }) private encodingType!: string;
-  @Prop() private mask!: string;
-  @Prop({ default: true }) private showMask!: boolean;
-  @Prop() private hint!: string;
-  @Prop({ default: () => [] }) private list!: string[];
+import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 
-  @State('keyboard') private keyboard!: KeyboardState;
-  @Action('setKeyboard', { namespace: 'keyboard' })
-  private setKeyboard: any;
-  @Action('setActiveFieldName', { namespace: 'keyboard' })
-  private setActiveFieldName: any;
-  @Action('setKeyboardInputTarget', { namespace: 'keyboard' })
-  private setKeyboardInputTarget: any;
+export default createComponent({
+  props: {
+    value: String,
+    label: String,
+    keyboardType: String,
+    encodingType: String,
+    mask: String,
+    showMask: Boolean,
+    hint: String,
+    list: Array
+  },
 
-  get valueHolder() {
-    return this.value;
-  }
-  set valueHolder(val: any) {
-    this.$emit('update:value', val);
-  }
+  setup(props, context) {
+    const store = context.root.$store;
+    const keyboard = reactive(store.state.keyboard);
 
-  get isActive() {
-    if (this.label === this.keyboard.activeFieldName && this.keyboard.showKeyboard) {
-        return true;
-    } else {
-        return false;
-    }
-  }
+    const valueHolder = computed({
+      get: () => props.value,
+      set: (val: string) => context.emit('update:value', val)
+    });
 
-  set isActive(status: boolean) {
-      this.setKeyboard(status);
-  }
+    const isActive = computed({
+      get: () => {
+        const keyboard = context.root.$store.state.keyboard;
+        if (props.label === keyboard.activeFieldName && keyboard.showKeyboard) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      set: (status: boolean) =>
+        store._actions['keyboard/setKeyboard'][0](status)
+    });
 
-  private select(value: string) {
-    this.$emit('update:value', value);
-  }
+    const displayKeyboard = (event: any) => {
+      store._actions['keyboard/setKeyboardInputTarget'][0](event.target);
+      store._actions['keyboard/setActiveFieldName'][0](props.label);
+      if (!context.root.$store.state.showKeyboard) {
+        store._actions['keyboard/setKeyboard'][0](true);
+      }
+    };
 
-  private displayKeyboard(event: any) {
-    this.setKeyboardInputTarget(event.target);
-    this.setActiveFieldName(this.label);
-    if (!this.keyboard.showKeyboard) {
-        this.setKeyboard(true);
-    }
-  }
+    const select = (value: string) => {
+      context.emit('update:value', value);
+    };
 
-  private save() {
-    this.$emit('save');
+    const save = () => {
+      context.emit('save');
+    };
+
+    return {
+      keyboard,
+      valueHolder,
+      isActive,
+      displayKeyboard,
+      select,
+      save
+    };
   }
-}
+});
 </script>
