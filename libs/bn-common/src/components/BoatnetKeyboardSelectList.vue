@@ -1,17 +1,18 @@
 <template>
-  <div>
+  <div class="q-pa-sm">
+    <div class="text-bold">{{ config.displayName }}</div>
     <q-input
       outlined
       v-model="valueHolder"
-      :type="encodingType"
-      :mask="mask"
-      :label="label"
+      :type="config.encodingType"
+      :mask="config.mask"
+      :label="config.displayName"
       debounce="500"
       @input="save"
       @focus="displayKeyboard"
-      :fill-mask="showMask"
-      :hint="hint"
-      :data-layout="keyboardType"
+      :fill-mask="config.showMask"
+      :hint="config.hint"
+      :data-layout="config.keyboardType"
       dense
     >
       <template v-slot:append>
@@ -22,9 +23,9 @@
     <boatnet-keyboard
       v-on:selected="select"
       :visible.sync="isActive"
-      :layout="keyboardType"
+      :layout="config.keyboardType"
       :inputTarget="keyboard.keyboardInputTarget"
-      :list="list"
+      :list="config.list"
       :inputValue="valueHolder"
       @next="keyboard.next"
     />
@@ -40,14 +41,8 @@ import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 
 export default createComponent({
   props: {
-    value: String,
-    label: String,
-    keyboardType: String,
-    encodingType: String,
-    mask: String,
-    showMask: Boolean,
-    hint: String,
-    list: Array
+    config: Object,
+    model: Object
   },
 
   setup(props, context) {
@@ -55,14 +50,19 @@ export default createComponent({
     const keyboard = reactive(store.state.keyboard);
 
     const valueHolder = computed({
-      get: () => props.value,
+      get: () => {
+        console.log('get value');
+        const modelName = props.config ? props.config.modelName : '';
+        const val = props.model ? props.model[modelName] : '';
+        return val ? val : '';
+      },
       set: (val: string) => context.emit('update:value', val)
     });
 
     const isActive = computed({
       get: () => {
         const keyboard = context.root.$store.state.keyboard;
-        if (props.label === keyboard.activeFieldName && keyboard.showKeyboard) {
+        if (props.config && props.config.displayName === keyboard.activeFieldName && keyboard.showKeyboard) {
           return true;
         } else {
           return false;
@@ -73,8 +73,9 @@ export default createComponent({
     });
 
     const displayKeyboard = (event: any) => {
+      const displayName = props.config ? props.config.displayName : '';
       store._actions['keyboard/setKeyboardInputTarget'][0](event.target);
-      store._actions['keyboard/setActiveFieldName'][0](props.label);
+      store._actions['keyboard/setActiveFieldName'][0](displayName);
       if (!context.root.$store.state.showKeyboard) {
         store._actions['keyboard/setKeyboard'][0](true);
       }

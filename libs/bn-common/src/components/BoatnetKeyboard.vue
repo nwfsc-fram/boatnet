@@ -34,7 +34,7 @@
                'keyboard': true,
                'numeric': true,
                'keyboardWithList':(list && list.length != 0),
-               'keyboardWithoutList': (list && list.length == 0)}"
+               'keyboardWithoutList': (!list)}"
       class="popover keyboard keyboardWithList numeric"
       :options="keyboardOptions"
       :layout="layout"
