@@ -262,17 +262,17 @@ export default class CouchViews extends Vue {
 
         for (const result of this.viewResults) {
             if (fisheries.indexOf(result.value.fishery) === -1) {
-                this.fisheryOptions.push({label: result.value.fishery, value: result.value.fishery})
+                this.fisheryOptions.push({label: result.value.fishery, value: result.value.fishery});
                 fisheries.push(result.value.fishery);
             }
 
             if (vessels.indexOf(result.value.vesselName) === -1) {
-                this.vesselOptions.push({label: result.value.vesselName, value: result.value.vesselName})
+                this.vesselOptions.push({label: result.value.vesselName, value: result.value.vesselName});
                 vessels.push(result.value.vesselName);
             }
 
             if (programs.indexOf(result.value.programName) === -1) {
-                this.programOptions.push({label: result.value.programName, value: result.value.programName})
+                this.programOptions.push({label: result.value.programName, value: result.value.programName});
                 programs.push(result.value.programName);
             }
         }
@@ -286,7 +286,7 @@ export default class CouchViews extends Vue {
             } else {
                 return 0;
             }
-        } )
+        } );
 
         this.vesselOptions.sort( (a: any, b: any) => {
             if (a.label > b.label) {
@@ -297,7 +297,7 @@ export default class CouchViews extends Vue {
             } else {
                 return 0;
             }
-        } )
+        } );
 
         this.programOptions.sort( (a: any, b: any) => {
             if (a.label > b.label) {
@@ -308,7 +308,7 @@ export default class CouchViews extends Vue {
             } else {
                 return 0;
             }
-        } )
+        } );
 
         this.vesselOptions.unshift({label: 'All', value: 'All'});
         this.fisheryOptions.unshift({label: 'All', value: 'All'});
@@ -322,7 +322,7 @@ export default class CouchViews extends Vue {
 
     private getResults() {
         this.calculatedResult = 0;
-        this.displayResults = true
+        this.displayResults = true;
 
         for (const result of this.viewResults) {
 

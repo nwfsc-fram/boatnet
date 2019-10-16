@@ -88,8 +88,8 @@ export default class LogBookCapture extends Vue {
     private async getImages() {
 
         const parent = document.getElementById('imagesholder');
-        while (parent.firstChild) {
-            parent.firstChild.remove();
+        while (parent!.firstChild) {
+            parent!.firstChild.remove();
         }
 
         const docs = await pouchService.db.allDocs(pouchService.userDBName, {attachments: true} );
