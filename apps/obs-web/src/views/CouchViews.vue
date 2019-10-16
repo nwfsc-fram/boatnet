@@ -164,14 +164,14 @@ export default class CouchViews extends Vue {
         sortBy: 'name',
         descending: false,
         rowsPerPage: 0
-      }
+      };
 
     constructor() {
         super();
     }
 
     private hasKey(row: any, key: string) {
-        console.log(Object.keys(row).includes(key))
+        console.log(Object.keys(row).includes(key));
         return Object.keys(row).includes(key);
     }
 
@@ -195,12 +195,12 @@ export default class CouchViews extends Vue {
     }
 
     private get docKeys() {
-        const columns = []
+        const columns = [];
         for (const key of Object.keys(this.docs[0])) {
             if (!['_id', '_rev', 'createdBy', 'createdDate', 'updatedBy', 'updatedDate', 'uploadedDate', 'uploadedBy'].includes(key)) {
 
-                const column = {name: key, label: key.toUpperCase(), field: key}
-                columns.push(column)
+                const column = {name: key, label: key.toUpperCase(), field: key};
+                columns.push(column);
             }
         }
         console.log(columns);
@@ -264,7 +264,7 @@ export default class CouchViews extends Vue {
             for (const row of Object.keys(queryDocs.rows)) {
                 this.viewResults.push(queryDocs.rows[row]);
                 if (this.includeDocs) {
-                    this.docs.push(queryDocs.rows[row].doc)
+                    this.docs.push(queryDocs.rows[row].doc);
                 }
             }
             this.getFisheriesAndVessels();
@@ -334,7 +334,7 @@ export default class CouchViews extends Vue {
 
         for (const result of this.viewResults) {
 
-            const vessel = result.value.vesselName + ' (' + result.value.vesselNum + ')'
+            const vessel = result.value.vesselName + ' (' + result.value.vesselNum + ')';
 
             if (fisheries.indexOf(result.value.fishery) === -1) {
                 this.fisheryOptions.push({label: result.value.fishery, value: result.value.fishery});
@@ -427,7 +427,7 @@ export default class CouchViews extends Vue {
                 }
 
             } else {
-                return this.calculatedResult = 'not yet implemented'
+                return this.calculatedResult = 'not yet implemented';
             }
         }
     }
