@@ -33,13 +33,14 @@
                 </div>
 
                 <q-btn class="view-button" label="run" color="primary" @click="runView"></q-btn>
-                <q-toggle v-model="includeDocs" color="primary" label="include docs"></q-toggle>
+                <q-toggle v-model="includeDocs" color="primary" label="include docs" ></q-toggle>
                 <q-btn v-if="viewDocs[selectedView].reduce" class="view-button" label="run with reduce" @click="runWithReduce"></q-btn>
                 <q-select v-if="options.length > 0" v-model="viewKey" :options="options" label="key" emit-value outlined style="width: 200px"></q-select>
                 <q-btn v-if="options.length > 0" class="view-button" label="run with key" @click="runWithKey(viewKey)"></q-btn>
-                <br><br>
-                <q-btn class="view-button" label="edit"></q-btn>
-                <q-btn class="view-button" label="duplicate"></q-btn>
+                <div style="float:right">
+                    <q-btn class="view-button" label="edit"></q-btn>
+                    <q-btn class="view-button" label="duplicate"></q-btn>
+                </div>
             </div>
 
             <div v-if="viewResults.length > 0" style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px">
@@ -81,11 +82,34 @@
 
         </div>
 
-            <div v-if="viewResults.length > 0 && selectedView !== 'trips-query'">
+            <div v-if="viewResults.length > 0 && selectedView !== 'trips-query' && !includeDocs">
                 <q-list>
-                    <q-item v-for="result of viewResults" :key="viewResults.indexOf(result)"> {{ result }} </q-item>
+                    <q-item selectable v-for="result of viewResults" :key="viewResults.indexOf(result)"> {{ result }} </q-item>
                 </q-list>
             </div>
+
+            <q-table
+            v-if="docs.length > 0"
+            :data="docs"
+            :columns="docKeys"
+            :pagination="pagination"
+            dense
+            row-key="_id"
+            class="bg-blue-grey-1"
+            >
+
+            <!-- <template v-slot:body="props">
+                <q-tr :props="props">
+                    <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName ? props.row.vessel.vesselName : '' }}</q-td>
+                    <q-td key="vesselCGNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
+                    <q-td v-if="hasKey(props.row, 'lePermit')" key="lePermit" :props="props">{{ getLEPermit(props.row) }}</q-td>
+                    <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
+                    <q-td key="efpTypes" :props="props">
+                        {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
+                    <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear.map((gear) => gear.description)) }}</q-td>
+                </q-tr>
+            </template> -->
+            </q-table>
 
 
     </q-page>
@@ -127,15 +151,60 @@ export default class CouchViews extends Vue {
     private queryFishery: string = 'All';
     private queryVessel: string = 'All';
     private queryProgram: string = 'All';
-    private calculatedResult: number = 0;
+    private calculatedResult: any = 0;
     private displayResults: any = false;
 
     private queryTypes = ['Sea Days', 'Observers', 'Trips', 'Vessel'];
 
     private loading: boolean = false;
+    private docs: any[] = [];
+    private vopt: any[] = [];
+
+    private pagination = {
+        sortBy: 'name',
+        descending: false,
+        rowsPerPage: 0
+      };
 
     constructor() {
         super();
+    }
+
+    private hasKey(row: any, key: string) {
+        console.log(Object.keys(row).includes(key));
+        return Object.keys(row).includes(key);
+    }
+
+    private getArrayValues(array: any[]) {
+        let returnString  = '';
+        for (const item of array) {
+            returnString += item;
+            if (array.indexOf(item) + 1 < array.length && array.length > 1) {
+                returnString += ' , ';
+            }
+        }
+        return returnString;
+    }
+
+    private getLEPermit(row: any) {
+        if (row.lePermit) {
+            return row.lePermit;
+        } else {
+            return '';
+        }
+    }
+
+    private get docKeys() {
+        const columns = [];
+        for (const key of Object.keys(this.docs[0])) {
+            if (!['_id', '_rev', 'createdBy', 'createdDate', 'updatedBy', 'updatedDate', 'uploadedDate', 'uploadedBy'].includes(key)) {
+
+                const column = {name: key, label: key.toUpperCase(), field: key};
+                columns.push(column);
+            }
+        }
+        console.log(columns);
+        return columns;
     }
 
     private async getDesignDocs() {
@@ -194,6 +263,9 @@ export default class CouchViews extends Vue {
             console.log(queryDocs.rows);
             for (const row of Object.keys(queryDocs.rows)) {
                 this.viewResults.push(queryDocs.rows[row]);
+                if (this.includeDocs) {
+                    this.docs.push(queryDocs.rows[row].doc);
+                }
             }
             this.getFisheriesAndVessels();
             this.loading = false;
@@ -261,14 +333,17 @@ export default class CouchViews extends Vue {
         this.programOptions = [];
 
         for (const result of this.viewResults) {
+
+            const vessel = result.value.vesselName + ' (' + result.value.vesselNum + ')';
+
             if (fisheries.indexOf(result.value.fishery) === -1) {
                 this.fisheryOptions.push({label: result.value.fishery, value: result.value.fishery});
                 fisheries.push(result.value.fishery);
             }
 
-            if (vessels.indexOf(result.value.vesselName) === -1) {
-                this.vesselOptions.push({label: result.value.vesselName, value: result.value.vesselName});
-                vessels.push(result.value.vesselName);
+            if (vessels.indexOf(vessel) === -1) {
+                this.vesselOptions.push({label: vessel, value: vessel});
+                vessels.push(vessel);
             }
 
             if (programs.indexOf(result.value.programName) === -1) {
@@ -325,36 +400,35 @@ export default class CouchViews extends Vue {
         this.displayResults = true;
 
         for (const result of this.viewResults) {
+            if (this.queryType === 'Sea Days') {
 
-            // console.log( moment(result.value.returnDate).format() )
-            // console.log( moment(result.value.returnDate) >= moment(this.queryRangeStart) );
-            // console.log( moment(result.value.returnDate) <= moment(this.queryRangeEnd ) );
-            // console.log( result.value.fishery === this.queryFishery );
+                if ( moment(result.value.returnDate) >= moment(this.queryRangeStart) && moment(result.value.returnDate) <= moment(this.queryRangeEnd ) ) {
 
-            if ( moment(result.value.returnDate) >= moment(this.queryRangeStart) && moment(result.value.returnDate) <= moment(this.queryRangeEnd ) ) {
-
-                if (this.queryFishery === 'All') {
-                    if (this.queryVessel === 'All') {
-                        this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
-                    } else {
-                        if (this.queryVessel === result.value.vesselName) {
-                            this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
-                        }
-                    }
-                } else {
-                    if (this.queryFishery === result.value.fishery) {
+                    if (this.queryFishery === 'All') {
                         if (this.queryVessel === 'All') {
                             this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
                         } else {
-                            if (this.queryVessel === result.value.vesselName) {
+                            if (this.queryVessel.includes(result.value.vesselNum)) {
                                 this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
                             }
                         }
+                    } else {
+                        if (this.queryFishery === result.value.fishery) {
+                            if (this.queryVessel === 'All') {
+                                this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
+                            } else {
+                                if (this.queryVessel.includes(result.value.vesselNum)) {
+                                    this.calculatedResult += moment(result.value.returnDate).diff(moment(result.value.departureDate), 'days') + 1;
+                                }
+                            }
+                        }
                     }
+
                 }
 
+            } else {
+                return this.calculatedResult = 'not yet implemented';
             }
-
         }
     }
 
