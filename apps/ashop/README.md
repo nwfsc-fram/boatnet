@@ -1,4 +1,4 @@
-# ashop-test
+# Ashop and WCGOP
 
 ## Config file setup
 Each app is controlled by a config file stored in pouch lookups in the boatnet-config-lookup view. To create another app follow the following format: 
