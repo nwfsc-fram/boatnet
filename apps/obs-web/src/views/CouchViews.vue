@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <q-expansion-item label="View Selection" v-model="viewExpanded">
+        <q-expansion-item label="View Selection" v-model="viewExpanded" dense>
         <div style="display: flex">
 
             <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px" v-if="designDocs.length > 0">
@@ -59,7 +59,7 @@
                 <div v-if="displayResults && selectedView === 'trips-query'"> {{ queryFishery }} {{ queryType }}: {{ calculatedResult }} for {{ queryRangeStart }} through {{ queryRangeEnd }} for vessel {{ queryVessel }}</div>
             </div>
 
-        <q-expansion-item label="Computed Results" v-model="computedResultsExpanded">
+        <q-expansion-item label="Computed Results" v-model="computedResultsExpanded" dense>
             <div class="fixed-bottom" style="text-align: center; margin: 80px; z-index: 999" v-if="loading">
                 <q-spinner
                     color="primary"
@@ -69,7 +69,7 @@
             </div>
         </q-expansion-item>
 
-        <q-expansion-item label="Filter Results" v-model="queryFiltersExpanded">
+        <q-expansion-item label="Filter Results" v-model="queryFiltersExpanded" dense>
 
         <div v-if="viewResults.length > 0 && selectedView === 'trips-query'" style="display: flex">
             <div>
@@ -90,7 +90,7 @@
         </div>
         </q-expansion-item>
 
-        <q-expansion-item label="Query Results" v-model="queryResultsExpanded">
+        <q-expansion-item label="Query Results" v-model="queryResultsExpanded" dense>
 
             <div v-if="viewResults.length > 0 && selectedView !== 'trips-query' && !includeDocs">
                 <q-list>
