@@ -77,7 +77,8 @@ Which columns to show on summary page.
     "align": "left",
     "field": "haulNum",
     "sortable": true,
-    "type": "number",
+    "type": "dateTime", // number, float
+    "displayFormat": "MM/DD/YYYY h:mm:ss", //only specify when type=dateTime. Using moment formats: https://momentjs.com/
     "width": "10%"
   }]
 }
