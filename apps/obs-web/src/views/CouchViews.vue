@@ -1,12 +1,30 @@
 <template>
     <q-page padding>
+
+
         <div style="display: flex">
 
             <q-select v-model="selectedDoc" outlined dense :options="designDocs" label="Design Doc" @input="getViews(selectedDoc)" :option-label="(doc) => doc.replace('_design/', '')" style="width: 200px; margin: 10px"></q-select>
             <q-select v-model="selectedView" outlined dense :options="views" label="View" @input="getView(selectedView)" style="width: 200px; margin: 10px"></q-select>
+            <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px; width: 1000px" v-if="selectedView">
+                <div class="text-h6">Selected View: {{ selectedView.toUpperCase() }}</div>
+                <div>
+                    {{ viewDocs[selectedView].map }}
+                </div>
 
+                <q-btn class="view-button" label="run" color="primary" @click="runView"></q-btn>
+                <q-toggle v-model="includeDocs" color="primary" label="include docs" ></q-toggle>
+                <q-btn v-if="viewDocs[selectedView].reduce" class="view-button" label="run with reduce" @click="runWithReduce"></q-btn>
+                <q-select v-if="options.length > 0" v-model="viewKey" :options="options" label="key" emit-value outlined style="width: 200px"></q-select>
+                <q-btn v-if="options.length > 0" class="view-button" label="run with key" @click="runWithKey(viewKey)"></q-btn>
+                <div style="float:right">
+                    <q-btn class="view-button" label="edit"></q-btn>
+                    <q-btn class="view-button" label="duplicate"></q-btn>
+                </div>
+            </div>
         </div>
 
+        <q-expansion-item label="View Selection" v-model="viewExpanded" dense>
         <div style="display: flex">
 
             <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px" v-if="designDocs.length > 0">
@@ -26,22 +44,12 @@
             </div>
 
 
-            <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px; width: 400px" v-if="selectedView">
-                <div class="text-h6">Selected View: {{ selectedView.toUpperCase() }}</div>
-                <div>
-                    {{ viewDocs[selectedView].map }}
-                </div>
 
-                <q-btn class="view-button" label="run" color="primary" @click="runView"></q-btn>
-                <q-toggle v-model="includeDocs" color="primary" label="include docs" ></q-toggle>
-                <q-btn v-if="viewDocs[selectedView].reduce" class="view-button" label="run with reduce" @click="runWithReduce"></q-btn>
-                <q-select v-if="options.length > 0" v-model="viewKey" :options="options" label="key" emit-value outlined style="width: 200px"></q-select>
-                <q-btn v-if="options.length > 0" class="view-button" label="run with key" @click="runWithKey(viewKey)"></q-btn>
-                <div style="float:right">
-                    <q-btn class="view-button" label="edit"></q-btn>
-                    <q-btn class="view-button" label="duplicate"></q-btn>
-                </div>
-            </div>
+
+
+        </div>
+
+                </q-expansion-item>
 
             <div v-if="viewResults.length > 0" style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px">
                 <div>Loaded Docs: {{ viewResults.length }} </div>
@@ -51,16 +59,17 @@
                 <div v-if="displayResults && selectedView === 'trips-query'"> {{ queryFishery }} {{ queryType }}: {{ calculatedResult }} for {{ queryRangeStart }} through {{ queryRangeEnd }} for vessel {{ queryVessel }}</div>
             </div>
 
-        </div>
+        <q-expansion-item label="Computed Results" v-model="computedResultsExpanded" dense>
+            <div class="fixed-bottom" style="text-align: center; margin: 80px; z-index: 999" v-if="loading">
+                <q-spinner
+                    color="primary"
+                    size="10em"
+                    :thickness="10"
+                />
+            </div>
+        </q-expansion-item>
 
-        <div class="fixed-bottom" style="text-align: center; margin: 80px; z-index: 999" v-if="loading">
-            <q-spinner
-                color="primary"
-                size="10em"
-                :thickness="10"
-            />
-        </div>
-
+        <q-expansion-item label="Filter Results" v-model="queryFiltersExpanded" dense>
 
         <div v-if="viewResults.length > 0 && selectedView === 'trips-query'" style="display: flex">
             <div>
@@ -78,9 +87,10 @@
                 <q-select v-model="queryFishery" :options="fisheryOptions" label="Fishery" emit-value outlined style="width: 200px" @input="resetResult"></q-select>
                 <q-select v-model="queryVessel" :options="vesselOptions" label="Vessel" emit-value outlined style="width: 200px" @input=resetResult></q-select>
             </div>
-
-
         </div>
+        </q-expansion-item>
+
+        <q-expansion-item label="Query Results" v-model="queryResultsExpanded" dense>
 
             <div v-if="viewResults.length > 0 && selectedView !== 'trips-query' && !includeDocs">
                 <q-list>
@@ -111,6 +121,7 @@
             </template> -->
             </q-table>
 
+        </q-expansion-item>
 
     </q-page>
 </template>
@@ -159,6 +170,11 @@ export default class CouchViews extends Vue {
     private loading: boolean = false;
     private docs: any[] = [];
     private vopt: any[] = [];
+
+    private viewExpanded: boolean = false;
+    private queryResultsExpanded: boolean = true;
+    private computedResultsExpanded: boolean = true;
+    private queryFiltersExpanded: boolean = true;
 
     private pagination = {
         sortBy: 'name',
