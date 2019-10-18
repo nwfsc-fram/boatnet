@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
       <div
         v-for="config of appConfig.tripAttributes"
         :key="appConfig.tripAttributes.indexOf(config)"
@@ -10,7 +10,6 @@
           :date.sync="trip[config.modelName]"
           :config="config"
           :model="trip"
-          class="q-ma-sm"
         ></boatnet-datetime-prime>
 
         <boatnet-keyboard-select-list
@@ -18,7 +17,6 @@
          :value.sync="trip[config.modelName]"
          :config="config"
          :model="trip"
-         class="q-ma-sm"
         ></boatnet-keyboard-select-list>
       </div>
     </div>
@@ -37,12 +35,12 @@
 import { sampleData, sampleTrip } from '../data/data';
 
 import { createComponent, ref, reactive } from '@vue/composition-api';
+import { WcgopTrip } from '@boatnet/bn-models';
 
 export default createComponent({
   setup(props, context) {
     context.root.$store._actions['tripsState/setCurrentTrip'][0](sampleTrip);
     const appConfig = context.root.$store.state.appSettings.appConfig;
-
     const trip = ref({});
 
     return {

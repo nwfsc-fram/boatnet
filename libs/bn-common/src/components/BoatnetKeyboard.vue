@@ -2,9 +2,7 @@
   <div v-if="visible">
     <vue-touch-keyboard
       v-if="layout === 'normal'"
-      :class="{'popover':true,
-               'keyboard': true,
-               'normal': true,
+      :class="{'normalKeyboard': true,
                'keyboardWithList':(list && list.length != 0),
                'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
@@ -16,9 +14,7 @@
     />
     <vue-touch-keyboard
       v-else-if="layout === 'numeric'"
-      :class="{'popover':true,
-               'keyboard': true,
-               'numeric': true,
+      :class="{'numericKeyboard': true,
                'keyboardWithList':(list && list.length != 0),
                'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
@@ -30,12 +26,9 @@
     />
     <vue-touch-keyboard
       v-else-if="layout === 'compact'"
-      :class="{'popover':true,
-               'keyboard': true,
-               'numeric': true,
+      :class="{'numericKeyboard': true,
                'keyboardWithList':(list && list.length != 0),
-               'keyboardWithoutList': (!list)}"
-      class="popover keyboard keyboardWithList numeric"
+               'keyboardWithoutList': (list && list.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -45,7 +38,7 @@
     />
     <div v-if="list && list.length != 0">
       <boatnet-keyboard-list
-        class="popover list"
+        class="list"
         v-on:selected="select"
         :list="list"
         :value="inputValue"/>
@@ -87,7 +80,7 @@ export default class BoatnetKeyboard extends Vue {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .popover {
   position: absolute;
   bottom: 0;
@@ -96,9 +89,18 @@ export default class BoatnetKeyboard extends Vue {
   height: 200px;
 }
 .keyboard {
+  @extend .popover;
   width: 100%;
   margin: 0 auto;
   padding: 1em;
+}
+.normalKeyboard {
+  @extend .keyboard;
+  max-width: 1000px;
+}
+.numericKeyboard {
+  @extend .keyboard;
+  max-width: 500px;
 }
 .keyboardWithoutList {
   right: 0;
@@ -108,14 +110,9 @@ export default class BoatnetKeyboard extends Vue {
   right: 25%;
 }
 .list {
+  @extend .popover;
   left: 75%;
   height: 200px;
   background-color: grey;
-}
-.normal {
-  max-width: 1000px;
-}
-.numeric {
-  max-width: 500px;
 }
 </style>

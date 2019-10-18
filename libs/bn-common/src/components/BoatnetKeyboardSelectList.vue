@@ -1,12 +1,11 @@
 <template>
-  <div class="q-pa-sm">
+  <div class="q-px-md q-py-sm">
     <div class="text-bold">{{ config.displayName }}</div>
     <q-input
       outlined
       v-model="valueHolder"
       :type="config.encodingType"
       :mask="config.mask"
-      :label="config.displayName"
       debounce="500"
       @input="save"
       @focus="displayKeyboard"
@@ -51,7 +50,6 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        console.log('get value');
         const modelName = props.config ? props.config.modelName : '';
         const val = props.model ? props.model[modelName] : '';
         return val ? val : '';
@@ -61,8 +59,8 @@ export default createComponent({
 
     const isActive = computed({
       get: () => {
-        const keyboard = context.root.$store.state.keyboard;
-        if (props.config && props.config.displayName === keyboard.activeFieldName && keyboard.showKeyboard) {
+        const keyboardState = context.root.$store.state.keyboard;
+        if (props.config && props.config.displayName === keyboardState.activeFieldName && keyboardState.showKeyboard) {
           return true;
         } else {
           return false;
