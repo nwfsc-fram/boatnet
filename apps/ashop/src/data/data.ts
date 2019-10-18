@@ -1,4 +1,4 @@
-export const sampleTrip = [{
+export const sampleTrip = {
     type: 'ashop-trip',
     uploadedBy: 'nicholas.shaffer@noaa.gov',
     uploadedDate: '2019-05-29T12:13:00-07:00',
@@ -31,7 +31,7 @@ export const sampleTrip = [{
       tripSeq: 61,
       cruiseVesselSeq: 41
     }
-  }];
+  };
 
 export const sampleData = {
     wcgop:
