@@ -10,11 +10,16 @@ import './styles/quasar.styl';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
 import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
+import '@/assets/directional-buttons.css';
 
 import VueTouchKeyboard from 'vue-touch-keyboard';
 import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
+import VueCompositionApi from '@vue/composition-api';
+
 
 Vue.use(VueTouchKeyboard);
+Vue.use(VueCompositionApi);
+
 
 Vue.config.productionTip = false;
 

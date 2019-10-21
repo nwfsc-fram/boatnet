@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-sm">
+  <div class="q-px-md q-py-sm">
     <div class="text-bold">{{ config.displayName }}</div>
     <pCalendar
       v-model="dateVal"

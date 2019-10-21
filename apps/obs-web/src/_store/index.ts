@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import VuexPersist from 'vuex-persist';
+import VuexPersistence from 'vuex-persist'
 
 import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from './alert.module';
@@ -28,7 +28,7 @@ import { baseCouch } from '@boatnet/bn-couch';
 Vue.use(Vuex);
 
 // Preserves state between page refreshes.
-const vuexLocalStorage = new VuexPersist({
+const vuexLocalStorage = new VuexPersistence<RootState>({
   key: 'obs-web',
   storage: window.localStorage
 });
