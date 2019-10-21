@@ -67,15 +67,15 @@ export default createComponent({
         }
       },
       set: (status: boolean) =>
-        store._actions['keyboard/setKeyboard'][0](status)
+       store.dispatch('keyboard/setKeyboard', status)
     });
 
     const displayKeyboard = (event: any) => {
       const displayName = props.config ? props.config.displayName : '';
-      store._actions['keyboard/setKeyboardInputTarget'][0](event.target);
-      store._actions['keyboard/setActiveFieldName'][0](displayName);
+      store.dispatch('keyboard/setKeyboardInputTarget', event.target);
+      store.dispatch('keyboard/setActiveFieldName', displayName);
       if (!context.root.$store.state.showKeyboard) {
-        store._actions['keyboard/setKeyboard'][0](true);
+        store.dispatch('keyboard/setKeyboard', true);
       }
     };
 

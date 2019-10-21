@@ -39,7 +39,7 @@ import { WcgopTrip } from '@boatnet/bn-models';
 
 export default createComponent({
   setup(props, context) {
-    context.root.$store._actions['tripsState/setCurrentTrip'][0](sampleTrip);
+    context.root.$store.dispatch('tripsState/setCurrentTrip', sampleTrip);
     const appConfig = context.root.$store.state.appSettings.appConfig;
     const trip = ref({});
 
