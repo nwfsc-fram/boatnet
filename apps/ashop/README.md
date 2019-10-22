@@ -63,6 +63,26 @@ Input field with optional list
   ]
 }
 ```
+Toggle button
+```
+{
+      "title": "Did Fishing Occur",
+      "modelName": "didFishingOccur",
+      "type": "toggle",
+      "options": [
+        {
+          "label": "T",
+          "value": true
+        },
+        {
+          "label": "F",
+          "value": false
+        }
+      ]
+      "description":xxxxx
+}
+```
+
 
 ### Summary page
 Which columns to show on summary page. 
