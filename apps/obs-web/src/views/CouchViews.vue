@@ -109,17 +109,18 @@
             class="bg-blue-grey-1"
             >
 
-            <!-- <template v-slot:body="props">
+            <template v-slot:body="props">
                 <q-tr :props="props">
-                    <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName ? props.row.vessel.vesselName : '' }}</q-td>
+                    <q-td v-for="column of docKeys" :key="column.name" :props="props"> {{ getValue(props.row[column.name], column.name) }} </q-td>
+                    <!-- <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName ? props.row.vessel.vesselName : '' }}</q-td>
                     <q-td key="vesselCGNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
                     <q-td v-if="hasKey(props.row, 'lePermit')" key="lePermit" :props="props">{{ getLEPermit(props.row) }}</q-td>
                     <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
                     <q-td key="efpTypes" :props="props">
                         {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
-                    <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear.map((gear) => gear.description)) }}</q-td>
+                    <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear.map((gear) => gear.description)) }}</q-td> -->
                 </q-tr>
-            </template> -->
+            </template>
             </q-table>
 
         </q-expansion-item>
@@ -208,6 +209,23 @@ export default class CouchViews extends Vue {
             return row.lePermit;
         } else {
             return '';
+        }
+    }
+
+    private getValue(value: any, column: any) {
+        switch (column) {
+            case 'vessel':
+                return value.vesselName
+            case 'gear':
+                return value.map( (item) => item.description)
+            case 'efpTypes':
+                return value.map( (item) => item.description)
+            default:
+                if (Array.isArray(value)) {
+                    return value[0];
+                } else {
+                    return value;
+                }
         }
     }
 
