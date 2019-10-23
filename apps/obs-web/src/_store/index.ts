@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import VuexPersistence from 'vuex-persist'
+import VuexPersistence from 'vuex-persist';
 
 import { appState } from '@/_store/wcgop-app-state.module';
 import { alert } from './alert.module';

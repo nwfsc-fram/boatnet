@@ -432,9 +432,9 @@ export default class Trips extends Vue {
     private async cancelActiveTrip() {
       this.activeTrip!.closingReason = 'cancelled';
       let savedSelections: any = {
-        "type": "saved-selections",
-        "createdBy": authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
-        "createdDate": moment().format()
+        type: 'saved-selections',
+        createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+        createdDate: moment().format()
         };
 
       // check to see if savedSelections exists, fetch it if it does.
