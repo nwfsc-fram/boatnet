@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import VuexPersist from 'vuex-persist';
+import VuexPersistence from 'vuex-persist'
 
 import { alert } from '@boatnet/bn-common';
 import { auth } from '@boatnet/bn-auth';
@@ -20,8 +20,8 @@ import { appSettings } from '@boatnet/bn-common';
 Vue.use(Vuex);
 
 // Preserves state between page refreshes.
-const vuexLocalStorage = new VuexPersist({
-  key: 'obs-wcgop-optecs',
+const vuexLocalStorage = new VuexPersistence<RootState>({
+  storage: window.localStorage,
   modules: ['alert', 'appSettings', 'auth', 'keyboard', 'pouchState', 'pdfState', 'tallyState', 'tripsState']
 });
 
