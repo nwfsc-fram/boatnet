@@ -38,8 +38,8 @@
     <div class=" row items-start" >
 
       <q-card
-      v-for="(trip, i) in openTrips"
-      :key="i"
+      v-for="trip in openTrips"
+      :key="openTrips.indexOf(trip)"
       :class="computedTripClass(trip)"
       >
         <q-card-section>
@@ -60,8 +60,8 @@
           </div>
         </q-card-section>
         <q-card-actions>
-          <q-btn flat @click="getTripDetails(trip, i)">Edit</q-btn>
-          <q-btn v-if="i === 0" flat @click="closeConfirm(trip)">Close</q-btn>
+          <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
+          <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
           <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
@@ -372,33 +372,6 @@ export default class Trips extends Vue {
     );
     }
 
-
-
-
-    // private get trips() {
-    //     return this.$store.getters.trips;
-    // }
-
-    // private set trips(value) {
-    //     this.$store.dispatch('updateTrips', value);
-    // }
-
-    // private get openTrips() {
-    //   return this.$store.getters.openTrips;
-    // }
-
-    // private set openTrips(value) {
-    //   this.$store.dispatch('updateTrips', value);
-    // }
-
-    // private get closedTrips() {
-    //   return this.$store.getters.closedTrips;
-    // }
-
-    // private set closedTrips(value) {
-    //   this.$store.dispatch('updateTrips', value);
-    // }
-
     private selectText(event: any) {
       event.target.select();
     }
@@ -414,7 +387,7 @@ export default class Trips extends Vue {
 
     private closeTrip(trip: any) {
       trip.tripStatus.description = 'closed';
-      pouchService.db.put(pouchService.userDBName, trip);
+      pouchService.db.post(pouchService.userDBName, trip);
       }
 
     // private reOpenTrip(trip: any) {
@@ -456,26 +429,49 @@ export default class Trips extends Vue {
       this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
     }
 
-    private cancelActiveTrip() {
+    private async cancelActiveTrip() {
       this.activeTrip!.closingReason = 'cancelled';
+      let savedSelections: any = {
+        "type": "saved-selections",
+        "createdBy": authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+        "createdDate": moment().format()
+        };
 
-      if (this.openTrips.length > 1) {
+      // check to see if savedSelections exists, fetch it if it does.
+      const db = pouchService.db;
+      const docs = await db.allDocs(pouchService.userDBName);
+
+      for (const row of docs.rows) {
+        if (row.doc.type === 'saved-selections') {
+          savedSelections = row.doc;
+          savedSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
+          savedSelections.updatedDate = moment().format();
+        }
+      }
+
+      if (!savedSelections[this.activeTrip.fishery.name]) {
+        savedSelections[this.activeTrip.fishery.name] = [];
+      }
+
+      if (this.openTrips.indexOf(this.activeTrip) === 0 && this.openTrips.length > 1) {
+        savedSelections[this.activeTrip.fishery.name].push({
+                              vesselName: this.activeTrip.vessel.vesselName,
+                              isSelected: this.openTrips[1].isSelected,
+                              notes: this.openTrips[1].notes,
+                              selectionDate: this.openTrips[1].createdDate
+                            });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
         pouchService.db.post(pouchService.userDBName, this.openTrips[1]);
       } else {
-        // store record of trip selection - for use next time.
-        const tripSelection: TripSelection = {
-          type: 'trip-selection',
-          vessel: this.activeTrip.vessel,
-          isSelected: this.activeTrip.isSelected,
-          fishery: this.activeTrip.fishery,
-          permits: this.activeTrip.permits,
-          isActive: true,
-          notes: this.activeTrip.notes
-        };
-
-        pouchService.db.post(pouchService.userDBName, tripSelection);
+        savedSelections[this.activeTrip.fishery.name].push({
+                              vesselName: this.activeTrip.vessel.vesselName,
+                              isSelected: this.activeTrip.isSelected,
+                              notes: this.activeTrip.notes,
+                              selectionDate: this.activeTrip.createdDate
+                            });
       }
+
+      pouchService.db.post(pouchService.userDBName, savedSelections);
 
       this.closeTrip(this.activeTrip);
       this.cancelAlert = false;
@@ -617,76 +613,6 @@ private created() {
 
 }
 </script>
-
-<!--
-<script>
-
-import Vue from 'vue';
-import TripDetails from './TripDetails.vue';
-
-export default{
-    data() {
-      return {
-        alert: false
-      }
-    },
-    computed: {
-        trips: {
-          get() {
-              return this.$store.getters.trips
-          },
-          set(value) {
-              this.$store.dispatch('updateTrips', value)
-          }
-        },
-        openTrips: {
-          get() {
-            return this.$store.getters.openTrips
-          },
-          set(value) {
-            this.$store.dispatch('updateTrips', value)
-          }
-        },
-        closedTrips: {
-          get() {
-            return this.$store.getters.closedTrips
-          },
-          set(value) {
-              this.$store.dispatch('updateTrips', value)
-          }
-        }
-    },
-    created() {
-      this.$store.dispatch('updateActiveTrip', '')
-      console.log(this.$store.getters.trips)
-    },
-    methods: {
-      closeTrip(trip) {
-        trip.is_open = false;
-      },
-      reOpenTrip(trip) {
-        if (this.openTrips.length < 2) {
-          trip.is_open = true;
-        } else {
-          this.alert = true;
-        }
-      },
-      getTripDetails(trip) {
-        this.$store.dispatch('updateActiveTrip', trip)
-        // this.$store.state.activeTrip = this.trips[i]
-        this.$router.push({path: '/trips/'+ trip.trip_num})
-      },
-      newTrip() {
-        const newTripNum = this.$store.state.trips.length + 1
-        this.$store.state.trips.push({type: 'trip', trip_num: newTripNum, vessel: this.$store.state.activeVessel, permits: [], messages: [], start_port: this.$store.state.activeUser.homeport, end_port: 'same as start'})
-        this.$store.dispatch('updateActiveTrip', this.$store.state.trips[this.$store.state.trips.length -1])
-        console.log(this.$store.state.activeTrip)
-        this.$router.push({path: '/trips/' + newTripNum})
-      }
-    }
-};
-</script>
--->
 
 <style lang="stylus">
   .my-card

@@ -283,7 +283,7 @@ export default class TripDetails extends Vue {
   }
 
   private permitsFilterFn(val: string, update: any, abort: any) {
-    console.log(this.permit.permits);
+
     if (val === '') {
       update(() => {
         this.permits = this.permit.permits;
@@ -372,11 +372,11 @@ export default class TripDetails extends Vue {
       include_docs: false
     };
     const docs = await db.query(pouchService.lookupsDBName, 'obs_web/all_em_efp', queryOptions);
-    console.log(docs.rows);
+
     for (const row of docs.rows) {
       this.emRoster[row.key] = row.value;
     }
-    console.log(this.emRoster);
+
   }
 
   private get getVesselPermits() {
@@ -386,35 +386,6 @@ export default class TripDetails extends Vue {
     const vesselPermits = this.permit.vesselPermits[vesselId];
     return vesselPermits;
   }
-
-  private async getTripSelection(vesselId: string, fishery: Fishery) {
-    const db = pouchService.db;
-    const docs = await db.allDocs(pouchService.userDBName);
-
-    let tripSelection: any = 'none';
-
-    for (const row of docs.rows) {
-      const doc = row.doc;
-      if (doc.type === 'trip-selection') {
-        const tripSelectionVesselId = doc.vessel.coastGuardNumber ?
-                                    doc.vessel.coastGuardNumber :
-                                    doc.vessel.stateRegulationNumber;
-        if (
-            doc.isActive &&
-            tripSelectionVesselId === vesselId &&
-            doc.fishery.name === fishery.name
-            ) {
-                tripSelection = doc;
-              }
-      }
-    }
-    return tripSelection;
-  }
-
-  private async setTripSelectionInactive(tripSelection: TripSelection) {
-      tripSelection.isActive = false;
-      pouchService.db.put(pouchService.userDBName, tripSelection);
-    }
 
   private async createTrip() {
 
@@ -436,19 +407,34 @@ export default class TripDetails extends Vue {
 
     if (this.trip.activeTrip!.fishery!.name !== '') {
 
-      const vesselId: any = this.trip.activeTrip!.vessel!.coastGuardNumber ?
-                        this.trip.activeTrip!.vessel!.coastGuardNumber :
-                        this.trip.activeTrip!.vessel!.stateRegulationNumber;
-
-      const tripSelection = await this.getTripSelection(vesselId, this.trip.activeTrip!.fishery!);
+      let savedSelections = {};
+      const db = pouchService.db;
+      const docs = await db.allDocs(pouchService.userDBName);
+      for (const row of docs.rows) {
+        if (row.doc.type === 'saved-selections') {
+          savedSelections = row.doc;
+        }
+      }
 
       // apply selection to new trip
-      if (tripSelection !== 'none') {
-        console.log('found a trip selection - applying it to the new trip');
+      let tripSelection = null;
+      if (savedSelections[this.trip.activeTrip.fishery.name] && savedSelections[this.trip.activeTrip.fishery.name].length > 0) {
+        if (savedSelections[this.trip.activeTrip.fishery.name].length > 1) {
+          const sel1 = savedSelections[this.trip.activeTrip.fishery.name][0].selectionDate;
+          const sel2 = savedSelections[this.trip.activeTrip.fishery.name][1].selectionDate;
+          if (moment(sel1).isBefore(sel2)) {
+            tripSelection = savedSelections[this.trip.activeTrip.fishery.name].shift();
+          } else {
+            tripSelection = savedSelections[this.trip.activeTrip.fishery.name].pop();
+          }
+        } else {
+          tripSelection = savedSelections[this.trip.activeTrip.fishery.name].pop();
+        }
+
+        pouchService.db.post(pouchService.userDBName, savedSelections);
 
         this.trip.activeTrip!.isSelected = tripSelection.isSelected;
         this.trip.activeTrip!.notes = tripSelection.notes;
-        this.setTripSelectionInactive(tripSelection);
         pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
 
       } else {
