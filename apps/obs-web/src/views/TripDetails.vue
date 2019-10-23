@@ -407,7 +407,7 @@ export default class TripDetails extends Vue {
 
     if (this.trip.activeTrip!.fishery!.name !== '') {
 
-      let savedSelections = {};
+      let savedSelections: any = {};
       const db = pouchService.db;
       const docs = await db.allDocs(pouchService.userDBName);
       for (const row of docs.rows) {
@@ -417,18 +417,18 @@ export default class TripDetails extends Vue {
       }
 
       // apply selection to new trip
-      let tripSelection = null;
-      if (savedSelections[this.trip.activeTrip.fishery.name] && savedSelections[this.trip.activeTrip.fishery.name].length > 0) {
-        if (savedSelections[this.trip.activeTrip.fishery.name].length > 1) {
-          const sel1 = savedSelections[this.trip.activeTrip.fishery.name][0].selectionDate;
-          const sel2 = savedSelections[this.trip.activeTrip.fishery.name][1].selectionDate;
+      let tripSelection: any = null;
+      if (savedSelections[this.trip.activeTrip!.fishery!.name] && savedSelections[this.trip.activeTrip!.fishery!.name].length > 0) {
+        if (savedSelections[this.trip.activeTrip!.fishery!.name].length > 1) {
+          const sel1 = savedSelections[this.trip.activeTrip!.fishery!.name][0].selectionDate;
+          const sel2 = savedSelections[this.trip.activeTrip!.fishery!.name][1].selectionDate;
           if (moment(sel1).isBefore(sel2)) {
-            tripSelection = savedSelections[this.trip.activeTrip.fishery.name].shift();
+            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].shift();
           } else {
-            tripSelection = savedSelections[this.trip.activeTrip.fishery.name].pop();
+            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].pop();
           }
         } else {
-          tripSelection = savedSelections[this.trip.activeTrip.fishery.name].pop();
+          tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].pop();
         }
 
         pouchService.db.post(pouchService.userDBName, savedSelections);
