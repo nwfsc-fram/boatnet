@@ -152,7 +152,10 @@ export default class Home extends Vue {
               // for a given permit number.
               // so doing this hack until I've figured out
               // what's wrong with the permits.
-              if (this.permit.vesselPermits[vesselId].length < 1) {
+              // if (this.permit.vesselPermits[vesselId].length < 1) {
+              //   this.permit.vesselPermits[vesselId].push(permit);
+              // }
+              if (permit.isTrawlGear) {
                 this.permit.vesselPermits[vesselId].push(permit);
               }
             }

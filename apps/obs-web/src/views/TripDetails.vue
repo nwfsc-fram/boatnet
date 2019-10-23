@@ -122,43 +122,6 @@
         </q-select>
       </div>
 
-        <!-- <q-btn round color="primary" icon="add" size="sm" @click="prompt=true" style="float:right"/> -->
-
-        <!-- <p><strong>Messages</strong></p>
-                <div v-if="tripMessages.length > 0">
-                    <br>
-                    <q-list bordered separator class="rounded-borders">
-                        <q-item clickable :dense="true" v-for="(message, i) in tripMessages" :key="message.datetime">
-                            <q-item-section>
-                                <q-item-label class="text-primary">{{ message.author.name }}
-                                    <span style="float:right">
-                                    {{ getTimeText(message.datetime) }}
-                                    </span>
-                                </q-item-label>
-                                <q-item-label><strong>{{ message.text }}</strong></q-item-label>
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-        </div>-->
-
-        <!-- <q-dialog v-model="prompt" persistent>
-                    <q-card style="min-width: 300px">
-                        <q-card-section>
-                        <div class="text-h6">New Message</div>
-                        </q-card-section>
-
-                        <q-card-section>
-                        <q-input dense v-model="newMessage" autofocus @keyup.enter="addMessage" />
-                        </q-card-section>
-
-                        <q-card-actions align="right" class="text-primary">
-                        <q-btn flat label="Cancel" @click="prompt = false" />
-                        <q-btn flat label="Add" @click="addMessage" />
-                        </q-card-actions>
-                    </q-card>
-        </q-dialog>-->
-
-
       <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
         <q-btn label="Cancel" @click="goToTrips"/>
         &nbsp;
@@ -240,18 +203,6 @@ Vue.component('pCalendar', Calendar);
 
 import { Notify } from 'quasar';
 
-// @Component({
-//   pouch: {
-//     userTrips() { // Also declared in class
-//       return {
-//         database: pouchService.userDBName,
-//         selector: { type: 'wcgop-trip' },
-//         sort: [{ tripNum: 'desc' }]
-//         // limit: 5 // this.resultsPerPage,
-//       };
-//     }
-//   }
-// })
 @Component
 export default class TripDetails extends Vue {
   @State('trip') private trip!: TripState;
@@ -264,22 +215,10 @@ export default class TripDetails extends Vue {
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
-  // private get permits() {
-  //     return this.permit.permits.map( (permit: any) => (permit)
-  //     );
-  // }
-
   private prompt = false;
-  // private newMessage: string = '';
-
-  // private get ports() {
-  //     return this.general.ports.sort();
-  // }
 
   private portOptions: string[] = [];
   private fisheryOptions: Fishery[] = [];
-
-  // private vessels = [];
   private permits: Permit[] = [];
   private otsTargets: OTSTarget[] = [];
   private ports: any[] = [];
@@ -296,6 +235,7 @@ export default class TripDetails extends Vue {
   private minDate: any = null;
   private maxDate: any = null;
   private daysWarn: boolean = false;
+  private emRoster: any = {};
 
   constructor() {
     super();
@@ -411,46 +351,6 @@ export default class TripDetails extends Vue {
     });
   }
 
-  // private updatePorts(val: string, update: any, abort: any, portType: any) {
-  // update(async () => {
-  //   try {
-  //     const db = pouchService.db;
-  //     const queryOptions: ListOptions = {
-  //       limit: 5,
-  //       start_key: val.toLowerCase(),
-  //       inclusive_end: true,
-  //       descending: false
-  //     };
-
-  //     const ports = await db.query(
-  //       pouchService.lookupsDBName,
-  //       'optecs_trawl/all_port_names',
-  //       queryOptions
-  //     );
-  //     this.portOptions = ports.rows.map((port: any) => port.value);
-  //     if (portType === 'end') {
-  //         this.portOptions.push('SAME AS START');
-  //     }
-  //   } catch (err) {
-  //     this.errorAlert(err);
-  //   }
-  // });
-  // }
-
-  // private startPortsFilterFn(val: string, update: any, abort: any) {
-  //     this.updatePorts(val, update, abort, 'start');
-  //     }
-
-  // private endPortsFilterFn(val: string, update: any, abort: any) {
-  //     this.updatePorts(val, update, abort, 'end');
-  //     }
-
-  // private deleteTrip() {
-  //     this.trip.trips.pop();
-  //     this.trip.activeTrip = null;
-  //     this.$router.push({path: '/trips/'});
-  // }
-
   private getStatus(otsTarget: OTSTarget) {
     if (
       moment(otsTarget.effectiveDate) <= moment() &&
@@ -461,6 +361,22 @@ export default class TripDetails extends Vue {
     } else {
       return 'Inactive';
     }
+  }
+
+  private async getEmRoster() {
+    const db = pouchService.db;
+    const queryOptions = {
+      start_key: '',
+      inclusive_end: true,
+      descending: false,
+      include_docs: false
+    };
+    const docs = await db.query(pouchService.lookupsDBName, 'obs_web/all_em_efp', queryOptions);
+    console.log(docs.rows);
+    for (const row of docs.rows) {
+      this.emRoster[row.key] = row.value;
+    }
+    console.log(this.emRoster);
   }
 
   private get getVesselPermits() {
@@ -617,17 +533,6 @@ export default class TripDetails extends Vue {
     this.$router.push({ path: '/trips/' });
   }
 
-  // private getTimeText(time: any) {
-  //     const difference = moment.duration(moment().diff(moment(time))).asSeconds();
-  //     if (difference < 15) {
-  //         return 'just now';
-  //     } else if (difference >= 15 && difference < 60 ) {
-  //         return Math.floor(difference) + ' seconds ago';
-  //     } else {
-  //         return Math.floor(difference / 60) + ' minutes ago';
-  //     }
-  // }
-
   get departureDate(): Date | undefined {
     if (this.trip.activeTrip) {
       return new Date(moment(this.trip.activeTrip.departureDate).format());
@@ -651,22 +556,6 @@ export default class TripDetails extends Vue {
       this.trip.activeTrip.returnDate = moment(this.tripDates[1]).format();
     }
   }
-
-  // private async getLatestDepartureDate() {
-  //   const db = pouchService.db;
-  //   const docs = await db.allDocs(pouchService.userDBName);
-
-  //   for (const row of docs.rows) {
-  //     if (
-  //       row.doc.type === 'wcgop-trip' && row.doc.tripStatus.description === 'open' &&
-  //       row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName
-  //     ) {
-  //       if (moment(row.doc.returnDate) > moment(this.latestReturnDate)) {
-  //         this.latestReturnDate = row.doc.returnDate;
-  //       }
-  //     }
-  //   }
-  // }
 
   private async getMaxDate() {
     if (this.trip.index === 0) {
@@ -808,6 +697,18 @@ private async getMinDate() {
   }
 
   private created() {
+    this.getEmRoster().then( () => {
+      let emPermit = null;
+      const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber];
+      for (const permit of this.permit.permits) {
+        if (permit.permitNumber === permitNum) {
+          emPermit = permit;
+        }
+      }
+      if (emPermit) {
+        Vue.set(this.trip.activeTrip!, 'permits', [emPermit]);
+      }
+    });
     this.getMaxDate();
     this.getMinDate();
     this.getOtsTargets();
@@ -828,18 +729,6 @@ private async getMinDate() {
 
   }
 
-  // @Watch('departureDate')
-  // private handler1(newVal: string, oldVal: string) {
-  //   this.endYearMonth = moment(newVal).format('YYYY/MM');
-  //   if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
-  //     this.returnDate = newVal;
-  //   }
-  //   console.log(this.returnDate);
-  //   if (this.returnDate === 'Invalid date') {
-  //     Vue.set(this, 'returnDate', newVal);
-  //     }
-  // }
-
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
     if (newVal[0]) {
@@ -857,6 +746,7 @@ private async getMinDate() {
     }
   }
 
+
 }
 </script>
 
@@ -869,34 +759,6 @@ private async getMinDate() {
 }
 
 </style>
-
-<!--
-<script>
-import Vue from 'vue';
-export default {
-    data() {
-        return {
-            trip: this.$store.state.activeTrip,
-            permits: ['one', 'two', 'three','four', 'five', 'six','seven'],
-            prompt: false,
-            newMessage: ''
-        }
-    },
-    methods: {
-        addMessage() {
-            this.trip.messages.push({author: this.$store.state.activeUser.name ,datetime: Date.now() ,text: this.newMessage});
-            this.newMessage = '';
-            this.prompt = false;
-        }
-    },
-    computed: {
-        tripMessages() {
-                return this.trip.messages.reverse()
-        }
-    }
-}
-</script>
--->
 
 <style>
 p {
