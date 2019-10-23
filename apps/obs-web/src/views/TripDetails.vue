@@ -698,10 +698,9 @@ private async getMinDate() {
 
   private created() {
     this.getEmRoster().then( () => {
-      let emPermit = undefined;
+      let emPermit = null;
       const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber];
-      console.log(permitNum)
-      for (const permit of this.permit.permits){
+      for (const permit of this.permit.permits) {
         if (permit.permitNumber === permitNum) {
           emPermit = permit;
         }
