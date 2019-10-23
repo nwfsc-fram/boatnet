@@ -13,6 +13,7 @@ export const state: TripState = {
   activeTrip: null,
   trips: [],
   newTrip: false,
+  index: null
 };
 
 // const getters: GetterTree<TripState, RootState> = {
