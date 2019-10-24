@@ -17,7 +17,15 @@
          :value.sync="trip[config.modelName]"
          :config="config"
          :model="trip"
+         @save="saveOnUpdate"
         ></boatnet-keyboard-select-list>
+
+        <boatnet-button-toggle-comp
+         v-if="config.type === 'toggle'"
+         :value.sync="trip[config.modelName]"
+         :config="config"
+         @save="saveOnUpdate">
+        </boatnet-button-toggle-comp>
       </div>
     </div>
 
@@ -34,19 +42,43 @@
 <script lang="ts">
 import { sampleData, sampleTrip } from '../data/data';
 
-import { createComponent, ref, reactive } from '@vue/composition-api';
+import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { WcgopTrip } from '@boatnet/bn-models';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 export default createComponent({
   setup(props, context) {
-    context.root.$store.dispatch('tripsState/setCurrentTrip', sampleTrip);
+    const store = context.root.$store;
     const appConfig = context.root.$store.state.appSettings.appConfig;
-    const trip = ref({});
+    const trip = reactive(context.root.$store.state.tripsState.currentTrip);
+
+    const test = (attribute: string, event: any) => {
+      const fields: string[] = attribute.split('.');
+      let value: any = sampleTrip;
+      for (let i = 0; i < fields.length - 1; i++) {
+        value = value[fields[i]];
+      }
+    };
+
+    const saveOnUpdate = async () => {
+      if (trip._id) {
+      } else {
+        await pouchService.db
+          .post(pouchService.userDBName, trip)
+          .then((response: any) => {
+            trip._id = response.id;
+            trip._rev = response.rev;
+          });
+      }
+      store.dispatch('tripsState/save', trip);
+    };
 
     return {
+      saveOnUpdate,
       appConfig,
       name,
-      trip
+      trip,
+      test
     };
   }
 });
