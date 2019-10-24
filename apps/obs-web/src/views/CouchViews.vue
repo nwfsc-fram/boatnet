@@ -215,11 +215,11 @@ export default class CouchViews extends Vue {
     private getValue(value: any, column: any) {
         switch (column) {
             case 'vessel':
-                return value.vesselName
+                return value.vesselName;
             case 'gear':
-                return value.map( (item) => item.description)
+                return value.map( (item: any) => item.description);
             case 'efpTypes':
-                return value.map( (item) => item.description)
+                return value.map( (item: any) => item.description);
             default:
                 if (Array.isArray(value)) {
                     return value[0];
