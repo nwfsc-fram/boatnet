@@ -33,6 +33,7 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { get } from 'lodash';
 
 export default createComponent({
   props: {
@@ -46,13 +47,7 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        const modelName = props.config ? props.config.modelName : '';
-        const names = modelName.split('.');
-        let val: any = props.model;
-        for (const name of names) {
-          val = val ? val[name] : '';
-        }
-        return val ? val : '';
+        return get(props.model, props.config ? props.config.modelName : '');
       },
       set: (val: string) => context.emit('update:value', val)
     });

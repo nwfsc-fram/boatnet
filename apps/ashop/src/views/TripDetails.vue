@@ -14,7 +14,8 @@
 
         <boatnet-keyboard-select-list
          v-if="config.type === 'input'"
-         :value.sync="trip[config.modelName]"
+         v-bind:value="trip[config.modelName]"
+         v-on:update:value="updateVal(config.modelName, $event)"
          :config="config"
          :model="trip"
          @save="saveOnUpdate"
@@ -22,7 +23,8 @@
 
         <boatnet-button-toggle-comp
          v-if="config.type === 'toggle'"
-         :value.sync="trip[config.modelName]"
+         v-bind:value="trip[config.modelName]"
+         v-on:update:value="updateVal(config.modelName, $event)"
          :config="config"
          @save="saveOnUpdate">
         </boatnet-button-toggle-comp>
@@ -40,11 +42,10 @@
 </style>
 
 <script lang="ts">
-import { sampleData, sampleTrip } from '../data/data';
-
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { WcgopTrip } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { set } from 'lodash';
 
 export default createComponent({
   setup(props, context) {
@@ -52,25 +53,22 @@ export default createComponent({
     const appConfig = context.root.$store.state.appSettings.appConfig;
     const trip = reactive(context.root.$store.state.tripsState.currentTrip);
 
-    const test = (attribute: string, event: any) => {
-      const fields: string[] = attribute.split('.');
-      let value: any = sampleTrip;
-      for (let i = 0; i < fields.length - 1; i++) {
-        value = value[fields[i]];
-      }
+    const updateVal = (attribute: string, event: any) => {
+      console.log('displa tht');
+      set(trip, attribute, event);
     };
 
     const saveOnUpdate = async () => {
-      if (trip._id) {
-      } else {
+     // if (trip._id) {
+        store.dispatch('tripsState/save', trip);
+     /* } else {
         await pouchService.db
           .post(pouchService.userDBName, trip)
           .then((response: any) => {
             trip._id = response.id;
             trip._rev = response.rev;
           });
-      }
-      store.dispatch('tripsState/save', trip);
+      }*/
     };
 
     return {
@@ -78,7 +76,7 @@ export default createComponent({
       appConfig,
       name,
       trip,
-      test
+      updateVal
     };
   }
 });

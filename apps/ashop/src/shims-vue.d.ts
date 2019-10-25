@@ -6,3 +6,5 @@ declare module '*.vue' {
 declare module 'quasar';
 declare module 'vue-touch-keyboard';
 declare module 'pouchdb-utils';
+declare module 'lodash';
+declare module 'vue-async-function';
