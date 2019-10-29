@@ -64,7 +64,9 @@ import moment from 'moment';
 
 Vue.component(BoatnetSummary);
 
+
 @Component({
+
   pouch: {
     /**
      * In pouch-vue library, this will create a reactive binding to the user trips,
@@ -85,9 +87,12 @@ Vue.component(BoatnetSummary);
 /**
  * Trips Vue
  * Display a selectable list of WCGOP Trips,
- * the trips are loaded from PouchDB and are fully reactive
+ * the trips are loaded from PouchDB and are fully reactive<br><br>
+ * State: alert, tripsState, pouchState<br>
+ * Action: clear, error, setCurrentTrip<br>
+ * Getter: currentTrip, addTest
+ * 
  */
-
 export default class Trips extends Vue {
   public message = ''; // Message used for Alert service from bn-common
   // Vuex States:
@@ -172,13 +177,17 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * Simple date formatter using the moment lib
+   * @arg date: date string<br>
+   * @arg cats: a cat
    */
   private formatDate(date: string) {
     return moment(date).format('MM/DD/YY');
   }
 
   /**
+   * @vuese
    * Navigate to a selected Haul (boatnet-summary)
    */
   private handleGoToHauls() {
@@ -186,7 +195,9 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-table handler for when a trip is selected
+   * @arg trip: a trip, type any
    */
   private handleSelectTrip(trip: any) {
     if (trip) {
@@ -198,6 +209,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-summary override: handle add trip + navigation to Trip Details
    */
   private handleAddTrip() {
@@ -211,6 +223,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-summary override: handle edit trip + navigation to Trip Details
    */
   private handleEditTrip() {
@@ -218,6 +231,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-summary override:
    * TODO handle end trip
    */
@@ -226,6 +240,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-summary override: handle trip deletion (removes from PouchDB and reactively updates the boatnet-table)
    * Clears currently selected trip
    */
@@ -235,6 +250,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * boatnet-table: data for table (wrap pouchdb if available)
    */
   public get userDBTrips() {
@@ -246,6 +262,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * Get name of read-only (Lookups) database from PouchDB - usually lookups-dev
    */
   private get currentReadonlyDB(): string {
@@ -258,6 +275,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * Get name of user database from PouchDB - usually userdb-xyz with base64 encoded username
    */
   private get currentUserDB(): string {
@@ -270,6 +288,7 @@ export default class Trips extends Vue {
   }
 
   /**
+   * @vuese
    * Get handle to currently selected database for pouch-vue to work correctly
    */
   private get lookupsDB() {
