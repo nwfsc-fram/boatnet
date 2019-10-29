@@ -25,6 +25,7 @@
                 <q-input v-model="vessel.activeVessel.stateRegulationNumber" label="State Regulation Number" @click.native="selectText"></q-input>
             </div>
         </div>
+
         <q-input v-model="vessel.activeVessel.registeredLength.value" label="Registered Length (feet)" type="number" @click.native="selectText"></q-input>
 
         <!-- <q-input v-model="vessel.activeVessel.vesselType.description" label="Vessel Type"></q-input> -->
@@ -74,6 +75,15 @@
             </q-chip>
         </template>
         </q-select>
+
+        <div class="row">
+            <div class="col-sm q-pa-md">
+                <q-select v-model="vessel.activeVessel.emHardware" label="EM Hardware" :options="hardwareOptions" :option-label="opt => opt.name" option-value="_id" stack-label></q-select>
+            </div>
+            <div class="col-sm q-pa-md">
+                <q-select v-model="vessel.activeVessel.thirdPartyReviewer" label="3rd Party Reviewer" :options="reviewerOptions" :option-label="opt => opt.name" option-value="_id" stack-label></q-select>
+            </div>
+        </div>
 
         <q-btn label="Cancel" color="red" icon="warning" @click="navigateBack"></q-btn>
         <q-btn label="Save" color="primary" icon="fa fa-save" @click="saveCaptain"></q-btn>
@@ -127,6 +137,8 @@ export default class VesselDetails extends Vue {
     private captains = [];
     private ports = [];
     private showDialog = false;
+    private hardwareOptions = [];
+    private reviewerOptions = [];
 
     private selectText(event: any) {
       event.target.select();
@@ -238,6 +250,43 @@ export default class VesselDetails extends Vue {
 
     private navigateBack() {
         this.$router.back();
+    }
+
+    private async getOptions() {
+        const db = pouchService.db;
+        const queryOptions = {
+            include_docs: true
+        };
+
+        try {
+            const hardware = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/all_em_hardware',
+                queryOptions
+            );
+
+            this.hardwareOptions = hardware.rows.map((row: any) => row.doc);
+            console.log(this.hardwareOptions);
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            const reviewers = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/all_third_party_reviewers',
+                queryOptions
+            );
+
+            this.reviewerOptions = reviewers.rows.map((row: any) => row.doc);
+            console.log(this.reviewerOptions);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    private created() {
+        this.getOptions();
     }
 
 }
