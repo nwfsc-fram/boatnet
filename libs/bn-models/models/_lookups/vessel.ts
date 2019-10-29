@@ -39,6 +39,8 @@ export interface Vessel extends Base {
   safetyMeasures?: SafetyMeasure[]; // 30+ items
   media?: Media[];
   isActive?: boolean;
+  emHardware?: string;
+  thirdPartyReviewer?: string;
 
   // TODO store crew at Vessel level?
   legacy?: {

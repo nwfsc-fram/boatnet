@@ -46,6 +46,8 @@
                 <q-td key="port" :props="props">{{ props.row.port ? props.row.port.name : '' }}</q-td>
                 <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
                 <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
+                <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.name : '' }}</q-td>
+                <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.name : '' }}</q-td>
             </q-tr>
         </template>
 
@@ -91,14 +93,17 @@ private vessels: Vessel[] = [];
 private loading: boolean = false;
 
 private columns = [
-    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: false },
+    {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
     {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
-    sortable: false, align: 'left' },
-    {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: false },
-    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: false },
-    {name: 'port', label: 'Port', field: 'port', required: true, align: 'left', sortable: false },
-    {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: false },
-    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: false},
+    sortable: true, align: 'left' },
+    {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: true },
+    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
+    {name: 'port', label: 'Port', field: 'port', required: true, align: 'left', sortable: true },
+    {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: true },
+    {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: false },
+    {name: 'emHardware', label: 'EM Hardware', field: 'emHardware', required: false, align: 'left', sortable: true },
+    {name: 'thirdPartyReviewer', label: '3rd Party Reviewer', field: 'thirdPartyReviewer', required: false, align: 'left', sortable: true },
+
 ];
 
 private async getVessels() {
