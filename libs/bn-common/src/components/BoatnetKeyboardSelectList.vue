@@ -32,10 +32,6 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { State, Action, Getter } from 'vuex-class';
-import { KeyboardState } from '@boatnet/bn-common';
-
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 
 export default createComponent({
@@ -51,7 +47,11 @@ export default createComponent({
     const valueHolder = computed({
       get: () => {
         const modelName = props.config ? props.config.modelName : '';
-        const val = props.model ? props.model[modelName] : '';
+        const names = modelName.split('.');
+        let val: any = props.model;
+        for (const name of names) {
+          val = val ? val[name] : '';
+        }
         return val ? val : '';
       },
       set: (val: string) => context.emit('update:value', val)

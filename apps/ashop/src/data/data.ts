@@ -3,7 +3,9 @@ export const sampleTrip = {
     uploadedBy: 'nicholas.shaffer@noaa.gov',
     uploadedDate: '2019-05-29T12:13:00-07:00',
     operationIDs: [],
-    vessel: 4487,
+    vessel: {
+        vesselName: 'Last Straw'
+    },
     departureDate: '2008-05-13T08:00:00-07:00',
     returnDate: '2008-06-17T12:00:00-07:00',
     departurePort: {
@@ -26,6 +28,10 @@ export const sampleTrip = {
     observers: [11889, [11889], [11956]],
     crewSize: 212,
     didFishingOccur: true,
+    captain: {
+        firstName: 'Noah\'s',
+        lastName: 'Ark'
+    },
     legacy: {
       cruiseNum: 11889,
       tripSeq: 61,
