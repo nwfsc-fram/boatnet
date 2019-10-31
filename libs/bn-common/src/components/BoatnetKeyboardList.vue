@@ -3,7 +3,7 @@
     <div v-for="(name) in getSortedAndCuratedList" :key="name" class="item">
       <q-item
         clickable
-        :active="selectedValue === name"
+        :active="value === name"
         @click="setSelected(name)"
         active-class="my-menu-link"
       >
@@ -22,13 +22,11 @@ import { Action, Getter } from 'vuex-class';
 export default class BoatnetKeyboardList extends Vue {
   @Prop() public list!: string[];
   @Prop() public value!: string;
-  private selectedValue: string = this.value;
 
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
 
   private setSelected(value: string) {
-    this.selectedValue = value;
     this.$emit('selected', value);
     this.setValueSelected(true);
   }

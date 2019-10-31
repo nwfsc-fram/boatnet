@@ -56,9 +56,10 @@ export default createComponent({
     });
 
     const setValue = (value: string) => {
-      Vue.set(props.model, props.config.modelName, value);
-      set(props.model, props.config ? props.config.modelName : '', value);
-    }
+      const model: any = props.model;
+      Vue.set(model, props.config ? props.config.modelName : '', value);
+      set(model, props.config ? props.config.modelName : '', value);
+    };
 
     const isActive = computed({
       get: () => {
