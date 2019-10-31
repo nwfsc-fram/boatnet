@@ -101,8 +101,8 @@ export default createComponent({
     };
 
     const addTrip = async () => {
-      const tripNum = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
-      const type = appMode + '-trip';
+      const tripNum: number = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
+      const type: string = appMode + '-trip';
       const trip: BaseTrip = { tripNum, type };
       await pouchService.db
         .post(pouchService.userDBName, trip)

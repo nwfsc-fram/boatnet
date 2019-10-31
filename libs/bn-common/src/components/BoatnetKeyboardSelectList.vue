@@ -34,6 +34,7 @@
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { get, set } from 'lodash';
+import Vue from 'vue';
 
 export default createComponent({
   props: {
@@ -50,10 +51,14 @@ export default createComponent({
         return get(props.model, props.config ? props.config.modelName : '');
       },
       set: (val: string) => {
-        context.emit('update:model', val);
-        set(props.model, props.config ? props.config.modelName : '', val);
+        setValue(val);
       }
     });
+
+    const setValue = (value: string) => {
+      Vue.set(props.model, props.config.modelName, value);
+      set(props.model, props.config ? props.config.modelName : '', value);
+    }
 
     const isActive = computed({
       get: () => {
@@ -81,8 +86,7 @@ export default createComponent({
     };
 
     const select = (value: string) => {
-      context.emit('update:v', value);
-      set(props.model, props.config ? props.config.modelName : '', value);
+      setValue(value);
       context.emit('save');
     };
 

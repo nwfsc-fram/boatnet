@@ -35,7 +35,7 @@ export default class BoatnetKeyboardList extends Vue {
 
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
-      item.toLowerCase().includes(this.value.toLowerCase())
+      item.toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
     ).slice(0, 4);
   }
 }

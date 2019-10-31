@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="text-h3 justify-center">Non Fishing Day</div>
+    <div class="text-h4 text-center q-pa-md">Non Fishing Day</div>
     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
       <div
         v-for="config of appConfig.nonFishingDay"

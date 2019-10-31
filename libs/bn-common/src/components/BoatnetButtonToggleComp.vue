@@ -26,7 +26,7 @@ export default class BoatnetButtonToggle extends Vue {
     return get(this.model, this.config.modelName);
   }
   set valueHolder(value: string) {
-    this.$emit('update:model', value);
+    Vue.set(this.model, this.config.modelName, value);
     set(this.model, this.config.modelName, value);
   }
 

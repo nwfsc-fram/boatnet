@@ -21,6 +21,7 @@ import moment from 'moment';
 
 import Calendar from 'primevue/calendar';
 import { get, set } from 'lodash';
+
 Vue.component('pCalendar', Calendar);
 
 @Component
@@ -38,8 +39,8 @@ export default class BoatnetDatetimePrime extends Vue {
   }
 
   set dateVal(date: any) {
+    Vue.set(this.model, this.config.modelName, date);
     set(this.model, this.config.modelName, moment(date).format());
-    this.$emit('update:model', moment(date).format());
     this.$emit('save');
   }
 
