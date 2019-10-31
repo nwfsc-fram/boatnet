@@ -8,94 +8,111 @@
       @edit="editTrip"
       @delete="deleteTrip"
       @goTo="goToHauls"
+      @end="end"
     >
       <template v-slot:table>
-        <boatnet-table v-if="tripSettings.columns" :data="tripData" :settings="tripSettings" @select="handleSelectTrip">
+        <boatnet-table
+          v-if="tripSettings.columns"
+          :data="data"
+          :settings="tripSettings"
+          @select="handleSelectTrip"
+        >
           <template v-slot:default="rowVals">
-            <q-td v-for="column of tripSettings.columns" :align="column.align" :key="column.name" :style="{ width: column.width, whiteSpace: 'normal' }">
-              {{ getValue(rowVals.row, column) }}
-            </q-td>
+            <q-td
+              v-for="column of tripSettings.columns"
+              :align="column.align"
+              :key="column.name"
+              :style="{ width: column.width, whiteSpace: 'normal' }"
+            >{{ getValue(rowVals.row.doc, column) }}</q-td>
           </template>
         </boatnet-table>
       </template>
 
-      <template v-slot:goToButtons>
-      </template>
-
+      <template v-slot:goToButtons></template>
     </boatnet-summary>
-    
   </q-page>
 </template>
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { getFormattedValue } from '../helpers/helpers';
-import { sampleData, sampleTrip } from '../data/data';
-import { BaseTrip } from '@boatnet/bn-models';
+import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { useAsync } from 'vue-async-function';
+import { get, remove } from 'lodash';
 
 export default createComponent({
   setup(props, context) {
     const router = context.root.$router;
     const store = context.root.$store;
+    const db = pouchService.db;
 
     const tripSettings = store.state.appSettings.appConfig.trips;
     const appMode = store.state.appSettings.appMode;
-    let cruise;
-    let tripData = [sampleTrip];
+    let cruise: AshopCruise = {};
 
     const currentTrip = computed({
       get: () => {
         const curr = store.getters['tripsState/currentTrip'];
         return curr;
       },
-      set: (trip: BaseTrip) =>
-       store.dispatch('tripsState/setCurrentTrip', trip)
+      set: (trip: BaseTrip) => store.dispatch('tripsState/setCurrentTrip', trip)
     });
 
-    const getCruiseInfo = async () => {
-      const db = pouchService.db;
+    const init = async () => {
       const docs = await db.allDocs(pouchService.userDBName);
       const rows = docs.rows;
-      cruise = rows.filter( (row: any) => row.doc.type === 'ashop-cruise' );
-      return cruise;
-    };
-
-    const updateCruiseInfo = async (trip: BaseTrip) => {
-      const db = pouchService.db;
-      let cruise = await getCruiseInfo();
-      if (cruise.length === 0) {
-        const newCruise = { type: 'ashop-cruise', trips: [trip] };
-        db.post(pouchService.userDBName, newCruise);
+      if (appMode === 'ashop') {
+        cruise = rows.filter((row: any) => row.doc.type === 'ashop-cruise');
+        cruise = cruise[0] ? cruise[0].doc : undefined;
+        const tripIds = cruise ? cruise.trips : [];
+        const queryOptions = {
+          keys: tripIds,
+          descending: true
+        };
+        try {
+          const result = await pouchService.db.allDocs(
+            pouchService.userDBName,
+            queryOptions
+          );
+          return result.rows;
+        } catch (error) {
+          console.log(error);
+        }
       } else {
-        cruise = cruise[0].doc;
-        cruise.trips.push(trip);
+        return rows.filter((row: any) => row.doc.type === appMode + '-trip');
+      }
+    };
+    const { data } = useAsync(init);
+
+    // TODO
+    // 1. call cruise API to generate friendly cruiseNum
+    // 2. Find a way to indicate which cruise is active on the userDB. Either remove
+    // all inactive data each time a cruise ends. Or add a column that
+    // indicates whether cruise is active.
+    const updateCruise = async (tripId: CouchID) => {
+      if (cruise) {
+        cruise.trips ? cruise.trips.push(tripId) : (cruise.trips = [tripId]);
         db.put(pouchService.userDBName, cruise);
-      }
-    };
-
-    const getTrips = async () => {
-      if (appMode === 'ashop') {
-        // let cruise = await getCruiseInfo();
-         //let trips = cruise ? cruise[0].doc.trips : [];
-         //console.log(trips);
-
-        //tripData = [sampleTrip];
       } else {
-        return [sampleTrip];
+        const newCruise = { type: 'ashop-cruise', trips: [tripId] };
+        db.post(pouchService.userDBName, newCruise);
       }
     };
-    getTrips();
-   
 
-    const addTrip = () => {
-      // lousy way of adding another trip, will modify when actually querying db for trips info
-      const tripNum = store.state.tripsState.currentTrip.tripNum + 1;
-      const type = appMode + '-trip';
+    const addTrip = async () => {
+      const tripNum: number = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
+      const type: string = appMode + '-trip';
       const trip: BaseTrip = { tripNum, type };
+      await pouchService.db
+        .post(pouchService.userDBName, trip)
+        .then((response: any) => {
+          trip._id = response.id;
+          trip._rev = response.rev;
+        });
       store.dispatch('tripsState/setCurrentTrip', trip);
-      if (appMode === 'ashop') {
-        updateCruiseInfo(trip);
+      if (appMode === 'ashop' && trip._id) {
+        updateCruise(trip._id);
       }
       goToTripDetails(tripNum);
     };
@@ -105,35 +122,60 @@ export default createComponent({
       goToTripDetails(tripNum);
     };
 
-    const deleteTrip = () => {
-      pouchService.db.remove(pouchService.userDBName, currentTrip);
+    const deleteCruise = async (tripId: CouchID) => {
+      if (cruise.trips) {
+        remove(cruise.trips, (n: string) => n === tripId);
+      }
+      db.put(pouchService.userDBName, cruise).then((response: any) => {
+        cruise._id = response.id;
+        cruise._rev = response.rev;
+      });
+    };
+
+    const deleteTrip = async () => {
+      const id = store.state.tripsState.currentTrip._id;
+      if (appMode === 'ashop') {
+        deleteCruise(id);
+      }
+      const del = data.value.findIndex((i: any) => i.id === id);
+      data.value.splice(del, 1);
+      pouchService.db.remove(
+        pouchService.userDBName,
+        store.state.tripsState.currentTrip
+      );
       store.dispatch('tripsState/setCurrentTrip', undefined);
     };
 
     const goToHauls = () => {
-      router.push({path: '/hauls/'});
+      router.push({ path: '/hauls/' });
     };
 
     const goToTripDetails = (tripNum: number) => {
-      router.push({path: '/tripdetails/' + tripNum});
+      router.push({ path: '/tripdetails/' + tripNum });
+    };
+
+    const end = () => {
+      const tripNum = store.state.tripsState.currentTrip.tripNum;
+      router.push({ path: '/endtrip/' + tripNum });
     };
 
     const handleSelectTrip = (trip: any) => {
       if (trip) {
-        store.dispatch('tripsState/setCurrentTrip', trip);
+        delete trip.doc.__index;
+        store.dispatch('tripsState/setCurrentTrip', trip.doc);
       } else {
         store.dispatch('tripsState/setCurrentTrip', undefined);
       }
     };
 
     const getValue = (row: any, attribute: any) => {
-      const fields = attribute.field.split('.');
-      let value = row;
-      for (const field of fields) {
-        value = value[field];
-      }
+      const value = get(row, attribute.field);
       if (attribute.type) {
-        return getFormattedValue(value, attribute.type, attribute.displayFormat);
+        return getFormattedValue(
+          value,
+          attribute.type,
+          attribute.displayFormat
+        );
       } else {
         return value;
       }
@@ -142,13 +184,14 @@ export default createComponent({
     return {
       tripSettings,
       currentTrip,
-      tripData,
       addTrip,
       editTrip,
       deleteTrip,
       goToHauls,
       handleSelectTrip,
-      getValue
+      end,
+      getValue,
+      data
     };
   }
 });

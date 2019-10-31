@@ -3,9 +3,11 @@ import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
+import EndTrip from './views/EndTrip.vue';
 import Login from './views/Login.vue';
 import Hauls from './views/Hauls.vue';
 import Settings from './views/Settings.vue';
+import NonFishingDay from './views/NonFishingDay.vue';
 
 import { authService } from '@boatnet/bn-auth';
 import store from './_store';
@@ -51,6 +53,18 @@ const router = new Router({
           }
         },
         {
+          path: '/endtrip/:tripNum',
+          name: 'endtrip',
+          component: EndTrip,
+          props: (route: any) => ({ tripNum: Number(route.params.tripNum) }),
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '' }
+            ]
+          }
+        },
+        {
           path: '/hauls',
           name: 'Hauls',
           component: Hauls,
@@ -59,6 +73,19 @@ const router = new Router({
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: '' },
               { name: 'Hauls', link: '' }
+            ]
+          }
+        },
+        {
+          path: '/nonfishingday',
+          name: 'nonfishingday',
+          component: NonFishingDay,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '' },
+              { name: 'Hauls', link: '' },
+              { name: 'Non Fishing Day', link: '' }
             ]
           }
         }

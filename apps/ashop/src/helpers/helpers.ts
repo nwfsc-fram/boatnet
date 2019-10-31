@@ -7,7 +7,7 @@ export const getFormattedValue: any = (value: any, type: string, format: string 
         case 'float':
             return value.toFixed(format);
         case 'dateTime':
-            return moment(value).format(format);
+            return value ? moment(value).format(format) : null;
         case 'lookup':
             return value[format];
         default:
