@@ -20,31 +20,35 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import moment from 'moment';
 
 import Calendar from 'primevue/calendar';
+import { get, set } from 'lodash';
 Vue.component('pCalendar', Calendar);
 
 @Component
 export default class BoatnetDatetimePrime extends Vue {
   @Prop() private config!: any;
-  @Prop() private date!: string;
   @Prop() private model!: any;
 
   get dateVal() {
-    if (this.date) {
-      return new Date(this.date);
+    const date = get(this.model, this.config.modelName);
+    if (date) {
+      return new Date(date);
     } else {
       return undefined;
     }
   }
 
   set dateVal(date: any) {
-    this.$emit('update:date', moment(date).format());
+    set(this.model, this.config.modelName, moment(date).format());
+    this.$emit('update:model', moment(date).format());
+    this.$emit('save');
   }
 
   private getDate(value: string) {
+    const date = get(this.model, this.config.modelName);
     if (value === 'today') {
       return new Date();
-    } else if (value === ('departureDate' || 'returnDate') && this.model[value]) {
-        return new Date(this.model[value]);
+    } else if (value === ('departureDate' || 'returnDate') && date) {
+        return new Date(date);
     } else {
         return null;
     }

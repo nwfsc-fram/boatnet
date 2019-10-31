@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
-import { get } from 'lodash';
+import { get, set } from 'lodash';
 
 export default createComponent({
   props: {
@@ -49,20 +49,26 @@ export default createComponent({
       get: () => {
         return get(props.model, props.config ? props.config.modelName : '');
       },
-      set: (val: string) => context.emit('update:value', val)
+      set: (val: string) => {
+        context.emit('update:model', val);
+        set(props.model, props.config ? props.config.modelName : '', val);
+      }
     });
 
     const isActive = computed({
       get: () => {
         const keyboardState = context.root.$store.state.keyboard;
-        if (props.config && props.config.displayName === keyboardState.activeFieldName && keyboardState.showKeyboard) {
+        if (
+          props.config &&
+          props.config.displayName === keyboardState.activeFieldName &&
+          keyboardState.showKeyboard
+        ) {
           return true;
         } else {
           return false;
         }
       },
-      set: (status: boolean) =>
-       store.dispatch('keyboard/setKeyboard', status)
+      set: (status: boolean) => store.dispatch('keyboard/setKeyboard', status)
     });
 
     const displayKeyboard = (event: any) => {
@@ -75,7 +81,9 @@ export default createComponent({
     };
 
     const select = (value: string) => {
-      context.emit('update:value', value);
+      context.emit('update:v', value);
+      set(props.model, props.config ? props.config.modelName : '', value);
+      context.emit('save');
     };
 
     const save = () => {
