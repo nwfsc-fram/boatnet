@@ -40,6 +40,12 @@ import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';
 import { get, remove } from 'lodash';
+import {
+  getCruise,
+  getTrips,
+  updateCruise,
+  deleteCruise
+} from '../helpers/cruiseInfo';
 
 export default createComponent({
   setup(props, context) {
@@ -49,7 +55,6 @@ export default createComponent({
 
     const tripSettings = store.state.appSettings.appConfig.trips;
     const appMode = store.state.appSettings.appMode;
-    let cruise: AshopCruise = {};
 
     const currentTrip = computed({
       get: () => {
@@ -63,42 +68,13 @@ export default createComponent({
       const docs = await db.allDocs(pouchService.userDBName);
       const rows = docs.rows;
       if (appMode === 'ashop') {
-        cruise = rows.filter((row: any) => row.doc.type === 'ashop-cruise');
-        cruise = cruise[0] ? cruise[0].doc : undefined;
-        const tripIds = cruise ? cruise.trips : [];
-        const queryOptions = {
-          keys: tripIds,
-          descending: true
-        };
-        try {
-          const result = await pouchService.db.allDocs(
-            pouchService.userDBName,
-            queryOptions
-          );
-          return result.rows;
-        } catch (error) {
-          console.log(error);
-        }
+        await getCruise(appMode, rows);
+        return await getTrips();
       } else {
         return rows.filter((row: any) => row.doc.type === appMode + '-trip');
       }
     };
     const { data } = useAsync(init);
-
-    // TODO
-    // 1. call cruise API to generate friendly cruiseNum
-    // 2. Find a way to indicate which cruise is active on the userDB. Either remove
-    // all inactive data each time a cruise ends. Or add a column that
-    // indicates whether cruise is active.
-    const updateCruise = async (tripId: CouchID) => {
-      if (cruise) {
-        cruise.trips ? cruise.trips.push(tripId) : (cruise.trips = [tripId]);
-        db.put(pouchService.userDBName, cruise);
-      } else {
-        const newCruise = { type: 'ashop-cruise', trips: [tripId] };
-        db.post(pouchService.userDBName, newCruise);
-      }
-    };
 
     const addTrip = async () => {
       const tripNum: number = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
@@ -120,16 +96,6 @@ export default createComponent({
     const editTrip = () => {
       const tripNum = store.state.tripsState.currentTrip.tripNum;
       goToTripDetails(tripNum);
-    };
-
-    const deleteCruise = async (tripId: CouchID) => {
-      if (cruise.trips) {
-        remove(cruise.trips, (n: string) => n === tripId);
-      }
-      db.put(pouchService.userDBName, cruise).then((response: any) => {
-        cruise._id = response.id;
-        cruise._rev = response.rev;
-      });
     };
 
     const deleteTrip = async () => {
