@@ -55,18 +55,6 @@ After your pull request is merged, you can safely delete your branch and pull th
 - Stop tracking the remote branch:
   `git branch -d -r origin/my-fix-branch`
 
-# Dealing with Excessively Large .Vue Files
-
-Ideally, our .vue files should be less than 500 lines to retain manageability. 
-Various techniques could be applied to make this happen:
-
-* Refactor components into multiple components (preferred method, we'd like to keep our .Vue files "standard" when possible)
-* Move typescript code out of the .Vue file, for example:
- 1. For file ```obs-wcgop-optecs/src/views/Settings.ts```, copied the contents of the ```<script>``` tag into ```optecs/wcgop-optecs/src/views/src/settings.ts```
- 2. In Settings.vue, refer to the new source code via a relative path (the "./" is important)
- ```
-<script lang="ts" src="./src/settings.ts">
-</script>
-```
-* Move functionality into a boatnet common library (e.g. bn-common)
-
+# Coding Standards
+  - For issues such as code limit size (and possible fixes) see https://github.com/nwfsc-fram/boatnet/blob/master/docs/dev-notes/coding-standards.md
+  
