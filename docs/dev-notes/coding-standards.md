@@ -17,3 +17,5 @@ WARNING in C:/git/boatnet/apps/obs-wcgop-optecs/src/views/src/settings.ts
   > 29 | }
        |  ^
 ```     
+
+- We have chosen to ignore webpack-related warnings like asset/entrypoint size limits, and performance recommendations (for the time being.)
