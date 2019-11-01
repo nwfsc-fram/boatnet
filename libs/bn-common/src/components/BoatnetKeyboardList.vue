@@ -1,5 +1,5 @@
 <template>
-  <q-list bordered padding class="rounded-borders">
+  <q-list bordered padding class="scroll rounded-borders">
     <div v-for="(name) in getSortedAndCuratedList" :key="name" class="item">
       <q-item
         clickable
@@ -34,7 +34,7 @@ export default class BoatnetKeyboardList extends Vue {
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
       item.toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
-    ).slice(0, 4);
+    );
   }
 }
 </script>
