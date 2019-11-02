@@ -25,6 +25,7 @@ import Vessels from './views/Vessels.vue';
 import VesselDetails from './views/VesselDetails.vue';
 import ELogbook from './views/ELogbook.vue';
 import CouchViews from './views/CouchViews.vue';
+import ViewHauls from './views/ViewHauls.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -74,6 +75,12 @@ const router = new Router({
           }
         },
         { path: '/couch-views', name: 'Couch Views', component: CouchViews,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward',
+              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        { path: '/view-hauls', name: 'View Hauls', component: ViewHauls,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward',
               'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
