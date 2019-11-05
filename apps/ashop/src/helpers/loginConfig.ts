@@ -9,8 +9,7 @@ export const loginConfigValues: {
         statInfo: {
             'Last Software Update Date': '',
             'Last Data Sync': '',
-            'Last Login Date': '',
-            'Quasar Version': ''
+            'Last Login Date': ''
         }
     },
     wcgop: {
@@ -18,8 +17,7 @@ export const loginConfigValues: {
         statInfo: {
             'Last Software Update Date': '',
             'Last Data Sync': '',
-            'Last Login Date': '',
-            'Quasar Version': ''
+            'Last Login Date': ''
         }
     }
 };

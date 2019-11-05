@@ -69,8 +69,6 @@ import { formatDate } from '@boatnet/bn-util';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { loginConfigValues } from '../helpers/loginConfig';
 
-import { Quasar } from 'quasar';
-
 @Component
 export default class Login extends Vue {
   @State('auth') private auth!: AuthState;
@@ -99,21 +97,12 @@ export default class Login extends Vue {
   private isPwd = true;
   private submitted = false;
 
-  // private quasarVersion = Quasar.version;
-  private stat = {
-    value: '22'
-  };
-
   private options = {
     useKbEvents: false,
     preventClickEvent: false
   };
 
   private unsubscribe: any;
-
-  get quasarVersion(): number {
-    return Quasar.version;
-  }
 
   public get isLoggingIn(): boolean {
     const isLoggingIn = !!this.auth.status.isLoggingIn;
@@ -135,7 +124,6 @@ export default class Login extends Vue {
     this.loginConfig.statInfo['Last Software Update Date'] = '-';
     this.loginConfig.statInfo['Last Data Sync'] = this.lastDataSyncDate;
     this.loginConfig.statInfo['Last Login Date'] = '-';
-    this.loginConfig.statInfo['Quasar Version'] = Quasar.version;
   }
 
   private mounted() {
