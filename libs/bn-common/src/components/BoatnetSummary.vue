@@ -30,17 +30,12 @@
 
     <div class="row q-gutter-sm relative-bottom">
       <q-btn
-        :label="currentScreen"
-        color="secondary"
-        >
-        </q-btn>
-      <q-btn
         label="Add"
         color="primary"
         icon="add"
         @click="onAdd"
-      >
-      </q-btn>
+      />
+      <slot name="addButtons"/>
 
       <q-btn
         v-if="showRemove && !hasData"
@@ -56,7 +51,6 @@
         icon="edit"
         @click="onEdit"
         :disabled="!current"
-
       />
       <q-btn
         v-if="showEnd"
@@ -65,7 +59,6 @@
         icon="done"
         @click="onEnd"
         :disabled="!current"
-
       />
       <q-btn
         v-if="showDelete"
@@ -74,7 +67,6 @@
         icon="delete_forever"
         @click="showDeleteDialog = true"
         :disabled="!current"
-
       />
       <q-btn
         v-if="showMove"
@@ -83,13 +75,12 @@
         icon="fas fa-exchange-alt"
         @click="onMove"
         :disabled="!current"
-
       />
 
       <q-space/>
       <slot name="goToButtons"/>
       <span style="position: relative; right: 5px">
-        <q-btn v-if="current" color="primary" icon="navigate_next" :label="getNextScreen()" @click="goTo"/>
+        <q-btn color="primary" icon="navigate_next" :label="getNextScreen()" @click="goTo" :disabled="!current"/>
       </span>
     </div>
   </span>
@@ -111,7 +102,7 @@ export default class BoatnetSummary extends Vue {
   private showDeleteDialog = false;
 
   private get showEnd() {
-    if (this.currentScreen === 'Trip' || this.currentScreen === 'Haul') {
+    if (this.currentScreen === 'Trip') {
       return true;
     } else {
       return false;
