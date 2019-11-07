@@ -38,13 +38,16 @@ Various techniques could be applied to make this happen:
 # Configuring ESLint to highlight linting errors in VS Code
 
 * Install ESLint extension
-* ```
+* Install eslint and typescript globally
+```
 npm install -g eslint
 npm install -g typescript
 ```
+
 * File->Preferences->Settings, edit settings.json (I had to click around to find that option)
   * add this block:
-  ```
+  
+ ```
  "eslint.validate": [
     {
       "language": "vue",
@@ -60,7 +63,9 @@ npm install -g typescript
     }
   ]
 ```
+
 * Create an eslint configuration file like so:
+
 ```
 <cd to boatnet>
 $ eslint --init
@@ -79,6 +84,7 @@ The config that you've selected requires the following dependencies:
 eslint-plugin-vue@latest @typescript-eslint/eslint-plugin@latest eslint-config-airbnb-base@latest eslint@^5.16.0 || ^6.1.0 eslint-plugin-import@^2.18.2 @typescript-eslint/parser@latest
 ? Would you like to install them now with npm? Yes
 ```
+
 * This was for boatnet. If you look at the ESLint output it will tell you where it's looking for the eslintrc)
 * If not working, ctrl-shift-P then ESLint: Show Output Channel, which should let you know what's going on
 
