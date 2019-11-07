@@ -35,3 +35,50 @@ Various techniques could be applied to make this happen:
 ```
 * Move functionality into a boatnet common library (e.g. bn-common)
 
+# Configuring ESLint to highlight linting errors in VS Code
+
+* Install ESLint extension
+* ```
+npm install -g eslint
+npm install -g typescript
+```
+* File->Preferences->Settings, edit settings.json (I had to click around to find that option)
+  * add this block:
+  ```
+ "eslint.validate": [
+    {
+      "language": "vue",
+      "autoFix": true
+    },
+    {
+      "language": "html",
+      "autoFix": true
+    },
+    {
+      "language": "javascript",
+      "autoFix": true
+    }
+  ]
+```
+* Create an eslint configuration file like so:
+```
+<cd to boatnet>
+$ eslint --init
+? How would you like to use ESLint? To check syntax, find problems, and enforce code style
+? What type of modules does your project use? JavaScript modules (import/export)
+? Which framework does your project use? Vue.js
+? Does your project use TypeScript? Yes
+? Where does your code run? Browser
+? How would you like to define a style for your project? Use a popular style guide
+? Which style guide do you want to follow? Airbnb (https://github.com/airbnb/javascript)
+? What format do you want your config file to be in? JavaScript
+Checking peerDependencies of eslint-config-airbnb-base@latest
+Local ESLint installation not found.
+The config that you've selected requires the following dependencies:
+
+eslint-plugin-vue@latest @typescript-eslint/eslint-plugin@latest eslint-config-airbnb-base@latest eslint@^5.16.0 || ^6.1.0 eslint-plugin-import@^2.18.2 @typescript-eslint/parser@latest
+? Would you like to install them now with npm? Yes
+```
+* This was for boatnet. If you look at the ESLint output it will tell you where it's looking for the eslintrc)
+* If not working, ctrl-shift-P then ESLint: Show Output Channel, which should let you know what's going on
+
