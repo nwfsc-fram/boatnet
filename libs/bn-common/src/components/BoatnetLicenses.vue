@@ -1,5 +1,5 @@
 <template>
-  <div class="q-col-gutter-md column">
+  <div>
     <span v-for="(item, i) in list" :key="i">
       <boatnet-keyboard-select-list :config="config" :model="item" @save="save">
         <template v-slot:after>
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { createComponent, ref, computed } from '@vue/composition-api';
 import { get, set } from 'lodash';
 import Vue from 'vue';
 
@@ -38,6 +38,7 @@ export default createComponent({
 
     const listName = props.config ? props.config.listName : '';
     const modelName = props.config ? props.config.modelName : '';
+    const maxListSize = props.config ? props.config.maxItems : 0;
 
     const addEmptyItem = (list: Array<Object>) => {
       const emptyItem = set({}, modelName, '');
@@ -75,10 +76,10 @@ export default createComponent({
 
     const add = () => {
       context.root.$store.dispatch('keyboard/setKeyboard', false);
-      if (list.length < 7) {
+      if (list.length < maxListSize) {
         addEmptyItem(list);
       } else {
-        context.emit('error', 'Cannot add more than 7 licenses');
+        context.emit('error', 'Reached limit, cannot add more items.');
       }
     };
 
