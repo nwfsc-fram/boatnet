@@ -39,8 +39,17 @@ export default class BoatnetDatetimePrime extends Vue {
   }
 
   set dateVal(date: any) {
-    Vue.set(this.model, this.config.modelName, date);
-    set(this.model, this.config.modelName, moment(date).format());
+    const modelName = this.config ? this.config.modelName : '';
+    const model: any = this.model;
+    const fields = modelName.split('.');
+
+    if (fields.length > 1) {
+      const newObjName = modelName.slice(modelName.indexOf('.') + 1);
+      const newObj = set({}, newObjName, date);
+      Vue.set(model, fields[0], newObj);
+    } else {
+      Vue.set(model, modelName, date);
+    }
     this.$emit('save');
   }
 

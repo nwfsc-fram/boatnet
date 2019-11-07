@@ -19,6 +19,12 @@
         </boatnet-table>
       </template>
 
+      <template v-slot:addButtons>
+        <span>
+          <q-btn color="primary" icon="add" label="Add Non Fish Day" @click="handleGoToNonFishDay"/>
+        </span>
+      </template>
+
       <template v-slot:goToButtons>
         <span style="position: relative; right: 10px">
           <q-btn color="primary" icon="fa fa-th-list" label="Logbook Mode" />
@@ -133,6 +139,10 @@ export default class Hauls extends Vue {
     if (this.currentHaul) {
       this.$router.push({ path: '/catch/' });
     }
+  }
+
+  private handleGoToNonFishDay() {
+    this.$router.push({ path: '/nonfishingday/' });
   }
 
   private addHauls() {

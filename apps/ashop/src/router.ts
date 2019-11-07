@@ -84,7 +84,7 @@ const router = new Router({
             breadcrumb: [
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: '' },
-              { name: 'Hauls', link: '' },
+              { name: 'Hauls', link: '/hauls' },
               { name: 'Non Fishing Day', link: '' }
             ]
           }
@@ -100,12 +100,9 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
-  const validPages = store.getters['appSettings/appConfig'].validAppViews;
 
   if (authRequired && !logged) {
     return next('/login');
-  } else if (to.name && validPages.length !== 0 && !validPages.includes(to.name)) {
-    next(false);
   } else {
     next();
   }

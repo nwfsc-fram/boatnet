@@ -1,12 +1,7 @@
 <template>
   <div class="q-col-gutter-md column">
-    <span v-for="(certificate, i) in certificates" :key="i">
-      <boatnet-keyboard-input
-        :value.sync="certificate.certificateNumber"
-        label="Permit/ License #"
-        keyboardType="numeric"
-        @save="save"
-      >
+    <span v-for="(item, i) in list" :key="i">
+      <boatnet-keyboard-select-list :config="config" :model="item" @save="save">
         <template v-slot:after>
           <q-icon
             :name="i != 0 ? 'clear' : 'add'"
@@ -14,7 +9,7 @@
             class="cursor-pointer"
           />
         </template>
-      </boatnet-keyboard-input>
+      </boatnet-keyboard-select-list>
     </span>
 
     <boatnet-delete-dialog
@@ -26,43 +21,76 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { Certificate } from '@boatnet/bn-models';
+import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { get, set } from 'lodash';
+import Vue from 'vue';
 
-@Component
-export default class BoatnetLicenses extends Vue {
-  @Prop({ default: () => [{ certificateNumber: '', certificationId: 0 }] })
-  private certificates!: Certificate[];
-  private deleteMessage: string = '';
-  private showDeleteDialog: boolean = false;
-  private deleteIndex!: number;
+export default createComponent({
+  props: {
+    config: Object,
+    model: Object
+  },
 
-  private save() {
-    this.$emit('update:certificates', this.certificates);
-    this.$emit('save');
+  setup(props, context) {
+    const deleteMessage = ref('');
+    const showDeleteDialog = ref(false);
+    let deleteIndex: number = 0;
+
+    const listName = props.config ? props.config.listName : '';
+    const modelName = props.config ? props.config.modelName : '';
+
+    const addEmptyItem = (list: Array<Object>) => {
+      const emptyItem = set({}, modelName, '');
+      list.splice(0, 0, emptyItem);
+    };
+
+    const initList = () => {
+      const model: any = props.model;
+      let list = get(model, listName);
+      if (!list) {
+        list = [];
+        addEmptyItem(list);
+        Vue.set(model, listName, list);
+      }
+      return list;
+    };
+    const list = initList();
+
+    const save = () => {
+      context.emit('update:list', list);
+      context.emit('save');
+    };
+
+    const confirmDelete = (index: number) => {
+      context.root.$store.dispatch('keyboard/setKeyboard', false);
+      showDeleteDialog.value = true;
+      deleteMessage.value = "Are you sure you'd like to delete this entry?";
+      deleteIndex = index;
+    };
+
+    const onDelete = () => {
+      list.splice(deleteIndex, 1);
+      context.emit('save');
+    };
+
+    const add = () => {
+      context.root.$store.dispatch('keyboard/setKeyboard', false);
+      if (list.length < 7) {
+        addEmptyItem(list);
+      } else {
+        context.emit('error', 'Cannot add more than 7 licenses');
+      }
+    };
+
+    return {
+      save,
+      add,
+      confirmDelete,
+      onDelete,
+      deleteMessage,
+      showDeleteDialog,
+      list
+    };
   }
-
-  private confirmDelete(index: number) {
-    this.showDeleteDialog = true;
-    this.deleteMessage =
-      'Are you sure you want to delete license ' +
-      this.certificates[index].certificateNumber +
-      '?';
-    this.deleteIndex = index;
-  }
-
-  private onDelete() {
-    this.certificates.splice(this.deleteIndex, 1);
-    this.$emit('update:certificates', this.certificates);
-    this.$emit('save');
-  }
-
-  private add() {
-    if (this.certificates.length < 7) {
-      this.certificates.unshift({});
-    } else {
-      this.$emit('error', 'Cannot add more than 7 licenses');
-    }
-  }
-}
+});
 </script>

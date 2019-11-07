@@ -13,6 +13,10 @@
       class="bg-primary text-white"
       style="padding: .5em; text-align: center; font-weight: bold"
     >Trip Details: {{ trip }}</div>
+
+    <div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
+      <q-btn color="primary" icon="play_arrow" label="Go to Hauls" @click="goToHauls" />
+    </div>
   </div>
 </template>
 
@@ -20,10 +24,11 @@
 </style>
 
 <script lang="ts">
-import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { createComponent, reactive } from '@vue/composition-api';
 
 export default createComponent({
   setup(props, context) {
+    const router = context.root.$router;
     const store = context.root.$store;
     const appConfig = context.root.$store.state.appSettings.appConfig;
     const trip = reactive(context.root.$store.state.tripsState.currentTrip);
@@ -32,10 +37,15 @@ export default createComponent({
       store.dispatch('tripsState/save', trip);
     };
 
+    const goToHauls = () => {
+      router.push({ path: '/hauls/' });
+    };
+
     return {
       appConfig,
       trip,
-      saveOnUpdate
+      saveOnUpdate,
+      goToHauls
     };
   }
 });

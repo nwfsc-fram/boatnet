@@ -20,6 +20,13 @@
       :model="model"
       @save="save"
     ></boatnet-button-toggle-comp>
+
+    <boatnet-licenses
+      v-if="config.type === 'list'"
+      :config="config"
+      :model="model"
+      @save="save"
+    ></boatnet-licenses>
   </div>
 </template>
 
