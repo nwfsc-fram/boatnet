@@ -88,3 +88,10 @@ eslint-plugin-vue@latest @typescript-eslint/eslint-plugin@latest eslint-config-a
 * This was for boatnet. If you look at the ESLint output it will tell you where it's looking for the eslintrc)
 * If not working, ctrl-shift-P then ESLint: Show Output Channel, which should let you know what's going on
 
+## ESLint rules configuration
+* TODO updating as we go, this is in .eslintrc.js
+```
+rules: {
+    "linebreak-style": "off"
+  },
+```
