@@ -7,3 +7,4 @@ declare module 'quasar';
 declare module 'pouchdb-utils';
 
 declare module 'quasar-calendar';
+
