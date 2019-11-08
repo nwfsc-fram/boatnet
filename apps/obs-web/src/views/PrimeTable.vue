@@ -1,0 +1,58 @@
+<template>
+  <div>
+    <DataTable
+      :value="value"
+      :filters="filters"
+      :paginator="true"
+      :rows="10"
+      :selection.sync="selected"
+      data-key="key"
+    >
+      <template #header>
+        <div style="text-align:left">
+          <MultiSelect
+            v-model="columns"
+            :options="columnOptions"
+            optionLabel="header"
+            placeholder="Select Columns"
+            style="width: 20em"
+          />
+        </div>
+      </template>
+
+      <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
+
+      <Column v-for="col of columns" :field="col.field" :header="col.header" :key="col.field" :sortable="true">
+        <template #filter>
+          <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+        </template>
+      </Column>
+
+    </DataTable>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
+import MultiSelect from 'primevue/multiselect';
+
+Vue.component('DataTable', DataTable);
+Vue.component('Column', Column);
+Vue.component('InputText', InputText);
+Vue.component('MultiSelect', MultiSelect);
+
+@Component
+export default class PrimeTable extends Vue {
+    @Prop({ default: [] })
+    private columns!: any[];
+    @Prop({ default: [] })
+    private value: any[] = [];
+
+    private selected: any = {};
+    private filters: any = {};
+    private columnOptions = [...this.columns];
+}
+</script>
