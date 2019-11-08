@@ -58,11 +58,30 @@
                     {{ getValue(haul, item) }}
                 </span>
             </div>
-            <q-table :data=hauls :columns="getCols" :pagination="pagination">
+
+            <!-- <div>
+                {{ hauls[0].catches.map( (thing)=> thing.catchContent.members[0] ) }}
+            </div> -->
+
+            <q-table :data="hauls" :columns="getCols" :pagination="pagination">
+
             </q-table>
+
+            <!-- <pDataTable v-if="hauls.length > 0" :value="hauls[0].catches" :resizableColumns="true" columnResizeMode="fit">
+                <pColumn field="catchNum" header="Catch Num"></pColumn>
+                <pColumn field="catchContent.code" header="Code"></pColumn>
+                <pColumn field="catchContent.name" header="Name"></pColumn>
+                <pColumn field="disposition.description" header="Disposition"></pColumn>
+                <pColumn field="weightMethod.description" header="Weight Method"></pColumn>
+                <pColumn field="weight.value" header="Weight"></pColumn>
+            </pDataTable> -->
+
+            <!-- {{ hauls[0].catches }} -->
+
         </div>
 
 
+        <!-- {{ hauls[0] }} -->
 
 
         <!-- {{ refHaul.catches[4].children }} -->
@@ -97,6 +116,12 @@ import axios from 'axios';
 import FP from 'lodash';
 import _ from 'lodash';
 
+import DataTable from 'primevue/datatable';
+Vue.component('pDataTable', DataTable);
+
+import Column from 'primevue/column';
+Vue.component('pColumn', Column);
+
 @Component
 export default class ViewHauls extends Vue {
 
@@ -109,40 +134,7 @@ export default class ViewHauls extends Vue {
     private hauls: any[] = [];
     private pagination = {
         rowsPerPage: 50
-    }
-
-    private get getCols() {
-        let cols: any[] = []
-        for (const sel of this.selection) {
-            cols.push(
-                {
-                name: sel,
-                label: sel,
-                field: sel,
-                align: 'left',
-                sortable: true
-                }
-            )
-        }
-        return cols;
-
-    }
-
-    private getValue(object: any, item: any) {
-        console.log(object, item);
-        // if (item.indexOf('[0]') !== -1) {
-        //     let returnVal = '';
-        //     const arrayLength = this.refHaul[item.split('[0]')[0]].length;
-
-        //     for (const arrayItem in this.refHaul[item.split('[0]')[0]]) {
-        //         console.log(arrayItem)
-        //         returnVal += _.get(this.refHaul, arrayItem.replace('[0]', '[' + arrayItem + ']'))
-        //     }
-        // } else {
-            return _.get(object, item);
-        // }
-
-    }
+    };
 
     private haulDef = {
         _id: 'string' ,
@@ -186,7 +178,7 @@ export default class ViewHauls extends Vue {
         },
         isEfpUsed: 'boolean',
         isDataQualityPassing: 'boolean'
-    }
+    };
 
         private old = [
         'locations.[type,coordinates[ lat, lon], depth {measurementType, value, units}, position, locationDate, _id, type, createdBy, createdDate, updatedBy, updatedDate, legacy {fishingLocationId, fishingActivityId}]',
@@ -195,9 +187,9 @@ export default class ViewHauls extends Vue {
         'gearPerformance {description, id}',
         'isEfpUsed',
         'isDataQualityPassing',
-        {"catches[]": [
-            "type",
-            {"catchContent": [
+        {'catches[]': [
+            'type',
+            {catchContent: [
                 '_id',
                 '_rev',
                 'type',
@@ -213,7 +205,7 @@ export default class ViewHauls extends Vue {
                     'type',
                     'createdBy',
                     'uploadedBy',
-                    {'taxonomy': [
+                    {taxonomy: [
                         '_id',
                         '_rev',
                         'type',
@@ -223,7 +215,7 @@ export default class ViewHauls extends Vue {
                         'scientificName',
                         'parent',
                         'itisTSN',
-                        {'legacy': [
+                        {legacy: [
                             'wcgopSpeciesId',
                             'ashopSpeciesId',
                             'dwId[]'
@@ -239,14 +231,14 @@ export default class ViewHauls extends Vue {
                     'isTrawlSurvey'
                 ]},
                 'definition',
-                {'legacy': [
+                {legacy: [
                     'wcgopCatchCategoryCode',
                     'wcgopCatchCategoryId'
                     ]},
                 {'children[]': [
                     '_id',
                     'type',
-                    {'catchContent': [
+                    {catchContent: [
                     ]}
                 ]}
             ]},
@@ -255,10 +247,10 @@ export default class ViewHauls extends Vue {
             'uploadedBy',
             'uploadedDate',
             'catchNum',
-            {'disposition': ['description', '_id'] },
-            {'weightMethod': ['description', '_id']},
-            {'weight': ['measurementType', 'value', 'units']},
-            {'legacy': [
+            {disposition: ['description', '_id'] },
+            {weightMethod: ['description', '_id']},
+            {weight: ['measurementType', 'value', 'units']},
+            {legacy: [
                 'catchId',
                 'catchCategoryId',
                 'catchCategoryName',
@@ -266,7 +258,38 @@ export default class ViewHauls extends Vue {
                 'catchPurity'
                 ]}
         ]}
-    ]
+    ];
+
+    private get getCols() {
+        const cols: any[] = [];
+        for (const sel of this.selection) {
+            cols.push(
+                {
+                name: sel,
+                label: sel,
+                field: sel,
+                align: 'left',
+                sortable: true
+                }
+            );
+        }
+        return cols;
+    }
+
+    private getValue(object: any, item: any) {
+        console.log(object, item);
+        // if (item.indexOf('[0]') !== -1) {
+        //     let returnVal = '';
+        //     const arrayLength = this.refHaul[item.split('[0]')[0]].length;
+
+        //     for (const arrayItem in this.refHaul[item.split('[0]')[0]]) {
+        //         console.log(arrayItem)
+        //         returnVal += _.get(this.refHaul, arrayItem.replace('[0]', '[' + arrayItem + ']'))
+        //     }
+        // } else {
+        return _.get(object, item);
+        // }
+    }
 
     private async getRefHaul() {
         const ref = await couchService.masterDB.get('74c40bfdb8408b32113dd1a8c6780e13');
@@ -278,15 +301,15 @@ export default class ViewHauls extends Vue {
         const options = {
             include_docs: true,
             limit: 10
-        }
+        };
 
         const docs = await masterDB.viewWithDocs<any>(
             'MainDocs',
              'all-operations',
             options
-        )
+        );
 
-        this.hauls = docs.rows.map( (row) => row.doc )
+        this.hauls = docs.rows.map( (row) => row.doc );
     }
 
     private get locations() {
@@ -294,7 +317,7 @@ export default class ViewHauls extends Vue {
     }
 
     private get gearType() {
-        return _.get(this.refHaul, 'gearType.description')
+        return _.get(this.refHaul, 'gearType.description');
     }
 
     private get flatKeys() {
@@ -308,34 +331,35 @@ export default class ViewHauls extends Vue {
 
         */
 
-        let paths: any = [];
+        const paths: any = [];
+        let path = '';
         for (const myKey of Object.keys(this.refHaul)) {
-            let path = myKey;
+            path = myKey;
 
             if (FP.isArray(this.refHaul[myKey]) && typeof this.refHaul[myKey][0] === 'object') {
-                path += '['
+                path += '[';
                 for (const subKey of Object.keys(this.refHaul[myKey][0])) {
                     if (FP.isPlainObject(this.refHaul[myKey][0][subKey])) {
                         path += subKey + '.';
                         for (const subSubKey of Object.keys(this.refHaul[myKey][0][subKey])) {
                             path += subSubKey + ', ';
                         }
-                        path += ', '
+                        path += ', ';
                     } else {
-                        path += subKey + ', '
+                        path += subKey + ', ';
                     }
                 }
-                path += ']'
+                path += ']';
                 paths.push(path);
             } else if (FP.isPlainObject(this.refHaul[myKey])) {
-                let path = myKey + '(';
+                path = myKey + '(';
                 for (const subKey of Object.keys(this.refHaul[myKey])) {
                     path += subKey;
                     if (Object.keys(this.refHaul[myKey]).indexOf(subKey) !== Object.keys(this.refHaul[myKey]).length) {
-                        path += ', '
+                        path += ', ';
                     }
                 }
-                path += ')'
+                path += ')';
                 paths.push(path);
             } else {
                 paths.push(myKey);
@@ -348,7 +372,9 @@ export default class ViewHauls extends Vue {
 
     private created() {
         this.getRefHaul();
-        this.getHauls();
+        this.getHauls().then( () => {
+            console.log(this.hauls[0]);
+        });
     }
 
 }

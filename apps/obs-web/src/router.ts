@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
 import Home from './views/Home.vue';
-import About from './views/About.vue';
+import LookupEditor from './views/LookupEditor.vue';
 import Debriefer from './views/Debriefer.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
@@ -68,7 +68,7 @@ const router = new Router({
       component: DefaultLayout,
       children: [
         { path: '', name: 'Home', component: Home },
-        { path: '/about', name: 'About', component: About,
+        { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward',
               'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }

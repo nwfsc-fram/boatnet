@@ -5,11 +5,11 @@ export const BeaufortTypeName = 'beaufort';
 
 export interface Beaufort extends Base {
   description?: string;
-  lookupVal?: number;
-
+  
   legacy?: {
-    programId?: number;
+    lookupVal?: number;
     active?: boolean;
+    programId?: number;
     sortOrder?: number;
     lookupId?: number;
     obsprodLoadDate?: BoatnetDate;

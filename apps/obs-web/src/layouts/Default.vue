@@ -165,6 +165,20 @@
           </q-item-section>
         </q-item>
 
+        <q-item
+          to="/lookup-editor"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+        >
+          <q-item-section avatar>
+            <q-icon name="edit_attributes" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Lookup Editor</q-item-label>
+            <q-item-label caption>Edit Boatnet Lookups/Config/Docs</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item-label header>Settings</q-item-label>
 
         <q-item
