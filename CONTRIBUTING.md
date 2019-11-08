@@ -55,3 +55,6 @@ After your pull request is merged, you can safely delete your branch and pull th
 - Stop tracking the remote branch:
   `git branch -d -r origin/my-fix-branch`
 
+# Coding Standards
+  - For issues such as code limit size (and possible fixes) see https://github.com/nwfsc-fram/boatnet/blob/master/docs/dev-notes/coding-standards.md
+  

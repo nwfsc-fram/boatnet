@@ -33,6 +33,8 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { get, set } from 'lodash';
+import Vue from 'vue';
 
 export default createComponent({
   props: {
@@ -46,28 +48,41 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        const modelName = props.config ? props.config.modelName : '';
-        const names = modelName.split('.');
-        let val: any = props.model;
-        for (const name of names) {
-          val = val ? val[name] : '';
-        }
-        return val ? val : '';
+        return get(props.model, props.config ? props.config.modelName : '');
       },
-      set: (val: string) => context.emit('update:value', val)
+      set: (val: string) => {
+        setValue(val);
+      }
     });
+
+    const setValue = (value: string) => {
+      const modelName = props.config ? props.config.modelName : '';
+      const model: any = props.model;
+      const fields = modelName.split('.');
+
+      if (fields.length > 1) {
+        const newObjName = modelName.slice(modelName.indexOf('.') + 1);
+        const newObj = set({}, newObjName, value);
+        Vue.set(model, fields[0], newObj);
+      } else {
+        Vue.set(model, modelName, value);
+      }
+    };
 
     const isActive = computed({
       get: () => {
         const keyboardState = context.root.$store.state.keyboard;
-        if (props.config && props.config.displayName === keyboardState.activeFieldName && keyboardState.showKeyboard) {
+        if (
+          props.config &&
+          props.config.displayName === keyboardState.activeFieldName &&
+          keyboardState.showKeyboard
+        ) {
           return true;
         } else {
           return false;
         }
       },
-      set: (status: boolean) =>
-       store.dispatch('keyboard/setKeyboard', status)
+      set: (status: boolean) => store.dispatch('keyboard/setKeyboard', status)
     });
 
     const displayKeyboard = (event: any) => {
@@ -80,7 +95,8 @@ export default createComponent({
     };
 
     const select = (value: string) => {
-      context.emit('update:value', value);
+      setValue(value);
+      context.emit('save');
     };
 
     const save = () => {
