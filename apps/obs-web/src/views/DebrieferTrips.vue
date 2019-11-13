@@ -1,134 +1,7 @@
 <template>
   <div>
     <div class="text-h6">Trips</div>
-    <q-table
-      :data="WcgopTrips"
-      :columns="tripColumns"
-      dense
-      row-key="key"
-      @mousedown.native.prevent
-      :pagination.sync="pagination"
-      :visible-columns="visibleTripColumns"
-      :selected-rows-label="getSelectedString"
-      selection="multiple"
-      :selected.sync="rowSelected"
-      :table-class="computedTableClass"
-      @update:selected="onRowSelectUpdate"
-    >
-      <template v-slot:top="props">
-        <div v-if="$q.screen.gt.xs" class="col">
-          <q-select
-            outlined
-            v-model="visibleTripColumns"
-            multiple
-            :options="tripColumns"
-            label="Visible Columns"
-            style="width: 270px"
-            option-label="label"
-            option-value="name"
-            emit-value
-            :display-value="null"
-          >
-            <template v-slot:append>
-              <q-btn
-                round
-                dense
-                flat
-                style="font-size: .5em"
-                icon="fa fa-plus-circle"
-                @click="addAll"
-              />
-              <q-btn
-                round
-                dense
-                flat
-                style="font-size: .5em"
-                icon="fa fa-minus-circle"
-                @click="removeAll"
-              />
-            </template>
-
-            <template v-slot:option="scope">
-              <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
-                <q-item-section>
-                  <q-item-label v-html="scope.opt.label" />
-                </q-item-section>
-                <q-item-section avatar v-if="scope.selected">
-                  <q-icon name="fa fa-check-circle" />
-                </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-        <template>
-          <q-btn color="primary text-white q-ma-md" @click="openEditDialog()">Edit</q-btn>
-          <q-btn
-            color="red text-white"
-            @click="openDeleteDialog()"
-            :disable="deleteButtonDisabled"
-          >Delete</q-btn>
-        </template>
-      </template>
-
-      <template v-slot:body="props">
-        <q-tr
-          :props="props"
-          @[computedNativeHover].native="props.selected = !props.selected"
-          @[computedNativeClick].native="props.selected = !props.selected"
-          @keyup.enter.native.stop.prevent="
-                $refs.myTable.isRowSelected(props.row.__index)
-              "
-          ref="myRef"
-        >
-          <q-td auto-width>
-            <q-checkbox dense v-model="props.selected" />
-          </q-td>
-          <q-td key="key" :props="props">{{ props.row.key }}</q-td>
-          <q-td
-            key="tripStatus"
-            :props="props"
-            @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'tripStatus')"
-            @mouseover.native="highlight(props.row.__index,'tripStatus')"
-            @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'tripStatus')"
-            :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('tripStatus')!=-1?'bg-grey-2':''"
-          >{{ props.row.tripStatus.description }}</q-td>
-          <q-td
-            key="vessel"
-            :props="props"
-            @mousedown.native="selectMultipleRowsMousedown(props.row.__index,'vessel')"
-            @mouseover.native="highlight(props.row.__index,'vessel')"
-            @mouseup.native="selectMultipleRowsMouseup(props.row.__index,'vessel')"
-            :class="selected.hasOwnProperty(props.row.__index) && selected[props.row.__index].indexOf('vessel')!=-1?'bg-grey-2':''"
-          >{{ props.row.vessel.vesselName }}</q-td>
-          <q-td key="program" :props="props">{{ props.row.program.name }}</q-td>
-          <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
-          <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
-          <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
-          <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
-          <q-td key="captain" :props="props">{{ props.row.captain }}</q-td>
-          <q-td key="isPartialTrip" :props="props">{{ props.row.isPartialTrip }}</q-td>
-          <q-td key="fishingDays" :props="props">{{ props.row.fishingDays }}</q-td>
-          <q-td
-            key="fishery"
-            :props="props"
-          >{{ props.row.fishery ? props.row.fishery.description :'' }}</q-td>
-          <q-td key="crewSize" :props="props">{{ props.row.crewSize }}</q-td>
-          <q-td key="firstReceiver" :props="props">{{ props.row.firstReceiver }}</q-td>
-          <q-td key="isFishProcessed" :props="props">{{ props.row.isFishProcessed }}</q-td>
-          <q-td key="logbookNum" :props="props">{{ props.row.logbookNum }}</q-td>
-          <q-td key="logbookType" :props="props">{{ props.row.logbookType }}</q-td>
-          <q-td key="observerLogbookNum" :props="props">{{ props.row.observerLogbookNum }}</q-td>
-          <q-td key="debriefer" :props="props">{{ props.row.debriefer }}</q-td>
-          <q-td key="brd" :props="props">{{ props.row.brd }}</q-td>
-          <q-td key="hlfc" :props="props">{{ props.row.hlfc }}</q-td>
-          <q-td key="fishTickets" :props="props">{{ props.row.fishTickets }}</q-td>
-          <q-td key="certificates" :props="props">{{ props.row.certificates }}</q-td>
-          <q-td key="waiver" :props="props">{{ props.row.waiver }}</q-td>
-          <q-td key="intendedGearType" :props="props">{{ props.row.intendedGearType }}</q-td>
-        </q-tr>
-      </template>
-    </q-table>
-
+    <prime-table :value="WcgopTrips" :columns="columns" />
     <q-dialog v-model="dialog">
       <q-card>
         <q-card-section>
@@ -173,12 +46,24 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
 
+import PrimeTable from './PrimeTable.vue';
+Vue.component('PrimeTable', PrimeTable);
+
 @Component
 export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-
+  private columns = [
+    { field: 'key', header: 'Trip Id' },
+    { field: 'tripStatus.description', header: 'Trip Status' },
+    { field: 'vessel.vesselName', header: 'Vessel' },
+    { field: 'program.name', header: 'Program' },
+    { field: 'departurePort.name', header: 'Departure Port' },
+    { field: 'departureDate', header: 'Departure Date' },
+    { field: 'returnPort.name', header: 'Return Port' },
+    { field: 'returnDate', header: 'Return Date' }
+  ];
 
   private WcgopTrips: any[] = [];
   private WcgopDialogTrips: WcgopTrip[] = [];
@@ -200,17 +85,6 @@ export default class DebrieferTrips extends Vue {
   private currentRow: number = -1;
   private active: boolean = false;
   private rowSelectionType: string = 'click';
-
-  private visibleTripColumns = [
-    'key',
-    'tripStatus',
-    'vessel',
-    'program',
-    'departurePort',
-    'departureDate',
-    'returnPort',
-    'returnDate'
-  ];
 
   private tripColumns = [
     {
@@ -640,17 +514,8 @@ export default class DebrieferTrips extends Vue {
         }`;
   }
 
-  private addAll() {
-    this.visibleTripColumns = this.tripColumns.map(
-      (tripColumns) => tripColumns.name
-    );
-  }
   private isRowSelected(key: any) {
     console.log('isRowSelected');
-  }
-
-  private removeAll() {
-    this.visibleTripColumns = [];
   }
 
   // update selected row handler
@@ -669,7 +534,6 @@ export default class DebrieferTrips extends Vue {
     console.log('hanlder2', newVal, oldVal);
     this.colSelector();
   }
-
 }
 </script>
 
