@@ -10,15 +10,15 @@
     <q-btn label='add role' @click='addRole'></q-btn>
     <q-btn label='delete role' @click='deleteRole'></q-btn>
     <q-btn label='add user' @click='addUser'></q-btn> -->
-    <q-btn label="get doc types" color="primary" @click="getDocTypes"></q-btn>
+    <q-btn label="get lookups" color="primary" @click="getDocTypes"></q-btn>
     <br><br>
 
     <div class="row">
       <div v-if="docTypes.length > 0" class="col3" style="padding: 4px; margin: 4px">
-          <div class="text-h6" style="padding: 0 15px; color: black">DOC TYPES:</div>
+          <div class="text-h6" style="padding: 0 15px; color: black">LOOKUP TYPES:</div>
         <q-scroll-area style="height: 650px; width: 230px">
           <q-list separator dense>
-            <q-item v-for="docType of docTypes.filter( (docType) =>  { return !['emefp', 'wcgop-trip', 'wcgop-operation', 'vessel', 'taxonomy-alias', 'taxonomy', 'person', 'permit', 'ots-target', 'observer-activity', 'logbook-capture', 'catch-grouping', 'first-receiver', 'model-definition'].includes(docType) } )" :key="docType" @click.native="docTypeSelection = docType" :active="docTypeSelection === docType" style="line-height: 2em">
+            <q-item v-for="docType of docTypes.filter( (docType) =>  { return !['saved-selections', 'emefp', 'wcgop-trip', 'wcgop-operation', 'vessel', 'taxonomy-alias', 'taxonomy', 'person', 'permit', 'ots-target', 'observer-activity', 'logbook-capture', 'catch-grouping', 'first-receiver', 'model-definition', 'trip-selection'].includes(docType) } )" :key="docType" @click.native="docTypeSelection = docType" :active="docTypeSelection === docType" style="line-height: 2em">
               {{ docType }}
             </q-item>
           </q-list>
@@ -27,7 +27,7 @@
       </div>
 
       <div v-if="foundDocs.length > 0" class="col3" style="padding: 4px; ; margin: 4px">
-          <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} DOCS:</div>
+          <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
         <q-scroll-area style="height: 650px; width: 350px">
           <!-- DOC TYPE MODEL: {{ docTypeModel }} -->
           <q-list separator dense>
@@ -44,7 +44,7 @@
               <div v-else>
                 {{ doc.doc.name }}
               </div>
-              <div v-if="'isActive' in doc.doc && !doc.doc.isActive" style="margin-left: 25px; position: relative; top: 0; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
+              <div v-if="'isActive' in doc.doc && !doc.doc.isActive" style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
               <div v-else style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: teal; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ACTIVE</div>
             </q-item>
           </q-list>
@@ -568,6 +568,8 @@ export default class LookupEditor extends Vue {
     } else {
       console.log(authService.getCurrentUser());
     }
+
+    this.getDocTypes();
   }
 
   @Watch('docTypeSelection')
