@@ -1,11 +1,11 @@
-import { Base } from '../_base/base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common/boatnet-date';
 
 export const PortTypeName = 'port';
 
 // TODO add an at-sea transfer Port ID to DB
 
-export interface Port extends Base {
+export interface Port extends BaseLookup {
   name?: string;
   code?: string;
   group?: string;

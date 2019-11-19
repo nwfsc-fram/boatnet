@@ -1,13 +1,13 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const BiostructureTypeTypeName = 'biostructure-type';
 
-export interface BiostructureType extends Base {
-  description?: string;
-  lookupVal?: number;
+export interface BiostructureType extends BaseLookup {
+  // description
 
   legacy?: {
+    lookupVal?: number;
     programId?: number;
     active?: boolean;
     sortOrder?: number;

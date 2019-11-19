@@ -1,4 +1,4 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 import { string } from 'postcss-selector-parser';
 import { Taxonomy } from './taxonomy';
@@ -12,8 +12,8 @@ declare interface SpeciesSubCategory {
 }
 
 // Source - OBSPROD.SPECIES_CATEGORY
-export interface SpeciesCategory extends Base {
-  description?: string;
+export interface SpeciesCategory extends BaseLookup {
+  // description?: string;
   taxonomy?: Taxonomy; // Beth to track down
   subCategories?: SpeciesSubCategory[]; // Beth to track down
 

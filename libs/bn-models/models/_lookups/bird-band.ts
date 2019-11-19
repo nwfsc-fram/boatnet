@@ -1,6 +1,6 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 
-export interface BirdBand extends Base {
+export interface BirdBand extends BaseLookup {
   whichLeg?: string;
   material?: string;
   colors?: string[];

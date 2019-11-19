@@ -223,7 +223,7 @@
                     label="State"
                     type="address-level1"
                     :options="usStateOptions"
-                    :option-label="opt => opt.abbreviation ? opt.abbreviation + ' (' + opt.name + ')' : ''"
+                    :option-label="opt => opt.abbreviation ? opt.abbreviation + ' (' + opt.description + ')' : ''"
                     option-value="_id"
                     @filter="statesFilterFn"
                     outlined dense
@@ -292,50 +292,6 @@
                         </template>
                 </q-select>
 
-                <!-- <q-input class="col-md q-pa-sm wide-field"
-                outlined
-                dense
-                v-model="user.activeUser.birthdate" label="Birth Date">
-                    <template v-slot:append>
-                        <q-icon name="event" class="cursor-pointer">
-                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="user.activeUser.birthdate" @input="() => $refs.qDateProxy.hide()" />
-                        </q-popup-proxy>
-                        </q-icon>
-                    </template>
-                </q-input> -->
-<!--
-                <q-select
-                class="col-md q-pa-sm"
-                label="Emergency Contacts"
-                v-model="user.activeUser.emergencyContacts"
-                :options="contacts"
-                @filter="contactsFilterFn"
-                :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')'"
-                option-value="_id"
-                use-input
-                multiple
-                outlined
-                use-chips
-                >
-                    <template v-slot:append>
-                        <q-btn flat style="font-size: .5em" icon="fa fa-plus-circle" @click="newContact" >&nbsp;Add Contact</q-btn>
-                    </template>
-
-                    <template v-slot:selected-item="scope">
-                        <q-chip
-                            removable
-                            dense
-                            @remove="scope.removeAtIndex(scope.index)"
-                            :tabindex="scope.tabindex"
-                            color="primary"
-                            text-color="white"
-                            >
-                            <q-avatar color="primary" text-color="white" icon="person" />
-                            <span>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
-                        </q-chip>
-                    </template>
-                </q-select> -->
                 <div class="q-pa-sm">
                     <div class="text-h6">Emergency Contacts:</div>
                     <q-btn v-if="!contactEditing" color="primary" label="add" @click="addEmergencyContact" class="q-ma-sm"></q-btn>
@@ -671,54 +627,6 @@ export default class UserDetails extends Vue {
     );
     }
 
-    // private filterVessels(val: string, update: any, abort: any) {
-    //   update(async () => {
-    //         try {
-    //             const db = pouchService.db;
-    //             const queryOptions = {
-    //             // limit: 5,
-    //             inclusive_end: true,
-    //             descending: false,
-    //             include_docs: true
-    //             };
-
-    //             // const vessels = await db.query(
-    //             //     pouchService.lookupsDBName,
-    //             //     'optecs_trawl/all_vessel_names',
-    //             //     queryOptions
-    //             //     );
-    //             // this.vessels = vessels.rows.map((row: any) => row.doc);
-
-    //             const vesselCaptains = await db.query(
-    //                 pouchService.lookupsDBName,
-    //                 'obs_web/vessel_captains',
-    //                 queryOptions
-    //             );
-    //             for (const row of vesselCaptains.rows) {
-    //                 for (const captain of row.doc.captains) {
-
-    //                     if (!vesselCaptains[captain.workEmail]) {
-    //                         vesselCaptains[captain.workEmail] = [];
-    //                     }
-    //                     const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
-    //                     vesselCaptains[captain.workEmail].push(row.doc);
-    //                 }
-    //             }
-
-    //             if (this.user.activeUser) {
-    //                 const activeUserEmail = this.user.activeUser!.workEmail;
-    //                 if (activeUserEmail) {
-    //                     this.vessels = vesselCaptains[activeUserEmail];
-    //                 }
-    //             }
-
-
-    //         } catch (err) {
-    //             console.log(err);
-    //         }
-    //       });
-    //     }
-
     private statesFilterFn(val: string, update: any, abort: any) {
         if (val === '') {
             update(() => {
@@ -746,13 +654,6 @@ export default class UserDetails extends Vue {
                 descending: false,
                 include_docs: true
                 };
-
-                // const vessels = await db.query(
-                //     pouchService.lookupsDBName,
-                //     'optecs_trawl/all_vessel_names',
-                //     queryOptions
-                //     );
-                // this.vessels = vessels.rows.map((row: any) => row.doc);
 
                 const vesselCaptains = await db.query(
                     pouchService.lookupsDBName,
@@ -876,15 +777,19 @@ export default class UserDetails extends Vue {
     }
 
     private async getUsStates() {
-        const masterDB: Client<any> = couchService.lookupsDB;
+        const db = pouchService.db;
         try {
-        const queryOptions: ListOptions = {
-            descending: false
+        const queryOptions = {
+            key: 'us-state',
+            reduce: false,
+            inclusive_end: true,
+            descending: false,
+            include_docs: true
         };
 
-        const usstates = await masterDB.viewWithDocs<any>(
-            'obs_web',
-            'all_us_states',
+        const usstates = await db.query(
+            pouchService.lookupsDBName,
+            'obs_web/all_doc_types',
             queryOptions
             );
 
@@ -900,23 +805,22 @@ export default class UserDetails extends Vue {
 
     private async getPhoneTypes() {
         try {
-            console.log(moment().format());
             const db = pouchService.db;
             const queryOptions = {
-            start_key: '',
-            inclusive_end: true,
-            descending: false,
-            include_docs: true
+                key: 'phone-number-type',
+                reduce: false,
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
             };
 
             const phoneTypes = await db.query(
             pouchService.lookupsDBName,
-            'obs_web/all_phone_number_types',
+            'obs_web/all_doc_types',
             queryOptions
             );
 
             console.log(phoneTypes);
-            console.log(moment().format());
 
             this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
         } catch (err) {
@@ -1121,27 +1025,3 @@ export default class UserDetails extends Vue {
 }
 
 </style>
-
-
-<!--
-<script>
-export default {
-    data() {
-        return {
-            user: this.$store.getters.activeUser,
-        }
-    },
-    computed: {
-        usStates() {
-            return this.$store.state.usStates
-        },
-        ports() {
-            return this.$store.state.ports.sort()
-        },
-        roles() {
-            return this.$store.state.roles.sort()
-        }
-    }
-}
-</script>
--->

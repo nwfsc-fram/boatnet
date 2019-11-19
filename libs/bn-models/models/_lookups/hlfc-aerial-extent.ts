@@ -1,10 +1,9 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const HlfcAerialExtentTypeName = 'hlfc-aerial-extent';
 
-export interface HlfcAerialExtent extends Base {
-  description?: string;
+export interface HlfcAerialExtent extends BaseLookup {
 
   legacy?: {
     lookupVal?: number;

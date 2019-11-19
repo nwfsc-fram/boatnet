@@ -1,9 +1,6 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 
 export const OtsTargetTypeTypeName = 'ots-target-type';
 
-export interface OtsTargetType extends Base {
-  description?: string;
-  lookupVal?: number;
-}
+export type OtsTargetType = BaseLookup;
 

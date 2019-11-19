@@ -1,6 +1,7 @@
-export interface EMHardware {
-    name?: string;
-  }
+import { BaseLookup } from '../_base';
 
 export const EMHardwareTypeName = 'em-hardware';
+
+export type EMHardware = BaseLookup;
+
 

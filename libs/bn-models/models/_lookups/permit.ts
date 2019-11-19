@@ -1,4 +1,4 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate, CouchID} from '../_common';
 import { Fishery, Vessel, Organization, Person } from '../_lookups';
 import { GovernmentOrganization } from './fishery';
@@ -43,7 +43,7 @@ Our permits approach:  consume all of the active and inactive
         and an opening of a new record
 */
 
-export interface Permit extends Base {
+export interface Permit extends BaseLookup {
     permitOrganization: GovernmentOrganization;
     fishery: Fishery;  // Federal, State, IPHC
     permitNumber?: string; // ODFW = Number

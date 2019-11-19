@@ -1,13 +1,13 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const VesselStatusTypeName = 'vessel-status';
 
-export interface VesselStatus extends Base {
-  description?: string;
-  lookupVal?: number;
+export interface VesselStatus extends BaseLookup {
+  // description?: string;
 
   legacy?: {
+    lookupVal?: number;
     programId?: number;
     active?: boolean;
     sortOrder?: number;

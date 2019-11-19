@@ -1,11 +1,11 @@
-import { Base } from '../_base';
 import { BoatnetDate } from '../_common';
+import { BaseLookup } from '../_base';
 
 export const BeaufortTypeName = 'beaufort';
 
-export interface Beaufort extends Base {
-  description?: string;
-  
+export interface Beaufort extends BaseLookup {
+  // description
+
   legacy?: {
     lookupVal?: number;
     active?: boolean;
@@ -15,4 +15,5 @@ export interface Beaufort extends Base {
     obsprodLoadDate?: BoatnetDate;
     lookupType?: string;
   };
+
 }

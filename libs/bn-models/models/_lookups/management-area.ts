@@ -1,4 +1,4 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 import { CatchGrouping } from './catch-grouping';
 import { TaxonomyAlias } from './taxonomy-alias';
@@ -8,7 +8,7 @@ declare type ManagementType = string; // TODO - lookup - IFQ, FMP, etc.
 export const ManagementAreaTypeName = 'management-area';
 
 // Source - OBSPROD.IFQ_SPECIE_GROUPINGS
-export interface ManagementArea extends Base {
+export interface ManagementArea extends BaseLookup {
   name: string; // possibly a concatenation of year + area for this
   year: BoatnetDate;
   area: FishingArea; // 2 lines only per management area

@@ -1,10 +1,9 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const GearPerformanceTypeName = 'gear-performance';
 
-export interface GearPerformance extends Base {
-  description?: string;
+export interface GearPerformance extends BaseLookup {
 
   legacy?: {
     lookupVal?: number;

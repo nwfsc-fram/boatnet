@@ -18,7 +18,7 @@
           <div class="text-h6" style="padding: 0 15px; color: black">LOOKUP TYPES:</div>
         <q-scroll-area style="height: 650px; width: 230px">
           <q-list separator dense>
-            <q-item v-for="docType of docTypes.filter( (docType) =>  { return !['saved-selections', 'emefp', 'wcgop-trip', 'wcgop-operation', 'vessel', 'taxonomy-alias', 'taxonomy', 'person', 'permit', 'ots-target', 'observer-activity', 'logbook-capture', 'catch-grouping', 'first-receiver', 'model-definition', 'trip-selection'].includes(docType) } )" :key="docType" @click.native="docTypeSelection = docType" :active="docTypeSelection === docType" style="line-height: 2em">
+            <q-item v-for="docType of docTypes.filter( (docType) =>  { return !['saved-selections', 'emefp', 'wcgop-trip', 'wcgop-operation', 'vessel', 'taxonomy', 'person', 'permit', 'ots-target', 'observer-activity', 'logbook-capture', 'catch-grouping', 'first-receiver', 'model-definition', 'trip-selection', 'trips-api'].includes(docType) } )" :key="docType" @click.native="docTypeSelection = docType" :active="docTypeSelection === docType" style="line-height: 2em">
               {{ docType }}
             </q-item>
           </q-list>
@@ -40,6 +40,9 @@
               </div>
               <div v-else-if="doc.doc.survey">
                 {{ doc.doc.survey }} config
+              </div>
+              <div v-else-if="doc.doc.alias">
+                {{ doc.doc.alias }}
               </div>
               <div v-else>
                 {{ doc.doc.name }}
@@ -139,8 +142,9 @@
                     </sub>
                   </span>
                   <span v-else>
-                    <q-input v-if="key !== 'legacy' && !Array.isArray(docTypeModel[key])" v-model="selectedDoc[key]" :label="key"></q-input>
-                    <q-select v-if="key !== 'legacy' && Array.isArray(docTypeModel[key])" v-model="selectedDoc[key]" :label="key" :options="docTypeModel[key]"></q-select>
+                    <q-toggle v-if="docTypeModel[key] === 'boolean'" v-model="selectedDoc[key]" :label="key"></q-toggle>
+                    <q-input v-else-if="key !== 'legacy' && !Array.isArray(docTypeModel[key])" v-model="selectedDoc[key]" :label="key"></q-input>
+                    <q-select v-else-if="key !== 'legacy' && Array.isArray(docTypeModel[key])" v-model="selectedDoc[key]" :label="key" :options="docTypeModel[key]"></q-select>
                   </span>
                 </div>
               </div>
@@ -444,6 +448,14 @@ export default class LookupEditor extends Vue {
         if (a.doc.survey > b.doc.survey) {
           return 1;
         } else if (a.doc.survey < b.doc.survey) {
+          return -1;
+        } else {
+          return 0;
+        }
+      } else if (a.doc.alias) {
+        if (a.doc.alias > b.doc.alias) {
+          return 1;
+        } else if (a.doc.alias < b.doc.alias) {
           return -1;
         } else {
           return 0;

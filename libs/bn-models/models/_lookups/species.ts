@@ -1,11 +1,11 @@
-import { Base } from '../_base/index';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 import { SpeciesCategory } from './species-category';
 import { SpeciesSubCategory } from './species-sub-category';
 
 export const SpeciesTypeName = 'species';
 
-export interface Species extends Base {
+export interface Species extends BaseLookup {
   scientificName: string;
   commonName: string;
   pacfinCode?: string;

@@ -1,3 +1,5 @@
+import { BaseLookup } from '../_base';
+
 // TODO Full implementation
 export const FisheryTypeName = 'fishery';
 export type Sector = string; // WCGOP Obs Analyst Sectors
@@ -5,7 +7,7 @@ export type GovernmentOrganization = string; // TODO LOOKUPS
 // NOAA Fisheries, ODFW, WDFW, CDFW, IPHC
 
 // from lookups table
-export interface Fishery {
+export interface Fishery extends BaseLookup {
   name: string;
   organization?: GovernmentOrganization;
   isIfq?: boolean; // CatchShares, Shoreside Hake, Motherside Catcher-Vessel
@@ -21,7 +23,6 @@ export interface Fishery {
   // IPHC Directed Commerical Halibut do not have permits (using vessel number for IPHC)
   //      we get a yearly list from IPHC
   //
-  isActive?: boolean;
   sector?: Sector; // WCGOP Analyst Sectors
   // For fishery that breaks out into multiple sectors, ends up being based on
   //  gear + proportional landings (so 50% or more Hake, etc.)
