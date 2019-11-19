@@ -150,11 +150,11 @@
               </div>
 
               <div class="col" style="margin: 10px">
-                <b>Legacy: - Should 'legacy' values be editable?</b>
+                <b>Legacy:</b>
                 <div v-for="key of Object.keys(selectedDoc)" :key="key + 2">
                   <span v-if="key === 'legacy'">
                     <span v-for="subKey of Object.keys(selectedDoc[key])" :key="subKey">
-                      <q-input v-model=selectedDoc[key][subKey] :label="subKey"></q-input>
+                      <div style="margin-left: 10px">{{ subKey }}: {{ selectedDoc[key][subKey] }}</div>
                     </span>
                   </span>
                 </div>
