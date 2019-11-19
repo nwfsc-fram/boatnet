@@ -554,7 +554,7 @@ export default class DebrieferOperations extends Vue {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
-        keys: Object.keys(this.debriefer.WcgopOperationTripDict)
+        keys: this.debriefer.operationIds
       };
 
       const operations = await masterDB.viewWithDocs<any>(
@@ -571,9 +571,9 @@ export default class DebrieferOperations extends Vue {
             for (const catchSpecimenRow of catchRow.specimens) {
               const opCatch = Object.assign({}, row.doc);
               opCatch.key = row.key;
-              opCatch.trip = this.debriefer.WcgopOperationTripDict[
+             /* opCatch.trip = this.debriefer.WcgopOperationTripDict[
                 operation._id
-              ];
+              ];*/
               opCatch.catch = catchRow;
               opCatch.catch.basket = catchSpecimenRow;
               this.WcgopCatchSpecimens.push(opCatch);
