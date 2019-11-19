@@ -46,6 +46,7 @@ export default class DebrieferOperations extends Vue {
     { field: 'catch.catchNum', header: 'Catch #' },
     { field: 'catch.disposition.description', header: 'Catch Disposition' },
     { field: 'catch.weightMethod.description', header: 'Catch WM' },
+    { field: 'catch.catchContent.name', header: 'Species' },
     { field: 'catch.weight.value', header: 'Catch Weight (lbs)' }
   ];
 
@@ -53,7 +54,7 @@ export default class DebrieferOperations extends Vue {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
-        keys: Object.keys(this.debriefer.WcgopOperationTripDict)
+        keys: this.debriefer.operationIds
       };
 
       const operations = await masterDB.listWithDocs(
@@ -63,8 +64,7 @@ export default class DebrieferOperations extends Vue {
       for (const operation of operations.rows) {
         for (const catchRow of operation.catches) {
           const opCatch = Object.assign({}, operation);
-          opCatch.key = operation.key;
-          opCatch.trip = this.debriefer.WcgopOperationTripDict[operation._id];
+          opCatch.key = catchRow._id;
           opCatch.catch = catchRow;
           this.WcgopCatches.push(opCatch);
         }

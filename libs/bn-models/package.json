@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.6",
+    "fibers": "^4.0.2",
     "typescript": "3.4.2"
   },
   "license": "MIT",

@@ -6,6 +6,12 @@
       :paginator="true"
       :rows="10"
       :selection.sync="selected"
+      :resizableColumns="true"
+      editMode="cell"
+      columnResizeMode="expand"
+      @row-select="onRowSelect"
+      @row-unselect="onRowUnselect"
+      @cell-edit-init="onCellEditInit"
       data-key="key"
     >
       <template #header>
@@ -22,18 +28,27 @@
 
       <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
 
-      <Column v-for="col of columns" :field="col.field" :header="col.header" :key="col.field" :sortable="true">
+      <Column
+        v-for="col of columns"
+        :field="col.field"
+        :header="col.header"
+        :key="col.field"
+        :sortable="true"
+      >
+        <template #editor="slotProps">
+          <InputText type="text" v-model="cellVal" class="p-column-filter" />
+        </template>
         <template #filter>
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
         </template>
       </Column>
-
     </DataTable>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { get, set } from 'lodash';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
@@ -46,13 +61,27 @@ Vue.component('MultiSelect', MultiSelect);
 
 @Component
 export default class PrimeTable extends Vue {
-    @Prop({ default: [] })
-    private columns!: any[];
-    @Prop({ default: [] })
-    private value: any[] = [];
+  @Prop({ default: [] })
+  private columns!: any[];
+  @Prop({ default: [] })
+  private value!: any[];
+  @Prop({ default: null })
+  private selected!: any[];
 
-    private selected: any = {};
-    private filters: any = {};
-    private columnOptions = [...this.columns];
+  private filters: any = {};
+  private columnOptions = [...this.columns];
+  private cellVal: string = '';
+
+  private onCellEditInit(event: any) {
+    this.cellVal = get(event.data, event.field);
+  }
+
+  private onRowSelect(event: any) {
+    this.$emit('onRowSelect', event);
+  }
+
+  private onRowUnselect(event: any) {
+    this.$emit('onRowUnselect', event);
+  }
 }
 </script>

@@ -1,7 +1,13 @@
 <template>
   <div>
     <div class="text-h6">Hauls</div>
-    <prime-table :value="WcgopOperations" :columns="columns" />
+    <prime-table
+      :value="WcgopOperations"
+      :columns="columns"
+      :selected="selected"
+      @onRowSelect="onRowSelect"
+      @onRowUnselect="onRowUnSelect"
+    />
   </div>
 </template>
 
@@ -35,15 +41,21 @@ export default class DebrieferOperations extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
+  @Action('addOperationId', { namespace: 'debriefer' })
+  private addOperationId: any;
+  @Action('removeOperationId', { namespace: 'debriefer' })
+  private removeOperationId: any;
+
   private WcgopTrips: WcgopTrip[] = [];
   private WcgopOperations: WcgopOperation[] = [];
   private pagination = { rowsPerPage: 50 };
+  private selected: any = [];
 
   private columns = [
     { field: 'legacy.tripId', header: 'Trip Id' },
     { field: 'operationNum', header: 'Haul #' },
     { field: 'catches.length', header: 'Catches' },
-    { field: 'location.position', header: 'Position' },
+    // { field: 'location.position', header: 'Position' },
     // {field: 'locations[0].location.coordinates[0]', header: 'Location'},
     { field: 'observerTotalCatch.measurement.value', header: 'OTC' },
     { field: 'gearType.description', header: 'Gear Type' },
@@ -55,25 +67,46 @@ export default class DebrieferOperations extends Vue {
 
   private async getOperations() {
     const masterDB: Client<any> = couchService.masterDB;
+    let operationIds: string[] = [];
     try {
+      // get trips
+      const tripOptions: ListOptions = {
+        keys: this.debriefer.tripIds
+      };
+
+      const trips = await masterDB.listWithDocs(tripOptions);
+      for (const row of trips.rows) {
+        operationIds = operationIds.concat(row.operationIDs);
+      }
+
+      // get operations
       const options: ListOptions = {
-        keys: Object.keys(this.debriefer.WcgopOperationTripDict)
+        keys: operationIds
       };
 
       const operations = await masterDB.listWithDocs(options);
-
       for (const operation of operations.rows) {
-        for (const locationRow of operation.locations) {
-          const opLoc = Object.assign({}, operation);
-          opLoc.key = operation.key;
-          opLoc.trip = this.debriefer.WcgopOperationTripDict[operation._id];
-          opLoc.location = locationRow;
-          this.WcgopOperations.push(opLoc);
+        //  for (const locationRow of operation.locations) {
+        const opLoc = Object.assign({}, operation);
+        opLoc.key = operation._id;
+        //   opLoc.location = locationRow;
+        this.WcgopOperations.push(opLoc);
+        if (this.debriefer.operationIds.indexOf(operation._id) !== -1) {
+          this.selected.push(opLoc);
         }
+        //  }
       }
     } catch (err) {
       this.error(err);
     }
+  }
+
+  private onRowSelect(event: any) {
+    this.addOperationId(event.data._id);
+  }
+
+  private onRowUnSelect(event: any) {
+    this.removeOperationId(event.data._id);
   }
 
   private created() {
