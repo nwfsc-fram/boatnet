@@ -1,10 +1,9 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const HlfcHorizontalExtentTypeName = 'hlfc-horizontal-extent';
 
-export interface HlfcHorizontalExtent extends Base {
-  description?: string;
+export interface HlfcHorizontalExtent extends BaseLookup {
 
   legacy?: {
     lookupVal?: number;

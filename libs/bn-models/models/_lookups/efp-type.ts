@@ -1,8 +1,6 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 
 export const EfpTypeTypeName = 'efp-type';
 
-export interface EfpType extends Base {
-  description?: string;
-  lookupVal?: number;
-}
+export type EfpType = BaseLookup;
+

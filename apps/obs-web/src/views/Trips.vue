@@ -21,7 +21,7 @@
       v-model="vessel.activeVessel"
       label="Set Active Vessel (staff only)"
       dense
-      stack-label
+   
       use-input
       fill-input
       hide-selected

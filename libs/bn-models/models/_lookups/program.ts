@@ -1,11 +1,11 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const ProgramTypeName = 'program';
 
-export interface Program extends Base {
+export interface Program extends BaseLookup {
   name?: string;
-  description?: string;
+  // description?: string;
 
   legacy?: {
     lookupId?: number;

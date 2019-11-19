@@ -1,10 +1,9 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const SightingConditionTypeName = 'sighting-condition';
 
-export interface SightingCondition extends Base {
-  description?: string;
+export interface SightingCondition extends BaseLookup {
 
   legacy?: {
     lookupVal?: number;
