@@ -4,6 +4,7 @@ import DefaultLayout from './layouts/Default.vue';
 import Home from './views/Home.vue';
 import LookupEditor from './views/LookupEditor.vue';
 import Debriefer from './views/Debriefer.vue';
+import DebrieferLayout from './views/DebrieferLayout.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
@@ -89,7 +90,7 @@ const router = new Router({
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
         {
-          path: '/debriefer', name: 'Debriefer', component: Debriefer,
+          path: '/debriefer', name: 'Debriefer', component: DebrieferLayout,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward',
               'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }

@@ -35,7 +35,7 @@
         :key="col.field"
         :sortable="true"
       >
-        <template #editor="slotProps">
+        <template v-if="isEditable" #editor="slotProps">
           <InputText type="text" v-model="cellVal" class="p-column-filter" />
         </template>
         <template #filter>
@@ -67,6 +67,8 @@ export default class PrimeTable extends Vue {
   private value!: any[];
   @Prop({ default: null })
   private selected!: any[];
+  @Prop({ default: false })
+  private isEditable!: boolean;
 
   private filters: any = {};
   private columnOptions = [...this.columns];
