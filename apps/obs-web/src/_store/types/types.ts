@@ -12,7 +12,9 @@ export interface AlertState {
 }
 
 export interface DebrieferState {
-  WcgopOperationTripDict: any;
+  tripIds: string[];
+  operationIds: string[];
+  catches: string[];
 }
 
 export interface TripState {
