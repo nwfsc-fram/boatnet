@@ -1,10 +1,9 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const HlfcMitigationTypeTypeName = 'hlfc-mitigation-type';
 
-export interface HlfcMitigationType extends Base {
-  description?: string;
+export interface HlfcMitigationType extends BaseLookup {
 
   legacy?: {
     lookupVal?: number;

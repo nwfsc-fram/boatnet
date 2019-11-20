@@ -78,10 +78,24 @@
 
         <div class="row">
             <div class="col-sm q-pa-md">
-                <q-select v-model="vessel.activeVessel.emHardware" label="EM Hardware" :options="hardwareOptions" :option-label="opt => opt.name" option-value="_id" stack-label></q-select>
+                <q-select
+                    v-model="vessel.activeVessel.emHardware"
+                    label="EM Hardware"
+                    :options="hardwareOptions"
+                    :option-label="opt => opt.description"
+                    option-value="_id"
+                    stack-label
+                ></q-select>
             </div>
             <div class="col-sm q-pa-md">
-                <q-select v-model="vessel.activeVessel.thirdPartyReviewer" label="3rd Party Reviewer" :options="reviewerOptions" :option-label="opt => opt.name" option-value="_id" stack-label></q-select>
+                <q-select
+                    v-model="vessel.activeVessel.thirdPartyReviewer"
+                    label="3rd Party Reviewer"
+                    :options="reviewerOptions"
+                    :option-label="opt => opt.description"
+                    option-value="_id"
+                    stack-label
+                ></q-select>
             </div>
         </div>
 
@@ -255,13 +269,15 @@ export default class VesselDetails extends Vue {
     private async getOptions() {
         const db = pouchService.db;
         const queryOptions = {
-            include_docs: true
+            include_docs: true,
+            key: 'em-hardware',
+            reduce: false
         };
 
         try {
             const hardware = await db.query(
                 pouchService.lookupsDBName,
-                'obs_web/all_em_hardware',
+                'obs_web/all_doc_types',
                 queryOptions
             );
 
@@ -271,10 +287,12 @@ export default class VesselDetails extends Vue {
             console.log(err);
         }
 
+        queryOptions.key = 'third-party-reviewer';
+
         try {
             const reviewers = await db.query(
                 pouchService.lookupsDBName,
-                'obs_web/all_third_party_reviewers',
+                'obs_web/all_doc_types',
                 queryOptions
             );
 

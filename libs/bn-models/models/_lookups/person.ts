@@ -1,4 +1,4 @@
-import { Base } from '../_base';
+import { Base, BaseLookup } from '../_base';
 import { Port } from './port';
 import { BoatnetDate } from '../_common/boatnet-date';
 import { CouchID } from '../_common';
@@ -59,7 +59,7 @@ export interface PhoneNumber extends Base {
 }
 
 // Originally CONTACTS
-export interface Person extends Base {
+export interface Person extends BaseLookup {
   // This is sensitive PII
   firstName?: string;
   lastName?: string;

@@ -1,10 +1,10 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const CatchDispositionTypeName = 'catch-disposition';
 
-export interface CatchDisposition extends Base {
-  description?: string;
+export interface CatchDisposition extends BaseLookup {
+  // description
 
   legacy?: {
     lookupVal?: number;

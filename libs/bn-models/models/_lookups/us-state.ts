@@ -1,7 +1,7 @@
-import { Base } from '../_base';
-export const UsStateTypeName = 'usstate';
+import { BaseLookup } from '../_base';
 
-export interface UsState extends Base {
-    name: string;
+export const UsStateTypeName = 'us-state';
+
+export interface UsState extends BaseLookup {
     abbreviation: string;
 }

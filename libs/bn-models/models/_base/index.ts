@@ -5,3 +5,4 @@ export * from './base-event';
 export * from './base-operation';
 export * from './base-specimen';
 export * from './base-trip';
+export * from './base-lookup';

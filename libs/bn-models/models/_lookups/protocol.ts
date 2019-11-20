@@ -1,4 +1,4 @@
-import { Base } from '../_base/index';
+import { Base, BaseLookup } from '../_base';
 import { Person } from './person';
 import { TaxonomyAlias } from './taxonomy-alias';
 import { BoatnetDate } from '../_common';
@@ -20,7 +20,7 @@ export interface ProgramYearProtocol extends Base {
   protocols: Protocol[];
 }
 
-export interface Protocol extends Base {
+export interface Protocol extends BaseLookup {
 
   taxonomy: TaxonomyAlias;
   principalInvestigator?: Person; // Who

@@ -3,6 +3,7 @@
     <div class="text-h6">Errors</div>
     <prime-table :value="data" :columns="errorColumns" />
     <div class="text-h6">Data</div>
+    <div class="text-h6">Trips</div>
     <prime-table
       :value="WcgopTrips"
       :columns="columns"

@@ -1,4 +1,4 @@
-import { Base } from '../_base/index';
+import { BaseLookup } from '../_base/index';
 import { Taxonomy } from './taxonomy';
 
 export const TaxonomyAliasTypeName = 'taxonomy-alias';
@@ -7,7 +7,7 @@ declare type AliasType = string; // Lookup
 declare type Lifestage = string; // eggs, juvenile, adult
 declare type Condition = string; // Might want a different name, this is for decomposed, etc.
 
-export interface TaxonomyAlias extends Base {
+export interface TaxonomyAlias extends BaseLookup {
   taxonomy: Taxonomy; // Use this instead of _id for clarity except for top level record
   alias: string; // Rockfish, Canary
   aliasType: AliasType; // Lookup - Common Name, WCGOP Tally Short Code, Pacfin Species Code, etc.
@@ -29,10 +29,10 @@ export interface TaxonomyAlias extends Base {
   lifestage?: Lifestage;
   condition?: Condition; // such as Crushed (for urchins), decomposed, regurgitated
 
-  // Program-specific indicators
-  isAshop?: boolean;
-  isWcgop?: boolean;
-  isTrawlSurvey?: boolean;
-  isHakeSurvey?: boolean;
-  isHookAndLineSurvey?: boolean;
+  // Program-specific indicators - now in BaseLookup
+  // isAshop?: boolean;
+  // isWcgop?: boolean;
+  // isTrawlSurvey?: boolean;
+  // isHakeSurvey?: boolean;
+  // isHookAndLineSurvey?: boolean;
 }

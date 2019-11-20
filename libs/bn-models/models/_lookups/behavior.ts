@@ -1,10 +1,10 @@
-import { Base } from '../_base';
+import { BaseLookup } from '../_base';
 import { BoatnetDate } from '../_common';
 
 export const BehaviorTypeName = 'behavior';
 
-export interface Behavior extends Base {
-  description?: string;
+export interface Behavior extends BaseLookup {
+  // description
 
   legacy?: {
     lookupVal?: number;

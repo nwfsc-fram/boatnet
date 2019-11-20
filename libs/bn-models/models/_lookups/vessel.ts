@@ -1,6 +1,6 @@
 // TODO Full implementation
 import { Port } from './port';
-import { Base } from '../_base';
+import { Base, BaseLookup } from '../_base';
 import { VesselType } from './vessel-type';
 import { BoatnetDate, Measurement, CouchID } from '../_common/index';
 import { Person, VesselCaptain } from './person';
@@ -24,7 +24,7 @@ export interface VesselPortAssignment {
   startDate?: BoatnetDate;
   endDate?: BoatnetDate;
 }
-export interface Vessel extends Base {
+export interface Vessel extends BaseLookup {
   vesselName?: string;
   vesselType?: VesselType;
   permits?: Permit[]; // IPHC will be considered a permit

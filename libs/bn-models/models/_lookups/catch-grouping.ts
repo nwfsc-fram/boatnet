@@ -1,4 +1,4 @@
-import { Base } from '../_base/index';
+import { BaseLookup } from '../_base';
 import { MarineDebris } from './marine-debris';
 import { TaxonomyAlias } from './taxonomy-alias';
 
@@ -13,7 +13,7 @@ CatchGrouping Type
   - Marine Debris
 */
 
-export interface CatchGrouping extends Base {
+export interface CatchGrouping extends BaseLookup {
   name: string;
   code?: number;
   members?: TaxonomyAlias[] | MarineDebris[]; // Could be an empty member list (e.g. sharks)

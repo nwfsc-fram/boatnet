@@ -1,9 +1,9 @@
 import { BaseCatch } from '../_base/base-catch';
-import { Base } from '../_base/base';
+import { BaseLookup } from '../_base';
 
 
 export const UnsortedCatchTypeName = 'unsorted-catch';
 
-export interface UnsortedCatch extends Base {
+export interface UnsortedCatch extends BaseLookup {
     label: string;
 }
