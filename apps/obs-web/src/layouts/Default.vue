@@ -152,7 +152,7 @@
         </q-item>
 
         <q-item
-          to="/debriefer"
+          to="/debriefer/summary"
           exact
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
