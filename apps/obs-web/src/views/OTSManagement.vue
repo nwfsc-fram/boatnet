@@ -231,30 +231,31 @@ export default class OtsMangement extends Vue {
     }
 
     private async getEMEFP() {
-      const masterDB: Client<any> = couchService.masterDB;
+        const masterDB: Client<any> = couchService.masterDB;
 
-      const emefpTrips = await masterDB.viewWithDocs<any>(
+        const emefpTrips = await masterDB.viewWithDocs<any>(
         'obs-web',
         'em-efp-trips'
-      );
+        );
 
-      for (const row of emefpTrips.rows) {
+        for (const row of emefpTrips.rows) {
         const trip = row.doc;
         this.emEfpTrips.push(trip);
-      }
+        }
 
-    const queryOptions = {
-        reduce: false,
-        include_docs: true,
-        key: 'emefp'
-    }
-      const emefpRoster: any = await masterDB.view(
-        'obs-web',
-        'all_doc_types',
-        queryOptions
-      );
+        const queryOptions = {
+            reduce: false,
+            include_docs: true,
+            key: 'emefp'
+        };
 
-      this.emEfpRoster = emefpRoster.rows.map( (row: any) => row.doc );
+        const emefpRoster: any = await masterDB.view(
+            'obs-web',
+            'all_doc_types',
+            queryOptions
+        );
+
+        this.emEfpRoster = emefpRoster.rows.map( (row: any) => row.doc );
 
     }
 

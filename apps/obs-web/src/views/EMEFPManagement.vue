@@ -109,7 +109,7 @@ private async getEmEfp() {
             queryOptions
             );
 
-        this.EM_EFP = emefp.rows.map((row: any) => row.doc)
+        this.EM_EFP = emefp.rows.map((row: any) => row.doc);
 
     } catch (err) {
         this.error(err);

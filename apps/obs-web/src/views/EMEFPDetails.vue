@@ -155,11 +155,11 @@ export default class EMEFPDetails extends Vue {
 
           this.gearTypeOptions = geartypes.rows.map((row: any) => row.doc.description).sort( (a: any, b: any ) => {
             if (a > b) {
-              return 1
+              return 1;
             } else if (a < b) {
-              return -1
+              return -1;
             } else {
-              return 0
+              return 0;
             }
           });
 
@@ -172,15 +172,15 @@ export default class EMEFPDetails extends Vue {
     if (val === '') {
       update(() => {
         this.options = this.vessels;
-      })
+      });
       return;
     }
     update(() => {
       const searchString = val.toLowerCase();
       this.options = this.vessels.filter(
         (vessel: any) => vessel.vesselName.toLowerCase().indexOf(searchString) > -1
-      )
-    })
+      );
+    });
 
   }
 
@@ -197,19 +197,19 @@ export default class EMEFPDetails extends Vue {
         'obs-web',
         'all_doc_types',
         queryOptions
-      )
+      );
 
       this.vessels = vessels.rows.map( (row: any) => row.doc).sort(
         (a: any, b: any) => {
           if (a.vesselName > b.vesselName) {
-            return 1
+            return 1;
           } else if (a.vesselName < b.vesselName) {
-            return -1
+            return -1;
           } else {
-            return 0
+            return 0;
           }
         }
-      )
+      );
     } catch (err) {
       console.log(err);
     }

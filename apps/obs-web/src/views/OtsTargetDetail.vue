@@ -334,7 +334,7 @@ export default class OtsTargetDetail extends Vue {
         reduce: false,
         include_docs: true,
         key: 'ots-target'
-      }
+      };
 
       const history = await masterDB.view<any>(
         'obs-web',
@@ -362,7 +362,7 @@ export default class OtsTargetDetail extends Vue {
         reduce: false,
         include_docs: true,
         key: 'emefp'
-      }
+      };
 
       const emefpRoster: any = await masterDB.viewWithDocs<any>(
         'obs-web',
