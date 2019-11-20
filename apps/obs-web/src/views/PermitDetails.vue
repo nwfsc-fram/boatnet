@@ -15,32 +15,6 @@
         <div>
           <div>Reg. No.: {{ permit.activePermit.vessel.coastGuardNumber ? permit.activePermit.vessel.coastGuardNumber : permit.activePermit.vessel.stateRegulationNumber }}</div>
           <div>Length: {{ permit.activePermit.vessel.registeredLength.value }}'</div>
-          <!-- <div>Owner: {{ permit.activePermit.vessel_owner }}</div> -->
-          <!-- <q-select
-            v-model="permit.activePermit.captains"
-            color="primary"
-            multiple
-            use-chips
-            use-input
-            label="Active Captains"
-            :options="options"
-            @filter="filterFn"
-            style="width: 100%; font-size: 16px"
-          >
-            <template v-slot:selected-item="scope">
-              <q-chip
-                removable
-                dense
-                @remove="scope.removeAtIndex(scope.index)"
-                :tabindex="scope.tabindex"
-                color="primary"
-                text-color="white"
-              >
-                <q-avatar color="primary" text-color="white" icon="person"/>
-                {{ scope.opt.label }}
-              </q-chip>
-            </template>
-          </q-select> -->
         </div>
       </div>
 
@@ -130,36 +104,3 @@ export default class PermitDetails extends Vue {
   max-width: 400px;
 }
 </style>
-
-<!--
-<script>
-
-const captains = ['seth', 'bob', 'sally', 'betty']
-
-export default {
-
-    data() {
-        return {
-            permit: this.$store.state.permits[this.$route.params.id],
-            permitCaptains: [],
-            options: captains
-        }
-    },
-    methods: {
-        filterFn (val, update) {
-        if (val === '') {
-            update(() => {
-            this.options = captains
-            })
-            return
-        }
-
-      update(() => {
-        const needle = val.toLowerCase()
-        this.options = captains.filter(v => v.toLowerCase().indexOf(needle) > -1)
-      })
-    }
-    }
-}
-</script>
--->
