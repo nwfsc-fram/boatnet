@@ -1,10 +1,11 @@
 <template>
   <div>
-    <div class="text-h6">Trips</div>
     <prime-table
       :value="WcgopTrips"
       :columns="columns"
       :selected="selected"
+      :isEditable="true"
+      title="Data"
       @onRowSelect="onRowSelect"
       @onRowUnselect="onRowUnSelect"
     />
@@ -46,8 +47,6 @@ export default class DebrieferTrips extends Vue {
   private editingCellRows: any = {};
   private editingRows = [];
   private originalRows: any = null;
-  private value: string = 'hello';
-
   private columns = [
     { field: 'key', header: 'Id' },
     { field: 'tripStatus.description', header: 'Status' },

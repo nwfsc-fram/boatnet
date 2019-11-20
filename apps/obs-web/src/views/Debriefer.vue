@@ -1,7 +1,12 @@
 <template>
-  <div class="q-pa-md">
+  <div>
+    <div style="text-align: right">
+      <q-icon name="view_stream" size="md" v-on:click="showBoth" />
+      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
+    </div>
+    <prime-table v-if="showErrors" :value="data" :columns="errorColumns" title="Errors" />
     <div class="q-gutter-y-md">
-      <q-card>
+      <q-card v-if="showData">
         <q-tabs
           v-model="tab"
           dense
@@ -11,15 +16,15 @@
           align="justify"
           narrow-indicator
         >
-          <q-tab name="trips" label="Trips"/>
-          <q-tab name="operations" label="Hauls"/>
-          <q-tab name="catch" label="Catch"/>
-          <q-tab name="catchSpecies" label="Catch Species"/>
-          <q-tab name="catchBaskets" label="Catch Baskets"/>
-          <q-tab name="specimens" label="Specimens"/>
+          <q-tab name="trips" label="Trips" />
+          <q-tab name="operations" label="Hauls" />
+          <q-tab name="catch" label="Catch" />
+          <q-tab name="catchSpecies" label="Catch Species" />
+          <q-tab name="catchBaskets" label="Catch Baskets" />
+          <q-tab name="specimens" label="Specimens" />
         </q-tabs>
 
-        <q-separator/>
+        <q-separator />
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
@@ -45,7 +50,6 @@
           <q-tab-panel name="specimens">
             <app-debriefer-catch-specimens></app-debriefer-catch-specimens>
           </q-tab-panel>
-
         </q-tab-panels>
       </q-card>
     </div>
@@ -82,6 +86,11 @@ export default class Debriefer extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
+  @Prop({ default: true })
+  private showErrors!: boolean;
+  @Prop({ default: true })
+  private showData!: boolean;
+
   private WcgopTrips: WcgopTrip[] = [];
   private WcgopOperations: WcgopOperation[] = [];
   private WcgopCatches: WcgopCatch[] = [];
@@ -91,5 +100,40 @@ export default class Debriefer extends Vue {
   private pagination = { rowsPerPage: 50 };
   private tab = 'trips';
 
+  private errorColumns = [
+    { field: 'severity', header: 'Severity' },
+    { field: 'description', header: 'Description' },
+    { field: 'tripNum', header: 'Trip #' },
+    { field: 'dateCreated', header: 'Date Created' },
+    { field: 'observer', header: 'Observer' },
+    { field: 'status', header: 'Status' },
+    { field: 'dateFixed', header: 'Date Fixed' },
+    { field: 'note', header: 'Note' }
+  ];
+
+  private data = [
+    {
+      severity: 'Warning',
+      description:
+        'Multiple dissections of the same type collected for sea whip, sea pen, or non-coral species.',
+      tripNum: 24266,
+      dateCreated: '1/1/19',
+      observer: 'Davis',
+      status: 'Unresolved',
+      dateFixed: '',
+      note: 'dissection count'
+    }
+  ];
+
+  private showBoth() {
+    this.showErrors = true;
+    this.showData = true;
+  }
+
+  private openNewDebriefingTab() {
+    const route = '/observer-web/debriefer/qa';
+    window.open(route, '_blank');
+    this.showErrors = false;
+  }
 }
 </script>

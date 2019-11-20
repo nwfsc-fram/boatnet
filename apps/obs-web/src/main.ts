@@ -13,7 +13,7 @@ import '@quasar/extras/mdi-v3/mdi-v3.css';
 import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
-  QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection, QItemLabel,
+  QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
   QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox,
   QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels, QTabPanel, QScrollArea, QSpinner,
@@ -26,6 +26,7 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
 import UserDetails from './views/UserDetails.vue';
+import Debriefer from './views/Debriefer.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
 import DebrieferCatches from './views/DebrieferCatches.vue';
@@ -38,7 +39,7 @@ Vue.use(Quasar, {
   config: {},
   components: {
     QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
-    QToolbarTitle, QBtn, QIcon, QList, QItem, QItemSection,
+    QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
     QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, QSplitter,
@@ -54,6 +55,7 @@ Vue.use(Quasar, {
 });
 
 Vue.component('appUserDetails', UserDetails);
+Vue.component('appDebriefer', Debriefer);
 Vue.component('appDebrieferTrips', DebrieferTrips);
 Vue.component('appDebrieferOperations', DebrieferOperations);
 Vue.component('appDebrieferCatches', DebrieferCatches);

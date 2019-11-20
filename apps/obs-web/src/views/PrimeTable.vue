@@ -15,14 +15,24 @@
       data-key="key"
     >
       <template #header>
-        <div style="text-align:left">
+       
+        <div style="text-align:left; float:left">
           <MultiSelect
             v-model="columns"
             :options="columnOptions"
             optionLabel="header"
             placeholder="Select Columns"
             style="width: 20em"
-          />
+          >
+          <template #value="slotProps">
+            <div>Display Columns</div>
+          </template>
+          </MultiSelect>
+        </div>
+        <!--<div class="text-h6 q-pl-md" style="text-align:center; float:left">{{title}}</div>-->
+        <div style="text-align: right">
+            <i class="pi pi-search" style="margin: 4px 4px 0px 0px;"></i>
+            <InputText v-model="filters['global']" placeholder="Global Search" size="50" />
         </div>
       </template>
 
@@ -35,12 +45,12 @@
         :key="col.field"
         :sortable="true"
       >
-        <template #editor="slotProps">
+        <template v-if="isEditable" #editor="slotProps">
           <InputText type="text" v-model="cellVal" class="p-column-filter" />
         </template>
-        <template #filter>
+       <!-- <template #filter>
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
-        </template>
+        </template>-->
       </Column>
     </DataTable>
   </div>
@@ -67,6 +77,10 @@ export default class PrimeTable extends Vue {
   private value!: any[];
   @Prop({ default: null })
   private selected!: any[];
+  @Prop({ default: false })
+  private isEditable!: boolean;
+  @Prop()
+  private title!: string;
 
   private filters: any = {};
   private columnOptions = [...this.columns];
