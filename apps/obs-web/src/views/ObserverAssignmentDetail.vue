@@ -107,21 +107,6 @@ private get getObserverNames() {
     return this.observers.map((observer) => observer.firstName + ' ' + observer.lastName );
     }
 
-// private observerAvailability = [
-//     {observerName: 'Seth Gerou', status: 'Available For Dates',
-//     observerPhone: 2125551212, lastScheduledDate: '2019/03/04',
-//     nextScheduledDate: '2019/05/25'},
-//     {observerName: 'Will Smith', status: 'Available For Dates',
-//     observerPhone: 2125551212, lastScheduledDate: '2019/04/04',
-//     nextScheduledDate: '2019/05/15'},
-//     {observerName: 'Nick Schaffer', status: 'Available For Dates',
-//     observerPhone: 2125551212, lastScheduledDate: '2019/04/12',
-//     nextScheduledDate: '2019/05/10'},
-//     {observerName: 'Melina Shak', status: 'Not Available For Dates',
-//     observerPhone: 2125551212, lastScheduledDate: '2019/05/01',
-//     nextScheduledDate: '2019/06/14'},
-// ];
-
 private columns = [
         {name: 'observerName', label: 'Observer', field: 'observer', required: true,
         align: 'left', sortable: true },
@@ -178,7 +163,6 @@ private async updateTrip() {
         masterDB.put(this.oa.activeTrip._id, this.oa.activeTrip, this.oa.activeTrip._rev).then( () => {
             this.$router.push({path: '/observer-assignment'});
         });
-        // pouchService.db.put(pouchService.userDBName, this.oa.activeTrip);
     } catch (err) {
         console.log(err);
     }

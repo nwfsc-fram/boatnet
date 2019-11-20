@@ -161,32 +161,3 @@ export default class UserConfig extends Vue {
 
 }
 </script>
-
-<!--
-<script>
-export default {
-    data() {
-        return {
-            notificationOptions: ['email', 'sms/text', 'app']
-        }
-    },
-    computed: {
-        activeVessel : {
-            get() {
-                return this.$store.getters.activeVessel
-            },
-            set(value) {
-                this.$store.dispatch('updateActiveVessel', value)
-            }
-        },
-        activeUser: {
-            get() {
-            },
-            set(value) {
-                this.$store.dispatch('updateActiveUser', value)
-            }
-        }
-    }
-}
-</script>
--->

@@ -26,7 +26,7 @@
             @request="onRequest"
             binary-state-sort
             hide-bottom
-            >
+        >
 
             <template v-slot:top="props">
                 <q-input label="Vessel Name" v-model="vessel.filterText" debounce="300" placeholder="Search" style="width:100%" autofocus >
@@ -36,20 +36,20 @@
                 </q-input>
             </template>
 
-        <template v-slot:body="props">
-            <q-tr :props="props" @click.native="vesselDetails(props.row, props)">
-                <q-td key="id"></q-td>
-                <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
-                <q-td key="vesselCGNumber" :props="props">{{ (props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber) }}</q-td>
-                <q-td key="vesselType" :props="props">{{ props.row.vesselType ? props.row.vesselType.description : '' }}</q-td>
-                <q-td key="registeredLength" :props="props">{{ props.row.registeredLength.value ? props.row.registeredLength.value : '' }}</q-td>
-                <q-td key="port" :props="props">{{ props.row.port ? props.row.port.name : '' }}</q-td>
-                <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
-                <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
-                <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.name : '' }}</q-td>
-                <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.name : '' }}</q-td>
-            </q-tr>
-        </template>
+            <template v-slot:body="props">
+                <q-tr :props="props" @click.native="vesselDetails(props.row, props)">
+                    <q-td key="id"></q-td>
+                    <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
+                    <q-td key="vesselCGNumber" :props="props">{{ (props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber) }}</q-td>
+                    <q-td key="vesselType" :props="props">{{ props.row.vesselType ? props.row.vesselType.description : '' }}</q-td>
+                    <q-td key="registeredLength" :props="props">{{ props.row.registeredLength.value ? props.row.registeredLength.value : '' }}</q-td>
+                    <q-td key="port" :props="props">{{ props.row.port ? props.row.port.name : '' }}</q-td>
+                    <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
+                    <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
+                    <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.name : '' }}</q-td>
+                    <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.name : '' }}</q-td>
+                </q-tr>
+            </template>
 
         </q-table>
 
@@ -127,40 +127,6 @@ private async getVessels() {
     }
   }
 
-    //   private get filteredVessels() {
-    //     if (this.vessel.filterText.length > 0) {
-    //         return this.vessels.filter( (vessel: any) => vessel.vesselName.toLowerCase().includes( this.vessel.filterText.toLowerCase() ));
-    //     } else {
-    //         return this.vessels;
-    //         }
-    // }
-
-    // private vesselsFilterFn(val: string, update: any, abort: any) {
-    //     update(
-    //         async () => {
-    //             try {
-    //                 const db = couchService.masterDB;
-    //                 const queryOptions = {
-    //                 limit: 50,
-    //                 start_key: val.toLowerCase(),
-    //                 inclusive_end: true,
-    //                 descending: false,
-    //                 include_docs: true
-    //                 };
-
-    //                 const vessels = await db.viewWithDocs(
-    //                     'obs-web',
-    //                     'all_vessels',
-    //                     queryOptions
-    //                     );
-    //                 this.vessels = vessels.rows.map((row: any) => row.doc);
-    //             } catch (err) {
-    //                 this.error(err);
-    //             }
-    //         }
-    //     );
-    // }
-
   private async onRequest(props: any) {
 
     const { page, rowsPerPage, rowsNumber, sortBy, descending } = props.pagination;
@@ -180,7 +146,6 @@ private async getVessels() {
 
         const vessels = await db.viewWithDocs(
             'obs-web',
-            // 'searchable_vessels',
             'all_vessels',
             queryOptions
             );

@@ -13,19 +13,19 @@
           <q-item v-if="ots.newTarget">
             <q-item-section>
             <q-select
-            v-model="ots.activeOTSTarget.fishery"
-            dense
-            label="Fishery"
-            stack-label
-            :options="fisheries"
+              v-model="ots.activeOTSTarget.fishery"
+              dense
+              label="Fishery"
+              stack-label
+              :options="fisheries"
             ></q-select>
 
             <q-select
-            v-model="ots.activeOTSTarget.targetType"
-            dense
-            label="Target Type"
-            stack-label
-            :options="targetTypes"
+              v-model="ots.activeOTSTarget.targetType"
+              dense
+              label="Target Type"
+              stack-label
+              :options="targetTypes"
             ></q-select>
             </q-item-section>
           </q-item>
@@ -48,35 +48,36 @@
 
           <q-item v-if="ots.activeOTSTarget.targetType === 'Vessel'">
             <q-item-section>
-            <q-select
-            v-model="ots.activeOTSTarget.targetVessel"
-            label="Target Vessel"
-            :options="vessels"
-            @filter="filterVessels"
-            :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-            option-value="_id"
-            stack-label
-            use-input
-            fill-input
-            hide-selected
-            dense
-            >
-            </q-select>
+              <q-select
+                v-model="ots.activeOTSTarget.targetVessel"
+                label="Target Vessel"
+                :options="vessels"
+                @filter="filterVessels"
+                :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+                option-value="_id"
+                stack-label
+                use-input
+                fill-input
+                hide-selected
+                dense
+              >
+              </q-select>
             </q-item-section>
           </q-item>
 
           <q-item v-if="ots.activeOTSTarget.targetType === 'Port Group'">
             <q-item-section>
-            <q-select
-            v-model="ots.activeOTSTarget.targetPortGroup"
-            dense
-            label="Target Port Group"
-            stack-label
-            option-label="portGroup"
-            option-value="_id"
-            use-input
-            :options="portGroups">
-            </q-select>
+              <q-select
+                v-model="ots.activeOTSTarget.targetPortGroup"
+                dense
+                label="Target Port Group"
+                stack-label
+                option-label="portGroup"
+                option-value="_id"
+                use-input
+                :options="portGroups"
+              >
+              </q-select>
             </q-item-section>
           </q-item>
 
@@ -84,10 +85,10 @@
               <q-item-section>
               <q-item-label><strong>Coverage Goal<br><br></strong></q-item-label>
                 <q-slider
-                v-model="ots.activeOTSTarget.coverageGoal"
-                :min="0"
-                :max="100"
-                label-always
+                  v-model="ots.activeOTSTarget.coverageGoal"
+                  :min="0"
+                  :max="100"
+                  label-always
                 >
                 </q-slider>
               </q-item-section>
@@ -96,11 +97,11 @@
               <q-item-section>
               <q-item-label><strong>Set Rate<br><br></strong></q-item-label>
                 <q-slider
-                v-model="ots.activeOTSTarget.setRate"
-                :min="0"
-                :max="100"
-                label-always
-                color="green"
+                  v-model="ots.activeOTSTarget.setRate"
+                  :min="0"
+                  :max="100"
+                  label-always
+                  color="green"
                 >
                 </q-slider>
               </q-item-section>
@@ -229,11 +230,7 @@ import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import moment from 'moment';
 import date from 'quasar';
-import {
-  GeneralState,
-  PermitState,
-  OTSState
-} from '../_store/types/types';
+import { GeneralState, PermitState, OTSState } from '../_store/types/types';
 import { OTSTarget, Vessel, WcgopTrip, EmEfp } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
@@ -333,16 +330,19 @@ export default class OtsTargetDetail extends Vue {
     // function to get ots target history
     private async getHistory() {
       const masterDB: Client<any> = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'ots-target'
+      }
 
-      const history = await masterDB.viewWithDocs<any>(
+      const history = await masterDB.view<any>(
         'obs-web',
-        'all_ots_targets'
+        'all_doc_types',
+        queryOptions
       );
 
-      for (const row of history.rows) {
-        const target = row.doc;
-        this.otsTargetHistory.push(target);
-      }
+      this.otsTargetHistory = history.rows.map( (row: any) => row.doc );
     }
 
     private async getEMEFP() {
@@ -358,15 +358,19 @@ export default class OtsTargetDetail extends Vue {
         this.emEfpTrips.push(trip);
       }
 
-      const emefpRoster = await masterDB.viewWithDocs<any>(
+      const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'emefp'
+      }
+
+      const emefpRoster: any = await masterDB.viewWithDocs<any>(
         'obs-web',
-        'all_em_efp'
+        'all_doc_types',
+        queryOptions
       );
 
-      for (const row of emefpRoster.rows) {
-        const member = row.doc;
-        this.emEfpRoster.push(member);
-      }
+      this.emEfpRoster = emefpRoster.rows.map( (row: any) => row.doc );
 
     }
 
@@ -383,13 +387,6 @@ export default class OtsTargetDetail extends Vue {
       const targetedVessels: any[] = [];
 
       if (this.ots.activeOTSTarget.targetType === 'Fishery Wide') {
-
-        // build a list of em efp vessels that are selected only based on an EM EFP Fishery Wide target
-        // for (const target of this.otsTargetHistory) {
-        //   if (this.getStatus(target) === 'Active' && target.fishery === this.ots.activeOTSTarget.fishery && target.targetType === 'Vessel')  {
-        //     targetedVessels.push( target.targetVessel.coastGuardNumber ? target.targetVessel.coastGuardNumber : target.targetVessel.stateRegulationNumber );
-        //   }
-        // }
 
         for (const member of this.emEfpRoster) {
           if (member.vessel) {
@@ -481,12 +478,6 @@ export default class OtsTargetDetail extends Vue {
       return count;
     }
 
-    // private getCoveredPercent(vessel: any) {
-    //   const coveredPercent = this.getSelectedTrips(vessel) / this.getTripsTaken(vessel) * 100;
-    //   return coveredPercent ? coveredPercent : 0;
-    // }
-
-
     private async deactivateTarget() {
       try {
         const masterDB: Client<any> = couchService.masterDB;
@@ -534,11 +525,6 @@ export default class OtsTargetDetail extends Vue {
             }
           );
 
-          // masterDB.put(this.ots.activeOTSTarget._id,
-          //               this.ots.activeOTSTarget,
-          //               this.ots.activeOTSTarget._rev)
-          //               .then( () => {this.$router.push({path: '/ots-management'});
-          //               });
         } catch (err) {
           this.errorAlert(err);
           }
@@ -597,30 +583,14 @@ export default class OtsTargetDetail extends Vue {
     }
 
     private filterVessels(val: string, update: any, abort: any) {
-      // update(async () => {
-      //       try {
-      //         const masterDB: Client<any> = couchService.masterDB;
-      //         const queryOptions: ListOptions = {
-      //           limit: 7,
-      //           start_key: val.toLowerCase(),
-      //           inclusive_end: true,
-      //           descending: false
-      //         };
 
-      //         const vessels = await masterDB.viewWithDocs<any>(
-      //           'optecs_trawl',
-      //           'all_vessel_names',
-      //           queryOptions
-      //         );
-
-      //         this.vessels = vessels.rows.map((row: any) => row.doc);
-      //       } catch (err) {
-      //         this.errorAlert(err);
-      //       }
-      //     });
         if (val.length > 0) {
           update(
-            this.vessels = this.emEfpRoster.map((member) => member.vessel ).filter( (vessel: any) => vessel.vesselName!.toLowerCase().includes(val.toLowerCase()))
+            this.vessels = this.emEfpRoster.map(
+              (member) => member.vessel ).filter(
+                (vessel: any) => vessel.vesselName!.toLowerCase().includes(val.toLowerCase()
+                )
+              )
           );
           } else {
           update(

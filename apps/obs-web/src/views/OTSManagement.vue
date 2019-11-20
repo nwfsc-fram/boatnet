@@ -254,14 +254,7 @@ export default class OtsMangement extends Vue {
         queryOptions
       );
 
-      this.emEfpRoster = emefpRoster.map( (row: any) => row.doc );
-
-    //   for (const row of emefpRoster.rows) {
-    //     const member = row.doc;
-    //     this.emEfpRoster.push(member);
-    //   }
-
-    console.log(this.emEfpRoster);
+      this.emEfpRoster = emefpRoster.rows.map( (row: any) => row.doc );
 
     }
 
