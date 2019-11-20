@@ -97,23 +97,19 @@ private columns = [
 private async getEmEfp() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
-        const queryOptions: ListOptions = {
-          descending: true
+        const queryOptions = {
+            reduce: false,
+            include_docs: true,
+            key: 'emefp'
         };
 
-        const emefp = await masterDB.viewWithDocs<any>(
+        const emefp: any = await masterDB.view(
             'obs-web',
-            'all_em_efp',
+            'all_doc_types',
             queryOptions
             );
 
-        console.log(emefp.rows);
-
-        for (const row of emefp.rows) {
-            const efp = row.doc;
-            this.EM_EFP.push(efp);
-        }
-        console.log(this.EM_EFP);
+        this.EM_EFP = emefp.rows.map((row: any) => row.doc)
 
     } catch (err) {
         this.error(err);
@@ -134,14 +130,6 @@ private getArrayValues(array: any[]) {
     }
     return returnString;
 }
-
-// private getVesselName(row: any) {
-//     if (row.vessel) {
-//         return row.vessel.vesselName;
-//     } else {
-//         return '';
-//     }
-// }
 
 private getVesselId(row: any) {
     if (row.vesselCGNumber) {

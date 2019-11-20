@@ -1,15 +1,7 @@
 <template>
   <q-page padding>
 
-    <!-- <div class='text-h6 text-primary' >About</div>
-    <q-btn label='runApexUserQuery' @click='hitApi'></q-btn>
-    <q-btn label='get users' @click='getUsers'></q-btn>
-    <q-btn label='get roles' @click='getRoles'></q-btn>
 
-    <q-input label='role name' v-model='roleName'></q-input>
-    <q-btn label='add role' @click='addRole'></q-btn>
-    <q-btn label='delete role' @click='deleteRole'></q-btn>
-    <q-btn label='add user' @click='addUser'></q-btn> -->
     <q-btn label="get lookups" color="primary" @click="getDocTypes"></q-btn>
     <br><br>
 
@@ -18,36 +10,45 @@
           <div class="text-h6" style="padding: 0 15px; color: black">LOOKUP TYPES:</div>
         <q-scroll-area style="height: 650px; width: 230px">
           <q-list separator dense>
-            <q-item v-for="docType of docTypes.filter( (docType) =>  { return !['saved-selections', 'emefp', 'wcgop-trip', 'wcgop-operation', 'vessel', 'taxonomy', 'person', 'permit', 'ots-target', 'observer-activity', 'logbook-capture', 'catch-grouping', 'first-receiver', 'model-definition', 'trip-selection', 'trips-api'].includes(docType) } )" :key="docType" @click.native="docTypeSelection = docType" :active="docTypeSelection === docType" style="line-height: 2em">
+            <q-item
+              v-for="docType of docTypes.filter(
+                  (docType) =>  {
+                    return !['saved-selections', 'emefp', 'wcgop-trip',
+                              'wcgop-operation', 'vessel', 'taxonomy',
+                              'person', 'permit', 'ots-target', 'observer-activity',
+                              'logbook-capture', 'catch-grouping', 'first-receiver',
+                              'model-definition', 'trip-selection', 'trips-api']
+                              .includes(docType)
+                    })"
+              :key="docType"
+              @click.native="docTypeSelection = docType"
+              :active="docTypeSelection === docType"
+              style="line-height: 2em"
+            >
               {{ docType }}
             </q-item>
           </q-list>
         </q-scroll-area>
-        <!-- <q-btn class="vertical-bottom" label="add" color="red" style="float: right; margin: 15px" @click="createNewLookupType"></q-btn> -->
       </div>
 
       <div v-if="foundDocs.length > 0" class="col3" style="padding: 4px; ; margin: 4px">
           <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
         <q-scroll-area style="height: 650px; width: 350px">
-          <!-- DOC TYPE MODEL: {{ docTypeModel }} -->
           <q-list separator dense>
-            <q-item v-for="doc of foundDocs" :key="doc._id" @click.native="docSelection = doc.doc" :active="docSelection === doc.doc"  style="line-height: 2em">
-              <div v-if="doc.doc.legacy && doc.doc.description">
-                {{ doc.doc.legacy.lookupVal }} - {{ doc.doc.description }}
-              </div>
-              <div v-else-if="doc.doc.description">
-                {{ doc.doc.description }}
-              </div>
-              <div v-else-if="doc.doc.survey">
-                {{ doc.doc.survey }} config
-              </div>
-              <div v-else-if="doc.doc.alias">
-                {{ doc.doc.alias }}
-              </div>
-              <div v-else>
-                {{ doc.doc.name }}
-              </div>
-              <div v-if="'isActive' in doc.doc && !doc.doc.isActive" style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
+            <q-item
+              v-for="row of foundDocs"
+              :key="row._id"
+              @click.native="docSelection = row.doc"
+              :active="docSelection === row.doc"
+              style="line-height: 2em"
+            >
+              <div v-if="row.doc.legacy && row.doc.description">{{ row.doc.legacy.lookupVal }} - {{ row.doc.description }}</div>
+              <div v-else-if="row.doc.description">{{ row.doc.description }}</div>
+              <div v-else-if="row.doc.survey">{{ row.doc.survey }} config</div>
+              <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
+              <div v-else>{{ row.doc.name }}</div>
+
+              <div v-if="'isActive' in row.doc && !row.doc.isActive" style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
               <div v-else style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: teal; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ACTIVE</div>
             </q-item>
           </q-list>
@@ -114,8 +115,7 @@
 
             </span>
           </div>
-          <!-- <q-input v-model="lookupModel.lookupVal" label="Lookup Val"></q-input>
-          <q-input v-model="lookupModel.description" label="Description"></q-input> -->
+
           <q-btn label="add" color="red" style="float: right; margin: 15px" @click="createDoc"></q-btn>
           <q-btn label="cancel" color="blue" style="float: right; margin: 15px 0" @click="newLookup = false"></q-btn>
         </q-card-section>
@@ -125,8 +125,9 @@
     <q-dialog v-model="editLookup">
       <q-card v-if="selectedDoc">
         <q-card-section>
-          <div class="text-h6" style="text-transform: uppercase">edit: {{
-                                                                            selectedDoc.legacy ? ( selectedDoc.legacy.lookupVal ? selectedDoc.legacy.lookupVal : selectedDoc.name ) : ( selectedDoc.description ? selectedDoc.description : selectedDoc.name ) }}</div>
+          <div class="text-h6" style="text-transform: uppercase">
+            edit: {{ selectedDoc.legacy ? ( selectedDoc.legacy.lookupVal ? selectedDoc.legacy.lookupVal : selectedDoc.name ) : ( selectedDoc.description ? selectedDoc.description : selectedDoc.name ) }}
+          </div>
 
             <div class="row">
 
@@ -162,11 +163,6 @@
 
             </div>
 
-            <!-- <div>
-              <q-input v-model="newFieldName" label="New Field" ></q-input>
-              <q-btn color="primary" label="Add Field" @click="addField"></q-btn>
-            </div> -->
-
           <q-btn label="update" color="red" style="float: right; margin: 15px" @click="updateDoc"></q-btn>
           <q-btn label="cancel" color="blue" style="float: right; margin: 15px 0" @click="editLookup = false"></q-btn>
         </q-card-section>
@@ -191,7 +187,6 @@
 
 <script lang='ts'>
 
-// import { mapState } from 'vuex';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { AlertState } from '../_store/types/types';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
@@ -236,6 +231,7 @@ export default class LookupEditor extends Vue {
   private addAttribute: any = {tripAttributes: false, haulAttributes: false};
   private docTypeSelection: any[] = [];
   private docSelection: any[] = [];
+  private models: any = {};
 
   constructor() {
     super();
@@ -253,86 +249,6 @@ export default class LookupEditor extends Vue {
     } else {
       return selectedDoc[key];
     }
-  }
-
-  private hitApi() {
-    axios.post('https://localhost:9000/api/v1/login', {
-        username: authService.getCurrentUser()!.username,
-        password: authService.getCurrentUser()!.hashedPW,
-        applicationName: 'OBSERVER_BOATNET'
-    })
-        .then( (response) => {
-            this.token = response.data.token;
-            console.log(this.token);
-        });
-  }
-
-  private getUsers() {
-    axios.get('https://localhost:9000/api/v1/users', {
-      params: {token: this.token}
-    })
-  .then((response) => {
-    this.users = response.data.users;
-    console.log(response.data.users);
-  });
-  }
-
-  private getRoles() {
-    axios.get('https://localhost:9000/api/v1/user-role', {
-      params: {
-        username: this.users[0],
-        token: this.token
-        }
-    })
-    .then((response) => {
-      console.log(response.data.roles);
-    });
-  }
-
-  private addRole() {
-    axios.post('https://localhost:9000/api/v1/user-role', {
-      token: this.token,
-      username: this.users[0],
-      role: this.roleName
-    })
-    .then((response) => {
-      console.log(response.data);
-    });
-  }
-
-    private deleteRole() {
-    const headers: any = {
-      'Content-Type': 'application/json',
-      'accept': 'application/json'
-      };
-
-    const data: any = {
-        username: this.users[0],
-        role: this.roleName
-    };
-
-    const params: any = {
-      token: this.token
-    };
-
-    axios.delete('https://localhost:9000/api/v1/user-role', {data, headers, params})
-    .then((response) => {
-      console.log(response);
-    });
-  }
-
-  private addUser() {
-    axios.post('https://localhost:9000/api/v1/user', {
-      username: 'jane.doe',
-      lastName: 'Doe',
-      firstName: 'Janet',
-      emailAddress: 'bad@address.xyz123',
-      comment: 'This is an example user.',
-      token: this.token
-      })
-    .then((response) => {
-      console.log(response);
-    });
   }
 
   private async getDocTypes() {
@@ -359,34 +275,8 @@ export default class LookupEditor extends Vue {
           }
         }
         this.loading = false;
-
     } catch (err) {
         this.error(err);
-
-    }
-
-  }
-
-  private async getTrips() {
-    const start = moment();
-    const masterDB: Client<any> = couchService.masterDB;
-    try {
-      this.loading = true;
-      const queryOptions: any = {
-        include_docs: false
-      };
-
-      const allTrips = await masterDB.view<any>(
-        'MainDocs',
-        'all-trips',
-        queryOptions
-      );
-
-      this.loading = false;
-      const end = moment();
-      console.log(end.diff(start, 'seconds'));
-    } catch (err) {
-      console.log(err);
     }
   }
 
@@ -409,22 +299,21 @@ export default class LookupEditor extends Vue {
       queryOptions
     );
 
-    try {
-      const docTypeModel: any = await lookupsDB.view<any>(
-        'LookupDocs',
-        'model_definition',
-        queryOptions
-      );
-
-      this.docTypeModel = docTypeModel.rows[0].doc;
-    } catch (err) {
-      console.log(err);
-    }
-
+    this.docTypeModel = this.models[docType];
 
     for (const row of docTypeDocs.rows) {
       const doc: any = row.key;
       this.foundDocs.push(row);
+    }
+
+    function sortWord(a: any, b: any) {
+      if (a > b) {
+        return 1
+      } else if (a < b) {
+        return -1
+      } else {
+        return 0
+      }
     }
 
     this.foundDocs.sort( (a: any, b: any) => {
@@ -437,40 +326,41 @@ export default class LookupEditor extends Vue {
           return 0;
         }
       } else if (a.doc.description) {
-        if (a.doc.description > b.doc.description) {
-          return 1;
-        } else if (a.doc.description < b.doc.description) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return sortWord(a.doc.description, b.doc.description);
       } else if (a.doc.survey) {
-        if (a.doc.survey > b.doc.survey) {
-          return 1;
-        } else if (a.doc.survey < b.doc.survey) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return sortWord(a.doc.survey, b.doc.survey);
       } else if (a.doc.alias) {
-        if (a.doc.alias > b.doc.alias) {
-          return 1;
-        } else if (a.doc.alias < b.doc.alias) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return sortWord(a.doc.alias, b.doc.alias);
       } else {
-        if (a.doc.name > b.doc.name) {
-          return 1;
-        } else if (a.doc.name < b.doc.name) {
-          return -1;
-        } else {
-          return 0;
-        }
+        return sortWord(a.doc.name, b.doc.name);
       }
     });
+  }
 
+  private async getDocModels() {
+    const lookupsDB: Client<any> = couchService.lookupsDB;
+    const queryOptions: any = {
+      include_docs: true,
+      reduce: false,
+      key: 'model-definition'
+    };
+
+    try {
+      const models: any = await lookupsDB.view<any>(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
+      );
+
+      this.models = {};
+
+      for (const row of models.rows) {
+          this.models[row.doc.modelName] = row.doc;
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   private selectDoc(doc: any) {
@@ -496,7 +386,6 @@ export default class LookupEditor extends Vue {
     } catch (err) {
       this.error(err);
     }
-
   }
 
   private async updateDoc() {
@@ -573,15 +462,13 @@ export default class LookupEditor extends Vue {
   }
 
   private async created() {
-    console.log( await this.getTrips());
-
     if (!authService.getCurrentUser()) {
       this.$router.push({path: '/login'});
     } else {
       console.log(authService.getCurrentUser());
     }
-
     this.getDocTypes();
+    this.getDocModels();
   }
 
   @Watch('docTypeSelection')
@@ -595,8 +482,6 @@ export default class LookupEditor extends Vue {
     console.log('handler2', newVal, oldVal);
     this.selectDoc(newVal);
   }
-
-
 
 }
 

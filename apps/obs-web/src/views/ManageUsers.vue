@@ -78,21 +78,6 @@ export default class ManageUsers extends Vue {
             this.user.activeUser = user;
             this.user.newUser = false;
 
-            // move legacy phone numbers?
-            // if (!this.user.activeUser!.phoneNumbers) {
-            //     Vue.set(this.user.activeUser!, 'phoneNumbers', []);
-            // }
-            // if (this.user.activeUser!.workPhone) {
-            //     const workPhone = {
-            //         number: this.user.activeUser!.workPhone,
-            //         phoneNumberType: {description: 'work'},
-            //         isActive: true,
-            //         createdBy: 'legacy',
-            //         createdDate: moment().format()
-            //     }
-            //     this.user.activeUser!.phoneNumbers!.push(workPhone);
-            // }
-
             const index = this.user.users.indexOf(user);
             this.$router.push({path: '/users/' + index});
         }
@@ -121,31 +106,6 @@ export default class ManageUsers extends Vue {
             return this.user.users;
             }
     }
-
-//   private async filterUsers(val: string, update: any, abort: any) {
-
-//       update(async () => {
-//         try {
-//           const masterDB: Client<any> = couchService.masterDB;
-//           const queryOptions = {
-//             limit: 20,
-//             start_key: val.toLowerCase(),
-//             inclusive_end: true,
-//             descending: false,
-//             include_docs: true
-//           };
-//           const users = await masterDB.view<any>(
-//             'obs-web',
-//             'all_persons',
-//             queryOptions
-//           );
-
-//           this.user.users = users.rows.map((row) => row.doc);
-//         } catch (err) {
-//           this.errorAlert(err);
-//         }
-//       });
-//   }
 
     private async getUsers() {
         const masterDB: Client<any> = couchService.masterDB;
@@ -235,29 +195,3 @@ export default class ManageUsers extends Vue {
 
 }
 </script>
-
-<!--
-<script>
-export default {
-    data() {
-        return {
-            users: this.$store.getters.users
-        }
-    },
-    methods: {
-        userDetails(user) {
-            this.$store.state.activeUser = user
-            const index = this.$store.state.users.indexOf(user)
-            this.$router.push({path: '/users/' + index})
-        },
-        newUser() {
-            this.$store.state.users.push({name: '', role: null, email: null, mobile: null, home: null})
-            this.$store.state.activeUser = this.$store.state.users[this.$store.state.users.length -1]
-            const index = this.$store.state.users.indexOf(this.$store.state.activeUser)
-            this.$router.push({path: '/users/' + index})
-        }
-    }
-
-}
-</script>
--->

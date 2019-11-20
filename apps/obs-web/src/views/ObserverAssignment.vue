@@ -84,9 +84,9 @@ export default class ObserverAssignment extends Vue {
     @State('user') private user!: UserState;
     @State('oa') private oa!: ObserverAssignmentState;
 
-  @State('alert') private alert!: AlertState;
-  @Action('error', { namespace: 'alert' }) private errorAlert: any;
-  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+    @State('alert') private alert!: AlertState;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
 private unassignedPagination = {rowsPerPage: 10};
 private assignedPagination = {rowsPerPage: 0};
@@ -136,69 +136,6 @@ private get unassignedTrips() {
         );
 }
 
-// private trips =  [
-//     {
-//         vesselName: 'Excalibur',
-//         captain: 'Todd Hay',
-//         captainPhone: 2225551212,
-//         tripStartDate: moment().format('MM/DD/YYYY'),
-//         tripEndDate: moment().add(5, 'days').format('MM/DD/YYYY'),
-//         fishery: 'EM EFP',
-//         departurePort: 'Newport',
-//         observerName: 'Will Smith',
-//         observerPhone: 2225551212,
-//         selectionStatus: 'Selected'
-//     },
-//     {
-//         vesselName: 'Raven',
-//         captain: 'Seth Gerou',
-//         captainPhone: 2225551212,
-//         tripStartDate: moment().format('MM/DD/YYYY'),
-//         tripEndDate: moment().add(5, 'days').format('MM/DD/YYYY'),
-//         fishery: 'EM EFP',
-//         departurePort: 'Newport',
-//         observerName: null,
-//         observerPhone: null,
-//         selectionStatus: 'Selected'
-//     },
-//     {
-//         vesselName: 'Timmy Boy',
-//         captain: 'Scott Leach',
-//         captainPhone: 2225551212,
-//         tripStartDate: moment().format('MM/DD/YYYY'),
-//         tripEndDate: moment().add(5, 'days').format('MM/DD/YYYY'),
-//         fishery: 'EM EFP',
-//         departurePort: 'Newport',
-//         observerName: null,
-//         observerPhone: null,
-//         selectionStatus: 'Selected'
-//     },
-//     {
-//         vesselName: 'FishWish',
-//         captain: 'John LaFargue',
-//         captainPhone: 2225551212,
-//         tripStartDate: moment().format('MM/DD/YYYY'),
-//         tripEndDate: moment().add(5, 'days').format('MM/DD/YYYY'),
-//         fishery: 'EM EFP',
-//         departurePort: 'Newport',
-//         observerName: null,
-//         observerPhone: null,
-//         selectionStatus: 'Selected'
-//     },
-//     {
-//         vesselName: 'Last Straw',
-//         captain: 'Melina Shak',
-//         captainPhone: 2225551212,
-//         tripStartDate: moment().format('MM/DD/YYYY'),
-//         tripEndDate: moment().add(5, 'days').format('MM/DD/YYYY'),
-//         fishery: 'EM EFP',
-//         departurePort: 'Newport',
-//         observerName: 'Nick Schaffer',
-//         observerPhone: 2225551212,
-//         selectionStatus: 'Selected'
-//     },
-// ];
-
 private async getEMEFPTrips() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
@@ -211,7 +148,6 @@ private async getEMEFPTrips() {
             const trip = row.doc;
             this.emefpTrips.push(trip);
         }
-
     } catch (err) {
         this.errorAlert(err);
     }

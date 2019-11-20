@@ -243,15 +243,25 @@ export default class OtsMangement extends Vue {
         this.emEfpTrips.push(trip);
       }
 
-      const emefpRoster = await masterDB.viewWithDocs<any>(
+    const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'emefp'
+    }
+      const emefpRoster: any = await masterDB.view(
         'obs-web',
-        'all_em_efp'
+        'all_doc_types',
+        queryOptions
       );
 
-      for (const row of emefpRoster.rows) {
-        const member = row.doc;
-        this.emEfpRoster.push(member);
-      }
+      this.emEfpRoster = emefpRoster.map( (row: any) => row.doc );
+
+    //   for (const row of emefpRoster.rows) {
+    //     const member = row.doc;
+    //     this.emEfpRoster.push(member);
+    //   }
+
+    console.log(this.emEfpRoster);
 
     }
 
