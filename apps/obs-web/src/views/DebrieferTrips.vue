@@ -1,14 +1,11 @@
 <template>
   <div>
-    <div class="text-h6">Errors</div>
-    <prime-table :value="data" :columns="errorColumns" />
-    <div class="text-h6">Data</div>
-    <div class="text-h6">Trips</div>
     <prime-table
       :value="WcgopTrips"
       :columns="columns"
       :selected="selected"
       :isEditable="true"
+      title="Data"
       @onRowSelect="onRowSelect"
       @onRowUnselect="onRowUnSelect"
     />
@@ -50,28 +47,6 @@ export default class DebrieferTrips extends Vue {
   private editingCellRows: any = {};
   private editingRows = [];
   private originalRows: any = null;
-  private value: string = 'hello';
-
-  private errorColumns = [
-    { field: 'severity', header: 'Severity' },
-    { field: 'description', header: 'Description' },
-    { field: 'tripNum', header: 'Trip #' },
-    { field: 'dateCreated', header: 'Date Created' },
-    { field: 'observer', header: 'Observer' },
-    { field: 'status', header: 'Status' },
-    { field: 'dateFixed', header: 'Date Fixed' },
-    { field: 'note', header: 'Note' }
-  ];
-
-  private data = [{ severity: 'Warning',
-                    description: 'Multiple dissections of the same type collected for sea whip, sea pen, or non-coral species.',
-                    tripNum: 24266,
-                    dateCreated: '1/1/19',
-                    observer: 'Davis',
-                    status:'Unresolved',
-                    dateFixed: '',
-                    note: 'dissection count'}];
-
   private columns = [
     { field: 'key', header: 'Id' },
     { field: 'tripStatus.description', header: 'Status' },

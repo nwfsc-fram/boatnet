@@ -22,11 +22,13 @@
       </div>
     </div>
     <TabView class="q-pa-md">
-      <TabPanel header="Summary">Summary</TabPanel>
-      <TabPanel header="QA/QC">
-      <app-debriefer/>
+      <TabPanel header="Summary" :active="activeTab === 'summary'">Summary</TabPanel>
+      <TabPanel header="QA/QC" :active="activeTab === 'qa'">
+        <app-debriefer
+          :showData="activeTab === 'qa' ? false : true"
+        />
       </TabPanel>
-      <TabPanel header="Assessment">Assessment</TabPanel>
+      <TabPanel header="Assessment" :active="activeTab === 'assessment'">Assessment</TabPanel>
     </TabView>
   </div>
 </template>
@@ -41,6 +43,7 @@ Vue.component('TabView', TabView);
 
 @Component
 export default class DebrieferLayout extends Vue {
+  @Prop(String) public activeTab!: string; // Passed by router
   private program: string = '';
   private observer: string = '';
   private evaluationPeriod: string = '';

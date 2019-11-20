@@ -6,6 +6,10 @@ import { DebrieferState } from '@/_store/types/types';
 Vue.use(Vuex);
 
 export const state: DebrieferState = {
+  program: '',
+  cruiseIds: '',
+  obesrvers: '',
+  evaluationPeriod: '',
   tripIds: [],
   operationIds: [],
   catches: []
@@ -29,10 +33,25 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   removeCatchId({ commit }: any, catchId: string) {
     commit('removeCatchId', catchId);
+  },
+  updateProgram({ commit }: any, value: string) {
+    commit('updateVal', {id: 'program', val: value});
+  },
+  updateCruise({ commit }: any, value: string) {
+    commit('updateVal', {id: 'cruiseIds', val: value});
+  },
+  updateObservers({ commit }: any, value: string) {
+    commit('updateVal', {id: 'obesrvers', val: value});
+  },
+  updateEvaluationPeriod({ commit }: any, value: string) {
+    commit('updateVal', {id: 'evaluationPeriod', val: value});
   }
 };
 
 const mutations: MutationTree<DebrieferState> = {
+  updateVal(newState: any, val: any) {
+    newState[val.id] = val.val;
+  },
   addTripId(newState: any, id: string) {
     newState.tripIds.push(id);
   },
