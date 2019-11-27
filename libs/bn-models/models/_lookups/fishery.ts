@@ -8,7 +8,7 @@ export type GovernmentOrganization = string; // TODO LOOKUPS
 
 // from lookups table
 export interface Fishery extends BaseLookup {
-  name: string;
+  name?: string;
   organization?: GovernmentOrganization;
   isIfq?: boolean; // CatchShares, Shoreside Hake, Motherside Catcher-Vessel
   // Trawl Gear Modification EFP (anything program 14 previously)
