@@ -1,28 +1,62 @@
 {
-    "_id": "_design/MainDocs",
-    "_rev": "1-d97d91b672f83fad7198a01bb52eca83",
-    "views": {
-      "all-operations": {
-        "map": "function (doc) {\r\n  if (doc.type == 'wcgop-operation') { \r\n    emit(doc.legacy.fishingActivityId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-trips": {
-        "map": "function (doc) {\r\n  if (doc.type == 'wcgop-trip') { \r\n    emit(doc.legacy.tripId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-vessels": {
-        "map": "function (doc) {\r\n  if (doc.type == 'vessel') { \r\n    emit(doc.legacy.vesselId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-contacts": {
-        "map": "function (doc) {\r\n  if (doc.type == 'contact') { \r\n    emit(doc.legacy.contactId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-ports": {
-        "map": "function (doc) {\r\n  if (doc.type == 'port') { \r\n    emit(doc.legacy.portId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-programs": {
-        "map": "function (doc) {\r\n  if (doc.type == 'program') { \r\n    emit(doc.legacy.programId, doc._rev);\r\n  }\r\n}"
-      },
-      "all-species": {
-        "map": "function (doc) {\r\n  if (doc.type == 'species') { \r\n    emit(doc.legacy.speciesId, doc._rev);\r\n  }\r\n}"
-      }
+  "_id": "_design/MainDocs",
+  "_rev": "49-bda3596ed901af9443ca0f06ed88b84f",
+  "views": {
+    "all-operations": {
+      "map": "function (doc) {\r\n  if (doc.type == 'wcgop-operation') { \r\n    emit(doc.legacy.fishingActivityId, doc._rev);\r\n  }\r\n}"
     },
-    "language": "javascript"
-  }
+    "all-trips": {
+      "map": "function (doc) {\r\n  if (doc.type == 'wcgop-trip') { \r\n    emit(doc.legacy.tripId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-vessels": {
+      "map": "function (doc) {\r\n  if (doc.type == 'vessel') { \r\n    emit(doc.legacy.vesselId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-contacts": {
+      "map": "function (doc) {\r\n  if (doc.type == 'contact') { \r\n    emit(doc.legacy.contactId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-ports": {
+      "map": "function (doc) {\r\n  if (doc.type == 'port') { \r\n    emit(doc.legacy.portId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-programs": {
+      "map": "function (doc) {\r\n  if (doc.type == 'program') { \r\n    emit(doc.legacy.programId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-species": {
+      "map": "function (doc) {\r\n  if (doc.type == 'species') { \r\n    emit(doc.legacy.speciesId, doc._rev);\r\n  }\r\n}"
+    },
+    "all-catch-species": {
+      "map": "function (doc) {\r\n  if (doc.type == 'wcgop-catch-species') { \r\n    emit(doc.species, {\r\n      discardReason: doc.discardReason, \r\n      speciesWeight: doc.speciesWeight, \r\n      speciesCount: doc.speciesCount, \r\n      rev: doc._rev}\r\n    );\r\n  }\r\n}"
+    },
+    "all-catch": {
+      "map": "function (doc) {\r\n  if (doc.type === 'wcgop-operation') {\r\n    doc.catches.forEach(function(x) {\r\n      emit({ \r\n        disposition: x.disposition,\r\n        weightMethod: x.weightMethod,\r\n        _rev: doc._rev\r\n      }, 1);\r\n    })\r\n  }\r\n}"
+    },
+    "doc_types": {
+      "reduce": "_count",
+      "map": "//Example usage: https://nwcdevfram2.nwfsc2.noaa.gov:6984/boatnet-dev/_design/optecs_trawl/_view/doc_types?group=true\nfunction (doc) {\n  emit(doc.type, 1);\n}"
+    },
+    "trips-operations-join": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n                emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]});\r\n            }\r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-operations-flattened": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n                emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]});\r\n            }\r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-catch-flattened": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n                \r\n                if (doc.operationIDs[i].catches) {\r\n                    for (var j in doc.operationIDs[i].catches) {\r\n                       emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]}, {_id: doc.operationIDs.catches[j]});\r\n\r\n                        \r\n                    }\r\n                }\r\n            }\r\n            \r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-catch-species-flattened": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n\r\n                if (doc.operationIDs[i].catches) {\r\n                    for (var j in doc.operationIDs[i].catches) {\r\n\r\n                        if (doc.operationIDs[i].catches[j].species) {\r\n                            for (var k in doc.operationIDs[i].catches[j].species) {\r\n                                emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]}, {_id: doc.operationIDs.catches[j]}, {_id: doc.operationIDs.catches[j].species[k]});\r\n                            }\r\n                        }\r\n\r\n\r\n                    }\r\n                }\r\n            }\r\n            \r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-baskets-flattened": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n\r\n                if (doc.operationIDs[i].catches) {\r\n                    for (var j in doc.operationIDs[i].catches) {\r\n\r\n                        if (doc.operationIDs[i].catches[j].species) {\r\n                            for (var k in doc.operationIDs[i].catches[j].species) {\r\n\r\n                                  if (doc.operationIDs[i].catches[j].species[k].baskets) {\r\n                                      for (var l in doc.operationIDs[i].catches[j].baskets) {\r\n                                          emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]}, {_id: doc.operationIDs.catches[j]}, {_id: doc.operationIDs.catches[j].species[k]}, {_id: doc.operationIDs.catches[j].species[k].baskets[l]});\r\n                                      }\r\n                                  }\r\n\r\n                            }\r\n                        }\r\n\r\n\r\n                    }\r\n                }\r\n            }\r\n            \r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-specimens-flattened": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n        if (doc.operationIDs) {\r\n            for (var i in doc.operationIDs) {\r\n\r\n                if (doc.operationIDs[i].catches) {\r\n                    for (var j in doc.operationIDs[i].catches) {\r\n\r\n                        if (doc.operationIDs[i].catches[j].species) {\r\n                            for (var k in doc.operationIDs[i].catches[j].species) {\r\n\r\n                                  if (doc.operationIDs[i].catches[j].species[k].specimens) {\r\n                                      for (var l in doc.operationIDs[i].catches[j].specimens) {\r\n                                          emit([doc._id, Number(i)+1], {_id: doc.operationIDs[i]}, {_id: doc.operationIDs.catches[j]}, {_id: doc.operationIDs.catches[j].species[k]}, {_id: doc.operationIDs.catches[j].species[k].specimens[l]});\r\n                                      }\r\n                                  }\r\n\r\n                            }\r\n                        }\r\n\r\n\r\n                    }\r\n                }\r\n            }\r\n            \r\n        }\r\n    }\r\n}\r\n"
+    },
+    "all-catch-flattened-TEST": {
+      "map": "function(doc) {\r\n    if (doc.type == \"wcgop-trip\") {\r\n        emit([doc._id, 0], null);\r\n    } else if (doc.type == \"wcgop-operation\") {\r\n        emit([doc._id, 1], null);\r\n    }\r\n}"
+    },
+    "query-by-observer": {
+      "map": "function (doc) {\n  emit(doc._id, 1);\n}"
+    }
+  },
+  "language": "javascript"
+}
