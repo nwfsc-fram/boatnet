@@ -109,7 +109,7 @@ export default class Home extends Vue {
             };
 
           const userquery = await db.viewWithDocs(
-            'obs-web',
+            'obs_web',
             'all_active_persons',
             queryOptions
           );
@@ -134,11 +134,17 @@ export default class Home extends Vue {
     this.permit.vesselPermits = {};
     const masterDB: Client<any> = couchService.masterDB;
     try {
-        const permits = await masterDB.viewWithDocs<any>(
-            'obs-web',
-            'all_permits',
+        const queryOptions = {
+          reduce: false,
+          include_docs: true,
+          key: 'permit'
+        };
+        const permits: any = await masterDB.view<any>(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
             );
-        console.log(permits);
+
         for (const row of permits.rows) {
             const permit = row.doc;
 

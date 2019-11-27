@@ -140,7 +140,7 @@ private async getEMEFPTrips() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
         const emefpTrips = await masterDB.viewWithDocs<any>(
-            'obs-web',
+            'obs_web',
             'em-efp-trips',
             );
         console.log(emefpTrips);

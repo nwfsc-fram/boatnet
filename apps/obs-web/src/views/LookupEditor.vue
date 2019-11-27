@@ -17,7 +17,7 @@
                               'wcgop-operation', 'vessel', 'taxonomy',
                               'person', 'permit', 'ots-target', 'observer-activity',
                               'logbook-capture', 'catch-grouping', 'first-receiver',
-                              'model-definition', 'trip-selection', 'trips-api']
+                              'model-definition', 'trip-selection', 'trips-api', 'tally-record']
                               .includes(docType)
                     })"
               :key="docType"
@@ -31,12 +31,15 @@
         </q-scroll-area>
       </div>
 
-      <div v-if="foundDocs.length > 0" class="col3" style="padding: 4px; ; margin: 4px">
+      <div v-if="filteredFoundDocs.length > 0" class="col5" style="padding: 4px; ; margin: 4px">
           <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
         <q-scroll-area style="height: 650px; width: 350px">
+          <div v-if="docType === 'taxonomy-alias'">
+            <q-input v-model="searchTerm" label="Search" dense @input="filterDocs"></q-input>
+          </div>
           <q-list separator dense>
             <q-item
-              v-for="row of foundDocs"
+              v-for="row of filteredFoundDocs"
               :key="row._id"
               @click.native="docSelection = row.doc"
               :active="docSelection === row.doc"
@@ -48,6 +51,13 @@
               <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
+              <div v-if="row.doc.isAshop" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
+              <div v-if="row.doc.isWcgop" style="margin-left: 7px; margin-top: 4px; background-color: green; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">WCGOP</div>
+              <div v-if="row.doc.isHakeSurvey" style="margin-left: 7px; margin-top: 4px; background-color: blue; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">HAKE</div>
+              <div v-if="row.doc.isHookAndLineSurvey" style="margin-left: 7px; margin-top: 4px; background-color: purple; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">H + L</div>
+              <div v-if="row.doc.isTrawlSurvey" style="margin-left: 7px; margin-top: 4px; background-color: orange; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">TRAWL</div>
+              <div v-if="row.doc.isPacfin" style="margin-left: 7px; margin-top: 4px; background-color: black; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">PACFIN</div>
+
               <div v-if="'isActive' in row.doc && !row.doc.isActive" style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
               <div v-else style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: teal; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ACTIVE</div>
             </q-item>
@@ -56,7 +66,7 @@
         <q-btn class="vertical-bottom" label="add" color="red" style="float: right; margin: 15px" @click="getNewLookupVal"></q-btn>
       </div>
 
-      <div v-if="selectedDoc" class="col6" style="border: 2px solid #1675d1; padding: 4px; ; margin: 4px; max-width: 550px">
+      <div v-if="selectedDoc" class="col5" style="border: 2px solid #1675d1; padding: 4px; ; margin: 4px; max-width: 550px">
         <div class="text-h6" style="padding: 0 15px; color: black">{{ selectedDoc.type.toUpperCase() }} DOC DETAILS:</div>
         <q-list v-if="selectedDoc" separator dense>
           <q-item v-for="key of Object.keys(selectedDoc).filter( (key) => { return !['_id', '_rev', 'type'].includes(key)})" :key="key"  style="line-height: 2em">
@@ -92,7 +102,8 @@
           <div v-if="docTypeModel">
             <span v-for="attrib in Object.keys(docTypeModel).filter( (attrib) => { return !['_id', '_rev', 'type', 'modelName', 'legacy'].includes(attrib)} )" :key="attrib">
 
-              <q-input v-if="typeof docTypeModel[attrib] !== 'object'" v-model="lookupModel[attrib]" :label="attrib" :type="docTypeModel[attrib]"></q-input>
+              <q-toggle v-if="docTypeModel[attrib] === 'boolean'" v-model="lookupModel[attrib]" :label="attrib"></q-toggle>
+              <q-input v-if="docTypeModel[attrib] === 'string'" v-model="lookupModel[attrib]" :label="attrib" :type="docTypeModel[attrib]"></q-input>
 
               <q-select v-if="Array.isArray(docTypeModel[attrib])" v-model="lookupModel[attrib]" :label="attrib" :options="docTypeModel[attrib]"></q-select>
 
@@ -126,10 +137,10 @@
       <q-card v-if="selectedDoc">
         <q-card-section>
           <div class="text-h6" style="text-transform: uppercase">
-            edit: {{ selectedDoc.legacy ? ( selectedDoc.legacy.lookupVal ? selectedDoc.legacy.lookupVal : selectedDoc.name ) : ( selectedDoc.description ? selectedDoc.description : selectedDoc.name ) }}
+            edit: {{ selectedDoc.legacy ? ( selectedDoc.legacy.lookupVal ? selectedDoc.legacy.lookupVal : selectedDoc.name ) : ( selectedDoc.description ? selectedDoc.description : selectedDoc.name? selectedDoc.name : selectedDoc.alias ) }}
           </div>
 
-            <div class="row">
+            <div class="row" style="width: 400px">
 
               <div class="col" style="margin: 10px">
                 <div v-for="key of Object.keys(selectedDoc)" :key="key">
@@ -137,7 +148,7 @@
                   <span v-else-if="key === 'type'">
                     <b>{{ key }}: {{ selectedDoc[key] }}</b>
                   </span>
-                  <span v-else-if="key === 'createdBy' || key === 'createdDate' || key === 'updatedDate' || key === 'updatedBy'">
+                  <span v-else-if="key === 'createdBy' || key === 'createdDate' || key === 'updatedDate' || key === 'updatedBy' || key === 'uploadedDate' || key === 'uploadedBy'">
                     <sub>
                       {{ key }} : {{ parseVal(selectedDoc, key) }}
                     </sub>
@@ -150,7 +161,7 @@
                 </div>
               </div>
 
-              <div class="col" style="margin: 10px">
+              <div v-if="selectedDoc.legacy" class="col" style="margin: 10px">
                 <b>Legacy:</b>
                 <div v-for="key of Object.keys(selectedDoc)" :key="key + 2">
                   <span v-if="key === 'legacy'">
@@ -219,6 +230,7 @@ export default class LookupEditor extends Vue {
   private docTypes: any[] = [];
   private loading: boolean = false;
   private foundDocs: any[] = [];
+  private filteredFoundDocs: any[] = [];
   private docType: string = '';
   private selectedDoc: any = null;
   private lookupModel: any = {lookupVal: ''};
@@ -232,6 +244,7 @@ export default class LookupEditor extends Vue {
   private docTypeSelection: any[] = [];
   private docSelection: any[] = [];
   private models: any = {};
+  private searchTerm: string = '';
 
   constructor() {
     super();
@@ -264,7 +277,7 @@ export default class LookupEditor extends Vue {
         };
 
         const docTypes = await masterDB.view<any>(
-            'obs-web',
+            'obs_web',
             'all_doc_types',
             queryOptions
             );
@@ -294,7 +307,7 @@ export default class LookupEditor extends Vue {
     };
 
     const docTypeDocs = await masterDB.view<any>(
-      'obs-web',
+      'obs_web',
       'all_doc_types',
       queryOptions
     );
@@ -461,6 +474,47 @@ export default class LookupEditor extends Vue {
     this.newFieldName = '';
   }
 
+  private filterDocs() {
+    this.filteredFoundDocs = [];
+    if (this.searchTerm === '') {
+        this.filteredFoundDocs = this.foundDocs.slice(0, 50);
+    } else {
+      this.filteredFoundDocs = this.foundDocs.filter(
+        (doc) => doc.doc.alias.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+      );
+    }
+
+    function sortWord(a: any, b: any) {
+      if (a > b) {
+        return 1;
+      } else if (a < b) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+
+    this.filteredFoundDocs.sort( (a: any, b: any) => {
+      if (a.doc.legacy && a.doc.legacy.lookupVal) {
+        if (parseInt(a.doc.legacy.lookupVal, 10) > parseInt(b.doc.legacy.lookupVal, 10)) {
+          return 1;
+        } else if (parseInt(a.doc.legacy.lookupVal, 10) < parseInt(b.doc.legacy.lookupVal, 10)) {
+          return -1;
+        } else {
+          return 0;
+        }
+      } else if (a.doc.description) {
+        return sortWord(a.doc.description, b.doc.description);
+      } else if (a.doc.survey) {
+        return sortWord(a.doc.survey, b.doc.survey);
+      } else if (a.doc.alias) {
+        return sortWord(a.doc.alias, b.doc.alias);
+      } else {
+        return sortWord(a.doc.name, b.doc.name);
+      }
+    });
+}
+
   private async created() {
     if (!authService.getCurrentUser()) {
       this.$router.push({path: '/login'});
@@ -481,6 +535,15 @@ export default class LookupEditor extends Vue {
   private handler2(newVal: string, oldVal: string) {
     console.log('handler2', newVal, oldVal);
     this.selectDoc(newVal);
+  }
+
+  @Watch('foundDocs')
+  private handler3(newVal: string, oldVal: string) {
+    if (this.foundDocs.length < 50) {
+      this.filteredFoundDocs = this.foundDocs;
+    } else {
+      this.filteredFoundDocs = this.foundDocs.slice(0, 50);
+    }
   }
 
 }

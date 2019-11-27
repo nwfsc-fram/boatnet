@@ -316,7 +316,7 @@ export default class TripDetails extends Vue {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
@@ -340,7 +340,7 @@ export default class TripDetails extends Vue {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
@@ -366,15 +366,15 @@ export default class TripDetails extends Vue {
   private async getEmRoster() {
     const db = pouchService.db;
     const queryOptions = {
-      start_key: '',
+      key: 'emefp',
       inclusive_end: true,
-      descending: false,
-      include_docs: false
+      reduce: false,
+      include_docs: true
     };
-    const docs = await db.query(pouchService.lookupsDBName, 'obs_web/all_em_efp', queryOptions);
+    const EMEfpRoster = await db.query(pouchService.lookupsDBName, 'obs_web/all_doc_types', queryOptions);
 
-    for (const row of docs.rows) {
-      this.emRoster[row.key] = row.value;
+    for (const row of EMEfpRoster.rows) {
+      this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
     }
 
   }
@@ -649,12 +649,14 @@ private async getMinDate() {
   private async getOtsTargets() {
     const db = pouchService.db;
     const queryOptions = {
-      include_docs: true
+      include_docs: true,
+      reduce: false,
+      key: 'ots-target'
     };
     try {
       const otsTargets = await db.query(
         pouchService.lookupsDBName,
-        'obs_web/all_ots_targets',
+        'obs_web/all_doc_types',
         queryOptions
       );
 
@@ -676,7 +678,7 @@ private async getMinDate() {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);

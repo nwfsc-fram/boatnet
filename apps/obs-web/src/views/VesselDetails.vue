@@ -173,7 +173,7 @@ export default class VesselDetails extends Vue {
 
                     const ports = await db.query(
                         pouchService.lookupsDBName,
-                        'optecs_trawl/all_port_names',
+                        'obs_web/all_port_names',
                         queryOptions
                         );
                     this.ports = ports.rows.map((row: any) => row.doc);
@@ -198,7 +198,7 @@ export default class VesselDetails extends Vue {
                     };
 
                     const captains = await db.viewWithDocs(
-                        'obs-web',
+                        'obs_web',
                         'all_active_persons',
                         queryOptions
                         );
@@ -282,9 +282,8 @@ export default class VesselDetails extends Vue {
             );
 
             this.hardwareOptions = hardware.rows.map((row: any) => row.doc);
-            console.log(this.hardwareOptions);
         } catch (err) {
-            console.log(err);
+            this.errorAlert(err);
         }
 
         queryOptions.key = 'third-party-reviewer';
@@ -297,9 +296,8 @@ export default class VesselDetails extends Vue {
             );
 
             this.reviewerOptions = reviewers.rows.map((row: any) => row.doc);
-            console.log(this.reviewerOptions);
         } catch (err) {
-            console.log(err);
+            this.errorAlert(err);
         }
     }
 
