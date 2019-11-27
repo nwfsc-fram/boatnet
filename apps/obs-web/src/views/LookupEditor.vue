@@ -475,14 +475,13 @@ export default class LookupEditor extends Vue {
   }
 
   private filterDocs() {
-    console.log(this.searchTerm)
     this.filteredFoundDocs = [];
     if (this.searchTerm === '') {
         this.filteredFoundDocs = this.foundDocs.slice(0, 50);
     } else {
       this.filteredFoundDocs = this.foundDocs.filter(
         (doc) => doc.doc.alias.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
-      )
+      );
     }
 
     function sortWord(a: any, b: any) {

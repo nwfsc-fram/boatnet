@@ -319,7 +319,7 @@ export default class OtsTargetDetail extends Vue {
           reduce: false,
           include_docs: true,
           key: 'ots-target-types'
-        }
+        };
 
         const otsTargetTypes = await pouchDB.query(
           pouchService.lookupsDBName,

@@ -138,7 +138,7 @@ export default class Home extends Vue {
           reduce: false,
           include_docs: true,
           key: 'permit'
-        }
+        };
         const permits: any = await masterDB.view<any>(
             'obs_web',
             'all_doc_types',

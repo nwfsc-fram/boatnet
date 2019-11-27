@@ -81,12 +81,11 @@ export default class UserConfig extends Vue {
         const vesselCaptains: any = {};
         const db = pouchService.db;
         const queryOptions = {
-            // limit: 5,
             start_key: '',
             inclusive_end: true,
             descending: false,
             include_docs: true
-        }
+        };
         try {
             const vessels = await db.query(
                 pouchService.lookupsDBName,
