@@ -315,10 +315,16 @@ export default class OtsTargetDetail extends Vue {
         );
         this.fisheries = allFisheries.rows.map((row: any) => row.key);
 
+        const otsTargetTypesQueryOptions = {
+          reduce: false,
+          include_docs: true,
+          key: 'ots-target-types'
+        }
+
         const otsTargetTypes = await pouchDB.query(
           pouchService.lookupsDBName,
-          'obs_web/ots-target-types',
-          queryOptions
+          'obs_web/all_doc_types',
+          otsTargetTypesQueryOptions
         );
         this.targetTypes = otsTargetTypes.rows.map((row: any) => row.key);
 
@@ -337,7 +343,7 @@ export default class OtsTargetDetail extends Vue {
       };
 
       const history = await masterDB.view<any>(
-        'obs-web',
+        'obs_web',
         'all_doc_types',
         queryOptions
       );
@@ -349,7 +355,7 @@ export default class OtsTargetDetail extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
 
       const emefpTrips = await masterDB.viewWithDocs<any>(
-        'obs-web',
+        'obs_web',
         'em-efp-trips'
       );
 
@@ -365,7 +371,7 @@ export default class OtsTargetDetail extends Vue {
       };
 
       const emefpRoster: any = await masterDB.viewWithDocs<any>(
-        'obs-web',
+        'obs_web',
         'all_doc_types',
         queryOptions
       );

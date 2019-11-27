@@ -145,7 +145,7 @@ private async getVessels() {
         };
 
         const vessels = await db.viewWithDocs(
-            'obs-web',
+            'obs_web',
             'all_vessels',
             queryOptions
             );

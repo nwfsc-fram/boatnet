@@ -179,7 +179,7 @@ private async getObservers() {
 
         try {
             const observers = await masterDB.viewWithDocs<any>(
-                'obs-web',
+                'obs_web',
                 'all_observers',
                 queryOptions
                 );
@@ -266,7 +266,7 @@ private async getObserverTrips(observer: any) {
 
         try {
             const trips = await masterDB.viewWithDocs<any>(
-                'obs-web',
+                'obs_web',
                 'all_observed_trips',
                 {key: observer.userName}
                 );
@@ -288,7 +288,7 @@ private async getObserverActivities(observer: any) {
 
         try {
             const activities = await masterDB.viewWithDocs<any>(
-                'obs-web',
+                'obs_web',
                 'all_observer_activities',
                 {key: observer.userName}
                 );

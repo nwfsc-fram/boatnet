@@ -25,6 +25,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 @Component
 export default class UserConfig extends Vue {
@@ -78,11 +79,19 @@ export default class UserConfig extends Vue {
 
     private async getVessels() {
         const vesselCaptains: any = {};
-        const masterDB: Client<any> = couchService.masterDB;
+        const db = pouchService.db;
+        const queryOptions = {
+            // limit: 5,
+            start_key: '',
+            inclusive_end: true,
+            descending: false,
+            include_docs: true
+        }
         try {
-            const vessels = await masterDB.viewWithDocs<any>(
-                'obs-web',
-                'vessel_captains',
+            const vessels = await db.query(
+                pouchService.lookupsDBName,
+                'obs_web/vessel_captains',
+                queryOptions
                 );
             for (const row of vessels.rows) {
                 for (const captain of row.doc.captains) {
@@ -114,7 +123,7 @@ export default class UserConfig extends Vue {
 
         try {
             const userquery = await db.viewWithDocs<any>(
-            'obs-web',
+            'obs_web',
             'all_active_persons',
             queryOptions
             );

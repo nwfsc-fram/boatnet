@@ -104,7 +104,7 @@ private async getEmEfp() {
         };
 
         const emefp: any = await masterDB.view(
-            'obs-web',
+            'obs_web',
             'all_doc_types',
             queryOptions
             );

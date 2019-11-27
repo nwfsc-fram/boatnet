@@ -117,7 +117,7 @@ export default class ManageUsers extends Vue {
 
         try {
             const users = await masterDB.viewWithDocs<any>(
-                'obs-web',
+                'obs_web',
                 'all_active_persons',
                 queryOptions
                 );
