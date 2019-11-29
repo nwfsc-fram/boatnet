@@ -19,7 +19,7 @@
             Trip Selected
           </div>
 
-          <div v-else class="text-primary" style="font-size: 22px">
+          <div v-if="trip.activeTrip._id && !trip.activeTrip.isSelected" class="text-primary" style="font-size: 22px">
           <q-icon
             name="not_interested"
           ></q-icon>
