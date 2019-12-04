@@ -24,8 +24,6 @@
     "typescript": "3.4.2"
   },
   "dependencies": {
-    "@boatnet/bn-auth": "file:..\\..\\libs\\bn-auth",
-    "@boatnet/bn-couch": "file:..\\..\\libs\\bn-couch",
     "@types/express-session": "^1.15.13",
     "command-line-args": "^5.0.2",
     "cors": "^2.8.5",
