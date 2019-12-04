@@ -4,7 +4,7 @@ import moment from 'moment';
 
 import { alert } from '@/_store/alert.module';
 
-import { Vessel } from '@boatnet/bn-models/models/_lookups/vessel';
+import { Vessel } from '@boatnet/bn-models';
 import { OTSTrip, OTSMessage, OTSUser, OTSTarget, WcgopTrip, Permit, Person } from '@boatnet/bn-models';
 
 import { RootState } from '@/_store/types/types';
