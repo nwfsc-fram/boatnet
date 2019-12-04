@@ -38,3 +38,13 @@ export default class Default extends Vue {
   private router = router;
 }
 </script>
+
+<style>
+.q-field__label {
+  color: #027be3 !important;
+}
+
+.q-field__native {
+  font-weight: bold !important;
+}
+</style>
