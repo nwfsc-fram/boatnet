@@ -558,7 +558,7 @@ export default class TripDetails extends Vue {
   }
 
   private async getMaxDate() {
-    if (this.trip.index === 0) {
+    if (this.trip.index === 0 && !this.trip.newTrip) {
     const db = pouchService.db;
     const docs = await db.allDocs(pouchService.userDBName);
 
@@ -569,6 +569,10 @@ export default class TripDetails extends Vue {
         }
       }
     }
+  } else {
+    const myDate = new Date();
+    myDate.setDate(myDate.getDate() + 365);
+    this.maxDate = myDate;
   }
 }
 
