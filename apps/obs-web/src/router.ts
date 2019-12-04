@@ -30,32 +30,11 @@ import ViewHauls from './views/ViewHauls.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
+// Note: Jenkins build will update this dbConfig.ts file for Prod/ Stage/ Dev etc.
+import dbConfig from './config/dbConfig';
+authService.setDBConfig(dbConfig);
+
 Vue.use(Router);
-
-// export default new Router({
-
-//   routes: [
-//     {
-//       path: '/',
-//       component: DefaultLayout,
-//       children: [
-//         { path: '', name: 'Home', component: Home },
-//         { path: '/about', name: 'About', component: About },
-//         { path: '/trips', name: 'Trips', component: Trips},
-//         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-//         { path: '/debriefer', redirect: '' },
-//         { path: '/permits', name: 'Permits', component: Permits},
-//         { path: '/permits/:id', name: 'Permit Details', component: PermitDetails },
-//         { path: '/ots-management', name: 'OTS Management', component: OTSManagement },
-//         { path: 'user-config', name: 'User Config', component: UserConfig },
-//         { path: '/manage-users', name: 'Manage Users', component: ManageUsers },
-//         { path: '/users/:id', name: 'User Details', component: UserDetails},
-//         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture }
-//       ]
-//     }
-//   ],
-//   mode: 'history'
-// });
 
 const router = new Router({
   mode: 'history',

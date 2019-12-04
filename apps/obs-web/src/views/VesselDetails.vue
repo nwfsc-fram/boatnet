@@ -130,8 +130,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
 import router from '../router';
 import { AlertState, VesselState, UserState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Vessel, VesselTypeTypeName, PersonTypeName } from '@boatnet/bn-models';
 

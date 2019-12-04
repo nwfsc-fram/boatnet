@@ -68,8 +68,8 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 import { AlertState, TripState } from '@boatnet/bn-common';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 

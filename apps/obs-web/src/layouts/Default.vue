@@ -298,8 +298,8 @@ import router from '../router';
 import { AlertState } from '../_store/index';
 import { TripState, VesselState, UserState } from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import moment from 'moment';
