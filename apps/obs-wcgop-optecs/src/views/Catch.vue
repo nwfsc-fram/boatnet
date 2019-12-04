@@ -293,9 +293,6 @@ import {
 
 
 import moment from 'moment';
-import { freemem } from 'os';
-import { disconnect } from 'cluster';
-import { get } from 'http';
 
 import TreeTable from 'primevue/treetable';
 Vue.component('pTreeTable', TreeTable);
