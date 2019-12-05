@@ -15,6 +15,7 @@ import BoatnetKeyboardList from './components/BoatnetKeyboardList.vue';
 import BoatnetKeyboardSelect from './components/BoatnetKeyboardSelect.vue';
 import BoatnetKeyboardSelectList from './components/BoatnetKeyboardSelectList.vue';
 import BoatnetLicenses from './components/BoatnetLicenses.vue';
+import BoatnetLocation from './components/BoatnetLocation.vue';
 import BoatnetLocations from './components/BoatnetLocations.vue';
 import BoatnetSummary from './components/BoatnetSummary.vue';
 import BoatnetTable from './components/BoatnetTable.vue';
@@ -48,6 +49,7 @@ const Components: any = {
   BoatnetKeyboardSelect,
   BoatnetKeyboardSelectList,
   BoatnetLicenses,
+  BoatnetLocation,
   BoatnetLocations,
   BoatnetLogin,
   BoatnetSummary,
