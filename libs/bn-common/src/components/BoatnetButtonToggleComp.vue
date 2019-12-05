@@ -1,15 +1,10 @@
 <template>
   <div class="q-px-md q-py-sm">
     <div>
-      <b>{{config.title}}</b>
+      <b>{{title}}</b>
     </div>
-    <q-btn-toggle
-      v-model="valueHolder"
-      toggle-color="primary"
-      :options="config.options"
-      @input="save"
-    />
-    <div>{{config.description}}</div>
+    <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="options" @input="save" />
+    <div>{{description}}</div>
   </div>
 </template>
 
@@ -19,24 +14,16 @@ import { get, set } from 'lodash';
 
 @Component
 export default class BoatnetButtonToggle extends Vue {
-  @Prop() private config!: any;
-  @Prop() private model!: any;
+  @Prop() private title!: string;
+  @Prop() private options!: any;
+  @Prop() private description!: string;
+  @Prop() private val!: string;
 
   get valueHolder() {
-    return get(this.model, this.config.modelName);
+    return this.val;
   }
   set valueHolder(value: string) {
-    const modelName = this.config ? this.config.modelName : '';
-    const model: any = this.model;
-    const fields = modelName.split('.');
-
-    if (fields.length > 1) {
-      const newObjName = modelName.slice(modelName.indexOf('.') + 1);
-      const newObj = set({}, newObjName, value);
-      Vue.set(model, fields[0], newObj);
-    } else {
-      Vue.set(model, modelName, value);
-    }
+    this.$emit('update:val', value);
   }
 
   private save() {
