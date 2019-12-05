@@ -188,7 +188,7 @@ import { TripState, VesselState, UserState, WcgopAppState, AlertState } from '..
 
 import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
+import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 import {

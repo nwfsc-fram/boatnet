@@ -137,7 +137,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { WcgopTrip } from '@boatnet/bn-models';
 
 import { AuthState, authService } from '@boatnet/bn-auth';
-import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 import axios from 'axios';

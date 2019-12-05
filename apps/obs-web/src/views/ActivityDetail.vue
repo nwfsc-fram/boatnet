@@ -78,7 +78,6 @@ import moment from 'moment';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
-import { CouchDBInfo } from '@boatnet/bn-couch';
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);

@@ -53,7 +53,6 @@ import { ObserverActivityTypeName } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
-import { CouchDBInfo } from '@boatnet/bn-couch';
 
 @Component({
   pouch: {

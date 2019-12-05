@@ -124,7 +124,7 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
 import { AuthState, authService } from '@boatnet/bn-auth';
-import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { EmEfp, OTSTarget, OTSTargetTypeName, WcgopTrip } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
