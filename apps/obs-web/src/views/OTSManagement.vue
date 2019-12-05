@@ -9,8 +9,12 @@
         </q-banner>
 
         <div class="centered-page-item">
-            <q-btn color='primary text-white q-ma-md' @click='newOtsTarget'>New Target</q-btn>
+            <q-btn color="primary" class="q-ma-md text-white" @click='newOtsTarget'>New Target</q-btn>
+            <div style="float: right">
+                <q-btn color="primary" class="q-ma-md" to="/ots-trips" exact>View Ots Trips</q-btn>
+            </div>
         </div>
+
 
         <div >
             <q-toggle
