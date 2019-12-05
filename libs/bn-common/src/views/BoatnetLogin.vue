@@ -9,18 +9,8 @@
         <div>v0.0.0</div>
       </q-toolbar>
     </q-header>
-    <q-page-container>
-      <div class="q-pa-md">
-        <slot name="stat_info"></slot>
-        <div>
-          <b>Last Data Sync:</b>
-          {{lastDataSyncDate}}
-        </div>
-        <div>
-          <b>Quasar version:</b>
-          {{quasarVersion}}
-        </div>
-      </div>
+    <q-page-container class="absolute-center">
+
       <div class="q-pa-xl column justify-center items-center full-height">
         <form @submit.prevent.stop="handleSubmit" class="q-gutter-md" style="min-width: 300px;">
           <div v-show="!!alert.message">
@@ -58,7 +48,19 @@
           <router-link to="/" disabled="true">Forgot Password</router-link>
           <router-link to="/" disabled="true">Change Password</router-link>
         </div>
+        <div class="q-pa-md column justify-center items-center full-height">
+        <slot name="stat_info"></slot>
+        <div>
+          <b>Last Data Sync:</b>
+          {{lastDataSyncDate}}
+        </div>
+        <div>
+          <b>Quasar version:</b>
+          {{quasarVersion}}
+        </div>
+        </div>
       </div>
+
     </q-page-container>
   </q-layout>
 </template>
@@ -68,8 +70,8 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 // https://github.com/kaorun343/vue-property-decorator
 import { AlertState, TripState } from '@boatnet/bn-common';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials } from '@boatnet/bn-couch';
 import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 

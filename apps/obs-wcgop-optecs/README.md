@@ -6,7 +6,7 @@
 * For bugs that only show up in production (PWA mode) you'll want to be able to build and run locally.
 * I run CouchDB on a VM, but you could point to our dev server.
 1. Run `dev-auth-server` in a window.
-1. Modify your copy of `libs/bn-auth/src/config/dbConfig.ts` to point to localhost:9000.
+1. Modify your copy of `src/config/dbConfig.ts` to point to localhost:9000.
   * Do not commit this change to source control
 1. Next, build and run the app out of the `dist/` directory:
 ```

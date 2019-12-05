@@ -86,7 +86,8 @@ import router from '../router';
 import AshopBreadcrumb from '../components/AshopBreadcrumb.vue';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState, BoatnetConfig } from '@boatnet/bn-common';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo } from '@boatnet/bn-couch';
 import { colors } from 'quasar';
 
 @Component({

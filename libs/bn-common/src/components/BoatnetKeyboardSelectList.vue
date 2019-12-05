@@ -1,17 +1,16 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <div class="text-bold">{{ config.displayName }}</div>
+    <div class="text-bold">{{ displayName }}</div>
     <q-input
       outlined
       v-model="valueHolder"
-      :type="config.encodingType"
-      :mask="config.mask"
+      :mask="mask"
       debounce="500"
       @input="save"
       @focus="displayKeyboard"
-      :fill-mask="config.showMask"
-      :hint="config.hint"
-      :data-layout="config.keyboardType"
+      :data-layout="keyboardType"
+      :label="label"
+      :fill-mask="mask ? true : false"
       dense
     >
       <template v-slot:append>
@@ -22,9 +21,9 @@
     <boatnet-keyboard
       v-on:selected="select"
       :visible.sync="isActive"
-      :layout="config.keyboardType"
+      :layout="keyboardType"
       :inputTarget="keyboard.keyboardInputTarget"
-      :list="config.list"
+      :list="list"
       :inputValue="valueHolder"
       @next="keyboard.next"
     />
@@ -38,8 +37,12 @@ import Vue from 'vue';
 
 export default createComponent({
   props: {
-    config: Object,
-    model: Object
+    displayName: String,
+    mask: String,
+    keyboardType: String,
+    label: String,
+    list: Object,
+    val: String
   },
 
   setup(props, context) {
@@ -48,33 +51,17 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        return get(props.model, props.config ? props.config.modelName : '');
+        return props.val ? props.val : '';
       },
       set: (val: string) => {
-        setValue(val);
+        context.emit('update:val', val);
       }
     });
-
-    const setValue = (value: string) => {
-      const modelName = props.config ? props.config.modelName : '';
-      const model: any = props.model;
-      const fields = modelName.split('.');
-
-      if (fields.length > 1) {
-        const newObjName = modelName.slice(modelName.indexOf('.') + 1);
-        const newObj = set({}, newObjName, value);
-        Vue.set(model, fields[0], newObj);
-      } else {
-        Vue.set(model, modelName, value);
-      }
-    };
 
     const isActive = computed({
       get: () => {
         const keyboardState = context.root.$store.state.keyboard;
-        if (
-          props.config &&
-          props.config.displayName === keyboardState.activeFieldName &&
+        if (props.displayName === keyboardState.activeFieldName &&
           keyboardState.showKeyboard
         ) {
           return true;
@@ -86,16 +73,15 @@ export default createComponent({
     });
 
     const displayKeyboard = (event: any) => {
-      const displayName = props.config ? props.config.displayName : '';
       store.dispatch('keyboard/setKeyboardInputTarget', event.target);
-      store.dispatch('keyboard/setActiveFieldName', displayName);
+      store.dispatch('keyboard/setActiveFieldName', props.displayName);
       if (!context.root.$store.state.showKeyboard) {
         store.dispatch('keyboard/setKeyboard', true);
       }
     };
 
     const select = (value: string) => {
-      setValue(value);
+      context.emit('update:val', value);
       context.emit('save');
     };
 

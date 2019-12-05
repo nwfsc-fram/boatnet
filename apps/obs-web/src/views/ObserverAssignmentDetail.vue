@@ -80,7 +80,7 @@ import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_
 import moment from 'moment';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
 

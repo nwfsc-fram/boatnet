@@ -34,7 +34,7 @@ import { AlertState, VesselState, PermitState, UserState } from '../_store/types
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';

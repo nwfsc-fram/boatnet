@@ -51,7 +51,7 @@ import { AuthState, authService } from '@boatnet/bn-auth';
 import { PersonTypeName } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 @Component

@@ -9,3 +9,5 @@ declare module 'pouchdb-utils';
 // https://stackoverflow.com/questions/50576746/import-pdfmake-js-file-to-my-ts-file
 declare module 'pdfmake/build/pdfmake.js';
 declare module 'pdfmake/build/vfs_fonts.js';
+
+declare module 'querystring';

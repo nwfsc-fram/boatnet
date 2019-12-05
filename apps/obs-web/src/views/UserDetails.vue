@@ -425,7 +425,7 @@ import { Vessel, UsState, PersonTypeName, Person } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';
 
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
