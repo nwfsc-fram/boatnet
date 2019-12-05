@@ -57,7 +57,7 @@ export default createComponent({
     const latName = props && props.latModelName ? props.latModelName : '';
     const longName = props && props.longModelName ? props.longModelName : '';
 
-  const long = computed({
+    const long = computed({
       get: () => {
         return get(props.obj, longName);
       },
@@ -77,31 +77,31 @@ export default createComponent({
       }
     });
 
-    function setProp(obj: any, props: any, value: any) {
-      let prop: string = props.shift();
+    function setProp(obj: any, setProps: any, value: any) {
+      let prop: string = setProps.shift();
       let index: number = -1;
       const arrStart: number = prop.indexOf('[');
-      
-      if (arrStart != -1) {
-        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')));
+
+      if (arrStart !== -1) {
+        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')), 10);
         prop = prop.substring(0, arrStart);
       }
-      if (!obj[prop] && index == -1) {
+      if (!obj[prop] && index === -1) {
         Vue.set(obj, prop, {});
-      } else if (!obj[prop] && index != -1) {
+      } else if (!obj[prop] && index !== -1) {
         Vue.set(obj, prop, []);
       }
-      if (!props.length) {
+      if (!setProps.length) {
         if (value && typeof value === 'object' && !Array.isArray(value)) {
           obj[prop] = { ...obj[prop], ...value };
-        } else if (index != -1) {
+        } else if (index !== -1) {
           obj[prop][index] = value;
         } else {
           obj[prop] = value;
         }
         return;
       }
-      setProp(obj[prop], props, value);
+      setProp(obj[prop], setProps, value);
     }
 
     const save = () => {
