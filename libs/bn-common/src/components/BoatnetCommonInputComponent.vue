@@ -82,31 +82,31 @@ export default createComponent({
     });
 
     // https://jasonwatmore.com/post/2018/09/10/vuejs-set-get-delete-reactive-nested-object-properties
-    function setValue(obj: any, props: any, value: any) {
-      let prop: string = props.shift();
+    function setValue(obj: any, valProps: any, setVal: any) {
+      let prop: string = valProps.shift();
       let index: number = -1;
       const arrStart: number = prop.indexOf('[');
-      
-      if (arrStart != -1) {
-        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')));
+
+      if (arrStart !== -1) {
+        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')), 10);
         prop = prop.substring(0, arrStart);
       }
-      if (!obj[prop] && index == -1) {
+      if (!obj[prop] && index === -1) {
         Vue.set(obj, prop, {});
-      } else if (!obj[prop] && index != -1) {
+      } else if (!obj[prop] && index !== -1) {
         Vue.set(obj, prop, []);
       }
-      if (!props.length) {
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-          obj[prop] = { ...obj[prop], ...value };
-        } else if (index != -1) {
-          obj[prop][index] = value;
+      if (!valProps.length) {
+        if (setVal && typeof setVal === 'object' && !Array.isArray(setVal)) {
+          obj[prop] = { ...obj[prop], ...setVal };
+        } else if (index !== -1) {
+          obj[prop][index] = setVal;
         } else {
-          obj[prop] = value;
+          obj[prop] = setVal;
         }
         return;
       }
-      setValue(obj[prop], props, value);
+      setValue(obj[prop], valProps, setVal);
     }
 
     const save = () => {

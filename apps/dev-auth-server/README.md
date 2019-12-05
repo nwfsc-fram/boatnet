@@ -12,13 +12,13 @@ A dev-only auth server for use with developing boatnet apps without connecting t
 {
   "devUsers": [
     {
-      "username": "test",
-      "password": "test",
+      "username": "test (change to couch db username)",
+      "password": "test (change to couch db pw)",
       "applicationName": "BOATNET_OBSERVER",
       "userData": {
-        "roles": ["observer"],
+        "roles": ["observer", "debriefer"],
         "couchDBInfo": {
-          "urlRoot": "http://localhost:5984",
+          "urlRoot": "https://nwcdevfram2.nwfsc2.noaa.gov:6984",
           "lookupsDB": "lookups-dev",
           "masterDB": "master-dev"
         }
@@ -86,6 +86,7 @@ or base64 encoded password:
 # Development Notes
 
 Initial typescript project created like so, based on https://basarat.gitbooks.io/typescript/docs/quick/nodejs.html
+
 
 ```
 mkdir dev-auth-server && cd dev-auth-server
