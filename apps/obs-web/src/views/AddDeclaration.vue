@@ -1,0 +1,352 @@
+<template>
+  <div class="q-pa-md" style="max-width: 400px">
+    <q-form @submit="onSubmit">
+      <div class="row items-start q-gutter-md">
+        <p>Participating in EFP?</p>
+        <q-btn-toggle
+          v-model="efpTog"
+          toggle-color="primary"
+          @input="efpToggled()"
+          :options="[
+          {label: 'Yes', value: true},
+          {label: 'No', value: false},
+      ]"
+        />
+      </div>
+
+      <br />
+
+      <q-btn-toggle
+        v-if="!efpTog"
+        v-model="worksheetModel"
+        dense
+        toggle-color="primary"
+        @input="worksheetToggled()"
+        :options="[
+          {label: 'Declaration ID Worksheet', value: true},
+          {label: 'Chose ID from dropdown', value: false},
+      ]"
+      />
+
+      <p v-if="databaseObject.showEFPNote">
+        If you do not see your EFP category in the list below
+        please contact the OLE office at 999-999-9990
+      </p>
+
+      <br />
+      <br />
+
+      <q-select
+        label="Category of Declaration"
+        dense
+        v-if="databaseObject.showBoolArr[0]"
+        v-model="model1"
+        :options="options1"
+        @input="itemChosen(model1, 1)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        :label="row2Title"
+        dense
+        v-if="databaseObject.showBoolArr[1]"
+        v-model="model2"
+        :options="options2"
+        @input="itemChosen(model2, 2)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        :label="row3Title"
+        dense
+        v-if="databaseObject.showBoolArr[2]"
+        v-model="model3"
+        :options="options3"
+        @input="itemChosen(model3, 3)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        :label="row4Title"
+        dense
+        v-if="databaseObject.showBoolArr[3]"
+        v-model="model4"
+        :options="options4"
+        @input="itemChosen(model4, 4)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="Species"
+        dense
+        v-if="databaseObject.showBoolArr[4]"
+        v-model="model5"
+        :options="options5"
+        @input="itemChosen(model5, 5)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="EFP Category"
+        dense
+        v-if="databaseObject.showefpQ1"
+        v-model="modelefp1"
+        :options="efpOptions"
+        @input="efpCategoryChosen"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="EFP Declaration Type"
+        dense
+        v-if="databaseObject.showefpQ2"
+        v-model="modelefp2"
+        :options="efpOptions2"
+        @input="efpDeclarationChosen"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="Observer Status"
+        dense
+        v-if="databaseObject.showObsQuestion"
+        v-model="model6"
+        :options="obsOptions"
+        @input="databaseObject.cartAddBool=true"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-card v-if="databaseObject.cartAddBool" 
+              align="center" 
+              class="bg-light-blue-3" dense>
+        <q-card-section>
+          <div class="text-subtitle2">The declaration ID for {{ decChoiceDisplay.split('@')[0] }} is</div>
+        </q-card-section>
+
+        <q-card-section>
+          <div class="text-h6">{{ decChoiceDisplay.split('@')[1] }}</div>
+        </q-card-section>
+        
+      </q-card>
+
+      <br />
+
+      <div style="text-align: center">
+        <q-btn
+          v-if="databaseObject.cartAddBool"
+          label="Add To Cart"
+          type="addcart"
+          color="primary"
+        />
+      </div>
+
+      <p v-if="showLineNote">
+        <br />* Line = Hook &amp Line
+        <br />** Long Line = Stationary buoyed and anchored ground line with hooks
+        attached, so as to fish along the seabed, does not include
+        pelagic Hook &amp Line or Troll gear
+      </p>
+    </q-form>
+  </div>
+</template>
+
+<script lang="ts">
+import { State, Action, Getter, Mutation } from 'vuex-class';
+import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
+
+/* tslint:disable:no-var-requires  */
+const dropdownTree = require('../assets/declarationsWorksheetVault.json');
+
+@Component({})
+export default class Dropdowns extends Vue {
+  public databaseObject = {
+    showObsQuestion: false,
+    cartAddBool: false,
+    showBoolArr: [true, false, false, false, false],
+    // EFP stuff
+    showefpQ1: false,
+    showefpQ2: false,
+    showEFPNote: false
+  };
+  public model1: string = '';
+  public model2: string = '';
+  public model3: string = '';
+  public model4: string = '';
+  public model5: string = '';
+  public model6: string = '';
+  public efpTog: boolean = false;
+  public worksheetModel: boolean = true;
+  public obsOptions: string[] = ['Observer', 'EM', 'EM/Observer', 'None'];
+  public decChoiceDisplay: string = '';
+  public decChoiceKey: string = '';
+  public options1 = dropdownTree.Start;
+  public leafSet: Set<string> = new Set(Object.keys(dropdownTree['Leaf Nodes']));
+  public ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
+  // EFP stuff
+  public modelefp1: string = '';
+  public modelefp2: string = '';
+  public efpOptions = Object.keys(dropdownTree.EFP);
+  public efpOptions2: string[] = [];
+
+  public efpToggled() {
+    if (this.efpTog) {
+      this.clearEntriesBelow(0);
+      this.databaseObject.showEFPNote = true;
+      this.databaseObject.showefpQ1 = true;
+    } else {
+      if (this.worksheetModel) {
+        this.databaseObject.showBoolArr[0] = true;
+      }
+      this.databaseObject.showEFPNote = false;
+      this.databaseObject.showefpQ1 = false;
+      this.databaseObject.showefpQ2 = false;
+      this.clearEntriesBelow(1);
+      this.modelefp1 = '';
+      this.modelefp2 = '';
+    }
+  }
+
+  public worksheetToggled() {
+    if (this.worksheetModel) {
+      this.databaseObject.showBoolArr[0] = true;
+    } else {
+      this.clearEntriesBelow(0);
+    }
+  }
+
+  public itemChosen(model: any, boolIndex: number) {
+    this.clearEntriesBelow(boolIndex);
+    if (this.leafSet.has(model)) {
+      this.databaseObject.showBoolArr.fill(false, boolIndex, 4);
+      this.decChoiceDisplay = dropdownTree['Leaf Nodes'][model];
+      this.decChoiceKey = model;
+      this.handleObserverStatus();
+    } else {
+      this.databaseObject.showBoolArr[boolIndex] = true;
+    }
+  }
+
+  public handleObserverStatus() {
+    if (this.ifqSet.has(this.decChoiceKey)) {
+      this.databaseObject.showObsQuestion = true;
+    } else {
+      this.databaseObject.cartAddBool = true;
+    }
+  }
+
+  public clearEntriesBelow(index: number) {
+    this.databaseObject.showBoolArr.fill(false, index, 5);
+    this.databaseObject.showObsQuestion = false;
+    this.databaseObject.cartAddBool = false;
+    this.model6 = '';
+    if (index < 1) {
+      this.model1 = '';
+    }
+    if (index < 2) {
+      this.model2 = '';
+    }
+    if (index < 3) {
+      this.model3 = '';
+    }
+    if (index < 4) {
+      this.model4 = '';
+    }
+    if (index < 5) {
+      this.model5 = '';
+    }
+  }
+
+  public onSubmit() {
+    //
+  }
+
+  public get row2Title() {
+    if (this.model1 === 'Exemption') {
+      return 'Description';
+    } else {
+      return 'Fishery';
+    }
+  }
+
+  public get row3Title() {
+    if (this.model2 === 'Limited Entry') {
+      return 'Fishery Options';
+    } else {
+      return 'Gear Type';
+    }
+  }
+
+  public get row4Title() {
+    if (this.model3 === 'IFQ/CP/CV/MS') {
+      return 'Gear Type';
+    } else {
+      return 'Species';
+    }
+  }
+
+  // See if I can get all the option getters
+  // into one function
+  public get options2(): any {
+    if (this.model1 === '') {
+      return '';
+    } else {
+      return dropdownTree[this.model1];
+    }
+  }
+
+  public get options3(): any {
+    if (this.model2 === '') {
+      return '';
+    } else {
+      return dropdownTree[this.model2];
+    }
+  }
+
+  public get options4(): any {
+    if (this.model3 === '') {
+      return '';
+    } else {
+      return dropdownTree[this.model3];
+    }
+  }
+
+  public get options5(): any {
+    if (this.model4 === '') {
+      return '';
+    } else {
+      return dropdownTree[this.model4];
+    }
+  }
+
+  public get showLineNote(): boolean {
+    if (this.model2 === 'Open Access') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // EFP stuff
+  public efpCategoryChosen() {
+    const efpCatOptions = dropdownTree.EFP[this.modelefp1];
+    this.clearEntriesBelow(1);
+    this.modelefp2 = '';
+    this.databaseObject.showefpQ2 = false;
+    if (efpCatOptions.length === 1) {
+      this.decChoiceDisplay = dropdownTree['Leaf Nodes'][efpCatOptions[0]];
+      this.databaseObject.showObsQuestion = true;
+    } else {
+      this.efpOptions2 = efpCatOptions;
+      this.databaseObject.showefpQ2 = true;
+      this.model6 = 'EM';
+      this.databaseObject.showObsQuestion = true;
+    }
+  }
+
+  public efpDeclarationChosen() {
+    this.decChoiceDisplay = dropdownTree['Leaf Nodes'][this.modelefp2];
+    this.databaseObject.cartAddBool = true;
+  }
+}
+
+</script>

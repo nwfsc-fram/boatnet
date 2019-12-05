@@ -61,6 +61,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/new-declaration" exact>
+          <q-item-section avatar>
+            <q-icon name="camera_alt" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>New Declaration</q-item-label>
+            <q-item-label caption>take/upload logbook photo</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/log-book-capture" exact>
           <q-item-section avatar>
             <q-icon name="camera_alt" />
