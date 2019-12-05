@@ -113,5 +113,11 @@
         "SFCFA": ["Other Gear (or Activity) [69]"],
         "CPS": ["Other Gear (or Activity) [69]"],
         "Cook (OR Rockfish)": ["Ground Fish [35]"]
-    }
+    },
+    "Observed Options": [
+        "Observer", 
+        "EM", 
+        "EM/Observer", 
+        "None"
+    ]
 }

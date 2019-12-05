@@ -4,7 +4,7 @@
       <div class="row items-start q-gutter-md">
         <p>Participating in EFP?</p>
         <q-btn-toggle
-          v-model="efpTog"
+          v-model="databaseObject.efpTog"
           toggle-color="primary"
           @input="efpToggled()"
           :options="[
@@ -155,31 +155,39 @@ import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
 /* tslint:disable:no-var-requires  */
+// I don't think I need this still...
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
 @Component({})
 export default class Dropdowns extends Vue {
+  // This object represents the state of the worksheet
+  // will probably move this into couch eventually
   public databaseObject = {
     showObsQuestion: false,
     cartAddBool: false,
     showBoolArr: [true, false, false, false, false],
+    decChoiceKey: '',
     // EFP stuff
+    efpTog: false,
     showefpQ1: false,
     showefpQ2: false,
     showEFPNote: false
   };
+  // Here are some page control variables that need
+  // to be reactive, putting them into an object
+  // caused problems here, but I should look into this
+  // more to clean it up
   public model1: string = '';
   public model2: string = '';
   public model3: string = '';
   public model4: string = '';
   public model5: string = '';
   public model6: string = '';
-  public efpTog: boolean = false;
   public worksheetModel: boolean = true;
-  public obsOptions: string[] = ['Observer', 'EM', 'EM/Observer', 'None'];
   public decChoiceDisplay: string = '';
-  public decChoiceKey: string = '';
+  // Options pulled out of the json file, this information comes from OLE
   public options1 = dropdownTree.Start;
+  public obsOptions: string[] = dropdownTree['Observed Options'];
   public leafSet: Set<string> = new Set(Object.keys(dropdownTree['Leaf Nodes']));
   public ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   // EFP stuff
@@ -188,8 +196,9 @@ export default class Dropdowns extends Vue {
   public efpOptions = Object.keys(dropdownTree.EFP);
   public efpOptions2: string[] = [];
 
+  // If EFP is toggled to yes, provide a different set of menus
   public efpToggled() {
-    if (this.efpTog) {
+    if (this.databaseObject.efpTog) {
       this.clearEntriesBelow(0);
       this.databaseObject.showEFPNote = true;
       this.databaseObject.showefpQ1 = true;
@@ -206,6 +215,8 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // This toggle controls showing the worksheet or one
+  // single dropdown with all the declarations
   public worksheetToggled() {
     if (this.worksheetModel) {
       this.databaseObject.showBoolArr[0] = true;
@@ -214,26 +225,31 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // When dropdown item is chosen, use that information to
+  // generate the next dropdown
   public itemChosen(model: any, boolIndex: number) {
     this.clearEntriesBelow(boolIndex);
     if (this.leafSet.has(model)) {
       this.databaseObject.showBoolArr.fill(false, boolIndex, 4);
       this.decChoiceDisplay = dropdownTree['Leaf Nodes'][model];
-      this.decChoiceKey = model;
+      this.databaseObject.decChoiceKey = model;
       this.handleObserverStatus();
     } else {
       this.databaseObject.showBoolArr[boolIndex] = true;
     }
   }
 
+  // Observer status question only applies to subset of choices
   public handleObserverStatus() {
-    if (this.ifqSet.has(this.decChoiceKey)) {
+    if (this.ifqSet.has(this.databaseObject.decChoiceKey)) {
       this.databaseObject.showObsQuestion = true;
     } else {
       this.databaseObject.cartAddBool = true;
     }
   }
 
+  // Clear function so when dropdowns are changed, all
+  // dropdowns below are cleared/reset
   public clearEntriesBelow(index: number) {
     this.databaseObject.showBoolArr.fill(false, index, 5);
     this.databaseObject.showObsQuestion = false;
@@ -257,9 +273,10 @@ export default class Dropdowns extends Vue {
   }
 
   public onSubmit() {
-    //
+    // To-do
   }
 
+  // Question two title dependent on prior dropdown choice
   public get row2Title() {
     if (this.model1 === 'Exemption') {
       return 'Description';
@@ -268,6 +285,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Question three title dependent on prior dropdown choice
   public get row3Title() {
     if (this.model2 === 'Limited Entry') {
       return 'Fishery Options';
@@ -276,6 +294,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Question three title dependent on prior dropdown choice
   public get row4Title() {
     if (this.model3 === 'IFQ/CP/CV/MS') {
       return 'Gear Type';
@@ -286,6 +305,7 @@ export default class Dropdowns extends Vue {
 
   // See if I can get all the option getters
   // into one function
+  // Fill in dropdown options for question 2
   public get options2(): any {
     if (this.model1 === '') {
       return '';
@@ -294,6 +314,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Fill in dropdown options for question 3
   public get options3(): any {
     if (this.model2 === '') {
       return '';
@@ -302,6 +323,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Fill in dropdown options for question 4
   public get options4(): any {
     if (this.model3 === '') {
       return '';
@@ -310,6 +332,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Fill in dropdown options for question 5
   public get options5(): any {
     if (this.model4 === '') {
       return '';
@@ -318,6 +341,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Fill in dropdown options for question 6
   public get showLineNote(): boolean {
     if (this.model2 === 'Open Access') {
       return true;
@@ -326,7 +350,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // EFP stuff
+  // This fucnction controls the EFP version of the worksheet
   public efpCategoryChosen() {
     const efpCatOptions = dropdownTree.EFP[this.modelefp1];
     this.clearEntriesBelow(1);
@@ -343,6 +367,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // First EFP dropdown chosen
   public efpDeclarationChosen() {
     this.decChoiceDisplay = dropdownTree['Leaf Nodes'][this.modelefp2];
     this.databaseObject.cartAddBool = true;
