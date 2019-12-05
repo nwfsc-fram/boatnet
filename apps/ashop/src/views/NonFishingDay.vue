@@ -32,6 +32,9 @@ export default createComponent({
     const appConfig = store.state.appSettings.appConfig;
     const trip = reactive(store.state.tripsState.currentTrip);
 
+    // fetch from lookups list: https://github.com/nwfsc-fram/boatnet/issues/1007
+    appConfig.nonFishingDay[3].list = ['one', 'two'];
+
     const saveOnUpdate = async () => {
       store.dispatch('tripsState/save', trip);
     };

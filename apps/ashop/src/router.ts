@@ -6,6 +6,7 @@ import TripDetails from './views/TripDetails.vue';
 import EndTrip from './views/EndTrip.vue';
 import Login from './views/Login.vue';
 import Hauls from './views/Hauls.vue';
+import HaulDetails from './views/HaulDetails.vue';
 import Settings from './views/Settings.vue';
 import NonFishingDay from './views/NonFishingDay.vue';
 
@@ -77,6 +78,19 @@ const router = new Router({
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: '' },
               { name: 'Hauls', link: '' }
+            ]
+          }
+        },
+        {
+          path: '/hauldetails/:haulNum',
+          name: 'HaulDetails',
+          component: HaulDetails,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '' },
+              { name: 'Hauls', link: '/hauls' },
+              { name: 'haulIdPlaceholder', link: ''}
             ]
           }
         },
