@@ -61,13 +61,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/new-declaration" exact>
+        <q-item to="/declarations" exact>
           <q-item-section avatar>
-            <q-icon name="camera_alt" />
+            <q-icon name="how_to_vote" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>New Declaration</q-item-label>
-            <q-item-label caption>take/upload logbook photo</q-item-label>
+            <q-item-label>Declarations</q-item-label>
+            <q-item-label caption>create a declaration / view current and past declarations</q-item-label>
           </q-item-section>
         </q-item>
 

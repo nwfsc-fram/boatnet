@@ -9,6 +9,7 @@ import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
 import PermitDetails from './views/PermitDetails.vue';
+import Declarations from './views/Declarations.vue';
 import AddDeclaration from './views/AddDeclaration.vue';
 import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OTSManagement from './views/OTSManagement.vue';
@@ -97,6 +98,9 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward',
               'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
+        },
+        { 
+          path: '/declarations', name: 'Declaration', component: Declarations
         },
         { 
           path: '/new-declaration', name: 'New Declaration', component: AddDeclaration 
