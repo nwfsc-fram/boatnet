@@ -31,7 +31,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import { State, Action, Getter } from 'vuex-class';
 import { AlertState, VesselState, PermitState, UserState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';

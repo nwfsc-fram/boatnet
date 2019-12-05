@@ -47,7 +47,7 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, PermitState, UserState, GeneralState, AlertState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 import { PersonTypeName } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';

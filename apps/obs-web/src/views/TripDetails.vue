@@ -185,7 +185,7 @@ import moment from 'moment';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 import {
   WcgopTrip,
@@ -558,9 +558,10 @@ export default class TripDetails extends Vue {
   }
 
   private async getMaxDate() {
-    if (this.trip.index === 0 && !this.trip.newTrip) {
     const db = pouchService.db;
     const docs = await db.allDocs(pouchService.userDBName);
+
+    if (this.trip.index === 0 && !this.trip.newTrip) {
 
     for (const row of docs.rows) {
       if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
@@ -569,10 +570,6 @@ export default class TripDetails extends Vue {
         }
       }
     }
-  } else {
-    const myDate = new Date();
-    myDate.setDate(myDate.getDate() + 365);
-    this.maxDate = myDate;
   }
 }
 
@@ -703,6 +700,7 @@ private async getMinDate() {
   }
 
   private created() {
+    console.log(this.trip);
     this.getEmRoster().then( () => {
       let emPermit = null;
       const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber];
@@ -723,7 +721,11 @@ private async getMinDate() {
     this.getPorts();
     this.getFisheryOptions().then( () => {
         // default to EM EFP for now
-        Vue.set(this.trip.activeTrip!, 'fishery', this.fisheryOptions[15]);
+        for (const fishery of this.fisheryOptions) {
+          if (fishery.description === 'Electronic Monitoring EFP') {
+            Vue.set(this.trip.activeTrip!, 'fishery', fishery);
+          }
+        }
     });
     if (this.trip.activeTrip!.departureDate) {
       this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);

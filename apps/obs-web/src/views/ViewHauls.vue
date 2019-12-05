@@ -4,7 +4,7 @@
 
         <div>
 
-        
+
         {{ selection }}
 
         <!-- iterate through reference haul top level attributes -->
@@ -108,7 +108,7 @@ import { AlertState } from '../_store/types/types';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { WcgopTrip } from '@boatnet/bn-models';
 
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
