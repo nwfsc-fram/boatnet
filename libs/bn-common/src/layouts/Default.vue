@@ -133,7 +133,8 @@ import { Action, Getter, State } from 'vuex-class';
 import { Platform } from 'quasar';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import { AlertState } from '@boatnet/bn-common';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo } from '@boatnet/bn-couch';
 import { colors } from 'quasar';
 
 @Component

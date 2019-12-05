@@ -97,10 +97,10 @@ import { EfpType } from '@boatnet/bn-models';
 import moment from 'moment';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import axios from 'axios';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 @Component
 export default class EMEFPDetails extends Vue {
@@ -194,7 +194,7 @@ export default class EMEFPDetails extends Vue {
           };
 
       const vessels = await masterDB.view(
-        'obs-web',
+        'obs_web',
         'all_doc_types',
         queryOptions
       );
@@ -246,7 +246,7 @@ export default class EMEFPDetails extends Vue {
 
 
         const vessels = await masterDB.view<any>(
-          'obs-web',
+          'obs_web',
           'all_vessels',
         );
 

@@ -21,7 +21,6 @@
       v-model="vessel.activeVessel"
       label="Set Active Vessel (staff only)"
       dense
-   
       use-input
       fill-input
       hide-selected
@@ -44,10 +43,14 @@
       >
         <q-card-section>
           <div class="text-h6">
-            <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+            <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
-            <q-icon name="check_circle" size="18px"></q-icon>
-            <span class="text-h6">&nbsp;Trip Selected</span>
+              <q-icon name="warning" size="18px"></q-icon>
+              <span class="text-h6">&nbsp;Trip Selected</span>
+            </div>
+            <div v-else class="text-white" style="font-size: 32px; float: right" title="Observer Not Required">
+              <q-icon name="not_interested" size="18px"></q-icon>
+              <span class="text-h6">&nbsp;Observer Not Required</span>
             </div>
           </div>
           <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
@@ -74,7 +77,7 @@
 
       <q-card-section>
         <div class="text-h6">
-          <span v-if="trip.fishery">{{ trip.fishery.name }}</span>
+          <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
             <q-icon name="check_circle" size="18px"></q-icon>
             <span class="text-h6">&nbsp;Trip Selected</span>
@@ -185,8 +188,8 @@ import { TripState, VesselState, UserState, WcgopAppState, AlertState } from '..
 
 import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { couchService } from '@boatnet/bn-couch';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 import {
   WcgopTrip,
@@ -449,12 +452,12 @@ export default class Trips extends Vue {
         }
       }
 
-      if (!savedSelections[this.activeTrip.fishery.name]) {
-        savedSelections[this.activeTrip.fishery.name] = [];
+      if (!savedSelections[this.activeTrip.fishery.description]) {
+        savedSelections[this.activeTrip.fishery.description] = [];
       }
 
       if (this.openTrips.indexOf(this.activeTrip) === 0 && this.openTrips.length > 1) {
-        savedSelections[this.activeTrip.fishery.name].push({
+        savedSelections[this.activeTrip.fishery.description].push({
                               vesselName: this.activeTrip.vessel.vesselName,
                               isSelected: this.openTrips[1].isSelected,
                               notes: this.openTrips[1].notes,
@@ -463,7 +466,7 @@ export default class Trips extends Vue {
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
         pouchService.db.post(pouchService.userDBName, this.openTrips[1]);
       } else {
-        savedSelections[this.activeTrip.fishery.name].push({
+        savedSelections[this.activeTrip.fishery.description].push({
                               vesselName: this.activeTrip.vessel.vesselName,
                               isSelected: this.activeTrip.isSelected,
                               notes: this.activeTrip.notes,
@@ -529,7 +532,7 @@ export default class Trips extends Vue {
                             returnDate: '',
                             returnPort: {name: 'SAME AS START'},
                             isSelected: false,
-                            fishery: {name: ''},
+                            fishery: {description: ''},
                             tripStatus: {
                               description: 'open'
                             }

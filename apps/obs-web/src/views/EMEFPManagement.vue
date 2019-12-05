@@ -50,8 +50,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
 import router from '../router';
 import { AlertState, EmefpState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { EmEfp, EmEfpTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -104,12 +104,13 @@ private async getEmEfp() {
         };
 
         const emefp: any = await masterDB.view(
-            'obs-web',
+            'obs_web',
             'all_doc_types',
             queryOptions
             );
 
         this.EM_EFP = emefp.rows.map((row: any) => row.doc);
+
 
     } catch (err) {
         this.error(err);

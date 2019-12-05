@@ -74,7 +74,7 @@
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { WcgopFishTicket } from '@boatnet/bn-models';
 import moment from 'moment';
-import { FishingLocation } from '@boatnet/bn-models/models/_common/fishing-location';
+import { FishingLocation } from '@boatnet/bn-models';
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);

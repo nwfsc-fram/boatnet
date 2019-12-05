@@ -1,4 +1,6 @@
 # Creating a Boatnet Shared Component
+## [This doc is somewhat obsolete.]
+## See boatnet-module project for current @boatnet module development
 
 - For a minimal (typescript only, no Vue) example, see 'bn-util'
 
@@ -65,7 +67,7 @@ Import, declare, enjoy in your .Vue components:
   </div>
 </template>
 ...
-import BoatnetLogin from '@boatnet/bn-auth';
+import BoatnetLogin from '@boatnet/bn-common';
 ...
 Vue.component(BoatnetLogin);
 ...

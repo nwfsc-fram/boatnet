@@ -1,6 +1,6 @@
 <template>
   <boatnet-login appName="Boatnet WCGOP OPTECS Login">
-    <template v-slot:stat_info>
+    <!-- <template v-slot:stat_info>
       <div>
         <b>Last Software Update Date:</b>
         {{lastSoftwareUpdateDate}}
@@ -9,7 +9,7 @@
         <b>Last Login Date:</b>
         {{lastLoginDate}}
       </div>
-    </template>
+    </template> -->
   </boatnet-login>
 </template>
 

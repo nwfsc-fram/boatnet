@@ -17,6 +17,9 @@
               dense
               label="Fishery"
               stack-label
+              option-label="description"
+              option-value="description"
+              emit-value
               :options="fisheries"
             ></q-select>
 
@@ -25,6 +28,9 @@
               dense
               label="Target Type"
               stack-label
+              option-label="description"
+              option-value="description"
+              emit-value
               :options="targetTypes"
             ></q-select>
             </q-item-section>
@@ -147,7 +153,7 @@
 
       </q-card-section>
 
-      <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'EM EFP' && !ots.newTarget">
+      <q-card-section v-if="this.ots.activeOTSTarget.fishery === 'Electronic Monitoring EFP' && !ots.newTarget">
         <q-table
           title="Affected Vessels"
           :data="affectedVessels"
@@ -233,10 +239,10 @@ import date from 'quasar';
 import { GeneralState, PermitState, OTSState } from '../_store/types/types';
 import { OTSTarget, Vessel, WcgopTrip, EmEfp } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
@@ -301,26 +307,41 @@ export default class OtsTargetDetail extends Vue {
         try {
         // const masterDB: Client<any> = couchService.masterDB;
         const pouchDB = pouchService.db;
-        const queryOptions: ListOptions = {
-          limit: 100,
-          start_key: '',
-          inclusive_end: true,
-          descending: false
+        const queryOptions = {
+          reduce: false,
+          include_docs: true,
+          key: 'fishery'
         };
 
         const allFisheries = await pouchDB.query(
           pouchService.lookupsDBName,
-          'obs_web/all_fisheries',
+          'obs_web/all_doc_types',
           queryOptions
         );
-        this.fisheries = allFisheries.rows.map((row: any) => row.key);
+        this.fisheries = allFisheries.rows.map((row: any) => row.doc);
+
+        this.fisheries.sort( (a: any, b: any) => {
+          if (a.description > b.description) {
+            return 1;
+          } else if (a.description < b.description) {
+            return -1;
+          } else {
+            return 0;
+          }
+        });
+
+        const otsTargetTypesQueryOptions = {
+          reduce: false,
+          include_docs: true,
+          key: 'ots-target-type'
+        };
 
         const otsTargetTypes = await pouchDB.query(
           pouchService.lookupsDBName,
-          'obs_web/ots-target-types',
-          queryOptions
+          'obs_web/all_doc_types',
+          otsTargetTypesQueryOptions
         );
-        this.targetTypes = otsTargetTypes.rows.map((row: any) => row.key);
+        this.targetTypes = otsTargetTypes.rows.map((row: any) => row.doc);
 
         } catch (err) {
             this.error(err);
@@ -337,7 +358,7 @@ export default class OtsTargetDetail extends Vue {
       };
 
       const history = await masterDB.view<any>(
-        'obs-web',
+        'obs_web',
         'all_doc_types',
         queryOptions
       );
@@ -349,7 +370,7 @@ export default class OtsTargetDetail extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
 
       const emefpTrips = await masterDB.viewWithDocs<any>(
-        'obs-web',
+        'obs_web',
         'em-efp-trips'
       );
 
@@ -365,7 +386,7 @@ export default class OtsTargetDetail extends Vue {
       };
 
       const emefpRoster: any = await masterDB.viewWithDocs<any>(
-        'obs-web',
+        'obs_web',
         'all_doc_types',
         queryOptions
       );

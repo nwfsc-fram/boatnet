@@ -8,17 +8,23 @@
       </q-banner>
 
   <div :disabled="trip.readOnly">
-        <div class="text-h6 q-pa-md" style="margin-bottom: 10px;" >
-          {{ vessel.activeVessel.vesselName }}
-          <span v-if="trip.activeTrip.fishery.name">: {{ trip.activeTrip.fishery.name }}</span>
+        <div class="text-h6 q-pa-md" style="margin-bottom: 10px;">
+          <!-- {{ vessel.activeVessel.vesselName }} -->
+          <div v-if="trip.activeTrip.fishery.description"> {{ trip.activeTrip.fishery.description }}</div>
 
+          <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
           <q-icon
-            v-if="trip.activeTrip.isSelected"
-            name="check_circle"
-            class="text-primary"
-            style="font-size: 32px; float: right"
-            title="Trip is Selected"
+            name="warning"
           ></q-icon>
+            Trip Selected
+          </div>
+
+          <div v-if="trip.activeTrip._id && !trip.activeTrip.isSelected" class="text-primary" style="font-size: 22px">
+          <q-icon
+            name="not_interested"
+          ></q-icon>
+            Observer Not Required
+          </div>
 
         </div>
 
@@ -75,14 +81,11 @@
           v-model="trip.activeTrip.fishery"
           dense
           label="Fishery"
+          fill-input
           stack-label
           :rules="[val => !!val || 'Field is required']"
-          @filter="fisheriesFilterFn"
-          use-input
-          option-label="name"
+          :option-label="opt => opt.description"
           option-value="_id"
-          fill-input
-          hide-selected
           :options="fisheryOptions"
           :readonly="trip.readOnly || !this.trip.newTrip"
           style="padding-bottom: 5px"
@@ -180,9 +183,9 @@ import { Permit, OTSTarget } from '@boatnet/bn-models';
 import moment from 'moment';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 import {
   WcgopTrip,
@@ -245,41 +248,52 @@ export default class TripDetails extends Vue {
     return moment(myDate).format();
   }
 
-  private fisheriesFilterFn(val: string, update: any, abort: any) {
-    update(async () => {
-      try {
-        const db = pouchService.db;
-        const queryOptions: ListOptions = {
-          start_key: val.toLowerCase(),
-          inclusive_end: true,
-          descending: false
-        };
+  // private fisheriesFilterFn(val: string, update: any, abort: any) {
+  //   update(async () => {
+  //     try {
+  //       const db = pouchService.db;
+  //       const queryOptions: ListOptions = {
+  //         start_key: val.toLowerCase(),
+  //         inclusive_end: true,
+  //         descending: false
+  //       };
 
-        const fisheries = await db.query(
-          pouchService.lookupsDBName,
-          'obs_web/all_fisheries',
-          queryOptions
-        );
-        this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  }
+  //       const fisheries = await db.query(
+  //         pouchService.lookupsDBName,
+  //         'obs_web/all_fisheries',
+  //         queryOptions
+  //       );
+  //       this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   });
+  // }
 
   private async getFisheryOptions() {
     const db = pouchService.db;
-    // const queryOptions: ListOptions = {
-    //   start_key: '',
-    //   inclusive_end: true,
-    //   descending: false
-    // };
+    const queryOptions = {
+      reduce: false,
+      include_docs: true,
+      key: 'fishery'
+    };
 
     const fisheries = await db.query(
       pouchService.lookupsDBName,
-      'obs_web/all_fisheries'
+      'obs_web/all_doc_types',
+      queryOptions
     );
-    this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
+    this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
+
+    this.fisheryOptions.sort( (a: any, b: any) => {
+      if (a.description > b.description) {
+        return 1;
+      } else if (a.description < b.description) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   private permitsFilterFn(val: string, update: any, abort: any) {
@@ -316,7 +330,7 @@ export default class TripDetails extends Vue {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
@@ -340,7 +354,7 @@ export default class TripDetails extends Vue {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
@@ -366,15 +380,15 @@ export default class TripDetails extends Vue {
   private async getEmRoster() {
     const db = pouchService.db;
     const queryOptions = {
-      start_key: '',
+      key: 'emefp',
       inclusive_end: true,
-      descending: false,
-      include_docs: false
+      reduce: false,
+      include_docs: true
     };
-    const docs = await db.query(pouchService.lookupsDBName, 'obs_web/all_em_efp', queryOptions);
+    const EMEfpRoster = await db.query(pouchService.lookupsDBName, 'obs_web/all_doc_types', queryOptions);
 
-    for (const row of docs.rows) {
-      this.emRoster[row.key] = row.value;
+    for (const row of EMEfpRoster.rows) {
+      this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
     }
 
   }
@@ -405,7 +419,7 @@ export default class TripDetails extends Vue {
         return;
     }
 
-    if (this.trip.activeTrip!.fishery!.name !== '') {
+    if (this.trip.activeTrip!.fishery!.description !== '') {
 
       let savedSelections: any = {};
       const db = pouchService.db;
@@ -418,17 +432,17 @@ export default class TripDetails extends Vue {
 
       // apply selection to new trip
       let tripSelection: any = null;
-      if (savedSelections[this.trip.activeTrip!.fishery!.name] && savedSelections[this.trip.activeTrip!.fishery!.name].length > 0) {
-        if (savedSelections[this.trip.activeTrip!.fishery!.name].length > 1) {
-          const sel1 = savedSelections[this.trip.activeTrip!.fishery!.name][0].selectionDate;
-          const sel2 = savedSelections[this.trip.activeTrip!.fishery!.name][1].selectionDate;
+      if (savedSelections[this.trip.activeTrip!.fishery!.description!] && savedSelections[this.trip.activeTrip!.fishery!.description!].length > 0) {
+        if (savedSelections[this.trip.activeTrip!.fishery!.description!].length > 1) {
+          const sel1 = savedSelections[this.trip.activeTrip!.fishery!.description!][0].selectionDate;
+          const sel2 = savedSelections[this.trip.activeTrip!.fishery!.description!][1].selectionDate;
           if (moment(sel1).isBefore(sel2)) {
-            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].shift();
+            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].shift();
           } else {
-            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].pop();
+            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].pop();
           }
         } else {
-          tripSelection = savedSelections[this.trip.activeTrip!.fishery!.name].pop();
+          tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].pop();
         }
 
         pouchService.db.post(pouchService.userDBName, savedSelections);
@@ -445,7 +459,7 @@ export default class TripDetails extends Vue {
             if (
               this.getStatus(otsTarget) === 'Active' &&
               otsTarget.targetType === 'Fishery Wide' &&
-              otsTarget.fishery === this.trip.activeTrip.fishery.name
+              otsTarget.fishery === this.trip.activeTrip.fishery.description
             ) {
               activeOTSTarget = otsTarget;
             }
@@ -467,7 +481,7 @@ export default class TripDetails extends Vue {
               : this.trip.activeTrip.vessel.stateRegulationNumber;
             if (
               otsTarget.targetType === 'Vessel' &&
-              otsTarget.fishery === this.trip.activeTrip.fishery.name &&
+              otsTarget.fishery === this.trip.activeTrip.fishery.description &&
               otsVesselId === tripVesselId
             ) {
               activeOTSTarget = otsTarget;
@@ -544,7 +558,7 @@ export default class TripDetails extends Vue {
   }
 
   private async getMaxDate() {
-    if (this.trip.index === 0) {
+    if (this.trip.index === 0 && !this.trip.newTrip) {
     const db = pouchService.db;
     const docs = await db.allDocs(pouchService.userDBName);
 
@@ -555,6 +569,10 @@ export default class TripDetails extends Vue {
         }
       }
     }
+  } else {
+    const myDate = new Date();
+    myDate.setDate(myDate.getDate() + 365);
+    this.maxDate = myDate;
   }
 }
 
@@ -649,16 +667,18 @@ private async getMinDate() {
   private async getOtsTargets() {
     const db = pouchService.db;
     const queryOptions = {
-      include_docs: true
+      include_docs: true,
+      reduce: false,
+      key: 'ots-target'
     };
     try {
       const otsTargets = await db.query(
         pouchService.lookupsDBName,
-        'obs_web/all_ots_targets',
+        'obs_web/all_doc_types',
         queryOptions
       );
 
-      this.otsTargets = otsTargets.rows.map((row: any) => row.value);
+      this.otsTargets = otsTargets.rows.map((row: any) => row.doc);
     } catch (err) {
       console.log(err);
     }
@@ -676,7 +696,7 @@ private async getMinDate() {
 
         const ports = await db.query(
           pouchService.lookupsDBName,
-          'optecs_trawl/all_port_names',
+          'obs_web/all_port_names',
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
@@ -702,9 +722,8 @@ private async getMinDate() {
     this.getBookedDates();
     this.getPorts();
     this.getFisheryOptions().then( () => {
-      if (this.fisheryOptions.length === 1) {
-        Vue.set(this.trip.activeTrip!, 'fishery', this.fisheryOptions[0]);
-      }
+        // default to EM EFP for now
+        Vue.set(this.trip.activeTrip!, 'fishery', this.fisheryOptions[15]);
     });
     if (this.trip.activeTrip!.departureDate) {
       this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);

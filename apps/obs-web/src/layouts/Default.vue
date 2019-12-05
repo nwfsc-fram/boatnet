@@ -123,7 +123,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item
+        <!-- <q-item
           to="/observer-assignment"
           exact
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
@@ -149,7 +149,7 @@
             <q-item-label>Observer Availability</q-item-label>
             <q-item-label caption>Manage My Availability (Observer Role)</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
 
         <q-item
           to="/debriefer/summary"
@@ -298,8 +298,8 @@ import router from '../router';
 import { AlertState } from '../_store/index';
 import { TripState, VesselState, UserState } from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import moment from 'moment';
@@ -378,25 +378,22 @@ export default class DefaultLayout extends Vue {
   private buildIndexes() {
     setTimeout( async () => {
       this.isIndexing = true;
-      this.toIndex = 10;
+      this.toIndex = 8;
 
       const db = pouchService.db;
       const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
 
-      const phoneTypes = await db.query(pouchService.lookupsDBName, 'obs_web/all_phone_number_types', queryOptions);
-      this.decrementToIndex(phoneTypes);
-
       const fisheries = await db.query(pouchService.lookupsDBName, 'obs_web/all_fisheries');
       this.decrementToIndex(fisheries);
 
-      const ports = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_port_names', queryOptions);
+      const ports = await db.query(pouchService.lookupsDBName, 'obs_web/all_port_names', queryOptions);
       this.decrementToIndex(ports);
+
+      const vessels = await db.query(pouchService.lookupsDBName, 'obs_web/all_vessel_names', queryOptions);
+      this.decrementToIndex(vessels);
 
       const vesselCaptains = await db.query(pouchService.lookupsDBName, 'obs_web/vessel_captains', queryOptions);
       this.decrementToIndex(vesselCaptains);
-
-      const vessels = await db.query(pouchService.lookupsDBName, 'optecs_trawl/all_vessel_names', queryOptions);
-      this.decrementToIndex(vessels);
 
       this.isIndexing = false;
     }, 1500);
@@ -450,7 +447,7 @@ export default class DefaultLayout extends Vue {
   //         try {
   //             const masterDB: Client<any> = couchService.masterDB;
   //             const user = await masterDB.viewWithDocs<any>(
-  //                 'obs-web',
+  //                 'obs_web',
   //                 'all_usernames',
   //                 {key: authService.getCurrentUser()!.username}
   //             );

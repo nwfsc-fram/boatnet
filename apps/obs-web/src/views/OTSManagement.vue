@@ -123,8 +123,8 @@ import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
 import router from '../router';
 import { AlertState, EmefpState, GeneralState, OTSState } from '../_store/types/types';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { EmEfp, OTSTarget, OTSTargetTypeName, WcgopTrip } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -214,10 +214,16 @@ export default class OtsMangement extends Vue {
 
     private async getOtsTargets() {
         const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions = {
+            reduce: false,
+            include_docs: true,
+            key: 'ots-target'
+        };
         try {
-            const otsTargets = await masterDB.viewWithDocs<any>(
-                'obs-web',
-                'all_ots_targets',
+            const otsTargets: any = await masterDB.view<any>(
+                'obs_web',
+                'all_doc_types',
+                queryOptions
                 );
             console.log(otsTargets);
             for (const row of otsTargets.rows) {
@@ -234,7 +240,7 @@ export default class OtsMangement extends Vue {
         const masterDB: Client<any> = couchService.masterDB;
 
         const emefpTrips = await masterDB.viewWithDocs<any>(
-        'obs-web',
+        'obs_web',
         'em-efp-trips'
         );
 
@@ -250,7 +256,7 @@ export default class OtsMangement extends Vue {
         };
 
         const emefpRoster: any = await masterDB.view(
-            'obs-web',
+            'obs_web',
             'all_doc_types',
             queryOptions
         );

@@ -40,21 +40,22 @@ export default createComponent({
     const modelName = props.config ? props.config.modelName : '';
     const maxListSize = props.config ? props.config.maxItems : 0;
 
-    const addEmptyItem = (newList: object[]) => {
+    const addEmptyItem = (iList: any[]) => {
       const emptyItem = set({}, modelName, '');
-      newList.splice(0, 0, emptyItem);
+      iList.splice(0, 0, emptyItem);
     };
 
     const initList = () => {
       const model: any = props.model;
-      let temList = get(model, listName);
-      if (!temList) {
-        temList = [];
-        addEmptyItem(temList);
-        Vue.set(model, listName, temList);
+      let newList = get(model, listName);
+      if (!newList) {
+        newList = [];
+        addEmptyItem(newList);
+        Vue.set(model, listName, newList);
       }
-      return temList;
+      return newList;
     };
+
     const list = initList();
 
     const save = () => {
@@ -65,7 +66,7 @@ export default createComponent({
     const confirmDelete = (index: number) => {
       context.root.$store.dispatch('keyboard/setKeyboard', false);
       showDeleteDialog.value = true;
-      deleteMessage.value = 'Are you sure you\'d like to delete this entry?';
+      deleteMessage.value = 'Are you sure you want to delete this entry?';
       deleteIndex = index;
     };
 

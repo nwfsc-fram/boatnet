@@ -13,6 +13,10 @@ import NonFishingDay from './views/NonFishingDay.vue';
 import { authService } from '@boatnet/bn-auth';
 import store from './_store';
 
+// Note: Jenkins build will update this dbConfig.ts file for Prod/ Stage/ Dev etc.
+import dbConfig from './config/dbConfig';
+authService.setDBConfig(dbConfig);
+
 Vue.use(Router);
 
 const router = new Router({

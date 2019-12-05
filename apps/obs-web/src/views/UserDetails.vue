@@ -425,11 +425,11 @@ import { Vessel, UsState, PersonTypeName, Person } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';
 
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { AuthState, authService, CouchDBInfo } from '@boatnet/bn-auth';
+import { AuthState, authService } from '@boatnet/bn-auth';
 import { Notify } from 'quasar';
 
 @Component
@@ -569,7 +569,7 @@ export default class UserDetails extends Vue {
 
                     const ports = await db.query(
                         pouchService.lookupsDBName,
-                        'optecs_trawl/all_port_names',
+                        'obs_web/all_port_names',
                         queryOptions
                         );
                     this.ports = ports.rows.map((row: any) => row.doc);
@@ -613,7 +613,7 @@ export default class UserDetails extends Vue {
                 };
 
                 const contacts = await db.viewWithDocs(
-                    'obs-web',
+                    'obs_web',
                     'all_persons',
                     queryOptions
                     );
@@ -819,8 +819,6 @@ export default class UserDetails extends Vue {
             'obs_web/all_doc_types',
             queryOptions
             );
-
-            console.log(phoneTypes);
 
             this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);
         } catch (err) {
