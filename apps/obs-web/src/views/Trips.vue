@@ -390,6 +390,13 @@ export default class Trips extends Vue {
 
     private closeTrip(trip: any) {
       trip.tripStatus.description = 'closed';
+      trip.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'trip closed'
+        }
+      )
       pouchService.db.post(pouchService.userDBName, trip);
       }
 
@@ -535,7 +542,14 @@ export default class Trips extends Vue {
                             fishery: {description: ''},
                             tripStatus: {
                               description: 'open'
-                            }
+                            },
+                            changeLog: [
+                              {
+                                updatedBy: authService.getCurrentUser()!.username,
+                                updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+                                change: 'trip created'
+                              }
+                            ]
                             };
       this.trip.activeTrip = newTrip;
 
