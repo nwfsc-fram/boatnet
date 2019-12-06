@@ -396,7 +396,7 @@ export default class Trips extends Vue {
           updateDate: moment().format('MM/DD/YYYY HH:MM A'),
           change: 'trip closed'
         }
-      )
+      );
       pouchService.db.post(pouchService.userDBName, trip);
       }
 
