@@ -40,7 +40,7 @@
       <boatnet-keyboard-list
         class="list"
         v-on:selected="select"
-        :list="list"
+        :listLabels="listLabels"
         :value="inputValue"/>
     </div>
   </div>
@@ -54,7 +54,7 @@ export default class BoatnetKeyboard extends Vue {
   @Prop({ default: 'normal' }) public layout!: string;
   @Prop({ default: true }) public visible!: boolean;
   @Prop() public inputTarget!: any;
-  @Prop({ default: () => [] }) public list!: string[];
+  @Prop({ default: () => [] }) public listLabels!: string[];
   @Prop() public inputValue!: string;
 
   private keyboardOptions = {

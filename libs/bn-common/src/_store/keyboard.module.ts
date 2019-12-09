@@ -9,8 +9,7 @@ const state: KeyboardState = {
   keyboardType: 'normal',
   keyboardInputTarget: undefined,
   activeFieldName: '',
-  valueSelected: false,
-  next: undefined
+  valueSelected: false
 };
 
 const actions: ActionTree<KeyboardState, RootState> = {
@@ -28,10 +27,7 @@ const actions: ActionTree<KeyboardState, RootState> = {
   },
   setValueSelected({ commit }: any, selectedValue: boolean) {
     commit('setValueSelected', selectedValue);
-  },
-  setNext({ commit }: any, next: any) {
-    commit('setNext', next);
-  },
+  }
 };
 
 const mutations: MutationTree<KeyboardState> = {
@@ -49,9 +45,6 @@ const mutations: MutationTree<KeyboardState> = {
   },
   setValueSelected(newState: any, selectedValue: boolean) {
     newState.valueSelected = selectedValue;
-  },
-  setNext(newState: any, next: any) {
-    newState.next = next;
   }
 };
 
