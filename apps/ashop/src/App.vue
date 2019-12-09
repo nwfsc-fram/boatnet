@@ -23,11 +23,8 @@ export default class App extends Vue {
   private setActiveFieldName: any;
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
-  @Action('setNext', { namespace: 'keyboard' })
-  private setNext: any;
 
   private mounted() {
-    this.setNext(this.next);
     document.addEventListener('click', () => {
       if ( document.activeElement &&
         Object.keys(document.activeElement).length === 0 &&
@@ -46,32 +43,6 @@ export default class App extends Vue {
           break;
       }
     });
-  }
-
-  // private outputKey(event: any) {
-  //   this.filterText += event;
-  //   console.log(event);
-  // }
-
-  private setInput(event: any) {
-    console.log(event);
-  }
-
-  private next() {
-    const inputs = document.querySelectorAll('input');
-    let found = false;
-    for (let i = 0; i < inputs.length; i++) {
-      if (!found && inputs[i] === this.keyboard.keyboardInputTarget &&
-          i < inputs.length - 1) {
-        found = true;
-        this.$nextTick(() => {
-          inputs[i + 1].focus();
-        });
-      }
-    }
-    if (!found) {
-      this.setKeyboard(false);
-    }
   }
 }
 </script>

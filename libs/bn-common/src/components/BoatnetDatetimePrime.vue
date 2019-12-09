@@ -1,17 +1,20 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <div class="text-bold">{{ config.displayName }}</div>
-    <pCalendar
-      v-model="dateVal"
-      :showTime="config.showTime"
-      :timeOnly="config.timeOnly"
-      :hourFormat="config.hourFormat"
-      :minDate="getDate(config.minDate)"
-      :maxDate="getDate(config.maxDate)"
-      :inline="config.inline"
-      :touchUI="config.touch"
-      onfocus="blur()"
+    <div class="p-float-label">
+      <pCalendar
+        v-model="dateVal"
+        :showTime="config.showTime"
+        :timeOnly="config.timeOnly"
+        :hourFormat="config.hourFormat"
+        :minDate="getDate(config.minDate)"
+        :maxDate="getDate(config.maxDate)"
+        :inline="config.inline"
+        :touchUI="config.touch"
+        onfocus="blur()"
+        id="date"
       />
+      <label for="date">{{config.displayName}}</label>
+    </div>
   </div>
 </template>
 
@@ -47,11 +50,17 @@ export default class BoatnetDatetimePrime extends Vue {
     if (value === 'today') {
       return new Date();
     } else if (value === ('departureDate' || 'returnDate') && this.date) {
-        return new Date(this.date);
+      return new Date(this.date);
     } else {
-        return null;
+      return null;
     }
   }
 }
 </script>
-
+<style>
+.p-calendar,
+.p-inputtext {
+  width: 100%;
+  height: 40px;
+}
+</style>

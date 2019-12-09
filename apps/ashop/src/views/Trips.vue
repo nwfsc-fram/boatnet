@@ -136,7 +136,7 @@ export default createComponent({
 
     const getValue = (row: any, attribute: any) => {
       const value = get(row, attribute.field);
-      if (attribute.type) {
+      if (attribute.type && value) {
         return getFormattedValue(
           value,
           attribute.type,

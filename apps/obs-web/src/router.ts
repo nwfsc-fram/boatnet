@@ -27,6 +27,8 @@ import VesselDetails from './views/VesselDetails.vue';
 import ELogbook from './views/ELogbook.vue';
 import CouchViews from './views/CouchViews.vue';
 import ViewHauls from './views/ViewHauls.vue';
+import OtsTrips from './views/OtsTrips.vue';
+import OtsTripHistory from './views/OtsTripHistory.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -95,13 +97,25 @@ const router = new Router({
           }
         },
         {
-          path: 'ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
+          path: '/ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: 'ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
+          path: '/ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/ots-trips', name: 'OTS Trips', component: OtsTrips,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OtsTripHistory,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

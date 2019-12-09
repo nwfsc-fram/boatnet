@@ -753,6 +753,70 @@ private async getMinDate() {
     }
   }
 
+  @Watch('trip.activeTrip.departurePort', {deep: true})
+  private handler3(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'departurePort changed from ' + oldVal.name + ' to ' + newVal.name
+        }
+      );
+    }
+  }
+
+  @Watch('trip.activeTrip.returnPort', {deep: true})
+  private handler4(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'returnPort changed from ' + oldVal.name + ' to ' + newVal.name
+        }
+      );
+    }
+  }
+
+  @Watch('trip.activeTrip.departureDate', {deep: true})
+  private handler5(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'departureDate changed from ' + moment(oldVal).format('MM/DD/YYYY') + ' to ' + moment(newVal).format('MM/DD/YYYY')
+        }
+      );
+    }
+  }
+
+  @Watch('trip.activeTrip.returnDate', {deep: true})
+  private handler6(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'returnDate changed from ' + moment(oldVal).format('MM/DD/YYYY') + ' to ' + moment(newVal).format('MM/DD/YYYY')
+        }
+      );
+    }
+  }
+
 
 }
 </script>

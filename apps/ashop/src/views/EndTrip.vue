@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-h4 text-center q-pa-md">End Trip # {{trip.tripNum}}</div>
-    <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
+    <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px; align-items: center">
       <div
         v-for="config of appConfig.endTripAttributes"
         :key="appConfig.endTripAttributes.indexOf(config)"
