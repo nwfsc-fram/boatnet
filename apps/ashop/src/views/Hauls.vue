@@ -5,7 +5,7 @@
       :current="currentHaul"
       :selectionId="currentHaul ? currentHaul[haulsSettings.itemNumName] : 0"
       @edit="editHauls"
-      @add="addHauls"
+      @add="handleGoToAddHauls"
       @delete="deleteHauls"
       @goTo="handleGoToCatch"
     >
@@ -74,7 +74,7 @@ import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import moment from 'moment';
 import { sampleData, sampleTrip } from '../data/data';
 import { getFormattedValue } from '../helpers/helpers';
-import { remove } from 'lodash';
+import { remove, get } from 'lodash';
 
 Vue.component(BoatnetSummary);
 
@@ -150,8 +150,14 @@ export default class Hauls extends Vue {
     }
   }
 
-  private handleGoToNonFishDay() {
+  private async handleGoToNonFishDay() {
+    const haulNum: number = await this.addHauls();
     this.$router.push({ path: '/nonfishingday/' });
+  }
+
+  private async handleGoToAddHauls() {
+    const haulNum: number = await this.addHauls();
+    this.$router.push({path: '/hauldetails/' + haulNum });
   }
 
   private async addHauls() {
@@ -159,7 +165,7 @@ export default class Hauls extends Vue {
     const notes: string = 'cp'; // initialize vessel type to get hide and show working
     const haul: BaseOperation = { type, notes };
     haul[this.haulsSettings.itemNumName] =
-      this.haulsData.length > 0 ? parseInt(this.haulsData[0].doc[this.haulsSettings.itemNumName]) + 1 : 1;
+      this.haulsData.length > 0 ? parseInt(this.haulsData[0].doc[this.haulsSettings.itemNumName], 10) + 1 : 1;
 
     await pouchService.db
       .post(pouchService.userDBName, haul)
@@ -170,14 +176,13 @@ export default class Hauls extends Vue {
         // update trip doc with new haulId
         this.currentTrip.operationIDs
           ? this.currentTrip.operationIDs.push(response.id)
-          : [];
+          : this.currentTrip.operationIDs = [response.id];
         this.save(this.currentTrip);
       });
 
     this.setCurrentHaul(haul);
-    this.$router.push({
-      path: '/hauldetails/' + haul[this.haulsSettings.itemNumName]
-    });
+    const s = haul[this.haulsSettings.itemNumName];
+    return haul[this.haulsSettings.itemNumName];
   }
 
   private editHauls() {
@@ -188,7 +193,7 @@ export default class Hauls extends Vue {
 
   private async deleteHauls() {
     if (this.currentTrip.operationIDs && this.currentHaul._id) {
-      let removalIndex = this.currentTrip.operationIDs.slice().reverse().indexOf(this.currentHaul._id);
+      const removalIndex = this.currentTrip.operationIDs.slice().reverse().indexOf(this.currentHaul._id);
       this.haulsData.splice(removalIndex, 1);
       remove(this.currentTrip.operationIDs, (n: string) => n === this.currentHaul._id);
       this.save(this.currentTrip);
@@ -202,20 +207,17 @@ export default class Hauls extends Vue {
   }
 
   private getValue(row: any, attribute: any) {
-    const fields = attribute.field.split('.');
-    let value;
-    let i = 0;
-    while (row[fields[i]]) {
-      value = row[fields[i]];
-      i++;
+      const value = get(row, attribute.field);
+      if (attribute.type && value) {
+        return getFormattedValue(
+          value,
+          attribute.type,
+          attribute.displayFormat
+        );
+      } else {
+        return value;
+      }
     }
-
-    if (value && attribute.type) {
-      return getFormattedValue(value, attribute.type, attribute.displayFormat);
-    } else {
-      return value;
-    }
-  }
 
   private async getHaulsSettings() {
     if (this.appMode) {

@@ -33,12 +33,7 @@
       @save="save"
     ></boatnet-location>
 
-    <!-- <boatnet-licenses
-      v-if="config.type === 'list'"
-      :config="config"
-      :model="model"
-      @save="save"
-    ></boatnet-licenses>-->
+    <boatnet-licenses v-if="config.type === 'list'" :config="config" @save="save"></boatnet-licenses>
   </div>
 </template>
 
@@ -54,21 +49,19 @@ export default createComponent({
   },
   setup(props, context) {
     // determine whether to show a field or not
-    const currentHaul = reactive(
-      context.root.$store.state.tripsState.currentHaul
-    );
-    const key =
-      props.config && props.config.displayCondition
-        ? props.config.displayCondition.key
-        : '';
-    const value =
-      props.config && props.config.displayCondition
-        ? props.config.displayCondition.value
-        : '';
-
-    const showField = computed(() =>
-      get(currentHaul, key) === value ? true : false
-    );
+    const showField = computed({
+      get: () => {
+        const currentHaul = reactive(context.root.$store.state.tripsState.currentHaul);
+        let key = '';
+        let value = '';
+        if (props.config && props.config.displayCondition) {
+          key = props.config.displayCondition.key;
+          value = props.config.displayCondition.value;
+        }
+        return get(currentHaul, key) === value ? true : false;
+      },
+      set: () => undefined
+    });
 
     const valueHolder = computed({
       get: () => {
@@ -82,31 +75,31 @@ export default createComponent({
     });
 
     // https://jasonwatmore.com/post/2018/09/10/vuejs-set-get-delete-reactive-nested-object-properties
-    function setValue(obj: any, valProps: any, setVal: any) {
-      let prop: string = valProps.shift();
+    function setValue(obj: any, fields: any, setTo: any) {
+      let field: string = fields.shift();
       let index: number = -1;
-      const arrStart: number = prop.indexOf('[');
+      const arrStart: number = field.indexOf('[');
 
       if (arrStart !== -1) {
-        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')), 10);
-        prop = prop.substring(0, arrStart);
+        index = parseInt(field.substring(arrStart + 1, field.indexOf(']')), 10);
+        field = field.substring(0, arrStart);
       }
-      if (!obj[prop] && index === -1) {
-        Vue.set(obj, prop, {});
-      } else if (!obj[prop] && index !== -1) {
-        Vue.set(obj, prop, []);
+      if (!obj[field] && index === -1) {
+        Vue.set(obj, field, {});
+      } else if (!obj[field] && index !== -1) {
+        Vue.set(obj, field, []);
       }
-      if (!valProps.length) {
-        if (setVal && typeof setVal === 'object' && !Array.isArray(setVal)) {
-          obj[prop] = { ...obj[prop], ...setVal };
+      if (!fields.length) {
+        if (setTo && typeof setTo === 'object' && !Array.isArray(setTo)) {
+          obj[field] = { ...obj[field], ...setTo };
         } else if (index !== -1) {
-          obj[prop][index] = setVal;
+          obj[field][index] = setTo;
         } else {
-          obj[prop] = setVal;
+          obj[field] = setTo;
         }
         return;
       }
-      setValue(obj[prop], valProps, setVal);
+      setValue(obj[field], fields, setTo);
     }
 
     const save = () => {

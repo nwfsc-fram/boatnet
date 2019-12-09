@@ -58,50 +58,40 @@ export default createComponent({
     const longName = props && props.longModelName ? props.longModelName : '';
 
     const long = computed({
-      get: () => {
-        return get(props.obj, longName);
-      },
-      set: (val: string) => {
-        const fields = longName.split('.');
-        setProp(props.obj, fields, val);
-      }
+      get: () =>  get(props.obj, longName),
+      set: (val: string) => setValue(props.obj, longName.split('.'), val)
     });
 
     const lat = computed({
-      get: () => {
-        return get(props.obj, latName);
-      },
-      set: (val: string) => {
-        const fields = latName.split('.');
-        setProp(props.obj, fields, val);
-      }
+      get: () => get(props.obj, latName),
+      set: (val: string) => setValue(props.obj, latName.split('.'), val)
     });
 
-    function setProp(obj: any, setProps: any, value: any) {
-      let prop: string = setProps.shift();
+    function setValue(obj: any, fields: any, setTo: any) {
+      let field: string = fields.shift();
       let index: number = -1;
-      const arrStart: number = prop.indexOf('[');
+      const arrStart: number = field.indexOf('[');
 
       if (arrStart !== -1) {
-        index = parseInt(prop.substring(arrStart + 1, prop.indexOf(']')), 10);
-        prop = prop.substring(0, arrStart);
+        index = parseInt(field.substring(arrStart + 1, field.indexOf(']')), 10);
+        field = field.substring(0, arrStart);
       }
-      if (!obj[prop] && index === -1) {
-        Vue.set(obj, prop, {});
-      } else if (!obj[prop] && index !== -1) {
-        Vue.set(obj, prop, []);
+      if (!obj[field] && index === -1) {
+        Vue.set(obj, field, {});
+      } else if (!obj[field] && index !== -1) {
+        Vue.set(obj, field, []);
       }
-      if (!setProps.length) {
-        if (value && typeof value === 'object' && !Array.isArray(value)) {
-          obj[prop] = { ...obj[prop], ...value };
+      if (!fields.length) {
+        if (setTo && typeof setTo === 'object' && !Array.isArray(setTo)) {
+          obj[field] = { ...obj[field], ...setTo };
         } else if (index !== -1) {
-          obj[prop][index] = value;
+          obj[field][index] = setTo;
         } else {
-          obj[prop] = value;
+          obj[field] = setTo;
         }
         return;
       }
-      setProp(obj[prop], setProps, value);
+      setValue(obj[field], fields, setTo);
     }
 
     const save = () => {

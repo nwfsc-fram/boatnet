@@ -1,20 +1,17 @@
 <template>
   <div>
     <div class="text-h4 text-center q-pa-md">Non Fishing Day</div>
-    <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
-      <div
-        v-for="config of appConfig.nonFishingDay"
-        :key="appConfig.nonFishingDay.indexOf(config)"
-      >
-        <boatnet-common-input-component :config="config" :model="trip" @save="saveOnUpdate"></boatnet-common-input-component>
+    <div style="display: flex; flex-flow: column wrap; height: 400px; width: 400px">
+      <div v-for="config of appConfig.nonFishingDay" :key="appConfig.nonFishingDay.indexOf(config)">
+        <boatnet-common-input-component :config="config" :model="haul" @save="saveOnUpdate"></boatnet-common-input-component>
       </div>
     </div>
 
     <div
       class="bg-primary text-white"
       style="padding: .5em; text-align: center; font-weight: bold"
-    >Trip Details: {{ trip }}</div>
-  </div>
+    >Haul Details: {{ haul }}</div>
+    </div>
 </template>
 
 <style>
@@ -30,18 +27,27 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const appConfig = store.state.appSettings.appConfig;
-    const trip = reactive(store.state.tripsState.currentTrip);
+    const haul = reactive(context.root.$store.state.tripsState.currentHaul);
 
     // fetch from lookups list: https://github.com/nwfsc-fram/boatnet/issues/1007
-    appConfig.nonFishingDay[3].list = ['one', 'two'];
+    // also shouldn't use index to fetch item should use something to fetch based
+    // off displayName or model
+    appConfig.nonFishingDay[2].list = [
+      'Streaming to/from grounds',
+      'Weather',
+      'Looking for fish',
+      'Mechanical Breakdown',
+      'Cleaning Factory',
+      'Other (notes)'
+    ];
 
     const saveOnUpdate = async () => {
-      store.dispatch('tripsState/save', trip);
+      store.dispatch('tripsState/save', haul);
     };
 
     return {
       appConfig,
-      trip,
+      haul,
       saveOnUpdate
     };
   }

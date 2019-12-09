@@ -1,7 +1,13 @@
 <template>
   <div>
     <span v-for="(item, i) in list" :key="i">
-      <boatnet-keyboard-select-list :config="config" :model="item" @save="save">
+      <boatnet-keyboard-select-list
+        :keyboardType="config.keyboardType"
+        :displayName="config.displayName"
+        :listLabels="config.listLabels"
+        :val = list[i]
+        @save="save"
+      >
         <template v-slot:after>
           <q-icon
             :name="i != 0 ? 'clear' : 'add'"
@@ -27,16 +33,15 @@ import Vue from 'vue';
 
 export default createComponent({
   props: {
-    config: Object,
-    model: Object
+    config: Object
   },
 
   setup(props, context) {
+    const list: any[] = [''];
     const deleteMessage = ref('');
     const showDeleteDialog = ref(false);
     let deleteIndex: number = 0;
 
-    const listName = props.config ? props.config.listName : '';
     const modelName = props.config ? props.config.modelName : '';
     const maxListSize = props.config ? props.config.maxItems : 0;
 
@@ -44,19 +49,6 @@ export default createComponent({
       const emptyItem = set({}, modelName, '');
       iList.splice(0, 0, emptyItem);
     };
-
-    const initList = () => {
-      const model: any = props.model;
-      let newList = get(model, listName);
-      if (!newList) {
-        newList = [];
-        addEmptyItem(newList);
-        Vue.set(model, listName, newList);
-      }
-      return newList;
-    };
-
-    const list = initList();
 
     const save = () => {
       context.emit('update:list', list);
