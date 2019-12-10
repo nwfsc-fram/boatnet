@@ -262,7 +262,7 @@ export default class Trips extends Vue {
           this.currentTripState._id
         );
       } catch (err) {
-        this.errorAlert('TripId not found in database');
+        this.errorAlert('TripId not found in database: ' + err.message);
       }
     } else {
       try {
@@ -274,7 +274,7 @@ export default class Trips extends Vue {
           });
       } catch (err) {
         this.errorAlert(
-          'Trip ' + this.currentTrip.tripNum + ' was not added to the database'
+          'Trip ' + this.currentTrip.tripNum + ' was not added to the database: ' + err.message
         );
       }
     }
