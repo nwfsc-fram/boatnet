@@ -13,6 +13,8 @@ import { AppSettings } from '@boatnet/bn-common';
 @Component
 export default class App extends Vue {
   @State('appSettings') private appState!: AppSettings;
+  @Action('setAppMode', { namespace: 'appSettings' })
+  private setAppMode: any;
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 
@@ -23,11 +25,15 @@ export default class App extends Vue {
   private setActiveFieldName: any;
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
-  @Action('setNext', { namespace: 'keyboard' })
-  private setNext: any;
 
   private mounted() {
-    this.setNext(this.next);
+    // WS - set ASHOP mode explicitly for now
+    if (this.appState.appMode !== 'ashop') {
+      this.setAppMode('ashop');
+      this.setAppConfig();
+      console.log('Reloading in ASHOP mode.');
+      this.$router.go(0); // reload the page
+    }
     document.addEventListener('click', () => {
       if ( document.activeElement &&
         Object.keys(document.activeElement).length === 0 &&
@@ -46,32 +52,6 @@ export default class App extends Vue {
           break;
       }
     });
-  }
-
-  // private outputKey(event: any) {
-  //   this.filterText += event;
-  //   console.log(event);
-  // }
-
-  private setInput(event: any) {
-    console.log(event);
-  }
-
-  private next() {
-    const inputs = document.querySelectorAll('input');
-    let found = false;
-    for (let i = 0; i < inputs.length; i++) {
-      if (!found && inputs[i] === this.keyboard.keyboardInputTarget &&
-          i < inputs.length - 1) {
-        found = true;
-        this.$nextTick(() => {
-          inputs[i + 1].focus();
-        });
-      }
-    }
-    if (!found) {
-      this.setKeyboard(false);
-    }
   }
 }
 </script>

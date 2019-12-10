@@ -1,6 +1,5 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <div class="text-bold">{{ displayName }}</div>
     <q-input
       outlined
       v-model="valueHolder"
@@ -9,7 +8,7 @@
       @input="save"
       @focus="displayKeyboard"
       :data-layout="keyboardType"
-      :label="label"
+      :label="displayName"
       :fill-mask="mask ? true : false"
       dense
     >
@@ -23,9 +22,9 @@
       :visible.sync="isActive"
       :layout="keyboardType"
       :inputTarget="keyboard.keyboardInputTarget"
-      :list="list"
+      :listLabels="listLabels"
       :inputValue="valueHolder"
-      @next="keyboard.next"
+      @next="next"
     />
   </div>
 </template>
@@ -40,8 +39,7 @@ export default createComponent({
     displayName: String,
     mask: String,
     keyboardType: String,
-    label: String,
-    list: Object,
+    listLabels: Array,
     val: String
   },
 
@@ -61,7 +59,8 @@ export default createComponent({
     const isActive = computed({
       get: () => {
         const keyboardState = context.root.$store.state.keyboard;
-        if (props.displayName === keyboardState.activeFieldName &&
+        if (
+          props.displayName === keyboardState.activeFieldName &&
           keyboardState.showKeyboard
         ) {
           return true;
@@ -89,13 +88,32 @@ export default createComponent({
       context.emit('save');
     };
 
+    const next = () => {
+      const inputs = document.querySelectorAll('input');
+      let found = false;
+      for (let i = 0; i < inputs.length; i++) {
+        if (
+          !found &&
+          inputs[i] === keyboard.keyboardInputTarget &&
+          i < inputs.length - 1
+        ) {
+          found = true;
+          context.root.$nextTick(() => inputs[i + 1].focus());
+        }
+      }
+      if (!found) {
+        store.state.setKeyboard(false);
+      }
+    };
+
     return {
       keyboard,
       valueHolder,
       isActive,
       displayKeyboard,
       select,
-      save
+      save,
+      next
     };
   }
 });

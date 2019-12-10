@@ -5,7 +5,7 @@
         <div class="text-h5 row justify-center">Haul {{haul[haulName]}} Info Part 1</div>
       </template>
       <template v-slot:content1>
-        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
+        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px; align-items: flex-start">
           <div v-for="config of appConfig.haulInfoPt1" :key="appConfig.haulInfoPt1.indexOf(config)">
             <boatnet-common-input-component :config="config" :model="haul" @save="saveOnUpdate"></boatnet-common-input-component>
           </div>
@@ -15,7 +15,7 @@
         <div class="text-h5 row justify-center">Haul {{haul[haulName]}} Info Part 2</div>
       </template>
       <template v-slot:content2>
-        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
+        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px; align-items: flex-start">
           <div v-for="config of appConfig.haulInfoPt2" :key="appConfig.haulInfoPt2.indexOf(config)">
             <boatnet-common-input-component :config="config" :model="haul" @save="saveOnUpdate"></boatnet-common-input-component>
           </div>
@@ -25,7 +25,7 @@
         <div class="text-h5 row justify-center">Deployment/Retrievial Info</div>
       </template>
       <template v-slot:content3>
-        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
+        <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 430px;">
           <div
             v-for="config of appConfig.haulDeployment"
             :key="appConfig.haulDeployment.indexOf(config)"

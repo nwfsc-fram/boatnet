@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="q-pt-lg">
     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
       <div
         v-for="config of appConfig.tripAttributes"
