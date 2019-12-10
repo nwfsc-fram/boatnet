@@ -44,7 +44,7 @@
         <q-card-section>
           <div class="text-h6">
             <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
-            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip Is Selected">
               <q-icon name="warning" size="18px"></q-icon>
               <span class="text-h6">&nbsp;Trip Selected</span>
             </div>
@@ -68,6 +68,30 @@
           <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
+    </div>
+
+    <div v-if="nextSelections.length > 0" class="centered-page-item">Next Trip Selections
+          <div class="display: flex">
+            <q-card
+              v-for="selection in nextSelections"
+              :key="nextSelections.indexOf(selection)"
+              :class="computedSelectionClass(selection)"
+            >
+            <q-card-section>
+
+              <div class="text-h6" style="text-align: left">
+                <span>
+                  {{ selection.fishery }}
+                </span>
+              </div>
+                <div class="text-white" style="font-size: 22px; float: right; margin-bottom: 5px">
+                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="18px"></q-icon>
+                  <span class="text-h6" style="">&nbsp;{{ selection.isSelected ? 'Trip Selected' : 'Observer Not Required'}}</span>
+                </div>
+            </q-card-section>
+            </q-card>
+          </div>
+
     </div>
 
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
@@ -120,7 +144,7 @@
     <q-dialog v-model="earliestTripAlert">
       <q-card>
         <q-card-section>
-          <div class="text-h6">An earlier trip must be closed before this trip can be closed.</div>
+          <div class="text-h6">A later trip must be canceled before this trip can be canceled.</div>
           <q-btn color="primary" size="md" style="float: right" @click="earliestTripAlert = false">OK</q-btn>
           <br><br>
         </q-card-section>
@@ -251,6 +275,7 @@ export default class Trips extends Vue {
   private tripDates: any = [];
   private minDate: any = new Date();
   private maxDate = new Date();
+  private nextSelections: any = [];
 
   constructor() {
       super();
@@ -347,6 +372,76 @@ export default class Trips extends Vue {
       }
     }
 
+    private async getNextSelections() {
+      const selectionSorter = (a: any, b: any) => {
+        if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
+          return -1;
+        } else if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+        this.nextSelections = [];
+        let savedSelections: any = {};
+        const db = pouchService.db;
+        const docs = await db.allDocs(pouchService.userDBName);
+        for (const row of docs.rows) {
+          if (row.doc.type === 'saved-selections') {
+            savedSelections = row.doc;
+          }
+        }
+
+        const vesselName: string = this.vessel.activeVessel.vesselName;
+        if (savedSelections[vesselName]) {
+          for (const fishery of Object.keys(savedSelections[vesselName]).sort(
+            ((a: any, b: any) => {
+            if (a > b) {
+              return 1;
+            } else if (a < b) {
+              return -1;
+            } else {
+              return 0
+            }
+            })
+          )) {
+            for (const selection of savedSelections[vesselName][fishery].sort(
+              (a: any, b: any) => {
+                return selectionSorter(a, b);
+              }
+            )) {
+              if (savedSelections[vesselName][fishery].indexOf(selection) < 1) {
+                const selectionObject = {
+                  fishery,
+                  isSelected: selection.isSelected,
+                  selectionDate: selection.selectionDate
+                  };
+                this.nextSelections.push(selectionObject);
+              }
+            }
+          }
+        }
+        // for (const fishery of Object.keys(savedSelections)) {
+        //   console.log(fishery);
+        //   if (Array.isArray(savedSelections[fishery])) {
+        //     for (const selection of savedSelections[fishery]) {
+        //       console.log(selection);
+        //       const selectionObject = {fishery: fishery, isSelected: selection.isSelected}
+        //       console.log(selectionObject);
+        //       this.nextSelections.push(selectionObject)
+        //     }
+        //   }
+        // }
+
+        // this.nextSelections.sort(
+        //   (a: any, b: any) => {
+        //     return selectionSorter(a, b);
+        //   }
+        // );
+
+
+    }
+
     private vesselsFilterFn(val: string, update: any, abort: any) {
     update(
         async () => {
@@ -390,6 +485,8 @@ export default class Trips extends Vue {
 
     private closeTrip(trip: any) {
       trip.tripStatus.description = 'closed';
+      if (!trip.changelog) { trip.changeLog = []; }
+
       trip.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
@@ -410,6 +507,14 @@ export default class Trips extends Vue {
     //   }
 
     private cancelTrip(trip: any) {
+      for (const openTrip of this.openTrips) {
+        if (openTrip._id !== trip._id && moment(trip.departureDate).isBefore(openTrip.departureDate, 'day')) {
+          // if there is another open trip, see if its departure date is earlier than trip departure date
+          // Dialog - warn earliest trip must be closed first
+          this.earliestTripAlert = true;
+          return;
+        }
+      }
       this.activeTrip = trip;
       this.cancelAlert = true;
     }
@@ -421,26 +526,24 @@ export default class Trips extends Vue {
         return;
       }
 
-      for (const openTrip of this.openTrips) {
-        if (openTrip._id !== trip._id && moment(openTrip.departureDate).isBefore(trip.departureDate, 'day')) {
-          // if there is another open trip, see if its departure date is earlier than trip departure date
-          // Dialog - warn earliest trip must be closed first
-          this.earliestTripAlert = true;
-          return;
-        }
+      this.activeTrip = trip;
+      if (moment(this.activeTrip.departureDate).isAfter(moment(), 'day')) {
+        Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(moment().format()));
+      } else {
+        Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(this.activeTrip.departureDate));
+      }
+      if (moment(this.activeTrip.returnDate).isAfter(moment(), 'day')) {
+        Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(moment().format()));
+      } else {
+        Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(this.activeTrip.returnDate));
       }
 
-      this.activeTrip = trip;
-      Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(trip.departureDate));
-      Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(trip.returnDate));
       this.closeAlert = true;
-      console.log(this.activeTrip.captainAffirmedDepartureDate);
       this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
       this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
     }
 
-    private async cancelActiveTrip() {
-      this.activeTrip!.closingReason = 'cancelled';
+    private async saveSelection() {
       let savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
@@ -450,6 +553,8 @@ export default class Trips extends Vue {
       // check to see if savedSelections exists, fetch it if it does.
       const db = pouchService.db;
       const docs = await db.allDocs(pouchService.userDBName);
+      const vesselName: any = this.activeTrip.vessel.vesselName;
+      const fisheryName: any = this.activeTrip.fishery.description;
 
       for (const row of docs.rows) {
         if (row.doc.type === 'saved-selections') {
@@ -459,33 +564,43 @@ export default class Trips extends Vue {
         }
       }
 
-      if (!savedSelections[this.activeTrip.fishery.description]) {
-        savedSelections[this.activeTrip.fishery.description] = [];
+      if (!savedSelections[vesselName]) {
+        savedSelections[vesselName] = {};
+      }
+      if (!savedSelections[vesselName][fisheryName]) {
+        savedSelections[vesselName][fisheryName] = [];
       }
 
       if (this.openTrips.indexOf(this.activeTrip) === 0 && this.openTrips.length > 1) {
-        savedSelections[this.activeTrip.fishery.description].push({
-                              vesselName: this.activeTrip.vessel.vesselName,
+        savedSelections[vesselName][fisheryName].push({
+                              vesselName,
                               isSelected: this.openTrips[1].isSelected,
                               notes: this.openTrips[1].notes,
-                              selectionDate: this.openTrips[1].createdDate
+                              selectionDate: this.openTrips[1].selectionDate ? this.openTrips[1].selectionDate : this.openTrips[1].createdDate
                             });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
         pouchService.db.post(pouchService.userDBName, this.openTrips[1]);
       } else {
-        savedSelections[this.activeTrip.fishery.description].push({
-                              vesselName: this.activeTrip.vessel.vesselName,
+        savedSelections[vesselName][fisheryName].push({
+                              vesselName,
                               isSelected: this.activeTrip.isSelected,
                               notes: this.activeTrip.notes,
-                              selectionDate: this.activeTrip.createdDate
+                              selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
                             });
       }
-
       pouchService.db.post(pouchService.userDBName, savedSelections);
+    }
 
-      this.closeTrip(this.activeTrip);
-      this.cancelAlert = false;
-      this.closeAlert = false;
+    private async cancelActiveTrip() {
+      this.activeTrip!.closingReason = 'cancelled';
+      this.saveSelection().then(
+        () => {
+          this.closeTrip(this.activeTrip);
+          this.cancelAlert = false;
+          this.closeAlert = false;
+          this.getNextSelections();
+        }
+      );
     }
 
     private closeActiveTrip() {
@@ -515,6 +630,11 @@ export default class Trips extends Vue {
 
     private newTrip() {
       let newTripNum = 1;
+      if (this.openTrips.length > 0) {
+        this.trip.index = 1;
+      } else {
+        this.trip.index = 0;
+      }
 
       try {
         for (const userTrip of this.userTrips) {
@@ -543,6 +663,7 @@ export default class Trips extends Vue {
                             tripStatus: {
                               description: 'open'
                             },
+                            maximizedRetention: null,
                             changeLog: [
                               {
                                 updatedBy: authService.getCurrentUser()!.username,
@@ -569,6 +690,15 @@ export default class Trips extends Vue {
 
 private computedTripClass(trip: WcgopTrip) {
   if (trip.isSelected) {
+    return 'trip-card my-card bg-green text-white';
+  } else {
+    return 'trip-card my-card bg-primary text-white';
+  }
+}
+
+
+private computedSelectionClass(selection: any) {
+  if (selection.isSelected) {
     return 'trip-card my-card bg-green text-white';
   } else {
     return 'trip-card my-card bg-primary text-white';
@@ -626,6 +756,7 @@ private created() {
   if ( authService.getCurrentUser() ) {
     this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
   }
+  this.getNextSelections();
 }
 
 }
@@ -634,7 +765,7 @@ private created() {
 <style lang="stylus">
   .my-card
     width 100%
-    max-width 450px
+    max-width 450px;
 
   .left-pad
     padding-left: 10px
