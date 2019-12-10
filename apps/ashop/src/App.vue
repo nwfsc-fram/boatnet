@@ -13,6 +13,8 @@ import { AppSettings } from '@boatnet/bn-common';
 @Component
 export default class App extends Vue {
   @State('appSettings') private appState!: AppSettings;
+  @Action('setAppMode', { namespace: 'appSettings' })
+  private setAppMode: any;
   @Action('setAppConfig', { namespace: 'appSettings' })
   private setAppConfig: any;
 
@@ -25,6 +27,13 @@ export default class App extends Vue {
   private setValueSelected: any;
 
   private mounted() {
+    // WS - set ASHOP mode explicitly for now
+    if (this.appState.appMode !== 'ashop') {
+      this.setAppMode('ashop');
+      this.setAppConfig();
+      console.log('Reloading in ASHOP mode.');
+      this.$router.go(0); // reload the page
+    }
     document.addEventListener('click', () => {
       if ( document.activeElement &&
         Object.keys(document.activeElement).length === 0 &&
