@@ -34,6 +34,7 @@
           </p>
           <span>
             <pCalendar
+              v-if="tripDates"
               v-model="tripDates"
               :minDate="minDate"
               :maxDate="maxDate"
@@ -46,6 +47,20 @@
               style="width: 100%;"
               >
             </pCalendar>
+
+            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
+            <pCalendar
+              v-model="departureTime"
+              :showTime="true"
+              :timeOnly="true"
+              hourFormat="24"
+              onfocus="blur();"
+              :touchUI="false"
+              style="margin-left: 10px"
+            >
+            </pCalendar>
+            </div>
+
           </span>
         </div>
 
@@ -123,6 +138,21 @@
             </q-chip>
           </template>
         </q-select>
+
+        <div v-if="trip.activeTrip.fishery.description === 'Electronic Monitoring EFP'">
+          <strong :disabled="trip.readOnly">Will this trip be maximized retention?</strong>
+          <q-btn-toggle
+          v-model="trip.activeTrip.maximizedRetention"
+          toggle-color="primary"
+          :disabled="trip.readOnly"
+          :options="[
+              {label: 'Yes', value: true},
+              {label: 'No', value: false},
+              {label: 'Don\'t know', value: null}
+            ]"
+          >
+          </q-btn-toggle>
+        </div>
       </div>
 
       <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
@@ -149,7 +179,7 @@
       <q-card>
         <q-card-section>
         <div class="text-h6">
-          WARNING: Trip start date is less than 48 hours from now!  Observer availability can not be guaranteed.
+          Trip start date is less than 48 hours from now! If selected for observer coverage an observer will be provided ASAP but trip may be delayed up to 48 hours.
         </div>
         </q-card-section>
         <q-card-section class="float-right">
@@ -239,6 +269,7 @@ export default class TripDetails extends Vue {
   private maxDate: any = null;
   private daysWarn: boolean = false;
   private emRoster: any = {};
+  private maximizedRetention: any = null;
 
   constructor() {
     super();
@@ -420,82 +451,112 @@ export default class TripDetails extends Vue {
     }
 
     if (this.trip.activeTrip!.fishery!.description !== '') {
-
-      let savedSelections: any = {};
+      let savedSelections: any = {
+        type: 'saved-selections',
+        createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+        createdDate: moment().format()
+      };
       const db = pouchService.db;
-      const docs = await db.allDocs(pouchService.userDBName);
+      let docs = await db.allDocs(pouchService.userDBName);
+
+      const vesselName: string = this.vessel.activeVessel.vesselName;
+      const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
+
       for (const row of docs.rows) {
         if (row.doc.type === 'saved-selections') {
           savedSelections = row.doc;
         }
       }
 
-      // apply selection to new trip
-      let tripSelection: any = null;
-      if (savedSelections[this.trip.activeTrip!.fishery!.description!] && savedSelections[this.trip.activeTrip!.fishery!.description!].length > 0) {
-        if (savedSelections[this.trip.activeTrip!.fishery!.description!].length > 1) {
-          const sel1 = savedSelections[this.trip.activeTrip!.fishery!.description!][0].selectionDate;
-          const sel2 = savedSelections[this.trip.activeTrip!.fishery!.description!][1].selectionDate;
-          if (moment(sel1).isBefore(sel2)) {
-            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].shift();
+      if (!this.trip.activeTrip!.maximizedRetention) {
+
+
+        // apply selection to new trip
+        let tripSelection: any = null;
+
+        if (savedSelections[vesselName] && savedSelections[vesselName][fisheryName] && savedSelections[vesselName][fisheryName].length > 0) {
+          if (savedSelections[vesselName][fisheryName].length > 1) {
+            const sel1 = savedSelections[vesselName][fisheryName][0].selectionDate;
+            const sel2 = savedSelections[vesselName][fisheryName][1].selectionDate;
+            if (moment(sel1).isBefore(sel2, 'second')) {
+              tripSelection = savedSelections[vesselName][fisheryName].shift();
+            } else {
+              tripSelection = savedSelections[vesselName][fisheryName].pop();
+            }
           } else {
-            tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].pop();
+            tripSelection = savedSelections[vesselName][fisheryName].pop();
           }
+
+          pouchService.db.post(pouchService.userDBName, savedSelections)
+
+          this.trip.activeTrip!.isSelected = tripSelection.isSelected;
+          this.trip.activeTrip!.notes = tripSelection.notes;
+          this.trip.activeTrip!.selectionDate = tripSelection.selectionDate;
+
         } else {
-          tripSelection = savedSelections[this.trip.activeTrip!.fishery!.description!].pop();
+
+          const activeOTSTarget: any = this.getActiveOtsTarget();
+
+          const randomNum = Math.floor(Math.random() * 100);
+
+          if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
+            if (randomNum < activeOTSTarget.setRate) {
+              this.trip.activeTrip.isSelected = true;
+              this.trip.activeTrip.notes =
+                'Trip selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+            } else {
+              this.trip.activeTrip.isSelected = false;
+              this.trip.activeTrip.notes =
+                'Trip NOT selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was NOT less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+            }
+          }
+
         }
-
-        pouchService.db.post(pouchService.userDBName, savedSelections);
-
-        this.trip.activeTrip!.isSelected = tripSelection.isSelected;
-        this.trip.activeTrip!.notes = tripSelection.notes;
-        pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
 
       } else {
+        this.trip.activeTrip!.isSelected = false;
+        this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
+      }
 
-        let activeOTSTarget;
-        for (const otsTarget of this.otsTargets) {
-          if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
-            if (
-              this.getStatus(otsTarget) === 'Active' &&
-              otsTarget.targetType === 'Fishery Wide' &&
-              otsTarget.fishery === this.trip.activeTrip.fishery.description
-            ) {
-              activeOTSTarget = otsTarget;
-            }
-          }
-        }
-        for (const otsTarget of this.otsTargets) {
-          if (
-            this.getStatus(otsTarget) === 'Active' &&
-            otsTarget.targetVessel &&
-            this.trip.activeTrip &&
-            this.trip.activeTrip.vessel &&
-            this.trip.activeTrip.fishery
-          ) {
-            const otsVesselId = otsTarget.targetVessel.coastGuardNumber
-              ? otsTarget.targetVessel.coastGuardNumber
-              : otsTarget.targetVessel.stateRegulationNumber;
-            const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber
-              ? this.trip.activeTrip.vessel.coastGuardNumber
-              : this.trip.activeTrip.vessel.stateRegulationNumber;
-            if (
-              otsTarget.targetType === 'Vessel' &&
-              otsTarget.fishery === this.trip.activeTrip.fishery.description &&
-              otsVesselId === tripVesselId
-            ) {
-              activeOTSTarget = otsTarget;
-            }
-          }
-        }
+      pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
 
+      if (Object.keys(savedSelections).indexOf(vesselName) === -1) {
+        savedSelections[vesselName] = {};
+      }
+      if (Object.keys(savedSelections[vesselName]).indexOf(fisheryName) === -1) {
+        savedSelections[vesselName][fisheryName] = [];
+      }
+
+      if (!savedSelections[vesselName][fisheryName] || savedSelections[vesselName][fisheryName].length < 1) {
+        const activeOTSTarget: any = this.getActiveOtsTarget();
         const randomNum = Math.floor(Math.random() * 100);
 
-        if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
-          if (randomNum < activeOTSTarget.setRate) {
-            this.trip.activeTrip.isSelected = true;
-            this.trip.activeTrip.notes =
-              'Trip selected using Target Type: ' +
+        const newSelection: any = {
+          vesselName,
+          selectionDate: moment().format(),
+          isSelected: false
+          };
+
+      if (activeOTSTarget) {
+        if (randomNum < activeOTSTarget.setRate) {
+          newSelection.isSelected = true;
+          newSelection.notes = 'Trip selected using Target Type: ' +
               activeOTSTarget.targetType +
               ', with set rate of ' +
               activeOTSTarget.setRate +
@@ -504,10 +565,9 @@ export default class TripDetails extends Vue {
               ' was less than set rate: ' +
               activeOTSTarget.setRate +
               ')';
-          } else {
-            this.trip.activeTrip.isSelected = false;
-            this.trip.activeTrip.notes =
-              'Trip NOT selected using Target Type: ' +
+        } else {
+          newSelection.isSelected = false;
+          newSelection.notes = 'Trip NOT selected using Target Type: ' +
               activeOTSTarget.targetType +
               ', with set rate of ' +
               activeOTSTarget.setRate +
@@ -516,10 +576,21 @@ export default class TripDetails extends Vue {
               ' was NOT less than set rate: ' +
               activeOTSTarget.setRate +
               ')';
-          }
         }
+      }
 
-        pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
+        docs = await db.allDocs(pouchService.userDBName).then(
+          (docs: any) => {
+            for (const row of docs.rows) {
+              if (row.doc.type === 'saved-selections') {
+                savedSelections = row.doc;
+              }
+            }
+            savedSelections[vesselName][fisheryName].push(newSelection);
+            pouchService.db.post(pouchService.userDBName, savedSelections);
+            console.log(savedSelections);
+          }
+        );
       }
 
       this.$router.push({ path: '/trips/' });
@@ -527,6 +598,46 @@ export default class TripDetails extends Vue {
     } else {
         this.missingRequired = true;
     }
+  }
+
+  private getActiveOtsTarget() {
+    let activeOTSTarget;
+    const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
+    for (const otsTarget of this.otsTargets) {
+      if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
+        if (
+          this.getStatus(otsTarget) === 'Active' &&
+          otsTarget.targetType === 'Fishery Wide' &&
+          otsTarget.fishery === fisheryName
+        ) {
+          activeOTSTarget = otsTarget;
+        }
+      }
+    }
+    for (const otsTarget of this.otsTargets) {
+      if (
+        this.getStatus(otsTarget) === 'Active' &&
+        otsTarget.targetVessel &&
+        this.trip.activeTrip &&
+        this.trip.activeTrip.vessel &&
+        this.trip.activeTrip.fishery
+      ) {
+        const otsVesselId = otsTarget.targetVessel.coastGuardNumber
+          ? otsTarget.targetVessel.coastGuardNumber
+          : otsTarget.targetVessel.stateRegulationNumber;
+        const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber
+          ? this.trip.activeTrip.vessel.coastGuardNumber
+          : this.trip.activeTrip.vessel.stateRegulationNumber;
+        if (
+          otsTarget.targetType === 'Vessel' &&
+          otsTarget.fishery === this.trip.activeTrip.fishery.description &&
+          otsVesselId === tripVesselId
+        ) {
+          activeOTSTarget = otsTarget;
+        }
+      }
+    }
+    return activeOTSTarget;
   }
 
   private goToTrips() {
@@ -542,6 +653,18 @@ export default class TripDetails extends Vue {
   set departureDate(value) {
     if (this.trip.activeTrip) {
       this.trip.activeTrip.departureDate = moment(this.tripDates[0]).format();
+    }
+  }
+
+  get departureTime(): Date | undefined {
+    if (this.trip.activeTrip) {
+      return new Date(moment(this.trip.activeTrip.departureDate).format());
+    }
+  }
+
+  set departureTime(value) {
+    if (this.trip.activeTrip) {
+      this.trip.activeTrip.departureDate = moment(value).format();
     }
   }
 
@@ -604,7 +727,7 @@ private async getMinDate() {
              this.existingTripStart = row.doc.departureDate;
              this.existingTripEnd = row.doc.returnDate;
              const days = moment(row.doc.returnDate).diff(row.doc.departureDate, 'days');
-             for (i = 0; i <= days; i++) {
+             for (i = 0; i < days; i++) {
                 const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
                 invalidDay.add(i, 'days');
                 this.invalidDates.push(new Date(invalidDay.format()));
@@ -652,8 +775,58 @@ private async getMinDate() {
   private updateTrip() {
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
-    pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
-    this.$router.push({ path: '/trips' });
+    if (this.trip.activeTrip!.isSelected && this.trip.activeTrip!.maximizedRetention) {
+
+      this.saveSelection().then(
+        () => {
+          this.trip.activeTrip!.isSelected = false;
+          this.trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
+          pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
+          this.$router.push({ path: '/trips' });
+        }
+      );
+    } else {
+      pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
+      this.$router.push({ path: '/trips' });
+    }
+
+  }
+
+    private async saveSelection() {
+      let savedSelections: any = {
+        type: 'saved-selections',
+        createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+        createdDate: moment().format()
+        };
+
+      // check to see if savedSelections exists, fetch it if it does.
+      const db = pouchService.db;
+      const docs = await db.allDocs(pouchService.userDBName);
+      const vesselName: any = this.trip.activeTrip!.vessel!.vesselName;
+      const fisheryName: any = this.trip.activeTrip!.fishery!.description;
+
+      for (const row of docs.rows) {
+        if (row.doc.type === 'saved-selections') {
+          savedSelections = row.doc;
+          savedSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
+          savedSelections.updatedDate = moment().format();
+        }
+      }
+
+      if (!savedSelections[vesselName]) {
+        savedSelections[vesselName] = {};
+      }
+      if (!savedSelections[vesselName][fisheryName]) {
+        savedSelections[vesselName][fisheryName] = [];
+      }
+
+      savedSelections[vesselName][fisheryName].push({
+                            vesselName,
+                            isSelected: this.trip.activeTrip!.isSelected,
+                            notes: this.trip.activeTrip!.notes,
+                            selectionDate: this.trip.activeTrip!.selectionDate ? this.trip.activeTrip!.selectionDate : this.trip.activeTrip!.createdDate
+                          });
+      pouchService.db.post(pouchService.userDBName, savedSelections);
   }
 
   private goBack() {
@@ -739,10 +912,13 @@ private async getMinDate() {
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
     if (newVal[0]) {
-      if (moment(newVal[0]).diff(moment(), 'days') < 2 && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()) {
+      if (moment(newVal[0]).diff(moment(), 'day') < 2 && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()) {
         this.daysWarn = true;
       }
       this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+      if (!newVal[1]) {
+        this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
+      }
     }
     if (newVal[1]) {
       this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
@@ -763,7 +939,7 @@ private async getMinDate() {
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-          change: 'departurePort changed from ' + oldVal.name + ' to ' + newVal.name
+          change: 'Departure Port changed from ' + oldVal.name + ' to ' + newVal.name
         }
       );
     }
@@ -779,7 +955,7 @@ private async getMinDate() {
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-          change: 'returnPort changed from ' + oldVal.name + ' to ' + newVal.name
+          change: 'Return Port changed from ' + oldVal.name + ' to ' + newVal.name
         }
       );
     }
@@ -795,7 +971,7 @@ private async getMinDate() {
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-          change: 'departureDate changed from ' + moment(oldVal).format('MM/DD/YYYY') + ' to ' + moment(newVal).format('MM/DD/YYYY')
+          change: 'Departure Date changed from ' + moment(oldVal).format('MM/DD/YYYY HH:MM A') + ' to ' + moment(newVal).format('MM/DD/YYYY HH:MM A')
         }
       );
     }
@@ -811,7 +987,39 @@ private async getMinDate() {
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-          change: 'returnDate changed from ' + moment(oldVal).format('MM/DD/YYYY') + ' to ' + moment(newVal).format('MM/DD/YYYY')
+          change: 'Return Date changed from ' + moment(oldVal).format('MM/DD/YYYY HH:MM A') + ' to ' + moment(newVal).format('MM/DD/YYYY HH:MM A')
+        }
+      );
+    }
+  }
+
+  @Watch('trip.activeTrip.maximizedRetention', {deep: true})
+  private handler7(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'Maximized Retention changed from ' + oldVal + ' to ' + newVal
+        }
+      );
+    }
+  }
+
+  @Watch('trip.activeTrip.notes', {deep: true})
+  private handler8(newVal: any, oldVal: any) {
+    if (!this.trip.newTrip) {
+      if (!this.trip.activeTrip!.changeLog) {
+        this.trip.activeTrip!.changeLog = [];
+      }
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'Notes updated: ' + newVal
         }
       );
     }
