@@ -1,6 +1,8 @@
 # Boatnet
 
-Boatnet provides a suite of tools for collecting fisheries scientific survey and observer monitoring data while aboard commercial, recreational, and NOAA vessels. These include a tablet app for observers and surveys to capture their haul-level catch information and a mobile app for captains to keep track of observer-monitored trips. You can find more details about each project in this [section](https://github.com/nwfsc-fram/boatnet#projects)
+Boatnet provides a suite of tools for collecting fisheries scientific survey and observer monitoring data while aboard commercial, recreational, and NOAA vessels. These include a tablet app for observers and surveys to capture their haul-level catch information and a mobile app for captains to keep track of observer-monitored trips. 
+
+For more details about each project, please refer to the [Wiki](https://github.com/nwfsc-fram/boatnet/wiki)
 
 <p align="center">
   <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
@@ -13,26 +15,21 @@ Note that without a CouchDB, large sections of the application will not function
 
 ## Projects
 
-Boatnet contains multiple projects located in different directories. The different projects are listed below.
- All of the projects are currently a work in progress!
+Please refer to the [Wiki](https://github.com/nwfsc-fram/boatnet/wiki) for project descriptions.
+Boatnet contains multiple projects located in different directories.
+Note that all of the projects are currently a work in progress!
 
 ### OPTECS (Observer Program Technology Enhanced Collection System)
 
 **Directory**: apps/obs-wcgop-optecs
 
-* A tablet application used by observers to log information about fish caught on board. Observers can record stats such as weight, count, species type, and much more. The data collected is used to estimate how many fish can be sustainably caught.
-
 ### Observer Mobile Apps
 
 **Directory**: apps/obs-web
-* Mobile-first modules for captains to log trips, determine Observer coverage, submit OLE declarations, and capture and submit logbook images. 
-* Desktop-first modules for Observer Staff to manage Observer trip selection criteria/rates, debrief Observer trips, edit Boatnet lookups, and other misc Boatnet admin functionality.
 
-### Survey
+### Survey Applications
 
 **Directory**: apps/surv-*
-
-* In-progress Survey related applications
 
 ## How to build and run
 Boatnet uses the lerna + yarn workspace monorepo pattern.
