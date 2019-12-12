@@ -20,19 +20,19 @@ Boatnet contains multiple projects located in different directories. The differe
 
 **Directory**: apps/obs-wcgop-optecs
 
-A tablet application used by observers to log information about fish caught on board. Observers can record stats such as weight, count, species type, and much more. The data collected is used to estimate how many fish can be sustainably caught.
+* A tablet application used by observers to log information about fish caught on board. Observers can record stats such as weight, count, species type, and much more. The data collected is used to estimate how many fish can be sustainably caught.
 
-### Observer Mobile App
+### Observer Mobile Apps
 
 **Directory**: apps/obs-web
-
-A mobile app for our observer program where captains can log their trips and then see whether they are selected for observer coverage or not.
+* Mobile-first modules for captains to log trips, determine Observer coverage, submit OLE declarations, and capture and submit logbook images. 
+* Desktop-first modules for Observer Staff to manage Observer trip selection criteria/rates, debrief Observer trips, edit Boatnet lookups, and other misc Boatnet admin functionality.
 
 ### Survey
 
 **Directory**: apps/surv-*
 
-Survey applications
+* In-progress Survey related applications
 
 ## How to build and run
 Boatnet uses the lerna + yarn workspace monorepo pattern.
