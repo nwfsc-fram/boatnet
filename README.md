@@ -58,27 +58,5 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. Navigate to the project you need, e.g. `cd apps/example` and `yarn serve`
 
-1. See more [specific `lerna` instructions and development setup here.](./docs/dev-notes/README.md)
+1. See more [specific `lerna` instructions, troubleshooting, and development setup here.](./docs/dev-notes/README.md)
 
-## Troubleshooting Build Issues
-Occasionally our lerna monorepo can get into a confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
-```
-# get latest yarn, lerna, and typescript
-npm install -g yarn@latest
-npm install -g lerna@latest
-npm install -g typescript@latest
-cd <your-path>/boatnet/
-# get latest master branch (known good build)
-git pull 
-# clean the yarn cache - this has caused issues in the past occasionally (usually this is not required)
-yarn cache clean
-# remove the yarn.lock to ensure newest packages are acquired (usually this is not required)
-rm yarn.lock
-# now follow the normal build procedure
-lerna bootstrap
-lerna clean -y
-lerna run build
-cd apps/your-app
-yarn serve
-```
-* Also, note that file permission issues (e.g. `EPERM`) usually can be resolved by closing and re-opening Visual Studio Code (and stopping all node.js processes.)
