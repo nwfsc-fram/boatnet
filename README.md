@@ -5,8 +5,7 @@ Boatnet provides a suite of tools for collecting fisheries scientific survey and
 For more details about each project, please refer to the [Wiki](https://github.com/nwfsc-fram/boatnet/wiki)
 
 <p align="center">
-  <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot"
-       width="654" height="300">
+  <img src="./img/FRAM_screenshot.PNG" alt="FRAM Screenshot: Tally App">
 </p>
 
 For those only interested in running the project follow the [How to build and run](https://github.com/nwfsc-fram/boatnet#how-to-build-and-run) section and ignore the rest. The remaining sections are for development purposes only. Note: We are currently working on simplifying the process and in the future you can just download an executable and run the application.
