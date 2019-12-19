@@ -27,44 +27,107 @@
 import { createComponent, computed, ref } from '@vue/composition-api';
 import { get, set } from 'lodash';
 import Vue from 'vue';
+import { Format } from '@boatnet/bn-models/src/models/_base/base-event';
+import Coordinates from 'coordinate-parser';
 
 export default createComponent({
   props: {
-    latModelName: String,
-    longModelName: String,
+    model: String,
     obj: Object
   },
   setup(props, context) {
-    const format = ref('dd');
+    const model: any = props && props.model ? props.model : '';
+    const latName: string = model.concat('.rawInputLocation.coordinates[0]');
+    const longName: string = model.concat('.rawInputLocation.coordinates[1]');
+    const ddPoint: string = model.concat('.ddLocation.coordinates');
+    const unit: string = model.concat('.unit');
+
+    // initialize location unit to DD
+    function initUnit() {
+      const temp = get(props.obj, unit);
+      if (temp === undefined) {
+        setValue(props.obj, unit.split('.'), Format.DD);
+      }
+    }
+    initUnit();
+
     const options = [
       {
         label: 'DD',
-        value: 'dd'
+        value: 'DD'
       },
       {
         label: 'DMS',
-        value: 'dms'
+        value: 'DMS'
+      },
+      {
+        label: 'DMM',
+        value: 'DMM'
       }
     ];
 
-    const latMask = computed(() =>
-      format.value === 'dd' ? '##.####°' : '##°##.##'
-    );
-    const longMask = computed(() =>
-      format.value === 'dd' ? '###.####°' : '###°##.##'
-    );
+    const latMask = computed(() => {
+      switch (format.value) {
+        case Format.DD: {
+          return '##.####°';
+        }
+        case Format.DMS: {
+          return '##°##\'##\'\'';
+        }
+        case Format.DMM: {
+          return '##°##.##\'';
+        }
+      }
+    });
 
-    const latName = props && props.latModelName ? props.latModelName : '';
-    const longName = props && props.longModelName ? props.longModelName : '';
+    const longMask = computed(() => {
+      switch (format.value) {
+        case Format.DD: {
+          return '###.####°';
+        }
+        case Format.DMS: {
+          return '###°##\'##\'\'';
+        }
+        case Format.DMM: {
+          return '###°##.##\'';
+        }
+      }
+    });
+
+    const format = computed({
+      get: () => get(props.obj, unit),
+      set: (val: string) => setValue(props.obj, unit.split('.'), val)
+    });
+
+    function setDD(latitude: string, longitude: string) {
+      if (latitude && latitude.replace(/[^0-9]/g, '').length === 6 &&
+          longitude && longitude.replace(/[^0-9]/g, '').length === 7) {
+        const position = new Coordinates(latitude + ', ' + longitude);
+        setValue(props.obj, ddPoint.split('.'), [
+          position.latitude,
+          position.longitude
+        ]);
+      } else {
+        setValue(props.obj, ddPoint.split('.'), []);
+      }
+    }
 
     const long = computed({
-      get: () =>  get(props.obj, longName),
-      set: (val: string) => setValue(props.obj, longName.split('.'), val)
+      get: () => get(props.obj, longName),
+      set: (val: string) => {
+        const latitude = get(props.obj, latName);
+        setValue(props.obj, longName.split('.'), val);
+        setDD(latitude, val);
+      }
     });
 
     const lat = computed({
       get: () => get(props.obj, latName),
-      set: (val: string) => setValue(props.obj, latName.split('.'), val)
+      set: (val: string) => {
+        const longitude = get(props.obj, longName);
+        setValue(props.obj, latName.split('.'), val);
+        setDD(val, longitude);
+      }
     });
 
     function setValue(obj: any, fields: any, setTo: any) {

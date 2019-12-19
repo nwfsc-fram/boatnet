@@ -14,6 +14,8 @@
       :label="config.label"
       :list="config.list"
       :val.sync="valueHolder"
+      :displayFields="config.displayFields"
+      :docType="config.docType"
       @save="save"
     ></boatnet-keyboard-select-list>
 
@@ -27,8 +29,7 @@
 
     <boatnet-location
       v-if="config.type === 'location'"
-      :latModelName="config.lat"
-      :longModelName="config.long"
+      :model="config.model"
       :obj="model"
       @save="save"
     ></boatnet-location>

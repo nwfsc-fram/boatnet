@@ -4,3 +4,4 @@ declare module '*.vue' {
 }
 
 declare module 'querystring';
+declare module 'coordinate-parser';
