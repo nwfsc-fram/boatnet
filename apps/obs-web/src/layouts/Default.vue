@@ -61,6 +61,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/declarations" exact>
+          <q-item-section avatar>
+            <q-icon name="how_to_vote" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Declarations</q-item-label>
+            <q-item-label caption>create a declaration / view current and past declarations</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item to="/log-book-capture" exact>
           <q-item-section avatar>
             <q-icon name="camera_alt" />
