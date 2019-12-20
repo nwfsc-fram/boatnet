@@ -1,13 +1,13 @@
 <template>
   <q-list bordered padding class="scroll rounded-borders">
-    <div v-for="(name) in getSortedAndCuratedList" :key="name" class="item">
+    <div v-for="(item) in getSortedAndCuratedList" :key="item._id" class="item">
       <q-item
         clickable
-        :active="value === name"
-        @click="setSelected(name)"
+        :active="value === item"
+        @click="setSelected(item)"
         active-class="my-menu-link"
       >
-        <q-item-section>{{name}}</q-item-section>
+        <q-item-section>{{format(item)}}</q-item-section>
       </q-item>
     </div>
   </q-list>
@@ -18,61 +18,58 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { stringify } from 'querystring';
 import { Action, Getter } from 'vuex-class';
 import { get } from 'lodash';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
 @Component
 export default class BoatnetKeyboardList extends Vue {
   @Prop() public value!: string;
-  @Prop() public listLabels!: string[];
+  @Prop() public displayFields!: any[];
+  @Prop() public docType!: string;
 
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
 
   private list: any[] = [];
-  private created() {
-    this.list = this.initList();
+  private async created() {
+    this.list = await this.initList();
   }
 
-  private initList() {
-        // TODO remove static list and instead query pouch to get list
-        if (this.listLabels) {
-          const resultList = [
-            {
-              observer: {
-                firstName: 'Paul',
-                lastName: 'Pu'
-              },
-              startDate: '12/12/12',
-              endDate: '1/1/20'
-            },
-            {
-              observer: {
-                firstName: 'Will',
-                lastName: 'Smith'
-              },
-              startDate: '22/22/22',
-              endDate: '3/3/3'
-            }
-          ];
-          return this.formatList(resultList);
-        }
-        return [];
-      }
-
-    private formatList(items: any[]) {
-      const listModelName: any = this.listLabels ? this.listLabels : [];
-      const formattedList: any[] = [];
-      for (const item of items) {
-        let tempValue = '';
-        for (let i: number = 0; i < listModelName.length; i++) {
-          tempValue =
-            i < listModelName.length - 1
-              ? (tempValue += get(item, listModelName[i]) + ' ')
-              : (tempValue += get(item, listModelName[i]));
-        }
-        formattedList.push(tempValue);
-      }
-      return formattedList;
+  private format(origValue: any) {
+    const listModelName: any = this.displayFields ? this.displayFields : [];
+    let tempValue = '';
+    for (let i: number = 0; i < listModelName.length; i++) {
+      tempValue =
+        i < listModelName.length - 1
+          ? (tempValue += get(origValue, listModelName[i]) + ' ')
+          : (tempValue += get(origValue, listModelName[i]));
     }
+    return tempValue;
+  }
+
+  private async initList() {
+    console.log('init list');
+    const pouchDB = pouchService.db;
+    const queryOptions = {
+      inclusive_end: true,
+      ascending: false,
+      include_docs: true,
+      reduce: false,
+      key: this.docType
+    };
+
+    const results = await pouchDB.query(
+      pouchService.lookupsDBName,
+      'obs_web/all_doc_types',
+      queryOptions
+    );
+    console.log(results);
+    const resultList = [];
+    for (const result of results.rows) {
+      resultList.push(result.doc);
+    }
+    console.log(resultList);
+    return resultList;
+  }
 
   private setSelected(value: string) {
     this.$emit('selected', value);
@@ -81,7 +78,7 @@ export default class BoatnetKeyboardList extends Vue {
 
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
-      item.toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
+      this.format(item).toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
     );
   }
 }

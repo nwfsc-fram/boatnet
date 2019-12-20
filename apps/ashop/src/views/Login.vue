@@ -140,7 +140,7 @@ export default class Login extends Vue {
           this.$router.push({ path: '/' }); // On successful login, navigate to home
           break;
         case 'auth/loginFailure':
-          // this.errorAlert(state.auth.status.error.message);
+          this.errorAlert(state.auth.status.error.message);
           break;
       }
     });

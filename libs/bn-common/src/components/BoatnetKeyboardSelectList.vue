@@ -22,7 +22,8 @@
       :visible.sync="isActive"
       :layout="keyboardType"
       :inputTarget="keyboard.keyboardInputTarget"
-      :listLabels="listLabels"
+      :displayFields="displayFields"
+      :docType="docType"
       :inputValue="valueHolder"
       @next="next"
     />
@@ -39,7 +40,8 @@ export default createComponent({
     displayName: String,
     mask: String,
     keyboardType: String,
-    listLabels: Array,
+    displayFields: Array,
+    docType: String,
     val: String
   },
 
@@ -49,7 +51,13 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        return props.val ? props.val : '';
+        if (typeof props.val === 'object') {
+          const fields: any = props.displayFields ? props.displayFields : [];
+          return get(props.val, fields[0]);
+
+        } else {
+          return props.val ? props.val : '';
+        }
       },
       set: (val: string) => {
         context.emit('update:val', val);

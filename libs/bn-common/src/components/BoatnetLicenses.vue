@@ -5,6 +5,8 @@
         :keyboardType="config.keyboardType"
         :displayName="config.displayName"
         :listLabels="config.listLabels"
+        :displayFields="config.displayFields"
+        :docType="config.docType"
         :val = list[i]
         @save="save"
       >
