@@ -487,7 +487,7 @@ export default class TripDetails extends Vue {
             tripSelection = savedSelections[vesselName][fisheryName].pop();
           }
 
-          pouchService.db.post(pouchService.userDBName, savedSelections)
+          pouchService.db.post(pouchService.userDBName, savedSelections);
 
           this.trip.activeTrip!.isSelected = tripSelection.isSelected;
           this.trip.activeTrip!.notes = tripSelection.notes;
@@ -553,35 +553,35 @@ export default class TripDetails extends Vue {
           isSelected: false
           };
 
-      if (activeOTSTarget) {
-        if (randomNum < activeOTSTarget.setRate) {
-          newSelection.isSelected = true;
-          newSelection.notes = 'Trip selected using Target Type: ' +
-              activeOTSTarget.targetType +
-              ', with set rate of ' +
-              activeOTSTarget.setRate +
-              ' (randomly generated number: ' +
-              randomNum +
-              ' was less than set rate: ' +
-              activeOTSTarget.setRate +
-              ')';
-        } else {
-          newSelection.isSelected = false;
-          newSelection.notes = 'Trip NOT selected using Target Type: ' +
-              activeOTSTarget.targetType +
-              ', with set rate of ' +
-              activeOTSTarget.setRate +
-              ' (randomly generated number: ' +
-              randomNum +
-              ' was NOT less than set rate: ' +
-              activeOTSTarget.setRate +
-              ')';
+        if (activeOTSTarget) {
+          if (randomNum < activeOTSTarget.setRate) {
+            newSelection.isSelected = true;
+            newSelection.notes = 'Trip selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+          } else {
+            newSelection.isSelected = false;
+            newSelection.notes = 'Trip NOT selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was NOT less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+          }
         }
-      }
 
         docs = await db.allDocs(pouchService.userDBName).then(
-          (docs: any) => {
-            for (const row of docs.rows) {
+          (res: any) => {
+            for (const row of res.rows) {
               if (row.doc.type === 'saved-selections') {
                 savedSelections = row.doc;
               }

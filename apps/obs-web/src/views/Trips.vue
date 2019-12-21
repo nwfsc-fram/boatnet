@@ -381,46 +381,47 @@ export default class Trips extends Vue {
         } else {
           return 0;
         }
-      }
-        this.nextSelections = [];
-        let savedSelections: any = {};
-        const db = pouchService.db;
-        const docs = await db.allDocs(pouchService.userDBName);
-        for (const row of docs.rows) {
-          if (row.doc.type === 'saved-selections') {
-            savedSelections = row.doc;
-          }
-        }
+      };
 
-        const vesselName: string = this.vessel.activeVessel.vesselName;
-        if (savedSelections[vesselName]) {
-          for (const fishery of Object.keys(savedSelections[vesselName]).sort(
-            ((a: any, b: any) => {
+      this.nextSelections = [];
+      let savedSelections: any = {};
+      const db = pouchService.db;
+      const docs = await db.allDocs(pouchService.userDBName);
+      for (const row of docs.rows) {
+        if (row.doc.type === 'saved-selections') {
+          savedSelections = row.doc;
+        }
+      }
+
+      const vesselName: string = this.vessel.activeVessel.vesselName;
+      if (savedSelections[vesselName]) {
+        for (const fishery of Object.keys(savedSelections[vesselName]).sort(
+          (a: any, b: any) => {
             if (a > b) {
               return 1;
             } else if (a < b) {
               return -1;
             } else {
-              return 0
+              return 0;
             }
-            })
+          })
+        ) {
+          for (const selection of savedSelections[vesselName][fishery].sort(
+            (a: any, b: any) => {
+              return selectionSorter(a, b);
+            }
           )) {
-            for (const selection of savedSelections[vesselName][fishery].sort(
-              (a: any, b: any) => {
-                return selectionSorter(a, b);
-              }
-            )) {
-              if (savedSelections[vesselName][fishery].indexOf(selection) < 1) {
-                const selectionObject = {
-                  fishery,
-                  isSelected: selection.isSelected,
-                  selectionDate: selection.selectionDate
-                  };
-                this.nextSelections.push(selectionObject);
-              }
+            if (savedSelections[vesselName][fishery].indexOf(selection) < 1) {
+              const selectionObject = {
+                fishery,
+                isSelected: selection.isSelected,
+                selectionDate: selection.selectionDate
+                };
+              this.nextSelections.push(selectionObject);
             }
           }
         }
+      }
         // for (const fishery of Object.keys(savedSelections)) {
         //   console.log(fishery);
         //   if (Array.isArray(savedSelections[fishery])) {

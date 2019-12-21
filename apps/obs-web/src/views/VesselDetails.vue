@@ -16,6 +16,16 @@
         >
         </q-btn>
 
+        <div class="h6">
+            {{ vesselPermissions }}
+        </div>
+        <div class="h6">
+            {{ allowedPeople }}
+        </div>
+        <div class="h6">
+            {{ personAliases }}
+        </div>
+
         <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name" @click.native="selectText"></q-input>
         <div class="row">
             <div class="col-sm q-pa-md">
@@ -153,6 +163,68 @@ export default class VesselDetails extends Vue {
     private showDialog = false;
     private hardwareOptions = [];
     private reviewerOptions = [];
+    private vesselPermissions: any[] = [];
+    private allowedPeople: any[] = [];
+    private personAliases: any[] = [];
+
+    private async getPermissions() {
+        const db = pouchService.db;
+        const queryOptions = {
+            key: 'vessel-permissions',
+            reduce: false,
+            include_docs: true
+        }
+        const permissions = await db.query(
+            pouchService.lookupsDBName,
+            'obs_web/all_doc_types',
+            queryOptions
+        )
+
+        const doc = permissions.rows[0].doc;
+        console.log(doc);
+
+        for (const vessel of doc.vesselAuthorizations) {
+            for (const person of vessel.authorizedPeople) {
+                this.vesselPermissions.push(
+                    {
+                        vesselId: vessel.vesselIdNum,
+                        vesselIndex: doc.vesselAuthorizations.indexOf(vessel),
+                        personIndex: vessel.authorizedPeople.indexOf(person),
+                        personAliasId: person
+                    }
+                )
+            }
+        }
+        const vesselPermissions = this.vesselPermissions.filter( (vessel: any) => vessel.vesselId == this.vessel.activeVessel.coastGuardNumber);
+        for (const permission of vesselPermissions) {
+            const alias = await db.get(
+                pouchService.lookupsDBName,
+                permission.personAliasId
+            );
+            this.allowedPeople.push(alias);
+        }
+        this.allowedPeople = this.allowedPeople.filter( (alias) => alias.roles.includes('captain') )
+        console.log(this.allowedPeople);
+    }
+
+    private async getPersonAliases() {
+        const db = pouchService.db;
+        const queryOptions = {
+            key: 'person-alias',
+            reduce: false,
+            include_docs: true
+        }
+
+        const aliases = await db.query(
+            pouchService.lookupsDBName,
+            'obs_web/all_doc_types',
+            queryOptions
+        )
+
+        this.personAliases = aliases.rows.map( (row: any) => row.doc )
+        console.log(this.personAliases);
+
+    }
 
     private selectText(event: any) {
       event.target.select();
@@ -303,6 +375,8 @@ export default class VesselDetails extends Vue {
 
     private created() {
         this.getOptions();
+        this.getPermissions();
+        this.getPersonAliases()
     }
 
 }
