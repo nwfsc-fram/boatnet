@@ -27,7 +27,7 @@
 import { createComponent, computed, ref } from '@vue/composition-api';
 import { get, set } from 'lodash';
 import Vue from 'vue';
-import { Format } from '@boatnet/bn-models/src/models/_base/base-event';
+import { GPSFormat } from '@boatnet/bn-models/src/models/_base/base-event';
 import Coordinates from 'coordinate-parser';
 
 export default createComponent({
@@ -46,7 +46,7 @@ export default createComponent({
     function initUnit() {
       const temp = get(props.obj, unit);
       if (temp === undefined) {
-        setValue(props.obj, unit.split('.'), Format.DD);
+        setValue(props.obj, unit.split('.'), GPSFormat.DD);
       }
     }
     initUnit();
@@ -68,13 +68,13 @@ export default createComponent({
 
     const latMask = computed(() => {
       switch (format.value) {
-        case Format.DD: {
+        case GPSFormat.DD: {
           return '##.####°';
         }
-        case Format.DMS: {
+        case GPSFormat.DMS: {
           return '##°##\'##\'\'';
         }
-        case Format.DMM: {
+        case GPSFormat.DMM: {
           return '##°##.##\'';
         }
       }
@@ -82,13 +82,13 @@ export default createComponent({
 
     const longMask = computed(() => {
       switch (format.value) {
-        case Format.DD: {
+        case GPSFormat.DD: {
           return '###.####°';
         }
-        case Format.DMS: {
+        case GPSFormat.DMS: {
           return '###°##\'##\'\'';
         }
-        case Format.DMM: {
+        case GPSFormat.DMM: {
           return '###°##.##\'';
         }
       }

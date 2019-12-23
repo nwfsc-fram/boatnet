@@ -59,8 +59,12 @@ export default createComponent({
           return props.val ? props.val : '';
         }
       },
-      set: (val: string) => {
-        context.emit('update:val', val);
+      set: (val: any) => {
+        if (props.keyboardType === 'numeric') {
+          context.emit('update:val', parseInt(val, 10));
+        } else {
+          context.emit('update:val', val);
+        }
       }
     });
 

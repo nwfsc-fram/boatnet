@@ -103,7 +103,7 @@ const router = new Router({
               { name: 'Trip', link: '' },
               { name: 'tripIdPlaceholder', link: '' },
               { name: 'Hauls', link: '/hauls' },
-              { name: 'Non Fishing Day', link: '' }
+              { name: 'Non Fishing', link: '' }
             ]
           }
         }
