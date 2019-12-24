@@ -116,25 +116,25 @@ export default class Home extends Vue {
   private async getUserAliasfromPouchDB() {
     if (this.user.activeUser) {
       this.user.activeUserAlias = undefined; // DEV ONLY - DELETE THIS LINE!!!!
-      console.log(authService.getCurrentUser()!.username)
+      console.log(authService.getCurrentUser()!.username);
       const db = pouchService.db;
       const queryOptions = {
         include_docs: true,
         key: authService.getCurrentUser()!.username
-      }
+      };
 
       setTimeout( async () => {
         const alias = await db.query(
           pouchService.lookupsDBName,
           'obs_web/all_person_alias',
           queryOptions
-          )
+        );
 
-      if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
-        console.log('setting active user alias');
-        this.user.activeUserAlias = alias.rows[0].doc;
-      } else {
-        console.log('no active user alias');
+        if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
+          console.log('setting active user alias');
+          this.user.activeUserAlias = alias.rows[0].doc;
+        } else {
+          console.log('no active user alias');
           const newAlias = {
               type: 'person-alias',
               firstName: this.user.activeUser!.firstName,
@@ -145,17 +145,17 @@ export default class Home extends Vue {
               isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
               isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
               isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
-          }
+          };
           couchService.masterDB.post(newAlias).then(
               setTimeout( () => {
-                  this.notifySuccess('User Alias Created')
+                  this.notifySuccess('User Alias Created');
                   location.reload();
                   // this.$router.push({path: '/'});
               } , 1000 )
           );
 
-        }
-      } , 1000 )
+          }
+      } , 1000 );
     }
 
   }

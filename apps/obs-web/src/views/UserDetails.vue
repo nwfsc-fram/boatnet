@@ -734,7 +734,7 @@ export default class UserDetails extends Vue {
                     this.user.activeUserAlias._id,
                     this.user.activeUserAlias,
                     this.user.activeUserAlias._rev
-                )
+                );
 
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.put(

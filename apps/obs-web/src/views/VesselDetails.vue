@@ -204,12 +204,12 @@ export default class VesselDetails extends Vue {
             key: 'vessel-permissions',
             reduce: false,
             include_docs: true
-        }
+        };
         const permissions = await masterDB.view(
             'obs_web',
             'all_doc_types',
             queryOptions
-        )
+        );
 
         this.vesselPermissionsDoc = permissions.rows[0].doc;
         const activeVesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
@@ -225,7 +225,7 @@ export default class VesselDetails extends Vue {
                             personIndex: vessel.authorizedPeople.indexOf(person),
                             personAliasId: person
                         }
-                    )
+                    );
                 }
             }
         }
@@ -240,7 +240,7 @@ export default class VesselDetails extends Vue {
                 this.allowedPeople.push(alias);
             }
         }
-        this.allowedPeople = this.allowedPeople.filter( (alias) => alias.roles.includes('captain') || alias.roles.includes('delegate') )
+        this.allowedPeople = this.allowedPeople.filter( (alias) => alias.roles.includes('captain') || alias.roles.includes('delegate') );
 
     }
 
@@ -250,15 +250,15 @@ export default class VesselDetails extends Vue {
             key: 'person-alias',
             reduce: false,
             include_docs: true
-        }
+        };
 
         const aliases = await db.query(
             pouchService.lookupsDBName,
             'obs_web/all_doc_types',
             queryOptions
-        )
+        );
 
-        this.allPersonAliases = aliases.rows.map( (row: any) => row.doc )
+        this.allPersonAliases = aliases.rows.map( (row: any) => row.doc );
 
     }
 
@@ -355,7 +355,7 @@ export default class VesselDetails extends Vue {
                 masterDB.put(this.vessel.activeVessel!._id!,
                                 this.vessel.activeVessel!,
                                 this.vessel.activeVessel!._rev!
-                            )
+                            );
                             // .then( () => this.$router.push({path: '/vessels'}));
 
             } catch (err) {
@@ -455,7 +455,7 @@ export default class VesselDetails extends Vue {
     private created() {
         this.getOptions();
         this.getPermissions();
-        this.getPersonAliases()
+        this.getPersonAliases();
     }
 
 }

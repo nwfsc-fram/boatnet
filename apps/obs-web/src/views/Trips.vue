@@ -778,12 +778,12 @@ private async getAuthorizedVessels() {
         key: 'vessel-permissions',
         reduce: false,
         include_docs: true
-    }
+    };
     const permissionsQuery = await db.query(
         pouchService.lookupsDBName,
         'obs_web/all_doc_types',
         queryOptions
-    )
+    );
 
     const permissionsDoc = permissionsQuery.rows[0].doc;
 
@@ -792,26 +792,25 @@ private async getAuthorizedVessels() {
     for (const vessel of permissionsDoc.vesselAuthorizations) {
       for (const person of vessel.authorizedPeople) {
         if (person === this.user.activeUserAlias._id) {
-          vesselPermissions.push(vessel.vesselIdNum)
+          vesselPermissions.push(vessel.vesselIdNum);
         }
       }
     }
 
     for (const vesselId of vesselPermissions) {
-      console.log(vesselId)
       const vesselQueryOptions = {
         key: vesselId,
         reduce: false,
         include_docs: true
-      }
+      };
 
       const vesselQuery = await db.query(
         pouchService.lookupsDBName,
         'obs_web/all_vessel_nums',
         vesselQueryOptions
-      )
+      );
 
-      this.authorizedVessels.push(vesselQuery.rows[0].doc)
+      this.authorizedVessels.push(vesselQuery.rows[0].doc);
 
     }
 

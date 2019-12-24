@@ -447,7 +447,7 @@ export default class TripDetails extends Vue {
             html: true,
             multiLine: true
         });
-        return;
+      return;
     }
 
     if (this.trip.activeTrip!.fishery!.description !== '') {
@@ -473,7 +473,7 @@ export default class TripDetails extends Vue {
       }
 
       if (!savedSelections[vesselName][fisheryName]) {
-        savedSelections[vesselName][fisheryName] = []
+        savedSelections[vesselName][fisheryName] = [];
       }
 
       if (!this.trip.activeTrip!.maximizedRetention) {
