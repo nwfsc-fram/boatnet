@@ -14,3 +14,14 @@ export const getFormattedValue: any = (value: any, type: string, format: string 
             return value;
     }
 };
+
+export const setFormattedValue: any = (value: any, type: string) => {
+    switch (type) {
+        case 'number':
+            return parseInt(value, 10);
+        case 'float':
+            return parseFloat(value);
+        default:
+            return value;
+    }
+}

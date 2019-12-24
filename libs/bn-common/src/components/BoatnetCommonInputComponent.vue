@@ -16,6 +16,9 @@
       :val.sync="valueHolder"
       :displayFields="config.displayFields"
       :docType="config.docType"
+      :initValue="config.initValue"
+      :path="config.initKey"
+      :valType="config.valType"
       @save="save"
     ></boatnet-keyboard-select-list>
 
@@ -77,12 +80,24 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        return get(props.model, props.config ? props.config.modelName : '');
+        const modelName = props.config ? props.config.modelName : '';
+        if (typeof modelName === 'object') {
+          return get(props.model, modelName[0]);
+        } else {
+          return get(props.model, modelName);
+        }
       },
       set: (val: any) => {
         const modelName = props.config ? props.config.modelName : '';
-        const fields = modelName.split('.');
-        setValue(props.model, fields, val);
+        if (typeof modelName === 'object') {
+          for (let modell of modelName) {
+            const fields = modell.split('.');
+            setValue(props.model, fields, val);
+          }
+        } else {
+          const fields = modelName.split('.');
+          setValue(props.model, fields, val);
+        }
       }
     });
 

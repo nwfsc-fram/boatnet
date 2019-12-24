@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
-import { getFormattedValue } from '../helpers/helpers';
+import { getFormattedValue } from '@boatnet/bn-common';
 import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';

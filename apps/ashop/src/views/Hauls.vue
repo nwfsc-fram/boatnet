@@ -70,7 +70,7 @@ import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import moment from 'moment';
 import { sampleData, sampleTrip } from '../data/data';
-import { getFormattedValue } from '../helpers/helpers';
+import { getFormattedValue } from '@boatnet/bn-common';
 import { remove, get } from 'lodash';
 
 Vue.component(BoatnetSummary);

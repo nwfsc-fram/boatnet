@@ -1,19 +1,19 @@
 <template>
   <div>
-    <span v-for="(item, i) in list" :key="i">
+    <span v-for="(item, i) in lists" :key="i">
       <boatnet-keyboard-select-list
         :keyboardType="config.keyboardType"
         :displayName="config.displayName"
         :listLabels="config.listLabels"
         :displayFields="config.displayFields"
         :docType="config.docType"
-        :val = list[i]
+        :val.sync="lists[i]"
         @save="save"
       >
         <template v-slot:after>
           <q-icon
-            :name="i != 0 ? 'clear' : 'add'"
-            @click="i != 0 ? confirmDelete(i) : add()"
+            :name="i != 0 || maxListSize === lists.length ? 'clear' : 'add'"
+            @click="i != 0 || maxListSize === lists.length ? confirmDelete(i) : add()"
             class="cursor-pointer"
           />
         </template>
@@ -35,25 +35,21 @@ import Vue from 'vue';
 
 export default createComponent({
   props: {
-    config: Object
+    config: Object,
+    list: Array
   },
 
   setup(props, context) {
-    const list: any[] = [''];
+    const lists = props.list ? props.list : [''];
     const deleteMessage = ref('');
     const showDeleteDialog = ref(false);
     let deleteIndex: number = 0;
 
-    const modelName = props.config ? props.config.modelName : '';
-    const maxListSize = props.config ? props.config.maxItems : 0;
-
-    const addEmptyItem = (iList: any[]) => {
-      const emptyItem = set({}, modelName, '');
-      iList.splice(0, 0, emptyItem);
-    };
+    const modelName: string = props.config ? props.config.modelName : '';
+    const maxListSize: number = props.config ? props.config.maxItems : 0;
 
     const save = () => {
-      context.emit('update:list', list);
+      context.emit('update:list', lists);
       context.emit('save');
     };
 
@@ -65,14 +61,14 @@ export default createComponent({
     };
 
     const onDelete = () => {
-      list.splice(deleteIndex, 1);
+      lists.splice(deleteIndex, 1);
       context.emit('save');
     };
 
     const add = () => {
       context.root.$store.dispatch('keyboard/setKeyboard', false);
-      if (list.length < maxListSize) {
-        addEmptyItem(list);
+      if (lists.length < maxListSize) {
+        lists.splice(0, 0, '');
       } else {
         context.emit('error', 'Reached limit, cannot add more items.');
       }
@@ -85,7 +81,8 @@ export default createComponent({
       onDelete,
       deleteMessage,
       showDeleteDialog,
-      list
+      lists,
+      maxListSize
     };
   }
 });

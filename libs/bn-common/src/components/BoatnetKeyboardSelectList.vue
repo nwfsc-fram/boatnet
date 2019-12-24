@@ -33,6 +33,8 @@
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { get, set } from 'lodash';
+import { Measurement } from '@boatnet/bn-models';
+import { setFormattedValue } from '../helpers/helpers';
 import Vue from 'vue';
 
 export default createComponent({
@@ -42,7 +44,10 @@ export default createComponent({
     keyboardType: String,
     displayFields: Array,
     docType: String,
-    val: String
+    val: String,
+    initValue: Object,
+    path: String,
+    valType: String
   },
 
   setup(props, context) {
@@ -52,18 +57,25 @@ export default createComponent({
     const valueHolder = computed({
       get: () => {
         if (typeof props.val === 'object') {
-          const fields: any = props.displayFields ? props.displayFields : [];
-          return get(props.val, fields[0]);
-
+          if (props.path) {
+            return get(props.val, props.path ? props.path : '');
+          } else {
+            const fields: any = props.displayFields ? props.displayFields : [];
+            return get(props.val, fields[0]);
+          }
         } else {
           return props.val ? props.val : '';
         }
       },
       set: (val: any) => {
-        if (props.keyboardType === 'numeric') {
-          context.emit('update:val', parseInt(val, 10));
+        const type = props.valType ? props.valType : '';
+        let typeVal = setFormattedValue(val, type);
+        if (props.initValue) {
+          const value = props.initValue;
+          set(value, props.path ? props.path : '', typeVal);
+          context.emit('update:val', value);
         } else {
-          context.emit('update:val', val);
+          context.emit('update:val', typeVal);
         }
       }
     });
