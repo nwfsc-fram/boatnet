@@ -16,16 +16,6 @@
         >
         </q-btn>
 
-        <div class="h6">
-            {{ vesselPermissions }}
-        </div>
-        <div class="h6">
-            {{ allowedPeople }}
-        </div>
-        <div class="h6">
-            {{ personAliases }}
-        </div>
-
         <q-input v-model="vessel.activeVessel.vesselName" label="Vessel Name" @click.native="selectText"></q-input>
         <div class="row">
             <div class="col-sm q-pa-md">
@@ -58,7 +48,7 @@
             >
         </q-select>
 
-        <q-select
+        <!-- <q-select
             v-model="vessel.activeVessel.captains"
             label="Vessel Captains"
             :options="captains"
@@ -82,6 +72,35 @@
                 <q-avatar color="primary" text-color="white" icon="person" />
                 <span v-if="scope.opt.label">{{ scope.opt.label }}</span>
                 <span v-else>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
+            </q-chip>
+        </template>
+        </q-select> -->
+
+        <q-select
+            v-model="allowedPeople"
+            label="Authorized Personnel"
+            :options="personAliases"
+            :option-label="opt => capitalize(opt.firstName) + ' ' + capitalize(opt.lastName) + ' (' + opt.userName + ')' "
+            option-value="_id"
+            @filter="personAliasesFilterFn"
+            stack-label
+            use-input
+            multiple
+            use-chips
+            >
+        <template v-if="allowedPeople" v-slot:selected-item="scope">
+            <q-chip
+                removable
+                dense
+                @remove="scope.removeAtIndex(scope.index)"
+                :tabindex="scope.tabindex"
+                color="primary"
+                text-color="white"
+                >
+                <q-avatar v-if="scope.opt.roles[0] == 'observer'" color="primary" text-color="white" icon="visibility" />
+                <q-avatar v-if="scope.opt.roles[0] == 'captain'" color="primary" text-color="white" icon="directions_boat" />
+                <q-avatar v-if="scope.opt.roles[0] == 'delegate'" color="primary" text-color="white" icon="work" />
+                <span>{{ capitalize(scope.opt.firstName) + ' ' + capitalize(scope.opt.lastName) }}&nbsp; </span>
             </q-chip>
         </template>
         </q-select>
@@ -147,6 +166,7 @@ import { Vessel, VesselTypeTypeName, PersonTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
+import _ from 'lodash';
 
 @Component
 export default class VesselDetails extends Vue {
@@ -164,47 +184,64 @@ export default class VesselDetails extends Vue {
     private hardwareOptions = [];
     private reviewerOptions = [];
     private vesselPermissions: any[] = [];
+    private vesselPermissionsDoc: any = {};
     private allowedPeople: any[] = [];
     private personAliases: any[] = [];
+    private allPersonAliases: any[] = [];
+    private vesselIndex: number = -1;
+
+    private capitalize(text: string) {
+        return _.startCase(_.toLower(text));
+    }
 
     private async getPermissions() {
-        const db = pouchService.db;
+        this.vesselIndex = -1;
+        this.allowedPeople = [];
+        this.vesselPermissions = [];
+
+        const masterDB = couchService.masterDB;
         const queryOptions = {
             key: 'vessel-permissions',
             reduce: false,
             include_docs: true
         }
-        const permissions = await db.query(
-            pouchService.lookupsDBName,
-            'obs_web/all_doc_types',
+        const permissions = await masterDB.view(
+            'obs_web',
+            'all_doc_types',
             queryOptions
         )
 
-        const doc = permissions.rows[0].doc;
-        console.log(doc);
+        this.vesselPermissionsDoc = permissions.rows[0].doc;
+        const activeVesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
 
-        for (const vessel of doc.vesselAuthorizations) {
-            for (const person of vessel.authorizedPeople) {
-                this.vesselPermissions.push(
-                    {
-                        vesselId: vessel.vesselIdNum,
-                        vesselIndex: doc.vesselAuthorizations.indexOf(vessel),
-                        personIndex: vessel.authorizedPeople.indexOf(person),
-                        personAliasId: person
-                    }
-                )
+        for (const vessel of this.vesselPermissionsDoc.vesselAuthorizations) {
+            if (vessel.vesselIdNum === activeVesselId) {
+                this.vesselIndex = this.vesselPermissionsDoc.vesselAuthorizations.indexOf(vessel);
+                for (const person of vessel.authorizedPeople) {
+                    this.vesselPermissions.push(
+                        {
+                            vesselId: vessel.vesselIdNum,
+                            vesselIndex: this.vesselPermissionsDoc.vesselAuthorizations.indexOf(vessel),
+                            personIndex: vessel.authorizedPeople.indexOf(person),
+                            personAliasId: person
+                        }
+                    )
+                }
             }
         }
-        const vesselPermissions = this.vesselPermissions.filter( (vessel: any) => vessel.vesselId == this.vessel.activeVessel.coastGuardNumber);
-        for (const permission of vesselPermissions) {
+
+        const db = pouchService.db;
+        for (const permission of this.vesselPermissions) {
             const alias = await db.get(
                 pouchService.lookupsDBName,
                 permission.personAliasId
             );
-            this.allowedPeople.push(alias);
+            if (alias) {
+                this.allowedPeople.push(alias);
+            }
         }
-        this.allowedPeople = this.allowedPeople.filter( (alias) => alias.roles.includes('captain') )
-        console.log(this.allowedPeople);
+        this.allowedPeople = this.allowedPeople.filter( (alias) => alias.roles.includes('captain') || alias.roles.includes('delegate') )
+
     }
 
     private async getPersonAliases() {
@@ -221,8 +258,7 @@ export default class VesselDetails extends Vue {
             queryOptions
         )
 
-        this.personAliases = aliases.rows.map( (row: any) => row.doc )
-        console.log(this.personAliases);
+        this.allPersonAliases = aliases.rows.map( (row: any) => row.doc )
 
     }
 
@@ -283,6 +319,22 @@ export default class VesselDetails extends Vue {
         );
     }
 
+  private async personAliasesFilterFn(val: string, update: any, abort: any) {
+    if (val === '') {
+      update(() => {
+        this.personAliases = this.allPersonAliases;
+      });
+      return;
+    }
+    update(() => {
+      const searchString = val.toLowerCase();
+      this.personAliases = this.allPersonAliases.filter(
+        (person: any) => person.firstName.toLowerCase().indexOf(searchString) > -1 || person.lastName.toLowerCase().indexOf(searchString) > -1
+      );
+    });
+
+  }
+
     private async saveCaptain() {
         const masterDB: Client<any> = couchService.masterDB;
         if (this.$route.params.id === 'new') {
@@ -303,13 +355,40 @@ export default class VesselDetails extends Vue {
                 masterDB.put(this.vessel.activeVessel!._id!,
                                 this.vessel.activeVessel!,
                                 this.vessel.activeVessel!._rev!
-                            ).then( () => this.$router.push({path: '/vessels'}));
+                            )
+                            // .then( () => this.$router.push({path: '/vessels'}));
 
             } catch (err) {
                 this.errorAlert(err);
             }
         }
+        this.saveVesselPermissions();
+    }
 
+    private async saveVesselPermissions() {
+
+        if (this.vesselIndex !== -1) {
+            // update vesselPermissionsDoc at stored index
+            this.vesselPermissionsDoc.vesselAuthorizations[this.vesselIndex].authorizedPeople = this.allowedPeople.map( (person: any) => person._id);
+        } else {
+            // push new permissions to vesselPermissionsDoc
+            const newEntry: any = {};
+            newEntry.vesselIdNum = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+            newEntry.authorizedPeople = this.allowedPeople.map( (person: any) => person._id);
+            this.vesselPermissionsDoc.vesselAuthorizations.push(newEntry);
+        }
+        try {
+            this.vesselPermissionsDoc.updatedBy = authService.getCurrentUser()!.username;
+            this.vesselPermissionsDoc.updatedDate = moment().format();
+
+            couchService.masterDB.put(this.vesselPermissionsDoc._id,
+                            this.vesselPermissionsDoc,
+                            this.vesselPermissionsDoc._rev
+                        ).then( () => this.$router.push({path: '/vessels'}));
+
+        } catch (err) {
+            this.errorAlert(err);
+        }
     }
 
     private async deleteVessel() {
@@ -321,18 +400,18 @@ export default class VesselDetails extends Vue {
             });
     }
 
-    private newCaptain() {
-            const newUser = {
-                type: PersonTypeName,
-                createdBy: authService.getCurrentUser()!.username,
-                createdDate: moment().format()
-            };
-            this.user.activeUser = newUser;
-            this.user.activeUser.activeVessel = this.vessel.activeVessel;
-            this.user.activeUser.port = this.vessel.activeVessel!.homePort;
-            this.user.newUser = true;
-            this.$router.push({path: '/users/' + 'new'});
-    }
+    // private newCaptain() {
+    //         const newUser = {
+    //             type: PersonTypeName,
+    //             createdBy: authService.getCurrentUser()!.username,
+    //             createdDate: moment().format()
+    //         };
+    //         this.user.activeUser = newUser;
+    //         this.user.activeUser.activeVessel = this.vessel.activeVessel;
+    //         this.user.activeUser.port = this.vessel.activeVessel!.homePort;
+    //         this.user.newUser = true;
+    //         this.$router.push({path: '/users/' + 'new'});
+    // }
 
     private navigateBack() {
         this.$router.back();

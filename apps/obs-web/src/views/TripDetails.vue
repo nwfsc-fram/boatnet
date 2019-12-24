@@ -438,8 +438,8 @@ export default class TripDetails extends Vue {
     // first check whether there is a stored selection for the vessel and fishery
 
     if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
-        Notify.create({
-            message: '<b>A trip must have a start and end date</b>',
+      Notify.create({
+        message: '<b>A trip must have a start and end date</b>',
             position: 'center',
             color: 'primary',
             timeout: 2000,
@@ -466,6 +466,14 @@ export default class TripDetails extends Vue {
         if (row.doc.type === 'saved-selections') {
           savedSelections = row.doc;
         }
+      }
+
+      if (!savedSelections[vesselName]) {
+        savedSelections[vesselName] = {};
+      }
+
+      if (!savedSelections[vesselName][fisheryName]) {
+        savedSelections[vesselName][fisheryName] = []
       }
 
       if (!this.trip.activeTrip!.maximizedRetention) {
@@ -536,10 +544,11 @@ export default class TripDetails extends Vue {
 
       pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
 
-      if (Object.keys(savedSelections).indexOf(vesselName) === -1) {
+      if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
       }
-      if (Object.keys(savedSelections[vesselName]).indexOf(fisheryName) === -1) {
+
+      if (!savedSelections[vesselName][fisheryName]) {
         savedSelections[vesselName][fisheryName] = [];
       }
 
@@ -584,11 +593,18 @@ export default class TripDetails extends Vue {
             for (const row of res.rows) {
               if (row.doc.type === 'saved-selections') {
                 savedSelections = row.doc;
+
+                if (!savedSelections[vesselName]) {
+                  savedSelections[vesselName] = {};
+                }
+
+                if (!savedSelections[vesselName][fisheryName]) {
+                  savedSelections[vesselName][fisheryName] = [];
+                }
               }
             }
             savedSelections[vesselName][fisheryName].push(newSelection);
             pouchService.db.post(pouchService.userDBName, savedSelections);
-            console.log(savedSelections);
           }
         );
       }

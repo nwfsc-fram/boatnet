@@ -13,13 +13,25 @@
         <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
       </div>
       <div v-else>
-        <p>No active vessel, please set your active vessel in User Config.</p>
+        <p>No active vessel</p>
       </div>
+
+      <q-select
+      v-model="vessel.activeVessel"
+      label="Vessel"
+      dense
+      use-input
+      fill-input
+      hide-selected
+      :options="authorizedVessels"
+      :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+      option-value="_id"
+      ></q-select>
 
       <q-select
       v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode"
       v-model="vessel.activeVessel"
-      label="Set Active Vessel (staff only)"
+      label="Staff - Select ANY vessel"
       dense
       use-input
       fill-input
@@ -276,6 +288,7 @@ export default class Trips extends Vue {
   private minDate: any = new Date();
   private maxDate = new Date();
   private nextSelections: any = [];
+  private authorizedVessels: Vessel[] = [];
 
   constructor() {
       super();
@@ -373,6 +386,8 @@ export default class Trips extends Vue {
     }
 
     private async getNextSelections() {
+      if (this.vessel.activeVessel) {
+
       const selectionSorter = (a: any, b: any) => {
         if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
           return -1;
@@ -422,6 +437,7 @@ export default class Trips extends Vue {
           }
         }
       }
+    }
         // for (const fishery of Object.keys(savedSelections)) {
         //   console.log(fishery);
         //   if (Array.isArray(savedSelections[fishery])) {
@@ -706,13 +722,13 @@ private computedSelectionClass(selection: any) {
   }
 }
 
-private setActiveVessel() {
-  if (!this.vessel.activeVessel) {
-    if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
-      this.vessel.activeVessel = this.user.activeUser.activeVessel;
-    }
-  }
-}
+// private setActiveVessel() {
+//   if (!this.vessel.activeVessel) {
+//     if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
+//       this.vessel.activeVessel = this.user.activeUser.activeVessel;
+//     }
+//   }
+// }
 
 // @Watch('departureDate')
 // private handler1(newVal: string, oldVal: string) {
@@ -728,7 +744,9 @@ private setActiveVessel() {
 
 @Watch('vessel.activeVessel')
 private handler3(newVal: string, oldVal: string) {
+  this.nextSelections = [];
   this.getUserTrips();
+  this.getNextSelections();
 }
 
 @Watch('tripDates')
@@ -751,8 +769,57 @@ private async getUserTrips() {
     console.log(this.userTrips);
 }
 
+private async getAuthorizedVessels() {
+    this.authorizedVessels = [];
+
+    const db = pouchService.db;
+
+    const queryOptions = {
+        key: 'vessel-permissions',
+        reduce: false,
+        include_docs: true
+    }
+    const permissionsQuery = await db.query(
+        pouchService.lookupsDBName,
+        'obs_web/all_doc_types',
+        queryOptions
+    )
+
+    const permissionsDoc = permissionsQuery.rows[0].doc;
+
+    const vesselPermissions = [];
+
+    for (const vessel of permissionsDoc.vesselAuthorizations) {
+      for (const person of vessel.authorizedPeople) {
+        if (person === this.user.activeUserAlias._id) {
+          vesselPermissions.push(vessel.vesselIdNum)
+        }
+      }
+    }
+
+    for (const vesselId of vesselPermissions) {
+      console.log(vesselId)
+      const vesselQueryOptions = {
+        key: vesselId,
+        reduce: false,
+        include_docs: true
+      }
+
+      const vesselQuery = await db.query(
+        pouchService.lookupsDBName,
+        'obs_web/all_vessel_nums',
+        vesselQueryOptions
+      )
+
+      this.authorizedVessels.push(vesselQuery.rows[0].doc)
+
+    }
+
+}
+
 private created() {
-  this.setActiveVessel();
+  // this.setActiveVessel();
+  this.getAuthorizedVessels();
   this.getUserTrips();
   if ( authService.getCurrentUser() ) {
     this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));

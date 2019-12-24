@@ -238,7 +238,7 @@
                     <q-select class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.country" label="Country" :options="countryOptions"></q-select>
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
                     <q-select
                         label="Home Port"
                         v-model="user.activeUser.port"
@@ -263,7 +263,7 @@
                         fill-input
                         class="col-md q-pa-sm wide-field"
                     ></q-select>
-                </div>
+                </div> -->
 
                     <q-select
                         label="Notification Preferences"
@@ -357,7 +357,13 @@
                                 </q-card-actions>
                             </q-card-section>
                         </q-card>
+
                         <br><br><br><br>
+                        <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && user.activeUserAlias" >
+                            <q-toggle v-model="user.activeUser.isActive" label="Active"/>
+                            <q-toggle v-model="user.activeUser.isAshop" label="Ashop"/>
+                            <q-toggle v-model="user.activeUser.isWcgop" label="Wcgop"/>
+                        </div>
                 </div>
 
             </div>
@@ -716,6 +722,20 @@ export default class UserDetails extends Vue {
                 this.updateUserRoles();
                 this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
                 this.user.activeUser!.updatedDate = moment().format();
+
+                this.user.activeUserAlias.firstName = this.user.activeUser!.firstName;
+                this.user.activeUserAlias.lastName = this.user.activeUser!.lastName;
+                this.user.activeUserAlias.roles = authService.getCurrentUser()!.roles;
+                this.user.activeUserAlias.isActive = this.user.activeUser!.isActive;
+                this.user.activeUserAlias.isWcgop = this.user.activeUser!.isWcgop;
+                this.user.activeUserAlias.isAshop = this.user.activeUser!.isAshop;
+
+                couchService.masterDB.put(
+                    this.user.activeUserAlias._id,
+                    this.user.activeUserAlias,
+                    this.user.activeUserAlias._rev
+                )
+
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.put(
                         this.user.activeUser!._id,
@@ -726,6 +746,7 @@ export default class UserDetails extends Vue {
                     this.navigateBack()
                     );
                 } else {
+
                     couchService.masterDB.put(
                         this.user.activeUser!._id,
                         this.user.activeUser!,
@@ -744,8 +765,6 @@ export default class UserDetails extends Vue {
         }
 
     }
-
-
 
     private newContact() {
             const newUser = {
@@ -767,6 +786,9 @@ export default class UserDetails extends Vue {
                 birthdate: '',
                 activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
                 port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
+                isActive: true,
+                isWcgop: true,
+                isAshop: true,
                 createdBy: authService.getCurrentUser()!.username,
                 createdDate: moment().format()
             };
