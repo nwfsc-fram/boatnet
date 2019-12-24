@@ -80,11 +80,11 @@ const router = new Router({
               'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
-        { 
+        {
           path: '/declarations', name: 'Declaration', component: Declarations
         },
-        { 
-          path: '/new-declaration', name: 'New Declaration', component: AddDeclaration 
+        {
+          path: '/new-declaration', name: 'New Declaration', component: AddDeclaration
         },
         {
           path: '/permits', name: 'Permits', component: Permits,

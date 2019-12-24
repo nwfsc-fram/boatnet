@@ -15,10 +15,10 @@ import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar,
   QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
-  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable, 
-  QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels, 
-  QTabPanel, QScrollArea, QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, 
-  QSpace, QTabs, QTab, QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff, 
+  QPopupProxy, QSlideItem, QDialog, QSlider, QChip, QAvatar, QBanner, QTable,
+  QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels,
+  QTabPanel, QScrollArea, QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio,
+  QSpace, QTabs, QTab, QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff,
   Notify, QLinearProgress, QExpansionItem, QField, QForm
 } from 'quasar';
 
@@ -43,10 +43,10 @@ Vue.use(Quasar, {
     QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QDialog, QSlider,
-    QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox, QTh, QTr, QTd, 
-    QToggle, QSplitter, QTabPanels, QTabPanel, QScrollArea, QSpinner, 
-    QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace, QTabs, QTab, 
-    QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff, QLinearProgress, 
+    QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox, QTh, QTr, QTd,
+    QToggle, QSplitter, QTabPanels, QTabPanel, QScrollArea, QSpinner,
+    QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace, QTabs, QTab,
+    QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff, QLinearProgress,
     QExpansionItem, QField, QForm
   },
   directives: {

@@ -101,7 +101,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Vessel Management</q-item-label>
-            <q-item-label caption>Associate Captains with Vessels</q-item-label>
+            <q-item-label caption>Associate Personnel with Vessels</q-item-label>
           </q-item-section>
         </q-item>
 

@@ -39,6 +39,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';
 import axios from 'axios';
+import { Notify } from 'quasar';
 
 @Component
 export default class Home extends Vue {
@@ -76,30 +77,6 @@ export default class Home extends Vue {
     }
 
     private async getUserFromUserDB() {
-        // get user doc from userDB if exits
-        // console.log('getting user from userDB');
-
-        // try {
-        //     const allDocs = await pouchService.db.allDocs(
-        //         pouchService.userDBName
-        //         );
-
-        //     for (const row of allDocs.rows) {
-        //         if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
-        //             if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
-
-        //                 this.user.newUser = false;
-        //                 this.user.activeUser = row.doc;
-        //                 if (row.doc.activeVessel) {
-        //                   this.vessel.activeVessel = row.doc.activeVessel;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // } catch (err) {
-        //     this.errorAlert(err);
-        // }
-        // get user doc from master-dev if exists
         try {
           const db = couchService.masterDB;
           const queryOptions = {
@@ -117,9 +94,6 @@ export default class Home extends Vue {
           console.log(userquery);
           if (userquery.rows[0]) {
             this.user.activeUser = userquery.rows[0].doc;
-            if (userquery.rows[0].doc.activeVessel) {
-              this.vessel.activeVessel = userquery.rows[0].doc.activeVessel;
-            }
           }
           console.log(this.user.activeUser);
 
@@ -127,6 +101,64 @@ export default class Home extends Vue {
             console.log(err);
         }
     }
+
+  private notifySuccess(message: string) {
+      Notify.create({
+          message: 'Success: ' + message,
+          position: 'top-right',
+          color: 'green',
+          timeout: 2000,
+          icon: 'check',
+          multiLine: true
+      });
+  }
+
+  private async getUserAliasfromPouchDB() {
+    if (this.user.activeUser) {
+      this.user.activeUserAlias = undefined; // DEV ONLY - DELETE THIS LINE!!!!
+      console.log(authService.getCurrentUser()!.username);
+      const db = pouchService.db;
+      const queryOptions = {
+        include_docs: true,
+        key: authService.getCurrentUser()!.username
+      };
+
+      setTimeout( async () => {
+        const alias = await db.query(
+          pouchService.lookupsDBName,
+          'obs_web/all_person_alias',
+          queryOptions
+        );
+
+        if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
+          console.log('setting active user alias');
+          this.user.activeUserAlias = alias.rows[0].doc;
+        } else {
+          console.log('no active user alias');
+          const newAlias = {
+              type: 'person-alias',
+              firstName: this.user.activeUser!.firstName,
+              lastName: this.user.activeUser!.lastName,
+              userName: authService.getCurrentUser()!.username,
+              personDocId: this.user.activeUser!._id,
+              roles: authService.getCurrentUser()!.roles,
+              isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
+              isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
+              isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
+          };
+          couchService.masterDB.post(newAlias).then(
+              setTimeout( () => {
+                  this.notifySuccess('User Alias Created');
+                  location.reload();
+                  // this.$router.push({path: '/'});
+              } , 1000 )
+          );
+
+          }
+      } , 1000 );
+    }
+
+  }
 
   private async getPermits() {
     console.log('getting permits from masterDB');
@@ -171,58 +203,14 @@ export default class Home extends Vue {
         } catch (err) {
             console.log(err);
         }
-    // axios.get('https://www.webapps.nwfsc.noaa.gov/apex/ifq/permits/public_permits_active_v/?limit=500' )
-    //     .then( (response) => {
-    //         this.permit.permits = [];
-    //         for (const item of response.data.items) {
-    //           const permit: Permit = {
-    //             type: 'permit',
-    //             permitNumber: item.permit_number,
-    //             certificateStartDate: item.certificate_start_date,
-    //             permitType: 'NOAA Fisheries',
-    //             certificateEndDate: item.certificate_end_date,
-    //             owner: {
-    //               firstName: item.permit_owner,
-    //               addressLine1: item.permit_owner_address,
-    //               city: item.permit_owner_city,
-    //               state: item.permit_owner_state,
-    //               zipCode: item.permit_owner_zip
-    //             },
-    //             vessel: {
-    //               vesselName: item.vessel_name,
-    //               registeredLength: {value: item.vessel_length, units: 'feet'},
-    //               coastGuardNumber: item.vessel_registration_number,
-    //             },
-    //             isTrawlGear: item.trawl_gear === 'Yes' ? true : false,
-    //             isLonglineGear: item.longline_gear === 'Yes' ? true : false,
-    //             isTrapPotGear: item.trap_pot_gear === 'Yes' ? true : false,
-    //             isSmallFleet: item.small_fleet === 'Yes' ? true : false,
-    //             endorsedLength: item.endorsed_length,
-    //             isSableFishEndorsed: item.sablefish_endorsement === 'Yes' ? true : false,
-    //             sableFishTier: item.sablefish_tier ? item.sablefish_tier : null,
-    //             isCpEndorsed: item.cp_endorsement === 'Yes' ? true : false,
-    //             isMsEndorsed: item.ms_endorsement === 'Yes' ? true : false,
-    //             isMothershipCatcherVessel: item.mothership_catcher_vessel === 'Yes' ? true : false,
-    //             status: item.status,
-    //             goid: item.goid,
-    //             ghid: item.ghid,
-    //             isOwnerOnBoardExempt: item.owner_on_board_exempt === 'Yes' ? true : false,
-    //             whitingAssignment: item.whiting_assignment ? item.whiting_assignment : null,
-    //             whitingPercent: item.whiting_assignment ? item.whiting_assignment : null
-    //           };
-    //           this.permit.permits.push(permit);
-    //         }
-    //     })
-    //     .catch( (error) => {
-    //       this.errorAlert(error);
-    //       this.errorAlert(error.response);
-    //     });
+
   }
 
   private created() {
     // this.couch();
     this.getPermits();
     this.getUserFromUserDB();
+    this.getUserAliasfromPouchDB();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }

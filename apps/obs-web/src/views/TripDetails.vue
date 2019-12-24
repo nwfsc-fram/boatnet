@@ -438,8 +438,8 @@ export default class TripDetails extends Vue {
     // first check whether there is a stored selection for the vessel and fishery
 
     if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
-        Notify.create({
-            message: '<b>A trip must have a start and end date</b>',
+      Notify.create({
+        message: '<b>A trip must have a start and end date</b>',
             position: 'center',
             color: 'primary',
             timeout: 2000,
@@ -447,7 +447,7 @@ export default class TripDetails extends Vue {
             html: true,
             multiLine: true
         });
-        return;
+      return;
     }
 
     if (this.trip.activeTrip!.fishery!.description !== '') {
@@ -466,6 +466,14 @@ export default class TripDetails extends Vue {
         if (row.doc.type === 'saved-selections') {
           savedSelections = row.doc;
         }
+      }
+
+      if (!savedSelections[vesselName]) {
+        savedSelections[vesselName] = {};
+      }
+
+      if (!savedSelections[vesselName][fisheryName]) {
+        savedSelections[vesselName][fisheryName] = [];
       }
 
       if (!this.trip.activeTrip!.maximizedRetention) {
@@ -487,7 +495,7 @@ export default class TripDetails extends Vue {
             tripSelection = savedSelections[vesselName][fisheryName].pop();
           }
 
-          pouchService.db.post(pouchService.userDBName, savedSelections)
+          pouchService.db.post(pouchService.userDBName, savedSelections);
 
           this.trip.activeTrip!.isSelected = tripSelection.isSelected;
           this.trip.activeTrip!.notes = tripSelection.notes;
@@ -536,10 +544,11 @@ export default class TripDetails extends Vue {
 
       pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
 
-      if (Object.keys(savedSelections).indexOf(vesselName) === -1) {
+      if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
       }
-      if (Object.keys(savedSelections[vesselName]).indexOf(fisheryName) === -1) {
+
+      if (!savedSelections[vesselName][fisheryName]) {
         savedSelections[vesselName][fisheryName] = [];
       }
 
@@ -553,42 +562,49 @@ export default class TripDetails extends Vue {
           isSelected: false
           };
 
-      if (activeOTSTarget) {
-        if (randomNum < activeOTSTarget.setRate) {
-          newSelection.isSelected = true;
-          newSelection.notes = 'Trip selected using Target Type: ' +
-              activeOTSTarget.targetType +
-              ', with set rate of ' +
-              activeOTSTarget.setRate +
-              ' (randomly generated number: ' +
-              randomNum +
-              ' was less than set rate: ' +
-              activeOTSTarget.setRate +
-              ')';
-        } else {
-          newSelection.isSelected = false;
-          newSelection.notes = 'Trip NOT selected using Target Type: ' +
-              activeOTSTarget.targetType +
-              ', with set rate of ' +
-              activeOTSTarget.setRate +
-              ' (randomly generated number: ' +
-              randomNum +
-              ' was NOT less than set rate: ' +
-              activeOTSTarget.setRate +
-              ')';
+        if (activeOTSTarget) {
+          if (randomNum < activeOTSTarget.setRate) {
+            newSelection.isSelected = true;
+            newSelection.notes = 'Trip selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+          } else {
+            newSelection.isSelected = false;
+            newSelection.notes = 'Trip NOT selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was NOT less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+          }
         }
-      }
 
         docs = await db.allDocs(pouchService.userDBName).then(
-          (docs: any) => {
-            for (const row of docs.rows) {
+          (res: any) => {
+            for (const row of res.rows) {
               if (row.doc.type === 'saved-selections') {
                 savedSelections = row.doc;
+
+                if (!savedSelections[vesselName]) {
+                  savedSelections[vesselName] = {};
+                }
+
+                if (!savedSelections[vesselName][fisheryName]) {
+                  savedSelections[vesselName][fisheryName] = [];
+                }
               }
             }
             savedSelections[vesselName][fisheryName].push(newSelection);
             pouchService.db.post(pouchService.userDBName, savedSelections);
-            console.log(savedSelections);
           }
         );
       }

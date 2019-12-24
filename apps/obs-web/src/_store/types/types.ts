@@ -44,6 +44,7 @@ export interface EmefpState {
 
 export interface UserState {
   activeUser?: Person;
+  activeUserAlias?: any;
   users: Person[];
   newUser: boolean;
   unLinkedApexUsers: any[];

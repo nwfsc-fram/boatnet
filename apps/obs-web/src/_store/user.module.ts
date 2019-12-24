@@ -13,6 +13,7 @@ export const state: UserState = {
   users: [],
   newUser: false,
   activeUser: undefined,
+  activeUserAlias: undefined,
   unLinkedApexUsers: [],
   captainMode: false
 };
