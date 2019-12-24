@@ -3,8 +3,8 @@
     <vue-touch-keyboard
       v-if="layout === 'normal'"
       :class="{'normalKeyboard': true,
-               'keyboardWithList':(list && list.length != 0),
-               'keyboardWithoutList': (list && list.length == 0)}"
+               'keyboardWithList':(displayFields && displayFields.length != 0),
+               'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -15,8 +15,8 @@
     <vue-touch-keyboard
       v-else-if="layout === 'numeric'"
       :class="{'numericKeyboard': true,
-               'keyboardWithList':(list && list.length != 0),
-               'keyboardWithoutList': (list && list.length == 0)}"
+               'keyboardWithList':(displayFields && displayFields.length != 0),
+               'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -27,8 +27,8 @@
     <vue-touch-keyboard
       v-else-if="layout === 'compact'"
       :class="{'numericKeyboard': true,
-               'keyboardWithList':(list && list.length != 0),
-               'keyboardWithoutList': (list && list.length == 0)}"
+               'keyboardWithList':(displayFields && displayFields.length != 0),
+               'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
       :options="keyboardOptions"
       :layout="layout"
       :cancel="hide"
@@ -36,11 +36,12 @@
       :input="inputTarget"
       :next="next"
     />
-    <div v-if="list && list.length != 0">
+    <div v-if="displayFields && displayFields.length != 0">
       <boatnet-keyboard-list
         class="list"
         v-on:selected="select"
-        :listLabels="listLabels"
+        :displayFields="displayFields"
+        :docType="docType"
         :value="inputValue"/>
     </div>
   </div>
@@ -54,7 +55,8 @@ export default class BoatnetKeyboard extends Vue {
   @Prop({ default: 'normal' }) public layout!: string;
   @Prop({ default: true }) public visible!: boolean;
   @Prop() public inputTarget!: any;
-  @Prop({ default: () => [] }) public listLabels!: string[];
+  @Prop({ default: () => [] }) public displayFields!: string[];
+  @Prop() public docType !: string;
   @Prop() public inputValue!: string;
 
   private keyboardOptions = {

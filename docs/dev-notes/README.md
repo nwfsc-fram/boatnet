@@ -28,7 +28,7 @@ git clone git@github.com:nwfsc-fram/boatnet.git
    Specific detailed instructions can be found [here](./CONTRIBUTING.md)
 
 ## Using Lerna
-* See detailed [Developer Notes](./docs/dev-notes/dev-notes.md)
+* See even more detailed [Developer Notes](./docs/dev-notes/dev-notes.md)
 * https://github.com/lerna/lerna
 * You will no longer need `npm install` or `yarn install` for this workspace. Instead we'll be using:
   * `lerna bootstrap`  (Instead of `npm install`. Links local packages together and install remaining package dependencies)
@@ -55,7 +55,32 @@ lerna bootstrap
 lerna clean
 lerna run build
 ```
+
+## Troubleshooting Build Issues
+Occasionally our lerna monorepo can get into a confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
+```
+# get latest yarn, lerna, and typescript
+npm install -g yarn@latest
+npm install -g lerna@latest
+npm install -g typescript@latest
+cd <your-path>/boatnet/
+# get latest master branch (known good build)
+git pull 
+# clean the yarn cache - this has caused issues in the past occasionally (usually this is not required)
+yarn cache clean
+# remove the yarn.lock to ensure newest packages are acquired (usually this is not required)
+rm yarn.lock
+# now follow the normal build procedure
+lerna bootstrap
+lerna clean -y
+lerna run build
+cd apps/your-app
+yarn serve
+```
+* Also, note that file permission issues (e.g. `EPERM`) usually can be resolved by closing and re-opening Visual Studio Code (and stopping all node.js processes.)
+
 ### Creating and configuring dependencies for a new app, library, or tool:
+* Note that @boatnet shared libraries now live in https://github.com/nwfsc-fram/boatnet-module
 * Create a ticket and make a branch:
 ```
 git pull

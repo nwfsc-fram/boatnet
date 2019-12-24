@@ -14,6 +14,8 @@
       :label="config.label"
       :list="config.list"
       :val.sync="valueHolder"
+      :displayFields="config.displayFields"
+      :docType="config.docType"
       @save="save"
     ></boatnet-keyboard-select-list>
 
@@ -27,13 +29,23 @@
 
     <boatnet-location
       v-if="config.type === 'location'"
-      :latModelName="config.lat"
-      :longModelName="config.long"
+      :model="config.model"
       :obj="model"
       @save="save"
     ></boatnet-location>
 
-    <boatnet-licenses v-if="config.type === 'list'" :config="config" @save="save"></boatnet-licenses>
+    <boatnet-fish-tickets
+      v-if="config.type === 'fishTicket'"
+      :fishTickets.sync="valueHolder"
+      @save="save"
+    />
+
+    <boatnet-licenses
+      v-if="config.type === 'list'"
+      :list.sync="valueHolder"
+      :config="config"
+      @save="save"
+    ></boatnet-licenses>
   </div>
 </template>
 
@@ -51,14 +63,14 @@ export default createComponent({
     // determine whether to show a field or not
     const showField = computed({
       get: () => {
-        const currentHaul = reactive(context.root.$store.state.tripsState.currentHaul);
+        const currentData = reactive(context.root.$store.state.tripsState);
         let key = '';
         let value = '';
         if (props.config && props.config.displayCondition) {
           key = props.config.displayCondition.key;
           value = props.config.displayCondition.value;
         }
-        return get(currentHaul, key) === value ? true : false;
+        return get(currentData, key) === value ? true : false;
       },
       set: () => undefined
     });
@@ -67,7 +79,7 @@ export default createComponent({
       get: () => {
         return get(props.model, props.config ? props.config.modelName : '');
       },
-      set: (val: string) => {
+      set: (val: any) => {
         const modelName = props.config ? props.config.modelName : '';
         const fields = modelName.split('.');
         setValue(props.model, fields, val);

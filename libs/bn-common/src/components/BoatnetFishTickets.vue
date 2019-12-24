@@ -1,11 +1,12 @@
 <template>
   <span>
+    <div class="text-h6 col-2">Fish Tickets</div>
     <boatnet-table
-      :data="modifiedFishTickets"
+      :data="fishTickets"
       :settings="settings"
       :showBottom="true"
       :isCondensed="true"
-      @select="selectTrip"
+      @select="selectTicket"
     >
       <template v-slot:default="rowVals">
         <q-td key="fishTicketNum">{{ rowVals.row.fishNum }}</q-td>
@@ -70,19 +71,17 @@ import moment from 'moment';
 
 @Component
 export default class BoatnetFishTickets extends Vue {
-  @Prop() private fishTickets!: WcgopFishTicket[];
-  private modifiedFishTickets: WcgopFishTicket[] = this.fishTickets
-    ? this.fishTickets
-    : [];
+  @Prop({ default: () => [] }) private fishTickets!: WcgopFishTicket[];
 
   private selected: any[] = [];
-  private showDialog = false;
+  private showDialog: boolean = false;
   private action = '';
+  private index: number = -1;
 
   private currFishTicket: WcgopFishTicket = {};
 
   private settings = {
-    rowKey: '__index',
+    rowKey: 'fishNum',
     columns: [
       {
         name: 'fishTicketNum',
@@ -109,8 +108,10 @@ export default class BoatnetFishTickets extends Vue {
     ]
   };
 
-  private selectTrip(row: any) {
+  private selectTicket(row: any) {
     this.selected = row ? [row] : [];
+    this.currFishTicket = row ? row : {};
+    this.index = this.currFishTicket ? this.fishTickets.indexOf(this.currFishTicket) : -1;
   }
 
   private addRow() {
@@ -123,34 +124,30 @@ export default class BoatnetFishTickets extends Vue {
     this.action = 'edit';
     this.showDialog = true;
     if (this.selected.length > 0) {
-      const temp = JSON.stringify(this.fishTickets[this.selected[0].__index]);
+      const temp = JSON.stringify(this.currFishTicket);
       this.currFishTicket = JSON.parse(temp);
     }
   }
 
   private deleteRow() {
     if (this.selected.length > 0) {
-      this.modifiedFishTickets.splice(this.selected[0].__index, 1);
-      this.$emit('update:fishTickets', this.modifiedFishTickets);
+      this.fishTickets.splice(this.index, 1);
+      this.$emit('update:fishTickets', this.fishTickets);
       this.$emit('save');
     }
   }
 
   private saveAdd() {
-    this.modifiedFishTickets.push(this.currFishTicket);
-    this.$emit('update:fishTickets', this.modifiedFishTickets);
+    this.fishTickets.push(this.currFishTicket);
+    this.$emit('update:fishTickets', this.fishTickets);
     this.showDialog = false;
     this.$emit('save');
   }
 
   private saveEdit() {
-    this.modifiedFishTickets.splice(
-      this.selected[0].__index,
-      1,
-      this.currFishTicket
-    );
+    this.fishTickets.splice(this.index, 1, this.currFishTicket);
     this.showDialog = false;
-    this.$emit('update:fishTickets', this.modifiedFishTickets);
+    this.$emit('update:fishTickets', this.fishTickets);
     this.$emit('save');
     this.selected = [];
   }

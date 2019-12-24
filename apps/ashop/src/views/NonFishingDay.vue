@@ -27,7 +27,7 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const appConfig = store.state.appSettings.appConfig;
-    const haul = reactive(context.root.$store.state.tripsState.currentHaul);
+    const haul = reactive({});
 
     // fetch from lookups list: https://github.com/nwfsc-fram/boatnet/issues/1007
     // also shouldn't use index to fetch item should use something to fetch based
