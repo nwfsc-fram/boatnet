@@ -58,9 +58,9 @@ export default class BoatnetKeyboardList extends Vue {
     };
 
     const results = await pouchDB.query(
-      pouchService.lookupsDBName,
       'obs_web/all_doc_types',
-      queryOptions
+      queryOptions,
+      pouchService.lookupsDBName
     );
     console.log(results);
     const resultList = [];

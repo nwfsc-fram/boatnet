@@ -55,9 +55,9 @@ const mutations: MutationTree<AppSettings> = {
         include_docs: true
       };
       const config = await db.query(
-        pouchService.lookupsDBName,
         'LookupDocs/boatnet-config-lookup',
-        queryOptions
+        queryOptions,
+        pouchService.lookupsDBName
       );
       newState.appConfig = config.rows[0].doc;
     } catch (err) {

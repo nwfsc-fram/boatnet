@@ -107,7 +107,6 @@ export default class Hauls extends Vue {
 
   private async getHauls() {
     const currTrip = await pouchService.db.get(
-      pouchService.userDBName,
       this.currentTrip._id
     );
     if (currTrip.operationIDs) {
@@ -117,7 +116,6 @@ export default class Hauls extends Vue {
       };
       try {
         const result = await pouchService.db.allDocs(
-          pouchService.userDBName,
           queryOptions
         );
         this.haulsData = result.rows;

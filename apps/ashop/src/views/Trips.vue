@@ -65,7 +65,7 @@ export default createComponent({
     });
 
     const init = async () => {
-      const docs = await db.allDocs(pouchService.userDBName);
+      const docs = await db.allDocs();
       const rows = docs.rows;
       if (appMode === 'ashop') {
         await getCruise(appMode, rows);
