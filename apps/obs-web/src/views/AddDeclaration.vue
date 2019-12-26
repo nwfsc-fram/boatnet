@@ -17,7 +17,7 @@
       <br />
 
       <q-btn-toggle
-        v-if="!efpTog"
+        v-if="!databaseObject.efpTog"
         v-model="worksheetModel"
         dense
         toggle-color="primary"
@@ -27,14 +27,23 @@
           {label: 'Chose ID from dropdown', value: false},
       ]"
       />
+      <br />
+      <br />
+
+      <q-select
+        label="Choose a declaration ID"
+        v-model="modelID"
+        v-if="!worksheetModel"
+        dense
+        :options="Array.from(leafSet)"
+        @input="itemChosen(modelID, 5)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
 
       <p v-if="databaseObject.showEFPNote">
         If you do not see your EFP category in the list below
         please contact the OLE office at 999-999-9990
       </p>
-
-      <br />
-      <br />
 
       <q-select
         label="Category of Declaration"
@@ -116,9 +125,7 @@
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
-      <q-card v-if="databaseObject.cartAddBool" 
-              align="center" 
-              class="bg-light-blue-3" dense>
+      <q-card v-if="databaseObject.cartAddBool" align="center" class="bg-light-blue-3" dense>
         <q-card-section>
           <div class="text-subtitle2">The declaration ID for {{ decChoiceDisplay.split('@')[0] }} is</div>
         </q-card-section>
@@ -126,7 +133,6 @@
         <q-card-section>
           <div class="text-h6">{{ decChoiceDisplay.split('@')[1] }}</div>
         </q-card-section>
-        
       </q-card>
 
       <br />
@@ -183,12 +189,15 @@ export default class Dropdowns extends Vue {
   public model4: string = '';
   public model5: string = '';
   public model6: string = '';
+  public modelID: string = '';
   public worksheetModel: boolean = true;
   public decChoiceDisplay: string = '';
   // Options pulled out of the json file, this information comes from OLE
   public options1 = dropdownTree.Start;
   public obsOptions: string[] = dropdownTree['Observed Options'];
-  public leafSet: Set<string> = new Set(Object.keys(dropdownTree['Leaf Nodes']));
+  public leafSet: Set<string> = new Set(
+    Object.keys(dropdownTree['Leaf Nodes'])
+  );
   public ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   // EFP stuff
   public modelefp1: string = '';
@@ -200,6 +209,8 @@ export default class Dropdowns extends Vue {
   public efpToggled() {
     if (this.databaseObject.efpTog) {
       this.clearEntriesBelow(0);
+      this.worksheetModel = true;
+      this.modelID = '';
       this.databaseObject.showEFPNote = true;
       this.databaseObject.showefpQ1 = true;
     } else {
@@ -218,10 +229,10 @@ export default class Dropdowns extends Vue {
   // This toggle controls showing the worksheet or one
   // single dropdown with all the declarations
   public worksheetToggled() {
+    this.clearEntriesBelow(0);
     if (this.worksheetModel) {
       this.databaseObject.showBoolArr[0] = true;
-    } else {
-      this.clearEntriesBelow(0);
+      this.modelID = '';
     }
   }
 
@@ -373,5 +384,4 @@ export default class Dropdowns extends Vue {
     this.databaseObject.cartAddBool = true;
   }
 }
-
 </script>
