@@ -35,10 +35,10 @@ export async function getTrips() {
 export function updateCruise(tripId: CouchID) {
     if (cruise) {
         cruise.trips ? cruise.trips.push(tripId) : (cruise.trips = [tripId]);
-        db.put(pouchService.userDBName, cruise);
+        db.put(cruise);
     } else {
         const newCruise = { type: 'ashop-cruise', trips: [tripId] };
-        db.post(pouchService.userDBName, newCruise);
+        db.post(newCruise);
     }
 }
 
@@ -46,7 +46,7 @@ export function deleteCruise(tripId: CouchID) {
     if (cruise.trips) {
         remove(cruise.trips, (n: string) => n === tripId);
     }
-    db.put(pouchService.userDBName, cruise).then((response: any) => {
+    db.put(cruise).then((response: any) => {
         cruise._id = response.id;
         cruise._rev = response.rev;
     });

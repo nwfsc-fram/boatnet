@@ -35,7 +35,7 @@ const mutations: MutationTree<TripState> = {
     try {
       if (record._id) {
         pouchService.db
-          .put(pouchService.userDBName, record)
+          .put(record)
           .then((response: any) => {
             record._rev = response.rev;
           });

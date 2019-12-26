@@ -158,7 +158,7 @@ export default class Hauls extends Vue {
       this.haulsData.length > 0 ? parseInt(this.haulsData[0].doc[this.haulsSettings.itemNumName], 10) + 1 : 1;
 
     await pouchService.db
-      .post(pouchService.userDBName, haul)
+      .post(haul)
       .then((response: any) => {
         haul._id = response.id;
         haul._rev = response.rev;
@@ -188,7 +188,7 @@ export default class Hauls extends Vue {
       remove(this.currentTrip.operationIDs, (n: string) => n === this.currentHaul._id);
       this.save(this.currentTrip);
     }
-    await pouchService.db.remove(pouchService.userDBName, this.currentHaul);
+    await pouchService.db.remove(this.currentHaul);
     this.setCurrentHaul(undefined);
   }
 
