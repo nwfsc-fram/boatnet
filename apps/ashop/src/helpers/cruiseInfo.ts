@@ -18,9 +18,7 @@ export async function getTrips() {
         descending: true
     };
     try {
-        const result = await db.allDocs(
-            queryOptions
-        );
+        const result = await db.allDocs(queryOptions, pouchService.userDBName);
         return result.rows;
     } catch (error) {
         console.log(error);

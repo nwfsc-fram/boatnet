@@ -47,7 +47,6 @@ export default class BoatnetKeyboardList extends Vue {
   }
 
   private async initList() {
-    console.log('init list');
     const pouchDB = pouchService.db;
     const queryOptions = {
       inclusive_end: true,

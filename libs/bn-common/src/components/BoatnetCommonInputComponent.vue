@@ -11,11 +11,10 @@
       v-if="config.type === 'input' && (config.displayCondition ? showField : true)"
       :displayName="config.displayName"
       :keyboardType="config.keyboardType"
-      :label="config.label"
-      :list="config.list"
       :val.sync="valueHolder"
       :displayFields="config.displayFields"
       :docType="config.docType"
+      :valType="config.valType"
       @save="save"
     ></boatnet-keyboard-select-list>
 
@@ -37,6 +36,7 @@
     <boatnet-fish-tickets
       v-if="config.type === 'fishTicket'"
       :fishTickets.sync="valueHolder"
+      :configName="config.configName"
       @save="save"
     />
 

@@ -42,7 +42,8 @@ export default createComponent({
     keyboardType: String,
     displayFields: Array,
     docType: String,
-    val: String
+    val: String,
+    valType: String
   },
 
   setup(props, context) {

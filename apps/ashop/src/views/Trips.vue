@@ -16,16 +16,7 @@
           :data="data"
           :settings="tripSettings"
           @select="handleSelectTrip"
-        >
-          <template v-slot:default="rowVals">
-            <q-td
-              v-for="column of tripSettings.columns"
-              :align="column.align"
-              :key="column.name"
-              :style="{ width: column.width, whiteSpace: 'normal' }"
-            >{{ getValue(rowVals.row.doc, column) }}</q-td>
-          </template>
-        </boatnet-table>
+        />
       </template>
 
       <template v-slot:goToButtons></template>
@@ -35,7 +26,6 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
-import { getFormattedValue } from '../helpers/helpers';
 import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';
@@ -131,19 +121,6 @@ export default createComponent({
       }
     };
 
-    const getValue = (row: any, attribute: any) => {
-      const value = get(row, attribute.field);
-      if (attribute.type && value) {
-        return getFormattedValue(
-          value,
-          attribute.type,
-          attribute.displayFormat
-        );
-      } else {
-        return value;
-      }
-    };
-
     return {
       tripSettings,
       currentTrip,
@@ -153,7 +130,6 @@ export default createComponent({
       goToHauls,
       handleSelectTrip,
       end,
-      getValue,
       data
     };
   }
