@@ -233,8 +233,9 @@ export default class VesselDetails extends Vue {
         const db = pouchService.db;
         for (const permission of this.vesselPermissions) {
             const alias = await db.get(
-                pouchService.lookupsDBName,
-                permission.personAliasId
+                permission.personAliasId,
+                {},
+                pouchService.lookupsDBName
             );
             if (alias) {
                 this.allowedPeople.push(alias);
@@ -253,9 +254,9 @@ export default class VesselDetails extends Vue {
         };
 
         const aliases = await db.query(
-            pouchService.lookupsDBName,
             'obs_web/all_doc_types',
-            queryOptions
+            queryOptions,
+            pouchService.lookupsDBName
         );
 
         this.allPersonAliases = aliases.rows.map( (row: any) => row.doc );
@@ -280,9 +281,9 @@ export default class VesselDetails extends Vue {
                     };
 
                     const ports = await db.query(
-                        pouchService.lookupsDBName,
                         'obs_web/all_port_names',
-                        queryOptions
+                        queryOptions,
+                        pouchService.lookupsDBName
                         );
                     this.ports = ports.rows.map((row: any) => row.doc);
                 } catch (err) {
@@ -427,9 +428,9 @@ export default class VesselDetails extends Vue {
 
         try {
             const hardware = await db.query(
-                pouchService.lookupsDBName,
                 'obs_web/all_doc_types',
-                queryOptions
+                queryOptions,
+                pouchService.lookupsDBName
             );
 
             this.hardwareOptions = hardware.rows.map((row: any) => row.doc);
@@ -441,9 +442,9 @@ export default class VesselDetails extends Vue {
 
         try {
             const reviewers = await db.query(
-                pouchService.lookupsDBName,
                 'obs_web/all_doc_types',
-                queryOptions
+                queryOptions,
+                pouchService.lookupsDBName
             );
 
             this.reviewerOptions = reviewers.rows.map((row: any) => row.doc);

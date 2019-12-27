@@ -574,9 +574,9 @@ export default class UserDetails extends Vue {
                     };
 
                     const ports = await db.query(
-                        pouchService.lookupsDBName,
                         'obs_web/all_port_names',
-                        queryOptions
+                        queryOptions,
+                        pouchService.lookupsDBName
                         );
                     this.ports = ports.rows.map((row: any) => row.doc);
                 } catch (err) {
@@ -662,9 +662,9 @@ export default class UserDetails extends Vue {
                 };
 
                 const vesselCaptains = await db.query(
-                    pouchService.lookupsDBName,
                     'obs_web/vessel_captains',
-                    queryOptions
+                    queryOptions,
+                    pouchService.lookupsDBName
                 );
                 for (const row of vesselCaptains.rows) {
                     for (const captain of row.doc.captains) {
@@ -752,7 +752,7 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!,
                         this.user.activeUser!._rev
                     )
-                    // pouchService.db.put(pouchService.userDBName, this.user.activeUser)
+                    // pouchService.db.put(this.user.activeUser)
                     .then( () => {
                         this.notifySuccess('User Config Saved'),
                         this.$router.push({path: '/'});
@@ -810,9 +810,9 @@ export default class UserDetails extends Vue {
         };
 
         const usstates = await db.query(
-            pouchService.lookupsDBName,
             'obs_web/all_doc_types',
-            queryOptions
+            queryOptions,
+            pouchService.lookupsDBName
             );
 
         for (const row of usstates.rows) {
@@ -837,9 +837,9 @@ export default class UserDetails extends Vue {
             };
 
             const phoneTypes = await db.query(
-            pouchService.lookupsDBName,
-            'obs_web/all_doc_types',
-            queryOptions
+                'obs_web/all_doc_types',
+            queryOptions,
+            pouchService.lookupsDBName
             );
 
             this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);

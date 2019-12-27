@@ -393,16 +393,16 @@ export default class DefaultLayout extends Vue {
       const db = pouchService.db;
       const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
 
-      const fisheries = await db.query(pouchService.lookupsDBName, 'obs_web/all_fisheries');
+      const fisheries = await db.query('obs_web/all_fisheries', pouchService.lookupsDBName);
       this.decrementToIndex(fisheries);
 
-      const ports = await db.query(pouchService.lookupsDBName, 'obs_web/all_port_names', queryOptions);
+      const ports = await db.query('obs_web/all_port_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(ports);
 
-      const vessels = await db.query(pouchService.lookupsDBName, 'obs_web/all_vessel_names', queryOptions);
+      const vessels = await db.query('obs_web/all_vessel_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(vessels);
 
-      const vesselCaptains = await db.query(pouchService.lookupsDBName, 'obs_web/vessel_captains', queryOptions);
+      const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(vesselCaptains);
 
       this.isIndexing = false;
@@ -429,7 +429,6 @@ export default class DefaultLayout extends Vue {
 
   //     try {
   //         const allDocs = await pouchService.db.allDocs(
-  //             pouchService.userDBName
   //             );
 
   //         for (const row of allDocs.rows) {
@@ -464,7 +463,7 @@ export default class DefaultLayout extends Vue {
 
   //             if (user.rows.length > 0) {
   //                 couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
-  //                 pouchService.db.put(pouchService.userDBName, user.rows[0].doc).then( this.getUserFromUserDB() );
+  //                 pouchService.db.put(user.rows[0].doc).then( this.getUserFromUserDB() );
   //             }
   //         } catch (err) {
   //             this.errorAlert(err);
