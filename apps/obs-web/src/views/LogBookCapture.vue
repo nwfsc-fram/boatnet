@@ -81,7 +81,7 @@ export default class LogBookCapture extends Vue {
             }
         };
 
-        pouchService.db.post(pouchService.userDBName, newImage);
+        pouchService.db.post(newImage);
 
     }
 
@@ -92,7 +92,7 @@ export default class LogBookCapture extends Vue {
             parent!.firstChild.remove();
         }
 
-        const docs = await pouchService.db.allDocs(pouchService.userDBName, {attachments: true} );
+        const docs = await pouchService.db.allDocs({attachments: true} );
         for (const row of docs.rows) {
             if (row.doc.type === 'logbook-capture') {
                 const filename = Object.keys(row.doc._attachments)[0];

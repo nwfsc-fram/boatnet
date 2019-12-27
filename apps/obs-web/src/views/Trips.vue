@@ -401,7 +401,7 @@ export default class Trips extends Vue {
       this.nextSelections = [];
       let savedSelections: any = {};
       const db = pouchService.db;
-      const docs = await db.allDocs(pouchService.userDBName);
+      const docs = await db.allDocs();
       for (const row of docs.rows) {
         if (row.doc.type === 'saved-selections') {
           savedSelections = row.doc;
@@ -474,9 +474,9 @@ export default class Trips extends Vue {
                 };
 
                 const vessels = await db.query(
-                    pouchService.lookupsDBName,
-                    'optecs_trawl/all_vessel_names',
-                    queryOptions
+                  'optecs_trawl/all_vessel_names',
+                    queryOptions,
+                    pouchService.lookupsDBName
                     );
                 this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
@@ -511,13 +511,13 @@ export default class Trips extends Vue {
           change: 'trip closed'
         }
       );
-      pouchService.db.post(pouchService.userDBName, trip);
+      pouchService.db.post(trip);
       }
 
     // private reOpenTrip(trip: any) {
     //     if (this.openTrips.length < 2) {
     //       trip.tripStatus.description = 'open';
-    //       pouchService.db.put(pouchService.userDBName, trip);
+    //       pouchService.db.put(trip);
     //     } else {
     //       this.alert = true;
     //     }
@@ -569,7 +569,7 @@ export default class Trips extends Vue {
 
       // check to see if savedSelections exists, fetch it if it does.
       const db = pouchService.db;
-      const docs = await db.allDocs(pouchService.userDBName);
+      const docs = await db.allDocs();
       const vesselName: any = this.activeTrip.vessel.vesselName;
       const fisheryName: any = this.activeTrip.fishery.description;
 
@@ -596,7 +596,7 @@ export default class Trips extends Vue {
                               selectionDate: this.openTrips[1].selectionDate ? this.openTrips[1].selectionDate : this.openTrips[1].createdDate
                             });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
-        pouchService.db.post(pouchService.userDBName, this.openTrips[1]);
+        pouchService.db.post(this.openTrips[1]);
       } else {
         savedSelections[vesselName][fisheryName].push({
                               vesselName,
@@ -605,7 +605,7 @@ export default class Trips extends Vue {
                               selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
                             });
       }
-      pouchService.db.post(pouchService.userDBName, savedSelections);
+      pouchService.db.post(savedSelections);
     }
 
     private async cancelActiveTrip() {
@@ -761,7 +761,7 @@ private handler2(newVal: string, oldVal: string) {
 
 private async getUserTrips() {
     const db = pouchService.db;
-    const docs = await db.allDocs(pouchService.userDBName);
+    const docs = await db.allDocs();
     const rows = docs.rows;
 
     this.userTrips = rows.filter( (row: any) => row.doc.type === 'wcgop-trip' );
@@ -780,9 +780,9 @@ private async getAuthorizedVessels() {
         include_docs: true
     };
     const permissionsQuery = await db.query(
-        pouchService.lookupsDBName,
-        'obs_web/all_doc_types',
-        queryOptions
+      'obs_web/all_doc_types',
+        queryOptions,
+        pouchService.lookupsDBName
     );
 
     const permissionsDoc = permissionsQuery.rows[0].doc;
@@ -805,9 +805,9 @@ private async getAuthorizedVessels() {
       };
 
       const vesselQuery = await db.query(
-        pouchService.lookupsDBName,
         'obs_web/all_vessel_nums',
-        vesselQueryOptions
+        vesselQueryOptions,
+        pouchService.lookupsDBName
       );
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);

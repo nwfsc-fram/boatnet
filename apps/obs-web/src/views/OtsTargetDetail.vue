@@ -314,9 +314,9 @@ export default class OtsTargetDetail extends Vue {
         };
 
         const allFisheries = await pouchDB.query(
-          pouchService.lookupsDBName,
           'obs_web/all_doc_types',
-          queryOptions
+          queryOptions,
+          pouchService.lookupsDBName
         );
         this.fisheries = allFisheries.rows.map((row: any) => row.doc);
 
@@ -337,9 +337,9 @@ export default class OtsTargetDetail extends Vue {
         };
 
         const otsTargetTypes = await pouchDB.query(
-          pouchService.lookupsDBName,
           'obs_web/all_doc_types',
-          otsTargetTypesQueryOptions
+          otsTargetTypesQueryOptions,
+          pouchService.lookupsDBName
         );
         this.targetTypes = otsTargetTypes.rows.map((row: any) => row.doc);
 

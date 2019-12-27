@@ -290,9 +290,9 @@ export default class TripDetails extends Vue {
   //       };
 
   //       const fisheries = await db.query(
-  //         pouchService.lookupsDBName,
-  //         'obs_web/all_fisheries',
-  //         queryOptions
+    //         'obs_web/all_fisheries',
+  //         queryOptions,
+  //         pouchService.lookupsDBName
   //       );
   //       this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
   //     } catch (err) {
@@ -310,9 +310,9 @@ export default class TripDetails extends Vue {
     };
 
     const fisheries = await db.query(
-      pouchService.lookupsDBName,
       'obs_web/all_doc_types',
-      queryOptions
+      queryOptions,
+      pouchService.lookupsDBName
     );
     this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
 
@@ -331,13 +331,13 @@ export default class TripDetails extends Vue {
 
     if (val === '') {
       update(() => {
-        this.permits = this.permit.permits;
+        this.permit.permits = this.permit.permits;
       });
       return;
     }
     update(() => {
       const searchString = val.toLowerCase();
-      this.permits = this.permit.permits.filter((permit) =>
+      this.permit.permits = this.permit.permits.filter((permit) =>
         permit.permitNumber
           ? permit.permitNumber
               .toLowerCase()
@@ -360,9 +360,9 @@ export default class TripDetails extends Vue {
         };
 
         const ports = await db.query(
-          pouchService.lookupsDBName,
           'obs_web/all_port_names',
-          queryOptions
+          queryOptions,
+          pouchService.lookupsDBName
         );
         this.ports = ports.rows.map((row: any) => row.doc);
       } catch (err) {
@@ -384,9 +384,9 @@ export default class TripDetails extends Vue {
         };
 
         const ports = await db.query(
-          pouchService.lookupsDBName,
           'obs_web/all_port_names',
-          queryOptions
+          queryOptions,
+          pouchService.lookupsDBName
         );
         this.ports = ports.rows.map((row: any) => row.doc);
         this.ports.unshift({ name: 'SAME AS START' });
@@ -416,7 +416,7 @@ export default class TripDetails extends Vue {
       reduce: false,
       include_docs: true
     };
-    const EMEfpRoster = await db.query(pouchService.lookupsDBName, 'obs_web/all_doc_types', queryOptions);
+    const EMEfpRoster = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName);
 
     for (const row of EMEfpRoster.rows) {
       this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
@@ -457,7 +457,7 @@ export default class TripDetails extends Vue {
         createdDate: moment().format()
       };
       const db = pouchService.db;
-      let docs = await db.allDocs(pouchService.userDBName);
+      let docs = await db.allDocs();
 
       const vesselName: string = this.vessel.activeVessel.vesselName;
       const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
@@ -495,7 +495,7 @@ export default class TripDetails extends Vue {
             tripSelection = savedSelections[vesselName][fisheryName].pop();
           }
 
-          pouchService.db.post(pouchService.userDBName, savedSelections);
+          pouchService.db.post(savedSelections);
 
           this.trip.activeTrip!.isSelected = tripSelection.isSelected;
           this.trip.activeTrip!.notes = tripSelection.notes;
@@ -542,7 +542,7 @@ export default class TripDetails extends Vue {
         this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
       }
 
-      pouchService.db.post(pouchService.userDBName, this.trip.activeTrip);
+      pouchService.db.post(this.trip.activeTrip);
 
       if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
@@ -588,7 +588,7 @@ export default class TripDetails extends Vue {
           }
         }
 
-        docs = await db.allDocs(pouchService.userDBName).then(
+        docs = await db.allDocs().then(
           (res: any) => {
             for (const row of res.rows) {
               if (row.doc.type === 'saved-selections') {
@@ -604,7 +604,7 @@ export default class TripDetails extends Vue {
               }
             }
             savedSelections[vesselName][fisheryName].push(newSelection);
-            pouchService.db.post(pouchService.userDBName, savedSelections);
+            pouchService.db.post(savedSelections);
           }
         );
       }
@@ -698,7 +698,7 @@ export default class TripDetails extends Vue {
 
   private async getMaxDate() {
     const db = pouchService.db;
-    const docs = await db.allDocs(pouchService.userDBName);
+    const docs = await db.allDocs();
 
     if (this.trip.index === 0 && !this.trip.newTrip) {
 
@@ -715,7 +715,7 @@ export default class TripDetails extends Vue {
 private async getMinDate() {
   if (this.trip.index === 1) {
     const db = pouchService.db;
-    const docs = await db.allDocs(pouchService.userDBName);
+    const docs = await db.allDocs();
 
     for (const row of docs.rows) {
       if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
@@ -733,7 +733,7 @@ private async getMinDate() {
 
   private async getBookedDates() {
     const db = pouchService.db;
-    const docs = await db.allDocs(pouchService.userDBName);
+    const docs = await db.allDocs();
     let i = 0;
 
     for (const row of docs.rows) {
@@ -797,12 +797,12 @@ private async getMinDate() {
         () => {
           this.trip.activeTrip!.isSelected = false;
           this.trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
-          pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
+          pouchService.db.put(this.trip.activeTrip);
           this.$router.push({ path: '/trips' });
         }
       );
     } else {
-      pouchService.db.put(pouchService.userDBName, this.trip.activeTrip);
+      pouchService.db.put(this.trip.activeTrip);
       this.$router.push({ path: '/trips' });
     }
 
@@ -817,7 +817,7 @@ private async getMinDate() {
 
       // check to see if savedSelections exists, fetch it if it does.
       const db = pouchService.db;
-      const docs = await db.allDocs(pouchService.userDBName);
+      const docs = await db.allDocs();
       const vesselName: any = this.trip.activeTrip!.vessel!.vesselName;
       const fisheryName: any = this.trip.activeTrip!.fishery!.description;
 
@@ -842,7 +842,7 @@ private async getMinDate() {
                             notes: this.trip.activeTrip!.notes,
                             selectionDate: this.trip.activeTrip!.selectionDate ? this.trip.activeTrip!.selectionDate : this.trip.activeTrip!.createdDate
                           });
-      pouchService.db.post(pouchService.userDBName, savedSelections);
+      pouchService.db.post(savedSelections);
   }
 
   private goBack() {
@@ -859,9 +859,9 @@ private async getMinDate() {
     };
     try {
       const otsTargets = await db.query(
-        pouchService.lookupsDBName,
         'obs_web/all_doc_types',
-        queryOptions
+        queryOptions,
+        pouchService.lookupsDBName
       );
 
       this.otsTargets = otsTargets.rows.map((row: any) => row.doc);
@@ -881,9 +881,9 @@ private async getMinDate() {
         };
 
         const ports = await db.query(
-          pouchService.lookupsDBName,
           'obs_web/all_port_names',
-          queryOptions
+          queryOptions,
+          pouchService.lookupsDBName
         );
         this.ports = ports.rows.map((row: any) => row.doc);
   }

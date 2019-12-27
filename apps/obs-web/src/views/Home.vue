@@ -125,9 +125,9 @@ export default class Home extends Vue {
 
       setTimeout( async () => {
         const alias = await db.query(
-          pouchService.lookupsDBName,
           'obs_web/all_person_alias',
-          queryOptions
+          queryOptions,
+          pouchService.lookupsDBName
         );
 
         if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
@@ -141,7 +141,7 @@ export default class Home extends Vue {
               lastName: this.user.activeUser!.lastName,
               userName: authService.getCurrentUser()!.username,
               personDocId: this.user.activeUser!._id,
-              roles: authService.getCurrentUser()!.roles,
+              roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
               isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
               isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
               isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true

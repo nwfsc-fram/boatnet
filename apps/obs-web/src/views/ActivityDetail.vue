@@ -153,7 +153,7 @@ private get minEndDate() {
 private updateActivity() {
     if (this.obact.isNewActivity) {
         this.obact.activeActivity.observer = this.user.activeUser;
-        pouchService.db.post(pouchService.userDBName, this.obact.activeActivity);
+        pouchService.db.post(this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     } else {
         delete this.obact.activeActivity.__index;
@@ -161,13 +161,13 @@ private updateActivity() {
         this.obact.activeActivity.updatedBy = authService.getCurrentUser()!.username;
         this.obact.activeActivity.updatedDate = moment().format();
 
-        pouchService.db.put(pouchService.userDBName, this.obact.activeActivity);
+        pouchService.db.put(this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     }
 }
 
 private deleteActivity() {
-    pouchService.db.remove(pouchService.userDBName, this.obact.activeActivity);
+    pouchService.db.remove(this.obact.activeActivity);
     this.obact.activeActivity = undefined;
     this.obact.isNewActivity = false;
     this.$router.push({path: '/observer-availability'});
