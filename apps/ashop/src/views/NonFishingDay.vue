@@ -20,7 +20,6 @@
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { WcgopTrip } from '@boatnet/bn-models';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { set } from 'lodash';
 
 export default createComponent({

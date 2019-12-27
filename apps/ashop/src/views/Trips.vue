@@ -65,7 +65,7 @@ export default createComponent({
     });
 
     const init = async () => {
-      const docs = await db.allDocs(pouchService.userDBName);
+      const docs = await db.allDocs();
       const rows = docs.rows;
       if (appMode === 'ashop') {
         await getCruise(appMode, rows);
@@ -81,7 +81,7 @@ export default createComponent({
       const type: string = appMode + '-trip';
       const trip: BaseTrip = { tripNum, type };
       await pouchService.db
-        .post(pouchService.userDBName, trip)
+        .post(trip)
         .then((response: any) => {
           trip._id = response.id;
           trip._rev = response.rev;
@@ -105,10 +105,7 @@ export default createComponent({
       }
       const del = data.value.findIndex((i: any) => i.id === id);
       data.value.splice(del, 1);
-      pouchService.db.remove(
-        pouchService.userDBName,
-        store.state.tripsState.currentTrip
-      );
+      pouchService.db.remove(store.state.tripsState.currentTrip);
       store.dispatch('tripsState/setCurrentTrip', undefined);
     };
 
