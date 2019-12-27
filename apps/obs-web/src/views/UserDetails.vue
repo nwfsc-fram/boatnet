@@ -725,7 +725,7 @@ export default class UserDetails extends Vue {
 
                 this.user.activeUserAlias.firstName = this.user.activeUser!.firstName;
                 this.user.activeUserAlias.lastName = this.user.activeUser!.lastName;
-                this.user.activeUserAlias.roles = authService.getCurrentUser()!.roles;
+                this.user.activeUserAlias.roles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
                 this.user.activeUserAlias.isActive = this.user.activeUser!.isActive;
                 this.user.activeUserAlias.isWcgop = this.user.activeUser!.isWcgop;
                 this.user.activeUserAlias.isAshop = this.user.activeUser!.isAshop;
