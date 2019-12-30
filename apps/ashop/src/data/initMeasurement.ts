@@ -1,11 +1,11 @@
 import { Measurement } from '@boatnet/bn-models';
 
 export class MeasurementImpl implements Measurement {
-    public measurmentType: string;
+    public measurementType: string;
     public units: string;
 
     constructor(measurementType: string, units: string) {
-        this.measurmentType = measurementType;
+        this.measurementType = measurementType;
         this.units = units;
     }
 }

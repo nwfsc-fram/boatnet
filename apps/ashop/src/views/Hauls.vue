@@ -61,8 +61,8 @@ import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import moment from 'moment';
 import { remove, get } from 'lodash';
-import { AshopHaulInit } from '../data/initAshopHaul';
-import { WcgopOperationInit } from '../data/initWcgopHaul';
+import { initAshopHaul, initWcgopHaul } from '../data/initHauls';
+import { allDocs } from '../helpers/queries';
 
 Vue.component(BoatnetSummary);
 
@@ -105,12 +105,8 @@ export default class Hauls extends Vue {
         keys: currTrip.operationIDs,
         descending: true
       };
-      try {
-        const result = await pouchService.db.allDocs(queryOptions, pouchService.userDBName);
-        this.haulsData = result.rows;
-      } catch (err) {
-        console.log('error fetching hauls');
-      }
+      this.haulsData =  await allDocs(queryOptions, pouchService.userDBName);
+      console.log(this.haulsData);
     }
   }
 
@@ -121,8 +117,7 @@ export default class Hauls extends Vue {
 
   private handleSelectHaul(haul: any) {
     if (haul) {
-      delete haul.doc.__index;
-      this.setCurrentHaul(haul.doc);
+      this.setCurrentHaul(haul);
     } else {
       this.setCurrentHaul(undefined);
     }
@@ -142,11 +137,11 @@ export default class Hauls extends Vue {
   private async addHauls() {
     let haul: BaseOperation = {};
     const haulNum = this.haulsData.length > 0 ?
-      parseInt(this.haulsData[0].doc[this.haulsSettings.itemNumName], 10) + 1 : 1;
+      parseInt(this.haulsData[0][this.haulsSettings.itemNumName], 10) + 1 : 1;
     if (this.appMode === 'ashop') {
-      haul = new AshopHaulInit(haulNum);
+      haul = initAshopHaul(haulNum);
     } else {
-      haul = new WcgopOperationInit(haulNum);
+      haul = initWcgopHaul(haulNum);
     }
     await pouchService.db
       .post(haul)

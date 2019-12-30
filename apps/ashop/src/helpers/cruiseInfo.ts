@@ -1,13 +1,14 @@
 import { pouchService } from '@boatnet/bn-pouch';
 import { AshopCruise, CouchID } from '@boatnet/bn-models';
 import { remove } from 'lodash';
+import { allDocs } from './queries';
 
 let cruise: AshopCruise;
 const db = pouchService.db;
 
 export async function getCruise(type: string, docs: any) {
-    cruise = docs.filter((row: any) => row.doc.type === type + '-cruise');
-    cruise = cruise[0] ? cruise[0].doc : undefined;
+    cruise = docs.filter((row: any) => row.type === type + '-cruise');
+    cruise = cruise[0] ? cruise[0] : undefined;
     return cruise;
 }
 
@@ -17,12 +18,7 @@ export async function getTrips() {
         keys: tripIds,
         descending: true
     };
-    try {
-        const result = await db.allDocs(queryOptions, pouchService.userDBName);
-        return result.rows;
-    } catch (error) {
-        console.log(error);
-    }
+    return await allDocs(queryOptions, pouchService.userDBName);
 }
 
 // TODO

@@ -58,7 +58,7 @@ export default class BoatnetTable extends Vue {
       this.$emit('select', undefined);
     } else {
       this.selected = [row];
-      // delete row.__index; // This was here because __index is not in our models
+      delete row.__index; // This is here because __index is not in our models
       this.$emit('select', row);
     }
   }

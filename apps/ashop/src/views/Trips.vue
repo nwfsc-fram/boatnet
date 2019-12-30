@@ -36,6 +36,7 @@ import {
   updateCruise,
   deleteCruise
 } from '../helpers/cruiseInfo';
+import { allDocs } from '../helpers/queries';
 
 export default createComponent({
   setup(props, context) {
@@ -55,19 +56,18 @@ export default createComponent({
     });
 
     const init = async () => {
-      const docs = await db.allDocs();
-      const rows = docs.rows;
+      const rows = await allDocs({}, pouchService.userDBName);
       if (appMode === 'ashop') {
         await getCruise(appMode, rows);
         return await getTrips();
       } else {
-        return rows.filter((row: any) => row.doc.type === appMode + '-trip');
+        return rows.filter((row: any) => row.type === appMode + '-trip');
       }
     };
     const { data } = useAsync(init);
 
     const addTrip = async () => {
-      const tripNum: number = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
+      const tripNum: number = data.value[0] ? data.value[0].tripNum + 1 : 1;
       const type: string = appMode + '-trip';
       const trip: BaseTrip = { tripNum, type };
       await pouchService.db
@@ -114,8 +114,7 @@ export default createComponent({
 
     const handleSelectTrip = (trip: any) => {
       if (trip) {
-        delete trip.doc.__index;
-        store.dispatch('tripsState/setCurrentTrip', trip.doc);
+        store.dispatch('tripsState/setCurrentTrip', trip);
       } else {
         store.dispatch('tripsState/setCurrentTrip', undefined);
       }
