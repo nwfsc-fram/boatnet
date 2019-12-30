@@ -279,28 +279,6 @@ export default class TripDetails extends Vue {
     return moment(myDate).format();
   }
 
-  // private fisheriesFilterFn(val: string, update: any, abort: any) {
-  //   update(async () => {
-  //     try {
-  //       const db = pouchService.db;
-  //       const queryOptions: ListOptions = {
-  //         start_key: val.toLowerCase(),
-  //         inclusive_end: true,
-  //         descending: false
-  //       };
-
-  //       const fisheries = await db.query(
-    //         'obs_web/all_fisheries',
-  //         queryOptions,
-  //         pouchService.lookupsDBName
-  //       );
-  //       this.fisheryOptions = fisheries.rows.map((row: any) => row.value);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   });
-  // }
-
   private async getFisheryOptions() {
     const db = pouchService.db;
     const queryOptions = {
@@ -456,8 +434,7 @@ export default class TripDetails extends Vue {
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
         createdDate: moment().format()
       };
-      const db = pouchService.db;
-      let docs = await db.allDocs();
+      let docs = await pouchService.db.allDocs();
 
       const vesselName: string = this.vessel.activeVessel.vesselName;
       const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
@@ -495,7 +472,7 @@ export default class TripDetails extends Vue {
             tripSelection = savedSelections[vesselName][fisheryName].pop();
           }
 
-          pouchService.db.post(savedSelections);
+          await pouchService.db.put(savedSelections);
 
           this.trip.activeTrip!.isSelected = tripSelection.isSelected;
           this.trip.activeTrip!.notes = tripSelection.notes;
@@ -542,7 +519,7 @@ export default class TripDetails extends Vue {
         this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
       }
 
-      pouchService.db.post(this.trip.activeTrip);
+      await pouchService.db.post(this.trip.activeTrip);
 
       if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
@@ -588,28 +565,32 @@ export default class TripDetails extends Vue {
           }
         }
 
-        docs = await db.allDocs().then(
-          (res: any) => {
-            for (const row of res.rows) {
-              if (row.doc.type === 'saved-selections') {
-                savedSelections = row.doc;
+        await pouchService.db.allDocs().then(
+          async (res: any) => {
+                  for (const row of res.rows) {
+                    if (row.doc.type === 'saved-selections') {
+                      savedSelections = row.doc;
 
-                if (!savedSelections[vesselName]) {
-                  savedSelections[vesselName] = {};
-                }
+                      if (!savedSelections[vesselName]) {
+                        savedSelections[vesselName] = {};
+                      }
 
-                if (!savedSelections[vesselName][fisheryName]) {
-                  savedSelections[vesselName][fisheryName] = [];
-                }
-              }
-            }
-            savedSelections[vesselName][fisheryName].push(newSelection);
-            pouchService.db.post(savedSelections);
+                      if (!savedSelections[vesselName][fisheryName]) {
+                        savedSelections[vesselName][fisheryName] = [];
+                      }
+                    }
+                  }
+                  savedSelections[vesselName][fisheryName].push(newSelection);
+                  if (!savedSelections._id) {
+                    await pouchService.db.post(savedSelections);
+                  } else {
+                    await pouchService.db.put(savedSelections);
+                  }
           }
         );
       }
 
-      this.$router.push({ path: '/trips/' });
+        this.$router.push({ path: '/trips/' });
 
     } else {
         this.missingRequired = true;
@@ -788,21 +769,21 @@ private async getMinDate() {
     }
   }
 
-  private updateTrip() {
+  private async updateTrip() {
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
     if (this.trip.activeTrip!.isSelected && this.trip.activeTrip!.maximizedRetention) {
 
       this.saveSelection().then(
-        () => {
+        async () => {
           this.trip.activeTrip!.isSelected = false;
           this.trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
-          pouchService.db.put(this.trip.activeTrip);
+          await pouchService.db.put(this.trip.activeTrip);
           this.$router.push({ path: '/trips' });
         }
       );
     } else {
-      pouchService.db.put(this.trip.activeTrip);
+      await pouchService.db.put(this.trip.activeTrip);
       this.$router.push({ path: '/trips' });
     }
 
@@ -842,7 +823,7 @@ private async getMinDate() {
                             notes: this.trip.activeTrip!.notes,
                             selectionDate: this.trip.activeTrip!.selectionDate ? this.trip.activeTrip!.selectionDate : this.trip.activeTrip!.createdDate
                           });
-      pouchService.db.post(savedSelections);
+      await pouchService.db.post(savedSelections);
   }
 
   private goBack() {
@@ -889,7 +870,6 @@ private async getMinDate() {
   }
 
   private created() {
-    console.log(this.trip);
     this.getEmRoster().then( () => {
       let emPermit = null;
       const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber];

@@ -36,7 +36,7 @@
       v-model="leftDrawerOpen"
       bordered
       content-class="bg-grey-2"
-      v-if="!isSyncing && !isIndexing"
+      v-if="!isSyncing"
     >
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
@@ -355,7 +355,11 @@ export default class DefaultLayout extends Vue {
   }
 
   private get getPercent() {
-    if (this.syncStatus.pending < 150 && !this.isIndexing && this.syncStatus.db === 'lookups-dev') {
+    if (
+        this.syncStatus.pending < 150
+        && !this.isIndexing
+        && this.syncStatus.db === 'lookups-dev'
+      ) {
       this.buildIndexes();
     }
     return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
@@ -388,22 +392,22 @@ export default class DefaultLayout extends Vue {
   private buildIndexes() {
     setTimeout( async () => {
       this.isIndexing = true;
-      this.toIndex = 8;
+      this.toIndex = 6;
 
       const db = pouchService.db;
-      const queryOptions = { start_key: '', inclusive_end: true, include_docs: false };
-
-      const fisheries = await db.query('obs_web/all_fisheries', pouchService.lookupsDBName);
-      this.decrementToIndex(fisheries);
+      const queryOptions = { start_key: '', inclusive_end: true, reduce: false, include_docs: false };
 
       const ports = await db.query('obs_web/all_port_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(ports);
 
-      const vessels = await db.query('obs_web/all_vessel_names', queryOptions, pouchService.lookupsDBName);
+      const vessels = await db.query('optecs_trawl/all_vessel_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(vessels);
 
-      const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
-      this.decrementToIndex(vesselCaptains);
+      // const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
+      // this.decrementToIndex(vesselCaptains);
+
+      const allDocs = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName)
+      this.decrementToIndex(allDocs);
 
       this.isIndexing = false;
     }, 1500);
