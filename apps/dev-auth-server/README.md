@@ -7,7 +7,7 @@ A dev-only auth server for use with developing boatnet apps without connecting t
 - ```yarn install``` from the apps/dev-auth-server folder
 - Open the template config file located at:`server/config/authProxyConfig.sample.json`. We will use this when creating our actual config file.
 - Create an actual config file named: `server/config/authProxyConfig.json`. Here you can set the username and password to login, but do not duplicate any actual credentials.
-- You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g. 
+- You can set up your own CouchDB database configuration for development, then replace the dummy couch config with your server info, e.g.
 ```
 {
   "devUsers": [
@@ -87,12 +87,11 @@ or base64 encoded password:
 
 Initial typescript project created like so, based on https://basarat.gitbooks.io/typescript/docs/quick/nodejs.html
 
-
 ```
 mkdir dev-auth-server && cd dev-auth-server
 npm init -y
 npm install typescript --save-dev
-npm install @types/node --save-dev
+npm install @types/node@12 --save-dev
 npx tsc --init --rootDir src --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom --module commonjs
 # For live reload:
 npm install ts-node --save-dev
