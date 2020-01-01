@@ -106,7 +106,6 @@ export default class Hauls extends Vue {
         descending: true
       };
       this.haulsData =  await allDocs(queryOptions, pouchService.userDBName);
-      console.log(this.haulsData);
     }
   }
 

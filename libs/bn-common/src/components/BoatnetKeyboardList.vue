@@ -25,6 +25,7 @@ export default class BoatnetKeyboardList extends Vue {
   @Prop() public value!: string;
   @Prop() public displayFields!: any[];
   @Prop() public docType!: string;
+  @Prop() public valType!: string;
 
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
@@ -35,15 +36,19 @@ export default class BoatnetKeyboardList extends Vue {
   }
 
   private format(origValue: any) {
-    const listModelName: any = this.displayFields ? this.displayFields : [];
-    let tempValue = '';
-    for (let i: number = 0; i < listModelName.length; i++) {
-      tempValue =
-        i < listModelName.length - 1
-          ? (tempValue += get(origValue, listModelName[i]) + ' ')
-          : (tempValue += get(origValue, listModelName[i]));
+    if (typeof origValue === 'object') {
+      const listModelName: any = this.displayFields ? this.displayFields : [];
+      let tempValue = '';
+      for (let i: number = 0; i < listModelName.length; i++) {
+        tempValue =
+          i < listModelName.length - 1
+            ? (tempValue += get(origValue, listModelName[i]) + ' ')
+            : (tempValue += get(origValue, listModelName[i]));
+      }
+      return tempValue;
+    } else {
+      return origValue;
     }
-    return tempValue;
   }
 
   private async initList() {
@@ -64,7 +69,7 @@ export default class BoatnetKeyboardList extends Vue {
     console.log(results);
     const resultList = [];
     for (const result of results.rows) {
-      resultList.push(result.doc);
+      this.valType === 'string' ? resultList.push(this.format(result.doc)) : resultList.push(result.doc);
     }
     console.log(resultList);
     return resultList;
