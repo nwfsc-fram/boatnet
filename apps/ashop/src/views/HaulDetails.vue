@@ -40,7 +40,7 @@ import {
   computed,
   watch, onBeforeUnmount
 } from '@vue/composition-api';
-import { NonFlowScaleCatch, BaseOperation } from '@boatnet/bn-models';
+import { BaseOperation } from '@boatnet/bn-models';
 import { get, set } from 'lodash';
 import { update } from '../data/initHauls';
 
