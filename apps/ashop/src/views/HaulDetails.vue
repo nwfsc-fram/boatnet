@@ -42,15 +42,13 @@ import {
 } from '@vue/composition-api';
 import { NonFlowScaleCatch, BaseOperation } from '@boatnet/bn-models';
 import { get, set } from 'lodash';
-import { update } from '../data/initHauls'
-import { initMeasurement, MeasurementImpl } from '@boatnet/bn-models/src/models/_common/measurement';
-
+import { update } from '../data/initHauls';
 
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const appConfig = store.state.appSettings.appConfig;
-    let haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
+    const haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
     const haulName = store.state.appSettings.appConfig.hauls.itemNumName;
 
     const saveOnUpdate = async () => {

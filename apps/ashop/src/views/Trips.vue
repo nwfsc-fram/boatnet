@@ -89,11 +89,11 @@ export default createComponent({
     };
 
     const deleteTrip = async () => {
-      const id = store.state.tripsState.currentTrip._id;
+      const id: string = store.state.tripsState.currentTrip._id;
       if (appMode === 'ashop') {
         deleteCruise(id);
       }
-      const del = data.value.findIndex((i: any) => i.id === id);
+      const del = data.value.indexOf(store.state.tripsState.currentTrip);
       data.value.splice(del, 1);
       pouchService.db.remove(store.state.tripsState.currentTrip);
       store.dispatch('tripsState/setCurrentTrip', undefined);

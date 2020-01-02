@@ -1,5 +1,5 @@
 import { AshopHaul, Measurement, WcgopOperation } from '@boatnet/bn-models';
-import { initMeasurement, MeasurementImpl } from '@boatnet/bn-models/src/models/_common/measurement';
+import { initMeasurement } from '@boatnet/bn-models/src/models/_common/measurement';
 
 export function update(haul: AshopHaul) {
     haul.officialTotalCatch = setOfficialTotalCatch(haul);
@@ -8,7 +8,7 @@ export function update(haul: AshopHaul) {
     }
 }
 
-function getMeasurementVal(measurement: Measurement) {
+function getMeasurementVal(measurement: Measurement): number {
     if (measurement && measurement.value) {
         if (typeof measurement.value === 'string') {
             return parseInt(measurement.value, 10);
@@ -19,7 +19,7 @@ function getMeasurementVal(measurement: Measurement) {
     return 0;
 }
 
-function setOfficialTotalCatch(haul: AshopHaul) {
+function setOfficialTotalCatch(haul: AshopHaul): Measurement {
     let observerEstCatch: number = 0;
     const flowScaleMeasurement = haul.flowScaleCatch ? haul.flowScaleCatch.measurement : {};
     const nonFlowScaleCatch = haul.nonFlowScaleCatch ? haul.nonFlowScaleCatch : [];
@@ -40,7 +40,7 @@ function setOfficialTotalCatch(haul: AshopHaul) {
     };
 }
 
-export function initAshopHaul(haulNum: number) {
+export function initAshopHaul(haulNum: number): AshopHaul {
     const ashopHaul: AshopHaul = {
         type: 'ashop-haul',
         haulNum,
@@ -60,7 +60,7 @@ export function initAshopHaul(haulNum: number) {
     return ashopHaul;
 }
 
-export function initWcgopHaul(operationNum: number) {
+export function initWcgopHaul(operationNum: number): WcgopOperation {
     const wcgopHaul: WcgopOperation = {
         type: 'wcgop-haul',
         operationNum
