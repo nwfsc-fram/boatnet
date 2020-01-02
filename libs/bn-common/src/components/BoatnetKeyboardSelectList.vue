@@ -25,6 +25,7 @@
       :displayFields="displayFields"
       :docType="docType"
       :inputValue="valueHolder"
+      :valType="valType"
       @next="next"
     />
   </div>
@@ -42,7 +43,8 @@ export default createComponent({
     keyboardType: String,
     displayFields: Array,
     docType: String,
-    val: String
+    val: [String, Number],
+    valType: String
   },
 
   setup(props, context) {
@@ -54,13 +56,12 @@ export default createComponent({
         if (typeof props.val === 'object') {
           const fields: any = props.displayFields ? props.displayFields : [];
           return get(props.val, fields[0]);
-
         } else {
           return props.val ? props.val : '';
         }
       },
       set: (val: any) => {
-        if (props.keyboardType === 'numeric') {
+        if (props.valType === 'number') {
           context.emit('update:val', parseInt(val, 10));
         } else {
           context.emit('update:val', val);

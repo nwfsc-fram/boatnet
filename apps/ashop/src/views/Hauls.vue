@@ -15,16 +15,7 @@
           :data="haulsData"
           :settings="haulsSettings"
           @select="handleSelectHaul"
-        >
-          <template v-slot:default="rowVals">
-            <q-td
-              v-for="column of haulsSettings.columns"
-              :align="column.align"
-              :key="column.name"
-              :style="{ width: column.width, whiteSpace: 'normal' }"
-            >{{ getValue(rowVals.row.doc, column) }}</q-td>
-          </template>
-        </boatnet-table>
+        />
       </template>
 
       <template v-slot:addButtons>
@@ -69,9 +60,9 @@ import {
 import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 import moment from 'moment';
-import { sampleData, sampleTrip } from '../data/data';
-import { getFormattedValue } from '../helpers/helpers';
 import { remove, get } from 'lodash';
+import { initAshopHaul, initWcgopHaul } from '../data/initHauls';
+import { allDocs } from '../helpers/queries';
 
 Vue.component(BoatnetSummary);
 
@@ -114,14 +105,7 @@ export default class Hauls extends Vue {
         keys: currTrip.operationIDs,
         descending: true
       };
-      try {
-        const result = await pouchService.db.allDocs(
-          queryOptions
-        );
-        this.haulsData = result.rows;
-      } catch (err) {
-        console.log('error fetching hauls');
-      }
+      this.haulsData =  await allDocs(queryOptions, pouchService.userDBName);
     }
   }
 
@@ -132,8 +116,7 @@ export default class Hauls extends Vue {
 
   private handleSelectHaul(haul: any) {
     if (haul) {
-      delete haul.doc.__index;
-      this.setCurrentHaul(haul.doc);
+      this.setCurrentHaul(haul);
     } else {
       this.setCurrentHaul(undefined);
     }
@@ -151,12 +134,14 @@ export default class Hauls extends Vue {
   }
 
   private async addHauls() {
-    const type: string = this.appMode + '-haul';
-    const notes: string = 'cp'; // initialize vessel type to get hide and show working
-    const haul: BaseOperation = { type, notes };
-    haul[this.haulsSettings.itemNumName] =
-      this.haulsData.length > 0 ? parseInt(this.haulsData[0].doc[this.haulsSettings.itemNumName], 10) + 1 : 1;
-
+    let haul: BaseOperation = {};
+    const haulNum = this.haulsData.length > 0 ?
+      parseInt(this.haulsData[0][this.haulsSettings.itemNumName], 10) + 1 : 1;
+    if (this.appMode === 'ashop') {
+      haul = initAshopHaul(haulNum);
+    } else {
+      haul = initWcgopHaul(haulNum);
+    }
     await pouchService.db
       .post(haul)
       .then((response: any) => {
@@ -171,7 +156,6 @@ export default class Hauls extends Vue {
       });
 
     this.setCurrentHaul(haul);
-    const s = haul[this.haulsSettings.itemNumName];
     return haul[this.haulsSettings.itemNumName];
   }
 
@@ -195,19 +179,6 @@ export default class Hauls extends Vue {
   private formatDate(date: string) {
     return moment(date).format('HH:mm MM/DD/YY');
   }
-
-  private getValue(row: any, attribute: any) {
-      const value = get(row, attribute.field);
-      if (attribute.type && value) {
-        return getFormattedValue(
-          value,
-          attribute.type,
-          attribute.displayFormat
-        );
-      } else {
-        return value;
-      }
-    }
 
   private async getHaulsSettings() {
     if (this.appMode) {

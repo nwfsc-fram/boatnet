@@ -42,7 +42,9 @@
         v-on:selected="select"
         :displayFields="displayFields"
         :docType="docType"
-        :value="inputValue"/>
+        :value="inputValue"
+        :valType="valType"
+        />
     </div>
   </div>
 </template>
@@ -58,6 +60,7 @@ export default class BoatnetKeyboard extends Vue {
   @Prop({ default: () => [] }) public displayFields!: string[];
   @Prop() public docType !: string;
   @Prop() public inputValue!: string;
+  @Prop() public valType!: string;
 
   private keyboardOptions = {
     useKbEvents: false,

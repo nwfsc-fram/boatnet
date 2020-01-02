@@ -16,16 +16,7 @@
           :data="data"
           :settings="tripSettings"
           @select="handleSelectTrip"
-        >
-          <template v-slot:default="rowVals">
-            <q-td
-              v-for="column of tripSettings.columns"
-              :align="column.align"
-              :key="column.name"
-              :style="{ width: column.width, whiteSpace: 'normal' }"
-            >{{ getValue(rowVals.row.doc, column) }}</q-td>
-          </template>
-        </boatnet-table>
+        />
       </template>
 
       <template v-slot:goToButtons></template>
@@ -35,7 +26,6 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
-import { getFormattedValue } from '../helpers/helpers';
 import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';
@@ -46,6 +36,7 @@ import {
   updateCruise,
   deleteCruise
 } from '../helpers/cruiseInfo';
+import { allDocs } from '../helpers/queries';
 
 export default createComponent({
   setup(props, context) {
@@ -65,19 +56,18 @@ export default createComponent({
     });
 
     const init = async () => {
-      const docs = await db.allDocs();
-      const rows = docs.rows;
+      const rows = await allDocs({}, pouchService.userDBName);
       if (appMode === 'ashop') {
         await getCruise(appMode, rows);
         return await getTrips();
       } else {
-        return rows.filter((row: any) => row.doc.type === appMode + '-trip');
+        return rows.filter((row: any) => row.type === appMode + '-trip');
       }
     };
     const { data } = useAsync(init);
 
     const addTrip = async () => {
-      const tripNum: number = data.value[0] ? data.value[0].doc.tripNum + 1 : 1;
+      const tripNum: number = data.value[0] ? data.value[0].tripNum + 1 : 1;
       const type: string = appMode + '-trip';
       const trip: BaseTrip = { tripNum, type };
       await pouchService.db
@@ -99,11 +89,11 @@ export default createComponent({
     };
 
     const deleteTrip = async () => {
-      const id = store.state.tripsState.currentTrip._id;
+      const id: string = store.state.tripsState.currentTrip._id;
       if (appMode === 'ashop') {
         deleteCruise(id);
       }
-      const del = data.value.findIndex((i: any) => i.id === id);
+      const del = data.value.indexOf(store.state.tripsState.currentTrip);
       data.value.splice(del, 1);
       pouchService.db.remove(store.state.tripsState.currentTrip);
       store.dispatch('tripsState/setCurrentTrip', undefined);
@@ -124,23 +114,9 @@ export default createComponent({
 
     const handleSelectTrip = (trip: any) => {
       if (trip) {
-        delete trip.doc.__index;
-        store.dispatch('tripsState/setCurrentTrip', trip.doc);
+        store.dispatch('tripsState/setCurrentTrip', trip);
       } else {
         store.dispatch('tripsState/setCurrentTrip', undefined);
-      }
-    };
-
-    const getValue = (row: any, attribute: any) => {
-      const value = get(row, attribute.field);
-      if (attribute.type && value) {
-        return getFormattedValue(
-          value,
-          attribute.type,
-          attribute.displayFormat
-        );
-      } else {
-        return value;
       }
     };
 
@@ -153,7 +129,6 @@ export default createComponent({
       goToHauls,
       handleSelectTrip,
       end,
-      getValue,
       data
     };
   }
