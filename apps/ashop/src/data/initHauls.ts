@@ -1,5 +1,5 @@
 import { AshopHaul, Measurement, WcgopOperation } from '@boatnet/bn-models';
-import { initMeasurement } from '@boatnet/bn-models/src/models/_common/measurement';
+import { initMeasurement } from '@boatnet/bn-models';
 
 export function update(haul: AshopHaul) {
     haul.officialTotalCatch = setOfficialTotalCatch(haul);
