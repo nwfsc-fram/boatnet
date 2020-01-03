@@ -38,7 +38,7 @@ import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';
-import axios from 'axios';
+
 import { Notify } from 'quasar';
 
 @Component

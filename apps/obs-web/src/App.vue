@@ -28,10 +28,6 @@
   font-weight: bold !important;
 }
 
-.trip-card {
-  margin: 10px;
-}
-
 .trip-date {
   width: auto !important;
 }
@@ -39,18 +35,19 @@
 .my-card {
   width: 100%;
   max-width: 450px;
+  margin: 5px 0 5px 0
 }
 
 @media screen and ( min-width: 500px) {
   .centered-page-item {
     text-align: left;
-    margin-left: 20px;
+    margin-left: 5px
   }
 }
 
-@media screen and ( max-width: 450px) {
-  .trip-card {
-    margin: 10px 0;
+@media screen and ( min-width: 500px) {
+  .my-card {
+    margin: 5px
   }
 }
 

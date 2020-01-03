@@ -77,40 +77,40 @@ export default class UserConfig extends Vue {
           });
         }
 
-    private async getVessels() {
-        const vesselCaptains: any = {};
-        const db = pouchService.db;
-        const queryOptions = {
-            start_key: '',
-            inclusive_end: true,
-            descending: false,
-            include_docs: true
-        };
-        try {
-            const vessels = await db.query(
-                'obs_web/vessel_captains',
-                queryOptions,
-                pouchService.lookupsDBName
-                );
-            for (const row of vessels.rows) {
-                for (const captain of row.doc.captains) {
-                    if (!vesselCaptains[captain.workEmail]) {
-                        vesselCaptains[captain.workEmail] = [];
-                    }
-                    const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
-                    vesselCaptains[captain.workEmail].push(row.doc);
-                }
-            }
+    // private async getVessels() {
+    //     const vesselCaptains: any = {};
+    //     const db = pouchService.db;
+    //     const queryOptions = {
+    //         start_key: '',
+    //         inclusive_end: true,
+    //         descending: false,
+    //         include_docs: true
+    //     };
+    //     try {
+    //         const vessels = await db.query(
+    //             'obs_web/vessel_captains',
+    //             queryOptions,
+    //             pouchService.lookupsDBName
+    //             );
+    //         for (const row of vessels.rows) {
+    //             for (const captain of row.doc.captains) {
+    //                 if (!vesselCaptains[captain.workEmail]) {
+    //                     vesselCaptains[captain.workEmail] = [];
+    //                 }
+    //                 const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
+    //                 vesselCaptains[captain.workEmail].push(row.doc);
+    //             }
+    //         }
 
-            const activeUserEmail = this.user.activeUser!.workEmail;
-            if (activeUserEmail) {
-                this.vessels = vesselCaptains[activeUserEmail];
-            }
+    //         const activeUserEmail = this.user.activeUser!.workEmail;
+    //         if (activeUserEmail) {
+    //             this.vessels = vesselCaptains[activeUserEmail];
+    //         }
 
-        } catch (err) {
-            console.log(err);
-        }
-    }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // }
 
     private async getUser() {
         const db: Client<any> = couchService.masterDB;
@@ -163,7 +163,7 @@ export default class UserConfig extends Vue {
 
     private created() {
 
-        this.getVessels();
+        // this.getVessels();
         this.getUser();
     }
 

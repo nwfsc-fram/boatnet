@@ -99,7 +99,6 @@ import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import axios from 'axios';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 @Component

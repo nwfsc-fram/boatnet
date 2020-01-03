@@ -51,3 +51,4 @@ temp-pub-key.pem
 apps/obs-web/misc/index.js
 apps/obs-web/misc/upload_em_efp_permits.ts
 apps/obs-web/src/views/scratch.vue
+apps/obs-web/src/config/secrets.ts

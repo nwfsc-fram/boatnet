@@ -17,7 +17,10 @@
                               'wcgop-operation', 'vessel', 'taxonomy',
                               'person', 'permit', 'ots-target', 'observer-activity',
                               'logbook-capture', 'catch-grouping', 'first-receiver',
-                              'model-definition', 'trip-selection', 'trips-api', 'tally-record']
+                              'model-definition', 'trip-selection', 'trips-api', 'tally-record',
+                              'ashop-cruise', 'ashop-haul', 'ashop-tribal-delivery', 'ashop-trip',
+                              'nonFlowScaleReason', 'olevessel', 'trips-api', 'trips-api-catch',
+                              'person-alias', 'vessel-permissions', 'tribal-delivery']
                               .includes(docType)
                     })"
               :key="docType"
@@ -31,9 +34,13 @@
         </q-scroll-area>
       </div>
 
-      <div v-if="filteredFoundDocs.length > 0" class="col5" style="padding: 4px; ; margin: 4px">
+      <div v-if="docsLoading && !filteredFoundDocs.length > 0" class="col6" style="padding: 4px; margin: 4px; font-weight: bold">
+        <br>LOADING<br>
+        <q-spinner color="primary" size="3em"></q-spinner>
+      </div>
+      <div v-if="filteredFoundDocs.length > 0" class="col6" style="padding: 4px; ; margin: 4px">
           <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
-        <q-scroll-area style="height: 650px; width: 350px">
+        <q-scroll-area style="height: 650px; width: 460px">
           <div v-if="docType === 'taxonomy-alias'">
             <q-input v-model="searchTerm" label="Search" dense @input="filterDocs"></q-input>
           </div>
@@ -51,11 +58,11 @@
               <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
-              <div v-if="row.doc.isAshop" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
-              <div v-if="row.doc.isWcgop" style="margin-left: 7px; margin-top: 4px; background-color: green; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">WCGOP</div>
-              <div v-if="row.doc.isHakeSurvey" style="margin-left: 7px; margin-top: 4px; background-color: blue; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">HAKE</div>
-              <div v-if="row.doc.isHookAndLineSurvey" style="margin-left: 7px; margin-top: 4px; background-color: purple; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">H + L</div>
-              <div v-if="row.doc.isTrawlSurvey" style="margin-left: 7px; margin-top: 4px; background-color: orange; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">TRAWL</div>
+              <div v-if="row.doc.isAshop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
+              <div v-if="row.doc.isWcgop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: green; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">WCGOP</div>
+              <div v-if="row.doc.isHakeSurvey || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: blue; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">HAKE</div>
+              <div v-if="row.doc.isHookAndLineSurvey || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: purple; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">H + L</div>
+              <div v-if="row.doc.isTrawlSurvey || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: orange; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">TRAWL</div>
               <div v-if="row.doc.isPacfin" style="margin-left: 7px; margin-top: 4px; background-color: black; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">PACFIN</div>
 
               <div v-if="'isActive' in row.doc && !row.doc.isActive" style="margin-left: 25px; position: absolute; top: 6px; right: 0; background-color: grey; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">INACTIVE</div>
@@ -69,9 +76,16 @@
       <div v-if="selectedDoc" class="col5" style="border: 2px solid #1675d1; padding: 4px; ; margin: 4px; max-width: 550px">
         <div class="text-h6" style="padding: 0 15px; color: black">{{ selectedDoc.type.toUpperCase() }} DOC DETAILS:</div>
         <q-list v-if="selectedDoc" separator dense>
-          <q-item v-for="key of Object.keys(selectedDoc).filter( (key) => { return !['_id', '_rev', 'type'].includes(key)})" :key="key"  style="line-height: 2em">
+          <q-item v-for="key of Object.keys(selectedDoc).filter( (key) => { return !['_id', '_rev', 'type', 'createdBy', 'createdDate', 'uploadedBy', 'uploadedDate', 'updatedBy', 'updatedDate'].includes(key)})" :key="key"  style="line-height: 2em">
             <span v-if="key !== 'legacy'">
-            {{ key }} : {{ parseVal(selectedDoc, key) }}
+              <span v-if="key === 'taxonomy'">
+                taxonomy:<br>
+                <span style="margin-left: 10px">level: {{ parseVal(selectedDoc, key).level }} </span><br>
+                <span style="margin-left: 10px">scientificName: {{ parseVal(selectedDoc, key).scientificName }} </span>
+              </span>
+              <span v-else>
+                {{ key }} : {{ parseVal(selectedDoc, key) }}
+              </span>
             </span>
             <span v-if="key === 'legacy'">
               <b>Legacy:</b>
@@ -143,8 +157,13 @@
             <div class="row" style="width: 400px">
 
               <div class="col" style="margin: 10px">
-                <div v-for="key of Object.keys(selectedDoc)" :key="key">
-                  <span v-if="key === '_id' || key === '_rev'"></span>
+                <div v-for="key of Object.keys(docTypeModel)" :key="key">
+                  <span v-if="key === '_id' || key === '_rev' || key === 'modelName'"></span>
+                  <span v-else-if="key === 'taxonomy'">
+                    taxonomy:<br>
+                    <span style="margin-left: 10px">level: {{ parseVal(selectedDoc, key).level }} </span><br>
+                    <span style="margin-left: 10px">scientificName: {{ parseVal(selectedDoc, key).scientificName }} </span>
+                  </span>
                   <span v-else-if="key === 'type'">
                     <b>{{ key }}: {{ selectedDoc[key] }}</b>
                   </span>
@@ -245,6 +264,7 @@ export default class LookupEditor extends Vue {
   private docSelection: any[] = [];
   private models: any = {};
   private searchTerm: string = '';
+  private docsLoading = false;
 
   constructor() {
     super();
@@ -294,6 +314,7 @@ export default class LookupEditor extends Vue {
   }
 
   private async getDocs(docType: any) {
+    this.docsLoading = true;
     this.selectDoc(null);
     this.foundDocs = [];
     this.docType = docType;
@@ -311,6 +332,8 @@ export default class LookupEditor extends Vue {
       'all_doc_types',
       queryOptions
     );
+
+    this.docsLoading = false;
 
     this.docTypeModel = this.models[docType];
 

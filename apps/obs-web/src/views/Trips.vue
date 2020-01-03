@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pa-md q-gutter-md">
+  <div class="q-pa-md">
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
@@ -7,7 +7,7 @@
       </template>
     </q-banner>
 
-    <div class="centered-page-item" >
+    <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
         <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
@@ -54,19 +54,24 @@
       :class="computedTripClass(trip)"
       >
         <q-card-section>
+          <div v-if="trip.tripNum" style="font-size: 12px; line-height: 4px; margin-bottom: 10px"><br>Trip #: {{ trip.tripNum }}
+            <span style="float: right">
+              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+            </span>
+          </div>
+
           <div class="text-h6">
             <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
-            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip Is Selected">
-              <q-icon name="warning" size="18px"></q-icon>
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 12px; line-height: 20px" title="Trip Is Selected">
+              <q-icon name="warning" size="12px"></q-icon>
               <span class="text-h6">&nbsp;Trip Selected</span>
             </div>
-            <div v-else class="text-white" style="font-size: 32px; float: right" title="Observer Not Required">
-              <q-icon name="not_interested" size="18px"></q-icon>
-              <span class="text-h6">&nbsp;Observer Not Required</span>
+            <div v-else class="text-white" style="font-size: 12px; line-height: 20px" title="Observer Not Required">
+              <q-icon name="not_interested" size="12px"></q-icon>
+              <span>&nbsp;Observer Not Required</span>
             </div>
           </div>
-          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
-          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
           <div v-if="trip.observer">
             <sup class="text-white" style="float: right; text-align: right">
               observer: {{ trip.observer.firstName }} {{ trip.observer.lastName }}<br>
@@ -74,15 +79,15 @@
               </sup>
           </div>
         </q-card-section>
-        <q-card-actions>
-          <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
-          <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
-          <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
+        <q-card-actions style="float: right">
+            <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
+            <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
+            <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
         </q-card-actions>
     </q-card>
     </div>
 
-    <div v-if="nextSelections.length > 0" class="centered-page-item">Next Trip Selections
+    <div v-if="nextSelections.length > 0" class="centered-page-item">Next Trip Selections</div>
           <div class="display: flex">
             <q-card
               v-for="selection in nextSelections"
@@ -91,20 +96,19 @@
             >
             <q-card-section>
 
-              <div class="text-h6" style="text-align: left">
+              <div class="text-h6">
                 <span>
                   {{ selection.fishery }}
                 </span>
               </div>
-                <div class="text-white" style="font-size: 22px; float: right; margin-bottom: 5px">
-                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="18px"></q-icon>
-                  <span class="text-h6" style="">&nbsp;{{ selection.isSelected ? 'Trip Selected' : 'Observer Not Required'}}</span>
+                <div class="text-h6 text-white" style="font-size: 12px; line-height: 20px">
+                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="12px"></q-icon>
+                  <span style="font-size: 12px; line-height: 20px">&nbsp;{{ selection.isSelected ? 'Trip Selected' : 'Observer Not Required'}}</span>
                 </div>
             </q-card-section>
             </q-card>
           </div>
 
-    </div>
 
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
     <div class=" row items-start">
@@ -112,6 +116,12 @@
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white trip-card">
 
       <q-card-section>
+          <div v-if="trip.tripNum" style="font-size: 12px; line-height: 4px; margin-bottom: 10px"><br>Trip #: {{ trip.tripNum }}
+            <span style="float: right">
+              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+            </span>
+          </div>
         <div class="text-h6">
           <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
@@ -119,8 +129,7 @@
             <span class="text-h6">&nbsp;Trip Selected</span>
             </div>
         </div>
-          <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
-          <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+
       <div class="text-white">
           <span style="text-transform: capitalize;" v-if="trip.closingReason">{{ trip.closingReason }}</span>
           <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ formatDate(trip.captainAffirmedDepartureDate) }} - {{ formatDate(trip.captainAffirmedReturnDate) }} </span>
@@ -222,6 +231,7 @@ import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, WcgopAppState, AlertState } from '../_store/types/types';
 
+import request from 'request';
 import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
@@ -246,18 +256,6 @@ import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
 @Component
-// ({
-//   pouch: {
-//     userTrips() { // Also declared in class
-//       return {
-//         database: pouchService.userDBName,
-//         selector: { type: 'wcgop-trip' },
-//         sort: [{ tripNum: 'desc' }]
-//         // limit: 5 // this.resultsPerPage,
-//       };
-//     }
-//   }
-// })
 export default class Trips extends Vue {
   @State('trip') private trip!: TripState;
   @State('vessel') private vessel!: VesselState;
@@ -289,20 +287,12 @@ export default class Trips extends Vue {
   private maxDate = new Date();
   private nextSelections: any = [];
   private authorizedVessels: Vessel[] = [];
+  private tripsApiTrips: any[] = [];
 
   constructor() {
       super();
   }
 
-  // public get userDBTrips() {
-  //   // TODO: This seems to block the UI - handle asyn
-  //   // console.log('Called userDBTrips');
-  //   if (this.userTrips) {
-  //     return this.userTrips;
-  //   } else {
-  //     return [];
-  //   }
-  // }
   private get currentReadonlyDB(): string {
     if (!this.pouchState.credentials) {
       console.warn('WARNING: current RO db is undefined');
@@ -328,7 +318,6 @@ export default class Trips extends Vue {
 
     private get openTrips() {
       if (this.vessel.activeVessel) {
-        console.log(this.vessel.activeVessel);
         return this.userTrips
         .filter(
           (trip: any) => {
@@ -400,8 +389,7 @@ export default class Trips extends Vue {
 
       this.nextSelections = [];
       let savedSelections: any = {};
-      const db = pouchService.db;
-      const docs = await db.allDocs();
+      const docs = await pouchService.db.allDocs();
       for (const row of docs.rows) {
         if (row.doc.type === 'saved-selections') {
           savedSelections = row.doc;
@@ -438,24 +426,6 @@ export default class Trips extends Vue {
         }
       }
     }
-        // for (const fishery of Object.keys(savedSelections)) {
-        //   console.log(fishery);
-        //   if (Array.isArray(savedSelections[fishery])) {
-        //     for (const selection of savedSelections[fishery]) {
-        //       console.log(selection);
-        //       const selectionObject = {fishery: fishery, isSelected: selection.isSelected}
-        //       console.log(selectionObject);
-        //       this.nextSelections.push(selectionObject)
-        //     }
-        //   }
-        // }
-
-        // this.nextSelections.sort(
-        //   (a: any, b: any) => {
-        //     return selectionSorter(a, b);
-        //   }
-        // );
-
 
     }
 
@@ -500,7 +470,7 @@ export default class Trips extends Vue {
       return false;
     }
 
-    private closeTrip(trip: any) {
+    private async closeTrip(trip: any) {
       trip.tripStatus.description = 'closed';
       if (!trip.changelog) { trip.changeLog = []; }
 
@@ -511,17 +481,8 @@ export default class Trips extends Vue {
           change: 'trip closed'
         }
       );
-      pouchService.db.post(trip);
+      await pouchService.db.put(trip);
       }
-
-    // private reOpenTrip(trip: any) {
-    //     if (this.openTrips.length < 2) {
-    //       trip.tripStatus.description = 'open';
-    //       pouchService.db.put(trip);
-    //     } else {
-    //       this.alert = true;
-    //     }
-    //   }
 
     private cancelTrip(trip: any) {
       for (const openTrip of this.openTrips) {
@@ -596,7 +557,7 @@ export default class Trips extends Vue {
                               selectionDate: this.openTrips[1].selectionDate ? this.openTrips[1].selectionDate : this.openTrips[1].createdDate
                             });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
-        pouchService.db.post(this.openTrips[1]);
+        await pouchService.db.post(this.openTrips[1]);
       } else {
         savedSelections[vesselName][fisheryName].push({
                               vesselName,
@@ -605,17 +566,23 @@ export default class Trips extends Vue {
                               selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
                             });
       }
-      pouchService.db.post(savedSelections);
+      if (savedSelections._id) {
+        await pouchService.db.post(savedSelections);
+      } else {
+        await pouchService.db.put(savedSelections);
+      }
     }
 
     private async cancelActiveTrip() {
       this.activeTrip!.closingReason = 'cancelled';
       this.saveSelection().then(
-        () => {
-          this.closeTrip(this.activeTrip);
+        async () => {
+          await this.closeTrip(this.activeTrip);
           this.cancelAlert = false;
           this.closeAlert = false;
-          this.getNextSelections();
+          await this.getNextSelections().then( () => {
+            location.reload();
+          });
         }
       );
     }
@@ -625,19 +592,17 @@ export default class Trips extends Vue {
       this.closeTrip(this.activeTrip);
       this.cancelAlert = false;
       this.closeAlert = false;
+      location.reload();
     }
 
     private review(trip: any) {
       this.trip.activeTrip = trip;
       this.trip.newTrip = false;
       this.trip.readOnly = true;
-      console.log(this.trip.activeTrip);
       this.$router.push({path: '/trips/' + trip.tripNum});
     }
 
     private getTripDetails(trip: any, index = null) {
-        // this.$store.dispatch('updateActiveTrip', trip);
-        // this.$store.state.activeTrip = this.trips[i];
         this.trip.activeTrip = trip;
         this.trip.newTrip = false;
         this.trip.readOnly = false;
@@ -707,57 +672,22 @@ export default class Trips extends Vue {
 
 private computedTripClass(trip: WcgopTrip) {
   if (trip.isSelected) {
-    return 'trip-card my-card bg-green text-white';
+    return 'my-card bg-green text-white';
   } else {
-    return 'trip-card my-card bg-primary text-white';
+    return 'my-card bg-primary text-white';
   }
 }
 
 
 private computedSelectionClass(selection: any) {
   if (selection.isSelected) {
-    return 'trip-card my-card bg-green text-white';
+    return 'my-card bg-green text-white';
   } else {
-    return 'trip-card my-card bg-primary text-white';
+    return 'my-card bg-primary text-white';
   }
 }
 
-// private setActiveVessel() {
-//   if (!this.vessel.activeVessel) {
-//     if (this.user.activeUser &&  this.user.activeUser.activeVessel) {
-//       this.vessel.activeVessel = this.user.activeUser.activeVessel;
-//     }
-//   }
-// }
 
-// @Watch('departureDate')
-// private handler1(newVal: string, oldVal: string) {
-//   this.endYearMonth = moment(newVal).format('YYYY/MM');
-//   if (moment(newVal) < moment(this.existingTripStart) || moment(newVal) > moment(this.returnDate) ) {
-//     this.returnDate = newVal;
-//   }
-//   console.log(this.returnDate);
-//   if (this.returnDate === 'Invalid date') {
-//     Vue.set(this, 'returnDate', newVal);
-//     }
-// }
-
-@Watch('vessel.activeVessel')
-private handler3(newVal: string, oldVal: string) {
-  this.nextSelections = [];
-  this.getUserTrips();
-  this.getNextSelections();
-}
-
-@Watch('tripDates')
-private handler2(newVal: string, oldVal: string) {
-  if (newVal[0]) {
-    this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
-  }
-  if (newVal[1]) {
-    this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
-  }
-}
 
 private async getUserTrips() {
     const db = pouchService.db;
@@ -766,7 +696,6 @@ private async getUserTrips() {
 
     this.userTrips = rows.filter( (row: any) => row.doc.type === 'wcgop-trip' );
     this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
-    console.log(this.userTrips);
 }
 
 private async getAuthorizedVessels() {
@@ -816,23 +745,73 @@ private async getAuthorizedVessels() {
 
 }
 
-private created() {
-  // this.setActiveVessel();
-  this.getAuthorizedVessels();
-  this.getUserTrips();
-  if ( authService.getCurrentUser() ) {
-    this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+  private async getTripsApiTrips() {
+    const user = authService.getCurrentUser();
+
+    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+
+    const vesselTripsUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips'
+                + '?vesselId=' + vesselId;
+
+    const self = this;
+
+    try {
+
+      await request.get(
+        {
+          url: vesselTripsUrl,
+        json: true,
+        headers: {
+          authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
+        }
+      }, (err: any, response: any, body: any) => {
+
+        if (body) {
+          self.tripsApiTrips = body;
+        } else {
+          self.tripsApiTrips = [];
+        }
+      }
+      );
+
+    } catch (err) {
+      console.log(err);
+    }
   }
-  this.getNextSelections();
-}
+
+  private created() {
+    // this.setActiveVessel();
+    this.getAuthorizedVessels();
+    this.getTripsApiTrips();
+    this.getUserTrips();
+    if ( authService.getCurrentUser() ) {
+      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+    }
+    this.getNextSelections();
+  }
+
+  @Watch('vessel.activeVessel')
+  private handler3(newVal: string, oldVal: string) {
+    this.getTripsApiTrips();
+    this.nextSelections = [];
+    this.getUserTrips();
+    this.getNextSelections();
+  }
+
+  @Watch('tripDates')
+  private handler2(newVal: string, oldVal: string) {
+    if (newVal[0]) {
+      this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
+    }
+    if (newVal[1]) {
+      this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
+    }
+  }
 
 }
 </script>
 
 <style lang="stylus">
-  .my-card
-    width 100%
-    max-width 450px;
 
   .left-pad
     padding-left: 10px
