@@ -8,6 +8,7 @@
       </q-banner>
 
   <div :disabled="trip.readOnly">
+
         <div class="text-h6 q-pa-md" style="margin-bottom: 10px;">
           <!-- {{ vessel.activeVessel.vesselName }} -->
           <div v-if="trip.activeTrip.fishery.description"> {{ trip.activeTrip.fishery.description }}</div>
@@ -199,42 +200,31 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { date } from 'quasar';
 import {
-  TripState,
-  PermitState,
-  UserState,
-  GeneralState,
-  VesselState,
-  AlertState
+  AlertState, GeneralState, PermitState,
+  TripState, UserState, VesselState
 } from '../_store/types/types';
-import { Permit, OTSTarget } from '@boatnet/bn-models';
-
-import moment from 'moment';
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { AuthState, authService } from '@boatnet/bn-auth';
+import { AuthState, authService, auth } from '@boatnet/bn-auth';
 
 import {
-  WcgopTrip,
-  WcgopTripTypeName,
-  Port,
-  PortTypeName,
-  WcgopOperation,
-  WcgopOperationTypeName,
-  LocationEvent,
-  Vessel,
-  VesselTypeName,
-  Fishery,
-  TripSelection
+  Fishery, LocationEvent, OTSTarget, Permit, Port,
+  PortTypeName, TripSelection, Vessel, VesselTypeName,
+  WcgopOperation, WcgopOperationTypeName,
+  WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
+
+// import { username, password } from '../config/secrets'
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
-import { Notify } from 'quasar';
+import { date, Notify } from 'quasar';
+import request from 'request';
+import moment from 'moment';
 
 @Component
 export default class TripDetails extends Vue {
@@ -270,6 +260,8 @@ export default class TripDetails extends Vue {
   private daysWarn: boolean = false;
   private emRoster: any = {};
   private maximizedRetention: any = null;
+  private tripsApiTrips: any = [];
+  private tripsApiId: number = 0;
 
   constructor() {
     super();
@@ -412,9 +404,7 @@ export default class TripDetails extends Vue {
 
   private async createTrip() {
 
-    // REQUIRES A FISHERY!
-    // first check whether there is a stored selection for the vessel and fishery
-
+    // REQIRES A START AND END DATE
     if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
       Notify.create({
         message: '<b>A trip must have a start and end date</b>',
@@ -428,13 +418,14 @@ export default class TripDetails extends Vue {
       return;
     }
 
+    // REQUIRES A FISHERY!
     if (this.trip.activeTrip!.fishery!.description !== '') {
       let savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
         createdDate: moment().format()
       };
-      let docs = await pouchService.db.allDocs();
+      const docs = await pouchService.db.allDocs();
 
       const vesselName: string = this.vessel.activeVessel.vesselName;
       const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
@@ -455,10 +446,10 @@ export default class TripDetails extends Vue {
 
       if (!this.trip.activeTrip!.maximizedRetention) {
 
+        // first check whether there is a stored selection for the vessel and fishery
 
         // apply selection to new trip
         let tripSelection: any = null;
-
         if (savedSelections[vesselName] && savedSelections[vesselName][fisheryName] && savedSelections[vesselName][fisheryName].length > 0) {
           if (savedSelections[vesselName][fisheryName].length > 1) {
             const sel1 = savedSelections[vesselName][fisheryName][0].selectionDate;
@@ -519,7 +510,35 @@ export default class TripDetails extends Vue {
         this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
       }
 
-      await pouchService.db.post(this.trip.activeTrip);
+      const self = this;
+      self.tripsApiId = 0;
+
+      await request.post({
+        url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips',
+        json: true,
+        headers: {
+          authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
+        },
+        body: {
+          vesselId: this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber,
+          vesselName: this.vessel.activeVessel.vesselName,
+          departurePort: this.trip.activeTrip!.departurePort,
+          returnPort: this.trip.activeTrip!.returnPort,
+          departureDate: this.trip.activeTrip!.departureDate,
+          returnDate: this.trip.activeTrip!.returnDate,
+          createdBy: authService.getCurrentUser()!.username,
+          createdDate: moment().format()
+        }
+
+      }, async (err, response, body) => {
+        self.tripsApiId = body.tripID;
+        self.trip.activeTrip!.tripNum = body.tripID;
+        await pouchService.db.post(self.trip.activeTrip).then( () => {
+          self.$router.push({ path: '/trips/' });
+        });
+
+        }
+      );
 
       if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
@@ -528,9 +547,8 @@ export default class TripDetails extends Vue {
       if (!savedSelections[vesselName][fisheryName]) {
         savedSelections[vesselName][fisheryName] = [];
       }
-
       if (!savedSelections[vesselName][fisheryName] || savedSelections[vesselName][fisheryName].length < 1) {
-        const activeOTSTarget: any = this.getActiveOtsTarget();
+        const activeOTSTarget: any = await this.getActiveOtsTarget();
         const randomNum = Math.floor(Math.random() * 100);
 
         const newSelection: any = {
@@ -586,14 +604,12 @@ export default class TripDetails extends Vue {
                   } else {
                     await pouchService.db.put(savedSelections);
                   }
-          }
-        );
+                }
+              );
       }
 
-        this.$router.push({ path: '/trips/' });
-
     } else {
-        this.missingRequired = true;
+      this.missingRequired = true;
     }
   }
 
@@ -782,9 +798,54 @@ private async getMinDate() {
           this.$router.push({ path: '/trips' });
         }
       );
+
     } else {
-      await pouchService.db.put(this.trip.activeTrip);
-      this.$router.push({ path: '/trips' });
+
+      await pouchService.db.put(this.trip.activeTrip).then( async () => {
+        const self = this;
+
+        await request.get({
+          url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips/' + this.trip.activeTrip!.tripNum,
+          json: true,
+          headers: {
+            authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
+          }
+
+        }, (err: any, response: any, body: any) => {
+          const apiTrip = body;
+          if (!apiTrip.changelog) {
+            apiTrip.changelog = [];
+          }
+          apiTrip.changelog.push({
+            changedBy: authService.getCurrentUser()!.username,
+            changedDate: moment().format(),
+            previousDeparturePort: apiTrip.departurePort,
+            previousDepartureDate: apiTrip.departureDate,
+            previousReturnPort: apiTrip.returnPort,
+            previousReturnDate: apiTrip.returnDate
+          });
+          apiTrip.updatedBy = authService.getCurrentUser()!.username;
+          apiTrip.updatedDate = moment().format();
+          apiTrip.departurePort = self.trip.activeTrip!.departurePort;
+          apiTrip.departureDate = self.trip.activeTrip!.departureDate;
+          apiTrip.returnPort = self.trip.activeTrip!.returnPort;
+          apiTrip.returnDate = self.trip.activeTrip!.returnDate;
+
+          request.put({
+            url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips/' + self.trip.activeTrip!.tripNum,
+            json: true,
+            headers: {
+              authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
+            },
+            body: apiTrip
+          }, () => {
+            self.$router.push({ path: '/trips' });
+          });
+
+          }
+        );
+
+      });
     }
 
   }
@@ -1026,9 +1087,6 @@ private async getMinDate() {
 </script>
 
 <style lang="stylus">
-.my-card {
-  width: 95%;
-}
 .p-datepicker {
   padding: 0 !important
 }

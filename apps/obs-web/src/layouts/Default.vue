@@ -406,7 +406,7 @@ export default class DefaultLayout extends Vue {
       // const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
       // this.decrementToIndex(vesselCaptains);
 
-      const allDocs = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName)
+      const allDocs = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(allDocs);
 
       this.isIndexing = false;

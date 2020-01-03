@@ -112,7 +112,7 @@ import { AuthState, authService } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import axios from 'axios';
+
 import FP from 'lodash';
 import _ from 'lodash';
 
