@@ -215,8 +215,8 @@ export default class Trips extends Vue {
     tripNum: this.tripNum,
     type: 'wcgop-trip',
     vessel: { vesselName: '' },
-    departurePort: { name: '' },
-    returnPort: { name: '' }
+    departurePort: { name: '', pacfinPortCode: '', pacfinPortGroupCode: '' },
+    returnPort: { name: '', pacfinPortCode: '', pacfinPortGroupCode: '' }
   };
 
   private ph = ''; // TEMP

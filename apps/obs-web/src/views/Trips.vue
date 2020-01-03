@@ -639,7 +639,7 @@ export default class Trips extends Vue {
                             departureDate: '',
                             departurePort: this.user.activeUser!.port ? this.user.activeUser!.port : this.vessel.activeVessel!.homePort ? this.vessel.activeVessel!.homePort : {name: ''},
                             returnDate: '',
-                            returnPort: {name: 'SAME AS START'},
+                            returnPort: {name: 'SAME AS START', pacfinPortCode: '', pacfinPortGroupCode: '' },
                             isSelected: false,
                             fishery: {description: ''},
                             tripStatus: {

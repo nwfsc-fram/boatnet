@@ -1,19 +1,13 @@
 <template>
   <span>
-    <div class="text-h6 col-2">Fish Tickets</div>
+    <div class="text-h6 col-2">{{config.name}}</div>
     <boatnet-table
       :data="fishTickets"
-      :settings="settings"
+      :settings="config.tableSettings"
       :showBottom="true"
       :isCondensed="true"
       @select="selectTicket"
-    >
-      <template v-slot:default="rowVals">
-        <q-td key="fishTicketNum">{{ rowVals.row.fishNum }}</q-td>
-        <q-td key="date">{{ rowVals.row.date }}</q-td>
-        <q-td key="state">{{ rowVals.row.state }}</q-td>
-      </template>
-    </boatnet-table>
+    />
 
     <div class="row q-gutter-sm q-pa-md justify-center">
       <q-btn color="primary" label="Add" @click="addRow"/>
@@ -22,44 +16,15 @@
     </div>
 
     <boatnet-input-dialog
-      :title="action === 'add' ? 'Add Fish Ticket' : 'Edit Fish Ticket'"
+      :title="action === 'add' ? 'Add ' + config.name : 'Edit ' + config.name"
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-      <div class="col self-start q-gutter-md q-pb-md">
-        <boatnet-keyboard-input
-                  :value.sync="currFishTicket.fishNum"
-                  label="Fish Ticket #"
-                  keyboardType="normal"
-                />
-        <div class="col-2">
-          <div>State:</div>
-          <q-btn-toggle
-            v-model="currFishTicket.state"
-            toggle-color="primary"
-            :options="[
-                {label: 'CA', value: 'CA'},
-                {label: 'OR', value: 'OR'},
-                {label: 'WA', value: 'WA'}
-                ]"
-          />
+     <div style=" height: 200px">
+          <div v-for="config1 of config.formConfig" :key="config.formConfig.indexOf(config1)">
+            <boatnet-common-input-component :config="config1" :model="currFishTicket"></boatnet-common-input-component>
+          </div>
         </div>
-        <q-input
-          outlined
-          class="col-2"
-          label="Date"
-          mask="date"
-          :rules="['date']"
-          v-model="currFishTicket.date"
-        >
-          <template v-slot:append>
-            <q-icon name="event"></q-icon>
-          </template>
-        </q-input>
-      </div>
-      <div class="col q-pl-md">
-        <q-date v-model="currFishTicket.date" minimal/>
-      </div>
     </boatnet-input-dialog>
   </span>
 </template>
@@ -68,45 +33,29 @@
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import { WcgopFishTicket } from '@boatnet/bn-models';
 import moment from 'moment';
+import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
+import { Action, Getter, State } from 'vuex-class';
+import { get, } from 'lodash';
 
 @Component
 export default class BoatnetFishTickets extends Vue {
-  @Prop({ default: () => [] }) private fishTickets!: WcgopFishTicket[];
+  @Prop({ default: () => [] }) private fishTickets!: any[];
+  @Prop() private configName!: string;
 
   private selected: any[] = [];
   private showDialog: boolean = false;
   private action = '';
   private index: number = -1;
 
-  private currFishTicket: WcgopFishTicket = {};
+  private currFishTicket: any = {};
 
-  private settings = {
-    rowKey: 'fishNum',
-    columns: [
-      {
-        name: 'fishTicketNum',
-        required: true,
-        label: 'Fish #',
-        align: 'left',
-        field: (row: any) => row.fishNum,
-        sortable: true
-      },
-      {
-        name: 'date',
-        align: 'left',
-        label: 'Date',
-        field: (row: any) => row.date,
-        sortable: true
-      },
-      {
-        name: 'state',
-        align: 'left',
-        label: 'State',
-        field: (row: any) => row.state,
-        sortable: true
-      }
-    ]
-  };
+  @Getter('appConfig', { namespace: 'appSettings' })
+  private appConfig!: BoatnetConfig;
+  private config: any;
+
+  private created() {
+    this.config = get(this.appConfig, this.configName);
+  }
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];

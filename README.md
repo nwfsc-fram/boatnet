@@ -15,6 +15,8 @@ Note that without a CouchDB, large sections of the application will not function
 ## Projects
 
 Please refer to the [Wiki](https://github.com/nwfsc-fram/boatnet/wiki) for project descriptions.
+Also, see miscellaneous supporting [Docs](https://github.com/nwfsc-fram/boatnet/tree/master/docs).
+
 Boatnet contains multiple projects located in different directories.
 Note that all of the projects are currently a work in progress!
 

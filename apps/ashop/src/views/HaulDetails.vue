@@ -33,16 +33,26 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import {
+  createComponent,
+  ref,
+  reactive,
+  computed,
+  watch, onBeforeUnmount
+} from '@vue/composition-api';
+import { BaseOperation } from '@boatnet/bn-models';
+import { get, set } from 'lodash';
+import { update } from '../data/initHauls';
 
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const appConfig = store.state.appSettings.appConfig;
-    const haul = reactive(context.root.$store.state.tripsState.currentHaul);
-    const haulName = context.root.$store.state.appSettings.appConfig.hauls.itemNumName;
+    const haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
+    const haulName = store.state.appSettings.appConfig.hauls.itemNumName;
 
     const saveOnUpdate = async () => {
+      update(haul);
       store.dispatch('tripsState/save', haul);
     };
 

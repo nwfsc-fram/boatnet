@@ -2,24 +2,34 @@
   <span>
     <!-- <q-scroll-area style="height: 570px"> -->
 
-      <q-table
-        class="my-sticky-header-table"
-        :dense="isCondensed"
-        :hide-bottom="showBottom"
-        :data="data"
-        :columns="settings.columns"
-        :row-key="settings.rowKey"
-        :selected.sync="selected"
-        :pagination="pagination"
-        separator="vertical"
-      >
+    <q-table
+      class="my-sticky-header-table"
+      :dense="isCondensed"
+      :hide-bottom="showBottom"
+      :data="data"
+      :columns="settings.columns"
+      :row-key="settings.rowKey"
+      :selected.sync="selected"
+      :pagination="pagination"
+      separator="vertical"
+    >
 
-        <template v-slot:body="props">
-          <q-tr :props="props" @click.native="select(props.row)" class="cursor-pointer" style="font-weight: bold">
-              <slot v-bind:row="props.row"/>
-          </q-tr>
-        </template>
-      </q-table>
+      <template v-slot:body="props">
+        <q-tr
+          :props="props"
+          @click.native="select(props.row)"
+          class="cursor-pointer"
+          style="font-weight: bold"
+        >
+          <q-td
+            v-for="column of settings.columns"
+            :align="column.align"
+            :key="column.name"
+            :style="{ width: column.width, whiteSpace: 'normal' }"
+          >{{ getValue(props.row, column) }}</q-td>
+        </q-tr>
+      </template>
+    </q-table>
 
     <!-- </q-scroll-area> -->
   </span>
@@ -30,6 +40,8 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { BaseTrip } from '@boatnet/bn-models';
+import { getFormattedValue } from '../helpers/helpers';
+import { get } from 'lodash';
 
 @Component
 export default class BoatnetTable extends Vue {
@@ -38,7 +50,7 @@ export default class BoatnetTable extends Vue {
   @Prop({ default: true }) public showBottom!: boolean;
   @Prop({ default: true }) public isCondensed!: boolean;
   public selected: any[] = [];
-  private pagination = {rowsPerPage: 0};
+  private pagination = { rowsPerPage: 0 };
 
   private select(row: any) {
     if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
@@ -46,8 +58,17 @@ export default class BoatnetTable extends Vue {
       this.$emit('select', undefined);
     } else {
       this.selected = [row];
-      // delete row.__index; // This was here because __index is not in our models
+      delete row.__index; // This is here because __index is not in our models
       this.$emit('select', row);
+    }
+  }
+
+  private getValue(row: any, attribute: any) {
+    const value = get(row, attribute.field);
+    if (attribute.type && value) {
+      return getFormattedValue(value, attribute.type, attribute.displayFormat);
+    } else {
+      return value;
     }
   }
 }
