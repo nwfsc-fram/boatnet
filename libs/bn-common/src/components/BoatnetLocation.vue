@@ -27,7 +27,7 @@
 import { createComponent, computed, ref } from '@vue/composition-api';
 import { get, set } from 'lodash';
 import Vue from 'vue';
-import { GPSFormat } from '@boatnet/bn-models/src/models/_base/base-event';
+import { GPSFormat } from '@boatnet/bn-models';
 import Coordinates from 'coordinate-parser';
 
 export default createComponent({
