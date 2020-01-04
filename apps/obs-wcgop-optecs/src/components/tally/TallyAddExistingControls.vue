@@ -2,10 +2,10 @@
   <q-btn-group spread>
     <template v-for="reason in reasonButtonColors">
       <tally-control-btn
+        :key="`${reason.name}`"
         :control-name="reason.name"
         :color="reason.color.bg"
         :text-color="reason.color.text"
-        :key="`${reason.name}`"
         @controlclick="handleControlClick"
       >
         <q-badge
@@ -13,10 +13,12 @@
           color="blue"
           text-color="white"
           floating
-        >SELECTED</q-badge>
-        {{speciesCode}}
+        >
+          SELECTED
+        </q-badge>
+        {{ speciesCode }}
         <br>
-        {{reason.name}}
+        {{ reason.name }}
       </tally-control-btn>
     </template>
     <tally-control-btn
@@ -28,7 +30,7 @@
       Done
       <br>with
       <br>
-      {{speciesCode}}
+      {{ speciesCode }}
     </tally-control-btn>
   </q-btn-group>
 </template>

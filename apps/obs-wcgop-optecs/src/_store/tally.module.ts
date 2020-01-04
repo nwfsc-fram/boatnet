@@ -139,32 +139,6 @@ function getHighestTempCounter(
   return newCount;
 }
 
-async function updateLayoutDB(
-  layout: TallyLayoutRecord
-): Promise<TallyLayoutRecord> {
-  const result = await updateDB(layout);
-  if (result) {
-    layout._id = result.id;
-    layout._rev = result.rev;
-    layout.updatedDate = moment().format();
-    layout.updatedBy = authService.getCurrentUser()!.username;
-  }
-  return layout;
-}
-
-async function updateTallyDataDB(
-  tallyData: TallyDataRecord
-): Promise<TallyDataRecord> {
-  const result = await updateDB(tallyData);
-  if (result) {
-    tallyData._id = result.id;
-    tallyData._rev = result.rev;
-    tallyData.updatedDate = moment().format();
-    tallyData.updatedBy = authService.getCurrentUser()!.username;
-  }
-  return tallyData;
-}
-
 async function updateDB(record: Base) {
   try {
     if (record._id) {
@@ -226,6 +200,32 @@ async function updateDB(record: Base) {
       throw err;
     }
   }
+}
+
+async function updateLayoutDB(
+  layout: TallyLayoutRecord
+): Promise<TallyLayoutRecord> {
+  const result = await updateDB(layout);
+  if (result) {
+    layout._id = result.id;
+    layout._rev = result.rev;
+    layout.updatedDate = moment().format();
+    layout.updatedBy = authService.getCurrentUser()!.username;
+  }
+  return layout;
+}
+
+async function updateTallyDataDB(
+  tallyData: TallyDataRecord
+): Promise<TallyDataRecord> {
+  const result = await updateDB(tallyData);
+  if (result) {
+    tallyData._id = result.id;
+    tallyData._rev = result.rev;
+    tallyData.updatedDate = moment().format();
+    tallyData.updatedBy = authService.getCurrentUser()!.username;
+  }
+  return tallyData;
 }
 
 function getButtonFromIndex(getState: TallyState, idx: number) {

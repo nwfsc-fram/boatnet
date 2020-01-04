@@ -2,23 +2,23 @@
   <q-btn-group spread>
     <tally-control-btn
       control-name="tally-mode"
-      @controlclick="handleControlClick"
       :color="tallyMode.color"
       :textcolor="tallyMode['textcolor']"
       size="md"
+      @controlclick="handleControlClick"
     >
       Tally
       <br>Mode
       <br>
-      {{tallyMode.incdecText}}
+      {{ tallyMode.incdecText }}
     </tally-control-btn>
     <template v-for="reasonInfo in reasonButtonColors">
       <tally-btn
+        :key="reasonInfo.name"
         :layout="getLayout(reasonInfo)"
         :data="getData(reasonInfo)"
-        @dataChanged="handleDataChanged"
-        :key="reasonInfo.name"
         size="md"
+        @dataChanged="handleDataChanged"
       />
     </template>
     <tally-control-btn
@@ -31,7 +31,7 @@
       Done
       <br>with
       <br>
-      {{speciesCode}}
+      {{ speciesCode }}
     </tally-control-btn>
   </q-btn-group>
 </template>
@@ -100,10 +100,10 @@ export default class TallyAllTalliesControls extends Vue {
     this.clearLastIncDec();
   }
   public handleControlClick(controlName: string): void {
+    const isInc = this.tallyMode.value > 0;
     switch (controlName) {
       case 'tally-mode':
         // switch mode
-        const isInc = this.tallyMode.value > 0;
         this.setTallyMode(!isInc);
         break;
       case 'all-tallies-done':

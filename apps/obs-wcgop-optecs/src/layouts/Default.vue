@@ -1,7 +1,10 @@
 <template>
   <default-layout>
     <template v-slot:menu_item>
-      <q-item to="/tally" exact>
+      <q-item
+        to="/tally"
+        exact
+      >
         <q-item-section avatar>
           <q-icon name="dialpad" />
         </q-item-section>
@@ -9,17 +12,20 @@
           <q-item-label>Tally</q-item-label>
         </q-item-section>
       </q-item>
-      <q-item to="/dynamicTripDetails" exact>
-          <q-item-section avatar>
-            <q-icon name="error"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>dynamicTripDetails</q-item-label>
-          </q-item-section>
-        </q-item>
+      <q-item
+        to="/dynamicTripDetails"
+        exact
+      >
+        <q-item-section avatar>
+          <q-icon name="error" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>dynamicTripDetails</q-item-label>
+        </q-item-section>
+      </q-item>
     </template>
     <template v-slot:breadcrumb>
-      <optecs-breadcrumbs/>
+      <optecs-breadcrumbs />
     </template>
   </default-layout>
 </template>

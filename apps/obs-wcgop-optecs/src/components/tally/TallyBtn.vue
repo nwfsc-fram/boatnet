@@ -22,17 +22,32 @@
           color="black"
           floating
         >
-          <q-icon name="arrow_upward" color="white"/>
+          <q-icon
+            name="arrow_upward"
+            color="white"
+          />
         </q-badge>
         <q-badge
           v-if="tallyState.lastClickedIndex === layout.index && !tallyState.lastClickedWasInc"
           color="orange"
           floating
         >
-          <q-icon name="arrow_downward" color="black"/>
+          <q-icon
+            name="arrow_downward"
+            color="black"
+          />
         </q-badge>
-        <q-badge v-if="tallyMode === deleteButtonMode" color="red" floating>DELETE</q-badge>
-        <q-badge v-if="tallyMode === moveSelect" color="blue-3" text-color="black" floating>MOVE</q-badge>
+        <q-badge
+          v-if="tallyMode === deleteButtonMode"
+          color="red"
+          floating
+        >DELETE</q-badge>
+        <q-badge
+          v-if="tallyMode === moveSelect"
+          color="blue-3"
+          text-color="black"
+          floating
+        >MOVE</q-badge>
         <q-badge
           v-if="tallyMode === moveLocation && layout.index !== currentButtonIdx"
           color="green-3"
@@ -44,7 +59,7 @@
           color="blue"
           text-color="white"
           floating
-        >SELECT {{layout.labels.shortCode}}</q-badge>
+        >SELECT {{ layout.labels.shortCode }}</q-badge>
         <q-badge
           v-if="tallyMode === modifyDistSelectButton"
           color="blue"
@@ -69,11 +84,11 @@
           text-color="white"
           floating
         >NEW DISP</q-badge>
-        {{layout.labels.shortCode}}
+        {{ layout.labels.shortCode }}
         <br>
-        {{layout.labels.reason}}
+        {{ layout.labels.reason }}
         <br>
-        {{data ? data.count : ''}}
+        {{ data ? data.count : '' }}
       </q-btn>
     </span>
     <span v-if="layout && layout.blank && isHighlightBlankActive()">
@@ -85,7 +100,7 @@
         align="around"
         color="black"
         @click="handleBlankClicked"
-      ></q-btn>
+      />
     </span>
   </span>
 </template>

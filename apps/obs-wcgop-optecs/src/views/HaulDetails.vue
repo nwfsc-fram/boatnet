@@ -2,7 +2,9 @@
   <q-page>
     <boatnet-tab-panel :size="4">
       <template v-slot:title1>
-        <div class="text-h5 row justify-center">Haul #{{haulNum}} Info Part 1</div>
+        <div class="text-h5 row justify-center">
+          Haul #{{ haulNum }} Info Part 1
+        </div>
       </template>
       <template v-slot:content1>
         <div class="q-col-gutter-md row">
@@ -14,14 +16,16 @@
               title="Beaufort Scale:"
               :value.sync="currentHaul.beaufortValue"
               :options="beaufortOptions"
-              :description="beaufortLookupVals[currentHaul.beaufortValue] ? beaufortLookupVals[currentHaul.beaufortValue].value : ''"
+              :description="beaufortLookupVals[currentHaul.beaufortValue] ?
+                beaufortLookupVals[currentHaul.beaufortValue].value : ''"
               @save="saveChanges"
             />
             <boatnet-button-toggle
               title="Gear Type:"
               :value.sync="currentHaul.gearType"
               :options="gearTypeOptions"
-              :description="gearTypeLookupVals[currentHaul.gearType] ? gearTypeLookupVals[currentHaul.gearType].value : ''"
+              :description="gearTypeLookupVals[currentHaul.gearType] ?
+                gearTypeLookupVals[currentHaul.gearType].value : ''"
               @save="saveChanges"
             />
 
@@ -31,7 +35,7 @@
               :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <boatnet-button-toggle
@@ -40,25 +44,27 @@
               :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <div>
               <boatnet-keyboard-select
                 :value.sync="currentHaul.targetStrategy"
                 label="Target Strategy"
-                keyboardType="normal"
+                keyboard-type="normal"
                 :options="options"
                 @filter="filterSpecies"
                 @save="saveChanges"
               />
             </div>
           </div>
-          <div class="col q-col-gutter-md"></div>
+          <div class="col q-col-gutter-md" />
         </div>
       </template>
       <template v-slot:title2>
-        <div class="text-h5 row justify-center">Haul #{{haulNum}} Gear Info</div>
+        <div class="text-h5 row justify-center">
+          Haul #{{ haulNum }} Gear Info
+        </div>
       </template>
       <template v-slot:content2>
         <div class="q-col-gutter-md row q-pt-md">
@@ -66,37 +72,37 @@
             <boatnet-keyboard-input
               :value.sync="currentHaul.totalHook"
               label="Total Hooks"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.totalHooksLost"
               label="Total Hooks Lost"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.totalGearSegments"
               label="Total Gear Segments"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.gearSegmentsLost"
               label="Total Gear Segments Lost"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.hooksSampled"
               label="Hooks Sampled"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.avgNumHooksPerSegment"
               label="Avg # of hooks per segment"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
 
@@ -106,7 +112,7 @@
               :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
-                ]"
+              ]"
               @save="saveChanges"
             />
           </div>
@@ -114,7 +120,7 @@
             <boatnet-keyboard-input
               :value.sync="currentHaul.avgSetSpeed"
               label="Avg set speed"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
 
@@ -124,13 +130,13 @@
               :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.floatsPerSegment"
               label="Float per segment"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
 
@@ -140,26 +146,28 @@
               :options="[
                 {label: 'Y', value: true},
                 {label: 'N', value: false}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.weightPerSinker"
               label="Weight per sinker"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.avgNumSinkersPerSegment"
               label="Avg # sinkers per segment"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
           </div>
         </div>
       </template>
       <template v-slot:title3>
-        <div class="text-h5 row justify-center">Haul #{{haulNum}} Info Part 2</div>
+        <div class="text-h5 row justify-center">
+          Haul #{{ haulNum }} Info Part 2
+        </div>
       </template>
       <template v-slot:content3>
         <div class="q-col-gutter-md row">
@@ -174,14 +182,15 @@
                 {label: '11.00', value: '11.00'},
                 {label: '11.05', value: '11.05'},
                 {label: 'Scale Not Used', value: 'NA'}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <boatnet-button-toggle
               title="Gear Performance"
               :value.sync="currentHaul.gearPerformance"
               :options="gearPerformanceOptions"
-              :description="gearPerformanceLookupVals[currentHaul.gearPerformance] ? gearPerformanceLookupVals[currentHaul.gearPerformance].value : ''"
+              :description="gearPerformanceLookupVals[currentHaul.gearPerformance] ?
+                gearPerformanceLookupVals[currentHaul.gearPerformance].value : ''"
               @save="saveChanges"
             />
             <boatnet-button-toggle
@@ -190,31 +199,36 @@
               :options="[
                 {label: '14', value: '14'},
                 {label: '6', value: '6'}
-                ]"
+              ]"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.observerTotalCatch.measurement.value"
               label="Visual OTC"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
             <boatnet-keyboard-input
               :value.sync="currentHaul.fit"
               label="Fit #"
-              keyboardType="numeric"
+              keyboard-type="numeric"
               @save="saveChanges"
             />
           </div>
-          <div class="col q-col-gutter-md"></div>
+          <div class="col q-col-gutter-md" />
         </div>
       </template>
       <template v-slot:title4>
-        <div class="text-h5 row justify-center">Locations</div>
+        <div class="text-h5 row justify-center">
+          Locations
+        </div>
       </template>
       <template v-slot:content4>
         <div class="q-col-gutter-md q-pt-md">
-          <boatnet-locations :locations.sync="currentHaul.locations" @save="saveChanges"/>
+          <boatnet-locations
+            :locations.sync="currentHaul.locations"
+            @save="saveChanges"
+          />
         </div>
       </template>
     </boatnet-tab-panel>

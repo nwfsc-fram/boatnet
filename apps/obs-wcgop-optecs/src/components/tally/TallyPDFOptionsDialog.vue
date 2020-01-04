@@ -1,17 +1,46 @@
 <template>
-  <q-dialog v-model="isOpen" persistent>
+  <q-dialog
+    v-model="isOpen"
+    persistent
+  >
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Generate PDF - Set ID's</div>
+        <div class="text-h6">
+          Generate PDF - Set ID's
+        </div>
       </q-card-section>
       <q-card-section>
-        <q-input label="Trip #" v-model.number="config.tripId" type="number"></q-input>
-        <q-input label="Haul #" v-model.number="config.haulId" type="number"></q-input>
-        <q-input label="Catch #" v-model.number="config.catchId" type="number"></q-input>
+        <q-input
+          v-model.number="config.tripId"
+          label="Trip #"
+          type="number"
+        />
+        <q-input
+          v-model.number="config.haulId"
+          label="Haul #"
+          type="number"
+        />
+        <q-input
+          v-model.number="config.catchId"
+          label="Catch #"
+          type="number"
+        />
       </q-card-section>
-      <q-card-actions align="right" class="text-primary">
-        <q-btn label="Generate PDF" @click="generatePdf" v-close-popup/>
-        <q-btn flat label="Done" @click="close" v-close-popup/>
+      <q-card-actions
+        align="right"
+        class="text-primary"
+      >
+        <q-btn
+          v-close-popup
+          label="Generate PDF"
+          @click="generatePdf"
+        />
+        <q-btn
+          v-close-popup
+          flat
+          label="Done"
+          @click="close"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -37,6 +66,16 @@ export default Vue.component('tally-pdf-dialog', {
       }
     };
   },
+  computed: {
+    inputsOK(): boolean {
+      console.log('WTF');
+      return (
+        this.config.tripId !== null &&
+        this.config.haulId !== null &&
+        this.config.catchId !== null
+      );
+    }
+  },
   methods: {
     open() {
       this.isOpen = true;
@@ -48,16 +87,6 @@ export default Vue.component('tally-pdf-dialog', {
     generatePdf() {
       this.$emit('generatePdf', this.config);
       this.close();
-    }
-  },
-  computed: {
-    inputsOK(): boolean {
-      console.log('WTF');
-      return (
-        this.config.tripId !== null &&
-        this.config.haulId !== null &&
-        this.config.catchId !== null
-      );
     }
   }
 });

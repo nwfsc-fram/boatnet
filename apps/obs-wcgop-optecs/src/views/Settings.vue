@@ -1,10 +1,18 @@
 <template>
   <q-page padding>
     <div>
-      <q-toggle v-model="isKeyboardEnabled" label="Show Keyboard" @input="enableKeyboard"/>
+      <q-toggle
+        v-model="isKeyboardEnabled"
+        label="Show Keyboard"
+        @input="enableKeyboard"
+      />
     </div>
     <div>
-      <q-toggle v-model="isSoundEnabled" label="Enable Sound" @input="enableSound"/>
+      <q-toggle
+        v-model="isSoundEnabled"
+        label="Enable Sound"
+        @input="enableSound"
+      />
     </div>
   </q-page>
 </template>

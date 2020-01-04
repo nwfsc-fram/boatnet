@@ -1,16 +1,32 @@
 <template>
-  <q-dialog v-model="isOpen" persistent position="left">
+  <q-dialog
+    v-model="isOpen"
+    persistent
+    position="left"
+  >
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">History</div>
+        <div class="text-h6">
+          History
+        </div>
       </q-card-section>
       <q-card-section>
-        <q-table :pagination.sync="pagination" :data="history" :columns="columns">
-
-        </q-table>
+        <q-table
+          :pagination.sync="pagination"
+          :data="history"
+          :columns="columns"
+        />
       </q-card-section>
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Done" @click="close" v-close-popup/>
+      <q-card-actions
+        align="right"
+        class="text-primary"
+      >
+        <q-btn
+          v-close-popup
+          flat
+          label="Done"
+          @click="close"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -75,6 +91,11 @@ export default Vue.component('tally-history-dialog', {
       ]
     };
   },
+  computed: {
+    history(): TallyHistory[] {
+      return this.$store.getters['tallyState/currentTallyHistory'];
+    }
+  },
   methods: {
     open() {
       this.isOpen = true;
@@ -83,11 +104,6 @@ export default Vue.component('tally-history-dialog', {
     close() {
       this.$emit('cancel');
       this.isOpen = false;
-    }
-  },
-  computed: {
-    history(): TallyHistory[] {
-      return this.$store.getters['tallyState/currentTallyHistory'];
     }
   }
 });
