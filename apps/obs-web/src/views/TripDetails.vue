@@ -530,7 +530,7 @@ export default class TripDetails extends Vue {
           createdDate: moment().format()
         }
 
-      }, async (err, response, body) => {
+      }, async (err: any, response: any, body: any) => {
         self.tripsApiId = body.tripID;
         self.trip.activeTrip!.tripNum = body.tripID;
         await pouchService.db.post(self.trip.activeTrip).then( () => {
