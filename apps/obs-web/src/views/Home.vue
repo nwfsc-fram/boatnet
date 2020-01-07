@@ -38,6 +38,7 @@ import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';
+import { getTrips, getTrip } from '../helpers/trips-api';
 
 import { Notify } from 'quasar';
 
@@ -206,8 +207,7 @@ export default class Home extends Vue {
 
   }
 
-  private created() {
-    // this.couch();
+  private async created() {
     this.getPermits();
     this.getUserFromUserDB();
     this.getUserAliasfromPouchDB();

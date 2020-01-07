@@ -252,6 +252,8 @@ import {
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
+import { getTripsApiTrips } from '../helpers/trips-api';
+
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
@@ -745,44 +747,10 @@ private async getAuthorizedVessels() {
 
 }
 
-  private async getTripsApiTrips() {
-    const user = authService.getCurrentUser();
-
-    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-
-    const vesselTripsUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips'
-                + '?vesselId=' + vesselId;
-
-    const self = this;
-
-    try {
-
-      await request.get(
-        {
-          url: vesselTripsUrl,
-        json: true,
-        headers: {
-          authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
-        }
-      }, (err: any, response: any, body: any) => {
-
-        if (body) {
-          self.tripsApiTrips = body;
-        } else {
-          self.tripsApiTrips = [];
-        }
-      }
-      );
-
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  private created() {
+  private async created() {
     // this.setActiveVessel();
     this.getAuthorizedVessels();
-    this.getTripsApiTrips();
+    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.getUserTrips();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
@@ -791,8 +759,8 @@ private async getAuthorizedVessels() {
   }
 
   @Watch('vessel.activeVessel')
-  private handler3(newVal: string, oldVal: string) {
-    this.getTripsApiTrips();
+  private async handler3(newVal: string, oldVal: string) {
+    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.nextSelections = [];
     this.getUserTrips();
     this.getNextSelections();
