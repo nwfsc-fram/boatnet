@@ -64,6 +64,7 @@ yarn serve
 
 - Launch the VSC debugger
   - With your app running, click the green arrow at the top of the debug window (with `vuejs: chrome` configuration selected)
+  ![Run Debugger](images/run_debugger.png)
   - This will launch a Chrome browser instance that should link back to your debugger breakpoints.
   - you can watch variables, etc, like any debugger.
   
