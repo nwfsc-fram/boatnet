@@ -4,24 +4,17 @@
 
 ## Install Chrome debugger
 
-- I already had it installed, but check here:
+- I already had it installed, click on the extensions icon on the left (the stacked cubes) and search for `Debugger for Chrome`.
 
-https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
+## Update `vue.config.js` (same level as `package.json` in your app)
 
-## Create/ update `vue.config.js` (same level as `package.json` in your app)
+- This file will already exist if you have Quasar configured (created by Vue CLI 3)
 
-- This file will already exist if you have Quasar configured.
-
-```
-cd /c/git/boatnet/apps/obs-wcgop/optecs
-touch vue.config.js
-```
-
-- Add this to your `vue.config.js`
+- Add this `configureWebpack` block to your `vue.config.js`
 
 ```
 module.exports = {
-  // (Leave other stuff here if exists),
+  // (Leave other stuff here if exists), ...
   configureWebpack: {
     devtool: 'source-map'
   }
