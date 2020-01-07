@@ -1,7 +1,7 @@
 <template>
   <div v-if="visible">
     <vue-touch-keyboard
-      v-if="layout === 'normal'"
+      v-if="layout === 'normal' && isKeyboardEnabled"
       :class="{'normalKeyboard': true,
                'keyboardWithList':(displayFields && displayFields.length != 0),
                'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
@@ -13,7 +13,7 @@
       :next="next"
     />
     <vue-touch-keyboard
-      v-else-if="layout === 'numeric'"
+      v-else-if="layout === 'numeric' && isKeyboardEnabled"
       :class="{'numericKeyboard': true,
                'keyboardWithList':(displayFields && displayFields.length != 0),
                'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
@@ -25,7 +25,7 @@
       :next="next"
     />
     <vue-touch-keyboard
-      v-else-if="layout === 'compact'"
+      v-else-if="layout === 'compact' && isKeyboardEnabled"
       :class="{'numericKeyboard': true,
                'keyboardWithList':(displayFields && displayFields.length != 0),
                'keyboardWithoutList': (displayFields && displayFields.length == 0)}"
@@ -36,7 +36,7 @@
       :input="inputTarget"
       :next="next"
     />
-    <div v-if="displayFields && displayFields.length != 0">
+    <div v-if="displayFields && displayFields.length != 0 && isKeyboardEnabled">
       <boatnet-keyboard-list
         class="list"
         v-on:selected="select"
@@ -51,6 +51,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 
 @Component
 export default class BoatnetKeyboard extends Vue {
@@ -61,6 +62,9 @@ export default class BoatnetKeyboard extends Vue {
   @Prop() public docType !: string;
   @Prop() public inputValue!: string;
   @Prop() public valType!: string;
+
+  @Getter('isKeyboardEnabled', { namespace: 'appSettings' })
+  private isKeyboardEnabled!: boolean;
 
   private keyboardOptions = {
     useKbEvents: false,
@@ -87,7 +91,7 @@ export default class BoatnetKeyboard extends Vue {
 
 <style scoped lang="scss">
 .popover {
-  position: absolute;
+  position: fixed;
   bottom: 0;
 
   z-index: 10000;

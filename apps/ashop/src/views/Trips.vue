@@ -56,13 +56,7 @@ export default createComponent({
     });
 
     const init = async () => {
-      const rows = await allDocs({}, pouchService.userDBName);
-      if (appMode === 'ashop') {
-        await getCruise(appMode, rows);
-        return await getTrips();
-      } else {
-        return rows.filter((row: any) => row.type === appMode + '-trip');
-      }
+      return await getTrips(appMode)
     };
     const { data } = useAsync(init);
 
