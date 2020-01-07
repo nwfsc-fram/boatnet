@@ -1,8 +1,13 @@
 <template>
-  <q-dialog v-model="isOpen" persistent>
+  <q-dialog
+    v-model="isOpen"
+    persistent
+  >
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Templates</div>
+        <div class="text-h6">
+          Templates
+        </div>
       </q-card-section>
       <q-card-section>
         <q-table
@@ -10,16 +15,24 @@
           :columns="columns"
           selection="single"
           :selected.sync="selected"
-        ></q-table>
+        />
       </q-card-section>
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Cancel" @click="close" v-close-popup/>
+      <q-card-actions
+        align="right"
+        class="text-primary"
+      >
         <q-btn
+          v-close-popup
+          flat
+          label="Cancel"
+          @click="close"
+        />
+        <q-btn
+          v-close-popup
           flat
           label="Load Template"
-          @click="loadTemplate"
           :disabled="selected.length === 0"
-          v-close-popup
+          @click="loadTemplate"
         />
       </q-card-actions>
     </q-card>
@@ -33,11 +46,14 @@ import moment from 'moment';
 
 export default Vue.component('tally-template-dialog', {
   props: {
+    /* eslint-disable */
     templateData: {
       // this seems complicated, not sure if there's a simpler way
       // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
+      // esli
       type: Array as () => TallyLayoutRecord[]
     }
+    /* esline-enable */
   },
   data() {
     return {
@@ -53,6 +69,11 @@ export default Vue.component('tally-template-dialog', {
       ]
     };
   },
+  computed: {
+    // history(): TallyHistory[] {
+    //   return this.$store.getters['tallyState/currentTallyHistory'];
+    // }
+  },
   methods: {
     open() {
       this.isOpen = true;
@@ -67,11 +88,6 @@ export default Vue.component('tally-template-dialog', {
         this.$emit('selectedDefaultTemplate', doc);
       }
     }
-  },
-  computed: {
-    // history(): TallyHistory[] {
-    //   return this.$store.getters['tallyState/currentTallyHistory'];
-    // }
   }
 });
 </script>

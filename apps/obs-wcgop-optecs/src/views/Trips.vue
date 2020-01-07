@@ -1,16 +1,25 @@
 <template>
   <span>
     <q-page>
-      <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-        {{alert.message}}
+      <q-banner
+        v-show="!!alert.message"
+        rounded
+        inline-actions
+        class="bg-red text-white"
+      >
+        {{ alert.message }}
         <template v-slot:action>
-          <q-btn flat label="Dismiss" @click="clear"/>
+          <q-btn
+            flat
+            label="Dismiss"
+            @click="clear"
+          />
         </template>
       </q-banner>
       <boatnet-summary
-        currentScreen="Trip"
+        current-screen="Trip"
         :current="currentTrip"
-        :selectionId="currentTrip ? currentTrip.tripNum : 0"
+        :selection-id="currentTrip ? currentTrip.tripNum : 0"
         @add="handleAddTrip"
         @edit="handleEditTrip"
         @end="handleEndTrip"
@@ -24,7 +33,7 @@
             @select="handleSelectTrip"
           >
             <template v-slot:default="rowVals">
-              <q-td key="tripNum">{{rowVals.row.tripNum}}</q-td>
+              <q-td key="tripNum">{{ rowVals.row.tripNum }}</q-td>
               <q-td key="vesselName">{{ rowVals.row.vessel.vesselName }}</q-td>
               <q-td key="departurePort">{{ rowVals.row.departurePort.name }}</q-td>
               <q-td key="departureDate">{{ formatDate(rowVals.row.departureDate) }}</q-td>
@@ -267,14 +276,6 @@ export default class Trips extends Vue {
     } else {
       return this.pouchState.credentials.dbInfo.userDB;
     }
-  }
-
-  /**
-   * Get handle to currently selected database for pouch-vue to work correctly
-   */
-  private get lookupsDB() {
-    // @ts-ignore
-    return this[this.selectedDBName];
   }
 }
 </script>

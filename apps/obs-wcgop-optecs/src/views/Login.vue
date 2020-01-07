@@ -1,5 +1,5 @@
 <template>
-  <boatnet-login appName="Boatnet WCGOP OPTECS Login">
+  <boatnet-login app-name="Boatnet WCGOP OPTECS Login">
     <!-- <template v-slot:stat_info>
       <div>
         <b>Last Software Update Date:</b>

@@ -1,25 +1,64 @@
 <template>
   <q-btn-group spread>
-    <tally-control-btn color="grey-2" text-color="black" control-name="history" @controlclick="handleControlClick">History</tally-control-btn>
-    <tally-control-btn control-name="template-manager" color="grey-3" @controlclick="handleControlClick">
+    <tally-control-btn
+      color="grey-2"
+      text-color="black"
+      control-name="history"
+      @controlclick="handleControlClick"
+    >
+      History
+    </tally-control-btn>
+    <tally-control-btn
+      control-name="template-manager"
+      color="grey-3"
+      @controlclick="handleControlClick"
+    >
       Template
       <br>Load/Save
     </tally-control-btn>
-    <tally-control-btn color="grey-2" text-color="black" control-name="generate-pdf" @controlclick="handleControlClick">Generate<br>PDF</tally-control-btn>
-    <tally-control-btn control-name="modify-layout" @controlclick="handleControlClick" color="grey-4" text-color="black">
+    <tally-control-btn
+      color="grey-2"
+      text-color="black"
+      control-name="generate-pdf"
+      @controlclick="handleControlClick"
+    >
+      Generate<br>PDF
+    </tally-control-btn>
+    <tally-control-btn
+      control-name="modify-layout"
+      color="grey-4"
+      text-color="black"
+      @controlclick="handleControlClick"
+    >
       Modify
       <br>Layout
     </tally-control-btn>
-    <tally-control-btn control-name="tally-mode" @controlclick="handleControlClick" :color="tallyMode.color" :textcolor="tallyMode['textcolor']">
+    <tally-control-btn
+      control-name="tally-mode"
+      :color="tallyMode.color"
+      :textcolor="tallyMode['textcolor']"
+      @controlclick="handleControlClick"
+    >
       Tally
       <br>Mode
-      <br>{{tallyMode.incdecText}}
+      <br>{{ tallyMode.incdecText }}
     </tally-control-btn>
-    <tally-control-btn control-name="weights-for" @controlclick="handleControlClick" color="grey-5" text-color="black">
+    <tally-control-btn
+      control-name="weights-for"
+      color="grey-5"
+      text-color="black"
+      @controlclick="handleControlClick"
+    >
       Weights
       <br>For...
     </tally-control-btn>
-    <tally-control-btn control-name="all-tallies-for" @controlclick="handleControlClick" color="grey-6" text-color="black">     All
+    <tally-control-btn
+      control-name="all-tallies-for"
+      color="grey-6"
+      text-color="black"
+      @controlclick="handleControlClick"
+    >
+      All
       <br>Tallies
       <br>For...
     </tally-control-btn>
@@ -63,10 +102,10 @@ export default class TallyControls extends Vue {
 
   public handleControlClick(controlName: string): void {
     // Intercept, or pass along event to Tally parent component
+    const isInc = this.tallyMode.value > 0;
     switch (controlName) {
       case 'tally-mode':
         // switch mode
-        const isInc = this.tallyMode.value > 0;
         this.setTallyMode(!isInc);
         break;
       default:
