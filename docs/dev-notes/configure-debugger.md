@@ -29,7 +29,7 @@ module.exports = {
   
 - Replace content of `launch.json` with this. :
   **NOTE: THIS IS FOR ASHOP. ADJUST YOUR webRoot PATH APPROPRIATELY.**
-
+```
 {
   "version": "0.2.0",
   "configurations": [
