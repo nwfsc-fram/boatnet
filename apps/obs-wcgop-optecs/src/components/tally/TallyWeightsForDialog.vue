@@ -118,11 +118,11 @@ export default Vue.component('tally-weights-dialog', {
     // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
     buttonData: {
       type: Object,
-      default: () =>  { return {labels: { shortCode: '', reason: '' } } }
+      default: () =>  ({labels: { shortCode: '', reason: '' } })
     },
     speciesData: {
       type: Object,
-      default: () => { return {} }
+      default: () => ({})
     }
   },
   data() {
