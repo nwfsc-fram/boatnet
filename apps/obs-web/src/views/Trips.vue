@@ -54,11 +54,12 @@
       :class="computedTripClass(trip)"
       >
         <q-card-section>
-          <div v-if="trip.tripNum" style="font-size: 12px; line-height: 4px; margin-bottom: 10px"><br>Trip #: {{ trip.tripNum }}
-            <span style="float: right">
+          <div  class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
+            <span>
               <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
               <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
             </span>
+            <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
           </div>
 
           <div class="text-h6">
@@ -79,11 +80,11 @@
               </sup>
           </div>
         </q-card-section>
-        <q-card-actions style="float: right">
+        <div style="float: right">
             <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
             <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
             <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
-        </q-card-actions>
+        </div>
     </q-card>
     </div>
 
@@ -110,17 +111,29 @@
           </div>
 
 
-    <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips</div>
-    <div class=" row items-start">
+    <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips
+
+    <q-toggle
+      style="margin-left: 10px"
+      v-model="closedTripsTable"
+      checked-icon="check"
+      unchecked-icon="clear"
+      color="primary"
+      left-label
+      label="view as table"
+    />
+    </div>
+    <div class="row items-start" v-if="!closedTripsTable">
 
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white trip-card">
 
       <q-card-section>
-          <div v-if="trip.tripNum" style="font-size: 12px; line-height: 4px; margin-bottom: 10px"><br>Trip #: {{ trip.tripNum }}
-            <span style="float: right">
+          <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
+            <span>
               <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
               <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
             </span>
+            <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
           </div>
         <div class="text-h6">
           <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
@@ -135,11 +148,35 @@
           <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ formatDate(trip.captainAffirmedDepartureDate) }} - {{ formatDate(trip.captainAffirmedReturnDate) }} </span>
       </div>
       </q-card-section>
-      <q-card-actions style="float:right">
+      <div style="float:right">
         <q-btn flat @click="review(trip)">review</q-btn>
-      </q-card-actions>
+      </div>
 
     </q-card>
+  </div>
+  <div v-else>
+
+    <q-table
+      :data="closedTrips"
+      :columns="columns"
+      row-key="_id"
+      dense
+      binary-state-sort
+      hide-bottom
+    >
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
+          <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
+          <q-td key="returnDate" :props="props">{{ formatFullDate(props.row.returnDate) }}</q-td>
+          <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
+          <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
+          <q-td key="fishery" :props="props">{{ props.row.fishery.description }}</q-td>
+          <q-td key="isSelected" :props="props">{{ props.row.isSelected ? 'YES':'NO' }}</q-td>
+        </q-tr>
+      </template>
+    </q-table>
+
   </div>
 
     <q-dialog v-model="maxTripsAlert">
@@ -252,6 +289,8 @@ import {
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
+import { getTripsApiTrips } from '../helpers/trips-api';
+
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
@@ -288,6 +327,17 @@ export default class Trips extends Vue {
   private nextSelections: any = [];
   private authorizedVessels: Vessel[] = [];
   private tripsApiTrips: any[] = [];
+  private closedTripsTable: boolean = false;
+
+  private columns = [
+    {name: 'tripNum', label: 'Trip ID', field: 'tripNum', required: false, align: 'left', sortable: true},
+    {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true},
+    {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true},
+    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: false, align: 'left', sortable: true},
+    {name: 'returnPort', label: 'Return Port', field: 'returnPort', required: false, align: 'left', sortable: true},
+    {name: 'fishery', label: 'Fishery', field: 'fishery', required: false, align: 'left', sortable: true},
+    {name: 'isSelected', label: 'Selected', field: 'isSelected', required: false, align: 'right', sortable: true},
+  ];
 
   constructor() {
       super();
@@ -589,10 +639,15 @@ export default class Trips extends Vue {
 
     private closeActiveTrip() {
       this.activeTrip!.closingReason = 'taken';
-      this.closeTrip(this.activeTrip);
-      this.cancelAlert = false;
-      this.closeAlert = false;
-      location.reload();
+      this.closeTrip(this.activeTrip).then(
+        async () => {
+          this.cancelAlert = false;
+          this.closeAlert = false;
+          await this.getNextSelections().then( () => {
+          location.reload();
+          });
+        }
+      );
     }
 
     private review(trip: any) {
@@ -663,6 +718,14 @@ export default class Trips extends Vue {
 
   private formatDate(date: any) {
     return moment(date).format('MMM Do');
+  }
+
+  private formatFullDate(date: any) {
+    return moment(date).format('MM/DD/YYYY');
+  }
+
+  private formatDateTime(date: any) {
+    return moment(date).format('MM/DD/YYYY, HH:MM');
   }
 
   private formatTel(telNum: any) {
@@ -745,44 +808,10 @@ private async getAuthorizedVessels() {
 
 }
 
-  private async getTripsApiTrips() {
-    const user = authService.getCurrentUser();
-
-    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-
-    const vesselTripsUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips'
-                + '?vesselId=' + vesselId;
-
-    const self = this;
-
-    try {
-
-      await request.get(
-        {
-          url: vesselTripsUrl,
-        json: true,
-        headers: {
-          authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
-        }
-      }, (err: any, response: any, body: any) => {
-
-        if (body) {
-          self.tripsApiTrips = body;
-        } else {
-          self.tripsApiTrips = [];
-        }
-      }
-      );
-
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  private created() {
+  private async created() {
     // this.setActiveVessel();
     this.getAuthorizedVessels();
-    this.getTripsApiTrips();
+    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.getUserTrips();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
@@ -791,8 +820,8 @@ private async getAuthorizedVessels() {
   }
 
   @Watch('vessel.activeVessel')
-  private handler3(newVal: string, oldVal: string) {
-    this.getTripsApiTrips();
+  private async handler3(newVal: string, oldVal: string) {
+    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.nextSelections = [];
     this.getUserTrips();
     this.getNextSelections();

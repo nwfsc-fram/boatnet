@@ -206,8 +206,7 @@ export default class Home extends Vue {
 
   }
 
-  private created() {
-    // this.couch();
+  private async created() {
     this.getPermits();
     this.getUserFromUserDB();
     this.getUserAliasfromPouchDB();

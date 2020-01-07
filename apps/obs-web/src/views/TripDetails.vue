@@ -510,36 +510,6 @@ export default class TripDetails extends Vue {
         this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
       }
 
-      const self = this;
-      self.tripsApiId = 0;
-
-      await request.post({
-        url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips',
-        json: true,
-        headers: {
-          authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
-        },
-        body: {
-          vesselId: this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber,
-          vesselName: this.vessel.activeVessel.vesselName,
-          departurePort: this.trip.activeTrip!.departurePort,
-          returnPort: this.trip.activeTrip!.returnPort,
-          departureDate: this.trip.activeTrip!.departureDate,
-          returnDate: this.trip.activeTrip!.returnDate,
-          createdBy: authService.getCurrentUser()!.username,
-          createdDate: moment().format()
-        }
-
-      }, async (err: any, response: any, body: any) => {
-        self.tripsApiId = body.tripID;
-        self.trip.activeTrip!.tripNum = body.tripID;
-        await pouchService.db.post(self.trip.activeTrip).then( () => {
-          self.$router.push({ path: '/trips/' });
-        });
-
-        }
-      );
-
       if (!savedSelections[vesselName]) {
         savedSelections[vesselName] = {};
       }
@@ -607,6 +577,11 @@ export default class TripDetails extends Vue {
                 }
               );
       }
+
+      this.trip.activeTrip!.tripNum = this.tripsApiId;
+      await pouchService.db.post(this.trip.activeTrip).then( () => {
+        this.$router.push({ path: '/trips/' });
+      });
 
     } else {
       this.missingRequired = true;
@@ -802,52 +777,9 @@ private async getMinDate() {
     } else {
 
       await pouchService.db.put(this.trip.activeTrip).then( async () => {
-        const self = this;
-
-        await request.get({
-          url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips/' + this.trip.activeTrip!.tripNum,
-          json: true,
-          headers: {
-            authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
-          }
-
-        }, (err: any, response: any, body: any) => {
-          const apiTrip = body;
-          if (!apiTrip.changelog) {
-            apiTrip.changelog = [];
-          }
-          apiTrip.changelog.push({
-            changedBy: authService.getCurrentUser()!.username,
-            changedDate: moment().format(),
-            previousDeparturePort: apiTrip.departurePort,
-            previousDepartureDate: apiTrip.departureDate,
-            previousReturnPort: apiTrip.returnPort,
-            previousReturnDate: apiTrip.returnDate
-          });
-          apiTrip.updatedBy = authService.getCurrentUser()!.username;
-          apiTrip.updatedDate = moment().format();
-          apiTrip.departurePort = self.trip.activeTrip!.departurePort;
-          apiTrip.departureDate = self.trip.activeTrip!.departureDate;
-          apiTrip.returnPort = self.trip.activeTrip!.returnPort;
-          apiTrip.returnDate = self.trip.activeTrip!.returnDate;
-
-          request.put({
-            url: 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips/' + self.trip.activeTrip!.tripNum,
-            json: true,
-            headers: {
-              authorization: 'Token ' + authService.getCurrentUser()!.jwtToken
-            },
-            body: apiTrip
-          }, () => {
-            self.$router.push({ path: '/trips' });
-          });
-
-          }
-        );
-
-      });
+            this.$router.push({ path: '/trips' });
+            });
     }
-
   }
 
     private async saveSelection() {
