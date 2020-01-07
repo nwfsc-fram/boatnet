@@ -578,6 +578,7 @@ export default class TripDetails extends Vue {
               );
       }
 
+      this.trip.activeTrip!.tripNum = this.tripsApiId;
       await pouchService.db.post(this.trip.activeTrip).then( () => {
         this.$router.push({ path: '/trips/' });
       });
