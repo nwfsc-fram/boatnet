@@ -75,5 +75,5 @@ yarn serve
   - This will launch a Chrome browser instance that should link back to your debugger breakpoints.
   - you can watch variables, etc, like any debugger.
   
-  ![Debugger In Action](/images/debugger.png)
+  ![Debugger In Action](images/debugger.png)
  
