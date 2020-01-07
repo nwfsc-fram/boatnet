@@ -277,13 +277,6 @@ export default class Trips extends Vue {
       return this.pouchState.credentials.dbInfo.userDB;
     }
   }
-
-  /**
-   * Get handle to currently selected database for pouch-vue to work correctly
-   */
-  private get lookupsDB() {
-    return this[this.selectedDBName];
-  }
 }
 </script>
 
