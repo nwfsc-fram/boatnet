@@ -61,7 +61,6 @@ yarn serve
 - Add breakpoints
   - Click and add red breakpoints directly in VS Code to the left of the line numbers.
   - You can add a manual breakpoint in code by adding the `debugger` keyword. Remove it before committing code (tslint should complain about it as a reminder.)
-```
 
 - Launch the VSC debugger
   - With your app running, click the green arrow at the top of the debug window (with `vuejs: chrome` configuration selected)
