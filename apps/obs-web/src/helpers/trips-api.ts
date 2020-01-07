@@ -15,14 +15,15 @@ import { WcgopTrip } from '@boatnet/bn-models/lib';
 
 const jwt = authService.getCurrentUser()!.jwtToken;
 
+
 const tripsApiUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips';
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
     if (query) {
-        formattedQuery = '?' + query + '=' + queryValue
+        formattedQuery = '?' + query + '=' + queryValue;
     }
-    return new Promise(function (resolve, reject){
+    return new Promise( (resolve, reject) => {
         const queryUrl = tripsApiUrl + formattedQuery;
         request.get(
             {
@@ -38,12 +39,12 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
                     reject(err);
                 }
             }
-        )
-    })
+        );
+    });
 }
 
 export function getTripsApiTrip(tripId: any) {
-    return new Promise(function (resolve, reject){
+    return new Promise( (resolve, reject) => {
         const queryUrl = tripsApiUrl + '/' + tripId;
         request.get(
             {
@@ -59,12 +60,12 @@ export function getTripsApiTrip(tripId: any) {
                     reject(err);
                 }
             }
-        )
-    })
+        );
+    });
 }
 
 export function newTripsApiTrip(newTrip: any) {
-    return new Promise(function (resolve, reject){
+    return new Promise( (resolve, reject) => {
         const queryUrl = tripsApiUrl;
         request.post(
             {
@@ -81,12 +82,12 @@ export function newTripsApiTrip(newTrip: any) {
                     reject(err);
                 }
             }
-        )
-    })
+        );
+    });
 }
 
 export function updateTripsApiTrip(activeTrip: any) {
-    return new Promise(async function (resolve, reject){
+    return new Promise(async (resolve, reject) => {
         const tripsApiTrip: any = await getTripsApiTrip(activeTrip.tripNum);
         const queryUrl = tripsApiUrl + '/' + activeTrip.tripNum;
 
@@ -123,8 +124,8 @@ export function updateTripsApiTrip(activeTrip: any) {
                     reject(err);
                 }
             }
-        )
-    })
+        );
+    });
 }
 
 export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
