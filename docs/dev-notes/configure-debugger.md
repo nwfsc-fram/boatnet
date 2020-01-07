@@ -17,7 +17,7 @@ cd /c/git/boatnet/apps/obs-wcgop/optecs
 touch vue.config.js
 ```
 
-- Add `devtool` property to `vue.config.js`
+- Add this to your `vue.config.js`
 
 ```
 module.exports = {
@@ -28,31 +28,33 @@ module.exports = {
 }
 ```
 
-## Create debugger launch configuration in VS Code
+## Configure debugger launch configuration in VS Code
 
-- Click the Debug icon on left (bug with slash through it)
+- Click the Debug icon on left (bug with x on it)
 
-- Click the Gear icon at the top of the debug widnow (Next to No Configurations)
+- Click the Gear icon at the top of the debug window (Next to No Configurations)
+  
+- Replace content of `launch.json` with this. :
+  **NOTE: THIS IS FOR ASHOP. ADJUST YOUR webRoot PATH APPROPRIATELY.**
 
-  - Select "Chrome" from environments
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "vuejs: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}/apps/ashop/src",
+      "breakOnLoad": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    }
+  ]
+}
 
-- Replace `configurations` content of the generated launch.json with the corresponding configuration:
-
-```
-"version": "0.2.0",
-    "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "vuejs: chrome",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}/src",
-            "breakOnLoad": true,
-            "sourceMapPathOverrides": {
-              "webpack:///./src/": "${webRoot}"
-            }
-        }
-    ]
 ```
 
 ## Serve and Debug
@@ -64,24 +66,14 @@ yarn serve
 ```
 
 - Add breakpoints
-  - Add a manual breakpoint by adding the `debugger` keyword. Remove it before committing code (tslint will complain about it as a reminder.)
-  - In original source, I couldn't get the breakpoints to work (by clicking to the left of the line # in a source file)
-  - When the webpack src view pops up (after it hits the debugger statement) then you can set breakpoints in that file.
-  - Example in the constructor of src/components/MyComponent.vue:
-
-```
-<script lang="ts">
-... other code ...
-@Component
-export default class MyComponent extends Vue {
-  constructor() {
-    super();
-    debugger;
-  }
-}
-</script>
+  - Click and add red breakpoints directly in VS Code to the left of the line numbers.
+  - You can add a manual breakpoint in code by adding the `debugger` keyword. Remove it before committing code (tslint should complain about it as a reminder.)
 ```
 
 - Launch the VSC debugger
   - With your app running, click the green arrow at the top of the debug window (with `vuejs: chrome` configuration selected)
   - This will launch a Chrome browser instance that should link back to your debugger breakpoints.
+  - you can watch variables, etc, like any debugger.
+  
+  ![Debugger In Action](/images/debugger.png)
+ 
