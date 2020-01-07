@@ -3,17 +3,25 @@
     <q-page>
       <div style="float: left; padding: 10px">
         <span>
-          <q-btn color="primary" @click="expandAll">Expand All</q-btn>&nbsp;
+          <q-btn
+            color="primary"
+            @click="expandAll"
+          >Expand All</q-btn>&nbsp;
         </span>
-        <q-btn color="grey" @click="collapseAll" >Collapse All</q-btn>
+        <q-btn
+          color="grey"
+          @click="collapseAll"
+        >
+          Collapse All
+        </q-btn>
       </div>
-      <br />
-      <br />
+      <br>
+      <br>
       <boatnet-summary
-        currentScreen="Species"
+        current-screen="Species"
         :current="currentCatch"
-        :hasData="hasData"
-        :selectionId="currentCatch ? currentCatch.catchNum : 0"
+        :has-data="hasData"
+        :selection-id="currentCatch ? currentCatch.catchNum : 0"
         @goTo="handleGoToWtCnt"
         @add="addSpecies"
         @edit="editSpecies"
@@ -24,51 +32,72 @@
           <boatnet-tree-table
             :nodes="getNodes"
             :settings="wcgopCatchTreeSettings"
-            :expandedKeys="expandedKeys"
+            :expanded-keys="expandedKeys"
             @select="handleSelectCatch"
-          >
-          </boatnet-tree-table>
+          />
         </template>
-        <template v-slot:goToButtons v-if="currentCatch">
+        <template
+          v-if="currentCatch"
+          v-slot:goToButtons
+        >
           <span style="position: relative; right: 8px">
             <q-btn
-            color="primary" icon="dialpad" label="Tallies" />
-            &nbsp;
-            <q-btn color="primary" icon="fa fa-fish" label="Biospec" />
+              color="primary"
+              icon="dialpad"
+              label="Tallies"
+            />&nbsp;
+            <q-btn
+              color="primary"
+              icon="fa fa-fish"
+              label="Biospec"
+            />
           </span>
         </template>
       </boatnet-summary>
     </q-page>
 
     <q-drawer
-      side="right"
       v-model="drawerRight"
+      side="right"
       bordered
       :width="500"
       :breakpoint="500"
       content-class="bg-grey-3"
     >
       <q-scroll-area class="fit">
-        <div style="width: 500px; padding: 10px" v-if="newSpecies">
-          <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
-          <div class="text-h6" style="float: right; padding-right: 7%">ADD SPECIES</div>
-          <br />
+        <div
+          v-if="newSpecies"
+          style="width: 500px; padding: 10px"
+        >
+          <q-btn
+            flat
+            icon="close"
+            style="padding: 0 0 16px 0"
+            @click="drawerRight = false"
+          />
+          <div
+            class="text-h6"
+            style="float: right; padding-right: 7%"
+          >
+            ADD SPECIES
+          </div>
+          <br>
 
           <div class="row">
             <div class="col q-pa-md">
               <b>Disposition</b>
-              <br />
+              <br>
               <q-btn
                 v-model="catchModel.disposition"
                 :label="catchModel.disposition.description"
-                @click="catchModel.disposition.description === 'Discarded' ?
-                                  catchModel.disposition.description = 'Retained' :
-                                  catchModel.disposition.description = 'Discarded'"
                 :color="catchModel.disposition.description === 'Retained' ? 'grey-8': 'primary' "
-              ></q-btn>
+                @click="catchModel.disposition.description === 'Discarded' ?
+                  catchModel.disposition.description = 'Retained' :
+                  catchModel.disposition.description = 'Discarded'"
+              />
 
-              <br />
-              <br />
+              <br>
+              <br>
               <b>Weight Method</b>
               <div style="border: 1px solid #B5B5B5; border-radius: 4px">
                 <q-btn-toggle
@@ -87,7 +116,10 @@
                 />
               </div>
 
-              <p>{{ weightMethodLookup[catchModel.weightMethod] ? weightMethodLookup[catchModel.weightMethod].value : ''}}</p>
+              <p>
+                {{ weightMethodLookup[catchModel.weightMethod] ?
+                  weightMethodLookup[catchModel.weightMethod].value : '' }}
+              </p>
 
               <div
                 v-if="catchModel.weightMethod && ['6','7','14'].includes(catchModel.weightMethod)"
@@ -97,32 +129,36 @@
                   <span>(lbs)</span>
                   <boatnet-keyboard-input
                     v-model="catchModel.weight"
-                    keyboardType="numeric"
+                    keyboard-type="numeric"
                     :readonly="selectedSpecies.length > 1"
                   />
                   <b>Total # of fish</b>
                   <boatnet-keyboard-input
                     v-model="catchModel.count"
-                    keyboardType="numeric"
+                    keyboard-type="numeric"
                     :readonly="selectedSpecies.length > 1"
                   />
                 </div>
 
-                <div v-else>(Catch Weight and Total # of fish can only be added one at a time.)</div>
+                <div v-else>
+                  (Catch Weight and Total # of fish can only be added one at a time.)
+                </div>
               </div>
-
             </div>
 
-            <div class="col q-pa-md" style="padding-right: 7%">
+            <div
+              class="col q-pa-md"
+              style="padding-right: 7%"
+            >
               <q-btn
                 label="Frequent List"
-                @click="frequentList = !frequentList"
                 :color="frequentList ? 'primary': 'grey-5'"
-              ></q-btn>
+                @click="frequentList = !frequentList"
+              />
 
-              <br />
-              <br />
-              <br />
+              <br>
+              <br>
+              <br>
               <!-- <boatnet-keyboard-input
                   v-model="filterText"
                   keyboardType="normal"
@@ -130,93 +166,134 @@
                   label="Search Species"
                 >
               </boatnet-keyboard-input>-->
-              <q-input v-model="filterText" :value.sync="filterText" label="Search Species">
+              <q-input
+                v-model="filterText"
+                :value.sync="filterText"
+                label="Search Species"
+              >
                 <template v-slot:append>
-                  <q-icon name="close" @click="filterText = ''" class="cursor-pointer" />
+                  <q-icon
+                    name="close"
+                    class="cursor-pointer"
+                    @click="filterText = ''"
+                  />
                 </template>
               </q-input>
 
               <q-scroll-area style="height: 280px">
-                <q-list bordered separator dense>
+                <q-list
+                  bordered
+                  separator
+                  dense
+                >
                   <q-item
                     v-for="(option, i) of filteredSpecies"
                     :key="i"
                     :active="selectedSpecies.indexOf(option) !== -1"
-                    activeClass="itemSelected"
+                    active-class="itemSelected"
                     style="cursor:pointer; font-weight: bold"
-                    @click="setSelectedSpecies(option)"
                     clickable
-                  >{{ option.value.commonName }}</q-item>
+                    @click="setSelectedSpecies(option)"
+                  >
+                    {{ option.value.commonName }}
+                  </q-item>
                 </q-list>
               </q-scroll-area>
             </div>
           </div>
 
-          <div class="q-pa-md" style="float: right; padding-right: 7%">
+          <div
+            class="q-pa-md"
+            style="float: right; padding-right: 7%"
+          >
             <q-btn
               color="primary"
               label="add"
-              @click="updateCatch"
               :disabled="!catchModel.weightMethod || !catchModel.disposition || selectedSpecies.length < 1"
-            ></q-btn>
-            <br />
-            <br />
+              @click="updateCatch"
+            />
+            <br>
+            <br>
           </div>
 
-          <br />
+          <br>
         </div>
 
-        <div style="width: 500px; padding: 10px" v-if="currentCatch && speciesEditing">
-          <q-btn flat icon="close" style="padding: 0 0 16px 0" @click="drawerRight = false"></q-btn>
-          <div class="text-h6" style="float: right; padding-right: 7%">EDIT SPECIES</div>
-          <br />
+        <div
+          v-if="currentCatch && speciesEditing"
+          style="width: 500px; padding: 10px"
+        >
+          <q-btn
+            flat
+            icon="close"
+            style="padding: 0 0 16px 0"
+            @click="drawerRight = false"
+          />
+          <div
+            class="text-h6"
+            style="float: right; padding-right: 7%"
+          >
+            EDIT SPECIES
+          </div>
+          <br>
 
-          <div class="q-pa-md" style="width: 100%">
-            <div class="text-h6">{{ currentCatch.catchContent.alias }}</div>
-            <br />
+          <div
+            class="q-pa-md"
+            style="width: 100%"
+          >
+            <div class="text-h6">
+              {{ currentCatch.catchContent.alias }}
+            </div>
+            <br>
             <div
               v-if="speciesModel.disposition && speciesModel.disposition.description === 'Discarded'"
               style="width: 95%"
             >
               <b>Discard Reason</b>
-              <br />
+              <br>
               <q-btn-toggle
                 v-model="speciesModel.discardReason"
                 :options="discardReasonOptions"
                 :value.sync="speciesModel.discardReason"
                 spread
               />
-              <p>{{ speciesModel.discardReason ? discardReasonLookup[speciesModel.discardReason].value : '-'}}</p>
+              <p>{{ speciesModel.discardReason ? discardReasonLookup[speciesModel.discardReason].value : '-' }}</p>
             </div>
-            <br />
+            <br>
             <div
               v-if="speciesModel.weightMethod && ['6','7','14'].includes(speciesModel.weightMethod.lookupVal)"
             >
               <b>Catch Weight</b>
-              <span>({{speciesModel.weight.units}})</span>
+              <span>({{ speciesModel.weight.units }})</span>
               <boatnet-keyboard-input
                 v-model="speciesModel.weight.value"
-                keyboardType="numeric"
+                keyboard-type="numeric"
                 :value.sync="speciesModel.weight.value"
               />
-              <br />
+              <br>
               <b>Total # of fish</b>
               <boatnet-keyboard-input
                 v-model="speciesModel.count"
-                keyboardType="numeric"
+                keyboard-type="numeric"
                 :value.sync="speciesModel.count"
               />
             </div>
 
             <div
+              v-if="(speciesModel.disposition && speciesModel.disposition.description === 'Discarded')
+                || (speciesModel.weightMethod &&
+                  ['6','7','14'].includes(speciesModel.weightMethod.lookupVal))"
               style="float: right; padding-right: 3%"
-              v-if="(speciesModel.disposition && speciesModel.disposition.description === 'Discarded') || (speciesModel.weightMethod && ['6','7','14'].includes(speciesModel.weightMethod.lookupVal))"
             >
-              <br />
-              <br />
-              <q-btn color="primary" label="update" @click="updateSpecies"></q-btn>
-              <br />
-              <br />
+              <br>
+              <br>
+              <q-btn
+                color="primary"
+                label="update"
+                @click="updateSpecies"
+              />
+              <br>
+              <br>
             </div>
           </div>
         </div>
@@ -229,21 +306,28 @@
           <div v-if="speciesModel.disposition">
             <q-card>
               <q-card-section class="row items-center">
-                <q-avatar icon="fas fa-exchange-alt" color="primary" text-color="white" />
+                <q-avatar
+                  icon="fas fa-exchange-alt"
+                  color="primary"
+                  text-color="white"
+                />
                 <div
                   class="text-h6 q-pa-md"
-                >{{ currentCatch.catchContent.alias }} - Discard Reason: {{ currentCatch.discardReason ? currentCatch.discardReason : 'N/A' }}</div>
+                >
+                  {{ currentCatch.catchContent.alias }} - Discard Reason:
+                  {{ currentCatch.discardReason ? currentCatch.discardReason : 'N/A' }}
+                </div>
                 <div class="q-pa-md">
                   <b>Disposition</b>
-                  <br />
+                  <br>
                   <q-btn
                     v-model="speciesModel.disposition"
                     :label="speciesModel.disposition.description"
-                    @click="speciesModel.disposition.description === 'Discarded' ?
-                                  speciesModel.disposition.description = 'Retained' :
-                                  speciesModel.disposition.description = 'Discarded'"
                     :color="speciesModel.disposition.description === 'Retained' ? 'grey-8': 'primary' "
-                  ></q-btn>
+                    @click="speciesModel.disposition.description === 'Discarded' ?
+                      speciesModel.disposition.description = 'Retained' :
+                      speciesModel.disposition.description = 'Discarded'"
+                  />
                 </div>
 
                 <div>
@@ -260,12 +344,25 @@
                 </div>
                 <p
                   style="padding-left: 140px"
-                >{{ weightMethodLookup[speciesModel.weightMethod] ? weightMethodLookup[speciesModel.weightMethod].value : ''}}</p>
+                >
+                  {{ weightMethodLookup[speciesModel.weightMethod] ?
+                    weightMethodLookup[speciesModel.weightMethod].value : '' }}
+                </p>
               </q-card-section>
               <q-card-section>
                 <q-card-actions align="right">
-                  <q-btn flat label="Cancel" color="primary" @click="resetModify" />
-                  <q-btn flat label="Move" color="primary" @click="moveSpecies" />
+                  <q-btn
+                    flat
+                    label="Cancel"
+                    color="primary"
+                    @click="resetModify"
+                  />
+                  <q-btn
+                    flat
+                    label="Move"
+                    color="primary"
+                    @click="moveSpecies"
+                  />
                 </q-card-actions>
               </q-card-section>
             </q-card>
@@ -290,7 +387,6 @@ import {
   TaxonomyAlias,
   CatchGrouping
 } from '@boatnet/bn-models';
-
 
 import moment from 'moment';
 
@@ -340,8 +436,8 @@ export default class Catch extends Vue {
   private filterText = '';
   // private useActiveHaul = false;
   private discardReason: any = [];
-  private count: number = 0;
-  private weight: number = 0;
+  private count = 0;
+  private weight = 0;
   private weightMethod: any = [];
   private showBottom = true;
   private selectedCatch: any = [];
@@ -399,35 +495,36 @@ export default class Catch extends Vue {
       if (grouping.children) {
         for (const species of grouping.children!) {
           const speciesCatchContent: TaxonomyAlias = species.catchContent as TaxonomyAlias;
-          children.push(
-            {
-              key: (this.currentHaul!.catches![0].children!.indexOf(grouping) +
-                '-' + grouping.children.indexOf(species)).toString(),
-              data: {
-                name: speciesCatchContent.alias,
-                weight: species.weight!.value,
-                count: species.count,
-                discardReason: species.discardReason
-              },
-              catch: species
-            }
-          );
+          children.push({
+            key: (
+              this.currentHaul!.catches![0].children!.indexOf(grouping) +
+              '-' +
+              grouping.children.indexOf(species)
+            ).toString(),
+            data: {
+              name: speciesCatchContent.alias,
+              weight: species.weight!.value,
+              count: species.count,
+              discardReason: species.discardReason
+            },
+            catch: species
+          });
         }
       }
 
-      nodes.push(
-        {
-          key: this.currentHaul!.catches![0].children!.indexOf(grouping).toString(),
-          data: {
-            name: groupingCatchContent.name,
-            disposition: grouping.disposition!.description === 'Retained' ? 'R' : 'D',
-            weightMethod: grouping.weightMethod!.lookupVal
-          },
-          children: [...children],
-          catch: grouping
-        }
-      );
-
+      nodes.push({
+        key: this.currentHaul!.catches![0].children!.indexOf(
+          grouping
+        ).toString(),
+        data: {
+          name: groupingCatchContent.name,
+          disposition:
+            grouping.disposition!.description === 'Retained' ? 'R' : 'D',
+          weightMethod: grouping.weightMethod!.lookupVal
+        },
+        children: [...children],
+        catch: grouping
+      });
     }
 
     return nodes;
@@ -518,7 +615,14 @@ export default class Catch extends Vue {
           field: 'weightMethod',
           width: '8%'
         },
-        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '44%', expander: true },
+        {
+          name: 'name',
+          align: 'left',
+          label: 'Name',
+          field: 'name',
+          width: '44%',
+          expander: true
+        },
         {
           name: 'discardReason',
           align: 'left',
@@ -526,16 +630,28 @@ export default class Catch extends Vue {
           field: 'discardReason',
           width: '16%'
         },
-        { name: 'weight', align: 'left', label: 'Weight', field: 'weight', width: '12%' },
-        { name: 'count', align: 'left', label: 'Count', field: 'count', width: '12%' }
+        {
+          name: 'weight',
+          align: 'left',
+          label: 'Weight',
+          field: 'weight',
+          width: '12%'
+        },
+        {
+          name: 'count',
+          align: 'left',
+          label: 'Count',
+          field: 'count',
+          width: '12%'
+        }
       ]
     };
-
   }
 
   public async populateSpeciesView() {
     const db = pouchService.db;
     const queryOptions = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       include_docs: true
     };
 
@@ -552,7 +668,7 @@ export default class Catch extends Vue {
     }
   }
 
-  private handleSelectCatch(wCatch: any, preserveSelection: boolean = false) {
+  private handleSelectCatch(wCatch: any, preserveSelection = false) {
     if (!preserveSelection) {
       this.unselectRow();
     }
@@ -1042,7 +1158,7 @@ export default class Catch extends Vue {
   }
 
   private getNewCatchNum() {
-    let catchNum: number = 0;
+    let catchNum = 0;
     for (const wCatch of this.currentHaul.catches!) {
       // this is the unsorted catch
       if (wCatch.catchNum && wCatch.catchNum > catchNum) {
@@ -1093,7 +1209,7 @@ export default class Catch extends Vue {
       this.expandedKeys[catches!.indexOf(row)] = true;
     }
 
-    this.expandedKeys = {...this.expandedKeys};
+    this.expandedKeys = { ...this.expandedKeys };
   }
 
   private collapseAll() {
@@ -1311,7 +1427,6 @@ export default class Catch extends Vue {
     this.getFrequentSpecies();
     this.handleSelectCatch(undefined);
   }
-
 }
 </script>
 

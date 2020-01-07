@@ -1,8 +1,16 @@
 <template>
   <q-page padding>
     <div class="q-gutter-md">
-      <div v-for="r in vertButtonCount" class="row" :key="`md-r-${r}`">
-        <div v-for="c in horizButtonCount" class="col self-center" :key="`md-c-${c}`">
+      <div
+        v-for="r in vertButtonCount"
+        :key="`md-r-${r}`"
+        class="row"
+      >
+        <div
+          v-for="c in horizButtonCount"
+          :key="`md-c-${c}`"
+          class="col self-center"
+        >
           <!-- TODO: this should be in a TallyState -->
           <tally-btn
             :layout="getButton(r,c)"
@@ -13,58 +21,92 @@
         </div>
       </div>
     </div>
-    <q-banner rounded inline-actions v-show="!!alert.message" class="bg-green text-white">
-      {{alert.message}}
+    <q-banner
+      v-show="!!alert.message"
+      rounded
+      inline-actions
+      class="bg-green text-white"
+    >
+      {{ alert.message }}
       <template v-slot:action>
-        <q-btn flat label="Dismiss" @click="clearAlert"/>
+        <q-btn
+          flat
+          label="Dismiss"
+          @click="clearAlert"
+        />
       </template>
     </q-banner>
     <div class="q-pa-md">
       <component
-        v-bind:is="currentControlComponent"
+        :is="currentControlComponent"
+        :species-code="currentSelectedSpecies.shortCode"
         @controlevent="handleControlEvent"
         @cancel="handleCancel"
         @selectedReason="handleSelectedReason"
-        :speciesCode="currentSelectedSpecies.shortCode"
-      ></component>
+      />
     </div>
-    <q-dialog v-model="confirmReset" persistent>
+    <q-dialog
+      v-model="confirmReset"
+      persistent
+    >
       <q-card>
         <q-card-section class="row items-center">
-          <q-avatar icon="warning" color="red" text-color="white"/>
+          <q-avatar
+            icon="warning"
+            color="red"
+            text-color="white"
+          />
           <span class="q-ml-sm">Are you sure you want to reset tally data?</span>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup/>
-          <q-btn flat label="Reset Data" color="primary" @click="handleResetAllData" v-close-popup/>
+          <q-btn
+            v-close-popup
+            flat
+            label="Cancel"
+            color="primary"
+          />
+          <q-btn
+            v-close-popup
+            flat
+            label="Reset Data"
+            color="primary"
+            @click="handleResetAllData"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
     <boatnet-add-species-dialog
       ref="addNamedSpeciesModal"
-      @addNewSpecies="handleAddNamedSpecies"
-      :speciesList="speciesList"
+      :species-list="speciesList"
       position="left"
+      @addNewSpecies="handleAddNamedSpecies"
       @cancel="handleCancel"
     />
     <tally-weights-dialog
       ref="addTallyWeightsModal"
+      :button-data="currentSelectedButton"
+      :species-data="currentSelectedButton"
       @addNewSpecies="handleAddNamedSpecies"
-      :buttonData="currentSelectedButton"
-      :speciesData="currentSelectedButton"
       @cancel="handleCancel"
     />
-    <tally-history-dialog ref="historyModal" @cancel="handleCancel"/>
-    <tally-pdf-dialog ref="pdfModal" @generatePdf="handleGeneratePdf" @cancel="handleCancel"/>
+    <tally-history-dialog
+      ref="historyModal"
+      @cancel="handleCancel"
+    />
+    <tally-pdf-dialog
+      ref="pdfModal"
+      @generatePdf="handleGeneratePdf"
+      @cancel="handleCancel"
+    />
     <tally-template-dialog
       ref="templateModal"
+      :template-data="tallyDefaultTemplates"
       @cancel="handleCancel"
       @selectedDefaultTemplate="handleSelectedDefaultTemplate"
-      :templateData="tallyDefaultTemplates"
     />
 
-    <div>Mode: {{tallyMode}}</div>
+    <div>Mode: {{ tallyMode }}</div>
   </q-page>
 </template>
 
@@ -233,6 +275,7 @@ export default class Tally extends Vue {
   public async populateSpeciesView() {
     const db = pouchService.db;
     const queryOptions = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       include_docs: true
     };
 
@@ -257,6 +300,7 @@ export default class Tally extends Vue {
   public async populateTallyTemplatesView() {
     const db = pouchService.db;
     const queryOptions = {
+      // eslint-disable-next-line @typescript-eslint/camelcase
       include_docs: true,
       ascending: true
     };
@@ -442,6 +486,11 @@ export default class Tally extends Vue {
   public handleAddNamedSpecies(species: any) {
     // console.log('MODE', this.tallyMode);
     // console.log('SPECIES', species);
+    const renameHistory: TallyHistory = {
+      type: 'Rename',
+      oldValue: this.currentSelectedSpecies.shortCode,
+      newValue: species.shortCode
+    };
     switch (this.tallyMode) {
       case TallyOperationMode.AddNamedSpeciesSelectSpecies:
         // Side effect of close: switches back to tally mode
@@ -455,11 +504,6 @@ export default class Tally extends Vue {
           oldSpeciesCode: this.currentSelectedSpecies.shortCode,
           newSpeciesCode: species.shortCode
         });
-        const renameHistory: TallyHistory = {
-          type: 'Rename',
-          oldValue: this.currentSelectedSpecies.shortCode,
-          newValue: species.shortCode
-        };
         this.addTallyHistory(renameHistory);
         // Side effect of close: switches back to tally mode
         this.closeAddSpeciesPopup();

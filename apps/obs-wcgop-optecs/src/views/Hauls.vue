@@ -1,9 +1,9 @@
 <template>
   <q-page>
     <boatnet-summary
-      currentScreen="Haul"
+      current-screen="Haul"
       :current="currentHaul"
-      :selectionId="currentHaul ? currentHaul.operationNum : 0"
+      :selection-id="currentHaul ? currentHaul.operationNum : 0"
       @edit="editHauls"
       @add="addHauls"
       @delete="deleteHauls"
@@ -16,21 +16,47 @@
           @select="handleSelectHaul"
         >
           <template v-slot:default="rowVals">
-            <q-td key="haulNum">{{rowVals.row.doc.operationNum}}</q-td>
-            <q-td key="weightMethod">{{rowVals.row.doc.observerTotalCatch.weightMethod ? rowVals.row.doc.observerTotalCatch.weightMethod.description : ''}}</q-td>
-            <q-td key="gearPerf">{{ rowVals.row.doc.gearPerformance }}</q-td>
-            <q-td key="targetStrategy">SALM</q-td> <!--TODO {{ rowVals.row.doc.targetStrategy }}-->
-            <q-td key="gearType">{{ rowVals.row.doc.gearType }}</q-td>
-            <q-td key="setDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[0].locationDate) : '' }}</q-td>
-            <q-td key="upDate">{{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate) : ''}}</q-td>
-            <q-td key="otcWeight">{{rowVals.row.doc.observerTotalCatch.measurement ? rowVals.row.doc.observerTotalCatch.measurement.value : ''}}</q-td>
-            <q-td key="errors">100</q-td><!-- TODO -->
+            <q-td key="haulNum">
+              {{ rowVals.row.doc.operationNum }}
+            </q-td>
+            <q-td key="weightMethod">
+              {{ rowVals.row.doc.observerTotalCatch.weightMethod ?
+                rowVals.row.doc.observerTotalCatch.weightMethod.description : '' }}
+            </q-td>
+            <q-td key="gearPerf">
+              {{ rowVals.row.doc.gearPerformance }}
+            </q-td>
+            <q-td key="targetStrategy">
+              SALM
+            </q-td> <!--TODO {{ rowVals.row.doc.targetStrategy }}-->
+            <q-td key="gearType">
+              {{ rowVals.row.doc.gearType }}
+            </q-td>
+            <q-td key="setDate">
+              {{ rowVals.row.doc.locations ? formatDate(rowVals.row.doc.locations[0].locationDate) : '' }}
+            </q-td>
+            <q-td key="upDate">
+              {{ rowVals.row.doc.locations ?
+                formatDate(rowVals.row.doc.locations[rowVals.row.doc.locations.length - 1].locationDate)
+                : '' }}
+            </q-td>
+            <q-td key="otcWeight">
+              {{ rowVals.row.doc.observerTotalCatch.measurement ?
+                rowVals.row.doc.observerTotalCatch.measurement.value : '' }}
+            </q-td>
+            <q-td key="errors">
+              100
+            </q-td><!-- TODO -->
           </template>
         </boatnet-table>
       </template>
       <template v-slot:goToButtons>
         <span style="position: relative; right: 10px">
-        <q-btn color="primary" icon="fa fa-th-list" label="Logbook Mode"/>
+          <q-btn
+            color="primary"
+            icon="fa fa-th-list"
+            label="Logbook Mode"
+          />
         </span>
       </template>
     </boatnet-summary>

@@ -1,6 +1,9 @@
 <template>
   <q-btn-group>
-    <span v-for="(crumb, i) in breadcrumbs" :key="crumb.name">
+    <span
+      v-for="(crumb, i) in breadcrumbs"
+      :key="crumb.name"
+    >
       <q-btn
         v-if="i == 0"
         class="btn-arrow-right-only"
@@ -16,7 +19,7 @@
         :color="i != breadcrumbs.length-1 ? 'white' : 'secondary'"
         :text-color="i != breadcrumbs.length-1 ? 'primary' : 'white'"
         :to="crumb.link"
-      >{{crumb.name}}</q-btn>
+      >{{ crumb.name }}</q-btn>
     </span>
   </q-btn-group>
 </template>

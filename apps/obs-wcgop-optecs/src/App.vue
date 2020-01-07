@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
     <boatnet-keyboard
       :visible.sync="keyboardStatus"
       :layout="keyboard.keyboardType"
-      :inputTarget="keyboard.keyboardInputTarget"
+      :input-target="keyboard.keyboardInputTarget"
       @next="next"
     />
 
@@ -13,7 +13,6 @@
         :input="keyboard.keyboardInputTarget"
       ></boatnet-custom-keyboard>
     </div> -->
-
   </div>
 </template>
 

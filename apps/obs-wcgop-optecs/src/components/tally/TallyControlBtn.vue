@@ -8,7 +8,7 @@
     :size="size"
     @click="handleClick"
   >
-    <slot/>
+    <slot />
   </q-btn>
 </template>
 

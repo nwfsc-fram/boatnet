@@ -1,29 +1,60 @@
 <template>
-  <q-dialog v-model="isOpen" persistent>
+  <q-dialog
+    v-model="isOpen"
+    persistent
+  >
     <q-card style="min-width: 300px">
       <q-card-section>
-        <div class="text-h6">Tally Weights for {{shortCode}} - {{reason}}</div>
+        <div class="text-h6">
+          Tally Weights for {{ shortCode }} - {{ reason }}
+        </div>
       </q-card-section>
       <q-card-section>
-        <div class="text-body1">Current Total Tally: {{totalCount}}</div>
-        <div class="text-body1">Weighed Count: {{weighedCount}}</div>
-        <div class="text-body1">Average Weight: {{avgWeight}}</div>
+        <div class="text-body1">
+          Current Total Tally: {{ totalCount }}
+        </div>
+        <div class="text-body1">
+          Weighed Count: {{ weighedCount }}
+        </div>
+        <div class="text-body1">
+          Average Weight: {{ avgWeight }}
+        </div>
       </q-card-section>
       <q-card-section>
         <q-scroll-area style="height: 200px;">
-          <q-markup-table v-if="countsWeights" separator="horizontal" dense flat bordered>
+          <q-markup-table
+            v-if="countsWeights"
+            separator="horizontal"
+            dense
+            flat
+            bordered
+          >
             <thead>
               <tr>
-                <th class="text-left">Count</th>
-                <th class="text-left">Weight</th>
+                <th class="text-left">
+                  Count
+                </th>
+                <th class="text-left">
+                  Weight
+                </th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(cw, index) in countsWeights" :key="index">
-                <th class="text-left">{{cw.weighedCount}}</th>
-                <th class="text-left">{{cw.weight}}</th>
+              <tr
+                v-for="(cw, index) in countsWeights"
+                :key="index"
+              >
+                <th class="text-left">
+                  {{ cw.weighedCount }}
+                </th>
+                <th class="text-left">
+                  {{ cw.weight }}
+                </th>
                 <th @click="handleDelete(index)">
-                  <q-icon style="font-size: 32px;" name="delete_forever"/>
+                  <q-icon
+                    style="font-size: 32px;"
+                    name="delete_forever"
+                  />
                 </th>
               </tr>
             </tbody>
@@ -49,16 +80,28 @@
           color="green"
           :disabled="isAddDisabled"
           @click="addTallyCountWeights(false)"
-        >Add To Tally</q-btn>&nbsp;&nbsp;
+        >
+          Add To Tally
+        </q-btn>&nbsp;&nbsp;
         <q-btn
           color="green"
           :disabled="isAddAlreadyDisabled"
           @click="addTallyCountWeights(true)"
-        >Add (Count Already Tallied)</q-btn>
+        >
+          Add (Count Already Tallied)
+        </q-btn>
       </q-card-section>
 
-      <q-card-actions align="right" class="text-primary">
-        <q-btn flat label="Done" @click="close" v-close-popup/>
+      <q-card-actions
+        align="right"
+        class="text-primary"
+      >
+        <q-btn
+          v-close-popup
+          flat
+          label="Done"
+          @click="close"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -75,11 +118,11 @@ export default Vue.component('tally-weights-dialog', {
     // https://frontendsociety.com/using-a-typescript-interfaces-and-types-as-a-prop-type-in-vuejs-508ab3f83480
     buttonData: {
       type: Object,
-      default: { labels: { shortCode: '', reason: '' } }
+      default: () =>  ({labels: { shortCode: '', reason: '' } })
     },
     speciesData: {
       type: Object,
-      default: {}
+      default: () => ({})
     }
   },
   data() {
@@ -90,50 +133,6 @@ export default Vue.component('tally-weights-dialog', {
       addCountValue: null,
       addWeightValue: null
     };
-  },
-  methods: {
-    open() {
-      this.selectedSpecies = undefined;
-      this.isOpen = true;
-    },
-    close() {
-      this.$emit('cancel');
-      this.addCountValue = null;
-      this.addWeightValue = null;
-      this.isOpen = false;
-    },
-    addTallyCountWeights(isAlreadyAdded: boolean) {
-      if (!this.addCountValue || !this.addWeightValue) {
-        console.error('Zero values, do not add CW');
-        return;
-      }
-      const newCW = {
-        weighedCount: this.addCountValue,
-        weight: this.addWeightValue,
-        isAddedToTally: isAlreadyAdded
-      };
-      const newHistory: TallyHistory = {
-        type: 'Add C+Wt',
-        shortCode: this.buttonData.labels.shortCode,
-        reason: this.buttonData.labels.reason,
-        newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
-      };
-      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
-      this.$store.dispatch('tallyState/addTallyCountWeight', newCW);
-      this.addCountValue = null;
-      this.addWeightValue = null;
-    },
-    handleDelete(index: number) {
-      const newHistory: TallyHistory = {
-        type: 'Del C+Wt',
-        shortCode: this.buttonData.labels.shortCode,
-        reason: this.buttonData.labels.reason
-        // TODO figure out what's deleted, handleDelete parms more than mere index?
-        // newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
-      };
-      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
-      this.$store.dispatch('tallyState/deleteTallyCountWeight', index);
-    }
   },
   computed: {
     countsWeights(): string {
@@ -206,6 +205,50 @@ export default Vue.component('tally-weights-dialog', {
         this.addCountValue! <= 0 ||
         this.addCountValue! > availableTallyCount
       );
+    }
+  },
+  methods: {
+    open() {
+      this.selectedSpecies = undefined;
+      this.isOpen = true;
+    },
+    close() {
+      this.$emit('cancel');
+      this.addCountValue = null;
+      this.addWeightValue = null;
+      this.isOpen = false;
+    },
+    addTallyCountWeights(isAlreadyAdded: boolean) {
+      if (!this.addCountValue || !this.addWeightValue) {
+        console.error('Zero values, do not add CW');
+        return;
+      }
+      const newCW = {
+        weighedCount: this.addCountValue,
+        weight: this.addWeightValue,
+        isAddedToTally: isAlreadyAdded
+      };
+      const newHistory: TallyHistory = {
+        type: 'Add C+Wt',
+        shortCode: this.buttonData.labels.shortCode,
+        reason: this.buttonData.labels.reason,
+        newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
+      };
+      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
+      this.$store.dispatch('tallyState/addTallyCountWeight', newCW);
+      this.addCountValue = null;
+      this.addWeightValue = null;
+    },
+    handleDelete(index: number) {
+      const newHistory: TallyHistory = {
+        type: 'Del C+Wt',
+        shortCode: this.buttonData.labels.shortCode,
+        reason: this.buttonData.labels.reason
+        // TODO figure out what's deleted, handleDelete parms more than mere index?
+        // newValue: 'c: ' + this.addCountValue + ', wt: ' + this.addWeightValue
+      };
+      this.$store.dispatch('tallyState/addTallyHistory', newHistory);
+      this.$store.dispatch('tallyState/deleteTallyCountWeight', index);
     }
   }
 });
