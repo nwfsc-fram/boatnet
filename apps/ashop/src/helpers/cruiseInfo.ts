@@ -11,6 +11,7 @@ export async function getDocByType(program: string, type: string) {
         _id: '_design/docType',
         views: {
             by_type: {
+                // @ts-ignore
                 map: function (doc) { emit(doc.type); }.toString()
             }
         }
