@@ -1,10 +1,21 @@
-import { AshopHaul, Measurement, WcgopOperation } from '@boatnet/bn-models';
+import { AshopHaul, Measurement, WcgopOperation, BaseOperation } from '@boatnet/bn-models';
 import { initMeasurement } from '@boatnet/bn-models';
 
-export function update(haul: AshopHaul) {
+export function update(haul: AshopHaul, fieldName: string) {
     haul.officialTotalCatch = setOfficialTotalCatch(haul);
+    // apply depth units to both fishing and bottom depth
     if (haul.fishingDepth) {
         haul.fishingDepth.units = haul.bottomDepth ? haul.bottomDepth.units : '';
+    }
+    setFishingLocationUnits(haul, fieldName);
+}
+
+// set startFishingLocation units and endFishingLocation units equal to each other
+function setFishingLocationUnits(haul: BaseOperation, fieldName: string) {
+    if (fieldName === 'startFishingLocation') {
+        haul.endFishingLocation.unit = haul.startFishingLocation.unit;
+    } else if (fieldName === 'endFishingLocation') {
+        haul.startFishingLocation.unit = haul.endFishingLocation.unit;
     }
 }
 
@@ -19,6 +30,7 @@ function getMeasurementVal(measurement: Measurement): number {
     return 0;
 }
 
+// calculate official total catch
 function setOfficialTotalCatch(haul: AshopHaul): Measurement {
     let observerEstCatch: number = 0;
     const flowScaleMeasurement = haul.flowScaleCatch ? haul.flowScaleCatch.measurement : {};

@@ -53,7 +53,7 @@ export default class BoatnetTable extends Vue {
   private pagination = { rowsPerPage: 0 };
 
   private select(row: any) {
-    if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
+    if (this.selected.length > 0 && this.selected[0]._id === row._id) {
       this.selected = [];
       this.$emit('select', undefined);
     } else {

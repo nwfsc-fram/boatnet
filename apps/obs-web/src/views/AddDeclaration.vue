@@ -24,7 +24,7 @@
         @input="worksheetToggled()"
         :options="[
           {label: 'Declaration ID Worksheet', value: true},
-          {label: 'Chose ID from dropdown', value: false},
+          {label: 'Choose ID from dropdown', value: false},
       ]"
       />
       <br />

@@ -7,7 +7,7 @@
       <template v-slot:content1>
         <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 500px">
           <div v-for="config of appConfig.haulInfoPt1" :key="appConfig.haulInfoPt1.indexOf(config)">
-            <boatnet-common-input-component :config="config" :model="haul" @save="saveOnUpdate"></boatnet-common-input-component>
+            <boatnet-common-input-component :config="config" :model="haul" @save="saveOnUpdate(config.modelName)"></boatnet-common-input-component>
           </div>
         </div>
       </template>
@@ -50,10 +50,15 @@ export default createComponent({
     const appConfig = store.state.appSettings.appConfig;
     const haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
     const haulName = store.state.appSettings.appConfig.hauls.itemNumName;
+    let rev: string = '';
 
-    const saveOnUpdate = async () => {
-      update(haul);
-      store.dispatch('tripsState/save', haul);
+    const saveOnUpdate = async (fieldName: string) => {
+      update(haul, fieldName);
+      const curr = haul._rev;
+      if (curr !== rev) {
+        store.dispatch('tripsState/save', haul);
+        rev = curr ? curr : '';
+      }
     };
 
     return {
