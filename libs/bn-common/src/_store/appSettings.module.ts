@@ -70,6 +70,9 @@ const getters: GetterTree<AppSettings, RootState> = {
   isSoundEnabled(getState: AppSettings) {
     return getState.isSoundEnabled;
   },
+  isKeyboardEnabled(getState: AppSettings) {
+    return getState.isKeyboardEnabled;
+  },
   appMode(getState: AppSettings) {
     return getState.appMode;
   },

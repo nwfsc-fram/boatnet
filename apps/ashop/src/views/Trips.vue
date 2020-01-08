@@ -31,7 +31,6 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';
 import { get, remove } from 'lodash';
 import {
-  getCruise,
   getTrips,
   updateCruise,
   deleteCruise
@@ -56,13 +55,7 @@ export default createComponent({
     });
 
     const init = async () => {
-      const rows = await allDocs({}, pouchService.userDBName);
-      if (appMode === 'ashop') {
-        await getCruise(appMode, rows);
-        return await getTrips();
-      } else {
-        return rows.filter((row: any) => row.type === appMode + '-trip');
-      }
+      return await getTrips(appMode);
     };
     const { data } = useAsync(init);
 
