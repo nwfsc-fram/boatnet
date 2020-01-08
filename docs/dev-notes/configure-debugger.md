@@ -4,55 +4,50 @@
 
 ## Install Chrome debugger
 
-- I already had it installed, but check here:
+- I already had it installed, click on the extensions icon on the left (the stacked cubes) and search for `Debugger for Chrome`.
 
-https://marketplace.visualstudio.com/items?itemName=msjsdiag.debugger-for-chrome
+## Update `vue.config.js` (same level as `package.json` in your app)
 
-## Create/ update `vue.config.js` (same level as `package.json` in your app)
+- This file will already exist if you have Quasar configured (created by Vue CLI 3)
 
-- This file will already exist if you have Quasar configured.
-
-```
-cd /c/git/boatnet/apps/obs-wcgop/optecs
-touch vue.config.js
-```
-
-- Add `devtool` property to `vue.config.js`
+- Add this `configureWebpack` block to your `vue.config.js`
 
 ```
 module.exports = {
-  // (Leave other stuff here if exists),
+  // (Leave other stuff here if exists), ...
   configureWebpack: {
     devtool: 'source-map'
   }
 }
 ```
 
-## Create debugger launch configuration in VS Code
+## Configure debugger launch configuration in VS Code
 
-- Click the Debug icon on left (bug with slash through it)
+- Click the Debug icon on left (bug with x on it)
 
-- Click the Gear icon at the top of the debug widnow (Next to No Configurations)
-
-  - Select "Chrome" from environments
-
-- Replace `configurations` content of the generated launch.json with the corresponding configuration:
-
+- Click the Gear icon at the top of the debug window (Next to No Configurations)
+  
+- Replace content of `launch.json` with this. :
+  **NOTE: THIS IS FOR ASHOP. ADJUST YOUR webRoot PATH APPROPRIATELY.**
 ```
-"version": "0.2.0",
-    "configurations": [
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "vuejs: chrome",
-            "url": "http://localhost:8080",
-            "webRoot": "${workspaceFolder}/src",
-            "breakOnLoad": true,
-            "sourceMapPathOverrides": {
-              "webpack:///./src/": "${webRoot}"
-            }
-        }
-    ]
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "vuejs: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}/apps/ashop/src",
+      "breakOnLoad": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./src/*": "${webRoot}/*"
+      }
+    }
+  ]
+}
+
 ```
 
 ## Serve and Debug
@@ -64,24 +59,14 @@ yarn serve
 ```
 
 - Add breakpoints
-  - Add a manual breakpoint by adding the `debugger` keyword. Remove it before committing code (tslint will complain about it as a reminder.)
-  - In original source, I couldn't get the breakpoints to work (by clicking to the left of the line # in a source file)
-  - When the webpack src view pops up (after it hits the debugger statement) then you can set breakpoints in that file.
-  - Example in the constructor of src/components/MyComponent.vue:
-
-```
-<script lang="ts">
-... other code ...
-@Component
-export default class MyComponent extends Vue {
-  constructor() {
-    super();
-    debugger;
-  }
-}
-</script>
-```
+  - Click and add red breakpoints directly in VS Code to the left of the line numbers.
+  - You can add a manual breakpoint in code by adding the `debugger` keyword. Remove it before committing code (tslint should complain about it as a reminder.)
 
 - Launch the VSC debugger
   - With your app running, click the green arrow at the top of the debug window (with `vuejs: chrome` configuration selected)
+  ![Run Debugger](images/run_debugger.png)
   - This will launch a Chrome browser instance that should link back to your debugger breakpoints.
+  - you can watch variables, etc, like any debugger.
+  
+  ![Debugger In Action](images/debugger.png)
+ 
