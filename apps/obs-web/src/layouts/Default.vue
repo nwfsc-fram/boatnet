@@ -71,7 +71,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/log-book-capture" exact>
+        <q-item to="/log-book-capture" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode" exact>
           <q-item-section avatar>
             <q-icon name="camera_alt" />
           </q-item-section>
@@ -81,7 +81,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/e-logbook" exact>
+        <q-item to="/e-logbook" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode" exact>
           <q-item-section avatar>
             <q-icon name="notes" />
           </q-item-section>
