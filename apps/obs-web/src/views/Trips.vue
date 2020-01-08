@@ -65,12 +65,12 @@
           <div class="text-h6">
             <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 12px; line-height: 20px" title="Trip Is Selected">
-              <q-icon name="warning" size="12px"></q-icon>
-              <span class="text-h6">&nbsp;Trip Selected</span>
+              <q-icon name="warning" size="20px"></q-icon>
+              <span class="text-h6">&nbsp;Observer Required</span>
             </div>
             <div v-else class="text-white" style="font-size: 12px; line-height: 20px" title="Observer Not Required">
-              <q-icon name="not_interested" size="12px"></q-icon>
-              <span>&nbsp;Observer Not Required</span>
+              <q-icon name="not_interested" size="20px"></q-icon>
+              <span class="text-h6">&nbsp;Observer Not Required</span>
             </div>
           </div>
           <div v-if="trip.observer">
@@ -81,9 +81,9 @@
           </div>
         </q-card-section>
         <div style="float: right">
-            <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
-            <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
             <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
+            <q-btn v-if="openTrips.indexOf(trip) === 0" flat @click="closeConfirm(trip)">Close</q-btn>
+            <q-btn flat @click="getTripDetails(trip, openTrips.indexOf(trip))">Edit</q-btn>
         </div>
     </q-card>
     </div>
@@ -103,8 +103,8 @@
                 </span>
               </div>
                 <div class="text-h6 text-white" style="font-size: 12px; line-height: 20px">
-                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="12px"></q-icon>
-                  <span style="font-size: 12px; line-height: 20px">&nbsp;{{ selection.isSelected ? 'Trip Selected' : 'Observer Not Required'}}</span>
+                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="20px"></q-icon>
+                  <span  class="text-h6" >&nbsp;{{ selection.isSelected ? 'Observer Required' : 'Observer Not Required'}}</span>
                 </div>
             </q-card-section>
             </q-card>
@@ -137,9 +137,13 @@
           </div>
         <div class="text-h6">
           <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
-            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Trip is Selected">
-            <q-icon name="check_circle" size="18px"></q-icon>
-            <span class="text-h6">&nbsp;Trip Selected</span>
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Observer Required">
+            <q-icon name="warning" size="20px"></q-icon>
+            <span class="text-h6">&nbsp;Observer Required</span>
+            </div>
+            <div v-else class="text-white" style="font-size: 32px; float: right" title="Observer Not Required">
+            <q-icon name="not_interested" size="20px"></q-icon>
+            <span class="text-h6">&nbsp;Observer Not Required</span>
             </div>
         </div>
 

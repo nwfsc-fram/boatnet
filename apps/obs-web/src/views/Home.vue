@@ -11,7 +11,9 @@
       <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
     </div>
     <div style="display: block; text-align: center" >
-      <q-btn label="Manage Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+      <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
+
+      <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
 
       <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
 
