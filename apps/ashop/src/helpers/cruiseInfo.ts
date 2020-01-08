@@ -12,7 +12,7 @@ export async function getDocByType(program: string, type: string) {
         views: {
             by_type: {
                 // @ts-ignore
-                map: function (doc) { emit(doc.type); }.toString()
+                map: function(doc) { emit(doc.type); }.toString()
             }
         }
     };
@@ -24,9 +24,9 @@ export async function getDocByType(program: string, type: string) {
         key: program + '-' + type
     };
     let results: any = await db.query('docType/by_type', queryOptions)
-        .catch(async function (err: any) {
+        .catch(async (err: any) => {
             await db.put(designDoc);
-            return await db.query('docType/by_type', queryOptions)
+            return await db.query('docType/by_type', queryOptions);
         });
     results = results.rows;
     for (let i = 0; i < results.length; i++) {
