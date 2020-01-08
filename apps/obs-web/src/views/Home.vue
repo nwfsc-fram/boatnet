@@ -115,47 +115,70 @@ export default class Home extends Vue {
 
   private async getUserAliasfromPouchDB() {
     if (this.user.activeUser) {
-      this.user.activeUserAlias = undefined; // DEV ONLY - DELETE THIS LINE!!!!
-      console.log(authService.getCurrentUser()!.username);
-      const db = pouchService.db;
-      const queryOptions = {
-        include_docs: true,
-        key: authService.getCurrentUser()!.username
-      };
+      console.log('active user userName: ' + authService.getCurrentUser()!.username);
+      console.log(this.user.activeUserAlias);
+      if (!this.user.activeUserAlias) {
+        console.log('no active user alias');
+        const db = pouchService.db;
+        const queryOptions = {
+          include_docs: true,
+          key: authService.getCurrentUser()!.username
+        };
 
-      setTimeout( async () => {
-        const alias = await db.query(
-          'obs_web/all_person_alias',
-          queryOptions,
-          pouchService.lookupsDBName
-        );
-
-        if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
-          console.log('setting active user alias');
-          this.user.activeUserAlias = alias.rows[0].doc;
-        } else {
-          console.log('no active user alias');
-          const newAlias = {
-              type: 'person-alias',
-              firstName: this.user.activeUser!.firstName,
-              lastName: this.user.activeUser!.lastName,
-              userName: authService.getCurrentUser()!.username,
-              personDocId: this.user.activeUser!._id,
-              roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
-              isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
-              isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
-              isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
-          };
-          couchService.masterDB.post(newAlias).then(
-              setTimeout( () => {
-                  this.notifySuccess('User Alias Created');
-                  location.reload();
-                  // this.$router.push({path: '/'});
-              } , 1000 )
+        setTimeout( async () => {
+          const alias = await db.query(
+            'obs_web/all_person_alias',
+            queryOptions,
+            pouchService.lookupsDBName
           );
 
-          }
-      } , 1000 );
+          if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
+            console.log('setting active user alias');
+            this.user.activeUserAlias = alias.rows[0].doc;
+          } else {
+            console.log('user alias not found in pouch - looking in couch');
+            try {
+              const couchAlias = await couchService.masterDB.viewWithDocs(
+                'obs_web',
+                'all_person_alias',
+                queryOptions
+              );
+
+              if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
+                console.log('found user alias in couch - waiting for pouch');
+                setTimeout( () => {
+                  location.reload();
+                }, 2000 );
+              } else {
+                console.log('no active user alias');
+                const newAlias = {
+                    type: 'person-alias',
+                    firstName: this.user.activeUser!.firstName,
+                    lastName: this.user.activeUser!.lastName,
+                    userName: authService.getCurrentUser()!.username,
+                    personDocId: this.user.activeUser!._id,
+                    roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
+                    isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
+                    isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
+                    isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
+                };
+                couchService.masterDB.post(newAlias).then(
+                    setTimeout( () => {
+                        this.notifySuccess('User Alias Created');
+                        location.reload();
+                        // this.$router.push({path: '/'});
+                    } , 1000 )
+                );
+              }
+            } catch (err) {
+              console.log(err);
+            }
+
+            }
+        } , 1000 );
+      } else {
+        console.log(this.user.activeUserAlias);
+      }
     }
 
   }
@@ -206,6 +229,43 @@ export default class Home extends Vue {
 
   }
 
+  private async buildDesignDoc() {
+    const designDoc = {
+      _id: '_design/my_index',
+      views: {
+        by_type: {
+          // @ts-ignore
+          map: function(doc) { emit(doc.type); }.toString()
+           }
+        }
+      };
+
+    pouchService.db.put(designDoc).then( () => {
+          pouchService.db.query('my_index/by_type', {
+            limit: 0
+          }).then( (res: any) => {
+            console.log(res.rows.map( (row: any) => row.doc ));
+          }).catch( (err: any) => {
+            console.log(err);
+    });
+    }).catch ( (err: any) => {
+        console.log(err);
+      }
+    );
+
+  }
+
+  private async getDocsViaView() {
+    pouchService.db.query('my_index/by_type', {
+      key: 'saved-selections',
+      include_docs: true
+      }).then( (res: any) => {
+        console.log(res.rows.map( (row: any) => row.doc ));
+      }).catch( (err: any) => {
+        console.log(err);
+      });
+  }
+
   private async created() {
     this.getPermits();
     this.getUserFromUserDB();
@@ -213,6 +273,8 @@ export default class Home extends Vue {
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
+    // this.buildDesignDoc();
+    // this.getDocsViaView();
   }
 
 }
