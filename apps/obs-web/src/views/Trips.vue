@@ -289,8 +289,6 @@ import {
 
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 
-import { getTripsApiTrips } from '../helpers/trips-api';
-
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
@@ -811,7 +809,6 @@ private async getAuthorizedVessels() {
   private async created() {
     // this.setActiveVessel();
     this.getAuthorizedVessels();
-    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.getUserTrips();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
@@ -821,7 +818,6 @@ private async getAuthorizedVessels() {
 
   @Watch('vessel.activeVessel')
   private async handler3(newVal: string, oldVal: string) {
-    this.tripsApiTrips = await getTripsApiTrips() as any;
     this.nextSelections = [];
     this.getUserTrips();
     this.getNextSelections();
