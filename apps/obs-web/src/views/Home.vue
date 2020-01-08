@@ -136,19 +136,19 @@ export default class Home extends Vue {
             console.log('setting active user alias');
             this.user.activeUserAlias = alias.rows[0].doc;
           } else {
-            console.log('user alias not found in pouch - looking in couch')
+            console.log('user alias not found in pouch - looking in couch');
             try {
               const couchAlias = await couchService.masterDB.viewWithDocs(
                 'obs_web',
                 'all_person_alias',
                 queryOptions
-              )
+              );
 
               if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
                 console.log('found user alias in couch - waiting for pouch');
                 setTimeout( () => {
                   location.reload();
-                }, 2000 )
+                }, 2000 );
               } else {
                 console.log('no active user alias');
                 const newAlias = {
