@@ -261,7 +261,7 @@ export default class TripDetails extends Vue {
   private emRoster: any = {};
   private maximizedRetention: any = null;
   private tripsApiTrips: any = [];
-  private tripsApiId: number = 0;
+  private tripsApiNum: number = 0;
 
   constructor() {
     super();
@@ -578,7 +578,7 @@ export default class TripDetails extends Vue {
               );
       }
 
-      this.trip.activeTrip!.tripNum = this.tripsApiId;
+      this.trip.activeTrip!.tripNum = this.tripsApiNum;
       await pouchService.db.post(this.trip.activeTrip).then( () => {
         this.$router.push({ path: '/trips/' });
       });

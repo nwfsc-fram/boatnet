@@ -332,7 +332,7 @@ export default class Trips extends Vue {
   private closedTripsTable: boolean = false;
 
   private columns = [
-    {name: 'tripNum', label: 'Trip ID', field: 'tripNum', required: false, align: 'left', sortable: true},
+    {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
     {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true},
     {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true},
     {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: false, align: 'left', sortable: true},
