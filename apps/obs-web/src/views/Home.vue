@@ -10,6 +10,13 @@
     <div class="flex flex-center">
       <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
     </div>
+
+    <div style="display: block; text-align: center">
+      <q-btn label="Get Trips Api Trips" @click="getApiTrips"></q-btn>
+      <q-btn label="New Trips Api Trip" @click="createTripsApiTrip"></q-btn>
+      <q-btn label="Get A Specific Trips Api Trip" @click="getSpecificApiTrip"></q-btn>
+      <q-btn label="Update Trips Api Trip" @click="updateSpecificTripsApiTrip"></q-btn>
+    </div>
     <div style="display: block; text-align: center" >
       <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
 
@@ -60,6 +67,10 @@ export default class Home extends Vue {
   @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
 
   private userRoles: string[] = [];
+  private mytrips: any[] = [];
+  private trip: any = {};
+  private createdTrip: any = {};
+  private updatedTrip: any = {};
 
   constructor() {
     super();

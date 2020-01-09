@@ -42,9 +42,9 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
     });
 }
 
-export function getTripsApiTrip(tripId: any) {
+export function getTripsApiTrip(tripNum: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = tripsApiUrl + '/' + tripId;
+        const queryUrl = tripsApiUrl + '/' + tripNum;
         request.get(
             {
                 url: queryUrl,
@@ -72,8 +72,8 @@ export function newTripsApiTrip(newTrip: any) {
                 json: true,
                 headers: {
                     authorization: 'Token ' + jwt,
+                },
                 body: newTrip
-                }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
@@ -87,12 +87,13 @@ export function newTripsApiTrip(newTrip: any) {
 
 export function updateTripsApiTrip(activeTrip: any) {
     return new Promise(async (resolve, reject) => {
+
         const tripsApiTrip: any = await getTripsApiTrip(activeTrip.tripNum);
         const queryUrl = tripsApiUrl + '/' + activeTrip.tripNum;
 
         if (!tripsApiTrip.changeLog) { tripsApiTrip.changeLog = []; }
 
-        tripsApiTrip.changelog.push({
+        tripsApiTrip.changeLog.push({
             changedBy: authService.getCurrentUser()!.username,
             changedDate: moment().format(),
             previousDeparturePort: tripsApiTrip.departurePort,
@@ -114,8 +115,8 @@ export function updateTripsApiTrip(activeTrip: any) {
                 json: true,
                 headers: {
                     authorization: 'Token ' + jwt,
+                },
                 body: tripsApiTrip
-                }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
                     resolve(body);

@@ -16,9 +16,9 @@ module.exports = {
       // clientsClaim: true,
     }
   },
+  transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
+  publicPath: process.env.NODE_ENV === 'production' ? '/observer-web/' : '/',
   configureWebpack: {
     devtool: 'source-map'
-  },
-  transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
-  publicPath: process.env.NODE_ENV === 'production' ? '/observer-web/' : '/'
+  }
 };
