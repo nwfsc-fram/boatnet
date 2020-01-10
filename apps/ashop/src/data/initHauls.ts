@@ -1,10 +1,24 @@
-import { AshopHaul, Measurement, WcgopOperation } from '@boatnet/bn-models';
-import { initMeasurement } from '@boatnet/bn-models';
+import { AshopHaul, Measurement, WcgopOperation, initMeasurement, NonFlowScaleCatch } from '@boatnet/bn-models';
+
+const lbsToKgFormula = 1 / 2.2046;
 
 export function update(haul: AshopHaul) {
     haul.officialTotalCatch = setOfficialTotalCatch(haul);
     if (haul.fishingDepth) {
         haul.fishingDepth.units = haul.bottomDepth ? haul.bottomDepth.units : '';
+    }
+}
+
+function convertNonFlowScaleCatchToKg(nonFishingLoc: NonFlowScaleCatch) {
+    if (!nonFishingLoc.officialMeasurement) {
+        if (nonFishingLoc.rawInputMeasurement.units === 'kg') {
+            nonFishingLoc.officialMeasurement = nonFishingLoc.rawInputMeasurement;
+        } else {
+            nonFishingLoc.officialMeasurement = {
+                value: getMeasurementVal(nonFishingLoc.rawInputMeasurement) * lbsToKgFormula,
+                units: 'kg'
+            }
+        }
     }
 }
 
@@ -26,9 +40,11 @@ function setOfficialTotalCatch(haul: AshopHaul): Measurement {
     const vesselEstMeasurement = haul.vesselEstimatedCatch ? haul.vesselEstimatedCatch.measurement : {};
 
     observerEstCatch += getMeasurementVal(flowScaleMeasurement);
+    observerEstCatch = observerEstCatch * 1000; // convert from kg to mt
 
     for (const nonFlowScaleWt of nonFlowScaleCatch) {
-        observerEstCatch += getMeasurementVal(nonFlowScaleWt.measurement);
+        convertNonFlowScaleCatchToKg(nonFlowScaleWt);
+        observerEstCatch += (getMeasurementVal(nonFlowScaleWt.officialMeasurement) * 1000);
     }
     if (!observerEstCatch) {
         observerEstCatch += getMeasurementVal(vesselEstMeasurement);

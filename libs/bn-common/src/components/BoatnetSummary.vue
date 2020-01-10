@@ -30,7 +30,7 @@
 
     <div class="row q-gutter-sm relative-bottom">
       <q-btn
-        label="Add"
+        :label="addLabel()"
         color="primary"
         icon="add"
         @click="onAdd"
@@ -133,11 +133,25 @@ export default class BoatnetSummary extends Vue {
     }
   }
 
+  private addLabel() {
+    if (this.currentScreen === 'Trip') {
+      return 'Trip';
+    } else if (this.currentScreen === 'Haul') {
+      return 'Haul';
+    } else if (this.currentScreen === 'Catch') {
+      return 'Sample';
+    } else if (this.currentScreen === 'Species') {
+      return 'Species';
+    }
+  }
+
   private getNextScreen() {
     if (this.currentScreen === 'Trip') {
       return 'Hauls';
     } else if (this.currentScreen === 'Haul') {
       return 'Catch';
+    } else if (this.currentScreen === 'Catch') {
+      return 'Wts & Cnts';
     } else if (this.currentScreen === 'Species') {
       return 'Wts & Cnts';
     }

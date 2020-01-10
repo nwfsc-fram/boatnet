@@ -74,7 +74,6 @@ import {
   WcgopTrip,
   WcgopOperation,
   WcgopOperationTypeName,
-  LocationEvent,
   WcgopCatch,
   WcgopCatchTypeName,
   SpeciesTypeName
@@ -182,8 +181,8 @@ export default class Hauls extends Vue {
       };
       try {
         const result = await pouchService.db.allDocs(
-          pouchService.userDBName,
-          queryOptions
+          queryOptions,
+          pouchService.userDBName
         );
         this.wcgopHaulsData = result.rows;
       } catch (err) {
@@ -225,7 +224,7 @@ export default class Hauls extends Vue {
   }
 
   private deleteHauls() {
-    pouchService.db.remove(pouchService.userDBName, this.currentHaul);
+    pouchService.db.remove(this.currentHaul, {}, pouchService.userDBName);
     if (this.currentTrip.operationIDs && this.currentHaul._id) {
       const removalIndex = this.currentTrip.operationIDs.indexOf(
         this.currentHaul._id

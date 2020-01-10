@@ -7,6 +7,13 @@
       @save="save"
     ></boatnet-datetime-prime>
 
+    <boatnet-datetime
+      v-if="config.type === 'dateTimeSeparate'"
+      :label="config.label"
+      :value.sync="valueHolder"
+      @save="save"
+    ></boatnet-datetime>
+
     <boatnet-keyboard-select-list
       v-if="config.type === 'input' && (config.displayCondition ? showField : true)"
       :displayName="config.displayName"
