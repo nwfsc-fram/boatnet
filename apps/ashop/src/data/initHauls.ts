@@ -1,4 +1,4 @@
-import { AshopHaul, Measurement, WcgopOperation, initMeasurement, NonFlowScaleCatch } from '@boatnet/bn-models';
+import { AshopHaul, Measurement, WcgopOperation, initMeasurement, BaseOperation, NonFlowScaleCatch } from '@boatnet/bn-models';
 
 const lbsToKgFormula = 1 / 2.2046;
 
@@ -28,7 +28,7 @@ function convertNonFlowScaleCatchToKg(nonFishingLoc: NonFlowScaleCatch) {
             nonFishingLoc.officialMeasurement = {
                 value: getMeasurementVal(nonFishingLoc.rawInputMeasurement) * lbsToKgFormula,
                 units: 'kg'
-            }
+            };
         }
     }
 }
@@ -48,7 +48,7 @@ function getMeasurementVal(measurement: Measurement): number {
 function setOfficialTotalCatch(haul: AshopHaul): Measurement {
     let observerEstCatch: number = 0;
     const flowScaleMeasurement = haul.flowScaleCatch ? haul.flowScaleCatch.measurement : {};
-    const nonFlowScaleCatch = haul.nonFlowScaleCatch ? haul.nonFlowScaleCatch : [];
+    const nonFlowScaleCatch: NonFlowScaleCatch[] = haul.nonFlowScaleCatch ? haul.nonFlowScaleCatch : [];
     const vesselEstMeasurement = haul.vesselEstimatedCatch ? haul.vesselEstimatedCatch.measurement : {};
 
     observerEstCatch += getMeasurementVal(flowScaleMeasurement);

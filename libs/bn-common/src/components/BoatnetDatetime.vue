@@ -23,7 +23,7 @@ export default class BoatnetDatetime extends Vue {
     showTime: false,
     timeOnly: false,
     displayName: this.label + ' Date',
-    maxDate: "today"
+    maxDate: 'today'
   };
 
   get date() {
