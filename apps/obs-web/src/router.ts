@@ -20,6 +20,7 @@ import LogBookCapture from './views/LogBookCapture.vue';
 import Login from './views/Login.vue';
 import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
+import EMTripLevelCompare from './views/EMTripLevelCompare.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 import ObserverAvailability from './views/ObserverAvailability.vue';
@@ -151,6 +152,12 @@ const router = new Router({
         },
         {
           path: '/em-efp-details/:id', name: 'EM EFP Details', component: EMEFPDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-trip-level-compare', name: 'EM Trip Level Comparison', component: EMTripLevelCompare,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

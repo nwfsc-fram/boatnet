@@ -47,7 +47,6 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Home</q-item-label>
-            <q-item-label caption>summary / status page</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -57,7 +56,7 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Trips</q-item-label>
-            <q-item-label caption>create a trip / view trip history</q-item-label>
+            <q-item-label caption>create trips/view trip history</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -67,99 +66,41 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Declarations</q-item-label>
-            <q-item-label caption>create a declaration / view current and past declarations</q-item-label>
+            <q-item-label caption>create declarations + view current and past declarations</q-item-label>
           </q-item-section>
         </q-item>
 
-        <q-item to="/log-book-capture" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode" exact>
-          <q-item-section avatar>
-            <q-icon name="camera_alt" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Log Book Capture</q-item-label>
-            <q-item-label caption>take/upload logbook photo</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item to="/e-logbook" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode" exact>
-          <q-item-section avatar>
-            <q-icon name="notes" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>E Logbook</q-item-label>
-            <q-item-label caption>digital logbook</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          to="/vessels"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="fa fa-ship" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Vessel Management</q-item-label>
-            <q-item-label caption>Associate Personnel with Vessels</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          to="/em-efp-management"
-          exact
+        <q-expansion-item
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          label="Logbook"
+          icon="camera_alt"
+          v-model="lbExpanded"
+          @click="emExpanded = false; bmExpanded = false"
+          :header-inset-level="0"
+          :content-inset-level=".5"
         >
-          <q-item-section avatar>
-            <q-icon name="videocam" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>EM EFP Management</q-item-label>
-            <q-item-label caption>Manage EM EFP Roster</q-item-label>
-          </q-item-section>
-        </q-item>
 
-        <q-item
-          to="/ots-management"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="waves" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>OTS Management</q-item-label>
-            <q-item-label caption>Manage Selection Targets</q-item-label>
-          </q-item-section>
-        </q-item>
+              <q-item to="/log-book-capture" exact>
+                <q-item-section avatar>
+                  <q-icon name="camera_alt" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Log Book Capture</q-item-label>
+                  <q-item-label caption>capture + upload logbook photos</q-item-label>
+                </q-item-section>
+              </q-item>
 
-        <!-- <q-item
-          to="/observer-assignment"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="fa fa-binoculars" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Observer Assignment</q-item-label>
-            <q-item-label caption>Assign Observers to Selected Trips</q-item-label>
-          </q-item-section>
-        </q-item>
+              <q-item to="/e-logbook" exact>
+                <q-item-section avatar>
+                  <q-icon name="notes"/>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>E Logbook</q-item-label>
+                  <q-item-label caption>paperless logbook</q-item-label>
+                </q-item-section>
+              </q-item>
 
-        <q-item
-          to="/observer-availability"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="fa fa-calendar-alt" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Observer Availability</q-item-label>
-            <q-item-label caption>Manage My Availability (Observer Role)</q-item-label>
-          </q-item-section>
-        </q-item> -->
+        </q-expansion-item>
 
         <q-item
           to="/debriefer/summary"
@@ -167,66 +108,199 @@
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
-            <q-icon name="beenhere" />
+            <q-icon name="beenhere"/>
           </q-item-section>
           <q-item-section>
             <q-item-label>Debriefer</q-item-label>
-            <q-item-label caption>debriefer module description</q-item-label>
+            <q-item-label caption>debrief observed trips</q-item-label>
           </q-item-section>
         </q-item>
 
-        <q-item
-          to="/lookup-editor"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
+        <!-- <q-item to="/observer-availability" exact>
           <q-item-section avatar>
-            <q-icon name="edit_attributes" />
+            <q-icon name="fa fa-calendar-alt" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Lookup Editor</q-item-label>
-            <q-item-label caption>Edit Boatnet Lookups/Config/Docs</q-item-label>
+            <q-item-label>Observer Availability</q-item-label>
+            <q-item-label caption>manage my availability (bbserver role)</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
+
+        <q-expansion-item
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          label="Boatnet Management"
+          icon="settings"
+          v-model="bmExpanded"
+          @click="emExpanded = false; lbExpanded = false"
+          :header-inset-level="0"
+          :content-inset-level=".5"
+        >
+
+                <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode">
+                  <q-item-section avatar>
+                    <q-icon name="fa fa-ship" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Vessel Management</q-item-label>
+                    <q-item-label caption>associate personnel with vessels</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item to="/manage-users" exact>
+                  <q-item-section avatar>
+                    <q-icon name="people" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>User Management</q-item-label>
+                    <q-item-label caption>edit user conact info + roles</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item to="/ots-management" exact>
+                  <q-item-section avatar>
+                    <q-icon name="check_circle" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>OTS Management</q-item-label>
+                    <q-item-label caption>manage selection targets</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <!-- <q-item to="/observer-assignment" exact>
+                  <q-item-section avatar>
+                    <q-icon name="fa fa-binoculars" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Observer Assignment</q-item-label>
+                    <q-item-label caption>assign observers to selected trips</q-item-label>
+                  </q-item-section>
+                </q-item> -->
+
+                <q-item to="/permits" exact >
+                  <q-item-section avatar>
+                    <q-icon name="assignment" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Permits Viewer</q-item-label>
+                    <q-item-label caption>view permit endorsements and vessel association</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item to="/lookup-editor" exact >
+                  <q-item-section avatar>
+                    <q-icon name="edit_attributes" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Lookups Editor</q-item-label>
+                    <q-item-label caption>edit boatnet lookups, config + docs</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+
+        </q-expansion-item>
+
+        <q-expansion-item
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          label="Electronic Monitoring"
+          icon="videocam"
+          v-model="emExpanded"
+          @click="bmExpanded = false; lbExpanded = false"
+          :header-inset-level="0"
+          :content-inset-level=".5"
+        >
+                <q-item
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="/em-efp-management" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="table"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>EM EFP Management</q-item-label>
+                    <q-item-label caption>manage EM EFP roster</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  style="color: lightgrey"
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="check"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Task Management</q-item-label>
+                    <q-item-label caption>manage 3rd party review/audit</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="/em-trip-level-compare" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="compare"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Trip Level Comparison</q-item-label>
+                    <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  style="color: lightgrey"
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="compare_arrows"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Haul Level Comparison</q-item-label>
+                    <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  style="color: lightgrey"
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="rate_review"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Review/Audit Rate Management</q-item-label>
+                    <q-item-label caption>set/edit various rates</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  style="color: lightgrey"
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="videocam"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Vido Footage Management</q-item-label>
+                    <q-item-label caption>manage EM footage</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+        </q-expansion-item>
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item
-          to="/permits"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="assignment" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Permits</q-item-label>
-            <q-item-label caption>Associate captains to permits/vessels</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <!-- <q-item to="/user-config" exact> -->
         <q-item style="cursor:pointer" to="/user-config" exact>
           <q-item-section avatar>
             <q-icon name="person" />
           </q-item-section>
           <q-item-section>
             <q-item-label>User Config</q-item-label>
-            <q-item-label caption>Manage Preferences and Contact info</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          to="/manage-users"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-        >
-          <q-item-section avatar>
-            <q-icon name="people" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Manage Users</q-item-label>
-            <q-item-label caption>edit user conact info</q-item-label>
+            <q-item-label caption>manage preferences and contact info</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -338,6 +412,9 @@ export default class DefaultLayout extends Vue {
   private isIndexing: boolean = false;
   private toIndex: number = 0;
   private indexed: number = 0;
+  private bmExpanded: boolean = false;
+  private emExpanded: boolean = false;
+  private lbExpanded: boolean = false;
 
   constructor() {
     super();

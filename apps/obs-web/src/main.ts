@@ -36,6 +36,8 @@ import DebrieferCatchBaskets from './views/DebrieferCatchBaskets.vue';
 import DebrieferCatchSpecimens from './views/DebrieferCatchSpecimens.vue';
 // Vue.use(VueResource);
 
+import VueCompositionApi from '@vue/composition-api';
+
 Vue.use(Quasar, {
   config: {},
   components: {
@@ -56,6 +58,8 @@ Vue.use(Quasar, {
     Notify
   }
 });
+
+Vue.use(VueCompositionApi);
 
 Vue.component('appUserDetails', UserDetails);
 Vue.component('appDebriefer', Debriefer);
