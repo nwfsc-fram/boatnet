@@ -1,20 +1,20 @@
 <template>
   <div>
     <boatnet-button-toggle-comp
-      title="Location Format"
+      :title="label + ' Location Format'"
       :options="options"
       :val.sync="format"
       @save="save"
     ></boatnet-button-toggle-comp>
     <boatnet-keyboard-select-list
-      displayName="Latitude"
+      :displayName="label + ' Latitude'"
       keyboardType="numeric"
       :mask="latMask"
       :val.sync="lat"
       @save="save"
     ></boatnet-keyboard-select-list>
     <boatnet-keyboard-select-list
-      displayName="Longitude"
+      :displayName="label + ' Longitude'"
       keyboardType="numeric"
       :mask="longMask"
       :val.sync="long"
@@ -33,6 +33,7 @@ import Coordinates from 'coordinate-parser';
 export default createComponent({
   props: {
     model: String,
+    label: String,
     obj: Object
   },
   setup(props, context) {

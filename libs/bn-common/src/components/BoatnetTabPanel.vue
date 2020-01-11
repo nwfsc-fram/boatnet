@@ -3,7 +3,7 @@
     <q-tab-panels v-model="tab" animated>
       <q-tab-panel v-for="i in size" :key="i" :name="'panel' + i">
         <slot :name="'title' + i" v-bind:panelNum="i"/>
-        <div class="row" style="height:460px; max-height: 100%;">
+        <div class="row" style="height:500px; max-height: 100%;">
           <div v-if="i != 1" class="col-1 self-center">
             <q-btn flat dense round @click="changeTab(i - 1)" icon="chevron_left" size="3em"/>
           </div>

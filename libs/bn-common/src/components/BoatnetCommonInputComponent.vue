@@ -36,6 +36,7 @@
     <boatnet-location
       v-if="config.type === 'location'"
       :model="config.modelName"
+      :label="config.label"
       :obj="model"
       @save="save"
     ></boatnet-location>
