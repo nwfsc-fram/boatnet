@@ -52,11 +52,11 @@ function setOfficialTotalCatch(haul: AshopHaul): Measurement {
     const vesselEstMeasurement = haul.vesselEstimatedCatch ? haul.vesselEstimatedCatch.measurement : {};
 
     observerEstCatch += getMeasurementVal(flowScaleMeasurement);
-    observerEstCatch = observerEstCatch * 1000; // convert from kg to mt
+    observerEstCatch = observerEstCatch * .001; // convert from kg to mt
 
     for (const nonFlowScaleWt of nonFlowScaleCatch) {
         convertNonFlowScaleCatchToKg(nonFlowScaleWt);
-        observerEstCatch += (getMeasurementVal(nonFlowScaleWt.officialMeasurement) * 1000);
+        observerEstCatch += (getMeasurementVal(nonFlowScaleWt.officialMeasurement) * .001);
     }
     if (!observerEstCatch) {
         observerEstCatch += getMeasurementVal(vesselEstMeasurement);
