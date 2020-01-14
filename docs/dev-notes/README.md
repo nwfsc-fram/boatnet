@@ -1,3 +1,12 @@
+## Contributing Guidelines
+
+1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
+2. Verify everything builds under lerna (`lerna run build`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+   Specific detailed instructions can be found [here](./CONTRIBUTING.md)
+
 ## Further Development Setup
 
 - Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
@@ -17,15 +26,6 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 
 1. Go to your `boatnet/.git/hooks` folder
 2. Copy and rename `pre-commit.sample` to `pre-commit`
-
-## Contributing Guidelines
-
-1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
-2. Verify everything builds under lerna (`lerna run build`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
-   Specific detailed instructions can be found [here](./CONTRIBUTING.md)
 
 ## Using Lerna
 * See even more detailed [Developer Notes](./docs/dev-notes/dev-notes.md)
