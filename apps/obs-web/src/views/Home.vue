@@ -122,6 +122,7 @@ export default class Home extends Vue {
 
   private async getUserAliasfromPouchDB() {
     if (this.user.activeUser) {
+      this.user.activeUserAlias = undefined;
       console.log('active user userName: ' + authService.getCurrentUser()!.username);
       console.log(this.user.activeUserAlias);
       if (!this.user.activeUserAlias) {
@@ -186,6 +187,8 @@ export default class Home extends Vue {
       } else {
         console.log(this.user.activeUserAlias);
       }
+    } else {
+      console.log('no active user!')
     }
 
   }
