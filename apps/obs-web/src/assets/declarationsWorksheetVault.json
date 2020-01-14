@@ -9,21 +9,15 @@
         "Limited Entry",
         "Open Access"
     ],
-    "Exemption": [
-        "Haul Out [10]",
-        "Outside Areas [20]",
-        "Emergency [30]",
-        "Long-Term Departure [40]"
-    ],
     "Limited Entry": [
         "IFQ/CP/CV/MS",
         "Non-IFQ Fixed Gear [10]"
     ],
     "Open Access": [
         "Non-Groundfish Trawl",
-        "Salmon Trawl [63]",
+        "Salmon Troll [63]",
         "Line*",
-        "Long Line**",
+        "Longline**",
         "Trap/Pot",
         "CPS Net Gear [67]",
         "CA Gillnet Complex Gear [68]",
@@ -44,75 +38,86 @@
     "Line*": [
         "CA Halibut [64]",
         "HMS [66]",
-        "Ground Fish [35]"
+        "Groundfish [35]"
     ],
-    "Long Line**": [
-        "Ground Fish [33]",
-        "Halibut [62]"
+    "Longline**": [
+        "Groundfish [33]",
+        "Pacific Halibut [62]"
     ],
     "Trap/Pot": [
         "Prawn [60]",
         "Dungeness Crab [61]",
         "Sheephead [65]",
-        "Ground Fish [34]"
+        "Groundfish [34]"
     ],
     "Midwater Trawl": [
         "Non-Whiting [20]",
         "Whiting Shorebased [21]",
         "Whiting CP [22]",
-        "Whiting CV/MS [23]"
+        "Whiting CV (Mothership Sector) [23]",
+        "Whiting MS [23]"
     ],
     "Leaf Nodes": {
-        "Non-IFQ Fixed Gear [10]": "Limited entry fixed gear, not including IFQ@10",
-        "Fixed Gear [11]": "Limited entry groundfish non-trawl, IFQ@11",
-        "Non-Whiting [20]": "Limited entry midwater trawl gear, non-whiting shorebased IFQ@20",
-        "Whiting Shorebased [21]": "Limited entry midwater trawl, Pacific whiting shorebased IFQ@21",
-        "Whiting CP [22]": "Limited entry midwater trawl, Pacific whiting catcher/processor sector@22",
-        "Whiting CV/MS [23]": "Limited entry midwater trawl, Pacific whiting mothership sector (catcher vessel or mothership)@23",
-        "Bottom Trawl [30]": "Limited entry bottom trawl, shorebased IFQ, not including demersal trawl@30",
-        "Demersal Trawl [31]": "Limited entry demersal trawl, shorebased IFQ@31",
-        "Ground Fish [33]": "Open access longline gear for groundfish@33",
-        "Ground Fish [34]": "Open access groundfish trap or pot gear@34",
-        "Ground Fish [35]": "Open access line gear for groundfish@35",
-        "Ridgeback Prawn [40]": "Non-groundfish trawl gear for ridgeback prawn@40",
-        "Pink Shrimp [41]": "Non-groundfish trawl gear for pink shrimp@41",
-        "CA Halibut [42]": "Non-groundfish trawl gear for CA halibut@42",
-        "Sea Cucumber [43]": "Non-groundfish trawl gear for sea cucumber@43",
-        "Tribal Trawl [50]": "Tribal Trawl gear@50@50",
-        "Prawn [60]": "Open access prawn trap or pot gear@60",
-        "Dungeness Crab [61]": "Open access Dungeness crab trap or pot gear@61",
-        "Halibut [62]": "Open access Pacific Halibut longline gear@62",
-        "Salmon Trawl [63]": "Open access salmon troll gear@63",
-        "CA Halibut [64]": "Open access California halibut line gear@64",
-        "Sheephead [65]": "Open access sheephead trap or pot gear@65",
-        "HMS [66]": "Open access Highly Migratory Species line gear@66",
-        "CPS Net Gear [67]": "Open access Coastal Pelagic Species net hear@67",        
-        "CA Gillnet Complex Gear [68]": "Open access California gillnet complex gear@68",
-        "Other Gear (or Activity) [69]": "A gear that is not listed above@69",
-        "Haul Out [10]": "Haul out exemption@10",
-        "Outside Areas [20]": "Outside areas exemption@20",
-        "Emergency [30]": "Emergency exemption@30",
-        "Long-Term Departure [40]": "Long-term eparture exemption@40"
+        "Non-IFQ Fixed Gear [10]": "10 ‐ Limited entry fixed gear, not including shorebased IFQ",
+        "Fixed Gear [11]": "11 ‐ Limited entry groundfish non‐trawl, shorebased IFQ",
+        "Non-Whiting [20]": "20 ‐ Limited entry midwater trawl gear, nonwhiting shorebased IFQ",
+        "Whiting Shorebased [21]": "21 ‐ Limited entry midwater trawl, Pacific whiting shorebased IFQ",
+        "Whiting CP [22]": "22 ‐ Limited entry midwater trawl, Pacific whiting catcher/processor sector",
+        "Whiting CV (Mothership Sector) [23]": "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector (catcher vessel)",
+        "Whiting MS [23]": "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector",
+        "Bottom Trawl [30]": "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl",
+        "Demersal Trawl [31]": "31 ‐ Limited entry demersal trawl, shorebased IFQ",
+        "Groundfish [33]": "33 ‐ Open access longline gear for groundfish",
+        "Groundfish [34]": "34 ‐ Open access groundfish trap or pot gear",
+        "Groundfish [35]": "35 ‐ Open access line gear for groundfish",
+        "Ridgeback Prawn [40]": "40 ‐ Non‐groundfish trawl gear for ridgeback prawn",
+        "Pink Shrimp [41]": "41 ‐ Non‐groundfish trawl gear for pink shrimp",
+        "CA Halibut [42]": "42 ‐ Non‐groundfish trawl gear for CA halibut",
+        "Sea Cucumber [43]": "43 ‐ Non‐groundfish trawl gear for sea cucumber",
+        "Tribal Trawl [50]": "50 ‐ Tribal trawl gear",
+        "Prawn [60]": "60 ‐ Open access prawn trap or pot gear",
+        "Dungeness Crab [61]": "61 ‐ Open access Dungeness crab trap or pot gear",
+        "Pacific Halibut [62]": "62 ‐ Open access Pacific Halibut longline gear",
+        "Salmon Troll [63]": "63 ‐ Open access salmon troll gear",
+        "CA Halibut [64]": "64 ‐ Open access California halibut line gear",
+        "Sheephead [65]": "65 ‐ Open access sheephead trap or pot gear",
+        "HMS [66]": "66 ‐ Open access Highly Migratory Species line gear",
+        "CPS Net Gear [67]": "67 ‐ Open access Coastal Pelagic Species net gear",        
+        "CA Gillnet Complex Gear [68]": "68 ‐ Open access California gillnet complex gear",
+        "Other Gear (or Activity) [69]": "69 ‐ A gear (or activity) that is not listed above",
+        "Haul Out [10]": "10 ‐ Haul out exemption",
+        "Outside Areas [20]": "20 ‐ Outside areas exemption",
+        "Emergency [30]": "30 ‐ Emergency exemption",
+        "Long-Term Departure [40]": "40 – Long‐term departure exemption"
     },
     "IFQ Fisheries": [
         "Fixed Gear [11]",
+        "11 ‐ Limited entry groundfish non‐trawl, shorebased IFQ",
         "Non-Whiting [20]",
+        "20 ‐ Limited entry midwater trawl gear, nonwhiting shorebased IFQ",
         "Whiting Shorebased [21]",
+        "21 ‐ Limited entry midwater trawl, Pacific whiting shorebased IFQ",
         "Whiting CP [22]",
-        "Whiting CV/MS [23]",
+        "22 ‐ Limited entry midwater trawl, Pacific whiting catcher/processor sector",
+        "Whiting CV (Mothership Sector) [23]",
+        "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector (catcher vessel)",
+        "Whiting MS [23]",
+        "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector",
         "Bottom Trawl [30]",
-        "Demersal Trawl [31]"
+        "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl",
+        "Demersal Trawl [31]",
+        "31 ‐ Limited entry demersal trawl, shorebased IFQ"
     ],
     "EFP": {
         "Trawl Gear (Midwater)": ["Non-Whiting [20]"],
         "Trawl Gear (Bottom)": ["Bottom Trawl [30]"],
         "Cowcod": ["Other Gear (or Activity) [69]"],
         "Deep Side Buoy Gear": ["Other Gear (or Activity) [69]"],
-        "Electronic Monitoring": ["Non-Whiting [20]", "Whiting Shorebased [21]", "Whiting CV/MS [23]", "Bottom Trawl [30]"],
+        "Electronic Monitoring": ["Non-Whiting [20]", "Whiting Shorebased [21]", "Whiting CV (Mothership Sector) [23]", "Whiting MS [23]", "Bottom Trawl [30]"],
         "Real Good Fish": ["na"],
         "SFCFA": ["Other Gear (or Activity) [69]"],
         "CPS": ["Other Gear (or Activity) [69]"],
-        "Cook (OR Rockfish)": ["Ground Fish [35]"]
+        "Cook (OR Rockfish)": ["Groundfish [35]"]
     },
     "Observed Options": [
         "Observer", 
