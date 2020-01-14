@@ -68,6 +68,8 @@ cd <your-path>/boatnet/
 git pull 
 # clean the yarn cache - this has caused issues in the past occasionally (usually this is not required)
 yarn cache clean
+# axe node_modules
+rm -f node_modules
 # remove the yarn.lock to ensure newest packages are acquired (usually this is not required)
 rm yarn.lock
 # now follow the normal build procedure
