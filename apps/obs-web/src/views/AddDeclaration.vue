@@ -35,14 +35,14 @@
         v-model="modelID"
         v-if="!worksheetModel"
         dense
-        :options="Array.from(leafSet)"
+        :options="Array.from(leafValues)"
         @input="itemChosen(modelID, 5)"
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
       <p v-if="databaseObject.showEFPNote">
         If you do not see your EFP category in the list below
-        please contact the OLE office at 999-999-9990
+        please contact the OLE office at 888-585-5518
       </p>
 
       <q-select
@@ -125,33 +125,59 @@
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
+      <q-input
+        label="Describe Activity/Gear/Fishery"
+        stack-label
+        v-if="databaseObject.showOtherGearTextBox"
+        v-model="otherGearNote"
+        filled
+        type="textarea"
+        lazy-rules
+        :rules="[val => val.length >= 3 || 'Sufficient details required for other gear type declaration']"
+      />
+
+      <br />
+
       <q-card v-if="databaseObject.cartAddBool" align="center" class="bg-light-blue-3" dense>
         <q-card-section>
-          <div class="text-subtitle2">The declaration ID for {{ decChoiceDisplay.split('@')[0] }} is</div>
+          <div
+            class="text-subtitle2"
+          >The declaration ID for {{ decChoiceDisplay.split(' ‐ ')[1] }} is</div>
         </q-card-section>
 
         <q-card-section>
-          <div class="text-h6">{{ decChoiceDisplay.split('@')[1] }}</div>
+          <div class="text-h6">{{ decChoiceDisplay.split(' ‐ ')[0] }}</div>
         </q-card-section>
       </q-card>
 
       <br />
 
       <div style="text-align: center">
-        <q-btn
-          v-if="databaseObject.cartAddBool"
-          label="Add To Cart"
-          type="addcart"
-          color="primary"
-        />
+        <q-btn v-if="databaseObject.cartAddBool" label="Add To Cart" type="submit" color="primary" />
       </div>
 
       <p v-if="showLineNote">
         <br />* Line = Hook &amp Line
-        <br />** Long Line = Stationary buoyed and anchored ground line with hooks
+        <br />** Longline = Stationary buoyed and anchored ground line with hooks
         attached, so as to fish along the seabed, does not include
         pelagic Hook &amp Line or Troll gear
       </p>
+
+      <q-dialog v-model="exemptionPopup" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <span class="q-ml-sm">
+              Exemptions
+              <b>must</b> be made by calling the Office of Law Enforcement at
+              <b>888-585-5518</b>.
+            </span>
+          </q-card-section>
+
+          <q-card-actions align="center">
+            <q-btn flat label="Okay" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-form>
   </div>
 </template>
@@ -172,6 +198,7 @@ export default class Dropdowns extends Vue {
     showObsQuestion: false,
     cartAddBool: false,
     showBoolArr: [true, false, false, false, false],
+    showOtherGearTextBox: false,
     decChoiceKey: '',
     // EFP stuff
     efpTog: false,
@@ -191,12 +218,17 @@ export default class Dropdowns extends Vue {
   public model6: string = '';
   public modelID: string = '';
   public worksheetModel: boolean = true;
+  public exemptionPopup: boolean = false;
   public decChoiceDisplay: string = '';
+  public otherGearNote: string = '';
   // Options pulled out of the json file, this information comes from OLE
   public options1 = dropdownTree.Start;
   public obsOptions: string[] = dropdownTree['Observed Options'];
   public leafSet: Set<string> = new Set(
     Object.keys(dropdownTree['Leaf Nodes'])
+  );
+  public leafValues: Set<string> = new Set(
+    Object.values(dropdownTree['Leaf Nodes'])
   );
   public ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   // EFP stuff
@@ -238,15 +270,38 @@ export default class Dropdowns extends Vue {
 
   // When dropdown item is chosen, use that information to
   // generate the next dropdown
+  // If not using worksheet dropdown, the format is slightly different
   public itemChosen(model: any, boolIndex: number) {
     this.clearEntriesBelow(boolIndex);
-    if (this.leafSet.has(model)) {
-      this.databaseObject.showBoolArr.fill(false, boolIndex, 4);
+    if (
+      [
+        'Exemption',
+        '10 ‐ Haul out exemption',
+        '20 ‐ Outside areas exemption',
+        '30 ‐ Emergency exemption',
+        '40 – Long‐term departure exemption'
+      ].includes(model)
+    ) {
+      this.exemptionPopup = true;
+      return;
+    } else if (this.leafSet.has(model)) {
       this.decChoiceDisplay = dropdownTree['Leaf Nodes'][model];
-      this.databaseObject.decChoiceKey = model;
-      this.handleObserverStatus();
+    } else if (this.leafValues.has(model)) {
+      this.decChoiceDisplay = model;
     } else {
       this.databaseObject.showBoolArr[boolIndex] = true;
+      return;
+    }
+    this.databaseObject.showBoolArr.fill(false, boolIndex, 4);
+    this.databaseObject.decChoiceKey = model;
+    this.handleObserverStatus();
+    if (
+      [
+        'Other Gear (or Activity) [69]',
+        '69 ‐ A gear (or activity) that is not listed above'
+      ].includes(model)
+    ) {
+      this.databaseObject.showOtherGearTextBox = true;
     }
   }
 
@@ -265,7 +320,9 @@ export default class Dropdowns extends Vue {
     this.databaseObject.showBoolArr.fill(false, index, 5);
     this.databaseObject.showObsQuestion = false;
     this.databaseObject.cartAddBool = false;
+    this.databaseObject.showOtherGearTextBox = false;
     this.model6 = '';
+    this.otherGearNote = '';
     if (index < 1) {
       this.model1 = '';
     }
