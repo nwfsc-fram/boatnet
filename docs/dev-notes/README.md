@@ -57,7 +57,19 @@ lerna run build
 ```
 
 ## Troubleshooting Build Issues
-Occasionally our lerna monorepo can get into a confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
+First, try this:
+```
+cd boatnet
+# make sure you're on master
+git pull
+rm -rf node_modules
+rm yarn.lock
+lerna bootstrap
+lerna clean
+lerna run build
+```
+
+Occasionally our lerna monorepo can get into a more confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
 ```
 # get latest yarn, lerna, and typescript
 npm install -g yarn@latest
