@@ -188,7 +188,7 @@ export default class Home extends Vue {
         console.log(this.user.activeUserAlias);
       }
     } else {
-      console.log('no active user!')
+      console.log('no active user!');
     }
 
   }

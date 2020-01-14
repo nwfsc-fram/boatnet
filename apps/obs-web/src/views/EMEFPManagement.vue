@@ -20,7 +20,6 @@
             selection="single"
             :selected.sync="selected"
             :pagination.sync="pagination"
-            class="bg-blue-grey-1"
             >
 
         <template v-slot:body="props">

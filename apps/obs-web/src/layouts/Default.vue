@@ -237,27 +237,13 @@
 
                 <q-item
                   v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-trip-level-compare" exact
+                  to="/em-data-compare" exact
                 >
                   <q-item-section avatar>
                     <q-icon name="compare"/>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>Trip Level Comparison</q-item-label>
-                    <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item
-                  style="color: lightgrey"
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="" exact
-                >
-                  <q-item-section avatar>
-                    <q-icon name="compare_arrows"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Haul Level Comparison</q-item-label>
+                    <q-item-label>Data Comparison</q-item-label>
                     <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
                   </q-item-section>
                 </q-item>
