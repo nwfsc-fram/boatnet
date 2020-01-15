@@ -157,7 +157,7 @@ const router = new Router({
           }
         },
         {
-          path: '/em-data-compare', name: 'EM Data Comparison', component: EMDataCompare,
+          path: '/em-data-compare/', name: 'EM Data Comparison', component: EMDataCompare,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

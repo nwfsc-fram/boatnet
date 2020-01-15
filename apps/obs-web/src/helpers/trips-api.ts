@@ -44,7 +44,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
 
 export function getTripsApiTrip(tripNum: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = tripsApiUrl + '/' + tripNum;
+        const queryUrl = tripsApiUrl + '/' + parseInt(tripNum, 10);
         request.get(
             {
                 url: queryUrl,

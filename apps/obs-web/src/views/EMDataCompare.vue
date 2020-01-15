@@ -1,8 +1,17 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-    <div
-      class="text-h6"
-    >Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - Data Comparison</div>
+      <div
+        class="text-h6" style="max-width: 60%"
+      >Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - Data Comparison
+      </div>
+
+      <div style="position: absolute; top: 30px; right: 15px">
+      <q-input v-model="tripNum" label="Trip #" style="width: 150px">
+        <template v-slot:append>
+            <q-btn color="primary" @click="getAPITripData">load</q-btn>
+        </template>
+      </q-input>
+      </div>
 
     <q-table
       :data="tripData"
@@ -42,6 +51,8 @@ import {
   onBeforeUnmount,
   onMounted
 } from '@vue/composition-api';
+
+import { getTripsApiTrip } from '../helpers/trips-api';
 
 export default createComponent({
   setup(props, context) {
@@ -269,6 +280,7 @@ export default createComponent({
     const tripTotals: any = {};
     const haulTotals: any = {};
     const tripData: any = [];
+    const tripNum: any = ref(context.root.$route.query.tripNum ? context.root.$route.query.tripNum : 0);
 
     const getTripData = () => {
       for (const source of apiCatch) {
@@ -349,6 +361,12 @@ export default createComponent({
       return result;
     }
 
+    const getAPITripData = async () => {
+      console.log(tripNum.value);
+      const tripsApiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
+      console.log(tripsApiTrip);
+    }
+
     const getClass = (val: any) => {
       if (val && parseInt(val.split('.')[0], 10) > 10) {
         return 'red';
@@ -367,12 +385,12 @@ export default createComponent({
       selected,
       tripData,
       getPercentDifference,
-      getClass
+      getClass,
+      tripNum,
+      getAPITripData
     };
   }
 });
-</script>
-
 </script>
 
 <style>
@@ -381,7 +399,7 @@ export default createComponent({
   font-weight: bold;
 }
 
-tr:nth-child(even) { 
+tr:nth-child(even) {
   background-color: rgb(238, 238, 238);
 }
 </style>
