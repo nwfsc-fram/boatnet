@@ -71,7 +71,7 @@ export default class BoatnetKeyboard extends Vue {
     preventClickEvent: true
   };
 
-  private select(value: string) {
+  private select(value: any) {
     this.$emit('selected', value);
   }
 

@@ -81,11 +81,11 @@ export default class BoatnetKeyboardList extends Vue {
     return results.rows.sort(this.sortDisplayValues);
   }
 
-  private setSelected(value: string) {
+  private setSelected(value: any) {
     if (this.valType === 'string') {
       this.$emit('selected', this.formatDisplayValue(value));
     } else if (this.valType === 'object') {
-      this.$emit('selected', value);
+      this.$emit('selected', value.doc);
     }
     this.setValueSelected(true);
   }

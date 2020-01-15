@@ -43,7 +43,7 @@ export default createComponent({
     keyboardType: String,
     displayFields: Array,
     docType: String,
-    val: [String, Number],
+    val: [String, Number, Object],
     valType: String
   },
 
@@ -92,7 +92,7 @@ export default createComponent({
       }
     };
 
-    const select = (value: string) => {
+    const select = (value: any) => {
       context.emit('update:val', value);
       context.emit('save');
     };
