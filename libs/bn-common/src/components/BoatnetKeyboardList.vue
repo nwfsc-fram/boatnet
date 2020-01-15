@@ -7,7 +7,7 @@
         @click="setSelected(item)"
         active-class="my-menu-link"
       >
-        <q-item-section>{{format(item)}}</q-item-section>
+        <q-item-section>{{formatDisplayValue(item)}}</q-item-section>
       </q-item>
     </div>
   </q-list>
@@ -30,24 +30,35 @@ export default class BoatnetKeyboardList extends Vue {
   @Action('setValueSelected', { namespace: 'keyboard' })
   private setValueSelected: any;
 
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: string;
+
   private list: any[] = [];
   private async created() {
     this.list = await this.initList();
   }
 
-  private format(origValue: any) {
-    if (typeof origValue === 'object') {
-      const listModelName: any = this.displayFields ? this.displayFields : [];
-      let tempValue = '';
-      for (let i: number = 0; i < listModelName.length; i++) {
-        tempValue =
-          i < listModelName.length - 1
-            ? (tempValue += get(origValue, listModelName[i]) + ' ')
-            : (tempValue += get(origValue, listModelName[i]));
+  private formatDisplayValue(row: any) {
+    const listModelName: any = this.displayFields ? this.displayFields : [];
+    let displayValue = '';
+    for (let i: number = 0; i < listModelName.length; i++) {
+      displayValue =
+        i < listModelName.length - 1
+          ? (displayValue += get(row, 'doc.' + listModelName[i]) + ' ')
+          : (displayValue += get(row, 'doc.' + listModelName[i]));
       }
-      return tempValue;
+    return displayValue;
+  }
+
+  private sortDisplayValues(val1: any, val2: any) {
+    const val1Name = this.formatDisplayValue(val1);
+    const val2Name = this.formatDisplayValue(val2);
+    if (val1Name > val2Name) {
+      return 1;
+    } else if (val1Name < val2Name) {
+      return -1;
     } else {
-      return origValue;
+      return 0;
     }
   }
 
@@ -61,28 +72,27 @@ export default class BoatnetKeyboardList extends Vue {
       key: this.docType
     };
 
+    const view = 'LookupDocs/' + this.appMode + '-lookups';
     const results = await pouchDB.query(
-      'obs_web/all_doc_types',
+      view,
       queryOptions,
       pouchService.lookupsDBName
     );
-    console.log(results);
-    const resultList = [];
-    for (const result of results.rows) {
-      this.valType === 'string' ? resultList.push(this.format(result.doc)) : resultList.push(result.doc);
-    }
-    console.log(resultList);
-    return resultList;
+    return results.rows.sort(this.sortDisplayValues);
   }
 
-  private setSelected(value: string) {
-    this.$emit('selected', value);
+  private setSelected(value: any) {
+    if (this.valType === 'string') {
+      this.$emit('selected', this.formatDisplayValue(value));
+    } else if (this.valType === 'object') {
+      this.$emit('selected', value.doc);
+    }
     this.setValueSelected(true);
   }
 
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
-      this.format(item).toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
+      this.formatDisplayValue(item).toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
     );
   }
 }
