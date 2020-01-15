@@ -14,7 +14,7 @@
             </div>
           </div>
           <div class="column" style="width: 50%">
-            <div class="text-h5 row justify-center">Retrievial Info</div>
+            <div class="text-h5 row justify-center">Retrieval Info</div>
             <div v-for="config of appConfig.retrievial" :key="appConfig.retrievial.indexOf(config)">
               <boatnet-common-input-component
                 :config="config"
