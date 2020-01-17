@@ -21,16 +21,14 @@ function setFishingLocationUnits(haul: BaseOperation, fieldName: string) {
 }
 
 function convertNonFlowScaleCatchToKg(nonFishingLoc: NonFlowScaleCatch) {
-    if (!nonFishingLoc.officialMeasurement) {
-        if (nonFishingLoc.rawInputMeasurement.units === 'kg') {
-            nonFishingLoc.officialMeasurement = nonFishingLoc.rawInputMeasurement;
-        } else {
-            nonFishingLoc.officialMeasurement = {
-                value: getMeasurementVal(nonFishingLoc.rawInputMeasurement) * lbsToKgFormula,
-                units: 'kg'
-            };
-        }
-    }
+    if (nonFishingLoc.rawInputMeasurement.units === 'kg') {
+        nonFishingLoc.officialMeasurement = nonFishingLoc.rawInputMeasurement;
+     } else {
+        nonFishingLoc.officialMeasurement = {
+            value: getMeasurementVal(nonFishingLoc.rawInputMeasurement) * lbsToKgFormula,
+            units: 'kg'
+         };
+     }
 }
 
 function getMeasurementVal(measurement: Measurement): number {
