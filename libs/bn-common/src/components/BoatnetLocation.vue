@@ -1,20 +1,20 @@
 <template>
   <div>
     <boatnet-button-toggle-comp
-      :title="label + ' Location Format'"
+      :title="locationLabel + ' Location Format'"
       :options="options"
       :val.sync="format"
       @save="save"
     ></boatnet-button-toggle-comp>
     <boatnet-keyboard-select-list
-      :displayName="label + ' Latitude'"
+      :displayName="locationLabel + ' Latitude'"
       keyboardType="numeric"
       :mask="latMask"
       :val.sync="lat"
       @save="save"
     ></boatnet-keyboard-select-list>
     <boatnet-keyboard-select-list
-      :displayName="label + ' Longitude'"
+      :displayName="locationLabel + ' Longitude'"
       keyboardType="numeric"
       :mask="longMask"
       :val.sync="long"
@@ -37,6 +37,7 @@ export default createComponent({
     obj: Object
   },
   setup(props, context) {
+    const locationLabel = props.label ? props.label : '';
     const model: any = props && props.model ? props.model : '';
     const latName: string = model.concat('.rawInputLocation.coordinates[0]');
     const longName: string = model.concat('.rawInputLocation.coordinates[1]');
@@ -163,6 +164,7 @@ export default createComponent({
     };
 
     return {
+      locationLabel,
       format,
       latMask,
       longMask,
