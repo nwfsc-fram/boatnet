@@ -36,9 +36,9 @@
         </div>
       </template>
     </boatnet-tab-panel>
-    <!--<div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
-      <q-btn color="primary" icon="play_arrow" label="Go to Catch" @click="goToHauls" />
-    </div>-->
+    <div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
+      <q-btn color="primary" icon="play_arrow" label="Go to Catch" @click="goToCatch" />
+    </div>
     <div
       class="bg-primary text-white"
       style="padding: .5em; text-align: center; font-weight: bold"
@@ -62,6 +62,7 @@ import { update } from '../data/initHauls';
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
+    const router = context.root.$router;
     const appConfig = store.state.appSettings.appConfig;
     const haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
     const haulName = store.state.appSettings.appConfig.hauls.itemNumName;
@@ -76,11 +77,16 @@ export default createComponent({
       }
     };
 
+    const goToCatch = () => {
+      router.push({ path: '/catch/' });
+    };
+
     return {
       appConfig,
       haul,
       haulName,
-      saveOnUpdate
+      saveOnUpdate,
+      goToCatch
     };
   }
 });

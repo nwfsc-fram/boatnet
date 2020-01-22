@@ -65,7 +65,6 @@ import {
   PortTypeName,
   WcgopOperation,
   WcgopOperationTypeName,
-  LocationEvent,
   Vessel,
   VesselTypeName
 } from '@boatnet/bn-models';
@@ -239,7 +238,7 @@ export default class Trips extends Vue {
    * Clears currently selected trip
    */
   private handleDeleteTrip() {
-    pouchService.db.remove(pouchService.userDBName, this.currentTrip);
+    pouchService.db.remove(this.currentTrip, {}, pouchService.userDBName);
     this.setCurrentTrip(undefined);
   }
 

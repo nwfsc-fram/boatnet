@@ -656,9 +656,9 @@ export default class Catch extends Vue {
     };
 
     const taxAlias = await db.query(
-      pouchService.lookupsDBName,
       'optecs_trawl/all_taxonomy_alias',
-      queryOptions
+      queryOptions,
+      pouchService.lookupsDBName
     );
 
     for (const row of taxAlias.rows) {
@@ -1311,8 +1311,9 @@ export default class Catch extends Vue {
     let lookupVals;
     try {
       const descriptions = await pouchService.db.query(
-        pouchService.lookupsDBName,
-        tableName
+        tableName, {},
+        pouchService.lookupsDBName
+
       );
       lookupVals = descriptions.rows.map((row: any) => row);
       lookupVals.sort(this.sorter);
@@ -1347,7 +1348,7 @@ export default class Catch extends Vue {
     const frequentSpecies: any = {};
 
     try {
-      const allDocs = await pouchService.db.allDocs(pouchService.userDBName);
+      const allDocs = await pouchService.db.allDocs({}, pouchService.userDBName);
 
       for (const row of allDocs.rows) {
         if (row.doc.type === 'wcgop-operation' && row.doc.catches) {

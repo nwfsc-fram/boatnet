@@ -9,6 +9,7 @@ import Hauls from './views/Hauls.vue';
 import HaulDetails from './views/HaulDetails.vue';
 import Settings from './views/Settings.vue';
 import NonFishingDay from './views/NonFishingDay.vue';
+import Catch from './views/Catch.vue';
 
 import { authService } from '@boatnet/bn-auth';
 import store from './_store';
@@ -104,6 +105,20 @@ const router = new Router({
               { name: 'tripIdPlaceholder', link: '' },
               { name: 'Hauls', link: '/hauls' },
               { name: 'Non Fishing', link: '' }
+            ]
+          }
+        },
+        {
+          path: '/catch',
+          name: 'catch',
+          component: Catch,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: '' },
+              { name: 'Hauls', link: '/hauls' },
+              { name: 'haulIdPlaceholder', link: ''},
+              { name: 'Catch', link: ''}
             ]
           }
         }

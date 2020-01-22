@@ -78,6 +78,9 @@ export default class BoatnetKeyboardList extends Vue {
       queryOptions,
       pouchService.lookupsDBName
     );
+    console.log(view + ' ' + pouchService.lookupsDBName);
+    console.log(queryOptions);
+    console.log(results);
     return results.rows.sort(this.sortDisplayValues);
   }
 
