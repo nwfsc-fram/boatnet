@@ -9,6 +9,11 @@
       </div>
     </div>
 
+    <div	
+      class="bg-primary text-white"	
+      style="padding: .5em; text-align: center; font-weight: bold"	
+    >Trip Details: {{ trip }}</div>	
+
     <div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls" @click="goToHauls" />
     </div>
