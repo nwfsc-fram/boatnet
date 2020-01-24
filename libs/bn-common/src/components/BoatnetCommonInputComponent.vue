@@ -43,7 +43,7 @@
 
     <boatnet-table-comp
       v-if="config.type === 'table'"
-      :fishTickets.sync="valueHolder"
+      :data.sync="valueHolder"
       :configName="config.configName"
       @save="save"
     />

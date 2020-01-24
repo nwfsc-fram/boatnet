@@ -20,7 +20,7 @@
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-     <div style=" height: 200px">
+     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 200px;">
           <div v-for="config1 of config.formConfig" :key="config.formConfig.indexOf(config1)">
             <boatnet-common-input-component :config="config1" :model="currRow"></boatnet-common-input-component>
           </div>

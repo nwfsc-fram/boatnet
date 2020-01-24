@@ -1,5 +1,5 @@
 import { pouchService } from '@boatnet/bn-pouch';
-import { AshopCruise, CouchID } from '@boatnet/bn-models';
+import { Base, AshopCruise, CouchID } from '@boatnet/bn-models';
 import { remove } from 'lodash';
 import { allDocs } from './queries';
 
@@ -12,7 +12,7 @@ export async function getDocByType(program: string, type: string) {
         views: {
             by_type: {
                 // @ts-ignore
-                map: function(doc) { emit(doc.type); }.toString()
+                map: function (doc) { emit(doc.type); }.toString()
             }
         }
     };
@@ -39,7 +39,7 @@ export async function getTrips(appMode: string) {
     if (appMode === 'ashop') {
         const cruises = await getDocByType(appMode, 'cruise');
         cruise = cruises[0];
-        const tripIds = cruise ? cruise.trips : [];
+        const tripIds = cruise && cruise.trips ? cruise.trips : [];
         const queryOptions = {
             keys: tripIds,
             descending: true
@@ -49,25 +49,30 @@ export async function getTrips(appMode: string) {
         const wcgopTrips = getDocByType(appMode, 'trip');
         return wcgopTrips;
     }
-
 }
 
-// TODO
-// 1. call cruise API to generate friendly cruiseNum
-// 2. Find a way to indicate which cruise is active on the userDB. Either remove
-// all inactive data each time a cruise ends. Or add a column that
-// indicates whether cruise is active.
-export function updateCruise(tripId: CouchID) {
-    if (cruise) {
-        cruise.trips ? cruise.trips.push(tripId) : (cruise.trips = [tripId]);
-        db.put(cruise);
-    } else {
-        const newCruise = { type: 'ashop-cruise', trips: [tripId] };
-        db.post(newCruise);
+export async function createCruise() {
+    const cruises = await getDocByType('ashop', 'cruise');
+    if (cruises && cruises.length === 0) {
+        const cruiseNum = 1; // TODO use API to generate cruiseId
+        const newCruise: Base = { type: 'ashop-cruise', cruiseNum };
+        await db.post(newCruise).then((response: any) => {
+            newCruise._id = response.id;
+            newCruise._rev = response.rev;
+        });
+        return newCruise;
     }
 }
 
-export function deleteCruise(tripId: CouchID) {
+export function addTripIdToCruise(tripId: CouchID) {
+    cruise.trips ? cruise.trips.push(tripId) : (cruise.trips = [tripId]);
+    db.put(cruise).then((response: any) => {
+        cruise._id = response.id;
+        cruise._rev = response.rev;
+    });
+}
+
+export function removeTripIdFromCruise(tripId: CouchID) {
     if (cruise.trips) {
         remove(cruise.trips, (n: string) => n === tripId);
     }

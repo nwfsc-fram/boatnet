@@ -1,5 +1,5 @@
 <template>
-  <div class="q-pt-lg">
+  <div class="q-pa-lg">
     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
       <div
         v-for="config of appConfig.tripAttributes"
@@ -8,11 +8,6 @@
         <boatnet-common-input-component :config="config" :model="trip" @save="saveOnUpdate"></boatnet-common-input-component>
       </div>
     </div>
-
-    <div
-      class="bg-primary text-white"
-      style="padding: .5em; text-align: center; font-weight: bold"
-    >Trip Details: {{ trip }}</div>
 
     <div class="row q-gutter-sm fixed-bottom q-pa-md justify-end">
       <q-btn color="primary" icon="play_arrow" label="Go to Hauls" @click="goToHauls" />

@@ -28,17 +28,7 @@ export default createComponent({
     const appConfig = store.state.appSettings.appConfig;
     const haul = reactive({});
 
-    // fetch from lookups list: https://github.com/nwfsc-fram/boatnet/issues/1007
-    // also shouldn't use index to fetch item should use something to fetch based
-    // off displayName or model
-    appConfig.nonFishingDay[2].list = [
-      'Streaming to/from grounds',
-      'Weather',
-      'Looking for fish',
-      'Mechanical Breakdown',
-      'Cleaning Factory',
-      'Other (notes)'
-    ];
+    // get trips and only
 
     const saveOnUpdate = async () => {
       store.dispatch('tripsState/save', haul);
