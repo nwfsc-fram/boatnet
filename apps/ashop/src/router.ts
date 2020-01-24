@@ -99,17 +99,6 @@ const router = new Router({
               { name: 'haulIdPlaceholder', link: ''}
             ]
           }
-        },
-        {
-          path: '/nonfishingday',
-          name: 'nonfishingday',
-          component: NonFishingDay,
-          meta: {
-            breadcrumb: [
-              { name: 'Trip', link: '' },
-              { name: 'Non Fishing', link: '' }
-            ]
-          }
         }
       ]
     }
