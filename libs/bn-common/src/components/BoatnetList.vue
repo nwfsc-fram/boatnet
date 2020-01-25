@@ -2,18 +2,19 @@
   <div>
     <span v-for="(item, i) in lists" :key="i">
       <boatnet-keyboard-select-list
+        :displayName="config.displayName + ' ' + (i + 1)"
         :keyboardType="config.keyboardType"
-        :displayName="config.displayName"
+        :val.sync="lists[i]"
         :listLabels="config.listLabels"
         :displayFields="config.displayFields"
         :docType="config.docType"
-        :val.sync="lists[i]"
-        @save="save"
+        :valType="config.valType"
+        @save="save(i)"
       >
-        <template v-slot:after>
+        <template v-if="i >= (minListSize - 1)" v-slot:after>
           <q-icon
-            :name="i != 0 || maxListSize === lists.length ? 'clear' : 'add'"
-            @click="i != 0 || maxListSize === lists.length ? confirmDelete(i) : add()"
+            :name="i != (minListSize - 1) ? 'clear' : 'add'"
+            @click="i != (minListSize - 1) ? confirmDelete(i) : add()"
             class="cursor-pointer"
           />
         </template>
@@ -40,39 +41,53 @@ export default createComponent({
   },
 
   setup(props, context) {
-    const lists = props.list ? props.list : [''];
+    const modelName: string = props.config ? props.config.modelName : '';
+    const maxListSize: number = props.config ? props.config.maxItems : 0;
+    const minListSize: number = props.config ? props.config.minItems : 1;
+
+    const lists: string[] = initList();
     const deleteMessage = ref('');
     const showDeleteDialog = ref(false);
     let deleteIndex: number = 0;
 
-    const modelName: string = props.config ? props.config.modelName : '';
-    const maxListSize: number = props.config ? props.config.maxItems : 0;
+    function initList() {
+      const items: any[] = props.list ? props.list : [];
+      if (items.length === 0) {
+        for (let i = 0; i < minListSize; i++) {
+          items.push('');
+        }
+      }
+      return items;
+    }
 
-    const save = () => {
+    function save(index: number) {
       context.emit('update:list', lists);
       context.emit('save');
-    };
+    }
 
-    const confirmDelete = (index: number) => {
+    function confirmDelete(index: number) {
       context.root.$store.dispatch('keyboard/setKeyboard', false);
       showDeleteDialog.value = true;
-      deleteMessage.value = 'Are you sure you want to delete this entry?';
+      const displayName = props.config ? props.config.displayName : '';
+      deleteMessage.value = 'Are you sure you want to delete '
+                          + displayName + ': '
+                          + lists[index] + '?';
       deleteIndex = index;
-    };
+    }
 
-    const onDelete = () => {
+    function onDelete() {
       lists.splice(deleteIndex, 1);
       context.emit('save');
-    };
+    }
 
-    const add = () => {
+    function add() {
       context.root.$store.dispatch('keyboard/setKeyboard', false);
       if (lists.length < maxListSize) {
-        lists.splice(0, 0, '');
+        lists.push('');
       } else {
         context.emit('error', 'Reached limit, cannot add more items.');
       }
-    };
+    }
 
     return {
       save,
@@ -82,7 +97,8 @@ export default createComponent({
       deleteMessage,
       showDeleteDialog,
       lists,
-      maxListSize
+      maxListSize,
+      minListSize
     };
   }
 });

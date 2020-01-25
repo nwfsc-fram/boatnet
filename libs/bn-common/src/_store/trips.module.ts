@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
 import { RootState, TripState } from './types/types';
-import { BaseTrip, BaseOperation, BaseCatch } from '@boatnet/bn-models';
+import { Base, BaseTrip, BaseOperation, BaseCatch } from '@boatnet/bn-models';
 import { pouchService } from '@boatnet/bn-pouch';
 
 Vue.use(Vuex);
 
 const state: TripState = {
+  currentCruise: undefined,
   currentTrip: undefined,
   currentHaul: undefined,
   currentCatch: undefined
@@ -15,6 +16,9 @@ const state: TripState = {
 const actions: ActionTree<TripState, RootState> = {
   save({ commit }: any, trip: BaseTrip) {
     commit('save', trip);
+  },
+  setCurrentCruise({ commit }: any, cruise: Base) {
+    commit('setCurrentCruise', cruise);
   },
   setCurrentTrip({ commit }: any, trip: BaseTrip) {
     commit('setCurrentTrip', trip);
@@ -44,6 +48,9 @@ const mutations: MutationTree<TripState> = {
       console.log('not properly save to the database');
     }
   },
+  setCurrentCruise(newState: any, cruise: Base) {
+    newState.currentCruise = cruise;
+  },
   setCurrentTrip(newState: any, trip: BaseTrip) {
     newState.currentTrip = trip;
   },
@@ -56,6 +63,9 @@ const mutations: MutationTree<TripState> = {
 };
 
 const getters: GetterTree<TripState, RootState> = {
+  currentCruise(getState: TripState) {
+    return getState.currentCruise;
+  },
   currentTrip(getState: TripState) {
     return getState.currentTrip;
   },

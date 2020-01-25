@@ -1,4 +1,4 @@
-import { BaseTrip, BaseOperation, BaseCatch } from '@boatnet/bn-models';
+import { BaseTrip, BaseOperation, BaseCatch, Base } from '@boatnet/bn-models';
 
 // Root state for app store
 export interface RootState {
@@ -11,6 +11,7 @@ export interface AlertState {
 }
 
 export interface TripState {
+    currentCruise?: Base;
     currentTrip?: BaseTrip;
     currentHaul?: BaseOperation;
     currentCatch?: BaseCatch;
