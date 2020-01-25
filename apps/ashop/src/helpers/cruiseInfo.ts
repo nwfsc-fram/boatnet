@@ -54,7 +54,7 @@ export async function getTrips(appMode: string) {
 export async function createCruise() {
     const cruises = await getDocByType('ashop', 'cruise');
     if (cruises && cruises.length === 0) {
-        const cruiseNum = 1; // TODO use API to generate cruiseId
+        const cruiseNum = 100001; // TODO use API to generate cruiseId
         const newCruise: Base = { type: 'ashop-cruise', cruiseNum };
         await db.post(newCruise).then((response: any) => {
             newCruise._id = response.id;
