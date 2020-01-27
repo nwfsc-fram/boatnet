@@ -8,7 +8,7 @@
       <div style="position: absolute; top: 30px; right: 15px">
       <q-input v-model="tripNum" label="Trip #" style="width: 150px">
         <template v-slot:append>
-            <q-btn color="primary" @click="getAPITripData">load</q-btn>
+            <q-btn color="primary" type="submit" @click="getAPITripData">load</q-btn>
         </template>
       </q-input>
       </div>
@@ -52,7 +52,7 @@ import {
   onMounted
 } from '@vue/composition-api';
 
-import { getTripsApiTrip } from '../helpers/trips-api';
+import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
 
 export default createComponent({
   setup(props, context) {
@@ -67,7 +67,7 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
-    const apiTrip: any = {
+    let apiTrip: any = {
       _id: '77fd968d63e9b5c90a434aa5cd2afb30',
       _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
       vesselId: 'CF9490UV',
@@ -82,7 +82,7 @@ export default createComponent({
       tripNum: 100002
     };
 
-    const apiCatch = [
+    let apiCatch: any = [
       {
         _id: '6ec983c88220cad5c56c5a94a3d29f28',
         _rev: '2-f322bdfda33c70a5cc5e8a8df0884fc0',
@@ -277,12 +277,15 @@ export default createComponent({
       rowsPerPage: 100
     };
     const selected: any = [];
-    const tripTotals: any = {};
-    const haulTotals: any = {};
-    const tripData: any = [];
-    const tripNum: any = ref(context.root.$route.query.tripNum ? context.root.$route.query.tripNum : 0);
+    let tripTotals: any = {};
+    let haulTotals: any = {};
+    let tripData: any = [];
+    const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
 
     const getTripData = () => {
+      tripData.length = 0;
+      tripTotals = {};
+      haulTotals = {};
       for (const source of apiCatch) {
         for (const haul of source.hauls) {
           for (const species of haul.catch) {
@@ -363,8 +366,9 @@ export default createComponent({
 
     const getAPITripData = async () => {
       console.log(tripNum.value);
-      const tripsApiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
-      console.log(tripsApiTrip);
+      apiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
+      apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
+      getTripData();
     }
 
     const getClass = (val: any) => {
