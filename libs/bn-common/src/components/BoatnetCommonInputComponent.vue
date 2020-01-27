@@ -5,7 +5,14 @@
       :config="config"
       :date.sync="valueHolder"
       @save="save"
-    ></boatnet-datetime-prime>
+    />
+
+    <boatnet-datetime
+      v-if="config.type === 'dateTimeSeparate'"
+      :label="config.label"
+      :value.sync="valueHolder"
+      @save="save"
+    />
 
     <boatnet-keyboard-select-list
       v-if="config.type === 'input' && (config.displayCondition ? showField : true)"
@@ -16,7 +23,7 @@
       :docType="config.docType"
       :valType="config.valType"
       @save="save"
-    ></boatnet-keyboard-select-list>
+    />
 
     <boatnet-button-toggle-comp
       v-if="config.type === 'toggle' && (config.displayCondition ? showField : true)"
@@ -24,28 +31,29 @@
       :options="config.options"
       :val.sync="valueHolder"
       @save="save"
-    ></boatnet-button-toggle-comp>
+    />
 
     <boatnet-location
       v-if="config.type === 'location'"
       :model="config.modelName"
+      :label="config.label"
       :obj="model"
       @save="save"
-    ></boatnet-location>
+    />
 
-    <boatnet-fish-tickets
-      v-if="config.type === 'fishTicket'"
-      :fishTickets.sync="valueHolder"
+    <boatnet-table-comp
+      v-if="config.type === 'table'"
+      :data.sync="valueHolder"
       :configName="config.configName"
       @save="save"
     />
 
-    <boatnet-licenses
+    <boatnet-list
       v-if="config.type === 'list'"
       :list.sync="valueHolder"
       :config="config"
       @save="save"
-    ></boatnet-licenses>
+    />
   </div>
 </template>
 

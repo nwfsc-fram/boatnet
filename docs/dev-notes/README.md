@@ -1,3 +1,12 @@
+## Contributing Guidelines
+
+1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
+2. Verify everything builds under lerna (`lerna run build`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+   Specific detailed instructions can be found [here](./CONTRIBUTING.md)
+
 ## Further Development Setup
 
 - Generate keys as described in the link on this page and add them to your GitHub account under settings->SSH and GPG keys
@@ -17,15 +26,6 @@ git clone git@github.com:nwfsc-fram/boatnet.git
 
 1. Go to your `boatnet/.git/hooks` folder
 2. Copy and rename `pre-commit.sample` to `pre-commit`
-
-## Contributing Guidelines
-
-1. Create your feature branch (`git checkout -b feature/fooBar`) and develop your changes.
-2. Verify everything builds under lerna (`lerna run build`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
-4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
-   Specific detailed instructions can be found [here](./CONTRIBUTING.md)
 
 ## Using Lerna
 * See even more detailed [Developer Notes](./docs/dev-notes/dev-notes.md)
@@ -57,7 +57,19 @@ lerna run build
 ```
 
 ## Troubleshooting Build Issues
-Occasionally our lerna monorepo can get into a confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
+First, try this:
+```
+cd boatnet
+# make sure you're on master
+git pull
+rm -rf node_modules
+rm yarn.lock
+lerna bootstrap
+lerna clean
+lerna run build
+```
+
+Occasionally our lerna monorepo can get into a more confused state. The following commands, performed in order, would be a good starting point to try and "reset" a corrupted environment:
 ```
 # get latest yarn, lerna, and typescript
 npm install -g yarn@latest
@@ -68,6 +80,8 @@ cd <your-path>/boatnet/
 git pull 
 # clean the yarn cache - this has caused issues in the past occasionally (usually this is not required)
 yarn cache clean
+# axe node_modules
+rm -f node_modules
 # remove the yarn.lock to ensure newest packages are acquired (usually this is not required)
 rm yarn.lock
 # now follow the normal build procedure

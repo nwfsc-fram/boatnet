@@ -7,14 +7,14 @@ import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
 import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
-import BoatnetFishTickets from './components/BoatnetFishTickets.vue';
+import BoatnetTableComp from './components/BoatnetTableComp.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
 import BoatnetKeyboardInput from './components/BoatnetKeyboardInput.vue';
 import BoatnetKeyboardList from './components/BoatnetKeyboardList.vue';
 import BoatnetKeyboardSelect from './components/BoatnetKeyboardSelect.vue';
 import BoatnetKeyboardSelectList from './components/BoatnetKeyboardSelectList.vue';
-import BoatnetLicenses from './components/BoatnetLicenses.vue';
+import BoatnetList from './components/BoatnetList.vue';
 import BoatnetLocation from './components/BoatnetLocation.vue';
 import BoatnetLocations from './components/BoatnetLocations.vue';
 import BoatnetSummary from './components/BoatnetSummary.vue';
@@ -41,14 +41,14 @@ const Components: any = {
   BoatnetDate,
   BoatnetDatetime,
   BoatnetDeleteDialog,
-  BoatnetFishTickets,
+  BoatnetTableComp,
   BoatnetInputDialog,
   BoatnetKeyboard,
   BoatnetKeyboardInput,
   BoatnetKeyboardList,
   BoatnetKeyboardSelect,
   BoatnetKeyboardSelectList,
-  BoatnetLicenses,
+  BoatnetList,
   BoatnetLocation,
   BoatnetLocations,
   BoatnetLogin,

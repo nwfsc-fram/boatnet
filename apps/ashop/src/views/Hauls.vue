@@ -47,7 +47,6 @@ import {
   WcgopTrip,
   WcgopOperation,
   WcgopOperationTypeName,
-  LocationEvent,
   WcgopCatch,
   WcgopCatchTypeName,
   SpeciesTypeName,

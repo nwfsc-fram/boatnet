@@ -31,9 +31,10 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { useAsync } from 'vue-async-function';
 import { get, remove } from 'lodash';
 import {
+  getDocByType,
   getTrips,
-  updateCruise,
-  deleteCruise
+  addTripIdToCruise,
+  removeTripIdFromCruise
 } from '../helpers/cruiseInfo';
 import { allDocs } from '../helpers/queries';
 
@@ -55,6 +56,13 @@ export default createComponent({
     });
 
     const init = async () => {
+      // redirect to cruises if none exist
+      if (appMode === 'ashop') {
+        const cruises = await getDocByType('ashop', 'cruise');
+        if (cruises.length === 0) {
+          router.push({ path: '/cruise/' });
+        }
+      }
       return await getTrips(appMode);
     };
     const { data } = useAsync(init);
@@ -71,7 +79,7 @@ export default createComponent({
         });
       store.dispatch('tripsState/setCurrentTrip', trip);
       if (appMode === 'ashop' && trip._id) {
-        updateCruise(trip._id);
+        addTripIdToCruise(trip._id);
       }
       goToTripDetails(tripNum);
     };
@@ -84,7 +92,7 @@ export default createComponent({
     const deleteTrip = async () => {
       const id: string = store.state.tripsState.currentTrip._id;
       if (appMode === 'ashop') {
-        deleteCruise(id);
+        removeTripIdFromCruise(id);
       }
       const del = data.value.indexOf(store.state.tripsState.currentTrip);
       data.value.splice(del, 1);

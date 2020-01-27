@@ -1,8 +1,8 @@
 <template>
   <span>
-    <div class="text-h6 col-2">{{config.name}}</div>
+    <b class="col-2">{{config.name}}</b>
     <boatnet-table
-      :data="fishTickets"
+      :data="data"
       :settings="config.tableSettings"
       :showBottom="true"
       :isCondensed="true"
@@ -20,9 +20,9 @@
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-     <div style=" height: 200px">
+     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 200px;">
           <div v-for="config1 of config.formConfig" :key="config.formConfig.indexOf(config1)">
-            <boatnet-common-input-component :config="config1" :model="currFishTicket"></boatnet-common-input-component>
+            <boatnet-common-input-component :config="config1" :model="currRow"></boatnet-common-input-component>
           </div>
         </div>
     </boatnet-input-dialog>
@@ -31,15 +31,14 @@
 
 <script lang="ts">
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
-import { WcgopFishTicket } from '@boatnet/bn-models';
 import moment from 'moment';
 import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { Action, Getter, State } from 'vuex-class';
 import { get, } from 'lodash';
 
 @Component
-export default class BoatnetFishTickets extends Vue {
-  @Prop({ default: () => [] }) private fishTickets!: any[];
+export default class BoatnetTableComp extends Vue {
+  @Prop({ default: () => [] }) private data!: any[];
   @Prop() private configName!: string;
 
   private selected: any[] = [];
@@ -47,7 +46,7 @@ export default class BoatnetFishTickets extends Vue {
   private action = '';
   private index: number = -1;
 
-  private currFishTicket: any = {};
+  private currRow: any = {};
 
   @Getter('appConfig', { namespace: 'appSettings' })
   private appConfig!: BoatnetConfig;
@@ -59,12 +58,12 @@ export default class BoatnetFishTickets extends Vue {
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];
-    this.currFishTicket = row ? row : {};
-    this.index = this.currFishTicket ? this.fishTickets.indexOf(this.currFishTicket) : -1;
+    this.currRow = row ? row : {};
+    this.index = this.currRow ? this.data.indexOf(this.currRow) : -1;
   }
 
   private addRow() {
-    this.currFishTicket = {};
+    this.currRow = {};
     this.action = 'add';
     this.showDialog = true;
   }
@@ -73,30 +72,30 @@ export default class BoatnetFishTickets extends Vue {
     this.action = 'edit';
     this.showDialog = true;
     if (this.selected.length > 0) {
-      const temp = JSON.stringify(this.currFishTicket);
-      this.currFishTicket = JSON.parse(temp);
+      const temp = JSON.stringify(this.currRow);
+      this.currRow = JSON.parse(temp);
     }
   }
 
   private deleteRow() {
     if (this.selected.length > 0) {
-      this.fishTickets.splice(this.index, 1);
-      this.$emit('update:fishTickets', this.fishTickets);
+      this.data.splice(this.index, 1);
+      this.$emit('update:data', this.data);
       this.$emit('save');
     }
   }
 
   private saveAdd() {
-    this.fishTickets.push(this.currFishTicket);
-    this.$emit('update:fishTickets', this.fishTickets);
+    this.data.push(this.currRow);
+    this.$emit('update:data', this.data);
     this.showDialog = false;
     this.$emit('save');
   }
 
   private saveEdit() {
-    this.fishTickets.splice(this.index, 1, this.currFishTicket);
+    this.data.splice(this.index, 1, this.currRow);
     this.showDialog = false;
-    this.$emit('update:fishTickets', this.fishTickets);
+    this.$emit('update:data', this.data);
     this.$emit('save');
     this.selected = [];
   }

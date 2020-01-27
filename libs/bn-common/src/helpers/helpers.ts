@@ -18,7 +18,7 @@ export const getFormattedValue: any = (value: any, type: string, format: string 
             for (const val of value) {
                 total += get(val, format);
             }
-            return total ? total : undefined;
+            return total ? total.toFixed(2) : undefined;
         default:
             return value;
     }
