@@ -20,7 +20,6 @@
             selection="single"
             :selected.sync="selected"
             :pagination.sync="pagination"
-            class="bg-blue-grey-1"
             :loading="loading"
             :filter="vessel.filterText"
             @request="onRequest"
@@ -28,7 +27,7 @@
             hide-bottom
         >
 
-            <template v-slot:top="props">
+            <template v-slot:top>
                 <q-input label="Vessel Name" v-model="vessel.filterText" debounce="300" placeholder="Search" style="width:100%" autofocus >
                     <template v-if="vessel.filterText">
                         <q-avatar dense icon="clear" @click="vessel.filterText = ''"></q-avatar>
