@@ -22,15 +22,29 @@
 </style>
 
 <script lang="ts">
-import { createComponent, reactive } from '@vue/composition-api';
+import { createComponent, reactive, computed } from '@vue/composition-api';
 import { createCruise } from '../helpers/cruiseInfo';
 import { useAsync } from 'vue-async-function';
 
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
-    const appConfig = store.state.appSettings.appConfig;
+    const appConfig = computed({
+      get: () => {
+        const currConfig = store.state.appSettings.appConfig;
+       return currConfig ? currConfig : {};
+      },
+       set: val => undefined
+      })
 
+    const cruise = computed({
+      get: () => {
+        const currCruise = store.state.tripsState.currentCruise;
+        return currCruise ? currCruise : { type: 'ashop-cruise', cruiseNum: 0 };
+      },
+      set: val => undefined
+    })
+  
     const init = async () => {
       const newCruise = await createCruise();
       if (newCruise) {
@@ -38,7 +52,6 @@ export default createComponent({
       }
     };
     useAsync(init);
-    const cruise = reactive(store.state.tripsState.currentCruise);
 
     function saveOnUpdate() {
       store.dispatch('tripsState/save', cruise);
