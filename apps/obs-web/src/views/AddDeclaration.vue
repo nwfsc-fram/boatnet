@@ -153,8 +153,28 @@
       <br />
 
       <div style="text-align: center">
-        <q-btn v-if="databaseObject.cartAddBool" label="Add To Cart" type="submit" color="primary" />
+        <q-btn
+          v-if="databaseObject.cartAddBool"
+          label="Add To Cart"
+          type="submit"
+          color="primary"
+        />
       </div>
+
+      <q-dialog v-model="confirm" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <span class="q-ml-sm">
+              Thank you for entering your declaration!
+              It has been registered with the Office of Law Enforcement.
+            </span>
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="Okay" color="primary" v-close-popup to="/declarations"/>
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
 
       <p v-if="showLineNote">
         <br />* Line = Hook &amp Line
@@ -164,7 +184,7 @@
       </p>
 
       <q-dialog v-model="exemptionPopup" persistent>
-        <q-card>
+        <q-card style="width: 300px">
           <q-card-section class="row items-center">
             <span class="q-ml-sm">
               Exemptions
@@ -236,6 +256,8 @@ export default class Dropdowns extends Vue {
   public modelefp2: string = '';
   public efpOptions = Object.keys(dropdownTree.EFP);
   public efpOptions2: string[] = [];
+
+  public confirm = false;
 
   // If EFP is toggled to yes, provide a different set of menus
   public efpToggled() {
@@ -342,6 +364,7 @@ export default class Dropdowns extends Vue {
 
   public onSubmit() {
     // To-do
+    this.confirm = true;
   }
 
   // Question two title dependent on prior dropdown choice
