@@ -6,7 +6,7 @@
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
-      <q-input v-model="tripNum" label="Trip #" style="width: 150px">
+      <q-input v-model="tripNum" label="Trip #" style="width: 150px" @keyup.enter.native="getAPITripData">
         <template v-slot:append>
             <q-btn color="primary" type="submit" @click="getAPITripData">load</q-btn>
         </template>
@@ -38,6 +38,7 @@
         </q-tr>
       </template>
     </q-table>
+
   </div>
 </template>
 
@@ -51,6 +52,8 @@ import {
   onBeforeUnmount,
   onMounted
 } from '@vue/composition-api';
+
+import { Notify } from 'quasar';
 
 import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
 
@@ -273,14 +276,15 @@ export default createComponent({
         type: 'trips-api-catch'
       }
     ];
+
     const pagination = {
       rowsPerPage: 100
     };
-    const selected: any = [];
+    let selected: any = [];
     let tripTotals: any = {};
     let haulTotals: any = {};
     let tripData: any = [];
-    const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
+    let tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
 
     const getTripData = () => {
       tripData.length = 0;
@@ -368,7 +372,22 @@ export default createComponent({
       console.log(tripNum.value);
       apiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
       apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
-      getTripData();
+      if (apiCatch !== 'not found') {
+        getTripData();
+      } else {
+        apiTrip = {};
+        apiCatch = [];
+        tripData.length = 0;
+        tripData.pop();
+        Notify.create({
+          message: 'No catch found matching trip #',
+          position: 'top-right',
+          color: 'red',
+          timeout: 2000,
+          icon: 'cancel',
+          multiLine: true
+        });
+      }
     }
 
     const getClass = (val: any) => {
@@ -378,11 +397,12 @@ export default createComponent({
     };
 
     onMounted(() => {
-      getTripData();
+      // getTripData();
     });
 
     return {
       apiTrip,
+      apiCatch,
       capitalize,
       columns,
       pagination,
