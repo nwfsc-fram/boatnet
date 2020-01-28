@@ -30,7 +30,6 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const appConfig = store.state.appSettings.appConfig;
-    const cruise = reactive(store.state.tripsState.currentCruise);
 
     const init = async () => {
       const newCruise = await createCruise();
@@ -39,6 +38,7 @@ export default createComponent({
       }
     };
     useAsync(init);
+    const cruise = reactive(store.state.tripsState.currentCruise);
 
     function saveOnUpdate() {
       store.dispatch('tripsState/save', cruise);
