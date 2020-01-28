@@ -6,7 +6,7 @@
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
-      <q-input v-model="tripNum" label="Trip #" style="width: 150px" @keyup.enter.native="getAPITripData">
+      <q-input v-model="tripNum" label="Trip # (6 digit)" style="width: 170px" @keyup.enter.native="getAPITripData">
         <template v-slot:append>
             <q-btn color="primary" type="submit" @click="getAPITripData">load</q-btn>
         </template>
