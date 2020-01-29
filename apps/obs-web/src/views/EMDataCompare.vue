@@ -1,12 +1,12 @@
 <template>
   <div class="q-pa-md q-gutter-md">
       <div
-        class="text-h6" style="max-width: 60%"
-      >Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - Data Comparison
+        class="text-h6" style="max-width: 60%">
+      <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
-      <q-input v-model="tripNum" label="Trip #" style="width: 150px">
+      <q-input v-model="tripNum" label="Trip # (6 digit)" style="width: 170px" @keyup.enter.native="getAPITripData">
         <template v-slot:append>
             <q-btn color="primary" type="submit" @click="getAPITripData">load</q-btn>
         </template>
@@ -38,6 +38,7 @@
         </q-tr>
       </template>
     </q-table>
+
   </div>
 </template>
 
@@ -49,8 +50,12 @@ import {
   computed,
   watch,
   onBeforeUnmount,
-  onMounted
+  onMounted,
+  onServerPrefetch
 } from '@vue/composition-api';
+import { Vue } from 'vue-property-decorator';
+
+import { Notify } from 'quasar';
 
 import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
 
@@ -67,20 +72,20 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
-    let apiTrip: any = {
-      _id: '77fd968d63e9b5c90a434aa5cd2afb30',
-      _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
-      vesselId: 'CF9490UV',
-      vesselName: 'Boaty McBoatFace',
-      departurePort: 'seattle',
-      departureDate: '2019-11-15T04:46:45.623Z',
-      returnPort: 'seattle',
-      returnDate: '2019-11-15T04:46:45.623Z',
-      permits: ['GF99999'],
-      fisheries: ['EM EFP'],
-      type: 'trips-api',
-      tripNum: 100002
-    };
+    let apiTrip: any = reactive({
+      // _id: '77fd968d63e9b5c90a434aa5cd2afb30',
+      // _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
+      // vesselId: 'CF9490UV',
+      // vesselName: 'Boaty McBoatFace',
+      // departurePort: 'seattle',
+      // departureDate: '2019-11-15T04:46:45.623Z',
+      // returnPort: 'seattle',
+      // returnDate: '2019-11-15T04:46:45.623Z',
+      // permits: ['GF99999'],
+      // fisheries: ['EM EFP'],
+      // type: 'trips-api',
+      // tripNum: 100002
+    });
 
     let apiCatch: any = [
       {
@@ -273,14 +278,15 @@ export default createComponent({
         type: 'trips-api-catch'
       }
     ];
+
     const pagination = {
       rowsPerPage: 100
     };
-    const selected: any = [];
+    let selected: any = [];
     let tripTotals: any = {};
     let haulTotals: any = {};
     let tripData: any = [];
-    const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
+    let tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
 
     const getTripData = () => {
       tripData.length = 0;
@@ -365,24 +371,52 @@ export default createComponent({
     }
 
     const getAPITripData = async () => {
-      console.log(tripNum.value);
-      apiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
+      const apiResponse: any = await getTripsApiTrip(parseInt(tripNum.value, 10));
+      if (apiResponse.tripNum) {
+        apiTrip.tripNum = apiResponse.tripNum;
+        apiTrip.vesselName = apiResponse.vesselName;
+        apiTrip.vesselId = apiResponse.vesselId;
+      } else {
+        apiTrip.tripNum = 0;
+        apiTrip.vesselName = '';
+        apiTrip.vesselId = '';
+      }
+
       apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
-      getTripData();
+      if (apiCatch === 'not found') {
+        Vue.set(apiTrip, tripNum, 0)
+        // apiTrip = {tripNum: 0};
+        apiCatch = [];
+        tripData.length = 0;
+        tripData.pop();
+        Notify.create({
+          message: 'No catch found matching trip #',
+          position: 'top-right',
+          color: 'red',
+          timeout: 2000,
+          icon: 'cancel',
+          multiLine: true
+        });
+        } else {
+          getTripData();
+      }
     }
 
     const getClass = (val: any) => {
-      if (val && parseInt(val.split('.')[0], 10) > 10) {
+      if (val && (parseInt(val.split('.')[0], 10) > 10 || parseInt(val.split('.')[0], 10) < -10)) {
         return 'red';
       }
     };
 
     onMounted(() => {
-      getTripData();
+      if (tripNum.value !== 0) {
+        getAPITripData();
+      }
     });
 
     return {
       apiTrip,
+      apiCatch,
       capitalize,
       columns,
       pagination,

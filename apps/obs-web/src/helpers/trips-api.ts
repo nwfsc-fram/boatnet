@@ -36,7 +36,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(response);
                 }
             }
         );
