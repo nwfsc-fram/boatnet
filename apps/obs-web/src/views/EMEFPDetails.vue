@@ -79,7 +79,6 @@
             <q-card-actions>
                 <q-btn color="red" label="Cancel" icon="warning" to="/em-efp-management" exact/>
                 <q-btn color="primary" @click="saveEmEfp">Save</q-btn>
-                <q-btn color="red" label="?" icon="fa fa-trash"/>
             </q-card-actions>
 
         </q-card>

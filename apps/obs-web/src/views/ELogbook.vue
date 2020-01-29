@@ -23,10 +23,10 @@
                     </div>
                 </div>
 
-                <b>Start Port:</b> <span style="background-color: #c8c8c8">
+                <b>Start Port:</b> <span>
                     {{ vessel.activeVessel.homePort.name }}<br>
                     </span>
-                <b>End Port:</b> <span style="background-color: #c8c8c8">
+                <b>End Port:</b> <span>
                     {{ vessel.activeVessel.homePort.name }}<br>
                     </span>
                 <br>

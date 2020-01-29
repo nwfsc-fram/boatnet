@@ -56,6 +56,7 @@
               <div v-else-if="row.doc.description">{{ row.doc.description }}</div>
               <div v-else-if="row.doc.survey">{{ row.doc.survey }} config</div>
               <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
+              <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
               <div v-if="row.doc.isAshop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
@@ -367,6 +368,8 @@ export default class LookupEditor extends Vue {
         return sortWord(a.doc.survey, b.doc.survey);
       } else if (a.doc.alias) {
         return sortWord(a.doc.alias, b.doc.alias);
+      } else if (a.doc.taxonomy) {
+        return sortWord(a.doc.taxonomy.taxonomyName, b.doc.taxonomy.taxonomyName);
       } else {
         return sortWord(a.doc.name, b.doc.name);
       }
@@ -503,7 +506,9 @@ export default class LookupEditor extends Vue {
         this.filteredFoundDocs = this.foundDocs.slice(0, 50);
     } else {
       this.filteredFoundDocs = this.foundDocs.filter(
-        (doc) => doc.doc.alias.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+        (item) => {
+          return item.doc.taxonomy.scientificName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+        }
       );
     }
 
@@ -532,6 +537,8 @@ export default class LookupEditor extends Vue {
         return sortWord(a.doc.survey, b.doc.survey);
       } else if (a.doc.alias) {
         return sortWord(a.doc.alias, b.doc.alias);
+      } else if (a.doc.taxonomy) {
+        return sortWord(a.doc.taxonomy.taxonomyName, b.doc.taxonomy.taxonomyName);
       } else {
         return sortWord(a.doc.name, b.doc.name);
       }

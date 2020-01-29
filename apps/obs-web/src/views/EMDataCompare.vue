@@ -403,7 +403,7 @@ export default createComponent({
     }
 
     const getClass = (val: any) => {
-      if (val && parseInt(val.split('.')[0], 10) > 10) {
+      if (val && (parseInt(val.split('.')[0], 10) > 10 || parseInt(val.split('.')[0], 10) < -10)) {
         return 'red';
       }
     };
