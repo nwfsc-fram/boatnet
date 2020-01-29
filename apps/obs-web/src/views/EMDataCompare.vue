@@ -1,8 +1,8 @@
 <template>
   <div class="q-pa-md q-gutter-md">
       <div
-        class="text-h6" style="max-width: 60%"
-      >Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - Data Comparison
+        class="text-h6" style="max-width: 60%">
+      <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
@@ -50,8 +50,10 @@ import {
   computed,
   watch,
   onBeforeUnmount,
-  onMounted
+  onMounted,
+  onServerPrefetch
 } from '@vue/composition-api';
+import { Vue } from 'vue-property-decorator';
 
 import { Notify } from 'quasar';
 
@@ -70,20 +72,20 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
-    let apiTrip: any = {
-      _id: '77fd968d63e9b5c90a434aa5cd2afb30',
-      _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
-      vesselId: 'CF9490UV',
-      vesselName: 'Boaty McBoatFace',
-      departurePort: 'seattle',
-      departureDate: '2019-11-15T04:46:45.623Z',
-      returnPort: 'seattle',
-      returnDate: '2019-11-15T04:46:45.623Z',
-      permits: ['GF99999'],
-      fisheries: ['EM EFP'],
-      type: 'trips-api',
-      tripNum: 100002
-    };
+    let apiTrip: any = reactive({
+      // _id: '77fd968d63e9b5c90a434aa5cd2afb30',
+      // _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
+      // vesselId: 'CF9490UV',
+      // vesselName: 'Boaty McBoatFace',
+      // departurePort: 'seattle',
+      // departureDate: '2019-11-15T04:46:45.623Z',
+      // returnPort: 'seattle',
+      // returnDate: '2019-11-15T04:46:45.623Z',
+      // permits: ['GF99999'],
+      // fisheries: ['EM EFP'],
+      // type: 'trips-api',
+      // tripNum: 100002
+    });
 
     let apiCatch: any = [
       {
@@ -369,13 +371,21 @@ export default createComponent({
     }
 
     const getAPITripData = async () => {
-      console.log(tripNum.value);
-      apiTrip = await getTripsApiTrip(parseInt(tripNum.value, 10));
-      apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
-      if (apiCatch !== 'not found') {
-        getTripData();
+      const apiResponse: any = await getTripsApiTrip(parseInt(tripNum.value, 10));
+      if (apiResponse.tripNum) {
+        apiTrip.tripNum = apiResponse.tripNum;
+        apiTrip.vesselName = apiResponse.vesselName;
+        apiTrip.vesselId = apiResponse.vesselId;
       } else {
-        apiTrip = {};
+        apiTrip.tripNum = 0;
+        apiTrip.vesselName = '';
+        apiTrip.vesselId = '';
+      }
+
+      apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
+      if (apiCatch === 'not found') {
+        Vue.set(apiTrip, tripNum, 0)
+        // apiTrip = {tripNum: 0};
         apiCatch = [];
         tripData.length = 0;
         tripData.pop();
@@ -387,6 +397,8 @@ export default createComponent({
           icon: 'cancel',
           multiLine: true
         });
+        } else {
+          getTripData();
       }
     }
 
@@ -397,7 +409,9 @@ export default createComponent({
     };
 
     onMounted(() => {
-      // getTripData();
+      if (tripNum.value !== 0) {
+        getAPITripData();
+      }
     });
 
     return {
