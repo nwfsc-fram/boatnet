@@ -40,7 +40,7 @@
       </div>
       <div v-if="filteredFoundDocs.length > 0" class="col6" style="padding: 4px; ; margin: 4px">
           <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
-        <q-scroll-area style="height: 650px; width: 460px">
+        <q-scroll-area style="height: 650px; width: 500px">
           <div v-if="docType === 'taxonomy-alias'">
             <q-input v-model="searchTerm" label="Search" dense @input="filterDocs"></q-input>
           </div>
@@ -56,7 +56,7 @@
               <div v-else-if="row.doc.description">{{ row.doc.description }}</div>
               <div v-else-if="row.doc.survey">{{ row.doc.survey }} config</div>
               <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
-              <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }}</div>
+              <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }} <br>{{ row.doc.commonNames.length > 0 ? row.doc.commonNames : '' }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
               <div v-if="row.doc.isAshop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
@@ -507,7 +507,11 @@ export default class LookupEditor extends Vue {
     } else {
       this.filteredFoundDocs = this.foundDocs.filter(
         (item) => {
-          return item.doc.taxonomy.scientificName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+          return (
+            item.doc.taxonomy.scientificName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+            ||
+            item.doc.commonNames.map( (name: any) => name.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1 ).includes(true)
+            )
         }
       );
     }
