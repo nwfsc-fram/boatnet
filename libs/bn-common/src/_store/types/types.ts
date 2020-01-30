@@ -12,6 +12,7 @@ export interface AlertState {
 
 export interface TripState {
     currentCruise?: Base;
+    currentNonFishingDay?: Base;
     currentTrip?: BaseTrip;
     currentHaul?: BaseOperation;
     currentCatch?: BaseCatch;

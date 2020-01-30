@@ -21,10 +21,11 @@
       </boatnet-keyboard-select-list>
     </span>
 
-    <boatnet-delete-dialog
+    <boatnet-warning-dialog
       :message="deleteMessage"
       :show.sync="showDeleteDialog"
-      @confirmDelete="onDelete"
+      @confirm="onDelete"
+      confirmationAction='Delete'
     />
   </div>
 </template>

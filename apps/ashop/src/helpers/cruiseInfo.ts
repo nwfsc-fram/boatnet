@@ -51,7 +51,7 @@ export async function getTrips(appMode: string) {
     }
 }
 
-export async function createCruise() {
+export async function getCruise() {
     const cruises = await getDocByType('ashop', 'cruise');
     if (cruises && cruises.length === 0) {
         const cruiseNum: number = 100001; // TODO use API to generate cruiseId
@@ -61,6 +61,8 @@ export async function createCruise() {
             newCruise._rev = response.rev;
         });
         return newCruise;
+    } else {
+        return cruises[0]; // TODO fetch active cruise
     }
 }
 

@@ -6,7 +6,7 @@ import BoatnetCommonInputComponent from './components/BoatnetCommonInputComponen
 import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
-import BoatnetDeleteDialog from './components/BoatnetDeleteDialog.vue';
+import BoatnetWarningDialog from './components/BoatnetWarningDialog.vue';
 import BoatnetTableComp from './components/BoatnetTableComp.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
 import BoatnetKeyboard from './components/BoatnetKeyboard.vue';
@@ -40,7 +40,7 @@ const Components: any = {
   BoatnetCustomKeyboard,
   BoatnetDate,
   BoatnetDatetime,
-  BoatnetDeleteDialog,
+  BoatnetWarningDialog,
   BoatnetTableComp,
   BoatnetInputDialog,
   BoatnetKeyboard,

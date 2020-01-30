@@ -23,35 +23,44 @@
 
 <script lang="ts">
 import { createComponent, reactive, computed } from '@vue/composition-api';
-import { createCruise } from '../helpers/cruiseInfo';
+import { getCruise } from '../helpers/cruiseInfo';
 import { useAsync } from 'vue-async-function';
+import moment from 'moment';
+import { AshopCruise } from '@boatnet/bn-models';
 
 export default createComponent({
   setup(props, context) {
-    const store = context.root.$store;
+    const store: any = context.root.$store;
+    const showDeleteDialog: boolean = false;
+    const deleteMessage: string = 'Are you sure you want to end cruise? '
+                                + 'This will archieve the data and clear it from the tablet. '
+                                + 'You will no longer be able to edit the data once this action is complete.';
+
+
     const appConfig = computed({
       get: () => {
-        const currConfig = store.state.appSettings.appConfig;
-       return currConfig ? currConfig : {};
+        const currConfig = store.state.appSettings.appConfig.cruise;
+        return currConfig ? currConfig : {};
       },
-       set: val => undefined
-      })
+       set: (val) => undefined
+      });
 
-    const cruise = computed({
+    const cruise: AshopCruise = computed({
       get: () => {
         const currCruise = store.state.tripsState.currentCruise;
         return currCruise ? currCruise : { type: 'ashop-cruise', cruiseNum: 0 };
       },
-      set: val => undefined
-    })
-  
-    const init = async () => {
-      const newCruise = await createCruise();
-      if (newCruise) {
-        store.dispatch('tripsState/setCurrentCruise', newCruise);
-      }
-    };
-    useAsync(init);
+      set: (val) => undefined
+    });
+
+
+    async function onDelete() {
+      cruise.value.endDate = moment().utc().format();
+      await store.dispatch('tripsState/save', cruise.value);
+      // TODO archive data and clear from tablet.
+      // Also need to think about how we will archive if there is no internet connection
+      console.log('deleting');
+    }
 
     function saveOnUpdate() {
       store.dispatch('tripsState/save', cruise);
@@ -60,7 +69,10 @@ export default createComponent({
     return {
       appConfig,
       saveOnUpdate,
-      cruise
+      cruise,
+      showDeleteDialog,
+      deleteMessage,
+      onDelete
     };
   }
 });

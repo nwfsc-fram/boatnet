@@ -22,6 +22,7 @@
       :displayFields="config.displayFields"
       :docType="config.docType"
       :valType="config.valType"
+      :inputType="config.inputType"
       @save="save"
     />
 
@@ -78,7 +79,12 @@ export default createComponent({
           key = props.config.displayCondition.key;
           value = props.config.displayCondition.value;
         }
-        return get(currentData, key) === value ? true : false;
+        const stateValue = get(currentData, key);
+        if (stateValue && stateValue === value) {
+          return true;
+        } else {
+          return get(props.model, key) === value ? true : false;
+        }
       },
       set: () => undefined
     });
