@@ -72,221 +72,18 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
-    let apiTrip: any = reactive({
-      // _id: '77fd968d63e9b5c90a434aa5cd2afb30',
-      // _rev: '1-a74f82244ea465bf1f50ed4f570e9768',
-      // vesselId: 'CF9490UV',
-      // vesselName: 'Boaty McBoatFace',
-      // departurePort: 'seattle',
-      // departureDate: '2019-11-15T04:46:45.623Z',
-      // returnPort: 'seattle',
-      // returnDate: '2019-11-15T04:46:45.623Z',
-      // permits: ['GF99999'],
-      // fisheries: ['EM EFP'],
-      // type: 'trips-api',
-      // tripNum: 100002
-    });
+    const apiTrip: any = reactive({});
 
-    let apiCatch: any = [
-      {
-        _id: '6ec983c88220cad5c56c5a94a3d29f28',
-        _rev: '2-f322bdfda33c70a5cc5e8a8df0884fc0',
-        tripNum: 100002,
-        source: 'thirdParty',
-        hauls: [
-          {
-            haulNum: 1,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 100
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 544
-              }
-            ]
-          },
-          {
-            haulNum: 2,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 324
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 544
-              }
-            ]
-          },
-          {
-            haulNum: 3,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 324
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 544
-              }
-            ]
-          }
-        ],
-        type: 'trips-api-catch'
-      },
-      {
-        _id: '6ec983c88220cad5c56c5a94a3d29f28',
-        _rev: '2-f322bdfda33c70a5cc5e8a8df0884fc0',
-        tripNum: 100002,
-        source: 'logbook',
-        hauls: [
-          {
-            haulNum: 1,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 224
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 354
-              },
-              {
-                speciesName: 'penguin',
-                retained: 123,
-                discard: 321
-              }
-            ]
-          },
-          {
-            haulNum: 2,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 214
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 500,
-                retained: 20000
-              }
-            ]
-          },
-          {
-            haulNum: 3,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 300
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 480
-              }
-            ]
-          }
-        ],
-        type: 'trips-api-catch'
-      },
-      {
-        _id: '6ec983c88220cad5c56c5a94a3d29f28',
-        _rev: '2-f322bdfda33c70a5cc5e8a8df0884fc0',
-        tripNum: 100002,
-        source: 'nwfscAudit',
-        hauls: [
-          {
-            haulNum: 1,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 140
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 540
-              }
-            ]
-          },
-          {
-            haulNum: 3,
-            date: '2019-11-15T04:46:45.623Z',
-            setTime: 'T04:46:45.623Z',
-            setLoc: '41.40338, 2.17403',
-            upTime: 'T04:46:45.623Z',
-            upLoc: '41.40338, 2.17403',
-            targetStrategy: 'PCHK',
-            catch: [
-              {
-                speciesName: 'canary rockfish',
-                discard: 330
-              },
-              {
-                speciesName: 'pacific halibut',
-                discard: 543
-              },
-              {
-                speciesName: 'octopus',
-                discard: 35
-              }
-            ]
-          }
-        ],
-        type: 'trips-api-catch'
-      }
-    ];
+    let apiCatch: any = [];
 
     const pagination = {
       rowsPerPage: 100
     };
-    let selected: any = [];
+    const selected: any = [];
     let tripTotals: any = {};
     let haulTotals: any = {};
-    let tripData: any = [];
-    let tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
+    const tripData: any = [];
+    const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
 
     const getTripData = () => {
       tripData.length = 0;
@@ -299,11 +96,12 @@ export default createComponent({
               tripTotals[species.speciesName] = {};
             }
             if (!tripTotals[species.speciesName][source.source]) { tripTotals[species.speciesName][source.source] = {}; }
-            if (!tripTotals[species.speciesName][source.source].discard) { tripTotals[species.speciesName][source.source].discard = 0;}
-            if (!tripTotals[species.speciesName][source.source].retained) {tripTotals[species.speciesName][source.source].retained = 0;}
+            if (!tripTotals[species.speciesName][source.source].discard) { tripTotals[species.speciesName][source.source].discard = 0; }
+            if (!tripTotals[species.speciesName][source.source].retained) {tripTotals[species.speciesName][source.source].retained = 0; }
             tripTotals[species.speciesName][source.source].discard += species.discard;
-            if (source.source === 'logbook') {tripTotals[species.speciesName][source.source].retained += species.retained ? species.retained : 0;}
-
+            if (source.source === 'logbook') {
+              tripTotals[species.speciesName][source.source].retained += species.retained ? species.retained : 0;
+            }
             if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
             if (!haulTotals[haul.haulNum][species.speciesName]) { haulTotals[haul.haulNum][species.speciesName] = {}; }
             if (!haulTotals[haul.haulNum][species.speciesName][source.source]) { haulTotals[haul.haulNum][species.speciesName][source.source] = {}; }
@@ -364,11 +162,13 @@ export default createComponent({
       let result = '';
       const words = val.split(' ');
       for (const word of words) {
-        result += word.charAt(0).toUpperCase() + word.slice(1)
-        if (words.indexOf(word) !== word.length -1 ) { result += ' '}
+        result += word.charAt(0).toUpperCase() + word.slice(1);
+        if (words.indexOf(word) !== words.length - 1 ) {
+          result += ' ';
+        }
       }
       return result;
-    }
+    };
 
     const getAPITripData = async () => {
       const apiResponse: any = await getTripsApiTrip(parseInt(tripNum.value, 10));
@@ -384,8 +184,7 @@ export default createComponent({
 
       apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
       if (apiCatch === 'not found') {
-        Vue.set(apiTrip, tripNum, 0)
-        // apiTrip = {tripNum: 0};
+        Vue.set(apiTrip, tripNum, 0);
         apiCatch = [];
         tripData.length = 0;
         tripData.pop();
@@ -400,7 +199,7 @@ export default createComponent({
         } else {
           getTripData();
       }
-    }
+    };
 
     const getClass = (val: any) => {
       if (val && (parseInt(val.split('.')[0], 10) > 10 || parseInt(val.split('.')[0], 10) < -10)) {
