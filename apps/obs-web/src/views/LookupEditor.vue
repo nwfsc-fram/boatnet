@@ -20,7 +20,7 @@
                               'model-definition', 'trip-selection', 'trips-api', 'tally-record',
                               'ashop-cruise', 'ashop-haul', 'ashop-tribal-delivery', 'ashop-trip',
                               'nonFlowScaleReason', 'olevessel', 'trips-api', 'trips-api-catch',
-                              'person-alias', 'vessel-permissions', 'tribal-delivery']
+                              'person-alias', 'vessel-permissions', 'tribal-delivery', 'ashop-cruise', 'ashop-haul']
                               .includes(docType)
                     })"
               :key="docType"
