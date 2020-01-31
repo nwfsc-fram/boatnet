@@ -20,7 +20,7 @@
                               'model-definition', 'trip-selection', 'trips-api', 'tally-record',
                               'ashop-cruise', 'ashop-haul', 'ashop-tribal-delivery', 'ashop-trip',
                               'nonFlowScaleReason', 'olevessel', 'trips-api', 'trips-api-catch',
-                              'person-alias', 'vessel-permissions', 'tribal-delivery']
+                              'person-alias', 'vessel-permissions', 'tribal-delivery', 'ashop-species']
                               .includes(docType)
                     })"
               :key="docType"
@@ -38,11 +38,11 @@
         <br>LOADING<br>
         <q-spinner color="primary" size="3em"></q-spinner>
       </div>
-      <div v-if="filteredFoundDocs.length > 0" class="col6" style="padding: 4px; ; margin: 4px">
+      <div v-else class="col6" style="padding: 4px; ; margin: 4px">
           <div class="text-h6" style="padding: 0 15px; text-transform: uppercase; color: black">{{ docType }} LOOKUPS:</div>
-        <q-scroll-area style="height: 650px; width: 460px">
+        <q-scroll-area style="height: 650px; width: 500px">
           <div v-if="docType === 'taxonomy-alias'">
-            <q-input v-model="searchTerm" label="Search" dense @input="filterDocs"></q-input>
+            <q-input v-model="searchTerm" label="Search (common or scientific name)" dense @input="filterDocs"></q-input>
           </div>
           <q-list separator dense>
             <q-item
@@ -56,7 +56,7 @@
               <div v-else-if="row.doc.description">{{ row.doc.description }}</div>
               <div v-else-if="row.doc.survey">{{ row.doc.survey }} config</div>
               <div v-else-if="row.doc.alias">{{ row.doc.alias }}</div>
-              <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }}</div>
+              <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }} <br>{{ row.doc.commonNames.length > 0 ? row.doc.commonNames : '' }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
               <div v-if="row.doc.isAshop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
@@ -71,7 +71,7 @@
             </q-item>
           </q-list>
         </q-scroll-area>
-        <q-btn class="vertical-bottom" label="add" color="red" style="float: right; margin: 15px" @click="getNewLookupVal"></q-btn>
+        <q-btn v-if="docType !== 'taxonomy-alias'" class="vertical-bottom" label="add" color="red" style="float: right; margin: 15px" @click="getNewLookupVal"></q-btn>
       </div>
 
       <div v-if="selectedDoc" class="col5" style="border: 2px solid #1675d1; padding: 4px; ; margin: 4px; max-width: 550px">
@@ -173,6 +173,21 @@
                       {{ key }} : {{ parseVal(selectedDoc, key) }}
                     </sub>
                   </span>
+                  <span v-else-if="key === 'commonNames'">
+                    <b>Common Names:</b>
+                    <div style="margin-left: 20px">
+                      <div v-for="name of selectedDoc[key]" :key="selectedDoc[key].indexOf(name)" style="margin-bottom: 5px">
+                        <span class="text-primary text-h6">{{ name }}&nbsp;</span>
+                        <q-btn size="xs" color="primary" icon="edit" @click="editCommonName(name)"></q-btn>&nbsp;
+                        <q-btn size="xs" color="primary" icon="clear" @click="deleteCommonName(name)"></q-btn>
+                      </div>
+                      <q-input dense v-model="newCommonName" label="Common Name">
+                        <template v-slot:after>
+                          <q-btn size="sm" color="primary" @click="addCommonName">Add</q-btn>
+                        </template>
+                      </q-input>
+                    </div>
+                  </span>
                   <span v-else>
                     <q-toggle v-if="docTypeModel[key] === 'boolean'" v-model="selectedDoc[key]" :label="key"></q-toggle>
                     <q-input v-else-if="key !== 'legacy' && !Array.isArray(docTypeModel[key])" v-model="selectedDoc[key]" :label="key"></q-input>
@@ -265,11 +280,40 @@ export default class LookupEditor extends Vue {
   private docSelection: any[] = [];
   private models: any = {};
   private searchTerm: string = '';
-  private docsLoading = false;
+  private docsLoading: boolean = false;
+  private newCommonName: string = '';
 
   constructor() {
     super();
   }
+
+  private editCommonName(name: string) {
+    this.selectedDoc.commonNames.splice(this.selectedDoc.commonNames.indexOf(name), 1);
+    this.newCommonName = name;
+  }
+
+  private deleteCommonName(name: string) {
+    this.selectedDoc.commonNames.splice(this.selectedDoc.commonNames.indexOf(name), 1);
+  }
+
+  private addCommonName() {
+    if (this.newCommonName.length > 0) {
+      this.selectedDoc.commonNames.push(this.capitalize(this.newCommonName));
+      this.newCommonName = '';
+    }
+  }
+
+  private capitalize = (val: string) => {
+      let result = '';
+      const words = val.split(' ');
+      for (const word of words) {
+        result += word.charAt(0).toUpperCase() + word.slice(1);
+        if (words.indexOf(word) !== words.length - 1 ) {
+          result += ' ';
+        }
+      }
+      return result;
+    }
 
   private get labels() {
     return this.docTypes.map( (docType) => {
@@ -507,7 +551,11 @@ export default class LookupEditor extends Vue {
     } else {
       this.filteredFoundDocs = this.foundDocs.filter(
         (item) => {
-          return item.doc.taxonomy.scientificName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+          return (
+            item.doc.taxonomy.scientificName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1
+            ||
+            item.doc.commonNames.map( (name: any) => name.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1 ).includes(true)
+            );
         }
       );
     }
