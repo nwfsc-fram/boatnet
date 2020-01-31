@@ -98,7 +98,6 @@ export default class Home extends Vue {
             queryOptions
           );
 
-          console.log(userquery);
           if (userquery.rows[0]) {
             this.user.activeUser = userquery.rows[0].doc;
           }
