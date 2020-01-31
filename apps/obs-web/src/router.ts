@@ -32,6 +32,7 @@ import CouchViews from './views/CouchViews.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
+import Help from './views/Help.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -189,6 +190,7 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
+        { path: '/help', name: 'Help', component: Help },
       ]
     }, // otherwise redirect to home
     { path: '*', redirect: '/' }

@@ -290,6 +290,13 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/help" exact>
+          <q-item-section avatar>
+            <q-icon name="help" />
+          </q-item-section>
+          <q-item-section>Help</q-item-section>
+        </q-item>
+
         <br />
         <q-item to="/login" exact>
           <q-item-section avatar>
