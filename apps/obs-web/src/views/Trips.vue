@@ -163,6 +163,7 @@
     <q-table
       :data="closedTrips"
       :columns="columns"
+      :pagination.sync="pagination"
       row-key="_id"
       dense
       binary-state-sort
@@ -330,6 +331,14 @@ export default class Trips extends Vue {
   private authorizedVessels: Vessel[] = [];
   private tripsApiTrips: any[] = [];
   private closedTripsTable: boolean = false;
+
+  private pagination = {
+    sortBy: 'departureDate',
+    descending: false,
+    page: 1,
+    rowsPerPage: 100,
+    rowsNumber: 100
+    };
 
   private columns = [
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},

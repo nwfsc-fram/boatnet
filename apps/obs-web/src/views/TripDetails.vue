@@ -580,6 +580,14 @@ export default class TripDetails extends Vue {
 
       this.trip.activeTrip!.tripNum = this.tripsApiNum;
       await pouchService.db.post(this.trip.activeTrip).then( () => {
+        Notify.create({
+          message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+            position: 'top',
+            color: 'primary',
+            timeout: 7000,
+            html: true,
+            multiLine: true
+        });
         this.$router.push({ path: '/trips/' });
       });
 
@@ -777,6 +785,14 @@ private async getMinDate() {
     } else {
 
       await pouchService.db.put(this.trip.activeTrip).then( async () => {
+            Notify.create({
+              message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+              position: 'top',
+              color: 'primary',
+              timeout: 7000,
+              html: true,
+              multiLine: true
+            });
             this.$router.push({ path: '/trips' });
             });
     }
