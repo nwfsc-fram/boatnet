@@ -40,7 +40,7 @@
       :options="vessels"
       :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
       option-value="_id"
-      @click.native="selectText"
+      @click.native="vessel.activeVessel = undefined"
       ></q-select>
 
     </div>
@@ -163,6 +163,7 @@
     <q-table
       :data="closedTrips"
       :columns="columns"
+      :pagination.sync="pagination"
       row-key="_id"
       dense
       binary-state-sort
@@ -330,6 +331,14 @@ export default class Trips extends Vue {
   private authorizedVessels: Vessel[] = [];
   private tripsApiTrips: any[] = [];
   private closedTripsTable: boolean = false;
+
+  private pagination = {
+    sortBy: 'departureDate',
+    descending: false,
+    page: 1,
+    rowsPerPage: 100,
+    rowsNumber: 100
+    };
 
   private columns = [
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
@@ -507,10 +516,6 @@ export default class Trips extends Vue {
 
           }
     );
-    }
-
-    private selectText(event: any) {
-      event.target.select();
     }
 
     private isAuthorized(authorizedRoles: string[]) {
