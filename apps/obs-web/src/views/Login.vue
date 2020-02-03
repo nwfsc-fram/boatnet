@@ -27,6 +27,7 @@
             ref="username"
             v-model="username"
             dense
+            autocorrect="off" autocapitalize="off" spellcheck="false"
             label="Username"/>
 
           <q-input
@@ -36,6 +37,7 @@
             v-model="password"
             label="Password"
             dense
+            autocorrect="off" autocapitalize="off" spellcheck="false"
             autocomplete="boatnet password"
           >
             <template v-slot:append>

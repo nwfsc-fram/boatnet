@@ -579,7 +579,9 @@ export default class TripDetails extends Vue {
       }
 
       this.trip.activeTrip!.tripNum = this.tripsApiNum;
-      await pouchService.db.post(this.trip.activeTrip).then( () => {
+
+      const masterDB: Client<any> = couchService.masterDB;
+      await masterDB.post(this.trip.activeTrip).then( () => {
         Notify.create({
           message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
             position: 'top',
@@ -590,6 +592,18 @@ export default class TripDetails extends Vue {
         });
         this.$router.push({ path: '/trips/' });
       });
+
+      // await pouchService.db.post(this.trip.activeTrip).then( () => {
+      //   Notify.create({
+      //     message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+      //       position: 'top',
+      //       color: 'primary',
+      //       timeout: 7000,
+      //       html: true,
+      //       multiLine: true
+      //   });
+      //   this.$router.push({ path: '/trips/' });
+      // });
 
     } else {
       this.missingRequired = true;
@@ -683,7 +697,7 @@ export default class TripDetails extends Vue {
     if (this.trip.index === 0 && !this.trip.newTrip) {
 
     for (const row of docs.rows) {
-      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
         if (row.doc.tripStatus.description === 'open') {
           this.maxDate = new Date(moment(row.doc.departureDate).add(1, 'days').format());
         }
@@ -698,7 +712,7 @@ private async getMinDate() {
     const docs = await db.allDocs();
 
     for (const row of docs.rows) {
-      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
         if (row.doc.tripStatus.description === 'open') {
           this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
         }
@@ -717,7 +731,7 @@ private async getMinDate() {
     let i = 0;
 
     for (const row of docs.rows) {
-      if ( row.doc.type === 'wcgop-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
         if (row.doc.tripStatus.description === 'open') {
           {
              this.existingTripStart = row.doc.departureDate;
@@ -784,7 +798,12 @@ private async getMinDate() {
 
     } else {
 
-      await pouchService.db.put(this.trip.activeTrip).then( async () => {
+      const masterDB: Client<any> = couchService.masterDB;
+      await masterDB.put(
+        this.trip.activeTrip!._id as string,
+        this.trip.activeTrip,
+        this.trip.activeTrip!._rev as string
+        ).then( async () => {
             Notify.create({
               message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
               position: 'top',
@@ -795,6 +814,18 @@ private async getMinDate() {
             });
             this.$router.push({ path: '/trips' });
             });
+
+      // await pouchService.db.put(this.trip.activeTrip).then( async () => {
+      //       Notify.create({
+      //         message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+      //         position: 'top',
+      //         color: 'primary',
+      //         timeout: 7000,
+      //         html: true,
+      //         multiLine: true
+      //       });
+      //       this.$router.push({ path: '/trips' });
+      //       });
     }
   }
 
@@ -881,7 +912,7 @@ private async getMinDate() {
   private created() {
     this.getEmRoster().then( () => {
       let emPermit = null;
-      const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber];
+      const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber];
       for (const permit of this.permit.permits) {
         if (permit.permitNumber === permitNum) {
           emPermit = permit;
@@ -890,6 +921,7 @@ private async getMinDate() {
       if (emPermit) {
         Vue.set(this.trip.activeTrip!, 'permits', [emPermit]);
       }
+
     });
     this.getMaxDate();
     this.getMinDate();

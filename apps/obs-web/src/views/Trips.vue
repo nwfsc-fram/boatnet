@@ -297,6 +297,8 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
+import { date, Notify } from 'quasar';
+
 @Component
 export default class Trips extends Vue {
   @State('trip') private trip!: TripState;
@@ -693,7 +695,7 @@ export default class Trips extends Vue {
       const newTrip: WcgopTrip = {
                             createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
                             createdDate: moment().format(),
-                            type: 'wcgop-trip',
+                            type: 'ots-trip',
                             tripNum: newTripNum,
                             vessel: this.vessel.activeVessel!,
                             // permits: [],
@@ -764,8 +766,38 @@ private async getUserTrips() {
     const docs = await db.allDocs();
     const rows = docs.rows;
 
-    this.userTrips = rows.filter( (row: any) => row.doc.type === 'wcgop-trip' );
+    this.userTrips = rows.filter( (row: any) => row.doc.type === 'ots-trip' );
     this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
+}
+
+private async getVesselTrips() {
+  const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+  const masterDB: Client<any> = couchService.masterDB;
+  const queryOptions: any = {
+          include_docs: true,
+          reduce: false,
+          key: vesselId
+        };
+
+  try {
+    const vesselTrips = await masterDB.view<any>(
+            'obs_web',
+            'ots_trips_by_vesselId',
+            queryOptions
+          );
+  
+    this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
+  } catch (err) {
+    Notify.create({
+        message: 'Internet Connection Required',
+            position: 'center',
+            color: 'red',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        })
+  }
 }
 
 private async getAuthorizedVessels() {
@@ -818,7 +850,8 @@ private async getAuthorizedVessels() {
   private async created() {
     // this.setActiveVessel();
     this.getAuthorizedVessels();
-    this.getUserTrips();
+    // this.getUserTrips();
+    this.getVesselTrips();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
@@ -828,7 +861,8 @@ private async getAuthorizedVessels() {
   @Watch('vessel.activeVessel')
   private async handler3(newVal: string, oldVal: string) {
     this.nextSelections = [];
-    this.getUserTrips();
+    // this.getUserTrips();
+    this.getVesselTrips();
     this.getNextSelections();
   }
 

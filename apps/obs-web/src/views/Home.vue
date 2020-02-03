@@ -213,7 +213,7 @@ export default class Home extends Vue {
             const permit = row.doc;
 
             if (permit.vessel && permit.vessel.coastGuardNumber !== 'UNIDENTIFIED' ) {
-              const vesselId = permit.vessel.coastGuardNumber;
+              const vesselId = permit.vessel.coastGuardNumber ? permit.vessel.coastGuardNumber : permit.vessel.stateRegulationNumber;
               if (!this.permit.vesselPermits[vesselId]) {
                 this.permit.vesselPermits[vesselId] = [];
               }
