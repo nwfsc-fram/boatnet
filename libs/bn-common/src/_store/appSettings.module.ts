@@ -9,6 +9,7 @@ const state: AppSettings = {
   isKeyboardEnabled: true,
   isSoundEnabled: true,
   appMode: 'wcgop',
+  defaultLocationFormat: 'DMS',
   appConfig: {
     validAppViews: [],
     navigationDrawerItems: [],
@@ -29,6 +30,9 @@ const actions: ActionTree<AppSettings, RootState> = {
   setAppMode({ commit }: any, appMode: string) {
     commit('setAppMode', appMode);
   },
+  setDefaultLocationFormat({ commit }: any, format: string) {
+    commit('setDefaultLocationFormat', format);
+  },
  setAppConfig({ commit }: any) {
     commit('setAppConfig');
   }
@@ -43,6 +47,9 @@ const mutations: MutationTree<AppSettings> = {
   },
   setAppMode(newState: any, appMode: string) {
     newState.appMode = appMode;
+  },
+  setDefaultLocationFormat(newState: any, format: string) {
+    newState.defaultLocationFormat = format;
   },
   async setAppConfig(newState: any) {
     try {
@@ -75,6 +82,9 @@ const getters: GetterTree<AppSettings, RootState> = {
   },
   appMode(getState: AppSettings) {
     return getState.appMode;
+  },
+  defaultLocationFormat(getState: AppSettings) {
+    return getState.defaultLocationFormat;
   },
   appConfig(getState: AppSettings) {
     return getState.appConfig;

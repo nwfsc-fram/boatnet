@@ -21,7 +21,7 @@ const actions: ActionTree<TripState, RootState> = {
   setCurrentCruise({ commit }: any, cruise: Base) {
     commit('setCurrentCruise', cruise);
   },
-  setCurrentNonFishingDay({ commit }: any, nonFishingDay: Base) {
+  setCurrentNonFishingDay({ commit }: any, nonFishingDay: number) {
     commit('setCurrentNonFishingDay', nonFishingDay);
   },
   setCurrentTrip({ commit }: any, trip: BaseTrip) {
@@ -55,7 +55,7 @@ const mutations: MutationTree<TripState> = {
   setCurrentCruise(newState: any, cruise: Base) {
     newState.currentCruise = cruise;
   },
-  setCurrentNonFishingDay(newState: any, nonFishingDay: Base) {
+  setCurrentNonFishingDay(newState: any, nonFishingDay: number) {
     newState.currentNonFishingDay = nonFishingDay;
   },
   setCurrentTrip(newState: any, trip: BaseTrip) {

@@ -46,13 +46,14 @@ export default createComponent({
 
     const config = store.state.appSettings.appConfig.nonFishingTable;
     const cruise = store.state.tripsState.currentCruise;
-    const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [{date: '11/12/20', reason: 'helpsss'}];
+    const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
 
     const currIndex = computed(() => store.getters['tripsState/currentNonFishingDay']);
     const friendlyIndex = currIndex.value + 1;
 
     function addNonFishingDay() {
-      const newFishingDay = reactive({});
+      const occuredInTrip = false;
+      const newFishingDay = reactive({ occuredInTrip });
       nonFishingDays.push(newFishingDay);
 
       // update cruise

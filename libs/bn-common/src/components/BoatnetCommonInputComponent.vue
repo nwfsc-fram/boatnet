@@ -26,11 +26,18 @@
       @save="save"
     />
 
+    <q-toggle v-if="config.type === 'toggle'"
+      v-model="valueHolder"
+      :label="config.title"
+    />
+
     <boatnet-button-toggle-comp
-      v-if="config.type === 'toggle' && (config.displayCondition ? showField : true)"
+      v-if="config.type === 'buttonToggle' && (config.displayCondition ? showField : true)"
       :title="config.title"
       :options="config.options"
       :val.sync="valueHolder"
+      :displayFields="config.displayFields"
+      :valType="config.valType"
       @save="save"
     />
 

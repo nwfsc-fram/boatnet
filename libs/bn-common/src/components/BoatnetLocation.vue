@@ -37,6 +37,8 @@ export default createComponent({
     obj: Object
   },
   setup(props, context) {
+    const store = context.root.$store;
+
     const locationLabel = props.label ? props.label : '';
     const model: any = props && props.model ? props.model : '';
     const latName: string = model.concat('.rawInputLocation.coordinates[0]');
@@ -44,20 +46,15 @@ export default createComponent({
     const ddPoint: string = model.concat('.ddLocation.coordinates');
     const unit: string = model.concat('.unit');
 
-    // initialize location unit to DD
+    // This defaults to whatever the user last selected
     function initUnit() {
-      const temp = get(props.obj, unit);
-      if (temp === undefined) {
-        setValue(props.obj, unit.split('.'), GPSFormat.DD);
-      }
+      let currUnit = get(props.obj, unit);
+      currUnit = currUnit ? currUnit : store.getters['appSettings/defaultLocationFormat'];
+      setValue(props.obj, unit.split('.'), currUnit);
     }
     initUnit();
 
     const options = [
-      {
-        label: 'DD',
-        value: 'DD'
-      },
       {
         label: 'DMS',
         value: 'DMS'
@@ -65,6 +62,10 @@ export default createComponent({
       {
         label: 'DMM',
         value: 'DMM'
+      },
+      {
+        label: 'DD',
+        value: 'DD'
       }
     ];
 
@@ -98,7 +99,10 @@ export default createComponent({
 
     const format = computed({
       get: () => get(props.obj, unit),
-      set: (val: string) => setValue(props.obj, unit.split('.'), val)
+      set: (val: string) => {
+        store.dispatch('appSettings/setDefaultLocationFormat', val);
+        setValue(props.obj, unit.split('.'), val);
+      }
     });
 
     function setDD(latitude: string, longitude: string) {
