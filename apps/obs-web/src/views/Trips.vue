@@ -802,7 +802,7 @@ private async getVesselTrips() {
 }
 
 private async getAuthorizedVessels() {
-    this.authorizedVessels = [];
+    this.authorizedVessels.length = 0;
 
     const db = pouchService.db;
 
@@ -845,14 +845,14 @@ private async getAuthorizedVessels() {
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
     }
 
-        Notify.create({
-              message: this.authorizedVessels.map( (vessel: any) => vessel.vesselName ) as any,
-              position: 'bottom',
-              color: 'red',
-              timeout: 2000,
-              html: true,
-              multiLine: true
-        })
+        // Notify.create({
+        //       message: this.authorizedVessels.map( (vessel: any) => vessel.vesselName ) as any,
+        //       position: 'bottom',
+        //       color: 'red',
+        //       timeout: 2000,
+        //       html: true,
+        //       multiLine: true
+        // })
 }
 
   private async created() {
