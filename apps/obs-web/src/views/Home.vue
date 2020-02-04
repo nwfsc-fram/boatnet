@@ -123,7 +123,7 @@ export default class Home extends Vue {
     if (this.user.activeUser) {
       this.user.activeUserAlias = undefined;
       console.log('active user userName: ' + authService.getCurrentUser()!.username);
-      console.log(this.user.activeUserAlias);
+      // console.log(this.user.activeUserAlias);
       if (!this.user.activeUserAlias) {
         console.log('no active user alias');
         const db = pouchService.db;

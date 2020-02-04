@@ -65,7 +65,7 @@ export default class UserConfig extends Vue {
               };
 
               const vessels = await masterDB.viewWithDocs<any>(
-                'optecs_trawl',
+                'obs_web',
                 'all_vessel_names',
                 queryOptions
               );
