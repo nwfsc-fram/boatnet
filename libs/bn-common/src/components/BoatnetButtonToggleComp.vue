@@ -11,7 +11,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { get, set } from 'lodash';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { useAsync } from 'vue-async-function';
 import { getOptions, formatDisplayValue } from '../helpers/getLookupsInfo';
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';

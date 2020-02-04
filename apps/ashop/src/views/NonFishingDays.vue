@@ -49,7 +49,6 @@ export default createComponent({
     const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
 
     const currIndex = computed(() => store.getters['tripsState/currentNonFishingDay']);
-    const friendlyIndex = currIndex.value + 1;
 
     function addNonFishingDay() {
       const occuredInTrip = false;
@@ -61,11 +60,11 @@ export default createComponent({
       store.dispatch('tripsState/save', cruise);
 
       store.dispatch('tripsState/setCurrentNonFishingDay', nonFishingDays.length - 1);
-      router.push({path: '/nonFishingDays/' + friendlyIndex });
+      router.push({path: '/nonFishingDays/' + currIndex.value });
     }
 
     function editNonFishingDay() {
-      router.push({path: '/nonFishingDays/' + friendlyIndex });
+      router.push({path: '/nonFishingDays/' + currIndex.value });
     }
 
     function deleteNonFishingDay() {
