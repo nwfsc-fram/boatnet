@@ -505,7 +505,7 @@ export default class Trips extends Vue {
                 };
 
                 const vessels = await db.query(
-                  'optecs_trawl/all_vessel_names',
+                  'obs_web/all_vessel_names',
                     queryOptions,
                     pouchService.lookupsDBName
                     );
@@ -811,6 +811,7 @@ private async getAuthorizedVessels() {
         reduce: false,
         include_docs: true
     };
+
     const permissionsQuery = await db.query(
       'obs_web/all_doc_types',
         queryOptions,
@@ -844,21 +845,12 @@ private async getAuthorizedVessels() {
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
     }
-
-        // Notify.create({
-        //       message: this.authorizedVessels.map( (vessel: any) => vessel.vesselName ) as any,
-        //       position: 'bottom',
-        //       color: 'red',
-        //       timeout: 2000,
-        //       html: true,
-        //       multiLine: true
-        // })
 }
 
   private async created() {
     // this.setActiveVessel();
-    this.getAuthorizedVessels();
     // this.getUserTrips();
+    this.getAuthorizedVessels();
     this.getVesselTrips();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));

@@ -347,7 +347,7 @@
               <span
                 v-if="isIndexing"
                 style=" font-size: 11px; margin-left: 20px; color: black"
-              >{{ toIndex / 2 }} remaining.</span>
+              >{{ toIndex }} remaining.</span>
             </div>
             <q-linear-progress
               v-if="isIndexing"
@@ -462,7 +462,7 @@ export default class DefaultLayout extends Vue {
   private buildIndexes() {
     setTimeout( async () => {
       this.isIndexing = true;
-      this.toIndex = 6;
+      this.toIndex = 7;
 
       const db = pouchService.db;
       const queryOptions = { start_key: '', inclusive_end: true, reduce: false, include_docs: false };
@@ -470,8 +470,11 @@ export default class DefaultLayout extends Vue {
       const ports = await db.query('obs_web/all_port_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(ports);
 
-      const vessels = await db.query('optecs_trawl/all_vessel_names', queryOptions, pouchService.lookupsDBName);
+      const vessels = await db.query('obs_web/all_vessel_names', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(vessels);
+
+      const vesselNums = await db.query('obs_web/all_vessel_nums', queryOptions, pouchService.lookupsDBName);
+      this.decrementToIndex(vesselNums);
 
       // const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
       // this.decrementToIndex(vesselCaptains);
@@ -480,6 +483,7 @@ export default class DefaultLayout extends Vue {
       this.decrementToIndex(allDocs);
 
       this.isIndexing = false;
+      location.reload();
     }, 1500);
 
   }
