@@ -20,7 +20,6 @@
       v-model="vessel.activeVessel"
       label="Vessel"
       dense
-      use-input
       fill-input
       hide-selected
       :options="authorizedVessels"
@@ -842,9 +841,16 @@ private async getAuthorizedVessels() {
       );
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
-
     }
 
+        Notify.create({
+              message: this.authorizedVessels.map( (vessel: any) => vessel.vesselName ) as any,
+              position: 'bottom',
+              color: 'red',
+              timeout: 2000,
+              html: true,
+              multiLine: true
+        })
 }
 
   private async created() {

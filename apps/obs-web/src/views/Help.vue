@@ -3,12 +3,14 @@
 
         <div class="text-h6">FAQ</div>
         <div class="q-pa-md">
-            Q. How do I X?  A.  You Y.
+            Todo
         </div>
 
         <div class="text-h6">Support</div>
         <div class="q-pa-md">
-            Please contact x for y.
+            For OLE Declaration support, please contact OLE at 888-585-5518.<br>
+            For Trip Selection support please contact ...<br>
+            For general application support please contact nmfs.nwfsc.fram.data.team@noaa.gov
         </div>
 
         <div class="text-h6">Reset Application</div>
@@ -30,7 +32,7 @@
                         <li>Press 'RELOAD'</li>
                         <li>Log back in</li>
                     </ol>
-                <q-input dense v-model="lookupsConfirmText">
+                <q-input dense autocorrect="off" autocapitalize="off" spellcheck="false" v-model="lookupsConfirmText">
                     <template v-slot: append>
                         <q-btn flat color="red" size="md" @click="deleteLookups">reload</q-btn>
                         <q-btn flat color="primary" size="md" @click="lookupsConfirm = false; lookupsConfirmText = ''">cancel</q-btn>
@@ -52,7 +54,7 @@
                         <li>Press 'RELOAD'</li>
                         <li>Log back in</li>
                     </ol>
-                <q-input dense v-model="userDBConfirmText">
+                <q-input dense autocorrect="off" autocapitalize="off" spellcheck="false" v-model="userDBConfirmText">
                     <template v-slot: append>
                         <q-btn flat color="red" size="md" @click="deleteUserDB">reload</q-btn>
                         <q-btn flat color="primary" size="md" @click="userDBConfirm = false; userDBConfirmText = ''">cancel</q-btn>
