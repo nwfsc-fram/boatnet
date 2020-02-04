@@ -142,13 +142,13 @@ export default class Home extends Vue {
           if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
             console.log('setting active user alias');
             Notify.create({
-               message: 'Setting active user alias',
-            position: 'bottom',
-            color: 'green',
-            timeout: 3000,
-            icon: 'sentiment_satisfied_alt',
-            html: true,
-            multiLine: true
+               message: 'Active User Set',
+              position: 'bottom',
+              color: 'green',
+              timeout: 3000,
+              icon: 'sentiment_satisfied_alt',
+              html: true,
+              multiLine: true
             })
             this.user.activeUserAlias = alias.rows[0].doc;
           } else {
@@ -248,28 +248,37 @@ export default class Home extends Vue {
   }
 
   private async buildDesignDoc() {
-    const designDoc = {
-      _id: '_design/my_index',
-      views: {
-        by_type: {
-          // @ts-ignore
-          map: function(doc) { emit(doc.type); }.toString()
-           }
-        }
-      };
+    try {
+        await pouchService.db.query('my_index/by_type', {
+          limit: 0
+        }).then( (res: any) => {
+          console.log(res.rows.map( (row: any) => row.doc ));
+        })
+    } catch (error) {
+      console.log(error)
+      const designDoc = {
+        _id: '_design/my_index',
+        views: {
+          by_type: {
+            // @ts-ignore
+            map: function(doc) { emit(doc.type); }.toString()
+             }
+          }
+        };
 
-    pouchService.db.put(designDoc).then( () => {
-          pouchService.db.query('my_index/by_type', {
-            limit: 0
-          }).then( (res: any) => {
-            console.log(res.rows.map( (row: any) => row.doc ));
-          }).catch( (err: any) => {
-            console.log(err);
-    });
-    }).catch ( (err: any) => {
-        console.log(err);
-      }
-    );
+      pouchService.db.put(designDoc).then( () => {
+            pouchService.db.query('my_index/by_type', {
+              limit: 0
+            }).then( (res: any) => {
+              console.log(res.rows.map( (row: any) => row.doc ));
+            }).catch( (err: any) => {
+              console.log(err);
+      });
+      }).catch ( (err: any) => {
+          console.log(err);
+        }
+      );
+    }
 
   }
 
@@ -291,7 +300,7 @@ export default class Home extends Vue {
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
-    // this.buildDesignDoc();
+    this.buildDesignDoc();
     // this.getDocsViaView();
   }
 
