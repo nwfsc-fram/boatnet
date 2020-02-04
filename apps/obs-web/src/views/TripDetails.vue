@@ -583,7 +583,7 @@ export default class TripDetails extends Vue {
       const masterDB: Client<any> = couchService.masterDB;
       await masterDB.post(this.trip.activeTrip).then( () => {
         Notify.create({
-          message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+          message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
             position: 'top',
             color: 'primary',
             timeout: 7000,
@@ -805,7 +805,7 @@ private async getMinDate() {
         this.trip.activeTrip!._rev as string
         ).then( async () => {
             Notify.create({
-              message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+              message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
               position: 'top',
               color: 'primary',
               timeout: 7000,
