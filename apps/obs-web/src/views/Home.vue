@@ -141,6 +141,15 @@ export default class Home extends Vue {
 
           if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
             console.log('setting active user alias');
+            Notify.create({
+               message: 'Setting active user alias',
+            position: 'bottom',
+            color: 'green',
+            timeout: 3000,
+            icon: 'sentiment_satisfied_alt',
+            html: true,
+            multiLine: true
+            })
             this.user.activeUserAlias = alias.rows[0].doc;
           } else {
             console.log('user alias not found in pouch - looking in couch');

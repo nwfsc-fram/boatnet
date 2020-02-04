@@ -21,7 +21,6 @@
       label="Vessel"
       dense
       fill-input
-      hide-selected
       :options="authorizedVessels"
       :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
       option-value="_id"
@@ -770,6 +769,7 @@ private async getUserTrips() {
 }
 
 private async getVesselTrips() {
+  if (this.vessel.activeVessel) {
   const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
   const masterDB: Client<any> = couchService.masterDB;
   const queryOptions: any = {
@@ -784,7 +784,7 @@ private async getVesselTrips() {
             'ots_trips_by_vesselId',
             queryOptions
           );
-  
+
     this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
   } catch (err) {
     Notify.create({
@@ -796,6 +796,8 @@ private async getVesselTrips() {
             html: true,
             multiLine: true
         })
+    }
+
   }
 }
 
