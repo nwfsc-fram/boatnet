@@ -37,7 +37,8 @@
       :options="config.options"
       :val.sync="valueHolder"
       :displayFields="config.displayFields"
-      :valType="config.valType"
+      :valueField="config.valueField"
+      :docType="config.docType"
       @save="save"
     />
 
@@ -86,6 +87,8 @@ export default createComponent({
           key = props.config.displayCondition.key;
           value = props.config.displayCondition.value;
         }
+        // check whether value is set in state otherwise
+        // check in obj
         const stateValue = get(currentData, key);
         if (stateValue && stateValue === value) {
           return true;

@@ -12,7 +12,7 @@
       <template v-slot:table>
         <boatnet-table
           v-if="config.columns"
-          :data="nonFishingDays"
+          :data="data"
           :settings="config"
           @select="select"
         />
@@ -25,18 +25,11 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive, computed } from '@vue/composition-api';
-import { BaseTrip, AshopCruise, CouchID } from '@boatnet/bn-models';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { useAsync } from 'vue-async-function';
+import { pouchService } from '@boatnet/bn-pouch';
 import { get, remove } from 'lodash';
-import {
-  getDocByType,
-  getTrips,
-  addTripIdToCruise,
-  removeTripIdFromCruise
-} from '../helpers/cruiseInfo';
-import { allDocs } from '../helpers/queries';
-import moment from 'moment';
+import { getDocByType } from '../helpers/cruiseInfo';
+import { useAsync } from 'vue-async-function';
+import { AshopTrip } from '@boatnet/bn-models';
 
 export default createComponent({
   setup(props, context) {
@@ -46,20 +39,32 @@ export default createComponent({
 
     const config = store.state.appSettings.appConfig.nonFishingTable;
     const cruise = store.state.tripsState.currentCruise;
-    const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
 
     const currIndex = computed(() => store.getters['tripsState/currentNonFishingDay']);
 
+    async function init() {
+      const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
+      // populate with tripNum
+      const trips = await getDocByType('ashop', 'trip');
+      nonFishingDays.forEach((noFishDay: any, index: number) => {
+        const trip = trips.find((element: AshopTrip) => element._id === noFishDay.tripId);
+        nonFishingDays[index].tripNum = trip.tripNum;
+      });
+      return nonFishingDays;
+    }
+
+    const { data } = useAsync(init);
+
     function addNonFishingDay() {
-      const occuredInTrip = false;
-      const newFishingDay = reactive({ occuredInTrip });
-      nonFishingDays.push(newFishingDay);
+      const inTrip = false;
+      const newFishingDay = reactive({ inTrip });
+      data.value.push(newFishingDay);
 
       // update cruise
-      cruise.nonFishingDays = nonFishingDays;
+      cruise.nonFishingDays = data.value;
       store.dispatch('tripsState/save', cruise);
 
-      store.dispatch('tripsState/setCurrentNonFishingDay', nonFishingDays.length - 1);
+      store.dispatch('tripsState/setCurrentNonFishingDay', data.value.length - 1);
       router.push({path: '/nonFishingDays/' + currIndex.value });
     }
 
@@ -68,10 +73,10 @@ export default createComponent({
     }
 
     function deleteNonFishingDay() {
-      nonFishingDays.splice(currIndex.value, 1);
+      data.value.splice(currIndex.value, 1);
 
       // update cruise
-      cruise.nonFishingDays = nonFishingDays;
+      cruise.nonFishingDays = data.value;
       store.dispatch('tripsState/save', cruise);
 
       store.dispatch('tripsState/setCurrentNonFishingDay', -1);
@@ -82,12 +87,12 @@ export default createComponent({
     }
 
     function select(day: any) {
-      const index = nonFishingDays.indexOf(day);
+      const index = data.value.indexOf(day);
       store.dispatch('tripsState/setCurrentNonFishingDay', index);
     }
 
     return {
-        nonFishingDays,
+        data,
         config,
         addNonFishingDay,
         editNonFishingDay,

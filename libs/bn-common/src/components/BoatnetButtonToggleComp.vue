@@ -18,22 +18,23 @@ import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 @Component
 export default class BoatnetButtonToggle extends Vue {
   @Prop() private title!: string;
-  @Prop() private options!: any;
+  @Prop() private options!: any[];
   @Prop() private val!: any;
 
-  @Prop() private displayFields !: any;
-  @Prop() private valType!: string;
+  @Prop() private docType!: string;
+  @Prop() private displayFields!: any;
+  @Prop() private valueField!: any;
   private optionsList: any = [];
 
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: AppSettings;
 
   private async getList() {
-    if (typeof this.options === 'string') {
-      const list = await getOptions(this.appMode.toString(), this.options, 'user', this.displayFields);
+   if (this.docType) {
+      const list = await getOptions(this.appMode.toString(), this.docType, 'user', this.displayFields);
       for (const row of list) {
-        const label = formatDisplayValue(row, this.displayFields);
-        const value = this.valType === 'object' ? row.doc : label;
+        const label = formatDisplayValue(row, [this.displayFields]);
+        const value = this.valueField ? formatDisplayValue(row, [this.valueField]) : row.doc;
         this.optionsList.push({ label, value });
       }
     } else {

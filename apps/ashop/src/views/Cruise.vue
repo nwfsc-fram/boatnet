@@ -26,7 +26,6 @@
 <script lang="ts">
 import { createComponent, reactive, computed } from '@vue/composition-api';
 import { getCruise } from '../helpers/cruiseInfo';
-import { useAsync } from 'vue-async-function';
 import moment from 'moment';
 import { AshopCruise } from '@boatnet/bn-models';
 
