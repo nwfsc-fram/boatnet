@@ -61,7 +61,6 @@ export default createComponent({
       if (appMode === 'ashop') {
         const cruises = await getDocByType('ashop', 'cruise');
         const newCruise = await getCruise();
-        console.log(newCruise);
         store.dispatch('tripsState/setCurrentCruise', newCruise);
         if (cruises.length === 0) {
           router.push({ path: '/cruise/' });

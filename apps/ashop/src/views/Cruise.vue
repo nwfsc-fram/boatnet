@@ -60,7 +60,6 @@ export default createComponent({
       await store.dispatch('tripsState/save', cruise.value);
       // TODO archive data and clear from tablet.
       // Also need to think about how we will archive if there is no internet connection
-      console.log('deleting');
     }
 
     function saveOnUpdate() {
