@@ -47,8 +47,10 @@ export default createComponent({
       // populate with tripNum
       const trips = await getDocByType('ashop', 'trip');
       nonFishingDays.forEach((noFishDay: any, index: number) => {
-        const trip = trips.find((element: AshopTrip) => element._id === noFishDay.tripId);
-        nonFishingDays[index].tripNum = trip.tripNum;
+        if (noFishDay.tripId) {
+          const trip = trips.find((element: AshopTrip) => element._id === noFishDay.tripId);
+          nonFishingDays[index].tripNum = trip.tripNum;
+        }
       });
       return nonFishingDays;
     }
@@ -64,6 +66,7 @@ export default createComponent({
       cruise.nonFishingDays = data.value;
       store.dispatch('tripsState/save', cruise);
 
+      store.dispatch('tripsState/setCurrentCruise', cruise);
       store.dispatch('tripsState/setCurrentNonFishingDay', data.value.length - 1);
       router.push({path: '/nonFishingDays/' + currIndex.value });
     }
