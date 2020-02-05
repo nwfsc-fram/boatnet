@@ -229,37 +229,44 @@
 
     <q-dialog v-model="closeAlert">
       <div style="background-color: white">
-          <div style="padding-left: 20px">
-            <br>
-            <strong class="text-subtitle2">I affirm this trip was taken.</strong>
-            <q-toggle
-            v-model="taken"
-            checked-icon="check"
-            unchecked-icon="clear"
-            color="green"
-            />
+
+          <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Capture Logbook Image
+              <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+          </label>
+
+          <div v-if="file" style="padding-left: 5%; padding-top: 5%">
+              <div class="text-h6">Logbook Capture</div>
+              <img :src="fileUrl" style="width: 95%">
           </div>
 
+          <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Capture Logbook Image
+              <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+          </label>
 
+          <div v-if="file">
+            <div class="text-h6" style="padding-left: 5%">Actual Trip Dates:</div>
             <pCalendar
               v-model="tripDates"
-              :inline="true"
+              :touchUI="true"
               :maxDate="maxDate"
               selectionMode="range"
               onfocus="blur();"
-              style="padding: 5px">
+              style="padding-left: 5%">
             </pCalendar>
+            <br><br><br><br>
+          </div>
 
         <br>
-        <div style="padding: 10px" class="text-primary float-right">
-          <q-btn color="primary" size="md" @click="closeAlert = false">cancel</q-btn>
+        <div class="text-primary" style="padding-left: 5%">
+          <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
           &nbsp;
-          <q-btn color="red" size="md" @click="closeActiveTrip" :disabled="!taken">close trip</q-btn>
-        </div>
+          <q-btn v-if="file" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
           <br><br>
+        </div>
       </div>
     </q-dialog>
 
+    <div id="imageholder"></div>
   </div>
 </template>
 
@@ -295,7 +302,7 @@ import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
-import { date, Notify } from 'quasar';
+import { Notify } from 'quasar';
 
 @Component
 export default class Trips extends Vue {
@@ -331,6 +338,9 @@ export default class Trips extends Vue {
   private authorizedVessels: Vessel[] = [];
   private tripsApiTrips: any[] = [];
   private closedTripsTable: boolean = false;
+  private file: any = null;
+  private fileUrl: any = null;
+  private image: any;
 
   private pagination = {
     sortBy: 'departureDate',
@@ -352,6 +362,12 @@ export default class Trips extends Vue {
 
   constructor() {
       super();
+  }
+
+  private handleImage(event: any) {
+      this.file = event!.target!.files[0];
+      this.fileUrl = URL.createObjectURL(this.file);
+      console.log(this.file);
   }
 
   private get currentReadonlyDB(): string {
@@ -538,8 +554,14 @@ export default class Trips extends Vue {
           change: 'trip closed'
         }
       );
-      await pouchService.db.put(trip);
-      }
+      console.log(trip);
+      const masterDB: Client<any> = couchService.masterDB;
+      return await masterDB.put(
+        trip._id as string,
+        trip,
+        trip._rev as string
+      );
+    }
 
     private cancelTrip(trip: any) {
       for (const openTrip of this.openTrips) {
@@ -644,17 +666,34 @@ export default class Trips extends Vue {
       );
     }
 
-    private closeActiveTrip() {
-      this.activeTrip!.closingReason = 'taken';
-      this.closeTrip(this.activeTrip).then(
-        async () => {
-          this.cancelAlert = false;
-          this.closeAlert = false;
-          await this.getNextSelections().then( () => {
-          location.reload();
-          });
-        }
-      );
+    private async closeActiveTrip() {
+      const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
+      let result: any;
+      const reader = new FileReader();
+      reader.readAsDataURL(this.file);
+      reader.onload = async () => {
+        result = reader.result;
+        this.activeTrip._attachments = {
+                  [fileName] : {
+                      content_type: this.file.type,
+                      data: result.split(',')[1]
+                  }
+              };
+
+        this.activeTrip!.closingReason = 'taken';
+        await this.closeTrip(this.activeTrip).then(
+          async () => {
+            this.cancelAlert = false;
+            this.closeAlert = false;
+            this.file = null;
+            this.closeAlert = false;
+            await this.getNextSelections().then( () => {
+            location.reload();
+            });
+          }
+        );
+      };
+
     }
 
     private review(trip: any) {
@@ -774,6 +813,7 @@ private async getVesselTrips() {
   const masterDB: Client<any> = couchService.masterDB;
   const queryOptions: any = {
           include_docs: true,
+          attachments: true,
           reduce: false,
           key: vesselId
         };
@@ -786,7 +826,35 @@ private async getVesselTrips() {
           );
 
     this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
+
+    // display closed trip logbook captures
+    for (const uTrip of this.userTrips) {
+      if (uTrip._attachments) {
+
+        const filename: any = Object.keys(uTrip._attachments);
+
+        const byteCharacters = atob(uTrip._attachments[filename].data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {type: uTrip._attachments[filename].content_type});
+
+        // this.dbImage = blob;
+        // this.dbImageUrl = URL.createObjectURL(blob);
+
+        const url = URL.createObjectURL(blob);
+        const img = document.createElement('img');
+        img.width = 300;
+        img.src = url;
+
+        document.getElementById('imageholder')!.appendChild(img);
+      }
+    }
+
   } catch (err) {
+    console.log(err);
     Notify.create({
         message: 'Internet Connection Required',
             position: 'center',
@@ -795,7 +863,7 @@ private async getVesselTrips() {
             icon: 'warning',
             html: true,
             multiLine: true
-        })
+        });
     }
 
   }
@@ -864,6 +932,7 @@ private async getAuthorizedVessels() {
     // this.getUserTrips();
     this.getVesselTrips();
     this.getNextSelections();
+    document.getElementById('imageholder')!.innerHTML = '';
   }
 
   @Watch('tripDates')
@@ -890,6 +959,23 @@ private async getAuthorizedVessels() {
 
   .p-datepicker
     border: none !important
+
+</style>
+
+<style scoped>
+
+label.cameraButton {
+  display: inline-block;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+label.cameraButton input[accept*="camera"] {
+  display: none;
+}
 
 </style>
 
