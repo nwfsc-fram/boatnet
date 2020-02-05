@@ -8,7 +8,7 @@
 
       <q-card-actions align="right">
         <q-btn flat label="Cancel" color="primary" @click="close"/>
-        <q-btn flat label="Delete" color="primary" @click="confirmDelete"/>
+        <q-btn flat :label="confirmationAction" color="primary" @click="confirm"/>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -19,16 +19,17 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
 @Component
-export default class BoatnetDeleteDialog extends Vue {
+export default class BoatnetWarningDialog extends Vue {
   @Prop() private message!: string;
   @Prop({ default: false }) private show!: boolean;
+  @Prop() private confirmationAction !: string;
 
   private close() {
     this.$emit('update:show', false);
   }
 
-  private confirmDelete() {
-    this.$emit('confirmDelete');
+  private confirm() {
+    this.$emit('confirm');
     this.close();
   }
 }

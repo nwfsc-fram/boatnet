@@ -22,10 +22,11 @@
 
     <slot name="table"/>
 
-    <boatnet-delete-dialog
+    <boatnet-warning-dialog
       :message="deleteMessage"
       :show.sync="showDeleteDialog"
-      @confirmDelete="onDelete"
+      @confirm="onDelete"
+      confirmationAction='Delete'
     />
 
     <div class="row q-gutter-sm relative-bottom">
@@ -140,6 +141,8 @@ export default class BoatnetSummary extends Vue {
       return 'Catch';
     } else if (this.currentScreen === 'Species') {
       return 'Wts & Cnts';
+    } else if (this.currentScreen === 'Non Fishing Day') {
+      return 'Trips';
     }
   }
 

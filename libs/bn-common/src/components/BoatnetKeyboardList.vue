@@ -7,7 +7,7 @@
         @click="setSelected(item)"
         active-class="my-menu-link"
       >
-        <q-item-section>{{formatDisplayValue(item)}}</q-item-section>
+        <q-item-section>{{formatDisplayValue(item, displayFields)}}</q-item-section>
       </q-item>
     </div>
   </q-list>
@@ -19,6 +19,7 @@ import { stringify } from 'querystring';
 import { Action, Getter } from 'vuex-class';
 import { get } from 'lodash';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { getOptions, formatDisplayValue } from '../helpers/getLookupsInfo';
 
 @Component
 export default class BoatnetKeyboardList extends Vue {
@@ -33,57 +34,21 @@ export default class BoatnetKeyboardList extends Vue {
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: string;
 
+  private formatDisplayValue = formatDisplayValue;
+
   private list: any[] = [];
   private async created() {
     this.list = await this.initList();
   }
 
-  private formatDisplayValue(row: any) {
-    const listModelName: any = this.displayFields ? this.displayFields : [];
-    let displayValue = '';
-    for (let i: number = 0; i < listModelName.length; i++) {
-      displayValue =
-        i < listModelName.length - 1
-          ? (displayValue += get(row, 'doc.' + listModelName[i]) + ' ')
-          : (displayValue += get(row, 'doc.' + listModelName[i]));
-      }
-    return displayValue;
-  }
-
-  private sortDisplayValues(val1: any, val2: any) {
-    const val1Name = this.formatDisplayValue(val1);
-    const val2Name = this.formatDisplayValue(val2);
-    if (val1Name > val2Name) {
-      return 1;
-    } else if (val1Name < val2Name) {
-      return -1;
-    } else {
-      return 0;
-    }
-  }
-
   private async initList() {
-    const pouchDB = pouchService.db;
-    const queryOptions = {
-      inclusive_end: true,
-      ascending: false,
-      include_docs: true,
-      reduce: false,
-      key: this.docType
-    };
-
-    const view = 'LookupDocs/' + this.appMode + '-lookups';
-    const results = await pouchDB.query(
-      view,
-      queryOptions,
-      pouchService.lookupsDBName
-    );
-    return results.rows.sort(this.sortDisplayValues);
+    return await getOptions(this.appMode.toString(), this.docType,
+                            'lookups', this.displayFields);
   }
 
   private setSelected(value: any) {
     if (this.valType === 'string') {
-      this.$emit('selected', this.formatDisplayValue(value));
+      this.$emit('selected', formatDisplayValue(value, this.displayFields));
     } else if (this.valType === 'object') {
       this.$emit('selected', value.doc);
     }
@@ -92,7 +57,7 @@ export default class BoatnetKeyboardList extends Vue {
 
   private get getSortedAndCuratedList() {
     return this.list.filter((item: string) =>
-      this.formatDisplayValue(item).toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
+      formatDisplayValue(item, this.displayFields).toLowerCase().includes(this.value ? this.value.toLowerCase() : '')
     );
   }
 }

@@ -8,7 +8,8 @@ import Login from './views/Login.vue';
 import Hauls from './views/Hauls.vue';
 import HaulDetails from './views/HaulDetails.vue';
 import Settings from './views/Settings.vue';
-import NonFishingDay from './views/NonFishingDay.vue';
+import NonFishingDays from './views/NonFishingDays.vue';
+import NonFishingDayDetails from './views/NonFishingDayDetails.vue';
 import Cruise from './views/Cruise.vue';
 
 import { authService } from '@boatnet/bn-auth';
@@ -34,7 +35,10 @@ const router = new Router({
         {
           path: '/cruise',
           name: 'cruise',
-          component: Cruise
+          component: Cruise,
+          meta: {
+            breadcrumb: []
+          }
         },
         {
           path: '',
@@ -99,6 +103,29 @@ const router = new Router({
               { name: 'haulIdPlaceholder', link: ''}
             ]
           }
+        },
+        {
+          path: '/nonFishingDays',
+          name: 'NonFishingDays',
+          component: NonFishingDays,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'Non Fishing Days', link: '/nonFishingDays' }
+            ]
+          }
+        },
+        {
+          path: '/nonFishingDays/:nonFishingDayNum',
+          name: 'NonFishingDayDetails',
+          component: NonFishingDayDetails,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'Non Fishing Days', link: '/nonFishingDays' },
+              { name: 'nonFishingDayPlaceholder', link: '' }
+            ]
+           }
         }
       ]
     }

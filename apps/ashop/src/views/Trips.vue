@@ -34,7 +34,8 @@ import {
   getDocByType,
   getTrips,
   addTripIdToCruise,
-  removeTripIdFromCruise
+  removeTripIdFromCruise,
+  getCruise
 } from '../helpers/cruiseInfo';
 import { allDocs } from '../helpers/queries';
 
@@ -59,6 +60,8 @@ export default createComponent({
       // redirect to cruises if none exist
       if (appMode === 'ashop') {
         const cruises = await getDocByType('ashop', 'cruise');
+        const newCruise = await getCruise();
+        store.dispatch('tripsState/setCurrentCruise', newCruise);
         if (cruises.length === 0) {
           router.push({ path: '/cruise/' });
         }

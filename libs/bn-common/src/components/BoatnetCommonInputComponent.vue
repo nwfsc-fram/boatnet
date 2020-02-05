@@ -22,14 +22,23 @@
       :displayFields="config.displayFields"
       :docType="config.docType"
       :valType="config.valType"
+      :inputType="config.inputType"
       @save="save"
     />
 
+    <q-toggle v-if="config.type === 'toggle'"
+      v-model="valueHolder"
+      :label="config.title"
+    />
+
     <boatnet-button-toggle-comp
-      v-if="config.type === 'toggle' && (config.displayCondition ? showField : true)"
+      v-if="config.type === 'buttonToggle' && (config.displayCondition ? showField : true)"
       :title="config.title"
       :options="config.options"
       :val.sync="valueHolder"
+      :displayFields="config.displayFields"
+      :valueField="config.valueField"
+      :docType="config.docType"
       @save="save"
     />
 
@@ -78,7 +87,14 @@ export default createComponent({
           key = props.config.displayCondition.key;
           value = props.config.displayCondition.value;
         }
-        return get(currentData, key) === value ? true : false;
+        // check whether value is set in state otherwise
+        // check in obj
+        const stateValue = get(currentData, key);
+        if (stateValue && stateValue === value) {
+          return true;
+        } else {
+          return get(props.model, key) === value ? true : false;
+        }
       },
       set: () => undefined
     });
