@@ -47,7 +47,7 @@ export default createComponent({
       // populate with tripNum
       const trips = await getDocByType('ashop', 'trip');
       nonFishingDays.forEach((noFishDay: any, index: number) => {
-        if (noFishDay.tripId) {
+        if (noFishDay.tripId && trips.length > 0) {
           const trip = trips.find((element: AshopTrip) => element._id === noFishDay.tripId);
           nonFishingDays[index].tripNum = trip.tripNum;
         }

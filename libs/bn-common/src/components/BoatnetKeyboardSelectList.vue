@@ -1,12 +1,14 @@
 <template>
   <div class="q-px-md q-py-sm">
     <q-input
+      :clearable="docType ? true : false"
       outlined
       v-model="valueHolder"
       :mask="mask"
       debounce="500"
       @input="save"
       @focus="displayKeyboard"
+      @clear="empty"
       :data-layout="keyboardType"
       :label="displayName"
       :fill-mask="mask ? true : false"
@@ -33,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import { createComponent, ref, reactive, computed, onMounted } from '@vue/composition-api';
 import { get, set } from 'lodash';
 import Vue from 'vue';
 
@@ -52,6 +54,7 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const keyboard = reactive(store.state.keyboard);
+    let isEditable: boolean = true;
 
     const valueHolder = computed({
       get: () => {
@@ -63,10 +66,12 @@ export default createComponent({
         }
       },
       set: (val: any) => {
-        if (props.valType === 'number') {
-          context.emit('update:val', parseInt(val, 10));
-        } else {
-          context.emit('update:val', val);
+        if (isEditable || val === null) {
+          if (props.valType === 'number') {
+            context.emit('update:val', parseInt(val, 10));
+          } else {
+            context.emit('update:val', val);
+          }
         }
       }
     });
@@ -87,16 +92,24 @@ export default createComponent({
     });
 
     const displayKeyboard = (event: any) => {
-      store.dispatch('keyboard/setKeyboardInputTarget', event.target);
-      store.dispatch('keyboard/setActiveFieldName', props.displayName);
-      if (!context.root.$store.state.showKeyboard) {
-        store.dispatch('keyboard/setKeyboard', true);
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        store.dispatch('keyboard/setKeyboardInputTarget', event.target);
+        store.dispatch('keyboard/setActiveFieldName', props.displayName);
+        if (!context.root.$store.state.showKeyboard) {
+          store.dispatch('keyboard/setKeyboard', true);
+        }
       }
+    };
+
+    const empty = () => {
+      isEditable = true;
     };
 
     const select = (value: any) => {
       context.emit('update:val', value);
       context.emit('save');
+      isEditable = false; // once an item has been selected don't allow
+                          // additional edits
     };
 
     const save = () => {
@@ -128,7 +141,8 @@ export default createComponent({
       displayKeyboard,
       select,
       save,
-      next
+      next,
+      empty
     };
   }
 });

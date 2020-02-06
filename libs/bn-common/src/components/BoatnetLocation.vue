@@ -34,23 +34,25 @@ export default createComponent({
   props: {
     model: String,
     label: String,
-    obj: Object
+    val: Object
   },
   setup(props, context) {
     const store = context.root.$store;
 
     const locationLabel = props.label ? props.label : '';
     const model: any = props && props.model ? props.model : '';
-    const latName: string = model.concat('.rawInputLocation.coordinates[0]');
-    const longName: string = model.concat('.rawInputLocation.coordinates[1]');
-    const ddPoint: string = model.concat('.ddLocation.coordinates');
-    const unit: string = model.concat('.unit');
+
+    const currLat = get(props.val, 'rawInputLocation[0]');
+    const currLong = get(props.val, 'rawInputLocation[1]');
+
+    const lat: any = currLat ? ref(currLat) : ref('');
+    const long: any = currLong ? ref(currLong) : ref('');
+    const unit: any = ref('');
 
     // This defaults to whatever the user last selected
     function initUnit() {
-      let currUnit = get(props.obj, unit);
-      currUnit = currUnit ? currUnit : store.getters['appSettings/defaultLocationFormat'];
-      setValue(props.obj, unit.split('.'), currUnit);
+      unit.value = get(props.val, 'rawInputFormat');
+      unit.value = unit.value ? unit.value : store.getters['appSettings/defaultLocationFormat'];
     }
     initUnit();
 
@@ -98,83 +100,44 @@ export default createComponent({
     });
 
     const format = computed({
-      get: () => get(props.obj, unit),
+      get: () => unit.value,
       set: (val: string) => {
-        store.dispatch('appSettings/setDefaultLocationFormat', val);
-        setValue(props.obj, unit.split('.'), val);
+        unit.value = val;
+        store.dispatch('appSettings/setDefaultLocationFormat', unit.value);
+        lat.value = '';
+        long.value = '';
       }
     });
 
     function setDD(latitude: string, longitude: string) {
       if (latitude && latitude.replace(/[^0-9]/g, '').length === 6 &&
           longitude && longitude.replace(/[^0-9]/g, '').length === 7) {
-        const position = new Coordinates(latitude + ', ' + longitude);
-        setValue(props.obj, ddPoint.split('.'), [
-          position.latitude,
-          position.longitude
-        ]);
+            const position = new Coordinates(latitude + ', ' + longitude);
+            return [position.latitude, position.longitude];
       } else {
-        setValue(props.obj, ddPoint.split('.'), []);
+        return [];
       }
-    }
-
-    const long = computed({
-      get: () => get(props.obj, longName),
-      set: (val: string) => {
-        const latitude = get(props.obj, latName);
-        setValue(props.obj, longName.split('.'), val);
-        setDD(latitude, val);
-      }
-    });
-
-    const lat = computed({
-      get: () => get(props.obj, latName),
-      set: (val: string) => {
-        const longitude = get(props.obj, longName);
-        setValue(props.obj, latName.split('.'), val);
-        setDD(val, longitude);
-      }
-    });
-
-    function setValue(obj: any, fields: any, setTo: any) {
-      let field: string = fields.shift();
-      let index: number = -1;
-      const arrStart: number = field.indexOf('[');
-
-      if (arrStart !== -1) {
-        index = parseInt(field.substring(arrStart + 1, field.indexOf(']')), 10);
-        field = field.substring(0, arrStart);
-      }
-      if (!obj[field] && index === -1) {
-        Vue.set(obj, field, {});
-      } else if (!obj[field] && index !== -1) {
-        Vue.set(obj, field, []);
-      }
-      if (!fields.length) {
-        if (setTo && typeof setTo === 'object' && !Array.isArray(setTo)) {
-          obj[field] = { ...obj[field], ...setTo };
-        } else if (index !== -1) {
-          obj[field][index] = setTo;
-        } else {
-          obj[field] = setTo;
-        }
-        return;
-      }
-      setValue(obj[field], fields, setTo);
     }
 
     const save = () => {
+      const ddLocation = setDD(lat.value, long.value);
+      const newVal = {
+        rawInputLocation: [lat.value, long.value],
+        rawInputFormat: format.value,
+        ddLocation
+      };
+      context.emit('update:val', newVal);
       context.emit('save');
     };
 
     return {
       locationLabel,
-      format,
       latMask,
       longMask,
+      options,
       lat,
       long,
-      options,
+      format,
       save
     };
   }
