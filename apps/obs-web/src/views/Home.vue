@@ -149,7 +149,7 @@ export default class Home extends Vue {
               icon: 'sentiment_satisfied_alt',
               html: true,
               multiLine: true
-            })
+            });
             this.user.activeUserAlias = alias.rows[0].doc;
           } else {
             console.log('user alias not found in pouch - looking in couch');
@@ -253,9 +253,9 @@ export default class Home extends Vue {
           limit: 0
         }).then( (res: any) => {
           console.log(res.rows.map( (row: any) => row.doc ));
-        })
+        });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       const designDoc = {
         _id: '_design/my_index',
         views: {
