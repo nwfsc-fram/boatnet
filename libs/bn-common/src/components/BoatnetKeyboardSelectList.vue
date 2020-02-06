@@ -1,6 +1,6 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <q-input 
+    <q-input
       outlined
       v-model="valueHolder"
       :mask="mask"

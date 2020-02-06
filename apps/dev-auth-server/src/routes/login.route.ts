@@ -22,6 +22,13 @@ export async function login(req: Request, res: Response) {
 
   username = username.toLowerCase(); // fix #671
 
+  if (req.body.encodeCouchPassword) {
+    console.log("NOTE: client requested base64 encoded couchDB password. " +
+     "For testing on a local couchDB, you will need to set a base64 encoded pw.");
+  }
+  if (req.body.clientVersion) {
+    console.log("Client version v" + req.body.clientVersion);
+  }
   if (username === '' || password === '') {
     res.status(401);
     res.json({

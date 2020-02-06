@@ -693,6 +693,12 @@ components:
         passwordEnc:
           type: string
           description: Required if password not specified
+        encodeCouchPassword:
+          type: boolean
+          description: Base64 encode couch password
+        clientVersion:
+          type: string
+          description: Optional (recommended) client version info
         applicationName:
           type: string
           description: Application name, determines which roles are returned in JWT
