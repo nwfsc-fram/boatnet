@@ -255,18 +255,18 @@
             </pCalendar>
             <br><br><br><br>
           </div>
-
         <br>
         <div class="text-primary" style="padding-left: 5%">
           <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
           &nbsp;
           <q-btn v-if="file" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
+          &nbsp;
+          <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           <br><br>
         </div>
       </div>
     </q-dialog>
 
-    <div id="imageholder"></div>
   </div>
 </template>
 
@@ -340,7 +340,7 @@ export default class Trips extends Vue {
   private closedTripsTable: boolean = false;
   private file: any = null;
   private fileUrl: any = null;
-  private image: any;
+  private transferring: boolean = false;
 
   private pagination = {
     sortBy: 'departureDate',
@@ -556,11 +556,14 @@ export default class Trips extends Vue {
       );
       console.log(trip);
       const masterDB: Client<any> = couchService.masterDB;
+      this.transferring = true;
       return await masterDB.put(
         trip._id as string,
         trip,
         trip._rev as string
-      );
+      ).then( () => {
+        this.transferring = false;
+      });
     }
 
     private cancelTrip(trip: any) {
@@ -813,7 +816,6 @@ private async getVesselTrips() {
   const masterDB: Client<any> = couchService.masterDB;
   const queryOptions: any = {
           include_docs: true,
-          attachments: true,
           reduce: false,
           key: vesselId
         };
@@ -826,32 +828,6 @@ private async getVesselTrips() {
           );
 
     this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
-
-    // display closed trip logbook captures
-    for (const uTrip of this.userTrips) {
-      if (uTrip._attachments) {
-
-        const filename: any = Object.keys(uTrip._attachments);
-
-        const byteCharacters = atob(uTrip._attachments[filename].data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], {type: uTrip._attachments[filename].content_type});
-
-        // this.dbImage = blob;
-        // this.dbImageUrl = URL.createObjectURL(blob);
-
-        const url = URL.createObjectURL(blob);
-        const img = document.createElement('img');
-        img.width = 300;
-        img.src = url;
-
-        document.getElementById('imageholder')!.appendChild(img);
-      }
-    }
 
   } catch (err) {
     console.log(err);
