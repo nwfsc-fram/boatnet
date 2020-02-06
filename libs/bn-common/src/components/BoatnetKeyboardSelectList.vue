@@ -10,6 +10,7 @@
       :data-layout="keyboardType"
       :label="displayName"
       :fill-mask="mask ? true : false"
+      :type="inputType"
       dense
     >
       <template v-slot:append>
@@ -44,7 +45,8 @@ export default createComponent({
     displayFields: Array,
     docType: String,
     val: [String, Number, Object],
-    valType: String
+    valType: String,
+    inputType: String
   },
 
   setup(props, context) {

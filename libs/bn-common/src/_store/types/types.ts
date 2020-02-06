@@ -12,6 +12,7 @@ export interface AlertState {
 
 export interface TripState {
     currentCruise?: Base;
+    currentNonFishingDay?: number;
     currentTrip?: BaseTrip;
     currentHaul?: BaseOperation;
     currentCatch?: BaseCatch;
@@ -21,6 +22,7 @@ export interface AppSettings {
     isKeyboardEnabled: boolean;
     isSoundEnabled?: boolean;
     appMode: string;
+    defaultLocationFormat: string;
     appConfig?: BoatnetConfig;
 }
 

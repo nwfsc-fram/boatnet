@@ -25,6 +25,7 @@
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 import { Getter } from 'vuex-class';
 import { BaseTrip, AshopHaul, WcgopOperation } from '@boatnet/bn-models';
+import moment from 'moment';
 
 @Component
 export default class AshopBreadcrumb extends Vue {
@@ -33,6 +34,10 @@ export default class AshopBreadcrumb extends Vue {
   private currentTrip!: BaseTrip;
   @Getter('currentHaul', { namespace: 'tripsState' })
   private currentHaul!: any;
+  @Getter('currentCruise', { namespace: 'tripsState' })
+  private currentCruise!: any;
+  @Getter('currentNonFishingDay', { namespace: 'tripsState' })
+  private currentNonFishingDay!: any;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
@@ -52,6 +57,13 @@ export default class AshopBreadcrumb extends Vue {
         const haulNum = this.currentHaul ? this.currentHaul.haulNum : 0;
         this.breadcrumbs[i].name = String(haulNum);
         this.breadcrumbs[i].link = '/hauldetails/' + String(haulNum);
+      } else if (this.$route.meta.breadcrumb[i].name === 'nonFishingDayPlaceholder') {
+        let index = this.currentNonFishingDay;
+        let date = this.currentCruise.nonFishingDays[index].date;
+        date = moment(date).format('MM/DD/YYYY');
+        this.breadcrumbs[i].name = date;
+        index += 1;
+        this.breadcrumbs[i].link = '/nonFishingDays/' + index;
       } else {
         this.breadcrumbs[i] = this.$route.meta.breadcrumb[i];
       }

@@ -3,26 +3,53 @@
     <div>
       <b>{{title}}</b>
     </div>
-    <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="options" @input="save" />
-    <div>{{description}}</div>
+    <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="optionsList" @input="save" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { get, set } from 'lodash';
+import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { getOptions, formatDisplayValue } from '../helpers/getLookupsInfo';
+import { State, Action, Getter, Mutation } from 'vuex-class';
+import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 
 @Component
 export default class BoatnetButtonToggle extends Vue {
   @Prop() private title!: string;
-  @Prop() private options!: any;
-  @Prop() private description!: string;
-  @Prop() private val!: string;
+  @Prop() private options!: any[];
+  @Prop() private val!: any;
+
+  @Prop() private docType!: string;
+  @Prop() private displayFields!: any;
+  @Prop() private valueField!: any;
+  private optionsList: any = [];
+
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
+
+  private async getList() {
+   if (this.docType) {
+      const list = await getOptions(this.appMode.toString(), this.docType, 'user', this.displayFields);
+      for (const row of list) {
+        const label = formatDisplayValue(row, [this.displayFields]);
+        const value = this.valueField ? formatDisplayValue(row, [this.valueField]) : row.doc;
+        this.optionsList.push({ label, value });
+      }
+    } else {
+      this.optionsList = this.options;
+    }
+  }
+
+  private created() {
+    this.getList();
+  }
 
   get valueHolder() {
     return this.val;
   }
-  set valueHolder(value: string) {
+  set valueHolder(value: any) {
     this.$emit('update:val', value);
   }
 
