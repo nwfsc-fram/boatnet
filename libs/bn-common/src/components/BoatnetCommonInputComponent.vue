@@ -46,7 +46,7 @@
       v-if="config.type === 'location'"
       :model="config.modelName"
       :label="config.label"
-      :obj="model"
+      :val.sync="valueHolder"
       @save="save"
     />
 
