@@ -30,7 +30,7 @@ export default createComponent({
 
     const currentState = store.state.tripsState;
     const cruise = currentState.currentCruise;
-    const nonFishingDayIndex: number = context.root._route.params.nonFishingDayNum;
+    const nonFishingDayIndex: number = Number(context.root.$route.params.nonFishingDayNum);
     const nonFishingDay = reactive(cruise.nonFishingDays[nonFishingDayIndex]);
 
     async function saveOnUpdate() {

@@ -40,7 +40,7 @@ export default createComponent({
     const config = store.state.appSettings.appConfig.nonFishingTable;
     const cruise = store.state.tripsState.currentCruise;
 
-    let currIndex: number = ref(-1);
+    const currIndex: any = ref(-1);
 
     async function init() {
       const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
