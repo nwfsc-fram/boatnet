@@ -33,6 +33,7 @@ import ViewHauls from './views/ViewHauls.vue';
 import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
 import Help from './views/Help.vue';
+import AllTrips from './views/AllTrips.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -161,6 +162,12 @@ const router = new Router({
           path: '/em-data-compare/', name: 'EM Data Comparison', component: EMDataCompare,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/all-trips', name: 'All Trips', component: AllTrips,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer'])) { return next(); } else { return next('/login'); }
           }
         },
         {

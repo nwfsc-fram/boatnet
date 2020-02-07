@@ -116,6 +116,21 @@
           </q-item-section>
         </q-item>
 
+        <q-item
+          to="/all-trips"
+          exact
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
+        >
+          <q-item-section avatar>
+            <q-icon name="table_chart"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>All Trips</q-item-label>
+            <q-item-label caption>observers/staff view all ots trips</q-item-label>
+          </q-item-section>
+        </q-item>
+
+
         <!-- <q-item to="/observer-availability" exact>
           <q-item-section avatar>
             <q-icon name="fa fa-calendar-alt" />
