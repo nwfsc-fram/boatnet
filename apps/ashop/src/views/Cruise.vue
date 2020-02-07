@@ -63,7 +63,7 @@ export default createComponent({
     }
 
     function saveOnUpdate() {
-      store.dispatch('tripsState/save', cruise);
+      store.dispatch('tripsState/save', cruise.value);
     }
 
     return {
