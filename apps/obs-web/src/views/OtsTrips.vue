@@ -21,14 +21,14 @@
             :options="columnOptions"
             optionLabel="header"
             placeholder="Select Columns"
-            style="width: 20em"
+            style="width: 20em;"
           >
-          <template #value="slotProps">
-            <div>Display Columns</div>
-          </template>
+            <template #value="slotProps">
+              <div>Display Columns</div>
+            </template>
           </MultiSelect>
         </div>
-        <!--<div class="text-h6 q-pl-md" style="text-align:center; float:left">{{title}}</div>-->
+
         <div style="text-align: right">
             <i class="pi pi-search" style="margin: 4px 4px 0px 0px;"></i>
             <InputText v-model="filters['global']" placeholder="Global Search" size="50" />
@@ -43,7 +43,9 @@
         :sortable="true"
       >
         <template #body="slotProps">
-          <div>{{ getVal(slotProps.data, col.field) }}</div>
+          <div>
+            {{ getVal(slotProps.data, col.field, col.header) }}
+          </div>
         </template>
 
       </Column>
@@ -94,15 +96,17 @@ export default class OtsTrips extends Vue {
     this.$emit('onRowUnselect', event);
   }
 
-  private getVal(data: any, field: any) {
+  private getVal(data: any, field: any, header: any) {
     if (field.indexOf('.') > -1) {
         if (field.indexOf('fishery') > -1) {
           return 'EM EFP';
         } else {
           return _.get(data, field);
-        }
-    } else if (field.indexOf('Date') > -1 ) {
-      return moment(data[field]).format('MMM D, YYYY HH:MM A');
+        };
+    } else if (header.indexOf('Time') > -1) {
+        return moment(data[field]).format('HH:MM A')
+    } else if (field.indexOf('Date') > -1) {
+      return moment(data[field]).format('MMM D, YYYY');
     } else {
       return data[field];
     }
@@ -112,12 +116,12 @@ export default class OtsTrips extends Vue {
 
     const masterDB: Client<any> = couchService.masterDB;
 
-    const emefpTrips = await masterDB.viewWithDocs<any>(
+    const otsTrips = await masterDB.viewWithDocs<any>(
         'obs_web',
-        'em-efp-trips'
+        'ots_trips_by_vesselId'
     );
 
-    for (const row of emefpTrips.rows) {
+    for (const row of otsTrips.rows) {
         const trip = row.doc;
         if (typeof trip.createdBy === 'string') {
           trip.vessel.vesselId = trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
@@ -135,11 +139,11 @@ export default class OtsTrips extends Vue {
         {field: 'vessel.vesselId', header: 'Vessel ID'},
         {field: 'tripStatus.description', header: 'Status'},
         {field: 'fishery.description', header: 'Fishery'},
-        {field: 'tripPermits', header: 'Permits'},
-        {field: 'departureDate', header: 'Departure Date'},
-        {field: 'returnDate', header: 'Return Date'},
-        {field: 'departurePort.name', header: 'Departure Port'},
-        {field: 'returnPort.name', header: 'Return Port'}
+        {field: 'departureDate', header: 'Start Date'},
+        {field: 'departureDate', header: 'Start Time'},
+        {field: 'departurePort.name', header: 'Start Port'},
+        {field: 'returnDate', header: 'End Date'},
+        {field: 'returnPort.name', header: 'End Port'}
         // {field: 'notes', header: 'Notes'},
     ];
 

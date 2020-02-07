@@ -691,70 +691,120 @@ export default class TripDetails extends Vue {
   }
 
   private async getMaxDate() {
-    const db = pouchService.db;
-    const docs = await db.allDocs();
+    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+    const masterDB: Client<any> = couchService.masterDB;
+    const queryOptions: any = {
+            include_docs: true,
+            reduce: false,
+            key: vesselId
+          };
 
-    if (this.trip.index === 0 && !this.trip.newTrip) {
+    try {
+      const vesselTrips = await masterDB.view<any>(
+              'obs_web',
+              'ots_trips_by_vesselId',
+              queryOptions
+            );
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
 
-    for (const row of docs.rows) {
-      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
-        if (row.doc.tripStatus.description === 'open') {
-          this.maxDate = new Date(moment(row.doc.departureDate).add(1, 'days').format());
+
+      if (this.trip.index === 0 && !this.trip.newTrip) {
+        for (const row of openTrips) {
+          if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+            if (row.doc.tripStatus.description === 'open') {
+              this.maxDate = new Date(moment(row.doc.departureDate).add(1, 'days').format());
+            }
+          }
         }
       }
+    } catch (err) {
+      console.log(err);
     }
-  }
 }
 
 private async getMinDate() {
-  if (this.trip.index === 1) {
-    const db = pouchService.db;
-    const docs = await db.allDocs();
+    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+    const masterDB: Client<any> = couchService.masterDB;
+    const queryOptions: any = {
+            include_docs: true,
+            reduce: false,
+            key: vesselId
+          };
 
-    for (const row of docs.rows) {
-      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
-        if (row.doc.tripStatus.description === 'open') {
-          this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
+    try {
+      const vesselTrips = await masterDB.view<any>(
+              'obs_web',
+              'ots_trips_by_vesselId',
+              queryOptions
+            );
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
+
+      if (this.trip.index === 1) {
+        for (const row of openTrips) {
+          if ( row.doc.type === 'ots-trip' &&
+                row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber === vesselId &&
+                row.doc._id !== this.trip.activeTrip!._id
+              ) {
+                  this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
+                }
         }
+      } else if (this.trip.newTrip) {
+        this.minDate = new Date();
+      } else {
+        this.minDate = undefined;
       }
+    } catch (err) {
+      console.log(err);
     }
-  } else if (this.trip.newTrip) {
-    this.minDate = new Date();
-  } else {
-    this.minDate = undefined;
-  }
 }
 
   private async getBookedDates() {
-    const db = pouchService.db;
-    const docs = await db.allDocs();
+    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+    const masterDB: Client<any> = couchService.masterDB;
+    const queryOptions: any = {
+            include_docs: true,
+            reduce: false,
+            key: vesselId
+          };
     let i = 0;
 
-    for (const row of docs.rows) {
-      if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
-        if (row.doc.tripStatus.description === 'open') {
-          {
-             this.existingTripStart = row.doc.departureDate;
-             this.existingTripEnd = row.doc.returnDate;
-             const days = moment(row.doc.returnDate).diff(row.doc.departureDate, 'days');
-             for (i = 0; i < days; i++) {
-                const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
-                invalidDay.add(i, 'days');
-                this.invalidDates.push(new Date(invalidDay.format()));
-             }
+    try {
+      const vesselTrips = await masterDB.view<any>(
+              'obs_web',
+              'ots_trips_by_vesselId',
+              queryOptions
+            );
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
+
+      for (const row of openTrips) {
+        if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
+          if (row.doc.tripStatus.description === 'open') {
+            {
+              this.existingTripStart = row.doc.departureDate;
+              this.existingTripEnd = row.doc.returnDate;
+              const days = moment(row.doc.returnDate).diff(row.doc.departureDate, 'days');
+              for (i = 0; i < days; i++) {
+                  const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
+                  invalidDay.add(i, 'days');
+                  this.invalidDates.push(new Date(invalidDay.format()));
+              }
+            }
           }
-        }
-        if (row.doc.tripStatus.description === 'closed' && row.doc.closingReason === 'Taken') {
-          const closedTripStart = row.doc.captainAffirmedDepartureDate;
-          const closedTripEnd = row.doc.captainAffirmedReturnDate;
-          const days = moment(row.doc.captainAffirmedReturnDate).diff(row.doc.captainAffirmedDepartureDate, 'days');
-          for (i = 0; i <= days; i++) {
-            const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.captainAffirmedDepartureDate)));
-            invalidDay.add(i, 'days');
-            this.invalidDates.push(new Date(invalidDay.format()));
+          if (row.doc.tripStatus.description === 'closed' && row.doc.closingReason === 'Taken') {
+            const closedTripStart = row.doc.captainAffirmedDepartureDate;
+            const closedTripEnd = row.doc.captainAffirmedReturnDate;
+            const days = moment(row.doc.captainAffirmedReturnDate).diff(row.doc.captainAffirmedDepartureDate, 'days');
+            for (i = 0; i <= days; i++) {
+              const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.captainAffirmedDepartureDate)));
+              invalidDay.add(i, 'days');
+              this.invalidDates.push(new Date(invalidDay.format()));
+            }
           }
         }
       }
+
+    } catch (err) {
+      console.log(err);
     }
   }
 
