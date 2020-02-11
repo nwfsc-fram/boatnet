@@ -16,6 +16,7 @@ export interface TripState {
     currentTrip?: BaseTrip;
     currentHaul?: BaseOperation;
     currentCatch?: BaseCatch;
+    currentRev?: string;
 }
 
 export interface AppSettings {

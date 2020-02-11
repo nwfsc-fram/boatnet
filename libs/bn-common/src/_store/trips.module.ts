@@ -11,7 +11,8 @@ const state: TripState = {
   currentNonFishingDay: undefined,
   currentTrip: undefined,
   currentHaul: undefined,
-  currentCatch: undefined
+  currentCatch: undefined,
+  currentRev: undefined
 };
 
 const actions: ActionTree<TripState, RootState> = {
@@ -41,12 +42,13 @@ const actions: ActionTree<TripState, RootState> = {
 const mutations: MutationTree<TripState> = {
   save(newState: any, record: any) {
     try {
-      if (record._id) {
+      if (record._id && newState.currentRev !== record._rev) {
         pouchService.db
           .put(record)
           .then((response: any) => {
             record._rev = response.rev;
           });
+        newState.currentRev = record._rev;
       }
     } catch (err) {
       console.log('not properly save to the database');
