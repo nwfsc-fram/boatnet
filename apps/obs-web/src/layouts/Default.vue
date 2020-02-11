@@ -237,9 +237,8 @@
                 </q-item>
 
                 <q-item
-                  style="color: lightgrey"
                   v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="" exact
+                  to="/em-task-management" exact
                 >
                   <q-item-section avatar>
                     <q-icon name="check"/>

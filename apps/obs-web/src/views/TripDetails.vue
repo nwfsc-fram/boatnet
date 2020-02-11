@@ -705,7 +705,7 @@ export default class TripDetails extends Vue {
               'ots_trips_by_vesselId',
               queryOptions
             );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
 
 
       if (this.trip.index === 0 && !this.trip.newTrip) {
@@ -737,7 +737,7 @@ private async getMinDate() {
               'ots_trips_by_vesselId',
               queryOptions
             );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
 
       if (this.trip.index === 1) {
         for (const row of openTrips) {
@@ -774,7 +774,7 @@ private async getMinDate() {
               'ots_trips_by_vesselId',
               queryOptions
             );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => {return row.doc.tripStatus.description === 'open'});
+      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
 
       for (const row of openTrips) {
         if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {

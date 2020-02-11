@@ -21,6 +21,7 @@ import Login from './views/Login.vue';
 import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import EMDataCompare from './views/EMDataCompare.vue';
+import EMTaskManagement from './views/EMTaskManagement.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 import ObserverAvailability from './views/ObserverAvailability.vue';
@@ -160,6 +161,12 @@ const router = new Router({
         },
         {
           path: '/em-data-compare/', name: 'EM Data Comparison', component: EMDataCompare,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-task-management/', name: 'EM Task Management', component: EMTaskManagement,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

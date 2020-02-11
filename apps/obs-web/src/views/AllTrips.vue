@@ -108,55 +108,52 @@ export default createComponent({
             {field: 'observer', header: 'Observer'}
         ];
 
-        const boolOpts: any[] = [
-            'yes', 'no'
-        ]
+        const data: any[] = [];
 
-        let data: any[] = [];
-
-        let filters: any = reactive({});
+        const filters: any = reactive({});
         let columnOptions = [...columns];
         let cellVal: string = '';
-        let selected: any = [];
+        const selected: any = [];
 
         const onCellEditInit = (event: any) => {
             cellVal = get(event.data, event.field);
-        }
+        };
 
         const onRowSelect = (event: any) => {
             context.emit('onRowSelect', event);
-        }
+        };
 
         const onRowUnselect = (event: any) => {
             context.emit('onRowUnselect', event);
-        }
+        };
 
-        const getVal = (data: any, field: any, header: any) => {
+        const getVal = (rowData: any, field: any, header: any) => {
             if (field.indexOf('.') > -1) {
                 if (field.indexOf('fishery') > -1) {
-                    const fishery = _.get(data, field);
+                    const fishery = _.get(rowData, field);
                     if (fishery === 'Electronic Monitoring EFP') {
                         return 'EM EFP';
                     } else {
                         return fishery;
                     }
                 } else {
-                    return _.get(data, field);
+                    return _.get(rowData, field);
                 }
             } else if (header.indexOf('Time') > -1) {
-                return moment(data['departureDate']).format('HH:mm')  // hard coded attribute to aviod duplicate keys in columns.
+                const departureDate: any = 'departureDate';
+                return moment(rowData[departureDate]).format('HH:mm');  // hard coded attribute to aviod duplicate keys in columns.
             } else if (field.indexOf('Date') > -1) {
-            return moment(data[field]).format('MMM D, YYYY');
+            return moment(rowData[field]).format('MMM D, YYYY');
             } else {
-                if (data[field] === true) {
+                if (rowData[field] === true) {
                     return 'Yes';
-                } else if (data[field] === false) {
+                } else if (rowData[field] === false) {
                     return 'No';
                 } else {
-                    return data[field];
+                    return rowData[field];
                 }
             }
-        }
+        };
 
         const getTrips = async () => {
 
@@ -179,25 +176,25 @@ export default createComponent({
             }
 
             columnOptions = [...columns];
-        }
+        };
 
         onMounted(() => {
             getTrips();
-        })
+        });
 
-    return {
-        cellVal,
-        columnOptions,
-        columns,
-        data,
-        filters,
-        getTrips,
-        getVal,
-        onCellEditInit,
-        onRowSelect,
-        onRowUnselect,
-        selected
-    };
+        return {
+            cellVal,
+            columnOptions,
+            columns,
+            data,
+            filters,
+            getTrips,
+            getVal,
+            onCellEditInit,
+            onRowSelect,
+            onRowUnselect,
+            selected
+        };
   }
 });
 </script>

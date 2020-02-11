@@ -102,9 +102,9 @@ export default class OtsTrips extends Vue {
           return 'EM EFP';
         } else {
           return _.get(data, field);
-        };
+        }
     } else if (header.indexOf('Time') > -1) {
-        return moment(data[field]).format('HH:MM A')
+        return moment(data[field]).format('HH:MM A');
     } else if (field.indexOf('Date') > -1) {
       return moment(data[field]).format('MMM D, YYYY');
     } else {
