@@ -142,7 +142,7 @@ export default class Home extends Vue {
           if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
             console.log('setting active user alias');
             Notify.create({
-               message: 'Active User Set',
+               message: 'Good To Go',
               position: 'bottom',
               color: 'green',
               timeout: 3000,

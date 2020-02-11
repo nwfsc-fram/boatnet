@@ -1,8 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-      <div
-        class="text-h6" style="max-width: 60%">
-      <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
+      <div class="text-h6" style="max-width: 60%">
+        <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
