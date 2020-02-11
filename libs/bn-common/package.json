@@ -12,7 +12,7 @@
     "@boatnet/bn-auth": "^0.1.7",
     "@boatnet/bn-models": "^0.2.3",
     "coordinate-parser": "^1.0.2",
-    "quasar": "^1.0.0-rc.4",
+    "quasar": "1.8.5",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0"

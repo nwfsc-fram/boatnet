@@ -17,7 +17,7 @@
     "@quasar/extras": "^1.0.0",
     "@types/lodash": "^4.14.144",
     "@vue/composition-api": "^0.3.2",
-    "quasar": "^1.0.0",
+    "quasar": "1.8.5",
     "vue": "^2.6.10",
     "vue-async-function": "^2.0.2",
     "vue-class-component": "^7.0.2",
