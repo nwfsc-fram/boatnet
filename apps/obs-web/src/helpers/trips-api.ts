@@ -15,8 +15,9 @@ import { WcgopTrip } from '@boatnet/bn-models/lib';
 
 const jwt = authService.getCurrentUser() ? authService.getCurrentUser()!.jwtToken : '';
 
-const tripsApiUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/trips';
-const catchApiUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/tripCatch';
+const tripsApiBaseUrl = authService.getTripsApiUrl() ? authService.getTripsApiUrl() : '';
+const tripsApiUrl = tripsApiBaseUrl + '/api/v1/trips';
+const catchApiUrl = tripsApiBaseUrl + '/api/v1/tripCatch';
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
