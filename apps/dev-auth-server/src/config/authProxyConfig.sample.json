@@ -7,9 +7,12 @@
       "userData": {
         "roles": ["observer"],
         "couchDBInfo": {
-          "urlRoot": "http://<your server>:5984",
+          "urlRoot": "https://<your server>:6984",
           "lookupsDB": "lookups-dev",
           "masterDB": "master-dev"
+        },
+        "tripsApi": {
+          "apiUrl": "https://<your trips api server>:9004"
         }
       }
     },
@@ -20,9 +23,12 @@
       "userData": {
         "roles": ["vessel_admin"],
         "couchDBInfo": {
-          "urlRoot": "http://<your server>:5984",
+          "apiUrl": "https://<your server>:6984",
           "lookupsDB": "lookups-dev",
           "masterDB": "master-dev"
+        },
+        "tripsApi": {
+          "apiUrl": "https://<your trips api server>:9004"
         }
       }
     },
@@ -33,9 +39,12 @@
       "userData": {
         "roles": ["debriefer", "observer"],
         "couchDBInfo": {
-          "urlRoot": "http://<your server>:5984",
+          "urlRoot": "https://<your server>:6984",
           "lookupsDB": "lookups-dev",
           "masterDB": "master-dev"
+        },
+        "tripsApi": {
+          "apiUrl": "https://<your trips api server>:9004"
         }
       }
     }

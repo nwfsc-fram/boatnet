@@ -44,6 +44,7 @@
           </boatnet-table>
         </template>
       </boatnet-summary>
+      <div>Trips API URL: {{ tripsApi }}</div>
     </q-page>
   </span>
 </template>
@@ -58,6 +59,8 @@ import { TripState } from '@boatnet/bn-common';
 import { AlertState } from '@boatnet/bn-common';
 import BoatnetSummary, { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
+import { AuthState, authService } from '@boatnet/bn-auth';
+
 import {
   WcgopTrip,
   WcgopTripTypeName,
@@ -103,6 +106,7 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @State('tripsState') private tripState!: TripState;
   @State('pouchState') private pouchState!: PouchDBState;
+  @State('authState') private authState!: AuthState;
 
   // Alert (show an alert in the UI) state actions:
   @Action('clear', { namespace: 'alert' }) private clear: any;
@@ -275,6 +279,18 @@ export default class Trips extends Vue {
       return '';
     } else {
       return this.pouchState.credentials.dbInfo.userDB;
+    }
+  }
+
+   /**
+    * Get URL for Trips Api
+    */
+  private get tripsApi(): string | undefined {
+    if (!authService) {
+      console.warn('WARNING: tripsApi undefined');
+      return '';
+    } else {
+      return authService.getTripsApiUrl();
     }
   }
 }

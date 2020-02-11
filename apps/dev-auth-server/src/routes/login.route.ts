@@ -119,7 +119,8 @@ async function devValidateUserPw(
       couchDBInfo: {
         ...authedUser.userData.couchDBInfo,
         userDB: getCouchUserDBName(authedUser.username)
-      }
+      },
+      tripsApi: authedUser.userData.tripsApi
     };
   } else {
     throw new Error('User not authorized for ' + applicationName);
