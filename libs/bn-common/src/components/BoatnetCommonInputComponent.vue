@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 350px">
     <boatnet-datetime-prime
       v-if="config.type === 'dateTime' && (config.displayCondition ? showField : true)"
       :config="config"
