@@ -8,7 +8,6 @@ Vue.use(Vuex);
 
 const state: TripState = {
   currentCruise: undefined,
-  currentNonFishingDay: undefined,
   currentTrip: undefined,
   currentHaul: undefined,
   currentCatch: undefined
@@ -20,9 +19,6 @@ const actions: ActionTree<TripState, RootState> = {
   },
   setCurrentCruise({ commit }: any, cruise: Base) {
     commit('setCurrentCruise', cruise);
-  },
-  setCurrentNonFishingDay({ commit }: any, nonFishingDay: number) {
-    commit('setCurrentNonFishingDay', nonFishingDay);
   },
   setCurrentTrip({ commit }: any, trip: BaseTrip) {
     commit('setCurrentTrip', trip);
@@ -55,9 +51,6 @@ const mutations: MutationTree<TripState> = {
   setCurrentCruise(newState: any, cruise: Base) {
     newState.currentCruise = cruise;
   },
-  setCurrentNonFishingDay(newState: any, nonFishingDay: number) {
-    newState.currentNonFishingDay = nonFishingDay;
-  },
   setCurrentTrip(newState: any, trip: BaseTrip) {
     newState.currentTrip = trip;
   },
@@ -72,9 +65,6 @@ const mutations: MutationTree<TripState> = {
 const getters: GetterTree<TripState, RootState> = {
   currentCruise(getState: TripState) {
     return getState.currentCruise;
-  },
-  currentNonFishingDay(getState: TripState) {
-    return getState.currentNonFishingDay;
   },
   currentTrip(getState: TripState) {
     return getState.currentTrip;
