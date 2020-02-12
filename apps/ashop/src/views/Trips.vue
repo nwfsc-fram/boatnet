@@ -57,11 +57,12 @@ export default createComponent({
     });
 
     const init = async () => {
-      // redirect to cruises if none exist
       if (appMode === 'ashop') {
+        const cruise = await getCruise();
+        store.dispatch('tripsState/setCurrentCruise', cruise);
+
+        // redirect to cruises if none exist
         const cruises = await getDocByType('ashop', 'cruise');
-        const newCruise = await getCruise();
-        store.dispatch('tripsState/setCurrentCruise', newCruise);
         if (cruises.length === 0) {
           router.push({ path: '/cruise/' });
         }
