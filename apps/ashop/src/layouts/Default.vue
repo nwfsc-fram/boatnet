@@ -139,11 +139,7 @@ export default class DefaultLayout extends Vue {
     }
   }
 
-<<<<<<< HEAD
-  async private buildIndexes() {
-=======
   private async buildIndexes() {
->>>>>>> f1cb910d... formatting fix
     setTimeout( async () => {
       const db = pouchService.db;
       const queryOptions = {
