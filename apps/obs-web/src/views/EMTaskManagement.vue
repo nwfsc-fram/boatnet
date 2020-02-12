@@ -59,8 +59,8 @@ export default createComponent({
             {name: 'actions', label: 'Actions', field: 'actions', required: false, align: 'left', sortable: true},
         ];
 
-        let activeTasks: any = reactive([]);
-        const selected: any =[];
+        const activeTasks: any = reactive([]);
+        const selected: any = [];
         const pagination = {sortBy: 'statusDate', descending: true, rowsPerPage: 50};
 
         const getTripsWithCaptures = async () => {
@@ -87,7 +87,7 @@ export default createComponent({
                     const dataSources = [];
                     for (const dataSource of apiCatch) {
                         if (dataSource.source === 'nwfscAudit') {
-                            trip.stage = "nwfscAudit";
+                            trip.stage = 'nwfscAudit';
                             trip.statusDate = dataSource.updateDate ? dataSource.updateDate : dataSource.createdDate;
                             break;
                         } else if (dataSource.source === 'thridParty') {
@@ -110,7 +110,7 @@ export default createComponent({
             } catch (err) {
                 console.log(err);
             }
-        }
+        };
 
         onMounted( () => {
             getTripsWithCaptures();
@@ -118,7 +118,7 @@ export default createComponent({
 
         return {
             activeTasks, columns, selected, pagination
-        }
+        };
 
     }
 

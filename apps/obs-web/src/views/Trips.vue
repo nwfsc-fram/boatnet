@@ -259,7 +259,7 @@
         <div class="text-primary" style="padding-left: 5%">
           <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
           &nbsp;
-          <q-btn v-if="file" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
+          <q-btn v-if="file || (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode)" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
           &nbsp;
           <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           <br><br>
@@ -670,32 +670,47 @@ export default class Trips extends Vue {
     }
 
     private async closeActiveTrip() {
-      const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
-      let result: any;
-      const reader = new FileReader();
-      reader.readAsDataURL(this.file);
-      reader.onload = async () => {
-        result = reader.result;
-        this.activeTrip._attachments = {
-                  [fileName] : {
-                      content_type: this.file.type,
-                      data: result.split(',')[1]
-                  }
-              };
+      if (this.file) {
+        const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
+        let result: any;
+        const reader = new FileReader();
+        reader.readAsDataURL(this.file);
+        reader.onload = async () => {
+          result = reader.result;
+          this.activeTrip._attachments = {
+                    [fileName] : {
+                        content_type: this.file.type,
+                        data: result.split(',')[1]
+                    }
+                };
 
-        this.activeTrip!.closingReason = 'taken';
-        await this.closeTrip(this.activeTrip).then(
-          async () => {
-            this.cancelAlert = false;
-            this.closeAlert = false;
-            this.file = null;
-            this.closeAlert = false;
-            await this.getNextSelections().then( () => {
-            location.reload();
-            });
-          }
-        );
-      };
+          this.activeTrip!.closingReason = 'taken';
+          await this.closeTrip(this.activeTrip).then(
+            async () => {
+              this.cancelAlert = false;
+              this.closeAlert = false;
+              this.file = null;
+              this.closeAlert = false;
+              await this.getNextSelections().then( () => {
+              location.reload();
+              });
+            }
+          );
+        };
+      } else {
+          this.activeTrip!.closingReason = 'taken';
+          await this.closeTrip(this.activeTrip).then(
+            async () => {
+              this.cancelAlert = false;
+              this.closeAlert = false;
+              this.file = null;
+              this.closeAlert = false;
+              await this.getNextSelections().then( () => {
+              location.reload();
+              });
+            }
+          );
+      }
 
     }
 
@@ -908,7 +923,6 @@ private async getAuthorizedVessels() {
     // this.getUserTrips();
     this.getVesselTrips();
     this.getNextSelections();
-    document.getElementById('imageholder')!.innerHTML = '';
   }
 
   @Watch('tripDates')
