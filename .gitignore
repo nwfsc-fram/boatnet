@@ -54,3 +54,5 @@ apps/obs-web/src/views/scratch.vue
 apps/obs-web/src/config/secrets.ts
 apps/obs-web/vue.config.js
 apps/obs-web/src/config/dbConfig.ts
+apps/obs-web/vue.config.js
+apps/obs-web/vue.config.js
