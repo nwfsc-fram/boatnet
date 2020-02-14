@@ -217,6 +217,8 @@ import {
   WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
 
+import { getTripsApiTrip, getTripsApiTrips, newTripsApiTrip } from '../helpers/trips-api';
+
 // import { username, password } from '../config/secrets'
 
 import Calendar from 'primevue/calendar';
@@ -578,7 +580,27 @@ export default class TripDetails extends Vue {
               );
       }
 
-      this.trip.activeTrip!.tripNum = this.tripsApiNum;
+      const newApiTrip = {
+        vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
+        vesselName: this.trip.activeTrip!.vessel!.vesselName,
+        departurePort: this.trip.activeTrip!.departurePort!.name,
+        departureDate: this.trip.activeTrip!.departureDate,
+        returnPort: this.trip.activeTrip!.returnPort!.name,
+        returnDate: this.trip.activeTrip!.returnDate,
+        permits: this.trip.activeTrip!.permits,
+        fisheries: this.trip.activeTrip!.fisheries,
+        createdBy: this.trip.activeTrip!.createdBy,
+        createdDate: this.trip.activeTrip!.createdDate
+      };
+
+      this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+
+      try {
+        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum)
+        this.trip.activeTrip!.tripNum = this.tripsApiNum;
+      } catch (err) {
+        console.log(err);
+      }
 
       const masterDB: Client<any> = couchService.masterDB;
       await masterDB.post(this.trip.activeTrip).then( () => {
@@ -746,12 +768,15 @@ private async getMinDate() {
                 row.doc._id !== this.trip.activeTrip!._id
               ) {
                   this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
+                  if (moment(this.minDate).isSameOrBefore(moment()) ) {
+                    this.minDate = new Date();
+                  }
                 }
         }
       } else if (this.trip.newTrip) {
         this.minDate = new Date();
       } else {
-        this.minDate = undefined;
+        this.minDate = new Date();
       }
     } catch (err) {
       console.log(err);
@@ -835,20 +860,22 @@ private async getMinDate() {
   private async updateTrip() {
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
+    const masterDB: Client<any> = couchService.masterDB;
     if (this.trip.activeTrip!.isSelected && this.trip.activeTrip!.maximizedRetention) {
 
       this.saveSelection().then(
         async () => {
           this.trip.activeTrip!.isSelected = false;
           this.trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
-          await pouchService.db.put(this.trip.activeTrip);
-          this.$router.push({ path: '/trips' });
+          await masterDB.put(
+            this.trip.activeTrip!._id as string,
+            this.trip.activeTrip,
+            this.trip.activeTrip!._rev as string).then( () => this.$router.push({ path: '/trips' }))
         }
       );
 
     } else {
 
-      const masterDB: Client<any> = couchService.masterDB;
       await masterDB.put(
         this.trip.activeTrip!._id as string,
         this.trip.activeTrip,
@@ -864,18 +891,6 @@ private async getMinDate() {
             });
             this.$router.push({ path: '/trips' });
             });
-
-      // await pouchService.db.put(this.trip.activeTrip).then( async () => {
-      //       Notify.create({
-      //         message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-      //         position: 'top',
-      //         color: 'primary',
-      //         timeout: 7000,
-      //         html: true,
-      //         multiLine: true
-      //       });
-      //       this.$router.push({ path: '/trips' });
-      //       });
     }
   }
 
@@ -959,7 +974,9 @@ private async getMinDate() {
         this.ports = ports.rows.map((row: any) => row.doc);
   }
 
-  private created() {
+  private async created() {
+    await getTripsApiTrip(100002).then( (res: any) => console.log(res))
+    await getTripsApiTrips('vesselId', this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber).then( (res: any) => console.log(res))
     this.getEmRoster().then( () => {
       let emPermit = null;
       const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber];
@@ -999,9 +1016,12 @@ private async getMinDate() {
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
     if (newVal[0]) {
-      if (moment(newVal[0]).diff(moment(), 'day') < 2 && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()) {
-        this.daysWarn = true;
-      }
+      if (
+          moment(newVal[0]).diff(moment(), 'day') < 2 && !newVal[1]
+          // && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()
+        ) {
+          this.daysWarn = true;
+        }
       this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
       if (!newVal[1]) {
         this.trip.activeTrip!.returnDate = moment(newVal[0]).format();

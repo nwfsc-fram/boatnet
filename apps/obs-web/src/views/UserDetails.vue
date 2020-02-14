@@ -78,15 +78,6 @@
                         @click.native="selectText"
                     ></q-input>
 
-                    <q-input
-                        label="Email (Home)"
-                        v-model="user.activeUser.homeEmail"
-                        type="email"
-                        outlined
-                        dense
-                        class="col-md q-pa-sm wide-field"
-                        @click.native="selectText"
-                    ></q-input>
                 </div>
 
                 <q-btn
@@ -195,75 +186,6 @@
                         Work: {{ user.activeUser.workPhone }}
                     </div>
                 </div>
-
-                <div class="row">
-                    <q-input
-                        label="Address Line 1"
-                        v-model="user.activeUser.addressLine1"
-                        type="street-address"
-                        outlined dense
-                        class="col-md q-pa-sm wide-field"
-                        @click.native="selectText"
-                    ></q-input>
-                    <q-input
-                        label="Address Line 2"
-                        v-model="user.activeUser.addressLine2"
-                        type="street-address"
-                        outlined dense
-                        class="col-md q-pa-sm wide-field"
-                        @click.native="selectText"
-                    ></q-input>
-                </div>
-
-                <div class="row">
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.city" label="City" type="address-level2" @click.native="selectText"></q-input>
-
-                    <q-select
-                    v-model="user.activeUser.state"
-                    label="State"
-                    type="address-level1"
-                    :options="usStateOptions"
-                    :option-label="opt => opt.abbreviation ? opt.abbreviation + ' (' + opt.description + ')' : ''"
-                    option-value="_id"
-                    @filter="statesFilterFn"
-                    outlined dense
-                    fill-input use-input hide-selected
-                    emit-label
-                    class="col-md q-pa-sm  wide-field"
-                    @click.native="selectText"
-                    ></q-select>
-
-                    <q-input class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.zipcode" label="Zip Code" type="postal-code" @click.native="selectText"></q-input>
-
-                    <q-select class="col-md q-pa-sm wide-field" outlined dense v-model="user.activeUser.country" label="Country" :options="countryOptions"></q-select>
-                </div>
-
-                <!-- <div class="row">
-                    <q-select
-                        label="Home Port"
-                        v-model="user.activeUser.port"
-                        :options="ports"
-                        :option-label="opt => opt.name"
-                        option-value="_id"
-                        @filter="portsFilterFn"
-                        outlined dense stack-label
-                        use-input fill-input hide-selected
-                        class="col-md q-pa-sm wide-field"
-                        @click.native="selectText"
-                    ></q-select>
-
-                    <q-select
-                        v-if="!user.newUser"
-                        label="Active Vessel"
-                        v-model="user.activeUser.activeVessel"
-                        :options="vessels"
-                        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-                        option-value="_id"
-                        outlined dense stack-label
-                        fill-input
-                        class="col-md q-pa-sm wide-field"
-                    ></q-select>
-                </div> -->
 
                     <q-select
                         label="Notification Preferences"

@@ -98,6 +98,7 @@ export function newTripsApiTrip(newTrip: any) {
                 },
                 body: newTrip
             }, (err: any, response: any, body: any) => {
+                console.log(response);
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {

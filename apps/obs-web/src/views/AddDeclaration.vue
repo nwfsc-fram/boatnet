@@ -42,7 +42,8 @@
 
       <p v-if="databaseObject.showEFPNote">
         If you do not see your EFP category in the list below
-        please contact the OLE office at 888-585-5518
+        please contact the OLE office at 
+        <a href="tel: 888-585-5518" data-rel="external">888-585-5518</a>
       </p>
 
       <q-select
@@ -189,7 +190,9 @@
             <span class="q-ml-sm">
               Exemptions
               <b>must</b> be made by calling the Office of Law Enforcement at
-              <b>888-585-5518</b>.
+              <b>
+                <a href="tel: 888-585-5518" data-rel="external">888-585-5518</a>
+              </b>.
             </span>
           </q-card-section>
 
