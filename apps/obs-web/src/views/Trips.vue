@@ -7,9 +7,17 @@
       </template>
     </q-banner>
 
+    <q-spinner
+      v-if="loading"
+      color="primary"
+      size="3em"
+      style="position: absolute; top: 50%; left: 50%"
+    >
+    </q-spinner>
+
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
-        <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2" color="primary" @click="newTrip">New Trip</q-btn>
+        <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
       </div>
       <div v-else>
@@ -259,7 +267,7 @@
         <div class="text-primary" style="padding-left: 5%">
           <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
           &nbsp;
-          <q-btn v-if="file || (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode)" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
+          <q-btn color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
           &nbsp;
           <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           <br><br>
@@ -341,6 +349,7 @@ export default class Trips extends Vue {
   private file: any = null;
   private fileUrl: any = null;
   private transferring: boolean = false;
+  private loading = false;
 
   private pagination = {
     sortBy: 'departureDate',
@@ -827,36 +836,37 @@ private async getUserTrips() {
 
 private async getVesselTrips() {
   if (this.vessel.activeVessel) {
-  const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-  const masterDB: Client<any> = couchService.masterDB;
-  const queryOptions: any = {
-          include_docs: true,
-          reduce: false,
-          key: vesselId
-        };
+    this.loading = true;
+    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+    const masterDB: Client<any> = couchService.masterDB;
+    const queryOptions: any = {
+            include_docs: true,
+            reduce: false,
+            key: vesselId
+          };
 
-  try {
-    const vesselTrips = await masterDB.view<any>(
-            'obs_web',
-            'ots_trips_by_vesselId',
-            queryOptions
-          );
+    try {
+      const vesselTrips = await masterDB.view<any>(
+              'obs_web',
+              'ots_trips_by_vesselId',
+              queryOptions
+            );
 
-    this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
+      this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
 
-  } catch (err) {
-    console.log(err);
-    Notify.create({
-        message: 'Internet Connection Required',
-            position: 'center',
-            color: 'red',
-            timeout: 2000,
-            icon: 'warning',
-            html: true,
-            multiLine: true
-        });
+    } catch (err) {
+      console.log(err);
+      Notify.create({
+          message: 'Internet Connection Required',
+              position: 'center',
+              color: 'red',
+              timeout: 2000,
+              icon: 'warning',
+              html: true,
+              multiLine: true
+          });
     }
-
+    this.loading = false;
   }
 }
 

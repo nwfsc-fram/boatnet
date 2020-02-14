@@ -3,7 +3,8 @@
     <q-btn class="bg-primary text-white q-ma-md" to="/new-declaration">New Declaration</q-btn>
 
     <p>If you would like to make your declaration/s by phone, please call the Office
-      of Law Enforcement at 888-585-5518
+      of Law Enforcement at 
+      <a href="tel: 888-585-5518" data-rel="external">888-585-5518</a>
     </p>
   </div>
 </template>

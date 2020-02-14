@@ -141,7 +141,7 @@ export default class EMEFPDetails extends Vue {
             pouchService.lookupsDBName
           );
 
-          this.efpTypeOptions = efptypes.rows.map((row: any) => row.doc.description);
+          this.efpTypeOptions = efptypes.rows.map((row: any) => row.doc);
 
           queryOptions.key = 'gear-type';
 
@@ -151,8 +151,8 @@ export default class EMEFPDetails extends Vue {
             pouchService.lookupsDBName
           );
 
-          this.gearTypeOptions = geartypes.rows.map((row: any) => row.doc.description).sort( (a: any, b: any ) => {
-            if (a > b) {
+          this.gearTypeOptions = geartypes.rows.map((row: any) => row.doc).sort( (a: any, b: any ) => {
+            if (a.description > b.description) {
               return 1;
             } else if (a < b) {
               return -1;
