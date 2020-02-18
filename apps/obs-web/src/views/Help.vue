@@ -8,10 +8,10 @@
 
         <div class="text-h6">Support</div>
         <div class="q-pa-md">
-            For OLE Declaration support, please contact OLE at 
+            For OLE Declaration support, please contact OLE at
             <a href="tel: 888-585-5518" data-rel="external">888-585-5518</a>.<br>
             For Trip Selection support please contact ...<br>
-            For general application support please contact 
+            For general application support please contact
             <a href="mailto: nmfs.nwfsc.fram.data.team@noaa.gov" data-rel="external">nmfs.nwfsc.fram.data.team@noaa.gov</a>
         </div>
 

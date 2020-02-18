@@ -858,7 +858,7 @@ private async getMinDate() {
           await masterDB.put(
             this.trip.activeTrip!._id as string,
             this.trip.activeTrip,
-            this.trip.activeTrip!._rev as string).then( () => this.$router.push({ path: '/trips' }))
+            this.trip.activeTrip!._rev as string).then( () => this.$router.push({ path: '/trips' }));
         }
       );
 

@@ -35,6 +35,7 @@ import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
 import Help from './views/Help.vue';
 import AllTrips from './views/AllTrips.vue';
+import ViewImage from './views/ViewImage.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -167,6 +168,12 @@ const router = new Router({
         },
         {
           path: '/em-task-management/', name: 'EM Task Management', component: EMTaskManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/view-image/', name: 'View Image', component: ViewImage,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
