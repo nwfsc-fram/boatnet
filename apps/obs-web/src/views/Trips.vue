@@ -251,7 +251,7 @@
               <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
           </label>
 
-          <div v-if="file">
+          <div>
             <div class="text-h6" style="padding-left: 5%">Actual Trip Dates:</div>
             <pCalendar
               v-model="tripDates"

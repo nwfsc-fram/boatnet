@@ -596,7 +596,7 @@ export default class TripDetails extends Vue {
       this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
 
       try {
-        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum)
+        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
         this.trip.activeTrip!.tripNum = this.tripsApiNum;
       } catch (err) {
         console.log(err);
@@ -614,18 +614,6 @@ export default class TripDetails extends Vue {
         });
         this.$router.push({ path: '/trips/' });
       });
-
-      // await pouchService.db.post(this.trip.activeTrip).then( () => {
-      //   Notify.create({
-      //     message: '<div class="text-h3" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-      //       position: 'top',
-      //       color: 'primary',
-      //       timeout: 7000,
-      //       html: true,
-      //       multiLine: true
-      //   });
-      //   this.$router.push({ path: '/trips/' });
-      // });
 
     } else {
       this.missingRequired = true;
@@ -975,8 +963,6 @@ private async getMinDate() {
   }
 
   private async created() {
-    await getTripsApiTrip(100002).then( (res: any) => console.log(res))
-    await getTripsApiTrips('vesselId', this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber).then( (res: any) => console.log(res))
     this.getEmRoster().then( () => {
       let emPermit = null;
       const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber];
