@@ -26,9 +26,13 @@ export async function login(req: Request, res: Response) {
     console.log("NOTE: client requested base64 encoded couchDB password. " +
      "For testing on a local couchDB, you will need to set a base64 encoded pw.");
   }
+
   if (req.body.clientVersion) {
     console.log("Client version v" + req.body.clientVersion);
+  } else {
+    console.warn("NOTE: Old bn-auth client detected. PW is not encoded");
   }
+
   if (username === '' || password === '') {
     res.status(401);
     res.json({
