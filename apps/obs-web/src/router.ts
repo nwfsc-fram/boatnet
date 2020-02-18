@@ -11,6 +11,8 @@ import Permits from './views/Permits.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import Declarations from './views/Declarations.vue';
 import AddDeclaration from './views/AddDeclaration.vue';
+import DeclarationCart from './views/DeclarationCart.vue';
+import DeclarationReceipt from './views/DeclarationReceipt.vue';
 import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OTSManagement from './views/OTSManagement.vue';
 import ManageUsers from './views/ManageUsers.vue';
@@ -90,6 +92,12 @@ const router = new Router({
         },
         {
           path: '/new-declaration', name: 'New Declaration', component: AddDeclaration
+        },
+        {
+          path: '/declaration-cart', name: 'Declaration Cart', component: DeclarationCart
+        },
+        {
+          path: '/declaration-receipt', name: 'Declaration Receipt', component: DeclarationReceipt
         },
         {
           path: '/permits', name: 'Permits', component: Permits,

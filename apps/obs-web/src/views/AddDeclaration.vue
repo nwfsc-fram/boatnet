@@ -1,23 +1,8 @@
 <template>
   <div class="q-pa-md" style="max-width: 400px">
     <q-form @submit="onSubmit">
-      <div class="row items-start q-gutter-md">
-        <p>Participating in EFP?</p>
-        <q-btn-toggle
-          v-model="databaseObject.efpTog"
-          toggle-color="primary"
-          @input="efpToggled()"
-          :options="[
-          {label: 'Yes', value: true},
-          {label: 'No', value: false},
-      ]"
-        />
-      </div>
-
-      <br />
 
       <q-btn-toggle
-        v-if="!databaseObject.efpTog"
         v-model="worksheetModel"
         dense
         toggle-color="primary"
@@ -40,19 +25,23 @@
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
-      <p v-if="databaseObject.showEFPNote">
-        If you do not see your EFP category in the list below
-        please contact the OLE office at 
-        <a href="tel: 888-585-5518" data-rel="external">888-585-5518</a>
-      </p>
-
       <q-select
-        label="Category of Declaration"
+        label="Category of Declaration (fishery/landing)"
         dense
         v-if="databaseObject.showBoolArr[0]"
         v-model="model1"
         :options="options1"
         @input="itemChosen(model1, 1)"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="Is declaration for an EFP?"
+        dense
+        v-if="databaseObject.showefpQ0"
+        v-model="databaseObject.efpTog"
+        :options="['yes','no']"
+        @input="efpToggled()"
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
@@ -76,25 +65,10 @@
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
-      <q-select
-        :label="row4Title"
-        dense
-        v-if="databaseObject.showBoolArr[3]"
-        v-model="model4"
-        :options="options4"
-        @input="itemChosen(model4, 4)"
-        style="width: 250px; padding-bottom: 32px"
-      ></q-select>
-
-      <q-select
-        label="Species"
-        dense
-        v-if="databaseObject.showBoolArr[4]"
-        v-model="model5"
-        :options="options5"
-        @input="itemChosen(model5, 5)"
-        style="width: 250px; padding-bottom: 32px"
-      ></q-select>
+      <p v-if="databaseObject.showEFPNote">
+        If you do not see your EFP category in the list below
+        please contact the OLE office at 888-585-5518
+      </p>
 
       <q-select
         label="EFP Category"
@@ -122,7 +96,17 @@
         v-if="databaseObject.showObsQuestion"
         v-model="model6"
         :options="obsOptions"
-        @input="databaseObject.cartAddBool=true"
+        @input="obsChosen"
+        style="width: 250px; padding-bottom: 32px"
+      ></q-select>
+
+      <q-select
+        label="Declaration in the Cook EFP?"
+        dense
+        v-if="databaseObject.showCookQuestion"
+        v-model="model7"
+        :options="['Yes', 'No']"
+        @input="cookEfpChosen"
         style="width: 250px; padding-bottom: 32px"
       ></q-select>
 
@@ -177,12 +161,15 @@
         </q-card>
       </q-dialog>
 
+      <br />
+      
       <p v-if="showLineNote">
-        <br />* Line = Hook &amp Line
+        * Line = Hook &amp Line
         <br />** Longline = Stationary buoyed and anchored ground line with hooks
         attached, so as to fish along the seabed, does not include
         pelagic Hook &amp Line or Troll gear
       </p>
+      <p v-if="showOpenAccNote"> † Open access defined as federal level open access </p>
 
       <q-dialog v-model="exemptionPopup" persistent>
         <q-card style="width: 300px">
@@ -209,63 +196,80 @@
 import { State, Action, Getter, Mutation } from 'vuex-class';
 import { Component, Prop, Watch, Vue } from 'vue-property-decorator';
 
+import moment from 'moment';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { Notify } from 'quasar';
+import { Vessel, OLEVessel, Declaration} from '@boatnet/bn-models';
+import {CouchDBInfo, CouchDBCredentials, couchService} from '@boatnet/bn-couch';
+import { VesselState, UserState, AlertState } from '../_store/types/types';
+
+
 /* tslint:disable:no-var-requires  */
 // I don't think I need this still...
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
 @Component({})
 export default class Dropdowns extends Vue {
+  @State('vessel') private vessel!: VesselState;
+  @State('user') private user!: UserState;
+  @Action('error', { namespace: 'alert' }) private errorAlert: any;
+
   // This object represents the state of the worksheet
   // will probably move this into couch eventually
-  public databaseObject = {
+  private databaseObject = {
+    accept: false,
     showObsQuestion: false,
+    showCookQuestion: false,
     cartAddBool: false,
-    showBoolArr: [true, false, false, false, false],
+    showBoolArr: [true, false, false],
     showOtherGearTextBox: false,
     decChoiceKey: '',
-    // EFP stuff
-    efpTog: false,
+    efpTog: '',    // EFP stuff
+    showefpQ0: false,
     showefpQ1: false,
     showefpQ2: false,
     showEFPNote: false
   };
-  // Here are some page control variables that need
-  // to be reactive, putting them into an object
-  // caused problems here, but I should look into this
-  // more to clean it up
-  public model1: string = '';
-  public model2: string = '';
-  public model3: string = '';
-  public model4: string = '';
-  public model5: string = '';
-  public model6: string = '';
-  public modelID: string = '';
-  public worksheetModel: boolean = true;
-  public exemptionPopup: boolean = false;
-  public decChoiceDisplay: string = '';
-  public otherGearNote: string = '';
+  // Here are some page control variables that need to be reactive
+  private oleDoc: OLEVessel = {};
+  private dbReturn: any = null;
+  private activeVesselId: string = '';
+  private userRoles: string[] = [];
+  private model1: string = '';
+  private model2: string = '';
+  private model3: string = '';
+  private model6: string = '';
+  private model7: string = '';
+  private modelID: string = '';
+  private worksheetModel: boolean = true;
+  private exemptionPopup: boolean = false;
+  private decChoiceDisplay: string = '';
+  private otherGearNote: string = '';
+  private newDeclaration: Declaration = { type: 'ole-declaration', declarationCode: 999, declarationDescrip: '', observerStatus: 'N/A' };
   // Options pulled out of the json file, this information comes from OLE
-  public options1 = dropdownTree.Start;
-  public obsOptions: string[] = dropdownTree['Observed Options'];
-  public leafSet: Set<string> = new Set(
+  private options1 = dropdownTree.Start;
+  private obsOptions: string[] = dropdownTree['Observed Options'];
+  private leafSet: Set<string> = new Set(
     Object.keys(dropdownTree['Leaf Nodes'])
   );
-  public leafValues: Set<string> = new Set(
+  private leafValues: Set<string> = new Set(
     Object.values(dropdownTree['Leaf Nodes'])
   );
-  public ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
+  private ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
+  private dualRules: any = dropdownTree['Allowed Dual Declarations'];
   // EFP stuff
-  public modelefp1: string = '';
-  public modelefp2: string = '';
-  public efpOptions = Object.keys(dropdownTree.EFP);
-  public efpOptions2: string[] = [];
+  private modelefp1: string = '';
+  private modelefp2: string = '';
+  private efpOptions = Object.keys(dropdownTree.EFP);
+  private efpOptions2: string[] = [];
 
-  public confirm = false;
+  private confirm = false;
 
   // If EFP is toggled to yes, provide a different set of menus
-  public efpToggled() {
-    if (this.databaseObject.efpTog) {
-      this.clearEntriesBelow(0);
+  private efpToggled() {
+    if (this.databaseObject.efpTog === 'yes') {
+      this.clearEntriesBelow(1);
       this.worksheetModel = true;
       this.modelID = '';
       this.databaseObject.showEFPNote = true;
@@ -280,12 +284,13 @@ export default class Dropdowns extends Vue {
       this.clearEntriesBelow(1);
       this.modelefp1 = '';
       this.modelefp2 = '';
+      this.databaseObject.showBoolArr[1] = true;
     }
   }
 
   // This toggle controls showing the worksheet or one
   // single dropdown with all the declarations
-  public worksheetToggled() {
+  private worksheetToggled() {
     this.clearEntriesBelow(0);
     if (this.worksheetModel) {
       this.databaseObject.showBoolArr[0] = true;
@@ -293,21 +298,28 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // When dropdown item is chosen, use that information to
-  // generate the next dropdown
-  // If not using worksheet dropdown, the format is slightly different
-  public itemChosen(model: any, boolIndex: number) {
+  private obsChosen() {
+    this.databaseObject.cartAddBool = true;
+    this.newDeclaration.observerStatus = this.model6;
+  }
+
+  private cookEfpChosen() {
+    this.databaseObject.cartAddBool = true;
+    this.newDeclaration.efpStatus = this.model7;
+  }
+
+  // When dropdown item is chosen, use that information to generate the next dropdown
+  private itemChosen(model: any, boolIndex: number) {
     this.clearEntriesBelow(boolIndex);
-    if (
-      [
-        'Exemption',
-        '10 ‐ Haul out exemption',
-        '20 ‐ Outside areas exemption',
-        '30 ‐ Emergency exemption',
-        '40 – Long‐term departure exemption'
+    if (['Exemptions', '10 ‐ Haul out exemption', '20 ‐ Outside areas exemption',
+         '30 ‐ Emergency exemption', '40 – Long‐term departure exemption'
       ].includes(model)
     ) {
       this.exemptionPopup = true;
+      return;
+    } else if (model === 'Federal Permit') {
+      // If federal permit need to re-direct flow to efp question
+      this.databaseObject.showefpQ0 = true;
       return;
     } else if (this.leafSet.has(model)) {
       this.decChoiceDisplay = dropdownTree['Leaf Nodes'][model];
@@ -317,7 +329,13 @@ export default class Dropdowns extends Vue {
       this.databaseObject.showBoolArr[boolIndex] = true;
       return;
     }
-    this.databaseObject.showBoolArr.fill(false, boolIndex, 4);
+    // need to figure out how the real good fish thing
+    // should be listed.
+    this.newDeclaration.declarationCode = Number('2'.concat(
+      this.decChoiceDisplay.split(' ‐ ')[0]
+    ));
+    this.newDeclaration.declarationDescrip = this.decChoiceDisplay.split(' ‐ ')[1].replace(/†/g, '');
+    this.databaseObject.showBoolArr.fill(false, boolIndex, 3);
     this.databaseObject.decChoiceKey = model;
     this.handleObserverStatus();
     if (
@@ -331,23 +349,43 @@ export default class Dropdowns extends Vue {
   }
 
   // Observer status question only applies to subset of choices
-  public handleObserverStatus() {
+  private handleObserverStatus() {
     if (this.ifqSet.has(this.databaseObject.decChoiceKey)) {
       this.databaseObject.showObsQuestion = true;
+    } else {
+      this.handleCookEfp();
+    }
+  }
+
+  // Observer status question only applies to subset of choices
+  private handleCookEfp() {
+    if (['Groundfish (line*) [35]', '35 ‐ Open access*** line gear for groundfish'].includes(this.databaseObject.decChoiceKey)
+      && this.model1 !== 'Federal Permit') {
+      this.databaseObject.showCookQuestion = true;
     } else {
       this.databaseObject.cartAddBool = true;
     }
   }
 
-  // Clear function so when dropdowns are changed, all
-  // dropdowns below are cleared/reset
-  public clearEntriesBelow(index: number) {
-    this.databaseObject.showBoolArr.fill(false, index, 5);
+  // When dropdowns change, all below are cleared/reset
+  private clearEntriesBelow(index: number) {
+    this.databaseObject.showBoolArr.fill(false, index, 3);
     this.databaseObject.showObsQuestion = false;
+    this.databaseObject.showCookQuestion = false;
     this.databaseObject.cartAddBool = false;
     this.databaseObject.showOtherGearTextBox = false;
     this.model6 = '';
+    this.model7 = '';
     this.otherGearNote = '';
+    if (this.model1 !== 'Federal Permit' || !this.worksheetModel) {
+      this.databaseObject.showefpQ0 = false;
+      this.databaseObject.efpTog = '';
+      this.databaseObject.showEFPNote = false;
+      this.databaseObject.showefpQ1 = false;
+      this.databaseObject.showefpQ2 = false;
+      this.modelefp1 = '';
+      this.modelefp2 = '';
+    }
     if (index < 1) {
       this.model1 = '';
     }
@@ -357,50 +395,103 @@ export default class Dropdowns extends Vue {
     if (index < 3) {
       this.model3 = '';
     }
-    if (index < 4) {
-      this.model4 = '';
+  }
+
+  // add declaration to cart
+  private async onSubmit() {
+    this.databaseObject.accept = false;
+    if (this.otherGearNote.length > 0) {
+      this.newDeclaration.activityDescrip = this.otherGearNote;
     }
-    if (index < 5) {
-      this.model5 = '';
+    this.checkNewDec();
+
+    if (!this.databaseObject.accept) {
+      return;
+    } else {
+      if (this.oleVessel.cartDeclarations!.length > 0) {
+      this.oleVessel.cartDeclarations = this.oleVessel.cartDeclarations!.concat(
+        this.newDeclaration
+      );
+      } else {
+        this.oleVessel.cartDeclarations = [this.newDeclaration];
+      }
+      await this.cartUpdate();
     }
   }
 
-  public onSubmit() {
-    // To-do
-    this.confirm = true;
+  // Check for conflicting declarations, required fields checked
+  // indirectly by qform
+  private checkNewDec() {
+    const okayArray: number[] = this.dualRules[this.newDeclaration.declarationCode];
+    console.log(okayArray);
+    for (const cartDec of this.oleVessel.cartDeclarations!) {
+      if (!okayArray.includes(cartDec.declarationCode)) {
+        if (cartDec.declarationCode === 269) {
+          this.$q.notify({
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'warning',
+            message: 'Declaration ' + this.newDeclaration.declarationCode +
+                    ' is incompatible with Declaration ' +
+                    cartDec.declarationCode + ' in the cart. Please put all Other' +
+                    ' Gear descriptions in one declaration.'
+          });
+        } else {
+          this.$q.notify({
+            color: 'red-5',
+            textColor: 'white',
+            icon: 'warning',
+            message: 'Declaration ' + this.newDeclaration.declarationCode +
+                    ' is incompatible with Declaration ' +
+                    cartDec.declarationCode + ' in the cart.'
+          });
+        }
+        return;
+      }
+    }
+    this.databaseObject.accept = true;
   }
 
-  // Question two title dependent on prior dropdown choice
-  public get row2Title() {
-    if (this.model1 === 'Exemption') {
+  // Add declaration to cart in couch doc
+  private async cartUpdate() {
+    const masterDB = couchService.masterDB;
+
+    const out = await masterDB.post(this.oleVessel).then(
+      setTimeout(() => {
+        this.$q.notify({
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'cloud_done',
+          message: 'Submitted'
+        }),
+          this.$router.push({ path: '/declaration-cart' });
+      }, 500)
+    );
+  }
+
+  // This block of functions to determine title of next dropown
+  private get row2Title() {
+    if (this.model1 === 'Exemptions') {
       return 'Description';
-    } else {
-      return 'Fishery';
-    }
-  }
-
-  // Question three title dependent on prior dropdown choice
-  public get row3Title() {
-    if (this.model2 === 'Limited Entry') {
-      return 'Fishery Options';
+    } else if (this.model1 === 'State Permit') {
+      return 'Species/Gear';
     } else {
       return 'Gear Type';
     }
   }
 
-  // Question three title dependent on prior dropdown choice
-  public get row4Title() {
-    if (this.model3 === 'IFQ/CP/CV/MS') {
-      return 'Gear Type';
+  private get row3Title() {
+    if (this.model2 === 'Midwater Trawl') {
+      return 'Midwater Fishery Options';
     } else {
-      return 'Species';
+      return 'Fixed Gear Fishey Options';
     }
   }
 
   // See if I can get all the option getters
   // into one function
   // Fill in dropdown options for question 2
-  public get options2(): any {
+  private get options2(): any {
     if (this.model1 === '') {
       return '';
     } else {
@@ -409,7 +500,7 @@ export default class Dropdowns extends Vue {
   }
 
   // Fill in dropdown options for question 3
-  public get options3(): any {
+  private get options3(): any {
     if (this.model2 === '') {
       return '';
     } else {
@@ -417,27 +508,16 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // Fill in dropdown options for question 4
-  public get options4(): any {
-    if (this.model3 === '') {
-      return '';
+  private get showLineNote(): boolean {
+    if (this.modelID.concat(this.model1, this.model2, this.model3).includes('*')) {
+      return true;
     } else {
-      return dropdownTree[this.model3];
+      return false;
     }
   }
 
-  // Fill in dropdown options for question 5
-  public get options5(): any {
-    if (this.model4 === '') {
-      return '';
-    } else {
-      return dropdownTree[this.model4];
-    }
-  }
-
-  // Fill in dropdown options for question 6
-  public get showLineNote(): boolean {
-    if (this.model2 === 'Open Access') {
+  private get showOpenAccNote(): boolean {
+    if (this.decChoiceDisplay.includes('†')) {
       return true;
     } else {
       return false;
@@ -445,9 +525,9 @@ export default class Dropdowns extends Vue {
   }
 
   // This fucnction controls the EFP version of the worksheet
-  public efpCategoryChosen() {
+  private efpCategoryChosen() {
     const efpCatOptions = dropdownTree.EFP[this.modelefp1];
-    this.clearEntriesBelow(1);
+    this.clearEntriesBelow(2);
     this.modelefp2 = '';
     this.databaseObject.showefpQ2 = false;
     if (efpCatOptions.length === 1) {
@@ -462,9 +542,53 @@ export default class Dropdowns extends Vue {
   }
 
   // First EFP dropdown chosen
-  public efpDeclarationChosen() {
+  private efpDeclarationChosen() {
     this.decChoiceDisplay = dropdownTree['Leaf Nodes'][this.modelefp2];
     this.databaseObject.cartAddBool = true;
   }
+
+  private async getOleVessel() {
+    console.log('fetching declarations from couch');
+    try {
+      const masterDB: Client<any> = couchService.masterDB;
+
+      const options = {
+        include_docs: true,
+        key: this.activeVesselId
+      };
+      const vessels: any = await masterDB.view<any>(
+        'OLEDeclarations',
+        'all_ole_vessels',
+        options
+      );
+      for (const v of vessels.rows) {
+        this.oleDoc = v.doc;
+      }
+      return vessels;
+    } catch (err) {
+      this.errorAlert(err);
+    }
+  }
+
+  private get oleVessel(): OLEVessel {
+    return this.oleDoc;
+  }
+
+  private created() {
+    this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
+      ? this.vessel.activeVessel.coastGuardNumber
+      : this.vessel.activeVessel.stateRegulationNumber;
+    if (authService.getCurrentUser()) {
+      this.userRoles = JSON.parse(
+        JSON.stringify(authService.getCurrentUser()!.roles)
+      );
+    }
+    try {
+      this.dbReturn = this.getOleVessel();
+    } catch (err) {
+      console.log('failed couch attempt');
+    }
+  }
+
 }
 </script>
