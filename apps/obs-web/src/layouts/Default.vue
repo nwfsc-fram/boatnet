@@ -28,16 +28,23 @@
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
         </q-toolbar-title>
+
+        <q-btn
+          v-if="['New Declaration', 'Declaration Cart', 'Declaration'].includes($route.name)"
+          flat
+          dense
+          round
+          to="/declaration-cart"
+          aria-label="Back"
+          icon="shopping_cart"
+          class="justify-end"
+        />
+
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em" />
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      content-class="bg-grey-2"
-      v-if="!isSyncing"
-    >
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing">
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
@@ -79,27 +86,25 @@
           :header-inset-level="0"
           :content-inset-level=".5"
         >
+          <q-item to="/log-book-capture" exact>
+            <q-item-section avatar>
+              <q-icon name="camera_alt" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Log Book Capture</q-item-label>
+              <q-item-label caption>capture + upload logbook photos</q-item-label>
+            </q-item-section>
+          </q-item>
 
-              <q-item to="/log-book-capture" exact>
-                <q-item-section avatar>
-                  <q-icon name="camera_alt" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Log Book Capture</q-item-label>
-                  <q-item-label caption>capture + upload logbook photos</q-item-label>
-                </q-item-section>
-              </q-item>
-
-              <q-item to="/e-logbook" exact>
-                <q-item-section avatar>
-                  <q-icon name="notes"/>
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>E Logbook</q-item-label>
-                  <q-item-label caption>paperless logbook</q-item-label>
-                </q-item-section>
-              </q-item>
-
+          <q-item to="/e-logbook" exact>
+            <q-item-section avatar>
+              <q-icon name="notes" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>E Logbook</q-item-label>
+              <q-item-label caption>paperless logbook</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-item
@@ -108,7 +113,7 @@
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item-section avatar>
-            <q-icon name="beenhere"/>
+            <q-icon name="beenhere" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Debriefer</q-item-label>
@@ -139,7 +144,7 @@
             <q-item-label>Observer Availability</q-item-label>
             <q-item-label caption>manage my availability (bbserver role)</q-item-label>
           </q-item-section>
-        </q-item> -->
+        </q-item>-->
 
         <q-expansion-item
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
@@ -150,38 +155,41 @@
           :header-inset-level="0"
           :content-inset-level=".5"
         >
+          <q-item
+            to="/vessels"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="fa fa-ship" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Vessel Management</q-item-label>
+              <q-item-label caption>associate personnel with vessels</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item to="/vessels" exact v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode">
-                  <q-item-section avatar>
-                    <q-icon name="fa fa-ship" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Vessel Management</q-item-label>
-                    <q-item-label caption>associate personnel with vessels</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item to="/manage-users" exact>
+            <q-item-section avatar>
+              <q-icon name="people" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>User Management</q-item-label>
+              <q-item-label caption>edit user conact info + roles</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item to="/manage-users" exact>
-                  <q-item-section avatar>
-                    <q-icon name="people" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>User Management</q-item-label>
-                    <q-item-label caption>edit user conact info + roles</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item to="/ots-management" exact>
+            <q-item-section avatar>
+              <q-icon name="check_circle" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>OTS Management</q-item-label>
+              <q-item-label caption>manage selection targets</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item to="/ots-management" exact>
-                  <q-item-section avatar>
-                    <q-icon name="check_circle" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>OTS Management</q-item-label>
-                    <q-item-label caption>manage selection targets</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <!-- <q-item to="/observer-assignment" exact>
+          <!-- <q-item to="/observer-assignment" exact>
                   <q-item-section avatar>
                     <q-icon name="fa fa-binoculars" />
                   </q-item-section>
@@ -189,29 +197,27 @@
                     <q-item-label>Observer Assignment</q-item-label>
                     <q-item-label caption>assign observers to selected trips</q-item-label>
                   </q-item-section>
-                </q-item> -->
+          </q-item>-->
 
-                <q-item to="/permits" exact >
-                  <q-item-section avatar>
-                    <q-icon name="assignment" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Permits Viewer</q-item-label>
-                    <q-item-label caption>view permit endorsements and vessel association</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item to="/permits" exact>
+            <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Permits Viewer</q-item-label>
+              <q-item-label caption>view permit endorsements and vessel association</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item to="/lookup-editor" exact >
-                  <q-item-section avatar>
-                    <q-icon name="edit_attributes" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Lookups Editor</q-item-label>
-                    <q-item-label caption>edit boatnet lookups, config + docs</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-
+          <q-item to="/lookup-editor" exact>
+            <q-item-section avatar>
+              <q-icon name="edit_attributes" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Lookups Editor</q-item-label>
+              <q-item-label caption>edit boatnet lookups, config + docs</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item
@@ -389,7 +395,11 @@ import router from '../router';
 import { AlertState } from '../_store/index';
 import { TripState, VesselState, UserState } from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
-import { CouchDBCredentials, couchService, CouchDBState } from '@boatnet/bn-couch';
+import {
+  CouchDBCredentials,
+  couchService,
+  CouchDBState
+} from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -407,12 +417,13 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
-  @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
-  @Getter('syncDateFormatted', { namespace: 'pouchState' }) private syncDate!: string;
+  @Getter('syncStatus', { namespace: 'pouchState' }) private syncStatus: any;
+  @Getter('syncDateFormatted', { namespace: 'pouchState' })
+  private syncDate!: string;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
-  @Action('reconnect', {namespace: 'baseCouch'}) private reconnectCouch: any;
+  @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
   private syncIsComplete: boolean = false;
@@ -440,13 +451,16 @@ export default class DefaultLayout extends Vue {
 
   private get getPercent() {
     if (
-        this.syncStatus.pending < 150
-        && !this.isIndexing
-        && this.syncStatus.db === 'lookups-dev'
-      ) {
+      this.syncStatus.pending < 150 &&
+      !this.isIndexing &&
+      this.syncStatus.db === 'lookups-dev'
+    ) {
       this.buildIndexes();
     }
-    return this.syncStatus.docs_read / (this.syncStatus.docs_read + this.syncStatus.pending);
+    return (
+      this.syncStatus.docs_read /
+      (this.syncStatus.docs_read + this.syncStatus.pending)
+    );
   }
 
   private get getIndexedPercent() {
@@ -474,17 +488,30 @@ export default class DefaultLayout extends Vue {
   }
 
   private buildIndexes() {
-    setTimeout( async () => {
+    setTimeout(async () => {
       this.isIndexing = true;
       this.toIndex = 7;
 
       const db = pouchService.db;
-      const queryOptions = { start_key: '', inclusive_end: true, reduce: false, include_docs: false };
+      const queryOptions = {
+        start_key: '',
+        inclusive_end: true,
+        reduce: false,
+        include_docs: false
+      };
 
-      const ports = await db.query('obs_web/all_port_names', queryOptions, pouchService.lookupsDBName);
+      const ports = await db.query(
+        'obs_web/all_port_names',
+        queryOptions,
+        pouchService.lookupsDBName
+      );
       this.decrementToIndex(ports);
 
-      const vessels = await db.query('obs_web/all_vessel_names', queryOptions, pouchService.lookupsDBName);
+      const vessels = await db.query(
+        'optecs_trawl/all_vessel_names',
+        queryOptions,
+        pouchService.lookupsDBName
+      );
       this.decrementToIndex(vessels);
 
       const vesselNums = await db.query('obs_web/all_vessel_nums', queryOptions, pouchService.lookupsDBName);
@@ -493,21 +520,26 @@ export default class DefaultLayout extends Vue {
       // const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
       // this.decrementToIndex(vesselCaptains);
 
-      const allDocs = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName);
+      const allDocs = await db.query(
+        'obs_web/all_doc_types',
+        queryOptions,
+        pouchService.lookupsDBName
+      );
       this.decrementToIndex(allDocs);
 
       this.isIndexing = false;
       location.reload();
     }, 1500);
-
   }
 
   private created() {
     this.leftDrawerOpen = Platform.is.desktop;
-    if ( authService.getCurrentUser() ) {
-      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+    if (authService.getCurrentUser()) {
+      this.userRoles = JSON.parse(
+        JSON.stringify(authService.getCurrentUser()!.roles)
+      );
     } else {
-      this.$router.push({path: '/login'});
+      this.$router.push({ path: '/login' });
     }
   }
 
@@ -610,7 +642,6 @@ export default class DefaultLayout extends Vue {
   //             }
   //           );
   // }
-
 }
 </script>
 
