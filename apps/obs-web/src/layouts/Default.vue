@@ -517,9 +517,6 @@ export default class DefaultLayout extends Vue {
       const vesselNums = await db.query('obs_web/all_vessel_nums', queryOptions, pouchService.lookupsDBName);
       this.decrementToIndex(vesselNums);
 
-      // const vesselCaptains = await db.query('obs_web/vessel_captains', queryOptions, pouchService.lookupsDBName);
-      // this.decrementToIndex(vesselCaptains);
-
       const allDocs = await db.query(
         'obs_web/all_doc_types',
         queryOptions,
@@ -547,54 +544,6 @@ export default class DefaultLayout extends Vue {
     this.$router.back();
   }
 
-  // private async getUserFromUserDB() {
-  //     // get user doc from userDB if exits
-  //     console.log('getting user from userDB');
-
-  //     try {
-  //         const allDocs = await pouchService.db.allDocs(
-  //             );
-
-  //         for (const row of allDocs.rows) {
-  //             if (row.doc.type === 'person' && row.doc.apexUserAdminUserName) {
-  //                 if (row.doc.apexUserAdminUserName === authService.getCurrentUser()!.username) {
-
-  //                     this.user.newUser = false;
-  //                     // this.user.activeUser = row.doc;
-  //                     Vue.set(this.user, 'activeUser', row.doc);
-  //                     if (row.doc.activeVessel) {
-  //                       this.vessel.activeVessel = row.doc.activeVessel;
-  //                     }
-  //                 }
-  //             }
-  //         }
-  //     } catch (err) {
-  //         this.errorAlert(err);
-  //     }
-  // }
-
-  // private async getUserFromMasterDB() {
-  //     // get user doc from master if exists / then put in userDB.
-  //     if (this.user.activeUser === undefined) {
-  //         console.log('Getting user from masterDB');
-  //         try {
-  //             const masterDB: Client<any> = couchService.masterDB;
-  //             const user = await masterDB.viewWithDocs<any>(
-  //                 'obs_web',
-  //                 'all_usernames',
-  //                 {key: authService.getCurrentUser()!.username}
-  //             );
-
-  //             if (user.rows.length > 0) {
-  //                 couchService.masterDB.delete(user.rows[0].doc._id, user.rows[0].doc._rev);
-  //                 pouchService.db.put(user.rows[0].doc).then( this.getUserFromUserDB() );
-  //             }
-  //         } catch (err) {
-  //             this.errorAlert(err);
-  //         }
-  //     }
-  // }
-
   private isAuthorized(authorizedRoles: string[]) {
     for (const role of authorizedRoles) {
       if (this.userRoles.includes(role)) {
@@ -604,44 +553,6 @@ export default class DefaultLayout extends Vue {
     return false;
   }
 
-  // private getUser() {
-  //     this.user.activeUser = undefined;
-
-  //     this.getUserFromUserDB().then(
-  //         () => {
-  //             this.getUserFromMasterDB();
-  //         }
-  //         ).then(
-  //             () => {
-  //                 if (this.user.activeUser === undefined) {
-  //                     this.user.newUser = true;
-  //                     const newUser = {
-  //                         type: 'person',
-  //                         firstName: '',
-  //                         lastName: '',
-  //                         apexUserAdminUserName: authService.getCurrentUser()!.username,
-  //                         addressLine1: '',
-  //                         addressLine2: '',
-  //                         city: '',
-  //                         state: '',
-  //                         zipCode: '',
-  //                         country: '',
-  //                         workPhone: '',
-  //                         homePhone: '',
-  //                         cellPhone: '',
-  //                         workEmail: '',
-  //                         homeEmail: '',
-  //                         birthdate: '',
-  //                         createdBy: authService.getCurrentUser()!.username,
-  //                         createdDate: moment().format()
-  //                         };
-
-  //                     Vue.set(this.user, 'activeUser', newUser);
-  //                 }
-  //                 this.$router.push({path: '/user-config'});
-  //             }
-  //           );
-  // }
 }
 </script>
 

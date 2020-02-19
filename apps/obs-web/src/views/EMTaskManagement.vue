@@ -81,7 +81,7 @@ export default createComponent({
             } else {
                 return attribute ? attribute : '';
             }
-        }
+        };
 
         const getActionUrl = (action: any, row: any) => {
             if (action === 'compare') {
@@ -89,7 +89,7 @@ export default createComponent({
             } else if (action === 'view') {
                 return 'view-image?' + 'id=' + row._id;
             }
-        }
+        };
 
         const getTripsWithCaptures = async () => {
             try {
@@ -113,7 +113,8 @@ export default createComponent({
                     trip.statusDate = '';
                     trip.actions = ['view', 'compare', 'review'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
-                    if (apiCatch.length > 0) {
+                    if (Array.isArray(apiCatch)) {
+
                         for (const dataSource of apiCatch) {
                             if (stagePriority.indexOf(dataSource.source) > stagePriority.indexOf(trip.stage)) {
                                 trip.stage = dataSource.source;

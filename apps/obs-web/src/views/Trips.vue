@@ -15,6 +15,10 @@
     >
     </q-spinner>
 
+    {{ user.activeUserAlias }}
+    <br><br>
+    {{ vessel.activeVessel }}
+
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
         <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
@@ -475,16 +479,27 @@ export default class Trips extends Vue {
 
       this.nextSelections = [];
       let savedSelections: any = {};
-      const docs = await pouchService.db.allDocs();
-      for (const row of docs.rows) {
-        if (row.doc.type === 'saved-selections') {
-          savedSelections = row.doc;
-        }
+
+      const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
+
+      const masterDb: Client<any> = couchService.masterDB;
+      const queryOptions = {
+        include_docs: true,
+        key: vesselId
       }
 
-      const vesselName: string = this.vessel.activeVessel.vesselName;
-      if (savedSelections[vesselName]) {
-        for (const fishery of Object.keys(savedSelections[vesselName]).sort(
+      const vesselSelections: any = await masterDb.view<any>(
+        'obs_web',
+        'saved_selections',
+        queryOptions
+      )
+
+      if (vesselSelections.rows[0]) {
+        savedSelections = vesselSelections.rows[0].doc;
+      }
+
+      if (savedSelections) {
+        for (const fishery of Object.keys(savedSelections).sort(
           (a: any, b: any) => {
             if (a > b) {
               return 1;
@@ -495,18 +510,20 @@ export default class Trips extends Vue {
             }
           })
         ) {
-          for (const selection of savedSelections[vesselName][fishery].sort(
-            (a: any, b: any) => {
-              return selectionSorter(a, b);
-            }
-          )) {
-            if (savedSelections[vesselName][fishery].indexOf(selection) < 1) {
-              const selectionObject = {
-                fishery,
-                isSelected: selection.isSelected,
-                selectionDate: selection.selectionDate
-                };
-              this.nextSelections.push(selectionObject);
+          if (Array.isArray(savedSelections[fishery])) {
+            for (const selection of savedSelections[fishery].sort(
+              (a: any, b: any) => {
+                return selectionSorter(a, b);
+              }
+            )) {
+              if (savedSelections[fishery].indexOf(selection) < 1) {
+                const selectionObject = {
+                  fishery,
+                  isSelected: selection.isSelected,
+                  selectionDate: selection.selectionDate
+                  };
+                this.nextSelections.push(selectionObject);
+              }
             }
           }
         }
@@ -620,48 +637,53 @@ export default class Trips extends Vue {
         };
 
       // check to see if savedSelections exists, fetch it if it does.
-      const db = pouchService.db;
-      const docs = await db.allDocs();
-      const vesselName: any = this.activeTrip.vessel.vesselName;
-      const fisheryName: any = this.activeTrip.fishery.description;
+      const vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+      const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : 'fish';
 
-      for (const row of docs.rows) {
-        if (row.doc.type === 'saved-selections') {
-          savedSelections = row.doc;
-          savedSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
-          savedSelections.updatedDate = moment().format();
-        }
+      const masterDb: Client<any> = couchService.masterDB;
+      const queryOptions = {
+        include_docs: true,
+        key: vesselId
       }
 
-      if (!savedSelections[vesselName]) {
-        savedSelections[vesselName] = {};
+      let vesselSelections: any = await masterDb.view<any>(
+              'obs_web',
+              'saved_selections',
+              queryOptions
+            );
+
+      if (vesselSelections.rows.length > 0) {
+        vesselSelections = vesselSelections.rows[0].doc;
+      } else {
+        vesselSelections = savedSelections;
       }
-      if (!savedSelections[vesselName][fisheryName]) {
-        savedSelections[vesselName][fisheryName] = [];
+
+      vesselSelections.vesselId = vesselId;
+      vesselSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
+      vesselSelections.updatedDate = moment().format();
+
+      if (!vesselSelections[fisheryName]) {
+        vesselSelections[fisheryName] = [];
       }
 
       if (this.openTrips.indexOf(this.activeTrip) === 0 && this.openTrips.length > 1) {
-        savedSelections[vesselName][fisheryName].push({
-                              vesselName,
+        vesselSelections[fisheryName].push({
                               isSelected: this.openTrips[1].isSelected,
                               notes: this.openTrips[1].notes,
                               selectionDate: this.openTrips[1].selectionDate ? this.openTrips[1].selectionDate : this.openTrips[1].createdDate
                             });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
-        await pouchService.db.post(this.openTrips[1]);
+        await masterDb.post(this.openTrips[1]);
       } else {
-        savedSelections[vesselName][fisheryName].push({
-                              vesselName,
+        vesselSelections[fisheryName].push({
                               isSelected: this.activeTrip.isSelected,
                               notes: this.activeTrip.notes,
                               selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
                             });
       }
-      if (savedSelections._id) {
-        await pouchService.db.post(savedSelections);
-      } else {
-        await pouchService.db.put(savedSelections);
-      }
+
+      await masterDb.post(vesselSelections);
+
     }
 
     private async cancelActiveTrip() {
@@ -765,7 +787,7 @@ export default class Trips extends Vue {
                             // permits: [],
                             // messages: [],
                             departureDate: '',
-                            departurePort: this.user.activeUser!.port ? this.user.activeUser!.port : this.vessel.activeVessel!.homePort ? this.vessel.activeVessel!.homePort : {name: ''},
+                            departurePort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             returnDate: '',
                             returnPort: {name: 'SAME AS START', pacfinPortCode: '', pacfinPortGroupCode: '' },
                             isSelected: false,
@@ -871,7 +893,6 @@ private async getVesselTrips() {
 }
 
 private async getAuthorizedVessels() {
-    this.authorizedVessels.length = 0;
 
     const db = pouchService.db;
 
@@ -912,6 +933,7 @@ private async getAuthorizedVessels() {
         pouchService.lookupsDBName
       );
 
+      this.authorizedVessels.length = 0;
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
     }
 }
