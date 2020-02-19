@@ -39,7 +39,6 @@ export default createComponent({
                     queryOptions
                 );
 
-                response.rows[0].doc._attachments[Object.keys(response.rows[0].doc._attachments)[0]];
                 const filename = Object.keys(response.rows[0].doc._attachments)[0];
 
                 const byteCharacters = atob(response.rows[0].doc._attachments[filename].data);
@@ -58,10 +57,10 @@ export default createComponent({
                 document.getElementById('imagesholder')!.appendChild(img);
             }
 
-        })
+        });
 
         return {
-        }
+        };
     }
-})
+});
 </script>

@@ -34,8 +34,8 @@
         <q-input v-model="vessel.activeVessel.notes" label="Notes" @click.native="selectText"></q-input>
 
         <q-select
-            v-model="vessel.activeVessel.port"
-            label="Port"
+            v-model="vessel.activeVessel.homePort"
+            label="Home Port"
             :options="ports"
             :option-label="opt => opt.name"
             option-value="_id"
