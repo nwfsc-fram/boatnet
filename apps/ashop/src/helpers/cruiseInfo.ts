@@ -12,7 +12,7 @@ export async function getDocByType(program: string, type: string) {
         views: {
             by_type: {
                 // @ts-ignore
-                map: function(doc) { emit(doc.type); }.toString()
+                map: function (doc) { emit(doc.type); }.toString()
             }
         }
     };
@@ -62,7 +62,11 @@ export async function getCruise() {
         });
         return newCruise;
     } else {
-        return cruises[0]; // TODO fetch active cruise
+        for (const cruiseVal of cruises) {
+            if (cruiseVal.isActive) {
+                return cruiseVal;
+            }
+        }
     }
 }
 

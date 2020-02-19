@@ -1,4 +1,4 @@
-import { AshopHaul, Measurement, WcgopOperation, initMeasurement, BaseOperation, NonFlowScaleCatch } from '@boatnet/bn-models';
+import { AshopHaul, Measurement, WcgopOperation, initMeasurement, BaseOperation, NonFlowScaleCatch, GPSFormat } from '@boatnet/bn-models';
 
 const lbsToKgFormula = 1 / 2.2046;
 
@@ -14,9 +14,9 @@ export function update(haul: AshopHaul, fieldName: string) {
 // set startFishingLocation units and endFishingLocation units equal to each other
 function setFishingLocationUnits(haul: BaseOperation, fieldName: string) {
     if (fieldName === 'startFishingLocation') {
-        haul.endFishingLocation.unit = haul.startFishingLocation.unit;
+        haul.endFishingLocation.rawInputFormat = haul.startFishingLocation.rawInputFormat;
     } else if (fieldName === 'endFishingLocation') {
-        haul.startFishingLocation.unit = haul.endFishingLocation.unit;
+        haul.startFishingLocation.rawInputFormat = haul.endFishingLocation.rawInputFormat;
     }
 }
 

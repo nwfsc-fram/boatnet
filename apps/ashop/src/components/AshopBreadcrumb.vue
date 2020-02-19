@@ -36,8 +36,6 @@ export default class AshopBreadcrumb extends Vue {
   private currentHaul!: any;
   @Getter('currentCruise', { namespace: 'tripsState' })
   private currentCruise!: any;
-  @Getter('currentNonFishingDay', { namespace: 'tripsState' })
-  private currentNonFishingDay!: any;
 
   @Watch('$route', { immediate: true, deep: true })
   private onUrlChange(newVal: any) {
@@ -58,7 +56,7 @@ export default class AshopBreadcrumb extends Vue {
         this.breadcrumbs[i].name = String(haulNum);
         this.breadcrumbs[i].link = '/hauldetails/' + String(haulNum);
       } else if (this.$route.meta.breadcrumb[i].name === 'nonFishingDayPlaceholder') {
-        let index = this.currentNonFishingDay;
+        let index = this.$route.params.nonFishingDayNum;
         let date = this.currentCruise.nonFishingDays[index].date;
         date = moment(date).format('MM/DD/YYYY');
         this.breadcrumbs[i].name = date;

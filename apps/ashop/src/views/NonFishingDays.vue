@@ -40,7 +40,7 @@ export default createComponent({
     const config = store.state.appSettings.appConfig.nonFishingTable;
     const cruise = store.state.tripsState.currentCruise;
 
-    const currIndex = computed(() => store.getters['tripsState/currentNonFishingDay']);
+    const currIndex: any = ref(-1);
 
     async function init() {
       const nonFishingDays = cruise.nonFishingDays ? cruise.nonFishingDays : [];
@@ -61,14 +61,14 @@ export default createComponent({
       const inTrip = false;
       const newFishingDay = reactive({ inTrip });
       data.value.push(newFishingDay);
+      const newItemIndex: number = data.value.length - 1;
 
       // update cruise
       cruise.nonFishingDays = data.value;
       store.dispatch('tripsState/save', cruise);
 
       store.dispatch('tripsState/setCurrentCruise', cruise);
-      store.dispatch('tripsState/setCurrentNonFishingDay', data.value.length - 1);
-      router.push({path: '/nonFishingDays/' + currIndex.value });
+      router.push({path: '/nonFishingDays/' + newItemIndex });
     }
 
     function editNonFishingDay() {
@@ -81,8 +81,6 @@ export default createComponent({
       // update cruise
       cruise.nonFishingDays = data.value;
       store.dispatch('tripsState/save', cruise);
-
-      store.dispatch('tripsState/setCurrentNonFishingDay', -1);
     }
 
     function goToTrips() {
@@ -90,8 +88,7 @@ export default createComponent({
     }
 
     function select(day: any) {
-      const index = data.value.indexOf(day);
-      store.dispatch('tripsState/setCurrentNonFishingDay', index);
+      currIndex.value = data.value.indexOf(day);
     }
 
     return {

@@ -148,6 +148,7 @@ export default class BoatnetLogin extends Vue {
     });
 
     if (authService.apiUrl) {
+
       console.log('Api URL', authService.apiUrl);
     } else {
       console.log('Api URL not defined. Auth proxy will be used');

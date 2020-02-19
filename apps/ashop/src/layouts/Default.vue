@@ -139,12 +139,30 @@ export default class DefaultLayout extends Vue {
     }
   }
 
+  private async buildIndexes() {
+    setTimeout( async () => {
+      const db = pouchService.db;
+      const queryOptions = {
+      inclusive_end: true,
+      ascending: false,
+      include_docs: true,
+      reduce: false
+    };
+
+      const lookups = await db.query('LookupDocs/ashop-lookups',
+                                     queryOptions,
+                                     pouchService.lookupsDBName);
+
+    }, 1500);
+  }
+
   private get syncStatusExists() {
     if (this.syncStatus && this.syncStatus.pending > 2) {
       return true;
     } else if (this.appConfig.navigationDrawerItems && this.appConfig.navigationDrawerItems.length === 0) {
       return true;
     } else {
+      this.buildIndexes();
       return false;
     }
   }

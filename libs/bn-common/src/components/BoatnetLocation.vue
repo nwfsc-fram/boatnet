@@ -4,7 +4,6 @@
       :title="locationLabel + ' Location Format'"
       :options="options"
       :val.sync="format"
-      @save="save"
     ></boatnet-button-toggle-comp>
     <boatnet-keyboard-select-list
       :displayName="locationLabel + ' Latitude'"
@@ -47,12 +46,14 @@ export default createComponent({
 
     const lat: any = currLat ? ref(currLat) : ref('');
     const long: any = currLong ? ref(currLong) : ref('');
-    const unit: any = ref('');
 
     // This defaults to whatever the user last selected
     function initUnit() {
-      unit.value = get(props.val, 'rawInputFormat');
-      unit.value = unit.value ? unit.value : store.getters['appSettings/defaultLocationFormat'];
+      let rawInputFormat = get(props.val, 'rawInputFormat');
+      if (!rawInputFormat) {
+        rawInputFormat = store.getters['appSettings/defaultLocationFormat'];
+        context.emit('update:val', { rawInputFormat });
+      }
     }
     initUnit();
 
@@ -100,12 +101,17 @@ export default createComponent({
     });
 
     const format = computed({
-      get: () => unit.value,
+      get: () => {
+        return get(props.val, 'rawInputFormat');
+      },
       set: (val: string) => {
-        unit.value = val;
-        store.dispatch('appSettings/setDefaultLocationFormat', unit.value);
+        store.dispatch('appSettings/setDefaultLocationFormat', val);
         lat.value = '';
         long.value = '';
+        const newVal = {
+          rawInputFormat: val
+        };
+        context.emit('update:val', newVal);
       }
     });
 
@@ -113,7 +119,7 @@ export default createComponent({
       if (latitude && latitude.replace(/[^0-9]/g, '').length === 6 &&
           longitude && longitude.replace(/[^0-9]/g, '').length === 7) {
             const position = new Coordinates(latitude + ', ' + longitude);
-            return [position.latitude, position.longitude];
+            return [position.latitude, -position.longitude];
       } else {
         return [];
       }

@@ -65,15 +65,10 @@ export default createComponent({
     const appConfig = store.state.appSettings.appConfig;
     const haul: BaseOperation = reactive(store.state.tripsState.currentHaul);
     const haulName = store.state.appSettings.appConfig.hauls.itemNumName;
-    let rev: string = '';
 
     const saveOnUpdate = async (fieldName: string) => {
       update(haul, fieldName);
-      const curr = haul._rev;
-      if (curr !== rev) {
-        store.dispatch('tripsState/save', haul);
-        rev = curr ? curr : '';
-      }
+      store.dispatch('tripsState/save', haul);
     };
 
     return {

@@ -8,10 +8,10 @@ Vue.use(Vuex);
 
 const state: TripState = {
   currentCruise: undefined,
-  currentNonFishingDay: undefined,
   currentTrip: undefined,
   currentHaul: undefined,
-  currentCatch: undefined
+  currentCatch: undefined,
+  currentRev: undefined
 };
 
 const actions: ActionTree<TripState, RootState> = {
@@ -20,9 +20,6 @@ const actions: ActionTree<TripState, RootState> = {
   },
   setCurrentCruise({ commit }: any, cruise: Base) {
     commit('setCurrentCruise', cruise);
-  },
-  setCurrentNonFishingDay({ commit }: any, nonFishingDay: number) {
-    commit('setCurrentNonFishingDay', nonFishingDay);
   },
   setCurrentTrip({ commit }: any, trip: BaseTrip) {
     commit('setCurrentTrip', trip);
@@ -41,12 +38,13 @@ const actions: ActionTree<TripState, RootState> = {
 const mutations: MutationTree<TripState> = {
   save(newState: any, record: any) {
     try {
-      if (record._id) {
+      if (record._id && newState.currentRev !== record._rev) {
         pouchService.db
           .put(record)
           .then((response: any) => {
             record._rev = response.rev;
           });
+        newState.currentRev = record._rev;
       }
     } catch (err) {
       console.log('not properly save to the database');
@@ -54,9 +52,6 @@ const mutations: MutationTree<TripState> = {
   },
   setCurrentCruise(newState: any, cruise: Base) {
     newState.currentCruise = cruise;
-  },
-  setCurrentNonFishingDay(newState: any, nonFishingDay: number) {
-    newState.currentNonFishingDay = nonFishingDay;
   },
   setCurrentTrip(newState: any, trip: BaseTrip) {
     newState.currentTrip = trip;
@@ -72,9 +67,6 @@ const mutations: MutationTree<TripState> = {
 const getters: GetterTree<TripState, RootState> = {
   currentCruise(getState: TripState) {
     return getState.currentCruise;
-  },
-  currentNonFishingDay(getState: TripState) {
-    return getState.currentNonFishingDay;
   },
   currentTrip(getState: TripState) {
     return getState.currentTrip;
