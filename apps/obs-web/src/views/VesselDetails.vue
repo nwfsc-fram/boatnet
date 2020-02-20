@@ -48,34 +48,6 @@
             >
         </q-select>
 
-        <!-- <q-select
-            v-model="vessel.activeVessel.captains"
-            label="Vessel Captains"
-            :options="captains"
-            :option-label="opt => opt.firstName + ' ' + opt.lastName + ' (' + opt.workEmail + ')' "
-            option-value="_id"
-            @filter="captainsFilterFn"
-            stack-label
-            use-input
-            multiple
-            use-chips
-            >
-        <template v-slot:selected-item="scope">
-            <q-chip
-                removable
-                dense
-                @remove="scope.removeAtIndex(scope.index)"
-                :tabindex="scope.tabindex"
-                color="primary"
-                text-color="white"
-                >
-                <q-avatar color="primary" text-color="white" icon="person" />
-                <span v-if="scope.opt.label">{{ scope.opt.label }}</span>
-                <span v-else>{{ scope.opt.firstName + ' ' + scope.opt.lastName }}</span>
-            </q-chip>
-        </template>
-        </q-select> -->
-
         <q-select
             v-model="allowedPeople"
             label="Authorized Personnel"
@@ -400,19 +372,6 @@ export default class VesselDetails extends Vue {
             this.vessel.activeVessel = {};
             });
     }
-
-    // private newCaptain() {
-    //         const newUser = {
-    //             type: PersonTypeName,
-    //             createdBy: authService.getCurrentUser()!.username,
-    //             createdDate: moment().format()
-    //         };
-    //         this.user.activeUser = newUser;
-    //         this.user.activeUser.activeVessel = this.vessel.activeVessel;
-    //         this.user.activeUser.port = this.vessel.activeVessel!.homePort;
-    //         this.user.newUser = true;
-    //         this.$router.push({path: '/users/' + 'new'});
-    // }
 
     private navigateBack() {
         this.$router.back();

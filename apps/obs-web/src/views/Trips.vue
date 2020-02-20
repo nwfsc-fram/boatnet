@@ -15,10 +15,6 @@
     >
     </q-spinner>
 
-    {{ user.activeUserAlias }}
-    <br><br>
-    {{ vessel.activeVessel }}
-
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
         <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
@@ -486,13 +482,13 @@ export default class Trips extends Vue {
       const queryOptions = {
         include_docs: true,
         key: vesselId
-      }
+      };
 
       const vesselSelections: any = await masterDb.view<any>(
         'obs_web',
         'saved_selections',
         queryOptions
-      )
+      );
 
       if (vesselSelections.rows[0]) {
         savedSelections = vesselSelections.rows[0].doc;
@@ -630,7 +626,7 @@ export default class Trips extends Vue {
     }
 
     private async saveSelection() {
-      let savedSelections: any = {
+      const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
         createdDate: moment().format()
@@ -644,7 +640,7 @@ export default class Trips extends Vue {
       const queryOptions = {
         include_docs: true,
         key: vesselId
-      }
+      };
 
       let vesselSelections: any = await masterDb.view<any>(
               'obs_web',
@@ -893,8 +889,8 @@ private async getVesselTrips() {
 }
 
 private async getAuthorizedVessels() {
-
     const db = pouchService.db;
+    const masterDB: Client<any> = couchService.masterDB;
 
     const queryOptions = {
         key: 'vessel-permissions',
@@ -902,10 +898,10 @@ private async getAuthorizedVessels() {
         include_docs: true
     };
 
-    const permissionsQuery = await db.query(
-      'obs_web/all_doc_types',
-        queryOptions,
-        pouchService.lookupsDBName
+    const permissionsQuery: any = await masterDB.view<any>(
+      'obs_web',
+      'all_doc_types',
+      queryOptions
     );
 
     const permissionsDoc = permissionsQuery.rows[0].doc;
@@ -933,9 +929,18 @@ private async getAuthorizedVessels() {
         pouchService.lookupsDBName
       );
 
-      this.authorizedVessels.length = 0;
-      this.authorizedVessels.push(vesselQuery.rows[0].doc);
+      this.authorizedVessels.unshift(vesselQuery.rows[0].doc);
     }
+
+    this.authorizedVessels.sort( (a: any, b: any) => {
+      if (a.vesselName > b.vesselName) {
+        return 1;
+      } else if (a.vesselName < b.vesselName) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
 }
 
   private async created() {

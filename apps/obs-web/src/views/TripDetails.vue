@@ -422,7 +422,7 @@ export default class TripDetails extends Vue {
 
     // REQUIRES A FISHERY!
     if (this.trip.activeTrip!.fishery!.description !== '') {
-      let savedSelections: any = {
+      const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
         createdDate: moment().format()
@@ -434,7 +434,7 @@ export default class TripDetails extends Vue {
       const queryOptions = {
         include_docs: true,
         key: vesselId
-      }
+      };
 
       let vesselSelections: any = await masterDb.view<any>(
               'obs_web',
@@ -869,7 +869,7 @@ private async getMinDate() {
   }
 
     private async saveSelection() {
-      let savedSelections: any = {
+      const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
         createdDate: moment().format()
@@ -877,13 +877,13 @@ private async getMinDate() {
 
       // check to see if savedSelections exists, fetch it if it does.
       const vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
-      const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : 'fish';
+      const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : '';
 
       const masterDb: Client<any> = couchService.masterDB;
       const queryOptions = {
         include_docs: true,
         key: vesselId
-      }
+      };
 
       let vesselSelections: any = await masterDb.view<any>(
               'obs_web',
@@ -909,7 +909,7 @@ private async getMinDate() {
             isSelected: this.trip.activeTrip!.isSelected,
             notes: this.trip.activeTrip!.notes ? this.trip.activeTrip!.notes : 'fish',
             selectionDate: this.trip.activeTrip!.selectionDate ? this.trip.activeTrip!.selectionDate : this.trip.activeTrip!.createdDate
-      })
+      });
 
 
       await masterDb.post(vesselSelections);
