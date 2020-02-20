@@ -77,41 +77,6 @@ export default class UserConfig extends Vue {
           });
         }
 
-    // private async getVessels() {
-    //     const vesselCaptains: any = {};
-    //     const db = pouchService.db;
-    //     const queryOptions = {
-    //         start_key: '',
-    //         inclusive_end: true,
-    //         descending: false,
-    //         include_docs: true
-    //     };
-    //     try {
-    //         const vessels = await db.query(
-    //             'obs_web/vessel_captains',
-    //             queryOptions,
-    //             pouchService.lookupsDBName
-    //             );
-    //         for (const row of vessels.rows) {
-    //             for (const captain of row.doc.captains) {
-    //                 if (!vesselCaptains[captain.workEmail]) {
-    //                     vesselCaptains[captain.workEmail] = [];
-    //                 }
-    //                 const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
-    //                 vesselCaptains[captain.workEmail].push(row.doc);
-    //             }
-    //         }
-
-    //         const activeUserEmail = this.user.activeUser!.workEmail;
-    //         if (activeUserEmail) {
-    //             this.vessels = vesselCaptains[activeUserEmail];
-    //         }
-
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // }
-
     private async getUser() {
         const db: Client<any> = couchService.masterDB;
         const queryOptions = {
@@ -135,20 +100,11 @@ export default class UserConfig extends Vue {
                     firstName: '',
                     lastName: '',
                     apexUserAdminUserName: authService.getCurrentUser()!.username,
-                    addressLine1: '',
-                    addressLine2: '',
-                    city: '',
-                    state: {abbreviation: '', name: ''},
-                    zipCode: '',
-                    country: '',
                     workPhone: '',
                     homePhone: '',
                     cellPhone: '',
                     workEmail: '',
                     homeEmail: '',
-                    birthdate: '',
-                    activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
-                    port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
                     createdBy: authService.getCurrentUser()!.username,
                     createdDate: moment().format()
                 };
@@ -162,8 +118,6 @@ export default class UserConfig extends Vue {
     }
 
     private created() {
-
-        // this.getVessels();
         this.getUser();
     }
 

@@ -11,7 +11,7 @@
       <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
     </div>
 
-    <div style="display: block; text-align: center" >
+    <div v-if="activeUser" style="display: block; text-align: center">
       <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
 
       <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
@@ -23,6 +23,13 @@
       <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" label="E Logbook" to="/e-logbook" color="primary" exact style="margin: 5px"></q-btn>
     <br>
     <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
+    </div>
+
+    <div v-else style="display: block; text-align: center">
+      <div class="text-h6">
+        Please complete your user details
+      </div>
+      <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
     </div>
 
   </q-page>
@@ -65,6 +72,7 @@ export default class Home extends Vue {
   private trip: any = {};
   private createdTrip: any = {};
   private updatedTrip: any = {};
+  private activeUser: boolean = false;
 
   constructor() {
     super();
@@ -83,7 +91,7 @@ export default class Home extends Vue {
       return false;
     }
 
-    private async getUserFromUserDB() {
+    private async getUserFromCouchDB() {
         try {
           const db = couchService.masterDB;
           const queryOptions = {
@@ -119,85 +127,54 @@ export default class Home extends Vue {
       });
   }
 
-  private async getUserAliasfromPouchDB() {
+  private async getUserAliasfromCouchDB() {
     if (this.user.activeUser) {
+      this.activeUser = true;
       this.user.activeUserAlias = undefined;
       console.log('active user userName: ' + authService.getCurrentUser()!.username);
-      // console.log(this.user.activeUserAlias);
       if (!this.user.activeUserAlias) {
-        console.log('no active user alias');
-        const db = pouchService.db;
+        console.log('getting active user alias');
+
+        const masterDb: Client<any> = couchService.masterDB;
         const queryOptions = {
           include_docs: true,
           key: authService.getCurrentUser()!.username
         };
 
-        setTimeout( async () => {
-          const alias = await db.query(
-            'obs_web/all_person_alias',
-            queryOptions,
-            pouchService.lookupsDBName
-          );
+        const couchAlias: any = await masterDb.view<any>(
+          'obs_web',
+          'all_person_alias',
+          queryOptions
+        );
 
-          if (alias.rows[0] && alias.rows[0].doc.isActive === true) {
-            console.log('setting active user alias');
-            Notify.create({
-               message: 'Good To Go',
-              position: 'bottom',
-              color: 'green',
-              timeout: 3000,
-              icon: 'sentiment_satisfied_alt',
-              html: true,
-              multiLine: true
-            });
-            this.user.activeUserAlias = alias.rows[0].doc;
-          } else {
-            console.log('user alias not found in pouch - looking in couch');
-            try {
-              const couchAlias = await couchService.masterDB.viewWithDocs(
-                'obs_web',
-                'all_person_alias',
-                queryOptions
-              );
 
-              if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
-                console.log('found user alias in couch - waiting for pouch');
-                setTimeout( () => {
+        if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
+          console.log('setting active user alias');
+          this.user.activeUserAlias = couchAlias.rows[0].doc;
+        } else {
+          console.log('user alias not found');
+          const newAlias = {
+              type: 'person-alias',
+              firstName: this.user.activeUser!.firstName,
+              lastName: this.user.activeUser!.lastName,
+              userName: authService.getCurrentUser()!.username,
+              personDocId: this.user.activeUser!._id,
+              roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
+              isActive: true,
+              isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
+              isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
+          };
+          couchService.masterDB.post(newAlias).then(
+              setTimeout( () => {
+                  this.notifySuccess('User Alias Created');
                   location.reload();
-                }, 2000 );
-              } else {
-                console.log('no active user alias');
-                const newAlias = {
-                    type: 'person-alias',
-                    firstName: this.user.activeUser!.firstName,
-                    lastName: this.user.activeUser!.lastName,
-                    userName: authService.getCurrentUser()!.username,
-                    personDocId: this.user.activeUser!._id,
-                    roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
-                    isActive: this.user.activeUser!.isActive ? this.user.activeUser!.isActive : true,
-                    isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
-                    isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
-                };
-                couchService.masterDB.post(newAlias).then(
-                    setTimeout( () => {
-                        this.notifySuccess('User Alias Created');
-                        location.reload();
-                        // this.$router.push({path: '/'});
-                    } , 1000 )
-                );
-              }
-            } catch (err) {
-              console.log(err);
-            }
-
-            }
-        } , 1000 );
+              } , 2000 )
+          );
+        }
+        }
       } else {
-        console.log(this.user.activeUserAlias);
+        this.activeUser = false;
       }
-    } else {
-      console.log('no active user!');
-    }
 
   }
 
@@ -252,7 +229,7 @@ export default class Home extends Vue {
         await pouchService.db.query('my_index/by_type', {
           limit: 0
         }).then( (res: any) => {
-          console.log(res.rows.map( (row: any) => row.doc ));
+          console.log('indexing userDB');
         });
     } catch (error) {
       console.log(error);
@@ -282,26 +259,14 @@ export default class Home extends Vue {
 
   }
 
-  private async getDocsViaView() {
-    pouchService.db.query('my_index/by_type', {
-      key: 'saved-selections',
-      include_docs: true
-      }).then( (res: any) => {
-        console.log(res.rows.map( (row: any) => row.doc ));
-      }).catch( (err: any) => {
-        console.log(err);
-      });
-  }
-
   private async created() {
     this.getPermits();
-    this.getUserFromUserDB();
-    this.getUserAliasfromPouchDB();
+    this.getUserFromCouchDB();
+    this.getUserAliasfromCouchDB();
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
     this.buildDesignDoc();
-    // this.getDocsViaView();
   }
 
 }

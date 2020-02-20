@@ -76,6 +76,7 @@
                         dense
                         class="col-md q-pa-sm wide-field"
                         @click.native="selectText"
+                        :rules="[val => !!val || 'Field is required']"
                     ></q-input>
 
                 </div>
@@ -215,7 +216,7 @@
                 </q-select>
 
                 <div class="q-pa-sm">
-                    <div class="text-h6">Emergency Contacts:</div>
+                    <div class="text-h6">Emergency Contacts (optional):</div>
                     <q-btn v-if="!contactEditing" color="primary" label="add" @click="addEmergencyContact" class="q-ma-sm"></q-btn>
                     <q-card v-if="contactEditing">
                         <q-card-section>
@@ -347,8 +348,8 @@ import { mapState } from 'vuex';
 import router from 'vue-router';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import { GeneralState, UserState, VesselState } from '../_store/types/types';
-import { Vessel, UsState, PersonTypeName, Person } from '@boatnet/bn-models';
+import { GeneralState, UserState } from '../_store/types/types';
+import { PersonTypeName, Person } from '@boatnet/bn-models';
 
 import moment from 'moment';
 import axios from 'axios';
@@ -364,21 +365,12 @@ import { Notify } from 'quasar';
 export default class UserDetails extends Vue {
     @State('general') private general!: GeneralState;
     @State('user') private user!: UserState;
-    @State('vessel') private vessel!: VesselState;
 
     @State('alert') private alert!: AlertState;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
     @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
-    private vessels: Vessel[] = [];
-
-    private usStateOptions: any = [];
-    private usStates: UsState[] = [];
-    private countryOptions = ['United States', 'Canada', 'Mexico'];
-
     private contacts: Person[] = [];
-
-    private ports: any[] = [];
 
     private applicationRoles = [];
     private storedRoles = [];
@@ -482,32 +474,6 @@ export default class UserDetails extends Vue {
         this.isNewContact = false;
     }
 
-    private portsFilterFn(val: string, update: any, abort: any) {
-
-        update(
-            async () => {
-                try {
-                    const db = pouchService.db;
-                    const queryOptions = {
-                    start_key: val.toLowerCase(),
-                    inclusive_end: true,
-                    descending: false,
-                    include_docs: true
-                    };
-
-                    const ports = await db.query(
-                        'obs_web/all_port_names',
-                        queryOptions,
-                        pouchService.lookupsDBName
-                        );
-                    this.ports = ports.rows.map((row: any) => row.doc);
-                } catch (err) {
-                    console.log(err);
-                }
-            }
-        );
-    }
-
     private apexUsersFilterFn(val: string, update: any, abort: any) {
         update(
             () => {
@@ -555,67 +521,7 @@ export default class UserDetails extends Vue {
     );
     }
 
-    private statesFilterFn(val: string, update: any, abort: any) {
-        if (val === '') {
-            update(() => {
-                this.usStateOptions = this.usStates;
-                });
-            return;
-        }
-
-        update( () => {
-            const inputVal = val.toLowerCase();
-            this.usStateOptions = this.usStates.filter(
-                (state) => state.name.toLowerCase().indexOf(inputVal) > -1 ||
-                state.abbreviation.toLowerCase().indexOf(inputVal) > -1
-                );
-        });
-    }
-
-    private async getVessels() {
-            try {
-                const db = pouchService.db;
-                const queryOptions = {
-                // limit: 5,
-                start_key: '',
-                inclusive_end: true,
-                descending: false,
-                include_docs: true
-                };
-
-                const vesselCaptains = await db.query(
-                    'obs_web/vessel_captains',
-                    queryOptions,
-                    pouchService.lookupsDBName
-                );
-                for (const row of vesselCaptains.rows) {
-                    for (const captain of row.doc.captains) {
-
-                        if (!vesselCaptains[captain.workEmail]) {
-                            vesselCaptains[captain.workEmail] = [];
-                        }
-                        const vesselId = row.doc.coastGuardNumber ? row.doc.coastGuardNumber : row.doc.stateRegulationNumber;
-                        vesselCaptains[captain.workEmail].push(row.doc);
-                    }
-                }
-
-                if (this.user.activeUser) {
-                    const activeUserEmail = this.user.activeUser!.workEmail;
-                    if (activeUserEmail) {
-                        this.vessels = vesselCaptains[activeUserEmail];
-                    }
-                }
-
-
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-    private saveUser() {
-        if (this.user.activeUser!.activeVessel) {
-            this.vessel.activeVessel = this.user.activeUser!.activeVessel;
-        }
+    private async saveUser() {
         if (this.user.activeUser!.workEmail !== '') {
             if (this.user.newUser) {
                 console.log('new user');
@@ -644,19 +550,6 @@ export default class UserDetails extends Vue {
                 this.updateUserRoles();
                 this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
                 this.user.activeUser!.updatedDate = moment().format();
-
-                this.user.activeUserAlias.firstName = this.user.activeUser!.firstName;
-                this.user.activeUserAlias.lastName = this.user.activeUser!.lastName;
-                this.user.activeUserAlias.roles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
-                this.user.activeUserAlias.isActive = this.user.activeUser!.isActive;
-                this.user.activeUserAlias.isWcgop = this.user.activeUser!.isWcgop;
-                this.user.activeUserAlias.isAshop = this.user.activeUser!.isAshop;
-
-                couchService.masterDB.put(
-                    this.user.activeUserAlias._id,
-                    this.user.activeUserAlias,
-                    this.user.activeUserAlias._rev
-                );
 
                 if (this.$route.name === 'User Details') {
                     couchService.masterDB.put(
@@ -694,20 +587,11 @@ export default class UserDetails extends Vue {
                 firstName: '',
                 lastName: '',
                 apexUserAdminUserName: authService.getCurrentUser()!.username,
-                addressLine1: '',
-                addressLine2: '',
-                city: '',
-                state: '',
-                zipCode: '',
-                country: '',
                 workPhone: '',
                 homePhone: '',
                 cellPhone: '',
                 workEmail: '',
                 homeEmail: '',
-                birthdate: '',
-                activeVessel: this.vessel.activeVessel ? this.vessel.activeVessel : '',
-                port: this.vessel.activeVessel ? this.vessel.activeVessel!.homePort : '',
                 isActive: true,
                 isWcgop: true,
                 isAshop: true,
@@ -718,33 +602,6 @@ export default class UserDetails extends Vue {
             Vue.set(this.user, 'activeUser', newUser);
             this.user.newUser = true;
             this.$router.push({path: '/users/' + 'new'});
-    }
-
-    private async getUsStates() {
-        const db = pouchService.db;
-        try {
-        const queryOptions = {
-            key: 'us-state',
-            reduce: false,
-            inclusive_end: true,
-            descending: false,
-            include_docs: true
-        };
-
-        const usstates = await db.query(
-            'obs_web/all_doc_types',
-            queryOptions,
-            pouchService.lookupsDBName
-            );
-
-        for (const row of usstates.rows) {
-            const state = row.doc;
-            this.usStates.push(state);
-        }
-
-        } catch (err) {
-            console.log(err);
-        }
     }
 
     private async getPhoneTypes() {
@@ -948,8 +805,6 @@ export default class UserDetails extends Vue {
         // if (this.$route.name === 'User Config') {
         //     this.getUser();
         // }
-        this.getVessels();
-        this.getUsStates();
         this.getPhoneTypes();
     }
 
