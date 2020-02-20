@@ -328,56 +328,57 @@
     </q-drawer>
 
     <q-page-container>
-      <q-dialog v-model="syncStatusExists" full-width seamless position="bottom">
+      <q-dialog v-model="syncStatusExists" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0">
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
             <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-primary"
+              class="text-primary text-h3"
             >
-              SYNCING DATA
+              SYNCING DATA<br>
               <span
                 v-if="syncStatus"
-                style=" font-size: 11px; margin-left: 20px; color: black"
+                style="margin-left: 20px; color: black"
+                class="text-h4"
               >{{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
             </div>
-            <q-linear-progress
+            <q-circular-progress
               v-if="syncStatus"
-              stripe
-              rounded
-              style="height: 10px;"
+              size="250px"
+              :thickness="0.5"
               :value="getPercent"
               color="primary"
-            ></q-linear-progress>
-            <br />
+            ></q-circular-progress>
+            <br /><br/>
+            please be patient - this only happens once
           </q-card-section>
         </q-card>
       </q-dialog>
 
-      <q-dialog v-model="isIndexing" full-width seamless position="bottom">
+      <q-dialog v-model="isIndexing" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0">
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
             <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-primary"
+              class="text-primary text-h3"
             >
-              INDEXING DATA
+              INDEXING DATA<br>
               <span
                 v-if="isIndexing"
-                style=" font-size: 11px; margin-left: 20px; color: black"
+                style="margin-left: 20px; color: black"
+                class="text-h4"
               >{{ toIndex }} remaining.</span>
             </div>
-            <q-linear-progress
+            <q-circular-progress
               v-if="isIndexing"
-              stripe
-              rounded
-              style="height: 10px;"
+              size="250px"
+              :thickness="0.5"
               :value="getIndexedPercent"
               color="primary"
-            ></q-linear-progress>
-            <br />
+            ></q-circular-progress>
+            <br/><br/>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -458,13 +459,13 @@ export default class DefaultLayout extends Vue {
       this.buildIndexes();
     }
     return (
-      this.syncStatus.docs_read /
-      (this.syncStatus.docs_read + this.syncStatus.pending)
+      (this.syncStatus.docs_read /
+      (this.syncStatus.docs_read + this.syncStatus.pending)) * 100
     );
   }
 
   private get getIndexedPercent() {
-    return this.indexed / (this.indexed + this.toIndex);
+    return (this.indexed / (this.indexed + this.toIndex)) * 100;
   }
 
   private get syncStatusExists() {
@@ -490,7 +491,7 @@ export default class DefaultLayout extends Vue {
   private buildIndexes() {
     setTimeout(async () => {
       this.isIndexing = true;
-      this.toIndex = 7;
+      this.toIndex = 10;
 
       const db = pouchService.db;
       const queryOptions = {
