@@ -11,7 +11,7 @@
       <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
     </div>
 
-    <div v-if="activeUser" style="display: block; text-align: center">
+    <div v-if="activeUser && !isSyncing" style="display: block; text-align: center">
       <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
 
       <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
@@ -25,7 +25,7 @@
     <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
     </div>
 
-    <div v-else style="display: block; text-align: center">
+    <div v-else-if="!activeUser && !isSyncing" style="display: block; text-align: center">
       <div class="text-h6">
         Please complete your user details
       </div>
