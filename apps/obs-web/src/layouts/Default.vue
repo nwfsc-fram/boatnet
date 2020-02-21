@@ -330,7 +330,7 @@
     <q-page-container>
       <q-dialog v-model="syncStatusExists" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%">
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
               class="text-h6"
@@ -364,7 +364,7 @@
 
       <q-dialog v-model="isIndexing" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
+          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%">
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
               class="text-h6"
