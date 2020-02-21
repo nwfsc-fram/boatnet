@@ -331,27 +331,33 @@
       <q-dialog v-model="syncStatusExists" full-width full-height seamless>
         <q-card>
           <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
-            <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-primary text-h3"
+              class="text-h6"
             >
-              SYNCING DATA<br>
+              LOADING DATA
+              <br>
               <span
                 v-if="syncStatus"
-                style="margin-left: 20px; color: black"
-                class="text-h4"
               >{{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
             </div>
             <q-circular-progress
               v-if="syncStatus"
-              size="250px"
-              :thickness="0.5"
+              show-value
+              size="150px"
+              :thickness="0.2"
               :value="getPercent"
               color="primary"
-            ></q-circular-progress>
+              track-color="grey-3"
+            >
+            <q-avatar size="90px">
+              <img src="../assets/NOAA_logo.svg">
+            </q-avatar>
+            </q-circular-progress>
             <br /><br/>
-            please be patient - this only happens once
+            <span class="text-h6">
+              please be patient - this only happens once
+            </span>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -359,26 +365,33 @@
       <q-dialog v-model="isIndexing" full-width full-height seamless>
         <q-card>
           <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 30%">
-            <!-- <q-btn size="sm" icon="close" flat v-close-popup class="float-right close-button"/> -->
             <div
               style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-primary text-h3"
+              class="text-h6"
             >
-              INDEXING DATA<br>
-              <span
-                v-if="isIndexing"
-                style="margin-left: 20px; color: black"
-                class="text-h4"
-              >{{ toIndex }} remaining.</span>
+              INDEXING DATA
+              <br>
+              <span v-if="isIndexing">
+                {{ toIndex }} remaining.
+              </span>
             </div>
             <q-circular-progress
               v-if="isIndexing"
-              size="250px"
-              :thickness="0.5"
+              show-value
+              size="150px"
+              :thickness="0.2"
               :value="getIndexedPercent"
               color="primary"
-            ></q-circular-progress>
+              track-color="grey-3"
+            >
+            <q-avatar size="90px">
+              <img src="../assets/NOAA_logo.svg">
+            </q-avatar>
+            </q-circular-progress>
             <br/><br/>
+            <span class="text-h6">
+              please be patient
+            </span>
           </q-card-section>
         </q-card>
       </q-dialog>
