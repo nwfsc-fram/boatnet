@@ -130,7 +130,7 @@ export default class Home extends Vue {
   private async getUserAliasfromCouchDB() {
     if (this.user.activeUser) {
       this.activeUser = true;
-      this.user.activeUserAlias = undefined;
+      this.user.activeUserAlias = undefined;  // eventually remove this line - useful during dev.
       console.log('active user userName: ' + authService.getCurrentUser()!.username);
       if (!this.user.activeUserAlias) {
         console.log('getting active user alias');
@@ -141,7 +141,7 @@ export default class Home extends Vue {
           key: authService.getCurrentUser()!.username
         };
 
-        const couchAlias: any = await masterDb.view<any>(
+        let couchAlias: any = await masterDb.view<any>(
           'obs_web',
           'all_person_alias',
           queryOptions
@@ -149,8 +149,36 @@ export default class Home extends Vue {
 
 
         if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
-          console.log('setting active user alias');
-          this.user.activeUserAlias = couchAlias.rows[0].doc;
+          couchAlias = couchAlias.rows[0].doc;
+          if (couchAlias.firstName.toString() !== this.user.activeUser!.firstName!.toString()
+            || couchAlias.lastName.toString() !== this.user.activeUser!.lastName!.toString()
+            || couchAlias.personDocId.toString() !== this.user.activeUser!._id!.toString()
+            || couchAlias.roles.toString() !== JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)).toString()
+            ) {
+              couchAlias.firstName = this.user.activeUser!.firstName;
+              couchAlias.lastName = this.user.activeUser!.lastName;
+              couchAlias.personDocId = this.user.activeUser!._id;
+              couchAlias.roles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+
+              await masterDb.put(
+                couchAlias._id,
+                couchAlias,
+                couchAlias._rev)
+                .then(
+                  async () => {
+                    const updatedAlias: any = await masterDb.view<any>(
+                      'obs_web',
+                    'all_person_alias',
+                    queryOptions
+                    );
+                    console.log('setting active user alias');
+                    this.user.activeUserAlias = updatedAlias.rows[0].doc;
+                  }
+              );
+            } else {
+              this.user.activeUserAlias = couchAlias;
+            }
+
         } else {
           console.log('user alias not found');
           const newAlias = {
@@ -175,7 +203,6 @@ export default class Home extends Vue {
       } else {
         this.activeUser = false;
       }
-
   }
 
   private async getPermits() {
