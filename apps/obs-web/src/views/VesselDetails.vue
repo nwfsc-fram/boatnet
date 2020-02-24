@@ -50,9 +50,9 @@
 
         <q-select
             v-model="allowedPeople"
-            label="Authorized Personnel"
+            label="Authorized Personnel (must have 'captain' or 'delegate' role)"
             :options="personAliases"
-            :option-label="opt => capitalize(opt.firstName) + ' ' + capitalize(opt.lastName) + ' (' + opt.userName + ')' "
+            :option-label="opt => capitalize(opt.firstName) + ' ' + capitalize(opt.lastName) + ' (' + opt.userName + ')' + getApplicableRoles(opt.roles)"
             option-value="_id"
             @filter="personAliasesFilterFn"
             stack-label
@@ -60,6 +60,20 @@
             multiple
             use-chips
             >
+        <template v-slot:option="scope">
+          <q-item
+            v-bind="scope.itemProps"
+            v-on="scope.itemEvents"
+          >
+            <q-item-section avatar>
+                <q-icon v-if="scope.opt.roles.includes('captain')" color="primary" name="directions_boat" />
+                <q-icon v-if="scope.opt.roles.includes('delegate')" color="primary" name="work" />
+            </q-item-section>
+            <q-item-section>
+                <q-item-label>{{ capitalize(scope.opt.firstName)}} {{capitalize(scope.opt.lastName)}} ( {{scope.opt.userName}} )</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
         <template v-if="allowedPeople" v-slot:selected-item="scope">
             <q-chip
                 removable
@@ -69,9 +83,8 @@
                 color="primary"
                 text-color="white"
                 >
-                <q-avatar v-if="scope.opt.roles[0] == 'observer'" color="primary" text-color="white" icon="visibility" />
-                <q-avatar v-if="scope.opt.roles[0] == 'captain'" color="primary" text-color="white" icon="directions_boat" />
-                <q-avatar v-if="scope.opt.roles[0] == 'delegate'" color="primary" text-color="white" icon="work" />
+                <q-avatar v-if="scope.opt.roles.includes('captain')" color="primary" text-color="white" icon="directions_boat" />
+                <q-avatar v-if="scope.opt.roles.includes('delegate')" color="primary" text-color="white" icon="work" />
                 <span>{{ capitalize(scope.opt.firstName) + ' ' + capitalize(scope.opt.lastName) }}&nbsp; </span>
             </q-chip>
         </template>
@@ -139,6 +152,7 @@ import { Vessel, VesselTypeTypeName, PersonTypeName } from '@boatnet/bn-models';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 import _ from 'lodash';
+import { Notify } from 'quasar';
 
 @Component
 export default class VesselDetails extends Vue {
@@ -232,11 +246,19 @@ export default class VesselDetails extends Vue {
         );
 
         this.allPersonAliases = aliases.rows.map( (row: any) => row.doc );
-
     }
 
     private selectText(event: any) {
       event.target.select();
+    }
+
+    private getApplicableRoles(roles: [string]) {
+        const applicableRoles = roles.filter( (role) => ['captain', 'delegate'].includes(role));
+        if (applicableRoles.length > 0) {
+            return ' - ' + applicableRoles;
+        } else {
+            return ' - not a captain or delegate';
+        }
     }
 
     private portsFilterFn(val: string, update: any, abort: any) {
@@ -409,6 +431,24 @@ export default class VesselDetails extends Vue {
             this.reviewerOptions = reviewers.rows.map((row: any) => row.doc);
         } catch (err) {
             this.errorAlert(err);
+        }
+    }
+
+    @Watch('allowedPeople')
+    private async handler3(newVal: string, oldVal: string) {
+        for (const person of this.allowedPeople) {
+            if (!person.roles.includes('captain') && !person.roles.includes('delegate')) {
+                this.allowedPeople.splice(this.allowedPeople.indexOf(person), 1);
+                Notify.create({
+                    message: 'Personnel not added - missing required role',
+                        position: 'top-right',
+                        color: 'red',
+                        timeout: 2000,
+                        icon: 'warning',
+                        html: true,
+                        multiLine: true
+                });
+            }
         }
     }
 
