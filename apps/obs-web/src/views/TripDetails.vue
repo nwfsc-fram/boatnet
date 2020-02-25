@@ -457,25 +457,43 @@ export default class TripDetails extends Vue {
       }
 
       if (!this.trip.activeTrip!.maximizedRetention) {
-
         // first check whether there is a stored selection for the vessel and fishery
-
         // apply selection to new trip
         let tripSelection: any = null;
         if (vesselSelections[fisheryName] && vesselSelections[fisheryName].length > 0) {
           if (vesselSelections[fisheryName].length > 1) {
-            const sel1 = vesselSelections[fisheryName][0].selectionDate;
-            const sel2 = vesselSelections[fisheryName][1].selectionDate;
-            if (moment(sel1).isBefore(sel2, 'second')) {
-              tripSelection = vesselSelections[fisheryName].shift();
-            } else {
-              tripSelection = vesselSelections[fisheryName].pop();
-            }
+            vesselSelections[fisheryName].sort( (a: any, b: any) => {
+              if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
+                return 1;
+              } else if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
+                return -1;
+              } else {
+                return 0;
+              }
+            })
+
+            tripSelection = vesselSelections[fisheryName].shift()
+
+            // const sel1 = vesselSelections[fisheryName][0].selectionDate;
+            // const sel2 = vesselSelections[fisheryName][1].selectionDate;
+            // if (moment(sel1).isBefore(sel2, 'second')) {
+            //   tripSelection = vesselSelections[fisheryName].shift();
+            // } else {
+            //   tripSelection = vesselSelections[fisheryName].pop();
+            // }
           } else {
             tripSelection = vesselSelections[fisheryName].pop();
           }
-
-          await masterDb.post(vesselSelections);
+          // no longer need to save here as a selection is added later
+          // if (vesselSelections._id) {
+          //   await masterDb.put(
+          //     vesselSelections._id,
+          //     vesselSelections,
+          //     vesselSelections._rev
+          //   );
+          // } else {
+          //   await masterDb.post(vesselSelections);
+          // }
 
           this.trip.activeTrip!.isSelected = tripSelection.isSelected;
           this.trip.activeTrip!.notes = tripSelection.notes;
@@ -523,9 +541,8 @@ export default class TripDetails extends Vue {
       }
 
       if (!vesselSelections[fisheryName]) {
-        vesselSelections[fisheryName] = {};
+        vesselSelections[fisheryName] = [];
       }
-
 
       if (!vesselSelections[fisheryName] || vesselSelections[fisheryName].length < 1) {
         const activeOTSTarget: any = await this.getActiveOtsTarget();
@@ -562,7 +579,15 @@ export default class TripDetails extends Vue {
           }
         }
         vesselSelections[fisheryName].push(newSelection);
-        await masterDb.post(vesselSelections);
+        if (vesselSelections._id) {
+          await masterDb.put(
+            vesselSelections._id,
+            vesselSelections,
+            vesselSelections._rev
+          );
+        } else {
+          await masterDb.post(vesselSelections);
+        }
 
       }
 
@@ -912,7 +937,15 @@ private async getMinDate() {
       });
 
 
-      await masterDb.post(vesselSelections);
+      if (vesselSelections._id) {
+        await masterDb.put(
+          vesselSelections._id,
+          vesselSelections,
+          vesselSelections._rev
+        );
+      } else {
+        await masterDb.post(vesselSelections);
+      }
 
   }
 
