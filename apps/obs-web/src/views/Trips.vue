@@ -464,9 +464,9 @@ export default class Trips extends Vue {
       if (this.vessel.activeVessel) {
 
       const selectionSorter = (a: any, b: any) => {
-        if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
-          return -1;
-        } else if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
+        if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
+          return 1;
+        } else if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
           return -1;
         } else {
           return 0;
@@ -507,20 +507,28 @@ export default class Trips extends Vue {
           })
         ) {
           if (Array.isArray(savedSelections[fishery])) {
-            for (const selection of savedSelections[fishery].sort(
+            savedSelections[fishery].sort(
               (a: any, b: any) => {
                 return selectionSorter(a, b);
               }
-            )) {
-              if (savedSelections[fishery].indexOf(selection) < 1) {
-                const selectionObject = {
+            )
+
+            const selectionObject = {
                   fishery,
-                  isSelected: selection.isSelected,
-                  selectionDate: selection.selectionDate
+                  isSelected: savedSelections[fishery][0].isSelected,
+                  selectionDate: savedSelections[fishery][0].selectionDate
                   };
-                this.nextSelections.push(selectionObject);
-              }
-            }
+            this.nextSelections.push(selectionObject)
+            // for (const selection of savedSelections[fishery]) {
+            //   if (savedSelections[fishery].indexOf(selection) < 1) {
+            //     const selectionObject = {
+            //       fishery,
+            //       isSelected: selection.isSelected,
+            //       selectionDate: selection.selectionDate
+            //       };
+            //     this.nextSelections.push(selectionObject);
+            //   }
+            // }
           }
         }
       }
@@ -597,6 +605,7 @@ export default class Trips extends Vue {
           return;
         }
       }
+      this.trip.activeTrip = trip;
       this.activeTrip = trip;
       this.cancelAlert = true;
     }
