@@ -71,11 +71,11 @@
           <div class="text-h6">
             <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 12px; line-height: 20px" title="Trip Is Selected">
-              <q-icon name="warning" size="20px"></q-icon>
+              <q-icon name="person_add" size="20px"></q-icon>
               <span class="text-h6">&nbsp;Observer Required</span>
             </div>
             <div v-else class="text-white" style="font-size: 12px; line-height: 20px" title="Observer Not Required">
-              <q-icon name="not_interested" size="20px"></q-icon>
+              <q-icon name="remove" size="20px"></q-icon>
               <span class="text-h6">&nbsp;Observer Not Required</span>
             </div>
           </div>
@@ -109,7 +109,7 @@
                 </span>
               </div>
                 <div class="text-h6 text-white" style="font-size: 12px; line-height: 20px">
-                  <q-icon :name="selection.isSelected ? 'warning' : 'not_interested'" size="20px"></q-icon>
+                  <q-icon :name="selection.isSelected ? 'person_add' : 'remove'" size="20px"></q-icon>
                   <span  class="text-h6" >&nbsp;{{ selection.isSelected ? 'Observer Required' : 'Observer Not Required'}}</span>
                 </div>
             </q-card-section>
@@ -131,7 +131,7 @@
     </div>
     <div class="row items-start" v-if="!closedTripsTable">
 
-    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-4 text-white trip-card">
+    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white trip-card">
 
       <q-card-section>
           <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
@@ -144,11 +144,11 @@
         <div class="text-h6">
           <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
             <div v-if="trip.isSelected" class="text-white" style="font-size: 32px; float: right" title="Observer Required">
-            <q-icon name="warning" size="20px"></q-icon>
+            <q-icon name="person_add" size="20px"></q-icon>
             <span class="text-h6">&nbsp;Observer Required</span>
             </div>
             <div v-else class="text-white" style="font-size: 32px; float: right" title="Observer Not Required">
-            <q-icon name="not_interested" size="20px"></q-icon>
+            <q-icon name="remove" size="20px"></q-icon>
             <span class="text-h6">&nbsp;Observer Not Required</span>
             </div>
         </div>
@@ -511,14 +511,14 @@ export default class Trips extends Vue {
               (a: any, b: any) => {
                 return selectionSorter(a, b);
               }
-            )
+            );
 
             const selectionObject = {
                   fishery,
                   isSelected: savedSelections[fishery][0].isSelected,
                   selectionDate: savedSelections[fishery][0].selectionDate
                   };
-            this.nextSelections.push(selectionObject)
+            this.nextSelections.push(selectionObject);
             // for (const selection of savedSelections[fishery]) {
             //   if (savedSelections[fishery].indexOf(selection) < 1) {
             //     const selectionObject = {
@@ -680,11 +680,13 @@ export default class Trips extends Vue {
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
         await masterDb.post(this.openTrips[1]);
       } else {
-        vesselSelections[fisheryName].push({
-                              isSelected: this.activeTrip.isSelected,
-                              notes: this.activeTrip.notes,
-                              selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
-                            });
+        if (!['Maximized Retention Trip - Not Selected', 'Maximized Retention chosen - selection removed'].includes(this.activeTrip.notes ) ) {
+          vesselSelections[fisheryName].push({
+                                isSelected: this.activeTrip.isSelected,
+                                notes: this.activeTrip.notes,
+                                selectionDate: this.activeTrip.selectionDate ? this.activeTrip.selectionDate : this.activeTrip.createdDate
+                              });
+        }
       }
 
       await masterDb.post(vesselSelections);
@@ -835,18 +837,18 @@ export default class Trips extends Vue {
 
 private computedTripClass(trip: WcgopTrip) {
   if (trip.isSelected) {
-    return 'my-card bg-green text-white';
-  } else {
     return 'my-card bg-primary text-white';
+  } else {
+    return 'my-card bg-secondary text-white';
   }
 }
 
 
 private computedSelectionClass(selection: any) {
   if (selection.isSelected) {
-    return 'my-card bg-green text-white';
-  } else {
     return 'my-card bg-primary text-white';
+  } else {
+    return 'my-card bg-secondary text-white';
   }
 }
 
@@ -995,6 +997,9 @@ private async getAuthorizedVessels() {
 
   .p-datepicker
     border: none !important
+
+  .p-datepicker span.p-highlight
+    background-color: #007EC6 !important
 
 </style>
 

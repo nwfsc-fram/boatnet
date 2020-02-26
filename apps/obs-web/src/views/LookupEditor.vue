@@ -74,7 +74,7 @@
         <q-btn v-if="docType !== 'taxonomy-alias'" class="vertical-bottom" label="add" color="red" style="float: right; margin: 15px" @click="getNewLookupVal"></q-btn>
       </div>
 
-      <div v-if="selectedDoc" class="col5" style="border: 2px solid #1675d1; padding: 4px; ; margin: 4px; max-width: 550px">
+      <div v-if="selectedDoc" class="col5" style="border: 2px solid #007EC6; padding: 4px; ; margin: 4px; max-width: 550px">
         <div class="text-h6" style="padding: 0 15px; color: black">{{ selectedDoc.type.toUpperCase() }} DOC DETAILS:</div>
         <q-list v-if="selectedDoc" separator dense>
           <q-item v-for="key of Object.keys(selectedDoc).filter( (key) => { return !['_id', '_rev', 'type', 'createdBy', 'createdDate', 'uploadedBy', 'uploadedDate', 'updatedBy', 'updatedDate'].includes(key)})" :key="key"  style="line-height: 2em">
@@ -99,9 +99,9 @@
         </q-list>
         <div style="margin-left: 15px">
           <q-btn class="vertical-bottom" label="delete" color="red" style="float: right; margin: 15px 15px 15px 0" @click="deleteConfirm = true"></q-btn>
-          <q-btn class="vertical-bottom" label="edit" color="blue" style="float: right; margin: 15px 15px" @click="editLookup = true"></q-btn>
+          <q-btn class="vertical-bottom" label="edit" color="primary" style="float: right; margin: 15px 15px" @click="editLookup = true"></q-btn>
           <q-btn v-if="'isActive' in selectedDoc && !selectedDoc.isActive" class="vertical-bottom" label="set active" color="red" style="float: right; margin: 15px 0" @click="setActive"></q-btn>
-          <q-btn v-else class="vertical-bottom" label="set inactive" color="blue" style="float: right; margin: 15px 0" @click="setInactive"></q-btn>
+          <q-btn v-else class="vertical-bottom" label="set inactive" color="primary" style="float: right; margin: 15px 0" @click="setInactive"></q-btn>
         </div>
       </div>
     </div>
@@ -630,7 +630,7 @@ export default class LookupEditor extends Vue {
 
 <style scoped>
   .q-item--active {
-    background-color: #1675d1;
+    background-color: #007EC6;
     color: white;
   }
 </style>

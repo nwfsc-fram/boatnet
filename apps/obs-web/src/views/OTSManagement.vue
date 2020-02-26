@@ -433,7 +433,7 @@ export default class OtsMangement extends Vue {
 
 <style>
 .q-table__title {
-    color: #1675d1;
+    color: #007EC6;
     font-weight: bold;
 }
 </style>

@@ -470,9 +470,9 @@ export default class TripDetails extends Vue {
               } else {
                 return 0;
               }
-            })
+            });
 
-            tripSelection = vesselSelections[fisheryName].shift()
+            tripSelection = vesselSelections[fisheryName].shift();
 
             // const sel1 = vesselSelections[fisheryName][0].selectionDate;
             // const sel2 = vesselSelections[fisheryName][1].selectionDate;
@@ -500,7 +500,6 @@ export default class TripDetails extends Vue {
           this.trip.activeTrip!.selectionDate = tripSelection.selectionDate;
 
         } else {
-
           const activeOTSTarget: any = this.getActiveOtsTarget();
 
           const randomNum = Math.floor(Math.random() * 100);
@@ -545,6 +544,7 @@ export default class TripDetails extends Vue {
       }
 
       if (!vesselSelections[fisheryName] || vesselSelections[fisheryName].length < 1) {
+
         const activeOTSTarget: any = await this.getActiveOtsTarget();
         const randomNum = Math.floor(Math.random() * 100);
 
