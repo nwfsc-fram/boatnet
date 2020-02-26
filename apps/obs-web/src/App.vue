@@ -19,7 +19,7 @@
 }
 
 .q-table th {
-    color: #1675d1 !important;
+    color: #007EC6 !important;
     font-weight: bold !important;
     font-size: 14px !important;
 }
