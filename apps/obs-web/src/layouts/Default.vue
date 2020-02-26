@@ -572,7 +572,7 @@ export default class DefaultLayout extends Vue {
 
 <style>
 .q-field__label {
-  color: #027be3 !important;
+  color: #007EC6 !important;
 }
 
 .q-field__native {

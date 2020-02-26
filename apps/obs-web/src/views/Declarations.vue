@@ -41,7 +41,7 @@
           <q-card
             v-for="(obj, index) in oleVessel.activeDeclarations"
             :key="index"
-            class="my-card bg-blue-6 text-white"
+            class="my-card bg-primary text-white"
           >
             <q-card-section>
               <div class="text-h6">{{ obj["declarationCode"] }}</div>

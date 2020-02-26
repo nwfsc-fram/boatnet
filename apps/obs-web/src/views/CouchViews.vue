@@ -6,7 +6,7 @@
 
             <q-select v-model="selectedDoc" outlined dense :options="designDocs" label="Design Doc" @input="getViews(selectedDoc)" :option-label="(doc) => doc.replace('_design/', '')" style="width: 200px; margin: 10px"></q-select>
             <q-select v-model="selectedView" outlined dense :options="views" label="View" @input="getView(selectedView)" style="width: 200px; margin: 10px"></q-select>
-            <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px; width: 1000px" v-if="selectedView">
+            <div style="border: 2px solid #007EC6; border-radius: 5px; margin: 10px; padding: 10px; width: 1000px" v-if="selectedView">
                 <div class="text-h6">Selected View: {{ selectedView.toUpperCase() }}</div>
                 <div>
                     {{ viewDocs[selectedView].map }}
@@ -27,14 +27,14 @@
         <q-expansion-item label="View Selection" v-model="viewExpanded" dense header-class="bg-primary text-white" expand-icon-class="text-white">
         <div style="display: flex">
 
-            <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px" v-if="designDocs.length > 0">
+            <div style="border: 2px solid #007EC6; border-radius: 5px; margin: 10px; padding: 10px" v-if="designDocs.length > 0">
                 <div class="text-h6">Design Docs</div>
                 <q-list>
                     <q-item clickable :active="selectedDoc === doc" active-class="active-item" v-for="doc of designDocs" :key="designDocs.indexOf(doc)" @click.native="getViews(doc)">{{ doc.replace('_design/', '' ) }}</q-item>
                 </q-list>
             </div>
 
-            <div style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px; max-height: 400px" v-if="views.length > 0">
+            <div style="border: 2px solid #007EC6; border-radius: 5px; margin: 10px; padding: 10px; max-height: 400px" v-if="views.length > 0">
                 <div class="text-h6">Views</div>
                 <q-scroll-area style="height: 350px; width: 200px;">
                     <q-list>
@@ -53,7 +53,7 @@
 
 
         <q-expansion-item label="Computed Results" v-model="computedResultsExpanded" dense header-class="bg-primary text-white" expand-icon-class="text-white">
-            <div v-if="viewResults.length > 0" style="border: 2px solid #1675d1; border-radius: 5px; margin: 10px; padding: 10px">
+            <div v-if="viewResults.length > 0" style="border: 2px solid #007EC6; border-radius: 5px; margin: 10px; padding: 10px">
                 <div>Loaded Docs: {{ viewResults.length }} </div>
 
                 <q-btn label="get results" @click="getResults" :loading="loading" wait-for-ripple></q-btn>
@@ -481,7 +481,7 @@ export default class CouchViews extends Vue {
     }
 
     .active-item {
-        color: #1675d1 !important;
+        color: #007EC6 !important;
         font-weight: bold;
         text-transform: uppercase;
     }
