@@ -37,6 +37,10 @@ import DebrieferCatchSpecimens from './views/DebrieferCatchSpecimens.vue';
 // Vue.use(VueResource);
 
 import VueCompositionApi from '@vue/composition-api';
+import { colors } from 'quasar';
+
+colors.setBrand('primary', '#007EC6');
+colors.setBrand('secondary', '#153547');
 
 Vue.use(Quasar, {
   config: {},

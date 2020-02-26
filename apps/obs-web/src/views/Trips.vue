@@ -118,18 +118,10 @@
 
 
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips
+      <q-btn :color="getBtnColor()" size="sm" @click="setTablePref()">{{ closedTripsTable ? 'View As Table' : 'View As Cards'}}</q-btn>
 
-    <q-toggle
-      style="margin-left: 10px"
-      v-model="closedTripsTable"
-      checked-icon="check"
-      unchecked-icon="clear"
-      color="primary"
-      left-label
-      label="view as table"
-    />
     </div>
-    <div class="row items-start" v-if="!closedTripsTable">
+    <div class="row items-start" v-if="closedTripsTable">
 
     <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white trip-card">
 
@@ -167,6 +159,7 @@
   <div v-else>
 
     <q-table
+      v-if="closedTrips.length > 0"
       :data="closedTrips"
       :columns="columns"
       :pagination.sync="pagination"
@@ -323,6 +316,8 @@ export default class Trips extends Vue {
   @State('alert') private alert!: AlertState;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+  @Action('setClosedTripsTable', {namespace: 'user'}) private setClosedTripsTable: any;
+  @Getter('closedTripsTable', {namespace: 'user'}) private closedTripsTable: any;
 
   private userTrips: any = [];
   private vessels = [];
@@ -345,7 +340,6 @@ export default class Trips extends Vue {
   private nextSelections: any = [];
   private authorizedVessels: Vessel[] = [];
   private tripsApiTrips: any[] = [];
-  private closedTripsTable: boolean = false;
   private file: any = null;
   private fileUrl: any = null;
   private transferring: boolean = false;
@@ -953,6 +947,18 @@ private async getAuthorizedVessels() {
       }
     });
 }
+
+  private setTablePref() {
+    this.setClosedTripsTable(!this.closedTripsTable);
+  }
+
+  private getBtnColor() {
+    if (this.closedTripsTable) {
+      return 'primary';
+    } else {
+      return 'secondary';
+    }
+  }
 
   private async created() {
     // this.setActiveVessel();
