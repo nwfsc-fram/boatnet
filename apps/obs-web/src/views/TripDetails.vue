@@ -799,14 +799,13 @@ private async getMinDate() {
               queryOptions
             );
       const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
-
       for (const row of openTrips) {
         if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
           if (row.doc.tripStatus.description === 'open') {
             {
               this.existingTripStart = row.doc.departureDate;
               this.existingTripEnd = row.doc.returnDate;
-              const days = moment(row.doc.returnDate).diff(row.doc.departureDate, 'days');
+              const days = moment(moment(row.doc.returnDate).format('YYYY-MM-DD')).diff(moment(row.doc.departureDate).format('YYYY-MM-DD'), 'days');
               for (i = 0; i < days; i++) {
                   const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
                   invalidDay.add(i, 'days');
@@ -1012,14 +1011,7 @@ private async getMinDate() {
     // this.getLatestDepartureDate();
     this.getBookedDates();
     this.getPorts();
-    this.getFisheryOptions().then( () => {
-        // default to EM EFP for now
-        for (const fishery of this.fisheryOptions) {
-          if (fishery.description === 'Electronic Monitoring EFP') {
-            Vue.set(this.trip.activeTrip!, 'fishery', fishery);
-          }
-        }
-    });
+    this.getFisheryOptions();
     if (this.trip.activeTrip!.departureDate) {
       this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
     }
