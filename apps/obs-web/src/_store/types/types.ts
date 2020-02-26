@@ -49,6 +49,7 @@ export interface UserState {
   newUser: boolean;
   unLinkedApexUsers: any[];
   captainMode: boolean;
+  closedTripsTable: boolean;
 }
 
 export interface VesselState {

@@ -10,7 +10,7 @@
 
         <q-card style="padding: 20px; max-width: 400px" class="bg-blue-grey-1">
           <!-- <div v-if="this.$route.params.id === 'new'"> -->
-            <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Nubmer" @click.native="selectText"></q-input>
+            <q-input v-model="emefp.activeEmefp.emEfpNumber" label="EM Number" @click.native="selectText"></q-input>
             <q-select
               v-model="emefp.activeEmefp.vessel"
               label="Vessel"
