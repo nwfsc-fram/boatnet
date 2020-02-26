@@ -229,13 +229,13 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <div style="background-color: white">
+      <div style="text-align: center; background-color: white; height: 100%; width: 100%">
 
           <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Capture Logbook Image
               <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
           </label>
 
-          <div v-if="file" style="padding-left: 5%; padding-top: 5%">
+          <div v-if="file" style="padding-top: 5%">
               <div class="text-h6">Logbook Capture</div>
               <img :src="fileUrl" style="width: 95%">
           </div>
@@ -244,23 +244,35 @@
               <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
           </label>
 
+          <div v-if="activeTrip">
+            <div class="text-h6">
+              planned trip dates:
+            </div>
+            <div>
+              start: {{ formatDateTime(this.activeTrip.departureDate) }} - end: {{ formatFullDate(this.activeTrip.returnDate) }}
+            </div>
+          </div>
           <div>
-            <div class="text-h6" style="padding-left: 5%">Actual Trip Dates:</div>
+            <br>
+            <div class="text-h6">Select Actual Trip Dates:</div>
             <pCalendar
               v-model="tripDates"
-              :touchUI="true"
+              :touchUI="false"
+              :inline="true"
               :maxDate="maxDate"
+              placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="padding-left: 5%">
+              style="width: 100%;">
             </pCalendar>
-            <br><br><br><br>
+
+            <br><br><br>
           </div>
         <br>
         <div class="text-primary" style="padding-left: 5%">
           <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
           &nbsp;
-          <q-btn color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
+          <q-btn v-if="activeTrip && activeTrip.captainAffirmedDepartureDate && activeTrip.captainAffirmedReturnDate" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
           &nbsp;
           <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           <br><br>
@@ -612,20 +624,21 @@ export default class Trips extends Vue {
       }
 
       this.activeTrip = trip;
-      if (moment(this.activeTrip.departureDate).isAfter(moment(), 'day')) {
-        Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(moment().format()));
-      } else {
-        Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(this.activeTrip.departureDate));
-      }
-      if (moment(this.activeTrip.returnDate).isAfter(moment(), 'day')) {
-        Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(moment().format()));
-      } else {
-        Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(this.activeTrip.returnDate));
-      }
+      // if (moment(this.activeTrip.departureDate).isAfter(moment(), 'day')) {
+      //   Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(moment().format()));
+      // } else {
+      //   Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(this.activeTrip.departureDate));
+      // }
+      // if (moment(this.activeTrip.returnDate).isAfter(moment(), 'day')) {
+      //   Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(moment().format()));
+      // } else {
+      //   Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(this.activeTrip.returnDate));
+      // }
+      // this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
+      // this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
 
       this.closeAlert = true;
-      this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
-      this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
+      this.tripDates = [];
     }
 
     private async saveSelection() {
@@ -981,11 +994,20 @@ private async getAuthorizedVessels() {
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
+    // if (newVal[0]) {
+    //   this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
+    // }
+    // if (newVal[1]) {
+    //   this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
+    // }
     if (newVal[0]) {
-      this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
+      this.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
+      if (!newVal[1]) {
+        this.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
+      }
     }
     if (newVal[1]) {
-      this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
+      this.activeTrip!.captainAffirmedReturnDate = moment(newVal[1]).format();
     }
   }
 
