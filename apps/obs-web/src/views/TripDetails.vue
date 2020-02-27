@@ -809,7 +809,7 @@ private async getMinDate() {
               this.existingTripStart = row.doc.departureDate;
               this.existingTripEnd = row.doc.returnDate;
               const days = moment(moment(row.doc.returnDate).format('YYYY-MM-DD')).diff(moment(row.doc.departureDate).format('YYYY-MM-DD'), 'days');
-              for (i = 0; i < days; i++) {
+              for (i = 1; i < days; i++) {
                   const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
                   invalidDay.add(i, 'days');
                   this.invalidDates.push(new Date(invalidDay.format()));
