@@ -168,12 +168,15 @@
       </div>
 
     <q-dialog v-model="missingRequired">
-          <div class="text-h6">
-            You must specify a fishery.
-          </div>
-        <div style="float: right;">
-          <q-btn color="primary" @click="missingRequired = false" label="ok"/>
-        </div>
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">
+              You must specify a fishery.
+            </div>
+            <q-btn style="float: right" color="primary" @click="missingRequired = false" label="ok"/>
+            <br><br>
+          </q-card-section>
+        </q-card>
     </q-dialog>
 
     <q-dialog v-model="daysWarn">
@@ -763,7 +766,7 @@ private async getMinDate() {
       if (this.trip.index === 1) {
         for (const row of openTrips) {
           if ( row.doc.type === 'ots-trip' &&
-                row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber === vesselId &&
+                (row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber) === vesselId &&
                 row.doc._id !== this.trip.activeTrip!._id
               ) {
                   this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
@@ -1038,7 +1041,9 @@ private async getMinDate() {
     if (newVal[1]) {
       this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
     }
+
     if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
+      console.log('THIS IS HAPPENING!!!!');
       this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
       this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
     }
