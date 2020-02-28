@@ -108,7 +108,7 @@
         </q-expansion-item>
 
         <q-item
-          to="/debriefer/summary"
+          to="/debriefer/data"
           exact
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >

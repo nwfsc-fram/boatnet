@@ -27,13 +27,15 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
 import UserDetails from './views/UserDetails.vue';
-import Debriefer from './views/Debriefer.vue';
+import DebrieferErrors from './views/DebrieferErrors.vue';
+import DebrieferData from './views/DebrieferData.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
 import DebrieferCatches from './views/DebrieferCatches.vue';
 import DebrieferCatchSpecies from './views/DebrieferCatchSpecies.vue';
 import DebrieferCatchBaskets from './views/DebrieferCatchBaskets.vue';
 import DebrieferCatchSpecimens from './views/DebrieferCatchSpecimens.vue';
+import DebrieferDialog from './views/DebrieferDialog.vue';
 // Vue.use(VueResource);
 
 import VueCompositionApi from '@vue/composition-api';
@@ -66,13 +68,15 @@ Vue.use(Quasar, {
 Vue.use(VueCompositionApi);
 
 Vue.component('appUserDetails', UserDetails);
-Vue.component('appDebriefer', Debriefer);
+Vue.component('appDebrieferErrors', DebrieferErrors);
+Vue.component('appDebrieferDialog', DebrieferDialog);
 Vue.component('appDebrieferTrips', DebrieferTrips);
 Vue.component('appDebrieferOperations', DebrieferOperations);
 Vue.component('appDebrieferCatches', DebrieferCatches);
 Vue.component('appDebrieferCatchSpecies', DebrieferCatchSpecies);
 Vue.component('appDebrieferCatchBaskets', DebrieferCatchBaskets);
 Vue.component('appDebrieferCatchSpecimens', DebrieferCatchSpecimens);
+Vue.component('appDebrieferData', DebrieferData);
 
 Vue.config.productionTip = false;
 

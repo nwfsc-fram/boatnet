@@ -14,6 +14,9 @@
       @cell-edit-init="onCellEditInit"
       data-key="key"
     >
+      <template #empty>
+        No data available
+      </template>
       <template #header>
        
         <div style="text-align:left; float:left">
@@ -48,7 +51,7 @@
         <template v-if="isEditable" #editor="slotProps">
           <InputText type="text" v-model="cellVal" class="p-column-filter" />
         </template>
-       <!-- <template #filter>
+        <!--<template #filter>
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
         </template>-->
       </Column>
@@ -99,3 +102,9 @@ export default class PrimeTable extends Vue {
   }
 }
 </script>
+
+<style scoped>
+  .p-inputtext {
+    background-color: inherit !important;
+  }
+</style>

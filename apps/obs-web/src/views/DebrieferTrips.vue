@@ -38,6 +38,8 @@ Vue.component('PrimeTable', PrimeTable);
 export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
+  @Getter('tripIds', { namespace: 'debriefer' })
+  private tripIds: any;
 
   @Action('addTripId', { namespace: 'debriefer' })
   private addTripId: any;
@@ -48,7 +50,7 @@ export default class DebrieferTrips extends Vue {
   private editingRows = [];
   private originalRows: any = null;
   private columns = [
-    { field: 'key', header: 'Id' },
+    { field: 'tripNum', header: 'Id' },
     { field: 'tripStatus.description', header: 'Status' },
     { field: 'vessel.vesselName', header: 'Vessel' },
     { field: 'program.name', header: 'Program' },
@@ -69,26 +71,24 @@ export default class DebrieferTrips extends Vue {
     this.removeTripId(event.data._id);
   }
 
+  @Watch('tripIds')
+  private async onPropertyChanged(value: any, oldValue: any) {
+    await this.getTrips();
+  }
+
   private async getTrips() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
       const options: ListOptions = {
-        limit: 20
+        keys: this.tripIds
       };
 
-      const trips = await masterDB.viewWithDocs<any>(
-        'MainDocs',
-        'all-trips',
+      const trips = await masterDB.listWithDocs(
         options
       );
 
       for (const row of trips.rows) {
-        const trip = row.doc;
-        trip.key = row.key;
-        this.WcgopTrips.push(trip);
-        if (this.debriefer.tripIds.indexOf(trip._id) !== -1) {
-          this.selected.push(trip);
-        }
+        this.WcgopTrips.push(row);
       }
     } catch (err) {
       this.error(err);
@@ -96,6 +96,10 @@ export default class DebrieferTrips extends Vue {
   }
 
   private created() {
+    // TODO fix this, shouldn't be removing tripIds every time
+    for (const id of this.tripIds) {
+      this.removeTripId(id);
+    }
     this.getTrips();
   }
 
