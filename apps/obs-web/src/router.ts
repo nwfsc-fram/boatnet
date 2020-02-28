@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
+import AllTrips from './views/AllTrips.vue';
+import Help from './views/Help.vue';
 import Home from './views/Home.vue';
 import LookupEditor from './views/LookupEditor.vue';
 import Debriefer from './views/Debriefer.vue';
@@ -24,6 +26,7 @@ import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import EMDataCompare from './views/EMDataCompare.vue';
 import EMTaskManagement from './views/EMTaskManagement.vue';
+import EMRateManagement from './views/EMRateManagement.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 import ObserverAvailability from './views/ObserverAvailability.vue';
@@ -32,11 +35,9 @@ import Vessels from './views/Vessels.vue';
 import VesselDetails from './views/VesselDetails.vue';
 import ELogbook from './views/ELogbook.vue';
 import CouchViews from './views/CouchViews.vue';
-import ViewHauls from './views/ViewHauls.vue';
 import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
-import Help from './views/Help.vue';
-import AllTrips from './views/AllTrips.vue';
+import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 
 import { authService } from '@boatnet/bn-auth';
@@ -176,6 +177,12 @@ const router = new Router({
         },
         {
           path: '/em-task-management/', name: 'EM Task Management', component: EMTaskManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-rate-management/', name: 'EM Rate Management', component: EMRateManagement,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
