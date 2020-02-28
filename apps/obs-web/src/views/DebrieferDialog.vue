@@ -78,7 +78,7 @@ export default createComponent({
     const evalType: any = ref('');
     const dates: any = ref([]);
     const selected: any = ref([]);
-    let trips: any = ref([]);
+    const trips: any = ref([]);
 
     const defaultEvaluationPeriods: any = ref([]);
     const pagination = { rowsPerPage: 15 };
