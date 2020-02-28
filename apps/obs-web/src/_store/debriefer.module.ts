@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { Module, ActionTree, MutationTree, GetterTree } from 'vuex';
+import Vuex, { Module, ActionTree, MutationTree } from 'vuex';
 import { RootState } from '@/_store/types/types';
 import { DebrieferState } from '@/_store/types/types';
 
@@ -72,16 +72,9 @@ const mutations: MutationTree<DebrieferState> = {
   }
 };
 
-const getters: GetterTree<DebrieferState, RootState> = {
-  tripIds(getState: DebrieferState) {
-    return getState.tripIds;
-  }
-};
-
 export const debriefer: Module<DebrieferState, RootState> = {
     namespaced: true,
     state,
     actions,
-    mutations,
-    getters
+    mutations
   };

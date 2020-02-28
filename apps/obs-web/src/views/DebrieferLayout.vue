@@ -43,6 +43,7 @@
             @input="setTripIds"
           />
           <q-btn
+            :disable="observer === '' ? true : false"
             style="display: inline-block"
             color="white"
             text-color="black"
