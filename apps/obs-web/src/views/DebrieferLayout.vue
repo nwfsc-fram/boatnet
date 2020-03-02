@@ -13,7 +13,7 @@
         />
       </div>
       <div v-if="program === 'wcgop'">
-        <div class="q-pa-md" style="float:left; width:30%">
+        <div class="q-pa-md" style="float:left; width:35%">
           <q-select
             use-input
             style="display: inline-block; width: 60%"
@@ -35,7 +35,7 @@
         </div>
         <div class="q-pa-md">
           <q-select
-            style="display: inline-block; width: 20%"
+            style="display: inline-block; width: 25%"
             :disable="observer === '' ? true : false"
             v-model="evaluationPeriod"
             :options="evaluations"
@@ -43,19 +43,23 @@
             @input="setTripIds"
           />
           <q-btn
+            round
             :disable="observer === '' ? true : false"
+            class="q-ma-xs"
             style="display: inline-block"
             color="white"
             text-color="black"
-            label="Add"
+            icon="add"
             @click="add"
           />
           <q-btn
+            round
             :disable="observer === '' ? true : false"
+            class="q-ma-xs"
             style="display: inline-block"
             color="white"
             text-color="black"
-            label="Edit"
+            icon="edit"
             @click="edit"
           />
         </div>
@@ -81,7 +85,7 @@
 
     <app-debriefer-dialog :showDialog.sync="showDialog" />
 
-    <TabView class="q-pa-md">
+    <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
         <app-debriefer-data />
       </TabPanel>
@@ -147,13 +151,12 @@ export default createComponent({
       const observers = [];
 
       if (!showAll.value) {
-        // queryOptions.key = state.user.activeUserAlias._id; // setting debriefer
-        queryOptions.key = '852949f4bbd4095bd4a70a8ad130a261';
+        queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
       }
 
       const results = await masterDB.view<any>(
         'obs_web',
-        'all-wcgop-observers',
+        'all_wcgop_observers',
         queryOptions
       );
 
@@ -181,14 +184,15 @@ export default createComponent({
 
     async function getEvaluationPeriods() {
       const evaluationPeriods: any[] = [];
+      const debrieferId = state.user.activeUserAlias.personDocId;
       const results = await masterDB.viewWithDocs<any>(
         'obs_web',
-        'evaluation-periods',
+        'evaluation_periods',
         { key: observer.value.value }
       );
 
       for (const row of results.rows) {
-        if (row.doc.debriefer === '48b80556bad0f18cb0a3748659ea6f9e') {
+        if (row.doc.debriefer === debrieferId) {
           const startDate = moment(row.doc.startDate).format('MM/DD/YY');
           const endDate = moment(row.doc.endDate).format('MM/DD/YY');
           evaluationPeriods.push({

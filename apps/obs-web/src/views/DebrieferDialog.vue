@@ -160,6 +160,7 @@ export default createComponent({
     }
 
     function save() {
+      closeDialog();
       const tripIds: number[] = [];
       for (const val of selected.value) {
         tripIds.push(val._id);
@@ -180,11 +181,10 @@ export default createComponent({
       }
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       context.emit('update:showDialog', false);
-      closeDialog();
     }
 
     function closeDialog() {
-        context.emit('update:showDialog', false);
+      context.emit('update:showDialog', false);
     }
 
     return {
