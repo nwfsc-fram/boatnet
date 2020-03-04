@@ -9,7 +9,7 @@
     <div class="row q-gutter-sm relative-bottom ">
       <q-btn color="primary" icon="check" label="End Cruise" @click="showDeleteDialog = true" />
       <q-space/>
-      <q-btn class="q-ml-md" color="primary" icon="play_arrow" label="Go To Trips" :to="'/'"/>
+      <q-btn class="q-ml-md" color="primary" icon="play_arrow" label="Go To Trips" @click="saveCruise"/>
     </div>
     <boatnet-warning-dialog
       :message="deleteMessage"
@@ -28,10 +28,12 @@ import { createComponent, reactive, computed } from '@vue/composition-api';
 import { getCruise } from '../helpers/cruiseInfo';
 import moment from 'moment';
 import { AshopCruise } from '@boatnet/bn-models';
+import { newCruiseApiTrip } from '@boatnet/bn-common';
 
 export default createComponent({
   setup(props, context) {
     const store: any = context.root.$store;
+    const router = context.root.$router;
     const showDeleteDialog: boolean = false;
     const deleteMessage: string = 'Are you sure you want to end this cruise? You will no '
                                 + 'longer be able to access and edit this data. '
@@ -66,9 +68,22 @@ export default createComponent({
       store.dispatch('tripsState/save', cruise.value);
     }
 
+    async function saveCruise() {
+      router.push({ path: '/' });
+      if (cruise.value.cruiseNum === 0 &&
+          cruise.value.vessel &&
+          cruise.value.vessel.vesselName &&
+          cruise.value.startDate) {
+        await newCruiseApiTrip(cruise.value).then( (res: any) => {
+          cruise.value.cruiseNum = res.cruiseNum;
+        });
+      }
+    }
+
     return {
       appConfig,
       saveOnUpdate,
+      saveCruise,
       cruise,
       showDeleteDialog,
       deleteMessage,

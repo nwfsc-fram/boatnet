@@ -1,16 +1,7 @@
-import { AuthState, authService } from '@boatnet/bn-auth';
-
-import { mapState } from 'vuex';
-import { State, Action, Getter } from 'vuex-class';
-
-import {
-    AlertState, GeneralState, PermitState,
-    TripState, UserState, VesselState
-  } from '../_store/types/types';
+import { authService } from '@boatnet/bn-auth';
 
 import request from 'request';
 import moment from 'moment';
-import { vessel } from '@/_store/vessel.module';
 import { WcgopTrip } from '@boatnet/bn-models/lib';
 
 const jwt = authService.getCurrentUser() ? authService.getCurrentUser()!.jwtToken : '';
@@ -18,6 +9,7 @@ const jwt = authService.getCurrentUser() ? authService.getCurrentUser()!.jwtToke
 const tripsApiBaseUrl = authService.getTripsApiUrl() ? authService.getTripsApiUrl() : '';
 const tripsApiUrl = tripsApiBaseUrl + '/api/v1/trips';
 const catchApiUrl = tripsApiBaseUrl + '/api/v1/tripCatch';
+const cruiseApiUrl = tripsApiBaseUrl + '/api/v1/cruise';
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
@@ -86,19 +78,26 @@ export function getCatchApiCatch(tripNum: any) {
     });
 }
 
+export function newCruiseApiTrip(newCruise: any) {
+    return newDeployment(newCruise, cruiseApiUrl);
+}
+
 export function newTripsApiTrip(newTrip: any) {
+    return newDeployment(newTrip, tripsApiUrl);
+}
+
+// calls newTrip or newCruise API
+function newDeployment(deployment: any, url: string) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = tripsApiUrl;
         request.post(
             {
-                url: queryUrl,
+                url,
                 json: true,
                 headers: {
                     authorization: 'Token ' + jwt,
                 },
-                body: newTrip
+                body: deployment
             }, (err: any, response: any, body: any) => {
-                console.log(response);
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {

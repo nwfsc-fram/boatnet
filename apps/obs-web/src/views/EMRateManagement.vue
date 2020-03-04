@@ -117,7 +117,7 @@ import moment from 'moment';
 import Chart from 'primevue/chart';
 Vue.component('pChart', Chart);
 
-import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
+import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth/lib';
 
 export default createComponent({
