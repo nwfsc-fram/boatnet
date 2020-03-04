@@ -220,7 +220,7 @@ import {
   WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
 
-import { getTripsApiTrip, getTripsApiTrips, newTripsApiTrip } from '@boatnet/bn-common';
+import { newTripsApiTrip } from '@boatnet/bn-common';
 
 // import { username, password } from '../config/secrets'
 
