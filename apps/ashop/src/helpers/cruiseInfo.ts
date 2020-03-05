@@ -53,21 +53,12 @@ export async function getTrips(appMode: string) {
 
 export async function getCruise() {
     const cruises = await getDocByType('ashop', 'cruise');
-    if (cruises && cruises.length === 0) {
-        const cruiseNum: number = 100001; // TODO use API to generate cruiseId
-        const newCruise: Base = { type: 'ashop-cruise', cruiseNum };
-        await db.post(newCruise).then((response: any) => {
-            newCruise._id = response.id;
-            newCruise._rev = response.rev;
-        });
-        return newCruise;
-    } else {
-        for (const cruiseVal of cruises) {
-            if (cruiseVal.isActive) {
-                return cruiseVal;
-            }
+    for (const cruiseVal of cruises) {
+        if (cruiseVal.isActive) {
+            return cruiseVal;
         }
     }
+    return null;
 }
 
 export function addTripIdToCruise(tripId: CouchID) {
