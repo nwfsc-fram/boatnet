@@ -78,7 +78,7 @@ or base64 encoded password:
 
 - This will return a JWT response with roles.
 - If you want to verify this manually, paste the encoded token into https://jwt.io along with the public cert. You should see Signature Verified.
--
+- To encode pw run echo -n 'test123' | base64
 ## Development Application Configuration
 
 `obs-web` and `obs-wcgop-optecs` are configured to proxy automatically to this server, see `vue.config.js`
