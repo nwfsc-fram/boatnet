@@ -74,10 +74,19 @@ export default createComponent({
           cruise.value.vessel &&
           cruise.value.vessel.vesselName &&
           cruise.value.startDate) {
-        await newCruiseApiTrip(cruise.value).then( (res: any) => {
-          cruise.value.cruiseNum = res.cruiseNum;
-        });
+
+            const newCruise = {
+              departureDate: cruise.value.startDate,
+              returnDate: '',
+              vesselId: cruise.value.vessel._id,
+              vesselName: cruise.value.vessel.vesselName,
+              createdDate: moment().format()
+            };
+            await newCruiseApiTrip(newCruise).then( (res: any) => {
+              cruise.value.cruiseNum = res.cruiseNum;
+            });
       }
+      saveOnUpdate();
     }
 
     return {
