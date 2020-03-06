@@ -89,8 +89,6 @@ import { Vue } from 'vue-property-decorator';
 
 import { Notify } from 'quasar';
 
-import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
-
 export default createComponent({
   setup(props, context) {
         const columns: any = [

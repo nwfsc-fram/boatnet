@@ -53,7 +53,7 @@ import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 
-import { getTripsApiTrip, getCatchApiCatch } from '../helpers/trips-api';
+import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
 export default createComponent({
     setup(props, context) {
