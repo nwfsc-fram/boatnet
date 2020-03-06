@@ -222,9 +222,7 @@ export default createComponent({
     }
 
     function setTripIds() {
-      for (const tripId of evaluationPeriod.value.trips) {
-        store.dispatch('debriefer/addTripId', tripId);
-      }
+      store.dispatch('debriefer/setTripIds', evaluationPeriod.value.trips);
     }
 
     return {

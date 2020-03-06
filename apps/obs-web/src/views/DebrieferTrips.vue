@@ -78,6 +78,7 @@ export default class DebrieferTrips extends Vue {
 
   private async getTrips() {
     const masterDB: Client<any> = couchService.masterDB;
+    this.WcgopTrips = [];
     try {
       const options: ListOptions = {
         keys: this.tripIds
@@ -96,11 +97,9 @@ export default class DebrieferTrips extends Vue {
   }
 
   private created() {
-    // TODO fix this, shouldn't be removing tripIds every time
-    for (const id of this.tripIds) {
-      this.removeTripId(id);
+    if (this.tripIds.length > 0) {
+      this.getTrips();
     }
-    this.getTrips();
   }
 
   private formatDate(inputDate: any) {

@@ -72,7 +72,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
-    const currEvalPeriod: any = reactive(state.debriefer.evaluationPeriod);
+    const currEvalPeriod: any = ref(state.debriefer.evaluationPeriod);
 
     const observerId = state.debriefer.observers;
     const evalType: any = ref('');
@@ -171,7 +171,7 @@ export default createComponent({
         type: 'observer-evaluation-periods',
         evalType: evalType.value,
         observer: observerId,
-        debriefer: state.user.activeUserAlias._id,
+        debriefer: state.user.activeUserAlias.personDocId,
         tripIds
       };
       if (currEvalPeriod.value && currEvalPeriod.value.id) {
