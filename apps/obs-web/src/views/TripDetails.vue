@@ -45,7 +45,7 @@
               placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="width: 100%;"
+              style="width: 100%; height: 330px"
               >
             </pCalendar>
 
@@ -154,18 +154,6 @@
           >
           </q-btn-toggle>
         </div>
-      </div>
-
-      <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
-        <q-btn label="Cancel" @click="goToTrips"/>
-        &nbsp;
-        <q-btn label="Create Trip" color="primary" @click="createTrip"/>
-      </div>
-      <div v-else align="right" class="text-primary" style="padding-right: 10px">
-        <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
-        &nbsp;
-        <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
-      </div>
 
     <q-dialog v-model="missingRequired">
         <q-card>
@@ -192,9 +180,40 @@
       </q-card>
     </q-dialog>
   </div>
-        <div align="right" class="q-pa-md q-gutter-md">
-          <q-btn label="Close" color="primary" @click="goBack" v-if="trip.readOnly"></q-btn>
+      </div>
+
+          <div v-if="trip.activeTrip.tripStatus.description === 'closed'" style="text-align: center">
+            <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+            <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Logbook Picture
+                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+            </label>
+
+            <div v-if="file" style="padding-top: 5%">
+                <div class="text-h6">Logbook Capture</div>
+                <img :src="fileUrl" style="width: 95%">
+            </div>
+
+            <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Take Logbook Picture
+                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+            </label>
+          </div>
+
+        <div v-if="trip.readOnly" align="right" class="q-pa-md q-gutter-md">
+          <q-btn label="Close" color="primary" @click="goBack" ></q-btn>
         </div>
+
+      <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
+        <q-btn label="Cancel" @click="goToTrips"/>
+        &nbsp;
+        <q-btn label="Create Trip" color="primary" @click="createTrip"/>
+        <br>&nbsp;
+      </div>
+      <div v-else align="right" class="text-primary" style="padding-right: 10px">
+        <q-btn label="Cancel Edit" @click="goToTrips" v-if="!trip.readOnly"></q-btn>
+        &nbsp;
+        <q-btn label="Update Trip" color="primary" @click="updateTrip" v-if="!trip.readOnly"></q-btn>
+        <br>&nbsp;
+      </div>
   </div>
 </template>
 
@@ -267,6 +286,10 @@ export default class TripDetails extends Vue {
   private maximizedRetention: any = null;
   private tripsApiTrips: any = [];
   private tripsApiNum: number = 0;
+  private file: any = null;
+  private fileUrl: any = null;
+  private transferring: boolean = false;
+  private newImage: boolean = false;
 
   constructor() {
     super();
@@ -952,8 +975,41 @@ private async getMinDate() {
   }
 
   private goBack() {
-    this.trip.readOnly = false;
-    this.$router.push({ path: '/trips' });
+    if (this.newImage) {
+      const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
+      let result: any;
+      const reader = new FileReader();
+      reader.readAsDataURL(this.file);
+      reader.onload = async () => {
+        result = reader.result;
+        this.trip.activeTrip!._attachments = {
+                  [fileName] : {
+                      content_type: this.file.type,
+                      data: result.split(',')[1]
+                  }
+              };
+      this.trip.activeTrip!.changeLog.unshift(
+        {
+          updatedBy: authService.getCurrentUser()!.username,
+          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          change: 'added/updated logbook capture'
+        }
+      );
+      const masterDB: Client<any> = couchService.masterDB;
+      this.transferring = true;
+      return await masterDB.put(
+        this.trip.activeTrip!._id as string,
+        this.trip.activeTrip!,
+        this.trip.activeTrip!._rev as string
+      ).then( () => {
+        this.transferring = false;
+        this.$router.push({ path: '/trips' });
+      });
+    }
+    } else {
+      this.trip.readOnly = false;
+      this.$router.push({ path: '/trips' });
+    }
   }
 
   private async getOtsTargets() {
@@ -994,6 +1050,61 @@ private async getMinDate() {
         this.ports = ports.rows.map((row: any) => row.doc);
   }
 
+  private handleImage(event: any) {
+      this.file = event!.target!.files[0];
+      this.fileUrl = URL.createObjectURL(this.file);
+      this.newImage = true;
+  }
+
+  private async getAttachment() {
+    if (this.trip.activeTrip!._attachments) {
+      this.newImage = false;
+      this.file = true;
+      this.transferring = true;
+      const masterDb: Client<any> = couchService.masterDB;
+      const queryOptions: any = {
+        include_docs: true,
+        attachments: true,
+        key: this.trip.activeTrip!._id
+      }
+
+      const tripWithAttachment: any = await masterDb.view<any>(
+        'obs_web',
+        'ots_trips_by_id',
+        queryOptions
+      );
+
+      this.trip.activeTrip = tripWithAttachment.rows[0].doc;
+
+      const filename = Object.keys(this.trip.activeTrip!._attachments)[0];
+      console.log(this.trip.activeTrip!._attachments[filename].data);
+
+      const byteCharacters = atob(this.trip.activeTrip!._attachments[filename].data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], {type: this.trip.activeTrip!._attachments[filename].content_type});
+
+      // this.dbImage = blob;
+      // this.dbImageUrl = URL.createObjectURL(blob);
+
+      const url = URL.createObjectURL(blob);
+      const img = document.createElement('img');
+      img.width = 300;
+      img.src = url;
+
+      this.file = img;
+      this.fileUrl = url;
+      this.transferring = false;
+      // this.fileUrl = URL.createObjectURL(this.file);
+
+      // document.getElementById('imagesholder')!.appendChild(img);
+
+    }
+  }
+
   private async created() {
     this.getEmRoster().then( () => {
       let emPermit = null;
@@ -1021,6 +1132,7 @@ private async getMinDate() {
     if (this.trip.activeTrip!.returnDate) {
       this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
     }
+    this.getAttachment();
 
   }
 
@@ -1171,6 +1283,19 @@ p {
   padding-top: 0 !important;
   border-radius: 0 !important;
   padding-left: 0 !important;
+}
+
+label.cameraButton {
+  display: inline-block;
+  margin: 1em;
+  padding: 0.5em;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+label.cameraButton input[accept*="camera"] {
+  display: none;
 }
 
 </style>

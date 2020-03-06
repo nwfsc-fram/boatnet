@@ -77,6 +77,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/log-book-capture" exact>
+          <q-item-section avatar>
+            <q-icon name="camera_alt" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Log Book Capture</q-item-label>
+            <q-item-label caption>capture + upload logbook photos</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-expansion-item
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
           label="Logbook"
@@ -86,15 +96,6 @@
           :header-inset-level="0"
           :content-inset-level=".5"
         >
-          <q-item to="/log-book-capture" exact>
-            <q-item-section avatar>
-              <q-icon name="camera_alt" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Log Book Capture</q-item-label>
-              <q-item-label caption>capture + upload logbook photos</q-item-label>
-            </q-item-section>
-          </q-item>
 
           <q-item to="/e-logbook" exact>
             <q-item-section avatar>

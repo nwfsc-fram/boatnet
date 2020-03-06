@@ -145,7 +145,7 @@ export default createComponent({
                     {
                         label: 'Actual',
                         backgroundColor: '#153547',
-                        data: [30, 100, 10, 40, 40, 0]
+                        data: [30, 10, 100, 10, 10, 0]
                     }
                 ]
             };
@@ -153,6 +153,7 @@ export default createComponent({
 
         const options = {
             responsive: true,
+            update: 0,
             hoverMode: 'index',
             stacked: false,
             scales: {
@@ -262,7 +263,7 @@ export default createComponent({
         };
 
         return {
-            emRates, saveAndLoad, increment, decrement, start, end, basicData
+            emRates, saveAndLoad, increment, decrement, start, end, basicData, options
         };
 
 
@@ -273,7 +274,7 @@ export default createComponent({
 
 <style scoped>
 
-    .chart{
+    /* .chart{
         display:table;
         table-layout: fixed;
         width:60%;
@@ -295,7 +296,7 @@ export default createComponent({
         background: #007EC6;
         animation: draw 1s ease-in-out;
         color: white
-    }
+    } */
 
     .title {
         display: inline;

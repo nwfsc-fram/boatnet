@@ -45,8 +45,8 @@
                     <q-td key="port" :props="props">{{ props.row.port ? props.row.port.name : '' }}</q-td>
                     <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
                     <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
-                    <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.name : '' }}</q-td>
-                    <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.name : '' }}</q-td>
+                    <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.description : '' }}</q-td>
+                    <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.description : '' }}</q-td>
                 </q-tr>
             </template>
 
