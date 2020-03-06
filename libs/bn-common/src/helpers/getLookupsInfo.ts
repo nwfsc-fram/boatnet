@@ -7,10 +7,13 @@ export function formatDisplayValue(row: any, displayFields: any) {
     const listModelName: any = displayFields ? displayFields : [];
     let displayValue = '';
     for (let i: number = 0; i < listModelName.length; i++) {
-      displayValue =
-        i < listModelName.length - 1
-          ? (displayValue += get(row, 'doc.' + listModelName[i]) + ' ')
-          : (displayValue += get(row, 'doc.' + listModelName[i]));
+      displayValue = i < listModelName.length - 1 ?
+        (displayValue += get(row, 'doc.' + listModelName[i]) + ' ')
+          : listModelName[i] === 'vesselRegistration' ?
+            get(row, 'doc.' + 'coastGuardNumber') ?
+              displayValue += '/ ' + get(row, 'doc.' + 'coastGuardNumber')
+              : displayValue += '/ ' + get(row, 'doc.' + 'stateRegulationNumber')
+        : (displayValue += get(row, 'doc.' + listModelName[i]));
     }
     return displayValue;
 }

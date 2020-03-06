@@ -22,6 +22,7 @@ export default class BoatnetButtonToggle extends Vue {
   @Prop() private val!: any;
 
   @Prop() private docType!: string;
+  @Prop() private docTypeDb!: string;
   @Prop() private displayFields!: any;
   @Prop() private valueField!: any;
   private optionsList: any = [];
@@ -31,7 +32,12 @@ export default class BoatnetButtonToggle extends Vue {
 
   private async getList() {
    if (this.docType) {
-      const list = await getOptions(this.appMode.toString(), this.docType, 'user', this.displayFields);
+     let list: any = []
+     if (this.docTypeDb) {
+       list = await getOptions(this.appMode.toString(), this.docType, this.docTypeDb, this.displayFields);
+     } else {
+       list = await getOptions(this.appMode.toString(), this.docType, 'user', this.displayFields);
+     }
       for (const row of list) {
         const label = formatDisplayValue(row, [this.displayFields]);
         const value = this.valueField ? formatDisplayValue(row, [this.valueField]) : row.doc;
