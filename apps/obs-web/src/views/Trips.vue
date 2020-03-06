@@ -17,7 +17,7 @@
 
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
-        <q-btn class="bg-primary text-white q-ma-md"  v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
+        <q-btn class="bg-primary text-white q-ma-md" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
       </div>
       <div v-else>
@@ -116,14 +116,13 @@
             </q-card>
           </div>
 
-
     <div v-if="closedTrips.length > 0" class="centered-page-item">Closed Trips
       <q-btn :color="getBtnColor()" size="sm" @click="setTablePref()">{{ closedTripsTable ? 'View As Table' : 'View As Cards'}}</q-btn>
 
     </div>
     <div class="row items-start" v-if="closedTripsTable">
 
-    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-blue-grey-3 text-white trip-card">
+    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-grey-6 text-white trip-card">
 
       <q-card-section>
           <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
@@ -150,6 +149,9 @@
           <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ formatDate(trip.captainAffirmedDepartureDate) }} - {{ formatDate(trip.captainAffirmedReturnDate) }} </span>
       </div>
       </q-card-section>
+      <div style="float: left; padding-left: 15px">
+        <q-icon size="sm" v-if="trip._attachments" name="camera_alt"></q-icon>
+      </div>
       <div style="float:right">
         <q-btn flat @click="review(trip)">review</q-btn>
       </div>
@@ -163,13 +165,14 @@
       :data="closedTrips"
       :columns="columns"
       :pagination.sync="pagination"
+      :selected.sync="selected"
       row-key="_id"
       dense
-      binary-state-sort
       hide-bottom
     >
       <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props"  @click.native="review(props.row)">
+          <q-td key="_attachments" :props="props"><q-icon :name="hasAttachments(props.row._attachments)"></q-icon></q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
           <q-td key="returnDate" :props="props">{{ formatFullDate(props.row.returnDate) }}</q-td>
@@ -231,7 +234,7 @@
     <q-dialog v-model="closeAlert">
       <div style="text-align: center; background-color: white; height: 100%; width: 100%">
 
-          <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Capture Logbook Image
+          <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Logbook Picture
               <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
           </label>
 
@@ -240,7 +243,7 @@
               <img :src="fileUrl" style="width: 95%">
           </div>
 
-          <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Capture Logbook Image
+          <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Take Logbook Picture
               <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
           </label>
 
@@ -263,7 +266,7 @@
               placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="width: 100%;">
+              style="width: 100%; height: 330px">
             </pCalendar>
 
             <br><br><br>
@@ -360,18 +363,19 @@ export default class Trips extends Vue {
   private pagination = {
     sortBy: 'departureDate',
     descending: false,
-    page: 1,
-    rowsPerPage: 100,
-    rowsNumber: 100
+    rowsPerPage: 0,
     };
 
+  private selected: any = [];
+
   private columns = [
+    {name: '_attachments', label: "", field: '_attachments', required: false, align: 'left', sortable: true},
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
-    {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true},
-    {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true},
-    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: false, align: 'left', sortable: true},
-    {name: 'returnPort', label: 'Return Port', field: 'returnPort', required: false, align: 'left', sortable: true},
-    {name: 'fishery', label: 'Fishery', field: 'fishery', required: false, align: 'left', sortable: true},
+    {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
+    {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
+    {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a.name).localeCompare(b.name)},
+    {name: 'returnPort', label: 'Return Port', field: 'returnPort', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a.name).localeCompare(b.name)},
+    {name: 'fishery', label: 'Fishery', field: 'fishery', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a.description).localeCompare(b.description)},
     {name: 'isSelected', label: 'Selected', field: 'isSelected', required: false, align: 'right', sortable: true},
   ];
 
@@ -577,6 +581,12 @@ export default class Trips extends Vue {
         }
       }
       return false;
+    }
+
+    private hasAttachments(attachments: any) {
+      if (attachments) {
+        return 'camera_alt'
+      }
     }
 
     private async closeTrip(trip: any) {
@@ -861,14 +871,14 @@ private computedSelectionClass(selection: any) {
 
 
 
-private async getUserTrips() {
-    const db = pouchService.db;
-    const docs = await db.allDocs();
-    const rows = docs.rows;
+// private async getUserTrips() {
+//     const db = pouchService.db;
+//     const docs = await db.allDocs();
+//     const rows = docs.rows;
 
-    this.userTrips = rows.filter( (row: any) => row.doc.type === 'ots-trip' );
-    this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
-}
+//     this.userTrips = rows.filter( (row: any) => row.doc.type === 'ots-trip' );
+//     this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
+// }
 
 private async getVesselTrips() {
   if (this.vessel.activeVessel) {
