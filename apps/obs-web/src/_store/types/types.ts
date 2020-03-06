@@ -14,8 +14,8 @@ export interface AlertState {
 export interface DebrieferState {
   program: string;
   cruiseIds: string;
-  obesrvers: string;
-  evaluationPeriod: string;
+  observers: string;
+  evaluationPeriod: any;
   tripIds: string[];
   operationIds: string[];
   catches: string[];
