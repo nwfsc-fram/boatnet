@@ -18,7 +18,7 @@ export async function getDocByType(program: string, type: string) {
     };
     const queryOptions = {
         inclusive_end: true,
-        ascending: false,
+        descending: true,
         include_docs: true,
         reduce: false,
         key: program + '-' + type
