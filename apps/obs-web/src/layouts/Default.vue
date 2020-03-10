@@ -44,7 +44,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2" v-if="!isSyncing">
+    <q-drawer v-model="leftDrawerOpen" bordered content-class="bg-grey-2">
       <q-list condensed>
         <q-item-label header>Navigation</q-item-label>
 
@@ -464,13 +464,6 @@ export default class DefaultLayout extends Vue {
   }
 
   private get getPercent() {
-    if (
-      this.syncStatus.pending < 150 &&
-      !this.isIndexing &&
-      this.syncStatus.db === 'lookups-dev'
-    ) {
-      this.buildIndexes();
-    }
     return (
       (this.syncStatus.docs_read /
       (this.syncStatus.docs_read + this.syncStatus.pending)) * 100
@@ -491,56 +484,6 @@ export default class DefaultLayout extends Vue {
 
   private set syncStatusExists(statusExists: boolean) {
     console.log(statusExists);
-  }
-
-  private decrementToIndex(indexed: any) {
-    console.log(indexed);
-    console.log(moment().format('MMSS'));
-    this.toIndex--;
-    this.indexed++;
-    console.log(this.toIndex);
-  }
-
-  private buildIndexes() {
-    setTimeout(async () => {
-      this.isIndexing = true;
-      this.toIndex = 10;
-
-      const db = pouchService.db;
-      const queryOptions = {
-        start_key: '',
-        inclusive_end: true,
-        reduce: false,
-        include_docs: false
-      };
-
-      const ports = await db.query(
-        'obs_web/all_port_names',
-        queryOptions,
-        pouchService.lookupsDBName
-      );
-      this.decrementToIndex(ports);
-
-      const vessels = await db.query(
-        'optecs_trawl/all_vessel_names',
-        queryOptions,
-        pouchService.lookupsDBName
-      );
-      this.decrementToIndex(vessels);
-
-      const vesselNums = await db.query('obs_web/all_vessel_nums', queryOptions, pouchService.lookupsDBName);
-      this.decrementToIndex(vesselNums);
-
-      const allDocs = await db.query(
-        'obs_web/all_doc_types',
-        queryOptions,
-        pouchService.lookupsDBName
-      );
-      this.decrementToIndex(allDocs);
-
-      this.isIndexing = false;
-      location.reload();
-    }, 1500);
   }
 
   private created() {

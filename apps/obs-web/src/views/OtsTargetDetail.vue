@@ -122,6 +122,7 @@
                   <pCalendar
                     v-model="effectiveDate"
                     :inline="true"
+                    style="height: 330px;"
                   >
                   </pCalendar>
                 </q-item-section>
@@ -135,6 +136,7 @@
                     v-model="expirationDate"
                     :inline="true"
                     :minDate="getMinExpiration"
+                    style="height: 330px;"
                   >
                   </pCalendar>
                   </q-item-section>
@@ -238,7 +240,6 @@ import moment from 'moment';
 import date from 'quasar';
 import { GeneralState, PermitState, OTSState } from '../_store/types/types';
 import { OTSTarget, Vessel, WcgopTrip, EmEfp } from '@boatnet/bn-models';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
@@ -305,19 +306,20 @@ export default class OtsTargetDetail extends Vue {
 
     private async getOptions() {
         try {
-        // const masterDB: Client<any> = couchService.masterDB;
-        const pouchDB = pouchService.db;
+        const masterDB: Client<any> = couchService.masterDB;
+
         const queryOptions = {
           reduce: false,
           include_docs: true,
           key: 'fishery'
         };
 
-        const allFisheries = await pouchDB.query(
-          'obs_web/all_doc_types',
-          queryOptions,
-          pouchService.lookupsDBName
+        const allFisheries: any = await masterDB.view(
+          'obs_web',
+          'all_doc_types',
+          queryOptions
         );
+
         this.fisheries = allFisheries.rows.map((row: any) => row.doc);
 
         this.fisheries.sort( (a: any, b: any) => {
@@ -336,11 +338,12 @@ export default class OtsTargetDetail extends Vue {
           key: 'ots-target-type'
         };
 
-        const otsTargetTypes = await pouchDB.query(
-          'obs_web/all_doc_types',
-          otsTargetTypesQueryOptions,
-          pouchService.lookupsDBName
+        const otsTargetTypes: any = await masterDB.view(
+          'obs_web',
+          'all_doc_types',
+          otsTargetTypesQueryOptions
         );
+
         this.targetTypes = otsTargetTypes.rows.map((row: any) => row.doc);
 
         } catch (err) {

@@ -357,7 +357,6 @@ import axios from 'axios';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AlertState } from '../_store/types/types';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { Notify } from 'quasar';
 
@@ -567,7 +566,6 @@ export default class UserDetails extends Vue {
                         this.user.activeUser!,
                         this.user.activeUser!._rev
                     )
-                    // pouchService.db.put(this.user.activeUser)
                     .then( () => {
                         this.notifySuccess('User Config Saved'),
                         this.$router.push({path: '/'});
@@ -606,7 +604,7 @@ export default class UserDetails extends Vue {
 
     private async getPhoneTypes() {
         try {
-            const db = pouchService.db;
+            const masterDb = couchService.masterDB;
             const queryOptions = {
                 key: 'phone-number-type',
                 reduce: false,
@@ -615,10 +613,10 @@ export default class UserDetails extends Vue {
                 include_docs: true
             };
 
-            const phoneTypes = await db.query(
-                'obs_web/all_doc_types',
-            queryOptions,
-            pouchService.lookupsDBName
+            const phoneTypes = await masterDb.view(
+                'obs_web',
+                'all_doc_types',
+                queryOptions,
             );
 
             this.phoneNumberTypes = phoneTypes.rows.map((type: any) => type.doc);

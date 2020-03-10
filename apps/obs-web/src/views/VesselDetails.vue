@@ -146,7 +146,6 @@ import router from '../router';
 import { AlertState, VesselState, UserState } from '../_store/types/types';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Vessel, VesselTypeTypeName, PersonTypeName } from '@boatnet/bn-models';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -216,13 +215,11 @@ export default class VesselDetails extends Vue {
             }
         }
 
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         for (const permission of this.vesselPermissions) {
-            const alias = await db.get(
-                permission.personAliasId,
-                {},
-                pouchService.lookupsDBName
-            );
+            const alias = await masterDb.get(
+                permission.personAliasId
+                );
             if (alias) {
                 this.allowedPeople.push(alias);
             }
@@ -232,17 +229,17 @@ export default class VesselDetails extends Vue {
     }
 
     private async getPersonAliases() {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         const queryOptions = {
             key: 'person-alias',
             reduce: false,
             include_docs: true
         };
 
-        const aliases = await db.query(
-            'obs_web/all_doc_types',
-            queryOptions,
-            pouchService.lookupsDBName
+        const aliases = await masterDb.view(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
         );
 
         this.allPersonAliases = aliases.rows.map( (row: any) => row.doc );
@@ -265,20 +262,20 @@ export default class VesselDetails extends Vue {
         update(
             async () => {
                 try {
-                    const db = pouchService.db;
+                    const masterDB = couchService.masterDB;
                     const queryOptions = {
-                    limit: 5,
-                    start_key: val.toLowerCase(),
-                    inclusive_end: true,
-                    descending: false,
-                    include_docs: true
+                        limit: 5,
+                        start_key: val.toLowerCase(),
+                        inclusive_end: true,
+                        descending: false,
+                        include_docs: true
                     };
 
-                    const ports = await db.query(
-                        'obs_web/all_port_names',
-                        queryOptions,
-                        pouchService.lookupsDBName
-                        );
+                    const ports = await masterDB.view(
+                        'obs_web',
+                        'all_port_names',
+                        queryOptions
+                    );
                     this.ports = ports.rows.map((row: any) => row.doc);
                 } catch (err) {
                     this.errorAlert(err);
@@ -400,7 +397,7 @@ export default class VesselDetails extends Vue {
     }
 
     private async getOptions() {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         const queryOptions = {
             include_docs: true,
             key: 'em-hardware',
@@ -408,10 +405,10 @@ export default class VesselDetails extends Vue {
         };
 
         try {
-            const hardware = await db.query(
-                'obs_web/all_doc_types',
-                queryOptions,
-                pouchService.lookupsDBName
+            const hardware = await masterDb.view(
+                'obs_web',
+                'all_doc_types',
+                queryOptions
             );
 
             this.hardwareOptions = hardware.rows.map((row: any) => row.doc);
@@ -422,10 +419,10 @@ export default class VesselDetails extends Vue {
         queryOptions.key = 'third-party-reviewer';
 
         try {
-            const reviewers = await db.query(
-                'obs_web/all_doc_types',
-                queryOptions,
-                pouchService.lookupsDBName
+            const reviewers = await masterDb.view(
+                'obs_web',
+                'all_doc_types',
+                queryOptions
             );
 
             this.reviewerOptions = reviewers.rows.map((row: any) => row.doc);

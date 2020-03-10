@@ -188,7 +188,6 @@ import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { TripState, PermitState, UserState, VesselState, AlertState } from '../_store/types/types';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
@@ -229,7 +228,6 @@ export default class LogBookCapture extends Vue {
     private handleImage(event: any) {
         this.file = event!.target!.files[0];
         this.fileUrl = URL.createObjectURL(this.file);
-        console.log(this.file);
     }
 
     private async submitImage() {
@@ -265,31 +263,31 @@ export default class LogBookCapture extends Vue {
                         data: result.split(',')[1]
                     }
                 };
-        this.trip.activeTrip!.changeLog.unshift(
-            {
-                updatedBy: authService.getCurrentUser()!.username,
-            updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-            change: 'added/updated logbook capture'
-            }
-        );
-        const masterDB: Client<any> = couchService.masterDB;
-        this.transferring = true;
-        return await masterDB.post(
-            this.trip.activeTrip
-            ).then( () => {
-                this.transferring = false;
-                Notify.create({
-                    message: 'Logbook Capture Successfully Transferred',
-                        position: 'center',
-                        color: 'green',
-                        timeout: 2000,
-                        icon: 'emoji_emotions',
-                        html: true,
-                        multiLine: true
-                    });
-                this.$router.push({ path: '/home' });
-            });
-        }
+            this.trip.activeTrip!.changeLog.unshift(
+                {
+                    updatedBy: authService.getCurrentUser()!.username,
+                updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+                change: 'added/updated logbook capture'
+                }
+            );
+            const masterDB: Client<any> = couchService.masterDB;
+            this.transferring = true;
+            return await masterDB.post(
+                this.trip.activeTrip
+                ).then( () => {
+                    this.transferring = false;
+                    Notify.create({
+                        message: 'Logbook Capture Successfully Transferred',
+                            position: 'center',
+                            color: 'green',
+                            timeout: 2000,
+                            icon: 'emoji_emotions',
+                            html: true,
+                            multiLine: true
+                        });
+                    this.$router.push({ path: '/home' });
+                });
+        };
 
     }
 
@@ -372,36 +370,39 @@ export default class LogBookCapture extends Vue {
     }
 
     private async getPorts() {
-            const db = pouchService.db;
-            const queryOptions = {
-            // limit: 5,
+        const masterDb = couchService.masterDB;
+
+        const queryOptions = {
             start_key: '',
             inclusive_end: true,
             descending: false,
             include_docs: true
-            };
+        };
 
-            const ports = await db.query(
-            'obs_web/all_port_names',
-            queryOptions,
-            pouchService.lookupsDBName
-            );
-            this.ports = ports.rows.map((row: any) => row.doc);
+        const ports = await masterDb.view(
+            'obs_web',
+            'all_port_names',
+            queryOptions
+        );
+
+        this.ports = ports.rows.map((row: any) => row.doc);
     }
 
     private async getFisheryOptions() {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
+
         const queryOptions = {
         reduce: false,
         include_docs: true,
         key: 'fishery'
         };
 
-        const fisheries = await db.query(
-        'obs_web/all_doc_types',
-        queryOptions,
-        pouchService.lookupsDBName
+        const fisheries = await masterDb.view(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
         );
+
         this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
 
         this.fisheryOptions.sort( (a: any, b: any) => {
@@ -416,8 +417,7 @@ export default class LogBookCapture extends Vue {
     }
 
     private async getAuthorizedVessels() {
-        const db = pouchService.db;
-        const masterDB: Client<any> = couchService.masterDB;
+        const masterDb: Client<any> = couchService.masterDB;
 
         const queryOptions = {
             key: 'vessel-permissions',
@@ -425,7 +425,7 @@ export default class LogBookCapture extends Vue {
             include_docs: true
         };
 
-        const permissionsQuery: any = await masterDB.view<any>(
+        const permissionsQuery: any = await masterDb.view<any>(
         'obs_web',
         'all_doc_types',
         queryOptions
@@ -450,10 +450,10 @@ export default class LogBookCapture extends Vue {
             include_docs: true
         };
 
-        const vesselQuery = await db.query(
-            'obs_web/all_vessel_nums',
-            vesselQueryOptions,
-            pouchService.lookupsDBName
+        const vesselQuery: any = await masterDb.view(
+            'obs_web',
+            'all_vessel_nums',
+            vesselQueryOptions
         );
 
         this.authorizedVessels.unshift(vesselQuery.rows[0].doc);
@@ -473,20 +473,20 @@ export default class LogBookCapture extends Vue {
     private startPortsFilterFn(val: string, update: any, abort: any) {
         update(async () => {
         try {
-            const db = pouchService.db;
+            const masterDb = couchService.masterDB;
             const queryOptions = {
-            // limit: 5,
-            start_key: val.toLowerCase(),
-            inclusive_end: true,
-            descending: false,
-            include_docs: true
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
             };
 
-            const ports = await db.query(
-            'obs_web/all_port_names',
-            queryOptions,
-            pouchService.lookupsDBName
+            const ports = await masterDb.view(
+            'obs_web',
+            'all_port_names',
+            queryOptions
             );
+
             this.ports = ports.rows.map((row: any) => row.doc);
         } catch (err) {
             console.log(err);
@@ -497,20 +497,20 @@ export default class LogBookCapture extends Vue {
     private endPortsFilterFn(val: string, update: any, abort: any) {
         update(async () => {
         try {
-            const db = pouchService.db;
+            const masterDb = couchService.masterDB;
             const queryOptions = {
-            // limit: 5,
-            start_key: val.toLowerCase(),
-            inclusive_end: true,
-            descending: false,
-            include_docs: true
+                start_key: val.toLowerCase(),
+                inclusive_end: true,
+                descending: false,
+                include_docs: true
             };
 
-            const ports = await db.query(
-            'obs_web/all_port_names',
-            queryOptions,
-            pouchService.lookupsDBName
+            const ports = await masterDb.view(
+                'obs_web',
+                'all_port_names',
+                queryOptions
             );
+
             this.ports = ports.rows.map((row: any) => row.doc);
             this.ports.unshift({ name: 'SAME AS START' });
         } catch (err) {

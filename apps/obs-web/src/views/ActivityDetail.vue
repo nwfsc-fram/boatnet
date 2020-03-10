@@ -75,9 +75,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, ObserverAssignmentState, ObserverAvailabilityState, AlertState } from '../_store/types/types';
 import moment from 'moment';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
+
+import { Client, CouchDoc, ListOptions } from 'davenport';
+import { couchService } from '@boatnet/bn-couch';
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
@@ -153,7 +154,7 @@ private get minEndDate() {
 private updateActivity() {
     if (this.obact.isNewActivity) {
         this.obact.activeActivity.observer = this.user.activeUser;
-        pouchService.db.post(this.obact.activeActivity);
+        couchService.masterDB.post(this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     } else {
         delete this.obact.activeActivity.__index;
@@ -161,13 +162,13 @@ private updateActivity() {
         this.obact.activeActivity.updatedBy = authService.getCurrentUser()!.username;
         this.obact.activeActivity.updatedDate = moment().format();
 
-        pouchService.db.put(this.obact.activeActivity);
+        couchService.masterDB.put(this.obact.activeActivity);
         this.$router.push({path: '/observer-availability'});
     }
 }
 
 private deleteActivity() {
-    pouchService.db.remove(this.obact.activeActivity);
+    couchService.masterDB.remove(this.obact.activeActivity);
     this.obact.activeActivity = undefined;
     this.obact.isNewActivity = false;
     this.$router.push({path: '/observer-availability'});

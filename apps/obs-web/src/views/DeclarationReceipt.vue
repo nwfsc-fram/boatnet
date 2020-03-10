@@ -51,8 +51,6 @@ import { Notify } from 'quasar';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-
 @Component
 export default class Declarations extends Vue {
   @State('vessel') private vessel!: VesselState;

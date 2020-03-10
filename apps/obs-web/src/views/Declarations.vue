@@ -175,7 +175,6 @@ import moment from 'moment';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
@@ -210,18 +209,17 @@ export default class Declarations extends Vue {
   private async getAuthorizedVessels() {
     this.authorizedVessels = [];
 
-    const db = pouchService.db;
-    const masterDB: Client<any> = couchService.masterDB;
+    const masterDb: Client<any> = couchService.masterDB;
 
     const queryOptions = {
       key: 'vessel-permissions',
       reduce: false,
       include_docs: true
     };
-    const permissionsQuery = await db.query(
-      'obs_web/all_doc_types',
-      queryOptions,
-      pouchService.lookupsDBName
+    const permissionsQuery: any = await masterDb.view(
+      'obs_web',
+      'all_doc_types',
+      queryOptions
     );
 
     console.log(permissionsQuery);
@@ -245,10 +243,10 @@ export default class Declarations extends Vue {
         include_docs: true
       };
 
-      const vesselQuery = await db.query(
-        'obs_web/all_vessel_nums',
-        vesselQueryOptions,
-        pouchService.lookupsDBName
+      const vesselQuery: any = await masterDb.view(
+        'obs_web',
+        'all_vessel_nums',
+        vesselQueryOptions
       );
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
