@@ -79,7 +79,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TripState, VesselState, UserState, ObserverAssignmentState } from '../_store/types/types';
 import moment from 'moment';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';

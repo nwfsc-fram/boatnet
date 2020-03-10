@@ -72,7 +72,6 @@
     import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
     import { TripState, PermitState, UserState, VesselState, AlertState } from '../_store/types/types';
 
-    import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
     import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
     import { Client, CouchDoc, ListOptions } from 'davenport';
     import { AuthState, authService } from '@boatnet/bn-auth';

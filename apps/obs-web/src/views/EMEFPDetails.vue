@@ -97,7 +97,6 @@ import moment from 'moment';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 @Component
@@ -126,7 +125,8 @@ export default class EMEFPDetails extends Vue {
 
     private async getOptions() {
         try {
-          const pouchDB = pouchService.db;
+          const masterDb = couchService.masterDB;
+
           const queryOptions = {
             inclusive_end: true,
             descending: false,
@@ -135,20 +135,20 @@ export default class EMEFPDetails extends Vue {
             key: 'efp-type'
           };
 
-          const efptypes = await pouchDB.query(
-            'obs_web/all_doc_types',
-            queryOptions,
-            pouchService.lookupsDBName
+          const efptypes = await masterDb.view(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
           );
 
           this.efpTypeOptions = efptypes.rows.map((row: any) => row.doc);
 
           queryOptions.key = 'gear-type';
 
-          const geartypes = await pouchDB.query(
-            'obs_web/all_doc_types',
-            queryOptions,
-            pouchService.lookupsDBName
+          const geartypes = await masterDb.view(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
           );
 
           this.gearTypeOptions = geartypes.rows.map((row: any) => row.doc).sort( (a: any, b: any ) => {

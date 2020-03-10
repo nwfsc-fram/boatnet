@@ -313,8 +313,6 @@ import {
   TripSelection
 } from '@boatnet/bn-models';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
@@ -326,7 +324,6 @@ export default class Trips extends Vue {
   @State('vessel') private vessel!: VesselState;
   @State('user') private user!: UserState;
   @State('appState') private appState!: WcgopAppState;
-  @State('pouchState') private pouchState!: PouchDBState;
 
   @State('alert') private alert!: AlertState;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
@@ -369,7 +366,7 @@ export default class Trips extends Vue {
   private selected: any = [];
 
   private columns = [
-    {name: '_attachments', label: "", field: '_attachments', required: false, align: 'left', sortable: true},
+    {name: '_attachments', label: '', field: '_attachments', required: false, align: 'left', sortable: true},
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
     {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
     {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
@@ -387,29 +384,6 @@ export default class Trips extends Vue {
       this.file = event!.target!.files[0];
       this.fileUrl = URL.createObjectURL(this.file);
       console.log(this.file);
-  }
-
-  private get currentReadonlyDB(): string {
-    if (!this.pouchState.credentials) {
-      console.warn('WARNING: current RO db is undefined');
-      return '';
-    } else {
-      return this.pouchState.credentials.dbInfo.lookupsDB;
-    }
-  }
-
-  private get currentUserDB(): string {
-    if (!this.pouchState.credentials) {
-      console.warn('WARNING: current User db is undefined');
-      return '';
-    } else {
-      return this.pouchState.credentials.dbInfo.userDB;
-    }
-  }
-
-  private get lookupsDB() {
-    // @ts-ignore
-    return this[this.selectedDBName];
   }
 
     private get openTrips() {
@@ -550,21 +524,20 @@ export default class Trips extends Vue {
     update(
         async () => {
             try {
-                const db = pouchService.db;
+                const masterDb = couchService.masterDB;
                 const queryOptions = {
-                // limit: 5,
-                start_key: val.toLowerCase(),
-                end_key: val.toLowerCase() + '\u9999' ,
-                inclusive_end: true,
-                descending: false,
-                include_docs: true
+                  start_key: val.toLowerCase(),
+                  end_key: val.toLowerCase() + '\u9999' ,
+                  inclusive_end: true,
+                  descending: false,
+                  include_docs: true
                 };
 
-                const vessels = await db.query(
-                  'obs_web/all_vessel_names',
-                    queryOptions,
-                    pouchService.lookupsDBName
-                    );
+                const vessels = await masterDb.view(
+                  'obs_web',
+                  'all_vessel_names',
+                  queryOptions
+                );
                 this.vessels = vessels.rows.map((row: any) => row.doc);
             } catch (err) {
                 console.log(err);
@@ -585,7 +558,7 @@ export default class Trips extends Vue {
 
     private hasAttachments(attachments: any) {
       if (attachments) {
-        return 'camera_alt'
+        return 'camera_alt';
       }
     }
 
@@ -869,17 +842,6 @@ private computedSelectionClass(selection: any) {
   }
 }
 
-
-
-// private async getUserTrips() {
-//     const db = pouchService.db;
-//     const docs = await db.allDocs();
-//     const rows = docs.rows;
-
-//     this.userTrips = rows.filter( (row: any) => row.doc.type === 'ots-trip' );
-//     this.userTrips = this.userTrips.map( (trip: any) => trip.doc);
-// }
-
 private async getVesselTrips() {
   if (this.vessel.activeVessel) {
     this.loading = true;
@@ -917,7 +879,6 @@ private async getVesselTrips() {
 }
 
 private async getAuthorizedVessels() {
-    const db = pouchService.db;
     const masterDB: Client<any> = couchService.masterDB;
 
     const queryOptions = {
@@ -951,10 +912,10 @@ private async getAuthorizedVessels() {
         include_docs: true
       };
 
-      const vesselQuery = await db.query(
-        'obs_web/all_vessel_nums',
-        vesselQueryOptions,
-        pouchService.lookupsDBName
+      const vesselQuery: any = await masterDB.view(
+        'obs_web',
+        'all_vessel_nums',
+        vesselQueryOptions
       );
 
       this.authorizedVessels.unshift(vesselQuery.rows[0].doc);
@@ -985,7 +946,6 @@ private async getAuthorizedVessels() {
 
   private async created() {
     // this.setActiveVessel();
-    // this.getUserTrips();
     this.getAuthorizedVessels();
     this.getVesselTrips();
     if ( authService.getCurrentUser() ) {
@@ -997,7 +957,6 @@ private async getAuthorizedVessels() {
   @Watch('vessel.activeVessel')
   private async handler3(newVal: string, oldVal: string) {
     this.nextSelections = [];
-    // this.getUserTrips();
     this.getVesselTrips();
     this.getNextSelections();
   }

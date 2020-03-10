@@ -50,29 +50,10 @@ import { TripState, VesselState, UserState, ObserverAssignmentState, ObserverAva
 import moment from 'moment';
 
 import { ObserverActivityTypeName } from '@boatnet/bn-models';
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 @Component({
-  pouch: {
-    userActivities() { // Also declared in class
-      return {
-        database: pouchService.userDBName,
-        selector: { type: 'observer-activity' },
-        sort: [{ startDate: 'desc' }]
-        // limit: 5 // this.resultsPerPage,
-      };
-    },
-    userTrips() { // Also declared in class
-      return {
-        database: pouchService.userDBName,
-        selector: { type: 'wcgop-trip' },
-        sort: [{ tripNum: 'desc' }]
-        // limit: 5 // this.resultsPerPage,
-      };
-    }
-  }
 })
 export default class ObserverAssignment extends Vue {
     @State('trip') private trip!: TripState;
@@ -80,12 +61,9 @@ export default class ObserverAssignment extends Vue {
     @State('user') private user!: UserState;
     @State('oa') private oa!: ObserverAssignmentState;
     @State('obact') private obact!: ObserverAvailabilityState;
-
-    @State('pouchState') private pouchState!: PouchDBState;
-
-  @State('alert') private alert!: AlertState;
-  @Action('error', { namespace: 'alert' }) private errorAlert: any;
-  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
+    @State('alert') private alert!: AlertState;
+    @Action('error', { namespace: 'alert' }) private errorAlert: any;
+    @Action('clear', { namespace: 'alert' }) private clearAlert: any;
 
 
     private pagination = {rowsPerPage: 0};
@@ -137,29 +115,6 @@ export default class ObserverAssignment extends Vue {
           return [];
       }
   }
-
-    private get currentReadonlyDB(): string {
-        if (!this.pouchState.credentials) {
-        console.warn('WARNING: current RO db is undefined');
-        return '';
-        } else {
-        return this.pouchState.credentials.dbInfo.lookupsDB;
-        }
-    }
-
-    private get currentUserDB(): string {
-        if (!this.pouchState.credentials) {
-        console.warn('WARNING: current User db is undefined');
-        return '';
-        } else {
-        return this.pouchState.credentials.dbInfo.userDB;
-        }
-    }
-
-    private get lookupsDB() {
-        // @ts-ignore
-        return this[this.selectedDBName];
-    }
 
     private columns = [
         {name: 'startDate', label: 'Start Date', field: 'startDate', required: false, align: 'left', sortable: true},

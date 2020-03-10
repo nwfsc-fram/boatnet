@@ -227,7 +227,6 @@ import {
   TripState, UserState, VesselState
 } from '../_store/types/types';
 
-import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService, auth } from '@boatnet/bn-auth';
@@ -300,18 +299,19 @@ export default class TripDetails extends Vue {
   }
 
   private async getFisheryOptions() {
-    const db = pouchService.db;
+    const masterDb = couchService.masterDB;
     const queryOptions = {
       reduce: false,
       include_docs: true,
       key: 'fishery'
     };
 
-    const fisheries = await db.query(
-      'obs_web/all_doc_types',
+    const fisheries = await masterDb.view(
+      'obs_web',
+      'all_doc_types',
       queryOptions,
-      pouchService.lookupsDBName
     );
+
     this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
 
     this.fisheryOptions.sort( (a: any, b: any) => {
@@ -348,7 +348,7 @@ export default class TripDetails extends Vue {
   private startPortsFilterFn(val: string, update: any, abort: any) {
     update(async () => {
       try {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         const queryOptions = {
           // limit: 5,
           start_key: val.toLowerCase(),
@@ -357,10 +357,10 @@ export default class TripDetails extends Vue {
           include_docs: true
         };
 
-        const ports = await db.query(
-          'obs_web/all_port_names',
+        const ports = await masterDb.view(
+          'obs_web',
+          'all_port_names',
           queryOptions,
-          pouchService.lookupsDBName
         );
         this.ports = ports.rows.map((row: any) => row.doc);
       } catch (err) {
@@ -372,7 +372,7 @@ export default class TripDetails extends Vue {
   private endPortsFilterFn(val: string, update: any, abort: any) {
     update(async () => {
       try {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         const queryOptions = {
           // limit: 5,
           start_key: val.toLowerCase(),
@@ -381,10 +381,10 @@ export default class TripDetails extends Vue {
           include_docs: true
         };
 
-        const ports = await db.query(
-          'obs_web/all_port_names',
-          queryOptions,
-          pouchService.lookupsDBName
+        const ports = await masterDb.view(
+          'obs_web',
+          'all_port_names',
+          queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
         this.ports.unshift({ name: 'SAME AS START' });
@@ -407,14 +407,19 @@ export default class TripDetails extends Vue {
   }
 
   private async getEmRoster() {
-    const db = pouchService.db;
+    const masterDb = couchService.masterDB;
     const queryOptions = {
       key: 'emefp',
       inclusive_end: true,
       reduce: false,
       include_docs: true
     };
-    const EMEfpRoster = await db.query('obs_web/all_doc_types', queryOptions, pouchService.lookupsDBName);
+
+    const EMEfpRoster = await masterDb.view(
+      'obs_web',
+      'all_doc_types',
+      queryOptions
+    );
 
     for (const row of EMEfpRoster.rows) {
       this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
@@ -988,24 +993,24 @@ private async getMinDate() {
                       data: result.split(',')[1]
                   }
               };
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
-          change: 'added/updated logbook capture'
-        }
-      );
-      const masterDB: Client<any> = couchService.masterDB;
-      this.transferring = true;
-      return await masterDB.put(
-        this.trip.activeTrip!._id as string,
-        this.trip.activeTrip!,
-        this.trip.activeTrip!._rev as string
-      ).then( () => {
-        this.transferring = false;
-        this.$router.push({ path: '/trips' });
-      });
-    }
+        this.trip.activeTrip!.changeLog.unshift(
+          {
+            updatedBy: authService.getCurrentUser()!.username,
+            updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+            change: 'added/updated logbook capture'
+          }
+        );
+        const masterDB: Client<any> = couchService.masterDB;
+        this.transferring = true;
+        return await masterDB.put(
+          this.trip.activeTrip!._id as string,
+          this.trip.activeTrip!,
+          this.trip.activeTrip!._rev as string
+        ).then( () => {
+          this.transferring = false;
+          this.$router.push({ path: '/trips' });
+        });
+    };
     } else {
       this.trip.readOnly = false;
       this.$router.push({ path: '/trips' });
@@ -1013,17 +1018,17 @@ private async getMinDate() {
   }
 
   private async getOtsTargets() {
-    const db = pouchService.db;
+    const masterDb = couchService.masterDB;
     const queryOptions = {
       include_docs: true,
       reduce: false,
       key: 'ots-target'
     };
     try {
-      const otsTargets = await db.query(
-        'obs_web/all_doc_types',
-        queryOptions,
-        pouchService.lookupsDBName
+      const otsTargets = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
       );
 
       this.otsTargets = otsTargets.rows.map((row: any) => row.doc);
@@ -1033,19 +1038,18 @@ private async getMinDate() {
   }
 
   private async getPorts() {
-        const db = pouchService.db;
+        const masterDb = couchService.masterDB;
         const queryOptions = {
-          // limit: 5,
           start_key: '',
           inclusive_end: true,
           descending: false,
           include_docs: true
         };
 
-        const ports = await db.query(
-          'obs_web/all_port_names',
-          queryOptions,
-          pouchService.lookupsDBName
+        const ports = await masterDb.view(
+          'obs_web',
+          'all_port_names',
+          queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
   }
@@ -1066,7 +1070,7 @@ private async getMinDate() {
         include_docs: true,
         attachments: true,
         key: this.trip.activeTrip!._id
-      }
+      };
 
       const tripWithAttachment: any = await masterDb.view<any>(
         'obs_web',
