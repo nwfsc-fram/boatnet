@@ -38,8 +38,6 @@ Vue.component('PrimeTable', PrimeTable);
 export default class DebrieferTrips extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
-  @Getter('tripIds', { namespace: 'debriefer' })
-  private tripIds: any;
 
   @Action('addTripId', { namespace: 'debriefer' })
   private addTripId: any;
@@ -71,7 +69,7 @@ export default class DebrieferTrips extends Vue {
     this.removeTripId(event.data._id);
   }
 
-  @Watch('tripIds')
+  @Watch('debriefer.evaluationPeriod.tripIds')
   private async onPropertyChanged(value: any, oldValue: any) {
     await this.getTrips();
   }
@@ -81,7 +79,7 @@ export default class DebrieferTrips extends Vue {
     this.WcgopTrips = [];
     try {
       const options: ListOptions = {
-        keys: this.tripIds
+        keys: this.debriefer.evaluationPeriod.tripIds
       };
 
       const trips = await masterDB.listWithDocs(
@@ -97,7 +95,9 @@ export default class DebrieferTrips extends Vue {
   }
 
   private created() {
-    if (this.tripIds.length > 0) {
+    if (this.debriefer.evaluationPeriod &&
+        this.debriefer.evaluationPeriod.tripIds &&
+        this.debriefer.evaluationPeriod.tripIds.length > 0) {
       this.getTrips();
     }
   }
