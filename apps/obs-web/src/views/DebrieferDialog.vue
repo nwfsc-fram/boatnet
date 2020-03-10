@@ -14,9 +14,12 @@
           />
           <div class="text-subtitle2" style="color: #027be3">Start/End Date:</div>
           <pCalendar
-            v-model="dates"
-            @date-select="getTrips"
-            selectionMode="range"
+            v-model="startDate"
+            @date-select="getTripsByDate"
+          />
+          <pCalendar
+            v-model="endDate"
+            @date-select="getTripsByDate"
           />
 
           <q-table
@@ -46,9 +49,9 @@ import {
   reactive,
   computed,
   onMounted,
-  toRefs
+  watch
 } from '@vue/composition-api';
-import Vue from 'vue';
+import Vue, { WatchOptions } from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import { useAsync } from 'vue-async-function';
@@ -65,18 +68,16 @@ import { get } from 'lodash';
 
 export default createComponent({
   props: {
-    showDialog: Boolean
+    showDialog: Boolean,
+    evaluationPeriod: Object
   },
 
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
-    const currEvalPeriod: any = ref(state.debriefer.evaluationPeriod);
 
     const observerId = state.debriefer.observers;
-    const evalType: any = ref('');
-    const dates: any = ref([]);
     const selected: any = ref([]);
     const trips: any = ref([]);
 
@@ -113,6 +114,69 @@ export default createComponent({
       }
     ];
 
+    const startDate = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        const start = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
+        return start;
+      },
+      set: (val) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.startDate = new Date(val);
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
+    const endDate = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        const end = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
+        return end;
+      },
+      set: (val) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.endDate = new Date(val);
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
+    const evalType = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        return evalPeriod.value;
+      },
+      set: (val) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.value = val;
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
+    async function initTrips() {
+      const tripsHolder: any[] = [];
+      const tripIds = props.evaluationPeriod && props.evaluationPeriod.tripIds ? props.evaluationPeriod.tripIds : [];
+      if (tripIds.length > 0) {
+        try {
+          const options: ListOptions = {
+            keys: props.evaluationPeriod ? props.evaluationPeriod.tripIds : []
+          };
+          const tripDocs = await masterDB.listWithDocs(options);
+          for (const trip of tripDocs.rows) {
+            tripsHolder.push(trip);
+          }
+        } catch (err) {
+          console.log('could not get trips');
+        }
+      }
+      trips.value = tripsHolder;
+    }
+
+    const watcherOptions: WatchOptions = {
+      immediate: true
+    };
+
+    watch(() => props.evaluationPeriod && props.evaluationPeriod.tripIds ? props.evaluationPeriod.tripIds : [], initTrips, watcherOptions);
+
     async function getEvaluationPeriodLookups() {
       const lookupsList: string[] = [];
       const queryOptions = {
@@ -130,6 +194,15 @@ export default createComponent({
         for (const lookup of lookupVals.rows) {
           lookupsList.push(lookup.doc.description);
         }
+        lookupsList.sort((a: any, b: any) => {
+          if (a > b) {
+            return 1;
+          }
+          if (b > a) {
+           return -1;
+          }
+          return 0;
+        });
         defaultEvaluationPeriods.value = lookupsList;
       } catch (err) {
         console.log('error');
@@ -137,8 +210,8 @@ export default createComponent({
     }
     useAsync(getEvaluationPeriodLookups);
 
-    async function getTrips() {
-      if (dates.value[0] && dates.value[1]) {
+    async function getTripsByDate() {
+      if (startDate.value && endDate.value) {
         const tripsHolder: any[] = [];
         try {
             const tripDocs: any = await masterDB.viewWithDocs(
@@ -147,8 +220,8 @@ export default createComponent({
             { key: observerId }
             );
             for (const trip of tripDocs.rows) {
-                if (moment(trip.doc.departureDate).isAfter(dates.value[0].toString())
-                    && moment(trip.doc.returnDate).isBefore(dates.value[1].toString())) {
+                if (moment(trip.doc.departureDate).isAfter(startDate.value.toString())
+                    && moment(trip.doc.returnDate).isBefore(endDate.value.toString())) {
                         tripsHolder.push(trip.doc);
                 }
             }
@@ -160,27 +233,42 @@ export default createComponent({
     }
 
     function save() {
-      closeDialog();
       const tripIds: number[] = [];
       for (const val of selected.value) {
         tripIds.push(val._id);
       }
+
+      const curr = props.evaluationPeriod ? props.evaluationPeriod : {};
       const evalPeriod = {
-        startDate: dates.value[0].toString(),
-        endDate: dates.value[1].toString(),
+        id: curr.id,
+        rev: curr.rev,
         type: 'observer-evaluation-periods',
-        evalType: evalType.value,
         observer: observerId,
         debriefer: state.user.activeUserAlias.personDocId,
+        evalType: curr.value,
+        startDate: curr.startDate,
+        endDate: curr.endDate,
         tripIds
       };
-      if (currEvalPeriod.value && currEvalPeriod.value.id) {
-        masterDB.put(currEvalPeriod.value.id, evalPeriod, currEvalPeriod.value.rev);
+
+      if (evalPeriod && evalPeriod.id) {
+        masterDB.put(evalPeriod.id, evalPeriod, evalPeriod.rev).then((response: any) => {
+          update(evalPeriod, response);
+        });
       } else {
-        masterDB.post(evalPeriod);
+        masterDB.post(evalPeriod).then((response: any) => {
+          update(evalPeriod, response);
+        });
       }
+      closeDialog();
+    }
+
+    function update(evalPeriod: any, response: any) {
+      evalPeriod._id = response.id;
+      evalPeriod._rev = response.rev;
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
-      context.emit('update:showDialog', false);
+      selected.value = [];
+      context.emit('closeEvalDialog');
     }
 
     function closeDialog() {
@@ -188,8 +276,8 @@ export default createComponent({
     }
 
     return {
-      currEvalPeriod,
-      dates,
+      startDate,
+      endDate,
       evalType,
       columns,
       selected,
@@ -197,7 +285,7 @@ export default createComponent({
       pagination,
       save,
       defaultEvaluationPeriods,
-      getTrips,
+      getTripsByDate,
       closeDialog
     };
   }

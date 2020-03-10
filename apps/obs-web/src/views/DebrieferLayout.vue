@@ -28,7 +28,7 @@
           <q-toggle
             class="q-ma-sm"
             style="display: inline-block"
-            label="Show Active"
+            label="Show All"
             v-model="showAll"
             @input="getWcgopObservers()"
           />
@@ -40,7 +40,6 @@
             v-model="evaluationPeriod"
             :options="evaluations"
             label="Previous Eval Periods"
-            @input="setTripIds"
           />
           <q-btn
             round
@@ -83,7 +82,11 @@
       </div>
     </div>
 
-    <app-debriefer-dialog :showDialog.sync="showDialog" />
+    <app-debriefer-dialog
+      :showDialog.sync="showDialog"
+      :evaluationPeriod="dialogEvalPeriod"
+      @closeEvalDialog="closeEvalDialog"
+    />
 
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
@@ -128,7 +131,6 @@ export default createComponent({
     const program: string = 'wcgop';
     const observer: any = ref('');
     const showAll: any = ref(false);
-    const evaluationPeriod: any = ref('');
     const cruiseIds = '';
 
     let list: any[] = [];
@@ -137,6 +139,16 @@ export default createComponent({
 
     const showDialog: any = ref(false);
     const masterDB: Client<any> = couchService.masterDB;
+
+    const dialogEvalPeriod = ref({});
+
+    const evaluationPeriod = computed({
+      get: () => {
+        return state.debriefer.evaluationPeriod;
+      }, set: (val) => {
+        store.dispatch('debriefer/updateEvaluationPeriod', val);
+      }
+    });
 
     function filterObservers(val: any, update: any) {
       update(() => {
@@ -179,7 +191,33 @@ export default createComponent({
 
     async function selectObserver() {
       store.dispatch('debriefer/updateObservers', observer.value.value);
+      evaluationPeriod.value = {};
       await getEvaluationPeriods();
+    }
+
+    async function closeEvalDialog() {
+      evaluationPeriod.value = formatEvaluationPeriod(evaluationPeriod.value);
+      await getEvaluationPeriods();
+    }
+
+    function formatDate(date: string) {
+      return moment(date).format('MM/DD/YYYY');
+    }
+
+    function formatEvaluationPeriod(evalPeriod: any) {
+      const startDate = moment(evalPeriod.startDate).format('MM/DD/YY');
+      const endDate = moment(evalPeriod.endDate).format('MM/DD/YY');
+      return {
+        id: evalPeriod._id,
+        rev: evalPeriod._rev,
+        label: evalPeriod.evalType + ' ' + startDate + '-' + endDate,
+        value: evalPeriod.evalType,
+        tripIds: evalPeriod.tripIds,
+        startDate: evalPeriod.startDate,
+        endDate: evalPeriod.endDate,
+        observer: evalPeriod.observer,
+        debriefer: evalPeriod.debriefer
+      };
     }
 
     async function getEvaluationPeriods() {
@@ -195,15 +233,8 @@ export default createComponent({
         if (row.doc.debriefer === debrieferId) {
           const startDate = moment(row.doc.startDate).format('MM/DD/YY');
           const endDate = moment(row.doc.endDate).format('MM/DD/YY');
-          evaluationPeriods.push({
-            id: row.doc._id,
-            rev: row.doc._rev,
-            label: row.doc.evalType + '  ' + startDate + '-' + endDate,
-            value: row.doc.evalType,
-            trips: row.doc.tripIds,
-            startDate: row.doc.startDate,
-            endDate: row.doc.endDate
-          });
+          const formattedVal = formatEvaluationPeriod(row.doc);
+          evaluationPeriods.push(formattedVal);
         }
       }
       evaluations.value = evaluationPeriods;
@@ -212,23 +243,26 @@ export default createComponent({
     useAsync(getEvaluationPeriods);
 
     function add() {
+      dialogEvalPeriod.value = {
+        value: '',
+        startDate: '',
+        endDate: '',
+        tripIds: []
+      };
       showDialog.value = true;
-      store.dispatch('debriefer/updateEvaluationPeriod', {});
     }
 
     function edit() {
+      dialogEvalPeriod.value = evaluationPeriod.value;
       showDialog.value = true;
-      store.dispatch('debriefer/updateEvaluationPeriod', evaluationPeriod.value);
-    }
-
-    function setTripIds() {
-      store.dispatch('debriefer/setTripIds', evaluationPeriod.value.trips);
     }
 
     return {
       program,
       observer,
       evaluationPeriod,
+      dialogEvalPeriod,
+      closeEvalDialog,
       observerList,
       evaluations,
       cruiseIds,
@@ -238,8 +272,7 @@ export default createComponent({
       getWcgopObservers,
       filterObservers,
       add,
-      edit,
-      setTripIds
+      edit
     };
   }
 });
