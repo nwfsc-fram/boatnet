@@ -1,37 +1,109 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="flex flex-center q-pa-md">
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
       <template v-slot:action>
         <q-btn flat label="Dismiss" @click="clearAlert"/>
       </template>
     </q-banner>
+    <div class="row items-start" v-if="offlineTrips">
+      <div style="width: 100%; text-align: center">
+        <q-card class="bg-red text-white">
+          <q-card-section>
+            <div class="text-h4">OFFLINE MODE</div>
+            <div class="text-h6">Last Updated: {{ formatDateTime(offlineTrips.storedDate) }}</div>
+            <div class="text-h6">Active Vessel: {{ offlineTrips.activeVessel }}</div>
+          </q-card-section>
+        </q-card>
 
-    <div class="flex flex-center">
-      <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
+        <div class="centered-page-item">Active Trips</div>
+
+        </div>
+      <q-card
+        v-for="trip in offlineTrips.openTrips"
+        :key="offlineTrips.openTrips.indexOf(trip)"
+        :class="computedTripClass(trip)"
+      >
+        <q-card-section>
+          <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
+            <span>
+              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+            </span>
+            <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
+          </div>
+
+          <div class="text-h6">
+            <span v-if="trip.fishery">{{ trip.fishery.description }}</span>
+            <div v-if="trip.isSelected" class="text-white" style="font-size: 12px; line-height: 20px" title="Trip Is Selected">
+              <q-icon name="person_add" size="20px"></q-icon>
+              <span class="text-h6">&nbsp;Observer Required</span>
+            </div>
+            <div v-else class="text-white" style="font-size: 12px; line-height: 20px" title="Observer Not Required">
+              <q-icon name="remove" size="20px"></q-icon>
+              <span class="text-h6">&nbsp;Observer Not Required</span>
+            </div>
+          </div>
+          <div v-if="trip.observer">
+            <sup class="text-white" style="float: right; text-align: right">
+              observer: {{ trip.observer.firstName }} {{ trip.observer.lastName }}<br>
+              mobile: {{ formatTel(trip.observer.cellPhone) }}
+              </sup>
+          </div>
+        </q-card-section>
+
+    </q-card>
+
+        <div class="row items-start" v-if="offlineTrips.nextSelections.length > 0">
+          <div style="width: 100%; text-align: center">
+            <div class="centered-page-item">Next Trip Selections</div>
+          </div>
+              <q-card
+                v-for="selection in offlineTrips.nextSelections"
+                :key="offlineTrips.nextSelections.indexOf(selection)"
+                :class="computedSelectionClass(selection)"
+              >
+              <q-card-section>
+
+                <div class="text-h6">
+                  <span>
+                    {{ selection.fishery }}
+                  </span>
+                </div>
+                  <div class="text-h6 text-white" style="font-size: 12px; line-height: 20px">
+                    <q-icon :name="selection.isSelected ? 'person_add' : 'remove'" size="20px"></q-icon>
+                    <span  class="text-h6" >&nbsp;{{ selection.isSelected ? 'Observer Required' : 'Observer Not Required'}}</span>
+                  </div>
+              </q-card-section>
+              </q-card>
+        </div>
     </div>
-
-    <div v-if="activeUser && !isSyncing" style="display: block; text-align: center">
-      <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
-
-      <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
-
-      <q-btn label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
-
-      <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" label="E Logbook" to="/e-logbook" color="primary" exact style="margin: 5px"></q-btn>
-
-      <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
-    <br>
-    <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
-    </div>
-
-    <div v-else-if="!activeUser && !isSyncing" style="display: block; text-align: center">
-      <div class="text-h6">
-        Please complete your user details
+    <div v-else>
+      <div class="flex flex-center">
+        <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
       </div>
-      <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
-    </div>
 
+      <div v-if="activeUser && !isSyncing" style="display: block; text-align: center">
+        <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" label="E Logbook" to="/e-logbook" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
+      <br>
+      <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
+      </div>
+
+      <div v-else-if="!activeUser && !isSyncing" style="display: block; text-align: center">
+        <div class="text-h6">
+          Please complete your user details
+        </div>
+        <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
+      </div>
+  </div>
   </q-page>
 </template>
 
@@ -73,6 +145,7 @@ export default class Home extends Vue {
   private createdTrip: any = {};
   private updatedTrip: any = {};
   private activeUser: boolean = false;
+  private offlineTrips: any = null;
 
   constructor() {
     super();
@@ -286,14 +359,79 @@ export default class Home extends Vue {
 
   }
 
-  private async created() {
-    this.getPermits();
-    this.getUserFromCouchDB();
-    this.getUserAliasfromCouchDB();
-    if ( authService.getCurrentUser() ) {
-      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+  private async getOfflineDocs() {
+    const pouchDb = pouchService.db
+    try {
+      await pouchDb.query(
+        'my_index/by_type', {
+          key: 'user-trips',
+          include_docs: true,
+          limit: 1
+        },
+        pouchService.userDBName
+      ).then(
+        (res: any) => {
+        this.offlineTrips = res.rows[0].doc;
+        }
+      )
+    } catch(err) {
+      console.log(err);
     }
-    this.buildDesignDoc();
+  }
+
+  private async determineNetworStatus() {
+    const db: Client<any> = couchService.masterDB;
+    const queryOptions = {
+      reduce: false,
+      limit: 1
+    };
+
+    try {
+        const userquery = await db.view<any>(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
+        );
+      console.log('ONLINE')
+    } catch (err) {
+      console.log('OFFLINE')
+        await this.getOfflineDocs();
+    }
+  }
+
+  private formatDate(date: any) {
+    return moment(date).format('MMM Do');
+  }
+
+  private formatDateTime(date: any) {
+    return moment(date).format('MMM DD, HH:mm');
+  }
+
+  private computedTripClass(trip: any) {
+    if (trip.isSelected) {
+      return 'my-card bg-primary text-white';
+    } else {
+      return 'my-card bg-secondary text-white';
+    }
+  }
+
+  private computedSelectionClass(selection: any) {
+    if (selection.isSelected) {
+      return 'my-card bg-primary text-white';
+    } else {
+      return 'my-card bg-secondary text-white';
+    }
+  }
+
+  private async created() {
+      this.getPermits();
+      this.getUserFromCouchDB();
+      this.getUserAliasfromCouchDB();
+      if ( authService.getCurrentUser() ) {
+        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+      }
+      this.buildDesignDoc();
+      this.determineNetworStatus();
   }
 
 }

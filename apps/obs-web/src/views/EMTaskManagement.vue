@@ -77,7 +77,7 @@ export default createComponent({
 
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
-                return attribute ? moment(attribute).format('MMM DD, YYYY HH:MM') : '';
+                return attribute ? moment(attribute).format('MMM DD, YYYY HH:mm') : '';
             } else {
                 return attribute ? attribute : '';
             }

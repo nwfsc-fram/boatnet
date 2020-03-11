@@ -21,7 +21,7 @@
                               'ashop-cruise', 'ashop-haul', 'ashop-tribal-delivery', 'ashop-trip',
                               'nonFlowScaleReason', 'olevessel', 'trips-api', 'trips-api-catch',
                               'person-alias', 'vessel-permissions', 'tribal-delivery', 'ashop-species', 'cruise-api',
-                              'boatnet-config']
+                              'boatnet-config', 'em-rate-config', 'observer-evaluation-periods', 'wcgop-haul']
                               .includes(docType)
                     })"
               :key="docType"

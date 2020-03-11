@@ -54,7 +54,7 @@ export default class OtsTripHistory extends Vue {
     private trip = null;
 
     private getDate(date: string) {
-        return moment(date).format('MM/DD/YYYY HH:MM A');
+        return moment(date).format('MM/DD/YYYY HH:mm A');
     }
 
     private async getTrip(id: string) {

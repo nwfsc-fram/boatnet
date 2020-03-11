@@ -52,7 +52,7 @@
     </div>
 
   <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
-    <div class=" row items-start" >
+    <div class="row items-start" >
 
       <q-card
       v-for="trip in openTrips"
@@ -317,6 +317,7 @@ import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
 import { Notify } from 'quasar';
+import { pouchService } from '@boatnet/bn-pouch/lib';
 
 @Component
 export default class Trips extends Vue {
@@ -569,7 +570,7 @@ export default class Trips extends Vue {
       trip.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
           change: 'trip closed'
         }
       );
@@ -582,6 +583,7 @@ export default class Trips extends Vue {
         trip._rev as string
       ).then( () => {
         this.transferring = false;
+        setTimeout( () => {this.storeOfflineData(); }, 1000);
       });
     }
 
@@ -796,7 +798,7 @@ export default class Trips extends Vue {
                             changeLog: [
                               {
                                 updatedBy: authService.getCurrentUser()!.username,
-                                updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+                                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
                                 change: 'trip created'
                               }
                             ]
@@ -817,7 +819,7 @@ export default class Trips extends Vue {
   }
 
   private formatDateTime(date: any) {
-    return moment(date).format('MM/DD/YYYY, HH:MM');
+    return moment(date).format('MM/DD/YYYY, HH:mm');
   }
 
   private formatTel(telNum: any) {
@@ -865,17 +867,65 @@ private async getVesselTrips() {
     } catch (err) {
       console.log(err);
       Notify.create({
-          message: 'Internet Connection Required',
-              position: 'center',
-              color: 'red',
-              timeout: 2000,
-              icon: 'warning',
-              html: true,
-              multiLine: true
-          });
+        message: 'OFFLINE MODE',
+        position: 'center',
+        color: 'red',
+        timeout: 2000,
+        icon: 'warning',
+        html: true,
+        multiLine: true
+      });
     }
     this.loading = false;
   }
+}
+
+private async storeOfflineData() {
+  const db = pouchService.db;
+  let userTripsDoc: any = {};
+
+  try {
+    await db.query(
+      'my_index/by_type', {
+        key: 'user-trips',
+        include_docs: true,
+        limit: 1
+      }
+    ).then(
+      (res: any) => {
+      userTripsDoc = res.rows[0].doc;
+      console.log(userTripsDoc);
+      userTripsDoc.openTrips = this.openTrips;
+      userTripsDoc.activeVessel = this.vessel.activeVessel.vesselName;
+      userTripsDoc.nextSelections = this.nextSelections;
+      userTripsDoc.storedDate = moment().format();
+      }
+    );
+
+  } catch (err) {
+    console.log(err);
+    userTripsDoc = {
+      type: 'user-trips',
+      openTrips: this.openTrips,
+      activeVessel: this.vessel.activeVessel.vesselName,
+      nextSelections: this.nextSelections,
+      storedDate: moment().format()
+    };
+  }
+
+  await db.post(userTripsDoc).then(
+    async () => {
+      await db.query(
+        'my_index/by_type', {
+          limit: 10,
+          key: 'user-trips',
+          include_docs: true
+        }
+      ).then(
+        (res: any) => console.log(res.rows[0].doc)
+      );
+    }
+  );
 }
 
 private async getAuthorizedVessels() {
@@ -952,6 +1002,7 @@ private async getAuthorizedVessels() {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
     this.getNextSelections();
+    setTimeout( () => {this.storeOfflineData(); }, 1000);
   }
 
   @Watch('vessel.activeVessel')
@@ -959,6 +1010,7 @@ private async getAuthorizedVessels() {
     this.nextSelections = [];
     this.getVesselTrips();
     this.getNextSelections();
+    setTimeout( () => {this.storeOfflineData(); }, 1000);
   }
 
   @Watch('tripDates')

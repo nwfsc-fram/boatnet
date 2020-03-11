@@ -64,7 +64,7 @@ export default class Declarations extends Vue {
   private activeVesselId: string = '';
 
   private formatDateTime(date: any) {
-    return moment(date).format('MM/DD/YYYY, HH:MM');
+    return moment(date).format('MM/DD/YYYY, HH:mm');
   }
 
   private async getOleVessel() {
