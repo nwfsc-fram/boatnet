@@ -266,7 +266,7 @@ export default class LogBookCapture extends Vue {
             this.trip.activeTrip!.changeLog.unshift(
                 {
                     updatedBy: authService.getCurrentUser()!.username,
-                updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
                 change: 'added/updated logbook capture'
                 }
             );
@@ -349,7 +349,7 @@ export default class LogBookCapture extends Vue {
                             changeLog: [
                                     {
                                         updatedBy: authService.getCurrentUser()!.username,
-                                        updateDate: moment().format('MM/DD/YYYY HH:MM A'),
+                                        updateDate: moment().format('MM/DD/YYYY HH:mm A'),
                                         change: 'trip logged'
                                     }
                                 ]

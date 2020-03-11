@@ -104,7 +104,7 @@ export default class OtsTrips extends Vue {
           return _.get(data, field);
         }
     } else if (header.indexOf('Time') > -1) {
-        return moment(data[field]).format('HH:MM A');
+        return moment(data[field]).format('HH:mm A');
     } else if (field.indexOf('Date') > -1) {
       return moment(data[field]).format('MMM D, YYYY');
     } else {
