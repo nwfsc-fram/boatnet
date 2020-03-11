@@ -1,45 +1,45 @@
 <template>
-    <q-dialog v-model="showDialog">
-      <q-card style="width: 700px; max-width: 80vw; height: 800px">
-        <q-card-section>
-          <div class="text-h6" style="text-align: center">Evaluation Period</div>
-        </q-card-section>
+  <q-dialog v-model="showDialog">
+    <q-card style="width: 700px; max-width: 80vw; height: 800px">
+      <q-card-section>
+        <div class="text-h6" style="text-align: center">Evaluation Period</div>
+      </q-card-section>
 
-        <q-card-section class="q-pt-none">
-          <q-select
-            style="max-width: 200px"
-            v-model="evalType"
-            :options="defaultEvaluationPeriods"
-            label="Type"
-          />
-          <div class="text-subtitle2" style="color: #027be3">Start/End Date:</div>
-          <pCalendar
-            v-model="startDate"
-            @date-select="getTripsByDate"
-          />
-          <pCalendar
-            v-model="endDate"
-            @date-select="getTripsByDate"
-          />
+      <q-card-section class="q-pt-none">
+        <q-select
+          class="q-pa-md"
+          style="width: 200px; display: inline-block"
+          v-model="evalType"
+          :options="defaultEvaluationPeriods"
+          label="Type"
+        />
+        <div style="display: inline-block" class="q-pa-md">
+          <div class="text-body2" style="color: #027be3">Start Date:</div>
+          <pCalendar v-model="startDate" @date-select="getTripsByDate" />
+        </div>
+        <div style="display: inline-block" class="q-pa-md">
+          <div class="text-body2" style="color: #027be3">End Date:</div>
+          <pCalendar v-model="endDate" @date-select="getTripsByDate" />
+        </div>
 
-          <q-table
-            class="q-mt-md"
-            dense
-            :data="trips"
-            :columns="columns"
-            :row-key="row => row.legacy.tripId"
-            selection="multiple"
-            :selected.sync="selected"
-            :pagination.sync="pagination"
-          />
-        </q-card-section>
+        <q-table
+          class="q-mt-md"
+          dense
+          :data="trips"
+          :columns="columns"
+          :row-key="row => row.legacy.tripId"
+          selection="multiple"
+          :selected.sync="selected"
+          :pagination.sync="pagination"
+        ></q-table>
+      </q-card-section>
 
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Save" @click="save" />
-          <q-btn flat label="Close" @click="closeDialog" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat label="Save" @click="save" />
+        <q-btn flat label="Close" @click="closeDialog" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -77,12 +77,12 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
 
-    const observerId = state.debriefer.observers;
     const selected: any = ref([]);
     const trips: any = ref([]);
 
     const defaultEvaluationPeriods: any = ref([]);
-    const pagination = { rowsPerPage: 15 };
+    const pagination = { rowsPerPage: 12 };
+
     const columns = [
       {
         name: 'tripNum',
@@ -103,21 +103,25 @@ export default createComponent({
         label: 'Start Date',
         align: 'left',
         sortable: true,
-        field: 'departureDate'
+        field: 'departureDate',
+        format: (val: any) => moment(val).format('MM/DD/YYYY HH:mm:ss')
       },
       {
         name: 'endDate',
         label: 'End Date',
         align: 'left',
         sortable: true,
-        field: 'returnDate'
+        field: 'returnDate',
+        format: (val: any) => moment(val).format('MM/DD/YYYY HH:mm:ss')
       }
     ];
 
     const startDate = computed({
       get: () => {
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
-        const start = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
+        const start = evalPeriod.startDate
+          ? new Date(evalPeriod.startDate)
+          : new Date();
         return start;
       },
       set: (val) => {
@@ -130,7 +134,9 @@ export default createComponent({
     const endDate = computed({
       get: () => {
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
-        const end = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
+        const end = evalPeriod.endDate
+          ? new Date(evalPeriod.endDate)
+          : new Date();
         return end;
       },
       set: (val) => {
@@ -154,7 +160,8 @@ export default createComponent({
 
     async function initTrips() {
       const tripsHolder: any[] = [];
-      const tripIds = props.evaluationPeriod && props.evaluationPeriod.tripIds ? props.evaluationPeriod.tripIds : [];
+      const tripIds = props.evaluationPeriod && props.evaluationPeriod.tripIds
+          ? props.evaluationPeriod.tripIds : [];
       if (tripIds.length > 0) {
         try {
           const options: ListOptions = {
@@ -175,7 +182,11 @@ export default createComponent({
       immediate: true
     };
 
-    watch(() => props.evaluationPeriod && props.evaluationPeriod.tripIds ? props.evaluationPeriod.tripIds : [], initTrips, watcherOptions);
+    watch(() => props.evaluationPeriod && props.evaluationPeriod.tripIds
+          ? props.evaluationPeriod.tripIds : [],
+      initTrips,
+      watcherOptions
+    );
 
     async function getEvaluationPeriodLookups() {
       const lookupsList: string[] = [];
@@ -199,7 +210,7 @@ export default createComponent({
             return 1;
           }
           if (b > a) {
-           return -1;
+            return -1;
           }
           return 0;
         });
@@ -211,28 +222,32 @@ export default createComponent({
     useAsync(getEvaluationPeriodLookups);
 
     async function getTripsByDate() {
+      const observerId = state.debriefer.observers;
       if (startDate.value && endDate.value) {
         const tripsHolder: any[] = [];
         try {
-            const tripDocs: any = await masterDB.viewWithDocs(
+          const tripDocs: any = await masterDB.viewWithDocs(
             'obs_web',
             'wcgop_trips_by_observerId',
             { key: observerId }
-            );
-            for (const trip of tripDocs.rows) {
-                if (moment(trip.doc.departureDate).isAfter(startDate.value.toString())
-                    && moment(trip.doc.returnDate).isBefore(endDate.value.toString())) {
-                        tripsHolder.push(trip.doc);
-                }
+          );
+          for (const trip of tripDocs.rows) {
+            if (moment(trip.doc.departureDate).isAfter(
+                startDate.value.toString()) &&
+              moment(trip.doc.returnDate).isBefore(endDate.value.toString())
+            ) {
+              tripsHolder.push(trip.doc);
             }
-            trips.value = tripsHolder;
+          }
+          trips.value = tripsHolder;
         } catch (err) {
-            console.log('could not get trips');
+          console.log('could not get trips');
         }
       }
     }
 
     function save() {
+      const observerId = state.debriefer.observers;
       const tripIds: number[] = [];
       for (const val of selected.value) {
         tripIds.push(val._id);
@@ -252,9 +267,10 @@ export default createComponent({
       };
 
       if (evalPeriod && evalPeriod.id) {
-        masterDB.put(evalPeriod.id, evalPeriod, evalPeriod.rev).then((response: any) => {
-          update(evalPeriod, response);
-        });
+        masterDB.put(evalPeriod.id, evalPeriod, evalPeriod.rev)
+          .then((response: any) => {
+            update(evalPeriod, response);
+          });
       } else {
         masterDB.post(evalPeriod).then((response: any) => {
           update(evalPeriod, response);
