@@ -153,39 +153,41 @@ export default createComponent({
     function filterObservers(val: any, update: any) {
       update(() => {
         const needle = val.toLowerCase();
-        observerList.value = list.filter((v: any) =>
-          v.label.toLowerCase().indexOf(needle) > -1);
+        observerList.value = list.filter(
+          (v: any) => v.label.toLowerCase().indexOf(needle) > -1
+        );
       });
     }
 
     async function getWcgopObservers() {
       const queryOptions: ListOptions = {};
-      const observers = [];
+      const observers: any[] = [];
 
-      if (!showAll.value) {
-        queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
-      }
-
-      const results = await masterDB.view<any>(
-        'obs_web',
-        'all_wcgop_observers',
-        queryOptions
-      );
-
-      for (const row of results.rows) {
-        observers.push({ label: row.value, value: row.id });
-      }
-      observers.sort((a: any, b: any) => {
-        if (a.label > b.label) {
-          return 1;
+      try {
+        if (!showAll.value) {
+          queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
         }
-        if (b.label > a.label) {
-          return -1;
-        }
-        return 0;
-      });
-      observerList.value = observers;
-      list = [...observerList.value];
+        const results = await masterDB
+          .view<any>('obs_web', 'all_wcgop_observers', queryOptions)
+          .then((response: any) => {
+            for (const row of response.rows) {
+              observers.push({ label: row.value, value: row.id });
+            }
+            observers.sort((a: any, b: any) => {
+              if (a.label > b.label) {
+                return 1;
+              }
+              if (b.label > a.label) {
+                return -1;
+              }
+              return 0;
+            });
+            observerList.value = observers;
+            list = [...observerList.value];
+          });
+      } catch (err) {
+        console.log(err);
+      }
     }
     useAsync(getWcgopObservers);
 
@@ -223,21 +225,26 @@ export default createComponent({
     async function getEvaluationPeriods() {
       const evaluationPeriods: any[] = [];
       const debrieferId = state.user.activeUserAlias.personDocId;
-      const results = await masterDB.viewWithDocs<any>(
-        'obs_web',
-        'evaluation_periods',
-        { key: observer.value.value }
-      );
-
-      for (const row of results.rows) {
-        if (row.doc.debriefer === debrieferId) {
-          const startDate = moment(row.doc.startDate).format('MM/DD/YY');
-          const endDate = moment(row.doc.endDate).format('MM/DD/YY');
-          const formattedVal = formatEvaluationPeriod(row.doc);
-          evaluationPeriods.push(formattedVal);
-        }
+      let results: any;
+      try {
+        results = await masterDB.viewWithDocs<any>(
+          'obs_web',
+          'evaluation_periods',
+          { key: observer.value.value })
+          .then((response: any) => {
+            for (const row of response.rows) {
+              if (row.doc.debriefer === debrieferId) {
+                const startDate = moment(row.doc.startDate).format('MM/DD/YY');
+                const endDate = moment(row.doc.endDate).format('MM/DD/YY');
+                const formattedVal = formatEvaluationPeriod(row.doc);
+                evaluationPeriods.push(formattedVal);
+              }
+            }
+            evaluations.value = evaluationPeriods;
+          });
+      } catch (err) {
+        console.log(err);
       }
-      evaluations.value = evaluationPeriods;
     }
 
     useAsync(getEvaluationPeriods);

@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="showDialog">
-    <q-card style="width: 700px; max-width: 80vw; height: 800px">
+    <q-card style="width: 775px; max-width: 80vw; height: 800px">
       <q-card-section>
         <div class="text-h6" style="text-align: center">Evaluation Period</div>
       </q-card-section>
