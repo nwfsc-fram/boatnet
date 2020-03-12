@@ -4,6 +4,7 @@
       <b>{{title}}</b>
     </div>
     <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="optionsList" @input="save" />
+    <div v-if="this.val && showDescription">{{ getDescription() }}</div>
   </div>
 </template>
 
@@ -25,6 +26,7 @@ export default class BoatnetButtonToggle extends Vue {
   @Prop() private docTypeDb!: string;
   @Prop() private displayFields!: any;
   @Prop() private valueField!: any;
+  @Prop() private showDescription!: any;
   private optionsList: any = [];
 
   @Getter('appMode', { namespace: 'appSettings' })
@@ -41,10 +43,20 @@ export default class BoatnetButtonToggle extends Vue {
       for (const row of list) {
         const label = formatDisplayValue(row, [this.displayFields]);
         const value = this.valueField ? formatDisplayValue(row, [this.valueField]) : row.doc;
-        this.optionsList.push({ label, value });
+        const description = get(row, 'doc.' + 'description') ? get(row, 'doc.' + 'description') + ' ' : '';
+        this.optionsList.push({ label, value, description });
       }
     } else {
       this.optionsList = this.options;
+    }
+  }
+
+  private getDescription() {
+    if (this.optionsList.filter((row: any) => row.value === this.val).length > 0
+      && this.optionsList.filter((row: any) => row.value === this.val)[0].description) {
+      return this.optionsList.filter((row: any) => row.value === this.val)[0].description
+    } else {
+      return ''
     }
   }
 
