@@ -40,6 +40,7 @@
       :valueField="config.valueField"
       :docType="config.docType"
       :docTypeDb="config.docTypeDb"
+      :showDescription="config.showDescription"
       @save="save"
     />
 
