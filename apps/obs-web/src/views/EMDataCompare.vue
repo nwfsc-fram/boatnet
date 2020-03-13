@@ -1,7 +1,9 @@
 <template>
   <div class="q-pa-md q-gutter-md">
-      <div class="text-h6" style="max-width: 60%">
+      <div class="text-h6" style="max-width: 70%">
         <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
+        <q-btn v-if="state.user.showLogbookRetained" color="secondary" size="sm" @click="toggleRetained">Hide Retained</q-btn>
+        <q-btn v-else color="primary" size="sm" @click="toggleRetained">Show Retained</q-btn>
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
@@ -22,6 +24,7 @@
       :pagination.sync="pagination"
       binary-state-sort
       hide-bottom
+      :visible-columns="visibleColumns"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
@@ -37,7 +40,6 @@
         </q-tr>
       </template>
     </q-table>
-
   </div>
 </template>
 
@@ -60,6 +62,8 @@ import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
 export default createComponent({
   setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
     const columns: any = [
       { name: 'haul', label: 'Haul', field: 'haul', required: false, align: 'left', sortable: true },
       { name: 'species', label: 'Species', field: 'species', required: false, align: 'left', sortable: true },
@@ -70,6 +74,17 @@ export default createComponent({
       { name: 'audit', label: 'NWFSC Audit Discard (lbs)', field: 'audit', required: false, align: 'center', sortable: true },
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
+
+    const visibleColumns: any = reactive([
+      'haul',
+      'species',
+      'logbookDiscard',
+      'logbookRetained',
+      'thirdPartyReview',
+      'diffReviewLogbook',
+      'audit',
+      'diffAuditReview'
+    ]);
 
     const apiTrip: any = reactive({});
 
@@ -83,6 +98,7 @@ export default createComponent({
     let haulTotals: any = {};
     const tripData: any = [];
     const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
+    const showRetained: any = ref(true);
 
     const getTripData = () => {
       tripData.length = 0;
@@ -206,9 +222,22 @@ export default createComponent({
       }
     };
 
+    const toggleRetained = () => {
+      if (visibleColumns.indexOf('logbookRetained') !== -1) {
+        visibleColumns.splice(visibleColumns.indexOf('logbookRetained') , 1);
+        store.dispatch('user/setShowLogbookRetained', false);
+      } else {
+        visibleColumns.push('logbookRetained');
+        store.dispatch('user/setShowLogbookRetained', true);
+      }
+    };
+
     onMounted(() => {
       if (tripNum.value !== 0) {
         getAPITripData();
+      }
+      if (!store.state.user.showLogbookRetained) {
+        visibleColumns.splice(visibleColumns.indexOf('logbookRetained') , 1);
       }
     });
 
@@ -223,7 +252,11 @@ export default createComponent({
       getPercentDifference,
       getClass,
       tripNum,
-      getAPITripData
+      getAPITripData,
+      showRetained,
+      visibleColumns,
+      toggleRetained,
+      state
     };
   }
 });

@@ -20,6 +20,7 @@
                 <q-td key="vesselId" :props="props" >{{ getVesselId(props.row) }}</q-td>
                 <q-td key="returnDate" :props="props" >{{ getAttribute(props.row.returnDate, 'date') }}</q-td>
                 <q-td key="stage" :props="props" >{{ getAttribute(props.row.stage) }}</q-td>
+                <q-td key="status" :props="props" >{{ getAttribute(props.row.status) }}</q-td>
                 <q-td key="statusDate" :props="props" >{{ getAttribute(props.row.statusDate, 'date') }}</q-td>
                 <!-- <q-td key="actions" :props="cellProperties" :props="props">{{ getAttribute(props.row.actions, 'link') }}
                     <a href="#/action">{{ cellProperties.value }}</a>
@@ -63,6 +64,7 @@ export default createComponent({
             {name: 'vesselId', label: 'Vessel Id', field: 'vesselId', required: false, align: 'left', sortable: true},
             {name: 'returnDate', label: 'End Date', field: 'returnDate', required: false, align: 'left', sortable: true},
             {name: 'stage', label: 'Stage', field: 'stage', required: false, align: 'left', sortable: true},
+            {name: 'status', label: 'Status', field: 'status', required: false, align: 'left', sortable: true},
             {name: 'statusDate', label: 'Status Date', field: 'statusDate', required: false, align: 'left', sortable: true},
             {name: 'actions', label: 'Actions', field: 'actions', required: false, align: 'left', sortable: true},
         ];
@@ -111,7 +113,7 @@ export default createComponent({
                     const apiCatch: any = await getCatchApiCatch(trip.tripNum);
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['view', 'compare', 'review'];
+                    trip.actions = ['view', 'view data', 'compare', 'review'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (Array.isArray(apiCatch)) {
 
@@ -119,10 +121,12 @@ export default createComponent({
                             if (stagePriority.indexOf(dataSource.source) > stagePriority.indexOf(trip.stage)) {
                                 trip.stage = dataSource.source;
                                 trip.statusDate = dataSource.updateDate ? dataSource.updateDate : dataSource.createdDate;
+                                trip.status = 'not selected for review';
                             }
                         }
                     } else {
                         trip.stage = 'capture';
+                        trip.status = 'waiting for logbook data';
                         trip.statusDate = trip.changeLog ? trip.changeLog[0].updateDate : trip.createdDate;
                     }
                 }
