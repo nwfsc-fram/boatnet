@@ -49,12 +49,34 @@ export default class DebrieferTrips extends Vue {
   private originalRows: any = null;
   private columns = [
     { field: 'tripNum', header: 'Id' },
-    { field: 'tripStatus.description', header: 'Status' },
+    {
+      field: 'tripStatus.description',
+      header: 'Status',
+      type: 'toggle',
+      list: ['Open', 'Closed']
+    },
     { field: 'vessel.vesselName', header: 'Vessel' },
-    { field: 'program.name', header: 'Program' },
-    { field: 'departurePort.name', header: 'Departure Port' },
+    {
+      field: 'program.name',
+      header: 'Program',
+      type: 'toggle',
+      list: ['Catch Shares', 'Open Access']
+    },
+    {
+      field: 'departurePort.name',
+      header: 'Departure Port',
+      type: 'toggle',
+      lookupKey: 'port',
+      lookupField: 'name'
+    },
     { field: 'departureDate', header: 'Departure Date' },
-    { field: 'returnPort.name', header: 'Return Port' },
+    {
+      field: 'returnPort.name',
+      header: 'Return Port',
+      type: 'toggle',
+      lookupKey: 'port',
+      lookupField: 'name'
+    },
     { field: 'returnDate', header: 'Return Date' }
   ];
 
@@ -82,9 +104,7 @@ export default class DebrieferTrips extends Vue {
         keys: this.debriefer.evaluationPeriod.tripIds
       };
 
-      const trips = await masterDB.listWithDocs(
-        options
-      );
+      const trips = await masterDB.listWithDocs(options);
 
       for (const row of trips.rows) {
         this.WcgopTrips.push(row);
@@ -95,9 +115,11 @@ export default class DebrieferTrips extends Vue {
   }
 
   private created() {
-    if (this.debriefer.evaluationPeriod &&
-        this.debriefer.evaluationPeriod.tripIds &&
-        this.debriefer.evaluationPeriod.tripIds.length > 0) {
+    if (
+      this.debriefer.evaluationPeriod &&
+      this.debriefer.evaluationPeriod.tripIds &&
+      this.debriefer.evaluationPeriod.tripIds.length > 0
+    ) {
       this.getTrips();
     }
   }

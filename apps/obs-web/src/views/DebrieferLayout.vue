@@ -128,7 +128,6 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
-    const program: string = 'wcgop';
     const observer: any = ref('');
     const showAll: any = ref(false);
     const cruiseIds = '';
@@ -141,6 +140,18 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
 
     const dialogEvalPeriod = ref({});
+
+    const program = computed ({
+      get: () => {
+        let mode: string = state.debriefer.program;
+        if (!mode) {
+          mode = 'wcgop';
+        }
+        return mode;
+      }, set: (val) => {
+        store.dispatch('debriefer/updateProgram', val);
+      }
+    })
 
     const evaluationPeriod = computed({
       get: () => {
