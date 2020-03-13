@@ -570,7 +570,7 @@ export default class Trips extends Vue {
       trip.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+          updateDate: moment().format(),
           change: 'trip closed'
         }
       );
@@ -798,7 +798,7 @@ export default class Trips extends Vue {
                             changeLog: [
                               {
                                 updatedBy: authService.getCurrentUser()!.username,
-                                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+                                updateDate: moment().format(),
                                 change: 'trip created'
                               }
                             ]

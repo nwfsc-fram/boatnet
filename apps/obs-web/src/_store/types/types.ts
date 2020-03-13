@@ -50,6 +50,7 @@ export interface UserState {
   unLinkedApexUsers: any[];
   captainMode: boolean;
   closedTripsTable: boolean;
+  showLogbookRetained: boolean;
 }
 
 export interface VesselState {

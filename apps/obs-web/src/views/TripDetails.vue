@@ -996,7 +996,7 @@ private async getMinDate() {
         this.trip.activeTrip!.changeLog.unshift(
           {
             updatedBy: authService.getCurrentUser()!.username,
-            updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+            updateDate: moment().format(),
             change: 'added/updated logbook capture'
           }
         );
@@ -1174,7 +1174,7 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+          updateDate: moment().format(),
           change: 'Departure Port changed from ' + oldVal.name + ' to ' + newVal.name
         }
       );
@@ -1190,7 +1190,7 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+          updateDate: moment().format(),
           change: 'Return Port changed from ' + oldVal.name + ' to ' + newVal.name
         }
       );
@@ -1206,8 +1206,8 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-          change: 'Departure Date changed from ' + moment(oldVal).format('MM/DD/YYYY HH:mm A') + ' to ' + moment(newVal).format('MM/DD/YYYY HH:mm A')
+          updateDate: moment().format(),
+          change: 'Departure Date changed from ' + moment(oldVal).format() + ' to ' + moment(newVal).format()
         }
       );
     }
@@ -1222,8 +1222,8 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-          change: 'Return Date changed from ' + moment(oldVal).format('MM/DD/YYYY HH:mm A') + ' to ' + moment(newVal).format('MM/DD/YYYY HH:mm A')
+          updateDate: moment().format(),
+          change: 'Return Date changed from ' + moment(oldVal).format() + ' to ' + moment(newVal).format()
         }
       );
     }
@@ -1238,7 +1238,7 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+          updateDate: moment().format(),
           change: 'Maximized Retention changed from ' + oldVal + ' to ' + newVal
         }
       );
@@ -1254,7 +1254,7 @@ private async getMinDate() {
       this.trip.activeTrip!.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+          updateDate: moment().format(),
           change: 'Notes updated: ' + newVal
         }
       );

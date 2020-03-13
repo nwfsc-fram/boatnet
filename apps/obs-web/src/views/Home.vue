@@ -360,7 +360,7 @@ export default class Home extends Vue {
   }
 
   private async getOfflineDocs() {
-    const pouchDb = pouchService.db
+    const pouchDb = pouchService.db;
     try {
       await pouchDb.query(
         'my_index/by_type', {
@@ -373,8 +373,8 @@ export default class Home extends Vue {
         (res: any) => {
         this.offlineTrips = res.rows[0].doc;
         }
-      )
-    } catch(err) {
+      );
+    } catch (err) {
       console.log(err);
     }
   }
@@ -387,15 +387,15 @@ export default class Home extends Vue {
     };
 
     try {
-        const userquery = await db.view<any>(
-        'obs_web',
-        'all_doc_types',
-        queryOptions
-        );
-      console.log('ONLINE')
+      const userquery = await db.view<any>(
+      'obs_web',
+      'all_doc_types',
+      queryOptions
+      );
+      console.log('ONLINE');
     } catch (err) {
-      console.log('OFFLINE')
-        await this.getOfflineDocs();
+      console.log('OFFLINE');
+      await this.getOfflineDocs();
     }
   }
 

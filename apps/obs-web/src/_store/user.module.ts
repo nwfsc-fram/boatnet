@@ -12,18 +12,27 @@ Vue.use(Vuex);
 const actions: ActionTree<UserState, RootState> = {
   setClosedTripsTable({ commit }: any, choice: boolean) {
     commit('setClosedTripsTable', choice);
+  },
+  setShowLogbookRetained({ commit}: any, choice: boolean) {
+    commit('setShowLogbookRetained', choice);
   }
 };
 
 const mutations: MutationTree<UserState> = {
   setClosedTripsTable(newState: any, choice: boolean) {
     newState.closedTripsTable = choice;
+  },
+  setShowLogbookRetained(newState: any, choice: boolean) {
+    newState.showLogbookRetained = choice;
   }
 };
 
 const getters: GetterTree<UserState, RootState> = {
   closedTripsTable(getState: UserState) {
     return getState.closedTripsTable;
+  },
+  showLogbookRetained(getstate: UserState) {
+    return getstate.showLogbookRetained;
   }
 };
 
@@ -34,7 +43,8 @@ export const state: UserState = {
   activeUserAlias: undefined,
   unLinkedApexUsers: [],
   captainMode: false,
-  closedTripsTable: false
+  closedTripsTable: false,
+  showLogbookRetained: true
 };
 
 export const user: Module<UserState, RootState> = {
