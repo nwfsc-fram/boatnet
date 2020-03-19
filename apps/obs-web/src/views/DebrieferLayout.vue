@@ -69,15 +69,15 @@
         </div>
         <div class="q-pa-md" style="float:left; width:15%">
           <b>Observer:</b>
-          <div>Ruth</div>
+          <div>{{ observers }}</div>
         </div>
-        <div class="q-pa-md" style="float:left; width:15%">
+       <!-- <div class="q-pa-md" style="float:left; width:15%">
           <b>Permit:</b>
           <div>329056</div>
-        </div>
+        </div>-->
         <div class="q-pa-md">
           <b>Vessel Name:</b>
-          <div>Startbound</div>
+          <div>{{ vesselName }}</div>
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@
 
 <script lang="ts">
 import { createComponent, ref, reactive,
-  computed, onMounted, toRefs} from '@vue/composition-api';
+  computed, watch } from '@vue/composition-api';
 import Vue from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -113,7 +113,8 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import moment from 'moment';
-
+import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
+ 
 Vue.component('TabPanel', TabPanel);
 Vue.component('TabView', TabView);
 Vue.component('DataTable', DataTable);
@@ -130,7 +131,6 @@ export default createComponent({
 
     const observer: any = ref('');
     const showAll: any = ref(false);
-    const cruiseIds = '';
 
     let list: any[] = [];
     const observerList: any = ref([]);
@@ -140,6 +140,37 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
 
     const dialogEvalPeriod = ref({});
+
+    const cruise: AshopCruise = ref({});
+    const cruiseIds = computed ({
+      get: () => {
+        return state.debriefer.cruiseIds;
+      }, set: (id) => {
+        if (id.length >= 5) {
+          store.dispatch('debriefer/setCruiseIds', id);
+        }
+      }
+    });
+
+    const vesselName = computed({
+      get: () => {
+        return cruise.value.vessel && cruise.value.vessel.vesselName ? cruise.value.vessel.vesselName : '';
+      }, set: (id) => undefined
+    })
+
+    const observers = computed({
+      get: () => {
+        let names = '';
+        const length = cruise.value.observers ? cruise.value.observers.length : 0;
+        for (let i = 0; i < length; i++) {
+          names += cruise.value.observers[i].firstName + ' ' + cruise.value.observers[i].lastName;
+          if (i < length - 1) {
+            names += ', ';
+          }
+        }
+        return names;
+      }, set: (id) => undefined
+    })
 
     const program = computed ({
       get: () => {
@@ -151,13 +182,14 @@ export default createComponent({
       }, set: (val) => {
         store.dispatch('debriefer/updateProgram', val);
       }
-    })
+    });
 
     const evaluationPeriod = computed({
       get: () => {
         return state.debriefer.evaluationPeriod;
       }, set: (val) => {
         store.dispatch('debriefer/updateEvaluationPeriod', val);
+        store.dispatch('debriefer/setTripIds', val.tripIds);
       }
     });
 
@@ -233,6 +265,24 @@ export default createComponent({
       };
     }
 
+    watch(() => state.debriefer.cruiseIds, getCruise);
+
+    async function getCruise() {
+      const cruiseId: number = parseInt(state.debriefer.cruiseIds, 10);
+      try {
+        const results = await masterDB.viewWithDocs<any>(
+          'obs_web',
+          'ashop_cruise',
+          { key: cruiseId}
+        );
+        cruise.value = results.rows[0].doc;
+        store.dispatch('debriefer/setTripIds', results.rows[0].doc.trips);
+      } catch (err) {
+        store.dispatch('debriefer/setTripIds', []);
+        console.log(err);
+      }
+    }
+
     async function getEvaluationPeriods() {
       const evaluationPeriods: any[] = [];
       const debrieferId = state.user.activeUserAlias.personDocId;
@@ -283,6 +333,9 @@ export default createComponent({
       closeEvalDialog,
       observerList,
       evaluations,
+      observers,
+      vesselName,
+      cruise,
       cruiseIds,
       selectObserver,
       showDialog,

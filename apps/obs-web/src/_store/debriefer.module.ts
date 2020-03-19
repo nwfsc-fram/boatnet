@@ -19,6 +19,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   setTripIds({ commit }: any, tripId: string) {
     commit('setTripIds', tripId);
   },
+  setCruiseIds({ commit }: any, cruiseId: string) {
+    commit('setCruiseIds', cruiseId);
+  },
   addOperationId({ commit }: any, operationId: string) {
     commit('addOperationId', operationId);
   },
@@ -34,9 +37,6 @@ const actions: ActionTree<DebrieferState, RootState> = {
   updateProgram({ commit }: any, value: string) {
     commit('updateVal', {id: 'program', val: value});
   },
-  updateCruise({ commit }: any, value: string) {
-    commit('updateVal', {id: 'cruiseIds', val: value});
-  },
   updateObservers({ commit }: any, value: string) {
     commit('updateVal', {id: 'observers', val: value});
   },
@@ -51,7 +51,9 @@ const mutations: MutationTree<DebrieferState> = {
   },
   setTripIds(newState: any, ids: string[]) {
     newState.tripIds = ids;
-    // newState.tripIds.splice(newState.tripIds.length, 1, id);
+  },
+  setCruiseIds(newState: any, ids: string) {
+    newState.cruiseIds = ids;
   },
   addOperationId(newState: any, id: string) {
     newState.operationIds.push(id);
