@@ -39,17 +39,17 @@
                     </template>
                 </q-input>
 
-                <q-input v-model="tripCatch.logbookPageNumber" outlined dense autogrow title="Page number from vessel logbook">
+                <q-input v-model="tripCatch.logbookPageNumber" outlined dense autogrow title="Page number from vessel logbook" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Logbook Page #</div>
                     </template>
                 </q-input>
 
-                <q-input v-model="tripCatch.fishery" outlined dense autogrow title="Description of the EM fishery. Whiting, Midwater Rockfish, Fixed Gear, Bottom Trawl">
+                <q-select v-model="tripCatch.fishery" outlined dense autogrow title="Description of the EM fishery. Whiting, Midwater Rockfish, Fixed Gear, Bottom Trawl" :options="fisheryOptions">
                     <template v-slot:append>
                         <div class="text-h6">Fishery</div>
                     </template>
-                </q-input>
+                </q-select>
             </div>
 
             <div class="logbook-element" style="border: 2px solid grey; border-radius: 5px; padding: 10px">
@@ -94,6 +94,7 @@
                         <div class="text-h6">Date / Time</div>
                     </template>
                 </q-input>
+
                 <div class="row items-start">
                     <q-select v-model="tripCatch.departureState" outlined dense autogrow title="State where the vessel departed for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA','OR', 'WA']">
                         <template v-slot:append>
@@ -101,7 +102,7 @@
                         </template>
                     </q-select>
 
-                    <q-input v-model="tripCatch.departurePortCode" outlined dense autogrow title="Port code where the vessel departed. The port code is the same as the PacFIN port code" style="width: 56.3%">
+                    <q-input v-model="tripCatch.departurePortCode" outlined dense autogrow title="Port code where the vessel departed. The port code is the same as the PacFIN port code" style="width: 56.3%" mask="XXXX">
                         <template v-slot:append>
                             <div class="text-h6">Port Code</div>
                         </template>
@@ -121,7 +122,7 @@
                         </template>
                     </q-select>
 
-                    <q-input v-model="tripCatch.returnPortCode" outlined dense autogrow title="Port code where the vessel returned. The port code is the same as the PacFIN port code" style="width: 56.3%">
+                    <q-input v-model="tripCatch.returnPortCode" outlined dense autogrow title="Port code where the vessel returned. The port code is the same as the PacFIN port code" style="width: 56.3%" mask="XXXX">
                         <template v-slot:append>
                             <div class="text-h6">Port Code</div>
                         </template>
@@ -223,7 +224,18 @@
             <div v-for="haul in tripCatch.hauls" :key="tripCatch.hauls.indexOf(haul)">
                 <q-field v-model="tripCatch.hauls[tripCatch.hauls.indexOf(haul)]" outlined dense autogrow @click.native="selectHaul(tripCatch.hauls.indexOf(haul) + 1)">
                     <template v-slot: control>
-                        <div class="self-center full-width no-outline text-black text-bold" tabindex="0">Haul {{ tripCatch.hauls.indexOf(haul) + 1 }}</div>
+                        <div class="self-center full-width no-outline text-black text-bold" tabindex="0">Haul {{ tripCatch.hauls.indexOf(haul) + 1 }}
+                            <span v-if="haul.startDateTime || haul.startDepth || haul.startLatitude || haul.startLongitude">start </span>
+                            <span v-if="haul.startDateTime"> - {{ haul.startDateTime }}</span>
+                            <span v-if="haul.startDepth"> - {{ haul.startDepth }} ftm</span>
+                            <span v-if="haul.startLatitude"> lat: {{ haul.startLatitude }}</span>
+                            <span v-if="haul.startLongitude"> long: {{ haul.startLongitude }}</span>
+                            <span v-if="haul.endDateTime || haul.endDepth || haul.endLatitude || haul.endLongitude"> / end </span>
+                            <span v-if="haul.endDateTime"> - {{ haul.endDateTime }}</span>
+                            <span v-if="haul.endDepth"> - {{ haul.endDepth }} ftm</span>
+                            <span v-if="haul.endLatitude"> lat: {{ haul.endLatitude }}</span>
+                            <span v-if="haul.endLongitude"> long: {{ haul.endLongitude }}</span>
+                        </div>
                     </template>
                     <template v-slot:append>
                     <q-btn flat dense icon="close" @click="tripCatch.hauls.splice(tripCatch.hauls.indexOf(haul) , 1)"></q-btn>
@@ -244,37 +256,37 @@
 
             <div class="logbook-element" style="border: 2px solid grey; border-radius: 5px; padding: 10px;">
                 <div class="text-h4 text-grey-7">Gear</div>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearTypeCode" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope), 10 = pot, 19 = hook & line">
+                <q-select v-model="tripCatch.hauls[selectedHaul -1].gearTypeCode" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope), 10 = pot, 19 = hook & line" :options="['1  = Groundfish trawl, footrope < 8 inches (small footrope)'  , '2  = Groundfish trawl, footrope > 8 inches (large footrope)', '10 = pot', '19 = hook & line']">
                     <template v-slot:append>
                         <div class="text-h6">Gear Type</div>
                     </template>
-                </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearTypeDescription" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope), 10 = pot, 19 = hook & line">
+                </q-select>
+                <q-select v-model="tripCatch.hauls[selectedHaul -1].gearTypeDescription" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope), 10 = pot, 19 = hook & line" :options="gearTypeOptions">
                     <template v-slot:append>
                         <div class="text-h6">Gear Type Description</div>
                     </template>
-                </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearPerSet" outlined dense autogrow title="Total number of pots or hooks set (Mandatory for FG hauls)">
+                </q-select>
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearPerSet" outlined dense autogrow title="Total number of pots or hooks set (Mandatory for FG hauls)" mask="###">
                     <template v-slot:append>
                         <div class="text-h6">Gear Per Set</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearLost" outlined dense autogrow title="Number of pots or hooks lost (Mandatory for FG hauls)">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].gearLost" outlined dense autogrow title="Number of pots or hooks lost (Mandatory for FG hauls)" mask="###">
                     <template v-slot:append>
                         <div class="text-h6">Gear Lost</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].avgHooksPerSeg" outlined dense autogrow title="Average hooks per set">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].avgHooksPerSeg" outlined dense autogrow title="Average hooks per set" mask="###">
                     <template v-slot:append>
                         <div class="text-h6">Avg Hooks Per Set</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].netType" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].netType" outlined dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)" mask="" hint="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)" style="margin-bottom: 15px">
                     <template v-slot:append>
                         <div class="text-h6">Net Type</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].codendCapacity" outlined dense autogrow title="Total estimated weight the codened can hold">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].codendCapacity" outlined dense autogrow title="Total estimated weight (lbs) the codened can hold" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Codend Capacity</div>
                     </template>
@@ -288,18 +300,18 @@
                         <div class="text-h6">Start Date / Time</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].startDepth" outlined dense autogrow title="Depth of fishing gear when gear is deployed (Fathoms)">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].startDepth" outlined dense autogrow title="Depth of fishing gear when gear is deployed (Fathoms)" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Depth</div>
                     </template>
                 </q-input>
                 <div class="row items-start">
-                    <q-input v-model="tripCatch.hauls[selectedHaul -1].startLatitude" outlined dense autogrow title="Latitude of gear deployement in decimal degrees" style="width: 50%; margin-right: 5px">
+                    <q-input v-model="tripCatch.hauls[selectedHaul -1].startLatitude" outlined dense autogrow title="Latitude of gear deployement in decimal degrees" style="width: 50%; margin-right: 5px" mask="###.#####">
                         <template v-slot:append>
                             <div class="text-h6">Lat</div>
                         </template>
                     </q-input>
-                    <q-input v-model="tripCatch.hauls[selectedHaul -1].startLongitude" outlined dense autogrow title="Longitude of gear deployement in decimal degrees" style="width: 48.3%">
+                    <q-input v-model="tripCatch.hauls[selectedHaul -1].startLongitude" outlined dense autogrow title="Longitude of gear deployement in decimal degrees" style="width: 48.3%" mask="###.#####">
                         <template v-slot:append>
                             <div class="text-h6">Long</div>
                         </template>
@@ -312,18 +324,18 @@
                         <div class="text-h6">End Date / Time</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].endDepth" outlined dense autogrow title="Depth of fishing gear when gear is retrieved (Fathoms)">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].endDepth" outlined dense autogrow title="Depth of fishing gear when gear is retrieved (Fathoms)" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Depth</div>
                     </template>
                 </q-input>
                 <div class="row items-start">
-                    <q-input v-model="tripCatch.hauls[selectedHaul -1].endLatitude" outlined dense autogrow title="Latitude of gear retrieval in decimal degrees" style="width: 50%; margin-right: 5px">
+                    <q-input v-model="tripCatch.hauls[selectedHaul -1].endLatitude" outlined dense autogrow title="Latitude of gear retrieval in decimal degrees" style="width: 50%; margin-right: 5px" mask="###.#####">
                         <template v-slot:append>
                             <div class="text-h6">Lat</div>
                         </template>
                     </q-input>
-                    <q-input v-model="tripCatch.hauls[selectedHaul -1].endLongitude" outlined dense autogrow title="Longitude of gear retrieval in decimal degrees" style="width: 48.3%">
+                    <q-input v-model="tripCatch.hauls[selectedHaul -1].endLongitude" outlined dense autogrow title="Longitude of gear retrieval in decimal degrees" style="width: 48.3%" mask="###.#####">
                         <template v-slot:append>
                             <div class="text-h6">Long</div>
                         </template>
@@ -332,7 +344,7 @@
             </div>
 
             <div class="logbook-element" style="border: 2px solid grey; border-radius: 5px; padding: 10px;">
-                <div class="text-h4 text-grey-7">Haul Details</div>
+                <div class="text-h4 text-grey-7">Details</div>
                 <q-input v-model="tripCatch.hauls[selectedHaul -1].targetStrategy" outlined dense autogrow title="Target Fish">
                     <template v-slot:append>
                         <div class="text-h6">Target Strategy</div>
@@ -343,12 +355,12 @@
                         <div class="text-h6">Average Depth</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].systemPerformance" outlined dense autogrow title="1 = No issues, 2 = Video Gaps, 3 = Poor video quality">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].systemPerformance" outlined dense autogrow title="1 = No issues, 2 = Video Gaps, 3 = Poor video quality" mask="#">
                     <template v-slot:append>
                         <div class="text-h6">System Performance</div>
                     </template>
                 </q-input>
-                <q-input v-model="tripCatch.hauls[selectedHaul -1].catchHandlingPerformance" outlined dense autogrow title="1 = No issues, 2 = Issues">
+                <q-input v-model="tripCatch.hauls[selectedHaul -1].catchHandlingPerformance" outlined dense autogrow title="1 = No issues, 2 = Issues" mask="#">
                     <template v-slot:append>
                         <div class="text-h6">Catch Handling Performance</div>
                     </template>
@@ -388,25 +400,25 @@
                         </div>
                         <br>
                         </div>
-                        <div v-if="selectedCatch">
+                        <div v-if="selectedCatch" style="border: 2px solid grey; border-radius: 5px; padding: 10px;">
                             <div class="text-h4 text-grey-7">Catch {{ selectedCatch }}</div>
                             <div class="row items-start">
-                                <q-input  class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].catchDisposition" outlined dense autogrow title="Disposition of the Catch (Retained or Discard)">
+                                <q-select  class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].catchDisposition" outlined dense autogrow title="Disposition of the Catch (Retained or Discard)" :options="['Discarded', 'Retained']">
                                     <template v-slot:append>
                                         <div class="text-h6">Catch Disposition</div>
                                     </template>
-                                </q-input>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].speciesCode" outlined dense autogrow title="WCGOP species code (3 or 4 digits)">
+                                </q-select>
+                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].speciesCode" outlined dense autogrow title="WCGOP species code (3 or 4 digits)" mask="XXXX">
                                     <template v-slot:append>
                                         <div class="text-h6">Species Code</div>
                                     </template>
                                 </q-input>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].estimatedWeight" outlined dense autogrow title="Estimated weight in lbs">
+                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].estimatedWeight" outlined dense autogrow title="Estimated weight in lbs" mask="#####">
                                     <template v-slot:append>
                                         <div class="text-h6">Estimated Total Weight</div>
                                     </template>
                                 </q-input>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].catchCount" outlined dense autogrow title="Number of fish for a species (Yellow Eye RF, PHLB, Species of concern...Salmon, Green Sturgeon, Eulachon). Not required for all species">
+                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].catchCount" outlined dense autogrow title="Number of fish for a species (Yellow Eye RF, PHLB, Species of concern...Salmon, Green Sturgeon, Eulachon). Not required for all species" mask="###">
                                     <template v-slot:append>
                                         <div class="text-h6">Count</div>
                                     </template>
@@ -416,12 +428,12 @@
                                         <div class="text-h6">Weight Calculation Method</div>
                                     </template>
                                 </q-input>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].length" outlined dense autogrow title="Length (in cm) of individual fish (Pacific Halibut)">
+                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].length" outlined dense autogrow title="Length (in cm) of individual fish (Pacific Halibut)" mask="####">
                                     <template v-slot:append>
                                         <div class="text-h6">Length</div>
                                     </template>
                                 </q-input>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].timeOnDeck" outlined dense autogrow title="Time on deck (in min) specific to each Pacific Halibut">
+                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul -1].catch[selectedCatch -1].timeOnDeck" outlined dense autogrow title="Time on deck (in min) specific to each Pacific Halibut" mask="###">
                                     <template v-slot:append>
                                         <div class="text-h6">timeOnDeck</div>
                                     </template>
@@ -440,9 +452,7 @@
         </div>
         </q-expansion-item>
 
-        {{ selectedHaul }}
         {{ tripCatch }}
-        {{ selectedCatch }}
     </div>
 </template>
 
@@ -458,9 +468,14 @@ import {
   onServerPrefetch
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import { Notify } from 'quasar';
 import moment from 'moment';
+
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
@@ -481,7 +496,8 @@ export default createComponent({
         isVoid: false,
         buyers: [],
         fishTicketNumber: [],
-        hauls: []
+        hauls: [],
+        departureDateTime: '2019-04-17T21:41:00-07:00'
     });
 
     const getClass = (attribute: any, option: string) => {
@@ -522,6 +538,74 @@ export default createComponent({
         selectedCatch.value = null;
     }
 
+    const fisheryOptions: any = [];
+    const getFisheryOptions = async() => {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'fishery'
+        };
+
+        const fisheries = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions,
+        );
+
+        const fisheryOptionsRows = fisheries.rows.map((row: any) => row.doc.description);
+        for (const row of fisheryOptionsRows) {
+            fisheryOptions.push(row);
+        }
+
+        fisheryOptions.sort( (a: any, b: any) => {
+        if (a > b) {
+            return 1;
+        } else if (a < b) {
+            return -1;
+        } else {
+            return 0;
+        }
+        });
+    }
+
+    const gearTypeOptions: any =[];
+    const getGearTypeOptions = async() => {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'gear-type'
+        };
+
+        const gearTypes = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions,
+        );
+
+        const gearTypeOptionsRows = gearTypes.rows.map((row: any) => row.doc.description);
+        for (const row of gearTypeOptionsRows) {
+            gearTypeOptions.push(row);
+        }
+
+        gearTypeOptions.sort( (a: any, b: any) => {
+        if (a > b) {
+            return 1;
+        } else if (a < b) {
+            return -1;
+        } else {
+            return 0;
+        }
+        });
+    }
+
+    onMounted( () => {
+        getFisheryOptions();
+        getGearTypeOptions();
+        }
+    )
+
     return {
         tripCatch,
         addCatch,
@@ -529,7 +613,9 @@ export default createComponent({
         selectHaul,
         getClass,
         selectedHaul,
-        selectedCatch
+        selectedCatch,
+        fisheryOptions,
+        gearTypeOptions
     };
   }
 });
