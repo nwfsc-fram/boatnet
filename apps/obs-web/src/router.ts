@@ -156,7 +156,7 @@ const router = new Router({
           }
         },
         { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
-        { path: '/e-logbook', name: 'E Logbook', component: ELogbook },
+        { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook },
         {
           path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
           beforeEnter: (to, from, next) => {

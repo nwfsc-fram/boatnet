@@ -90,6 +90,8 @@ export default createComponent({
                 return 'em-data-compare?' + 'tripnum=' + row.tripNum;
             } else if (action === 'view') {
                 return 'view-image?' + 'id=' + row._id;
+            } else if (action === 'view data') {
+                return 'e-logbook' + '/' + row.tripNum;
             }
         };
 
