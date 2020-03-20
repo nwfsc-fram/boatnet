@@ -97,7 +97,7 @@
           :content-inset-level=".5"
         >
 
-          <q-item to="/e-logbook" exact>
+          <q-item to="/e-logbook/new" exact>
             <q-item-section avatar>
               <q-icon name="notes" />
             </q-item-section>
