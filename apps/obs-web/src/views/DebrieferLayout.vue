@@ -1,92 +1,114 @@
 <template>
   <div>
-    <div style="width:100%">
-      <div class="q-pa-md" style="float:left">
-        <div>Program</div>
-        <q-btn-toggle
-          v-model="program"
-          toggle-color="primary"
-          :options="[
+    <div class="q-pa-md" style="float:left">
+      <div>Program</div>
+      <q-btn-toggle
+        v-model="program"
+        toggle-color="primary"
+        :options="[
             {label: 'WCGOP', value: 'wcgop'},
             {label: 'A-SHOP', value: 'ashop'}
           ]"
+      />
+    </div>
+    <div v-if="program === 'wcgop'">
+      <div class="q-pa-md" style="float:left; width:35%">
+        <q-select
+          use-input
+          style="display: inline-block; width: 60%"
+          v-model="observer"
+          :options="observerList"
+          label="Observer"
+          @input="selectObserver"
+          @filter="filterLookups"
+          fill-input
+          hide-selected
+        />
+        <q-toggle
+          class="q-ma-sm"
+          style="display: inline-block"
+          label="Show All"
+          v-model="showAll"
+          @input="getWcgopObservers()"
         />
       </div>
-      <div v-if="program === 'wcgop'">
-        <div class="q-pa-md" style="float:left; width:35%">
-          <q-select
-            use-input
-            style="display: inline-block; width: 60%"
-            v-model="observer"
-            :options="observerList"
-            label="Observer"
-            @input="selectObserver"
-            @filter="filterObservers"
-            fill-input
-            hide-selected
-          />
-          <q-toggle
-            class="q-ma-sm"
-            style="display: inline-block"
-            label="Show All"
-            v-model="showAll"
-            @input="getWcgopObservers()"
-          />
-        </div>
-        <div class="q-pa-md">
-          <q-select
-            style="display: inline-block; width: 25%"
-            :disable="observer === '' ? true : false"
-            v-model="evaluationPeriod"
-            :options="evaluations"
-            label="Previous Eval Periods"
-          />
-          <q-btn
-            round
-            :disable="observer === '' ? true : false"
-            class="q-ma-xs"
-            style="display: inline-block"
-            color="white"
-            text-color="black"
-            icon="add"
-            @click="add"
-          />
-          <q-btn
-            round
-            :disable="observer === '' ? true : false"
-            class="q-ma-xs"
-            style="display: inline-block"
-            color="white"
-            text-color="black"
-            icon="edit"
-            @click="edit"
-          />
-        </div>
+      <div class="q-pa-md">
+        <q-select
+          style="display: inline-block; width: 25%"
+          :disable="observer === '' ? true : false"
+          v-model="evaluationPeriod"
+          :options="evaluations"
+          label="Previous Eval Periods"
+        />
+        <q-btn
+          round
+          :disable="observer === '' ? true : false"
+          class="q-ma-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="add"
+          @click="add"
+        />
+        <q-btn
+          round
+          :disable="observer === '' ? true : false"
+          class="q-ma-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="edit"
+          @click="edit"
+        />
       </div>
-      <div v-else>
-        <div class="q-pa-md" style="float:left; width:30%">
-          <q-input v-model="cruiseIds" label="Cruise Id" />
-        </div>
-        <div class="q-pa-md" style="float:left; width:15%">
-          <b>Observer:</b>
-          <div>{{ observers }}</div>
-        </div>
-       <!-- <div class="q-pa-md" style="float:left; width:15%">
-          <b>Permit:</b>
-          <div>329056</div>
-        </div>-->
-        <div class="q-pa-md">
-          <b>Vessel Name:</b>
-          <div>{{ vesselName }}</div>
-        </div>
+    </div>
+    <div v-else>
+      <q-select
+        use-input
+        class="q-pa-md"
+        style="display: inline-block; width: 25%"
+        v-model="cruiseId"
+        :options="cruiseIdList"
+        label="Cruise Id"
+        @filter="filterLookups"
+        @input="selectCruise"
+        fill-input
+        hide-selected
+      />
+      <q-btn
+        round
+        class="q-ma-xs"
+        style="display: inline-block"
+        color="white"
+        text-color="black"
+        icon="edit"
+        @click="editCruise"
+      />
+      <div class="q-pa-md" style="display: inline-block; width: 20%">
+        <b>Observer:</b>
+        <div>{{ observers }}</div>
+      </div>
+      <div class="q-pa-md" style="display: inline-block; width: 10%">
+        <b>Vessel Name:</b>
+        <div>{{ vesselName }}</div>
+      </div>
+      <div class="q-pa-md" style="display: inline-block; width: 10%">
+        <b>Start Date:</b>
+        <div>{{ cruiseStartDate }}</div>
+      </div>
+      <div class="q-pa-md" style="display: inline-block; width: 10%">
+        <b>End Date:</b>
+        <div>{{ cruiseEndDate }}</div>
       </div>
     </div>
 
     <app-debriefer-dialog
-      :showDialog.sync="showDialog"
+      :showDialog.sync="showEvaluationDialog"
       :evaluationPeriod="dialogEvalPeriod"
       @closeEvalDialog="closeEvalDialog"
     />
+
+    <app-cruise-dialog :showDialog.sync="showCruiseDialog" :cruise="cruise" />
 
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
@@ -102,19 +124,28 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, reactive,
-  computed, watch } from '@vue/composition-api';
+import {
+  createComponent,
+  ref,
+  reactive,
+  computed,
+  watch
+} from '@vue/composition-api';
 import Vue from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 import { useAsync } from 'vue-async-function';
-import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import {
+  CouchDBInfo,
+  CouchDBCredentials,
+  couchService
+} from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
- 
+
 Vue.component('TabPanel', TabPanel);
 Vue.component('TabView', TabView);
 Vue.component('DataTable', DataTable);
@@ -132,54 +163,66 @@ export default createComponent({
     const observer: any = ref('');
     const showAll: any = ref(false);
 
-    let list: any[] = [];
+    let observerFilterList: any[] = [];
     const observerList: any = ref([]);
     const evaluations: any = ref([]);
 
-    const showDialog: any = ref(false);
+    const showEvaluationDialog: any = ref(false);
+    const showCruiseDialog: any = ref(false);
     const masterDB: Client<any> = couchService.masterDB;
 
     const dialogEvalPeriod = ref({});
 
+    const cruiseId: any = ref('');
     const cruise: AshopCruise = ref({});
-    const cruiseIds = computed ({
-      get: () => {
-        return state.debriefer.cruiseIds;
-      }, set: (id) => {
-        if (id.length >= 5) {
-          store.dispatch('debriefer/setCruiseIds', id);
-        }
-      }
-    });
+    const cruiseIdList: any = ref([]);
+    let cruiseIdFilterList: any[] = [];
 
-    const vesselName = computed({
-      get: () => {
-        return cruise.value.vessel && cruise.value.vessel.vesselName ? cruise.value.vessel.vesselName : '';
-      }, set: (id) => undefined
-    })
+    const cruiseStartDate = computed(() =>
+      cruise.value && cruise.value.startDate
+        ? moment(cruise.value.startDate).format('MM/DD/YYYY')
+        : ''
+    );
+    const cruiseEndDate = computed(() =>
+      cruise.value && cruise.value.endDate
+        ? moment(cruise.value.endDate).format('MM/DD/YYYY')
+        : ''
+    );
+    const vesselName = computed(() =>
+      cruise.value && cruise.value.vessel && cruise.value.vessel.vesselName
+        ? cruise.value.vessel.vesselName
+        : ''
+    );
 
     const observers = computed({
       get: () => {
         let names = '';
-        const length = cruise.value.observers ? cruise.value.observers.length : 0;
+        const length = cruise.value.observers
+          ? cruise.value.observers.length
+          : 0;
         for (let i = 0; i < length; i++) {
-          names += cruise.value.observers[i].firstName + ' ' + cruise.value.observers[i].lastName;
+          names +=
+            cruise.value.observers[i].firstName +
+            ' ' +
+            cruise.value.observers[i].lastName;
           if (i < length - 1) {
             names += ', ';
           }
         }
         return names;
-      }, set: (id) => undefined
-    })
+      },
+      set: (id) => undefined
+    });
 
-    const program = computed ({
+    const program = computed({
       get: () => {
         let mode: string = state.debriefer.program;
         if (!mode) {
           mode = 'wcgop';
         }
         return mode;
-      }, set: (val) => {
+      },
+      set: (val) => {
         store.dispatch('debriefer/updateProgram', val);
       }
     });
@@ -187,36 +230,72 @@ export default createComponent({
     const evaluationPeriod = computed({
       get: () => {
         return state.debriefer.evaluationPeriod;
-      }, set: (val) => {
+      },
+      set: (val) => {
         store.dispatch('debriefer/updateEvaluationPeriod', val);
         store.dispatch('debriefer/setTripIds', val.tripIds);
       }
     });
 
-    function filterObservers(val: any, update: any) {
+    function filterLookups(val: any, update: any) {
       update(() => {
         const needle = val.toLowerCase();
-        observerList.value = list.filter(
-          (v: any) => v.label.toLowerCase().indexOf(needle) > -1
-        );
+        if (state.debriefer.program === 'wcgop') {
+          observerList.value = observerFilterList.filter(
+            (v: any) =>
+              v.label
+                .toString()
+                .toLowerCase()
+                .indexOf(needle) > -1
+          );
+        } else {
+          cruiseIdList.value = cruiseIdFilterList.filter(
+            (v: any) =>
+              v.label
+                .toString()
+                .toLowerCase()
+                .indexOf(needle) > -1
+          );
+        }
       });
     }
 
     async function getWcgopObservers() {
       const queryOptions: ListOptions = {};
-      const observers: any[] = [];
+      if (!showAll.value) {
+        queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
+      }
+      observerList.value = await getLookups(
+        'all_wcgop_observers',
+        'value',
+        'id',
+        queryOptions
+      );
+      observerFilterList = observerList.value;
+    }
+    useAsync(getWcgopObservers);
 
+    async function getCruiseIds() {
+      cruiseIdList.value = await getLookups('ashop_cruise', 'key', 'key', {});
+      cruiseIdFilterList = cruiseIdList.value;
+    }
+    useAsync(getCruiseIds);
+
+    async function getLookups(
+      view: string,
+      label: string,
+      value: string,
+      queryOptions: any
+    ) {
+      const lookupVals: any[] = [];
       try {
-        if (!showAll.value) {
-          queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
-        }
         const results = await masterDB
-          .view<any>('obs_web', 'all_wcgop_observers', queryOptions)
+          .view<any>('obs_web', view, queryOptions)
           .then((response: any) => {
             for (const row of response.rows) {
-              observers.push({ label: row.value, value: row.id });
+              lookupVals.push({ label: row[label], value: row[value] });
             }
-            observers.sort((a: any, b: any) => {
+            lookupVals.sort((a: any, b: any) => {
               if (a.label > b.label) {
                 return 1;
               }
@@ -225,19 +304,38 @@ export default createComponent({
               }
               return 0;
             });
-            observerList.value = observers;
-            list = [...observerList.value];
           });
+        return lookupVals;
       } catch (err) {
         console.log(err);
       }
     }
-    useAsync(getWcgopObservers);
 
     async function selectObserver() {
       store.dispatch('debriefer/updateObservers', observer.value.value);
       evaluationPeriod.value = {};
       await getEvaluationPeriods();
+    }
+
+    async function selectCruise() {
+      store.dispatch('debriefer/setCruiseIds', cruiseId.value.value);
+      try {
+        const results = await masterDB.viewWithDocs<any>(
+          'obs_web',
+          'ashop_cruise',
+          { key: cruiseId.value.value }
+        );
+        if (results.rows[0] && results.rows[0].doc) {
+          cruise.value = results.rows[0].doc;
+          store.dispatch('debriefer/setTripIds', results.rows[0].doc.trips);
+        } else {
+          cruise.value = {};
+          store.dispatch('debriefer/setTripIds', []);
+        }
+      } catch (err) {
+        store.dispatch('debriefer/setTripIds', []);
+        console.log(err);
+      }
     }
 
     async function closeEvalDialog() {
@@ -265,33 +363,15 @@ export default createComponent({
       };
     }
 
-    watch(() => state.debriefer.cruiseIds, getCruise);
-
-    async function getCruise() {
-      const cruiseId: number = parseInt(state.debriefer.cruiseIds, 10);
-      try {
-        const results = await masterDB.viewWithDocs<any>(
-          'obs_web',
-          'ashop_cruise',
-          { key: cruiseId}
-        );
-        cruise.value = results.rows[0].doc;
-        store.dispatch('debriefer/setTripIds', results.rows[0].doc.trips);
-      } catch (err) {
-        store.dispatch('debriefer/setTripIds', []);
-        console.log(err);
-      }
-    }
-
     async function getEvaluationPeriods() {
       const evaluationPeriods: any[] = [];
       const debrieferId = state.user.activeUserAlias.personDocId;
       let results: any;
       try {
-        results = await masterDB.viewWithDocs<any>(
-          'obs_web',
-          'evaluation_periods',
-          { key: observer.value.value })
+        results = await masterDB
+          .viewWithDocs<any>('obs_web', 'evaluation_periods', {
+            key: observer.value.value
+          })
           .then((response: any) => {
             for (const row of response.rows) {
               if (row.doc.debriefer === debrieferId) {
@@ -317,12 +397,16 @@ export default createComponent({
         endDate: '',
         tripIds: []
       };
-      showDialog.value = true;
+      showEvaluationDialog.value = true;
     }
 
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
-      showDialog.value = true;
+      showEvaluationDialog.value = true;
+    }
+
+    function editCruise() {
+      showCruiseDialog.value = true;
     }
 
     return {
@@ -335,15 +419,21 @@ export default createComponent({
       evaluations,
       observers,
       vesselName,
+      cruiseStartDate,
+      cruiseEndDate,
       cruise,
-      cruiseIds,
+      selectCruise,
+      cruiseIdList,
+      cruiseId,
       selectObserver,
-      showDialog,
+      showCruiseDialog,
+      showEvaluationDialog,
       showAll,
       getWcgopObservers,
-      filterObservers,
+      filterLookups,
       add,
-      edit
+      edit,
+      editCruise
     };
   }
 });

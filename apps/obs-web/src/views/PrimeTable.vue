@@ -127,15 +127,23 @@ export default createComponent({
     const state = context.root.$store.state;
 
     const filters: any = {};
-    const columns = props.columns ? props.columns : [];
-    const columnOptions = [...columns];
+    const columnOptions: any = ref([...props.columns ? props.columns : []]);
     const lookupsList: any = ref([]);
+    let program = state.debriefer.program;
 
     const cellVal: any = ref('');
 
     async function getBooleanLookup() {
       lookupsList.value = ['true', 'false'];
     }
+
+    watch(() => props.columns, (cols) => {
+      // if program has changed update column selection options
+      if (program !== state.debriefer.program) {
+        columnOptions.value = cols;
+        program = state.debriefer.program;
+      }
+    });
 
     async function getLookupInfo(list: any[], displayField: string, key: string) {
       if (!list) {
@@ -169,7 +177,7 @@ export default createComponent({
     }
 
     function onCellEdit(newValue: any, slotProps: any, type: string) {
-      let valueHolder: any = props.value ? props.value : {};
+      const valueHolder: any = props.value ? props.value : {};
       let editingCellRow: any = valueHolder[slotProps.index];
       if (!editingCellRow) {
         editingCellRow = { ...slotProps.data };

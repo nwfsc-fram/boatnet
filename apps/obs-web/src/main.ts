@@ -36,6 +36,7 @@ import DebrieferCatchSpecies from './views/DebrieferCatchSpecies.vue';
 import DebrieferCatchBaskets from './views/DebrieferCatchBaskets.vue';
 import DebrieferCatchSpecimens from './views/DebrieferCatchSpecimens.vue';
 import DebrieferDialog from './views/DebrieferDialog.vue';
+import CruiseDialog from './views/CruiseDialog.vue';
 // Vue.use(VueResource);
 
 import VueCompositionApi from '@vue/composition-api';
@@ -77,6 +78,7 @@ Vue.component('appDebrieferCatchSpecies', DebrieferCatchSpecies);
 Vue.component('appDebrieferCatchBaskets', DebrieferCatchBaskets);
 Vue.component('appDebrieferCatchSpecimens', DebrieferCatchSpecimens);
 Vue.component('appDebrieferData', DebrieferData);
+Vue.component('appCruiseDialog', CruiseDialog);
 
 Vue.config.productionTip = false;
 

@@ -72,7 +72,8 @@ export default createComponent({
         field: 'tripStatus.description',
         header: 'Status',
         type: 'toggle',
-        list: ['Open', 'Closed'],
+        lookupKey: 'trip-status',
+        lookupField: 'description',
         key: 'wcgopStatus'
       },
       { field: 'observer.firstName', header: 'Obs. First Name', type: 'input', key: 'wcgopObsFirstName' },
