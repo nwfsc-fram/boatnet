@@ -97,7 +97,7 @@
           :content-inset-level=".5"
         >
 
-          <q-item to="/e-logbook/new" exact>
+          <q-item to="/e-logbook/new" exact @click="leftDrawerOpen = false">
             <q-item-section avatar>
               <q-icon name="notes" />
             </q-item-section>
@@ -245,7 +245,7 @@
 
                 <q-item
                   v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-task-management" exact
+                  to="/em-task-management" exact @click="leftDrawerOpen = false"
                 >
                   <q-item-section avatar>
                     <q-icon name="check"/>
@@ -258,7 +258,7 @@
 
                 <q-item
                   v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-data-compare" exact
+                  to="/em-data-compare" exact  @click="leftDrawerOpen = false"
                 >
                   <q-item-section avatar>
                     <q-icon name="compare"/>
