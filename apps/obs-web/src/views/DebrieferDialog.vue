@@ -121,7 +121,7 @@ export default createComponent({
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
         const start = evalPeriod.startDate
           ? new Date(evalPeriod.startDate)
-          : new Date();
+          : null;
         return start;
       },
       set: (val) => {
@@ -136,7 +136,7 @@ export default createComponent({
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
         const end = evalPeriod.endDate
           ? new Date(evalPeriod.endDate)
-          : new Date();
+          : null;
         return end;
       },
       set: (val) => {

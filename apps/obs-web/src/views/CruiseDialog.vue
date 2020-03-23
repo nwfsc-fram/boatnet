@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="showDialog">
-    <q-card style="width: 400px; max-width: 80vw; height: 300px">
+    <q-card style="width: 400px; max-width: 80vw; height: 550px">
       <q-card-section>
         <div class="text-h6" style="text-align: center">Edit Cruise Info</div>
       </q-card-section>
@@ -40,7 +40,8 @@ export default createComponent({
 
     const startDate = computed({
       get: () => {
-        return new Date(props.cruise ? props.cruise.startDate : '');
+        const startDateHolder = props.cruise ? props.cruise.startDate : null;
+        return startDateHolder ? new Date(startDateHolder) : null;
       },
       set: (val) => {
         updateDate(val, 'startDate');
@@ -49,7 +50,8 @@ export default createComponent({
 
     const endDate = computed({
       get: () => {
-        return new Date(props.cruise ? props.cruise.endDate : '');
+        const endDateHolder = props.cruise ? props.cruise.endDate : null;
+        return endDateHolder ? new Date(endDateHolder) : null;
       },
       set: (val) => {
         updateDate(val, 'endDate');
