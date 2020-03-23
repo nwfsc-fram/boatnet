@@ -91,12 +91,29 @@
 
             <div class="logbook-element" style="border: 2px solid grey; border-radius: 5px; padding: 10px">
                 <div class="text-h4 text-grey-7">Departure</div>
-                <q-input v-model="tripCatch.departureDateTime" outlined dense autogrow title="Date/Time the vessel departed port">
-                    <template v-slot:append>
-                        <div class="text-h6">Date / Time</div>
-                    </template>
-                </q-input>
+                <div class="row items-start">
+                    <q-field v-model="tripCatch.departureDateTime" outlined dense autogrow title="Date/Time the vessel departed port"  style="width: 55%; margin-right: 5px">
+                        <template v-slot:control>
+                            {{ formatDate(tripCatch.departureDateTime) }}
+                        </template>
+                        <template v-slot:prepend>
+                            <q-icon name="edit" class="cursor-pointer">
+                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.departureDateTime" @input="() => {departureTime = '', $refs.qDateProxy.hide()}"/>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                        <template v-slot:append>
+                            <div class="text-h6">Date</div>
+                        </template>
+                    </q-field>
 
+                    <q-input v-model="departureTime" outlined dense autogrow title="Time the vessel departed port" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
+                        <template v-slot:append>
+                            <div class="text-h6">Time</div>
+                        </template>
+                    </q-input>
+                </div>
                 <div class="row items-start">
                     <q-select v-model="tripCatch.departureState" outlined dense autogrow title="State where the vessel departed for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA','OR', 'WA']">
                         <template v-slot:append>
@@ -112,11 +129,28 @@
                 </div>
                 <hr size="2" noshade>
                 <div class="text-h4 text-grey-7" style="text-align: right">Return</div>
-                <q-input v-model="tripCatch.returnDateTime" outlined dense autogrow title="Date/Time the vessel returned to port for offload">
-                    <template v-slot:append>
-                        <div class="text-h6">Date / Time</div>
-                    </template>
-                </q-input>
+                <div class="row items-start">
+                    <q-field v-model="tripCatch.returnDateTime" outlined dense autogrow title="Date/Time the vessel returned to port for offload" style="width: 55%; margin-right: 5px">
+                        <template v-slot:control>
+                            {{ formatDate(tripCatch.returnDateTime) }}
+                        </template>
+                        <template v-slot:prepend>
+                            <q-icon name="edit" class="cursor-pointer">
+                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.returnDateTime" @input="() => {returnTime = '', $refs.qDateProxy.hide()}"/>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                        <template v-slot:append>
+                            <div class="text-h6">Date</div>
+                        </template>
+                    </q-field>
+                    <q-input v-model="returnTime" outlined dense autogrow title="Time the vessel returned to port" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
+                        <template v-slot:append>
+                            <div class="text-h6">Time</div>
+                        </template>
+                    </q-input>
+                </div>
                 <div class="row items-start">
                     <q-select v-model="tripCatch.returnPortState" outlined dense autogrow title="State where the vessel returned for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA', 'OR', 'WA']">
                         <template v-slot:append>
@@ -204,11 +238,21 @@
                     </div>
                 </div>
 
-                <q-input v-model="tripCatch.fishTicketDate" outlined dense autogrow title="Date the of the deliver on the fish ticket">
+                <q-field v-model="tripCatch.fishTicketDate" outlined dense autogrow title="Date/Time the vessel returned to port for offload">
+                    <template v-slot:control>
+                        {{ formatDate(tripCatch.fishTicketDate) }}
+                    </template>
+                    <template v-slot:prepend>
+                        <q-icon name="edit" class="cursor-pointer">
+                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                            <q-date v-model="tripCatch.fishTicketDate" @input="() => $refs.qDateProxy.hide()"/>
+                        </q-popup-proxy>
+                        </q-icon>
+                    </template>
                     <template v-slot:append>
                         <div class="text-h6">Fish Ticket Date</div>
-                        </template>
-                </q-input>
+                    </template>
+                </q-field>
             </div>
 
         </div>
@@ -292,11 +336,28 @@
 
             <div class="logbook-element" style="border: 2px solid grey; border-radius: 5px; padding: 10px;">
                 <div class="text-h4 text-grey-7">Haul Start</div>
-                <q-input v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" outlined dense autogrow title="Date and time the gear was set">
-                    <template v-slot:append>
-                        <div class="text-h6">Start Date / Time</div>
-                    </template>
-                </q-input>
+                <div class="row items-start">
+                    <q-field v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" outlined dense autogrow title="Date and time the gear was set" style="width: 55%; margin-right: 5px">
+                        <template v-slot:control>
+                            {{ formatDate(tripCatch.hauls[selectedHaul - 1].startDateTime) }}
+                        </template>
+                        <template v-slot:prepend>
+                            <q-icon name="edit" class="cursor-pointer">
+                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" @input="() => {$refs.qDateProxy.hide()}"/>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                        <template v-slot:append>
+                            <div class="text-h6">Date</div>
+                        </template>
+                    </q-field>
+                    <q-input v-model="haulStartTime" outlined dense autogrow title="Date and time the gear was set" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
+                        <template v-slot:append>
+                            <div class="text-h6">Time</div>
+                        </template>
+                    </q-input>
+                </div>
                 <q-input v-model="tripCatch.hauls[selectedHaul - 1].startDepth" outlined dense autogrow title="Depth of fishing gear when gear is deployed (Fathoms)" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Depth</div>
@@ -316,11 +377,28 @@
                 </div>
                 <hr size=2 noshade>
                 <div class="text-h4 text-grey-7" style="text-align: right">Haul End</div>
-                <q-input v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" outlined dense autogrow title="Date and time the gear was retrieved">
-                    <template v-slot:append>
-                        <div class="text-h6">End Date / Time</div>
-                    </template>
-                </q-input>
+                <div class="row items-start">
+                    <q-field v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" outlined dense autogrow title="Date the gear was retrieved" style="width: 55%; margin-right: 5px">
+                        <template v-slot:control>
+                            {{ formatDate(tripCatch.hauls[selectedHaul - 1].endDateTime) }}
+                        </template>
+                        <template v-slot:prepend>
+                            <q-icon name="edit" class="cursor-pointer">
+                            <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" @input="() => {$refs.qDateProxy.hide()}"/>
+                            </q-popup-proxy>
+                            </q-icon>
+                        </template>
+                        <template v-slot:append>
+                            <div class="text-h6">Date</div>
+                        </template>
+                    </q-field>
+                    <q-input v-model="haulEndTime" outlined dense autogrow title="Time the gear was retrieved" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
+                        <template v-slot:append>
+                            <div class="text-h6">Time</div>
+                        </template>
+                    </q-input>
+                </div>
                 <q-input v-model="tripCatch.hauls[selectedHaul - 1].endDepth" outlined dense autogrow title="Depth of fishing gear when gear is retrieved (Fathoms)" mask="#####">
                     <template v-slot:append>
                         <div class="text-h6">Depth</div>
@@ -466,9 +544,10 @@ import {
   onMounted,
   onServerPrefetch
 } from '@vue/composition-api';
-import { Vue } from 'vue-property-decorator';
+import { Vue, Watch } from 'vue-property-decorator';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
+import { WatchOptions } from 'vue';
 
 import { Notify } from 'quasar';
 import moment from 'moment';
@@ -512,14 +591,18 @@ export default createComponent({
     };
 
     const addHaul = () => {
-        tripCatch.hauls.push( {} );
+        tripCatch.hauls.push( {startDateTime: moment().format(), endDateTime: moment().format()} );
         selectedCatch.value = null;
         selectedHaul.value = tripCatch.hauls.length;
+        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime).format('hh:mm');
+        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime).format('hh:mm');
     };
 
     const selectHaul = (haulIndex: number) => {
         selectedHaul.value = haulIndex;
         selectedCatch.value = null;
+        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime).format('hh:mm');
+        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime).format('hh:mm');
     };
 
     const fisheryOptions: any = [];
@@ -598,6 +681,80 @@ export default createComponent({
         return moment(val).format('MMM, DD, YYYY HH:mm');
     };
 
+    const formatDate = (val: any) => {
+        return moment(val).format('MMM, DD, YYYY');
+    };
+
+    const watcherOptions: WatchOptions = {
+      immediate: false
+    };
+
+    let departureTime: any = ref(0);
+    const getDepartureTime = () => {
+        departureTime.value = moment(tripCatch.departureDateTime).format('hh:mm');
+    }
+    watch(
+        () => {return departureTime.value},
+        (newVal, oldVal) => {
+            console.log(newVal);
+            const departureDate = moment(tripCatch.departureDateTime)
+            if (newVal && newVal.indexOf(':') !== -1) {
+                departureDate.set('hour', newVal.split(':')[0]);
+                departureDate.set('minute', newVal.split(':')[1]);
+                tripCatch.departureDateTime = departureDate.format();
+            }
+        },
+        watcherOptions
+    )
+
+    let returnTime: any = ref(0);
+    const getReturnTime = () => {
+        returnTime.value = moment(tripCatch.returnDateTime).format('hh:mm');
+    }
+    watch(
+        () => {return returnTime.value},
+        (newVal, oldVal) => {
+            console.log(newVal);
+            const returnDate = moment(tripCatch.returnDateTime)
+            if (newVal && newVal.indexOf(':') !== -1) {
+                returnDate.set('hour', newVal.split(':')[0]);
+                returnDate.set('minute', newVal.split(':')[1]);
+                tripCatch.returnDateTime = returnDate.format();
+            }
+        },
+        watcherOptions
+    )
+
+    let haulStartTime: any = ref([]);
+    watch(
+        () => {return haulStartTime.value},
+        (newVal, oldVal) => {
+            console.log(newVal);
+            if (newVal && newVal.indexOf(':') !== -1) {
+                const startDate = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime);
+                startDate.set('hour', newVal.split(':')[0]);
+                startDate.set('minute', newVal.split(':')[1]);
+                tripCatch.hauls[selectedHaul.value -1].startDateTime = startDate.format();
+            }
+        },
+        watcherOptions
+    )
+
+    let haulEndTime: any = ref([]);
+    watch(
+        () => {return haulEndTime.value},
+        (newVal, oldVal) => {
+            console.log(newVal);
+            if (newVal && newVal.indexOf(':') !== -1) {
+                const endDate = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime);
+                endDate.set('hour', newVal.split(':')[0]);
+                endDate.set('minute', newVal.split(':')[1]);
+                tripCatch.hauls[selectedHaul.value -1].endDateTime = endDate.format();
+            }
+        },
+        watcherOptions
+    )
+
     onMounted( () => {
         getFisheryOptions();
         getGearTypeOptions();
@@ -613,16 +770,27 @@ export default createComponent({
                 buyers: [],
                 fishTicketNumber: [],
                 hauls: [],
-                departureDateTime: '2019-04-17T21:41:00-07:00'
+                departureDateTime: moment().format(),
+                returnDateTime: moment().format()
             };
 
             for (const key of Object.keys(dummyTrip)) {
                 Vue.set(tripCatch, key, dummyTrip[key]);
             }
+            setTimeout( () => {
+                getDepartureTime();
+                getReturnTime();
+            }, 500)
         } else {
-            getCatch(context.root.$route.params.id);
+            getCatch(context.root.$route.params.id).then(
+                () => {
+                    getDepartureTime();
+                    getReturnTime();
+                }
+            );
         }
-        }
+
+    }
     );
 
     return {
@@ -635,7 +803,12 @@ export default createComponent({
         selectedCatch,
         fisheryOptions,
         gearTypeOptions,
-        formatDateTime
+        formatDateTime,
+        formatDate,
+        departureTime,
+        returnTime,
+        haulStartTime,
+        haulEndTime
     };
   }
 });
