@@ -124,7 +124,7 @@ export default createComponent({
           : null;
         return start;
       },
-      set: (val) => {
+      set: (val: any) => {
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
         evalPeriod.startDate = new Date(val);
         context.emit('update:evaluationPeriod', evalPeriod);
@@ -139,7 +139,7 @@ export default createComponent({
           : null;
         return end;
       },
-      set: (val) => {
+      set: (val: any) => {
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
         evalPeriod.endDate = new Date(val);
         context.emit('update:evaluationPeriod', evalPeriod);
