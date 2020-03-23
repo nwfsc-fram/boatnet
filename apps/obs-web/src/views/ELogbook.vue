@@ -268,20 +268,22 @@
         <div>
             <q-btn color="primary" @click="addHaul">Add Haul</q-btn>
             <br><br>
-            <div v-for="haul in tripCatch.hauls" :key="tripCatch.hauls.indexOf(haul)">
-                <q-field v-model="tripCatch.hauls[tripCatch.hauls.indexOf(haul)]" outlined dense autogrow @click.native="selectHaul(tripCatch.hauls.indexOf(haul) + 1)">
-                    <template v-slot: control>
-                        <div class="self-center full-width no-outline text-black text-bold" tabindex="0">HAUL {{ tripCatch.hauls.indexOf(haul) + 1 }}
-                            <span v-if="haul.startDateTime || haul.startDepth || haul.startLatitude || haul.startLongitude"> - START: </span>
-                            <span v-if="haul.startDateTime"> {{ formatDateTime(haul.startDateTime) }}</span>
-                            <span v-if="haul.endDateTime || haul.endDepth || haul.endLatitude || haul.endLongitude"> / END: </span>
-                            <span v-if="haul.endDateTime"> {{ formatDateTime(haul.endDateTime) }}</span>
-                        </div>
-                    </template>
-                    <template v-slot:append>
-                    <q-btn flat dense icon="close" @click="tripCatch.hauls.splice(tripCatch.hauls.indexOf(haul) , 1)"></q-btn>
-                    </template>
-                </q-field>
+            <div v-if="tripCatch.hauls">
+                <div v-for="(haul, i) in tripCatch.hauls.slice().reverse()" :key="i">
+                    <q-field v-model="tripCatch.hauls[i]" outlined dense autogrow @click.native="selectHaul(tripCatch.hauls.indexOf(haul) + 1)">
+                        <template v-slot: control>
+                            <div class="self-center full-width no-outline text-black text-bold" tabindex="0">HAUL {{ tripCatch.hauls.indexOf(haul) + 1 }}
+                                <span v-if="haul.startDateTime || haul.startDepth || haul.startLatitude || haul.startLongitude"> - START: </span>
+                                <span v-if="haul.startDateTime"> {{ formatDateTime(haul.startDateTime) }}</span>
+                                <span v-if="haul.endDateTime || haul.endDepth || haul.endLatitude || haul.endLongitude"> / END: </span>
+                                <span v-if="haul.endDateTime"> {{ formatDateTime(haul.endDateTime) }}</span>
+                            </div>
+                        </template>
+                        <template v-slot:append>
+                        <q-btn flat dense icon="close" @click="tripCatch.hauls.splice(tripCatch.hauls.indexOf(haul) , 1)"></q-btn>
+                        </template>
+                    </q-field>
+                </div>
             </div>
             <br>
 
@@ -458,8 +460,8 @@
                     <div style="border: 2px solid grey; border-radius: 5px; padding: 10px;">
                         <q-btn color="primary" @click="addCatch">Add Catch</q-btn>
                         <br><br>
-                        <div v-if="selectedHaul">
-                        <div v-for="fish in tripCatch.hauls[selectedHaul - 1].catch" :key="tripCatch.hauls[selectedHaul - 1].catch.indexOf(fish)">
+                        <div v-if="selectedHaul && tripCatch.hauls[selectedHaul - 1].catch">
+                        <div v-for="(fish, i) in tripCatch.hauls[selectedHaul - 1].catch.slice().reverse()" :key="i">
                             <q-field v-model="tripCatch.hauls[selectedHaul - 1].catch[tripCatch.hauls[selectedHaul - 1].catch.indexOf(fish)]" outlined dense autogrow @click.native="selectedCatch = tripCatch.hauls[selectedHaul -1].catch.indexOf(fish) + 1">
                                 <template v-slot:control>
                                     <div class="self-center full-width no-outline text-black text-bold" tabindex="0">
@@ -696,7 +698,6 @@ export default createComponent({
     watch(
         () => {return departureTime.value},
         (newVal, oldVal) => {
-            console.log(newVal);
             const departureDate = moment(tripCatch.departureDateTime)
             if (newVal && newVal.indexOf(':') !== -1) {
                 departureDate.set('hour', newVal.split(':')[0]);
@@ -714,7 +715,6 @@ export default createComponent({
     watch(
         () => {return returnTime.value},
         (newVal, oldVal) => {
-            console.log(newVal);
             const returnDate = moment(tripCatch.returnDateTime)
             if (newVal && newVal.indexOf(':') !== -1) {
                 returnDate.set('hour', newVal.split(':')[0]);
@@ -729,7 +729,6 @@ export default createComponent({
     watch(
         () => {return haulStartTime.value},
         (newVal, oldVal) => {
-            console.log(newVal);
             if (newVal && newVal.indexOf(':') !== -1) {
                 const startDate = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime);
                 startDate.set('hour', newVal.split(':')[0]);
@@ -744,7 +743,6 @@ export default createComponent({
     watch(
         () => {return haulEndTime.value},
         (newVal, oldVal) => {
-            console.log(newVal);
             if (newVal && newVal.indexOf(':') !== -1) {
                 const endDate = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime);
                 endDate.set('hour', newVal.split(':')[0]);
