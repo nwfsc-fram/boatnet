@@ -584,15 +584,15 @@ export default createComponent({
         tripCatch.hauls.push( {startDateTime: moment().format(), endDateTime: moment().format()} );
         selectedCatch.value = null;
         selectedHaul.value = tripCatch.hauls.length;
-        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime).format('hh:mm');
-        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime).format('hh:mm');
+        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format('hh:mm');
+        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format('hh:mm');
     };
 
     const selectHaul = (haulIndex: number) => {
         selectedHaul.value = haulIndex;
         selectedCatch.value = null;
-        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime).format('hh:mm');
-        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime).format('hh:mm');
+        haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format('hh:mm');
+        haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format('hh:mm');
     };
 
     const haulPagination = {
@@ -721,14 +721,14 @@ export default createComponent({
       immediate: false
     };
 
-    let departureTime: any = ref(0);
+    const departureTime: any = ref(0);
     const getDepartureTime = () => {
         departureTime.value = moment(tripCatch.departureDateTime).format('hh:mm');
-    }
+    };
     watch(
-        () => {return departureTime.value},
+        () => departureTime.value,
         (newVal, oldVal) => {
-            const departureDate = moment(tripCatch.departureDateTime)
+            const departureDate = moment(tripCatch.departureDateTime);
             if (newVal && newVal.indexOf(':') !== -1) {
                 departureDate.set('hour', newVal.split(':')[0]);
                 departureDate.set('minute', newVal.split(':')[1]);
@@ -736,52 +736,52 @@ export default createComponent({
             }
         },
         watcherOptions
-    )
+    );
 
-    let returnTime: any = ref(0);
+    const returnTime: any = ref(0);
     const getReturnTime = () => {
         returnTime.value = moment(tripCatch.returnDateTime).format('hh:mm');
-    }
+    };
     watch(
-        () => {return returnTime.value},
+        () => returnTime.value,
         (newVal, oldVal) => {
-            const returnDate = moment(tripCatch.returnDateTime)
-            if (newVal && newVal.indexOf(':') !== -1) {
+            const returnDate = moment(tripCatch.returnDateTime);
+            if (newVal && newVal.indexOf(':') !== - 1) {
                 returnDate.set('hour', newVal.split(':')[0]);
                 returnDate.set('minute', newVal.split(':')[1]);
                 tripCatch.returnDateTime = returnDate.format();
             }
         },
         watcherOptions
-    )
+    );
 
-    let haulStartTime: any = ref([]);
+    const haulStartTime: any = ref([]);
     watch(
-        () => {return haulStartTime.value},
+        () => haulStartTime.value,
         (newVal, oldVal) => {
-            if (newVal && newVal.indexOf(':') !== -1) {
-                const startDate = moment(tripCatch.hauls[selectedHaul.value -1].startDateTime);
+            if (newVal && newVal.indexOf(':') !== -1 ) {
+                const startDate = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime);
                 startDate.set('hour', newVal.split(':')[0]);
                 startDate.set('minute', newVal.split(':')[1]);
-                tripCatch.hauls[selectedHaul.value -1].startDateTime = startDate.format();
+                tripCatch.hauls[selectedHaul.value - 1].startDateTime = startDate.format();
             }
         },
         watcherOptions
-    )
+    );
 
-    let haulEndTime: any = ref([]);
+    const haulEndTime: any = ref([]);
     watch(
-        () => {return haulEndTime.value},
+        () => haulEndTime.value,
         (newVal, oldVal) => {
-            if (newVal && newVal.indexOf(':') !== -1) {
-                const endDate = moment(tripCatch.hauls[selectedHaul.value -1].endDateTime);
+            if (newVal && newVal.indexOf(':') !== - 1) {
+                const endDate = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime);
                 endDate.set('hour', newVal.split(':')[0]);
                 endDate.set('minute', newVal.split(':')[1]);
-                tripCatch.hauls[selectedHaul.value -1].endDateTime = endDate.format();
+                tripCatch.hauls[selectedHaul.value - 1].endDateTime = endDate.format();
             }
         },
         watcherOptions
-    )
+    );
 
     onMounted( () => {
         getFisheryOptions();
@@ -808,7 +808,7 @@ export default createComponent({
             setTimeout( () => {
                 getDepartureTime();
                 getReturnTime();
-            }, 500)
+            }, 500);
         } else {
             getCatch(context.root.$route.params.id).then(
                 () => {
