@@ -28,7 +28,9 @@
             v-model="username"
             dense
             autocorrect="off" autocapitalize="off" spellcheck="false"
-            label="Username"/>
+            label="Username"
+            @input="username = username.toLowerCase()"
+            />
 
           <q-input
             outlined
