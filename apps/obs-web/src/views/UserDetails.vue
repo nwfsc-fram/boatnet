@@ -547,6 +547,7 @@ export default class UserDetails extends Vue {
             } else {
                 console.log('existing user');
                 this.updateUserRoles();
+                this.updatePersonAlias();
                 this.user.activeUser!.updatedBy = authService.getCurrentUser()!.username;
                 this.user.activeUser!.updatedDate = moment().format();
 
@@ -710,6 +711,34 @@ export default class UserDetails extends Vue {
             }
         }
     }
+
+    private async updatePersonAlias() {
+        let activePersonAlias: any = {}
+        const masterDb: Client<any> = couchService.masterDB;
+        const queryOptions = {
+          include_docs: true,
+          key: this.user.activeUser!.apexUserAdminUserName
+        };
+
+        let couchAlias: any = await masterDb.view<any>(
+          'obs_web',
+          'all_person_alias',
+          queryOptions
+        ).then( (res: any) => {
+            activePersonAlias = res.rows[0].doc;
+            activePersonAlias.roles = this.applicationRoles;
+            activePersonAlias.firstName = this.user.activeUser!.firstName;
+            activePersonAlias.lastName = this.user.activeUser!.lastName;
+        }).then( async () => {
+            await masterDb.put(
+                activePersonAlias._id,
+                activePersonAlias,
+                activePersonAlias._rev
+            ).then(() => {
+                console.log('person alias for ' + this.user.activeUser!.apexUserAdminUserName +  ' updated');
+            });
+        });
+    };
 
     private notifySuccess(message: string) {
         Notify.create({
