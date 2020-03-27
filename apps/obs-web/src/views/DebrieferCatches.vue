@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-h6">Catch</div>
-    <prime-table :value="WcgopCatches" :columns="columns"/>
+    <prime-table :value="WcgopCatches" :columns="columns" type="Catch" />
   </div>
 </template>
 
@@ -29,6 +29,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
+import { getSelected } from '../helpers/localStorage';
 
 @Component
 export default class DebrieferOperations extends Vue {
@@ -52,14 +53,14 @@ export default class DebrieferOperations extends Vue {
 
   private async getCatches() {
     const masterDB: Client<any> = couchService.masterDB;
+    const operationIds: any[] = getSelected(this.debriefer.program, 'Operations');
+
     try {
       const options: ListOptions = {
-        keys: this.debriefer.operationIds
+        keys: operationIds
       };
 
-      const operations = await masterDB.listWithDocs(
-        options
-      );
+      const operations = await masterDB.listWithDocs(options);
 
       for (const operation of operations.rows) {
         for (const catchRow of operation.catches) {
@@ -76,30 +77,6 @@ export default class DebrieferOperations extends Vue {
 
   private created() {
     this.getCatches();
-  }
-
-  private formatDate(inputDate: any) {
-    return date.formatDate(inputDate, 'MM/DD/YYYY');
-  }
-
-  private nullValueCheck(input: any, round: boolean) {
-    if (input) {
-      if (round) {
-        return input.value.toFixed(2);
-      } else {
-        return input.value;
-      }
-    }
-
-    return '';
-  }
-
-  private nullDescriptionCheck(input: any) {
-    if (input != null) {
-      return input.description;
-    }
-
-    return '';
   }
 }
 </script>

@@ -17,8 +17,8 @@ export interface DebrieferState {
   observers: string;
   evaluationPeriod: any;
   tripIds: string[];
-  operationIds: string[];
-  catches: string[];
+  displayColumns: any;
+  selectedValues: any;
 }
 
 export interface TripState {

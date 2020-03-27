@@ -9,11 +9,12 @@
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
-      @row-click="updateSelectedValues"
       @cell-edit-init="onCellEditInit"
       @cell-edit-complete="onCellEditComplete"
       :reorderableColumns="true"
       data-key="_id"
+      stateStorage="local"
+      :stateKey="state.debriefer.program + '-' + type"
     >
       <template #empty>No data available</template>
       <template #header>
@@ -127,44 +128,9 @@ export default createComponent({
     const cellVal: any = ref('');
 
     const tableType = state.debriefer.program + '-' + props.type;
-    let selected: any = ref([]);
+    const selected: any = ref([]);
 
     const stateDisplayCols = state.debriefer.displayColumns;
-    const stateSelectedCols = state.debriefer.selectedValues;
-
-    function init() {
-      if (stateSelectedCols[tableType]) {
-         selected.value = stateSelectedCols[tableType];
-        console.log('init')
-        console.log(selected.value)
-      }
-    }
-    init();
-
-    function updateSelectedValues(event: any) {
-      console.log('update select')
-      console.log(selected)
-      const selectedValues = state.debriefer.selectedValues;
-      selectedValues[tableType] = selected.value;
-      store.dispatch('debriefer/updateSelectedValues', selectedValues);
-    }
-
-    /*  const sel = computed({
-      get: () => {
-        return stateSelectedCols[tableType];
-        // console.log('get')
-        // console.log(stateSelectedCols[tableType]);
-      },
-      set: (val) => {
-        console.log(val)
-        console.log('new value')
-        console.log(selected.value);
-        const selectedValues = state.debriefer.selectedValues;
-        selectedValues[tableType] = val;
-        store.dispatch('debriefer/updateSelectedValues', selectedValues);
-        console.log(state.debriefer.selectedValues[tableType]);
-      }
-    });*/
 
     const displayColumns = computed({
       get: () => {
@@ -277,7 +243,6 @@ export default createComponent({
       onCellEditInit,
       onCellEdit,
       onCellEditComplete,
-      updateSelectedValues,
       getLookupInfo,
       getBooleanLookup,
       lookupsList,

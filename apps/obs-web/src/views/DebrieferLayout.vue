@@ -112,7 +112,8 @@
 
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
-        <app-debriefer-data />
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'"/>
+        <app-debriefer-ashop-data v-else />
       </TabPanel>
       <TabPanel header="Errors" :active="activeTab === 'qa'">
         <app-debriefer-errors :showData="activeTab === 'qa' ? false : true" />
@@ -219,6 +220,7 @@ export default createComponent({
         let mode: string = state.debriefer.program;
         if (!mode) {
           mode = 'wcgop';
+          store.dispatch('debriefer/updateProgram', mode);
         }
         return mode;
       },

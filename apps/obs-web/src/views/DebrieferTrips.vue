@@ -146,8 +146,6 @@ export default createComponent({
     }
 
     async function getTrips() {
-      console.log('from get trips')
-      console.log(localStorage.getItem('wcgop-Trips'));
       const masterDB: Client<any> = couchService.masterDB;
       const tripsHolder = [];
       try {
