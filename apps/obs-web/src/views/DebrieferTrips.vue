@@ -3,9 +3,8 @@
     <prime-table
       :value="trips"
       :columns="columns"
-      :selected="selected"
       :isEditable="true"
-      title="Data"
+      type="Trips"
     />
   </div>
 </template>
@@ -46,7 +45,6 @@ export default createComponent({
 
     const columns: any = ref([]);
     const trips: any = ref([]);
-    const selected = ref([]);
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -148,6 +146,8 @@ export default createComponent({
     }
 
     async function getTrips() {
+      console.log('from get trips')
+      console.log(localStorage.getItem('wcgop-Trips'));
       const masterDB: Client<any> = couchService.masterDB;
       const tripsHolder = [];
       try {
@@ -166,8 +166,7 @@ export default createComponent({
 
     return {
       columns,
-      trips,
-      selected
+      trips
     };
   }
 });
