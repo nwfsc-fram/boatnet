@@ -714,7 +714,7 @@ export default createComponent({
         });
     };
 
-    let speciesCodeOptions: any = [];
+    const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
         const masterDb = couchService.masterDB;
         const queryOptions = {
@@ -745,26 +745,25 @@ export default createComponent({
             } else {
                 return 0;
             }
-        })
-        console.log(speciesCodeOptions);
+        });
     };
 
-    let speciesCodeSelectOptions: any = ref([])
+    const speciesCodeSelectOptions: any = ref([]);
     const speciesFilterFn = (val: string, update: any, abort: any) => {
         if (val === '') {
             update( () => {
                 speciesCodeSelectOptions.value = speciesCodeOptions;
-            })
+            });
             return;
         }
         update( () => {
             speciesCodeSelectOptions.value = speciesCodeOptions.filter( (option: any) => {
                 return option.commonName.toLowerCase().includes(val.toLowerCase())
                 || option.pacfinCode.toLowerCase().includes(val.toLowerCase())
-                || option.wcgopSpeciesCode.toLowerCase().includes(val.toLowerCase())
-                })
-        })
-    }
+                || option.wcgopSpeciesCode.toLowerCase().includes(val.toLowerCase());
+                });
+        });
+    };
 
     const getCatch = async (id: any) => {
         await getCatchApiCatch(id).then(
