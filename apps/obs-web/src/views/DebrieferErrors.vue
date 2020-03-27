@@ -3,7 +3,7 @@
     <div style="text-align: right">
       <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
     </div>
-    <prime-table :value="data" :columns="errorColumns" title="Errors" />
+    <prime-table :value="data" :columns="errorColumns" type="Errors" />
   </div>
 </template>
 

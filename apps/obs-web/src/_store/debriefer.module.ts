@@ -11,8 +11,8 @@ export const state: DebrieferState = {
   observers: '',
   evaluationPeriod: {},
   tripIds: [],
-  operationIds: [],
-  catches: []
+  displayColumns: {},
+  selectedValues: {}
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -22,18 +22,6 @@ const actions: ActionTree<DebrieferState, RootState> = {
   setCruiseIds({ commit }: any, cruiseId: string) {
     commit('setCruiseIds', cruiseId);
   },
-  addOperationId({ commit }: any, operationId: string) {
-    commit('addOperationId', operationId);
-  },
-  removeOperationId({ commit }: any, operationId: string) {
-    commit('removeOperationId', operationId);
-  },
-  addCatchId({ commit }: any, catchId: string) {
-    commit('addCatchId', catchId);
-  },
-  removeCatchId({ commit }: any, catchId: string) {
-    commit('removeCatchId', catchId);
-  },
   updateProgram({ commit }: any, value: string) {
     commit('updateVal', {id: 'program', val: value});
   },
@@ -42,6 +30,12 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateEvaluationPeriod({ commit }: any, value: any) {
     commit('updateVal', {id: 'evaluationPeriod', val: value});
+  },
+  updateDisplayColumns({ commit }: any, value: any) {
+    commit('updateDisplayColumns', value);
+  },
+  updateSelectedValues({ commit }: any, value: any) {
+    commit('updateSelectedValues', value);
   }
 };
 
@@ -49,23 +43,17 @@ const mutations: MutationTree<DebrieferState> = {
   updateVal(newState: any, val: any) {
     newState[val.id] = val.val;
   },
+  updateDisplayColumns(newState: any, val: any) {
+    newState.displayColumns = val;
+  },
   setTripIds(newState: any, ids: string[]) {
     newState.tripIds = ids;
   },
   setCruiseIds(newState: any, ids: string) {
     newState.cruiseIds = ids;
   },
-  addOperationId(newState: any, id: string) {
-    newState.operationIds.push(id);
-  },
-  removeOperationId(newState: any, id: string) {
-    newState.operationIds.splice(state.operationIds.indexOf(id), 1);
-  },
-  addCatchId(newState: any, id: string) {
-    newState.catches.push(id);
-  },
-  removeCatchId(newState: any, id: string) {
-    newState.catches.splice(state.catches.indexOf(id), 1);
+  updateSelectedValues(newState: any, val: string) {
+    newState.selectedValues = val;
   }
 };
 

@@ -3,9 +3,8 @@
     <prime-table
       :value="trips"
       :columns="columns"
-      :selected="selected"
       :isEditable="true"
-      title="Data"
+      type="Trips"
     />
   </div>
 </template>
@@ -46,7 +45,6 @@ export default createComponent({
 
     const columns: any = ref([]);
     const trips: any = ref([]);
-    const selected = ref([]);
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -166,8 +164,7 @@ export default createComponent({
 
     return {
       columns,
-      trips,
-      selected
+      trips
     };
   }
 });

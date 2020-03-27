@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-h6">Catch Baskets</div>
-    <prime-table :value="WcgopCatchBaskets" :columns="columns"/>    
+    <prime-table :value="WcgopCatchBaskets" :columns="columns" type="CatchBaskets"/>    
   </div>
 </template>
 
@@ -29,6 +29,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
+import { getSelected } from '../helpers/localStorage';
 
 @Component
 export default class DebrieferOperations extends Vue {
@@ -52,9 +53,11 @@ export default class DebrieferOperations extends Vue {
 
    private async getCatchBaskets() {
     const masterDB: Client<any> = couchService.masterDB;
+    const operationIds: any[] = getSelected(this.debriefer.program, 'Operations');
+
     try {
       const options: ListOptions = {
-        keys: this.debriefer.operationIds
+        keys: operationIds
       };
 
       const operations = await masterDB.listWithDocs(

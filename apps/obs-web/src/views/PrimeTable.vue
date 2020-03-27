@@ -9,17 +9,18 @@
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
-      @row-select="onRowSelect"
-      @row-unselect="onRowUnselect"
       @cell-edit-init="onCellEditInit"
       @cell-edit-complete="onCellEditComplete"
-      data-key="key"
+      :reorderableColumns="true"
+      data-key="_id"
+      stateStorage="local"
+      :stateKey="state.debriefer.program + '-' + type"
     >
       <template #empty>No data available</template>
       <template #header>
         <div style="text-align:left; float:left">
           <MultiSelect
-            v-model="columns"
+            v-model="displayColumns"
             :options="columnOptions"
             optionLabel="header"
             placeholder="Select Columns"
@@ -40,7 +41,7 @@
       <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
-        v-for="col of columns"
+        v-for="col of displayColumns"
         :field="col.field"
         :header="col.header"
         :key="col.key"
@@ -87,15 +88,8 @@
 </template>
 
 <script lang="ts">
-import {
-  createComponent,
-  ref,
-  reactive,
-  computed,
-  onMounted,
-  watch
-} from '@vue/composition-api';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { createComponent, ref, computed } from '@vue/composition-api';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { get, set } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
@@ -118,34 +112,53 @@ export default createComponent({
   props: {
     columns: Array,
     value: Array,
-    selected: Array,
     isEditable: Boolean,
-    title: String
+    type: String
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
-    const state = context.root.$store.state;
+    const store = context.root.$store;
+    const state = store.state;
 
     const filters: any = {};
-    const columnOptions: any = ref([...props.columns ? props.columns : []]);
+    const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
+    const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
-    let program = state.debriefer.program;
 
     const cellVal: any = ref('');
+
+    const tableType = state.debriefer.program + '-' + props.type;
+    const selected: any = ref([]);
+
+    const stateDisplayCols = state.debriefer.displayColumns;
+
+    const displayColumns = computed({
+      get: () => {
+        if (!stateDisplayCols[tableType]) {
+          currCols.value = [...(props.columns ? props.columns : [])];
+        } else {
+          currCols.value = stateDisplayCols[tableType];
+        }
+        return currCols.value;
+      },
+      set: (val) => {
+        currCols.value = val;
+        stateDisplayCols[tableType] = val;
+        store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+      }
+    });
+
+    
 
     async function getBooleanLookup() {
       lookupsList.value = ['true', 'false'];
     }
 
-    watch(() => props.columns, (cols) => {
-      // if program has changed update column selection options
-      if (program !== state.debriefer.program) {
-        columnOptions.value = cols;
-        program = state.debriefer.program;
-      }
-    });
-
-    async function getLookupInfo(list: any[], displayField: string, key: string) {
+    async function getLookupInfo(
+      list: any[],
+      displayField: string,
+      key: string
+    ) {
       if (!list) {
         const lookupListHolder: any = [];
         const mode = state.debriefer.program;
@@ -165,7 +178,10 @@ export default createComponent({
     }
 
     function formatValue(slotProps: any, type: string) {
-      let val: any = get(props.value ? props.value[slotProps.index] : {}, slotProps.column.field);
+      let val: any = get(
+        props.value ? props.value[slotProps.index] : {},
+        slotProps.column.field
+      );
       if (type === 'date') {
         val = moment(val).format('MM/DD/YYYY HH:mm');
       }
@@ -183,7 +199,7 @@ export default createComponent({
         editingCellRow = { ...slotProps.data };
       }
       if (type === 'boolean') {
-        newValue = (newValue === 'true');
+        newValue = newValue === 'true';
       } else if (type === 'number') {
         newValue = Number(newValue);
       }
@@ -213,39 +229,29 @@ export default createComponent({
         context.emit('update:value', valueHolder);
       }
       masterDB
-        .put(
-          valueHolder[index]._id,
-          editingCellRow,
-          valueHolder[index]._rev
-        )
+        .put(valueHolder[index]._id, editingCellRow, valueHolder[index]._rev)
         .then((response: any) => {
           valueHolder[index]._rev = response.rev;
         });
     }
 
-    function onRowSelect(event: any) {
-      context.emit('onRowSelect', event);
-    }
-
-    function onRowUnselect(event: any) {
-      context.emit('onRowUnselect', event);
-    }
-
     return {
       filters,
       columnOptions,
+      displayColumns,
       cellVal,
       onCellEditInit,
       onCellEdit,
       onCellEditComplete,
-      onRowSelect,
-      onRowUnselect,
       getLookupInfo,
       getBooleanLookup,
       lookupsList,
       save,
       saveDropDown,
-      formatValue
+      formatValue,
+      tableType,
+      selected,
+      state
     };
   }
 });

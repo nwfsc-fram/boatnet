@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-h6">Catch Species</div>
-    <prime-table :value="WcgopCatchSpecies" :columns="columns" />
+    <prime-table :value="WcgopCatchSpecies" :columns="columns" type="CatchSpecies"/>
   </div>
 </template>
 
@@ -29,6 +29,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
+import { getSelected } from '../helpers/localStorage';
 
 @Component
 export default class DebrieferOperations extends Vue {
@@ -41,19 +42,21 @@ export default class DebrieferOperations extends Vue {
   private pagination = { rowsPerPage: 50 };
 
   private columns = [
-    { field: 'legacy.tripId', header: 'Trip Id' },
-    { field: 'operationNum', header: 'Haul #' },
-    { field: 'catch.catchNum', header: 'Catch #' },
-    { field: 'catch.disposition.description', header: 'Catch Disposition' },
-    { field: 'catch.weightMethod.description', header: 'Catch WM' },
-    { field: 'catch.weight.value', header: 'Catch Weight (lbs)' }
+    { field: 'legacy.tripId', header: 'Trip Id', key: 'tripId' },
+    { field: 'operationNum', header: 'Haul #', key: 'haulNum' },
+    { field: 'catch.catchNum', header: 'Catch #', key: 'catchNum' },
+    { field: 'catch.disposition.description', header: 'Catch Disposition', key: 'catchDisc' },
+    { field: 'catch.weightMethod.description', header: 'Catch WM', key: 'catchWM' },
+    { field: 'catch.weight.value', header: 'Catch Weight (lbs)', key: 'catchLbs' }
   ];
 
   private async getCatchSpecies() {
     const masterDB: Client<any> = couchService.masterDB;
+    const operationIds: any[] = getSelected(this.debriefer.program, 'Operations');
+
     try {
       const options: ListOptions = {
-        keys: this.debriefer.operationIds
+        keys: operationIds
       };
 
       const operations = await masterDB.listWithDocs(options);

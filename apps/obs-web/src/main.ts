@@ -28,7 +28,8 @@ import 'primeicons/primeicons.css';
 
 import UserDetails from './views/UserDetails.vue';
 import DebrieferErrors from './views/DebrieferErrors.vue';
-import DebrieferData from './views/DebrieferData.vue';
+import DebrieferWcgopData from './views/DebrieferWcgopData.vue';
+import DebrieferAshopData from './views/DebrieferAshopData.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
 import DebrieferCatches from './views/DebrieferCatches.vue';
@@ -77,7 +78,8 @@ Vue.component('appDebrieferCatches', DebrieferCatches);
 Vue.component('appDebrieferCatchSpecies', DebrieferCatchSpecies);
 Vue.component('appDebrieferCatchBaskets', DebrieferCatchBaskets);
 Vue.component('appDebrieferCatchSpecimens', DebrieferCatchSpecimens);
-Vue.component('appDebrieferData', DebrieferData);
+Vue.component('appDebrieferWcgopData', DebrieferWcgopData);
+Vue.component('appDebrieferAshopData', DebrieferAshopData);
 Vue.component('appCruiseDialog', CruiseDialog);
 
 Vue.config.productionTip = false;
