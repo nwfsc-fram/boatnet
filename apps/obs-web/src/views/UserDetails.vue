@@ -713,14 +713,14 @@ export default class UserDetails extends Vue {
     }
 
     private async updatePersonAlias() {
-        let activePersonAlias: any = {}
+        let activePersonAlias: any = {};
         const masterDb: Client<any> = couchService.masterDB;
         const queryOptions = {
           include_docs: true,
           key: this.user.activeUser!.apexUserAdminUserName
         };
 
-        let couchAlias: any = await masterDb.view<any>(
+        const couchAlias: any = await masterDb.view<any>(
           'obs_web',
           'all_person_alias',
           queryOptions
@@ -738,7 +738,7 @@ export default class UserDetails extends Vue {
                 console.log('person alias for ' + this.user.activeUser!.apexUserAdminUserName +  ' updated');
             });
         });
-    };
+    }
 
     private notifySuccess(message: string) {
         Notify.create({
