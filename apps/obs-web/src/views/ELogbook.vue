@@ -11,7 +11,7 @@
             <span v-if="selectedCatch">
                 &nbsp;
                 <q-icon name="fa fa-fish"/>
-                {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -
+                {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode ? tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode.commonName : '' }} -
                 {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
             </span>
         </div>
@@ -454,7 +454,7 @@
                             <template v-slot:body="props">
                                 <q-tr :props="props" @click.native="{{ selectedCatch = tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row) + 1 }}">
                                     <q-td key="catchDisposition" :props="props">{{ props.row.catchDisposition }}</q-td>
-                                    <q-td key="speciesCode" :props="props">{{ props.row.speciesCode }}</q-td>
+                                    <q-td key="speciesCode" :props="props">{{ props.row.speciesCode ? props.row.speciesCode.wcgopSpeciesCode : '' }}</q-td>
                                     <q-td key="estimatedWeight" :props="props">{{ props.row.estimatedWeight }}</q-td>
                                     <q-td key="catchCount" :props="props">{{ props.row.catchCount }}</q-td>
                                     <q-td key="calcWeightType" :props="props">{{ props.row.calcWeightType }}</q-td>
@@ -467,7 +467,7 @@
                         <br>
                         <div v-if="selectedCatch" style="border: 2px solid #153547; border-radius: 5px; padding: 10px;">
                             <div class="text-h4 text-secondary">
-                                {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -
+                                <span v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode">{{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode.commonName }} -</span>
                                 {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
                             </div>
                             <div class="row items-start">
@@ -476,11 +476,26 @@
                                         <div class="text-h6">Catch Disposition</div>
                                     </template>
                                 </q-select>
-                                <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode" dense autogrow title="WCGOP species code (3 or 4 digits)" mask="XXXX">
+                                <q-select
+                                    class="logbook-element"
+                                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode"
+                                    dense
+                                    autogrow
+                                    title="WCGOP species code (3 or 4 digits)"
+                                    :option-label="opt => opt.commonName +  ' ( PACFIN: '  + opt.pacfinCode + ') ( WCGOP: ' + opt.wcgopSpeciesCode + ')'"
+                                    :option-value="opt => opt"
+                                    :options="speciesCodeSelectOptions"
+                                    use-input
+                                    @filter="speciesFilterFn"
+                                    emit-value
+                                    >
                                     <template v-slot:before>
                                         <div class="text-h6">Species Code</div>
                                     </template>
-                                </q-input>
+                                    <template v-slot:append>
+                                        <q-btn v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode" round size="xs" color="secondary" icon="clear" @click="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode = null"></q-btn>
+                                    </template>
+                                </q-select>
                                 <q-input class="logbook-element" v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].estimatedWeight" dense autogrow title="Estimated weight in lbs" mask="#####">
                                     <template v-slot:before>
                                         <div class="text-h6">Estimated Total Weight</div>
@@ -699,6 +714,58 @@ export default createComponent({
         });
     };
 
+    let speciesCodeOptions: any = [];
+    const getSpeciesCodeOptions = async () => {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'ifq-species-groupings'
+        };
+
+        const speciesGroupings = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions,
+        );
+
+        const groupings = speciesGroupings.rows[0].doc.groupings;
+        for (const row of groupings) {
+            // const value = row.commonName + ' : (pacfin: ' + row.pacfinCode + ') : (wcgop: ' + row.wcgopSpeciesCode + ')';
+            const value = {commonName: row.commonName, pacfinCode: row.pacfinCode, wcgopSpeciesCode: row.wcgopSpeciesCode };
+            if (speciesCodeOptions.map( (species: any) => species.commonName).indexOf(row.commonName) === -1 ) {
+                speciesCodeOptions.push(value);
+            }
+        }
+        speciesCodeOptions.sort( (a: any, b: any) => {
+            if (a.commonName > b.commonName) {
+                return 1;
+            } else if (a.commonName < b.commonName) {
+                return -1;
+            } else {
+                return 0;
+            }
+        })
+        console.log(speciesCodeOptions);
+    };
+
+    let speciesCodeSelectOptions: any = ref([])
+    const speciesFilterFn = (val: string, update: any, abort: any) => {
+        if (val === '') {
+            update( () => {
+                speciesCodeSelectOptions.value = speciesCodeOptions;
+            })
+            return;
+        }
+        update( () => {
+            speciesCodeSelectOptions.value = speciesCodeOptions.filter( (option: any) => {
+                return option.commonName.toLowerCase().includes(val.toLowerCase())
+                || option.pacfinCode.toLowerCase().includes(val.toLowerCase())
+                || option.wcgopSpeciesCode.toLowerCase().includes(val.toLowerCase())
+                })
+        })
+    }
+
     const getCatch = async (id: any) => {
         await getCatchApiCatch(id).then(
             (res: any) => {
@@ -784,6 +851,7 @@ export default createComponent({
     );
 
     onMounted( () => {
+        getSpeciesCodeOptions();
         getFisheryOptions();
         getGearTypeOptions();
         if (context.root.$route.params.id === 'new') {
@@ -842,7 +910,10 @@ export default createComponent({
         haulColumns,
         catchPagination,
         catchSelected,
-        catchColumns
+        catchColumns,
+        speciesCodeOptions,
+        speciesCodeSelectOptions,
+        speciesFilterFn
     };
   }
 });
