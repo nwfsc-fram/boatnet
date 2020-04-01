@@ -19,7 +19,7 @@ import {
   QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels,
   QTabPanel, QScrollArea, QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio,
   QSpace, QTabs, QTab, QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff,
-  Notify, QLinearProgress, QCircularProgress, QExpansionItem, QField, QForm, QBadge
+  Notify, QLinearProgress, QCircularProgress, QExpansionItem, QField, QForm, QBadge, QUploader
 } from 'quasar';
 
 import 'primevue/resources/themes/nova-light/theme.css';
@@ -57,7 +57,7 @@ Vue.use(Quasar, {
     QToggle, QSplitter, QTabPanels, QTabPanel, QScrollArea, QSpinner,
     QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace, QTabs, QTab,
     QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff, QLinearProgress,
-    QCircularProgress, QExpansionItem, QField, QForm,  QBadge
+    QCircularProgress, QExpansionItem, QField, QForm,  QBadge, QUploader
   },
   directives: {
     ClosePopup
