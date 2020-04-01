@@ -1,5 +1,8 @@
 <template>
   <div class="q-px-md q-py-sm">
+    <div>
+      <b>{{title}}</b>
+    </div>
     <q-input
       :clearable="docType ? true : false"
       outlined
@@ -48,7 +51,8 @@ export default createComponent({
     docType: String,
     val: [String, Number, Object],
     valType: String,
-    inputType: String
+    inputType: String,
+    title: String
   },
 
   setup(props, context) {
