@@ -12,6 +12,7 @@ export async function getDocByType(program: string, type: string) {
         views: {
             by_type: {
                 // @ts-ignore
+                // tslint:disable-next-line
                 map: function(doc) { emit(doc.type); }.toString()
             }
         }

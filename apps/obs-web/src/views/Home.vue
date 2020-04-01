@@ -338,6 +338,7 @@ export default class Home extends Vue {
         views: {
           by_type: {
             // @ts-ignore
+            // tslint:disable-next-line
             map: function(doc) { emit(doc.type); }.toString()
              }
           }
