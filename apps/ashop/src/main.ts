@@ -15,11 +15,11 @@ import '@/assets/directional-buttons.css';
 import VueTouchKeyboard from 'vue-touch-keyboard';
 import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
 import VueCompositionApi from '@vue/composition-api';
+import Vuelidate from 'vuelidate';
 
-
+Vue.use(Vuelidate);
 Vue.use(VueTouchKeyboard);
 Vue.use(VueCompositionApi);
-
 
 Vue.config.productionTip = false;
 

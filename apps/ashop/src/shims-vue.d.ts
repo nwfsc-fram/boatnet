@@ -9,3 +9,4 @@ declare module 'pouchdb-utils';
 declare module 'vue-async-function';
 declare module 'querystring';
 declare module 'coordinate-parser';
+declare module 'vuelidate';
