@@ -19,6 +19,16 @@
         option-value="_id"
         ></q-select>
 
+        <q-uploader
+            url="https://nwfsc.noaa.gov/observer-web/upload"
+            label="multiple images"
+            multiple
+            batch
+            style="max-width: 450px"
+            accept=".jpg, image/*"
+        >
+        </q-uploader>
+
           <div style="text-align: center">
             <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Picture
                 <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
