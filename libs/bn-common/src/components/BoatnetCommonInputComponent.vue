@@ -1,5 +1,6 @@
 <template>
-  <div style="width: 350px">
+  <!-- <div style="width: 350px"> -->
+  <div>
     <boatnet-datetime-prime
       v-if="config.type === 'dateTime' && (config.displayCondition ? showField : true)"
       :config="config"
@@ -17,12 +18,14 @@
     <boatnet-keyboard-select-list
       v-if="config.type === 'input' && (config.displayCondition ? showField : true)"
       :displayName="config.displayName"
+      :title="config.title"
       :keyboardType="config.keyboardType"
       :val.sync="valueHolder"
       :displayFields="config.displayFields"
       :docType="config.docType"
       :valType="config.valType"
       :inputType="config.inputType"
+      :mask="config.mask"
       @save="save"
     />
 
