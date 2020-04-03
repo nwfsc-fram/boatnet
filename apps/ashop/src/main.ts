@@ -16,10 +16,13 @@ import VueTouchKeyboard from 'vue-touch-keyboard';
 import 'vue-touch-keyboard/dist/vue-touch-keyboard.css';
 import VueCompositionApi from '@vue/composition-api';
 import Vuelidate from 'vuelidate';
+import './registerComponentHooks'; // TODO: move to bn-rules
 
-Vue.use(Vuelidate);
+
 Vue.use(VueTouchKeyboard);
 Vue.use(VueCompositionApi);
+
+Vue.use(Vuelidate);
 
 Vue.config.productionTip = false;
 

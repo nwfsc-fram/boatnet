@@ -35,11 +35,14 @@
               />
             </template>
           </boatnet-keyboard-input>
+          <div class="error" v-if="!$v.username.required">Username is required</div>
+          <div class="error" v-if="!$v.username.minLength">Username must have at least {{$v.username.$params.minLength.min}} letters.</div>
+          <div class="error" v-if="!$v.password.required">Password is required</div>
           <div style="text-align: center">
             <q-btn
               class="full-width"
               color="primary"
-              :disable="!password || !username"
+              :disable="$v.$invalid"
               :loading="auth.status.isLoggingIn"
               label="Login"
               type="submit"
@@ -68,6 +71,9 @@ import { PouchDBState } from '@boatnet/bn-pouch';
 import { formatDate } from '@boatnet/bn-util';
 import { AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { loginConfigValues } from '../helpers/loginConfig';
+
+import { required, email, minLength, ValidationParams, ValidationRule } from 'vuelidate/lib/validators';
+import useVuelidate from 'vuelidate';
 
 @Component
 export default class Login extends Vue {
@@ -161,9 +167,11 @@ export default class Login extends Vue {
     this.submitted = true;
     const { username, password } = this;
 
-    if (username && password) {
-      this.login({ username, password });
-    }
+    console.log(this.$v.username.$model);
+
+    // if (username && password) {
+    //   this.login({ username, password });
+    // }
   }
 
   private get lastDataSyncDate() {
@@ -172,6 +180,13 @@ export default class Login extends Vue {
     } else {
       return 'Never';
     }
+  }
+
+  private validations() {
+    return {
+      username: { required, minLength: minLength(4) },
+      password: { required }
+    };
   }
 }
 </script>
