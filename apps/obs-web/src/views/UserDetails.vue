@@ -649,7 +649,7 @@ export default class UserDetails extends Vue {
                 authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
                 },
             params: {
-                username: authService.getCurrentUser()!.username,
+                username: this.user.activeUser!.apexUserAdminUserName,
                 applicationName: 'BOATNET_OBSERVER',
                 }
             };
