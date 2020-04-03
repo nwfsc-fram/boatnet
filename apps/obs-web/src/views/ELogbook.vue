@@ -928,7 +928,7 @@ body .p-inputtext {
 .logbook-element {
   width: 100%;
   max-width: 350px;
-  margin: 0 5px
+  margin: 5px 10px
 }
 
 </style>
