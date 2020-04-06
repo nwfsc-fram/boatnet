@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>
+    <p v-if="!isAuthorized(['enforcement'])">
       If you would like to make your declaration/s by phone, please call the Office
       of Law Enforcement at
       <a
@@ -10,153 +10,179 @@
     </p>
     <br />
 
-     <div class="centered-page-item q-pa-md q-gutter-sm">
-        <q-select
-          v-model="vessel.activeVessel"
-          label="Vessel"
-          dense
-          use-input
-          fill-input
-          hide-selected
-          :options="authorizedVessels"
-          :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-          option-value="_id"
-        ></q-select>
-      </div>
+    <div class="centered-page-item q-pa-md q-gutter-sm">
+      <q-select
+        v-if="isAuthorized(['enforcement'])"
+        v-model="vessel.activeVessel"
+        label="Staff - Select ANY vessel"
+        dense
+        use-input
+        fill-input
+        hide-selected
+        @filter="vesselsFilterFn"
+        :options="vessels"
+        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+        option-value="_id"
+        @click.native="vessel.activeVessel = undefined"
+      ></q-select>
+
+      <q-select
+        v-else
+        v-model="vessel.activeVessel"
+        label="Vessel"
+        dense
+        use-input
+        fill-input
+        hide-selected
+        :options="authorizedVessels"
+        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+        option-value="_id"
+      ></q-select>
+    </div>
 
     <div class="centered-page-item" v-if="vessel.activeVessel">
+      <div v-if="oleVessel !== undefined">
+        <div class="centered-page-item">{{vessel.activeVessel['vesselName']}}</div>
 
-      <div class="centered-page-item">{{vessel.activeVessel['vesselName']}}</div>
+        <br />
 
-      <br />
+        <q-btn class="bg-primary text-white q-ma-md" to="/declaration-cart">New Declaration</q-btn>
 
-      <q-btn class="bg-primary text-white q-ma-md" to="/declaration-cart">New Declaration</q-btn>
+        <br />
 
-      <br />
+        <div class="centered-page-item">Active Declarations</div>
 
-      <div class="centered-page-item">Active Declarations</div>
-
-      <div v-if="Object.keys(oleVessel.activeDeclarations).length > 0">
-        <div class="q-pa-md column">
-          <q-card
-            v-for="(obj, index) in oleVessel.activeDeclarations"
-            :key="index"
-            class="my-card bg-primary text-white"
-          >
-            <q-card-section>
-              <div class="text-h6">{{ obj["declarationCode"] }}</div>
-              <div style="font-size: 14px">{{ obj["declarationDescrip"] }}</div>
-              <div
-                v-if="'activityDescrip' in obj"
-                style="font-size: 14px"
-                class="text-overflow: ellipsis"
-              >Note: {{ obj["activityDescrip"] }}</div>
-              <div style="font-size: 14px">Start Date: {{ formatDateTime(obj["transactionDate"]) }}</div>
-              <div
-                v-show="obj['observerStatus'] !== 'N/A'"
-                style="font-size: 14px"
-              >Observer Status: {{ obj["observerStatus"] }}</div>
-              <div style="font-size: 14px">Confirmation Number:</div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </div>
-      <div v-else class="centered-page-item text-primary">No active declarations for this vessel.</div>
-      <br />
-      <div class="centered-page-item">Past Declarations</div>
-
-      <div v-if="Object.keys(oleVessel.deactivatedDeclarations).length > 0">
-        <div class="q-pa-md column">
-          <q-card
-            v-for="(obj, index) in oleVessel.deactivatedDeclarations"
-            :key="index"
-            class="my-card bg-blue-grey-4 text-white"
-          >
-            <q-card-section>
-              <div class="row no-wrap">
-                <div class="col-md-4 text-h6">{{ obj["declarationCode"] }}</div>
+        <div v-if="oleVessel !== undefined && Object.keys(oleVessel.activeDeclarations).length > 0">
+          <div class="q-pa-md column">
+            <q-card
+              v-for="(obj, index) in oleVessel.activeDeclarations"
+              :key="index"
+              class="my-card bg-primary text-white"
+            >
+              <q-card-section>
+                <div class="text-h6">{{ obj["declarationCode"] }}</div>
+                <div style="font-size: 14px">{{ obj["declarationDescrip"] }}</div>
                 <div
-                  class="col-md-4 offset-9"
-                  style="font-size: 18px; line-height: 4px; margin-bottom: 10px"
-                >
-                  <q-badge v-if="cartContains(obj)" color="green" align="top">In Cart</q-badge>
-                  <q-btn
-                    v-if="!cartContains(obj)"
-                    class="bg-primary justify-end"
-                    size="12px"
-                    round
-                    icon="add_shopping_cart"
-                    @click="addToCart(obj)"
-                  />
-                </div>
-              </div>
-              <div style="font-size: 14px">{{ obj["declarationDescrip"] }}</div>
-              <div
-                v-if="'activityDescrip' in obj"
-                style="font-size: 14px"
-                class="text-overflow: ellipsis"
-              >Note: {{ obj["activityDescrip"] }}</div>
-              <div style="font-size: 14px">Start Date: {{ formatDateTime(obj["transactionDate"]) }}</div>
-              <div
-                style="font-size: 14px"
-                v-show="obj['observerStatus'] !== 'N/A'"
-              >Observer Status: {{ obj["observerStatus"] }}</div>
-              <div style="font-size: 14px">Confirmation Number:</div>
-            </q-card-section>
-          </q-card>
+                  v-if="'activityDescrip' in obj"
+                  style="font-size: 14px"
+                  class="text-overflow: ellipsis"
+                >Note: {{ obj["activityDescrip"] }}</div>
+                <div
+                  style="font-size: 14px"
+                >Start Date: {{ formatDateTime(obj["transactionDate"]) }}</div>
+                <div
+                  v-show="obj['observerStatus'] !== 'N/A'"
+                  style="font-size: 14px"
+                >Observer Status: {{ obj["observerStatus"] }}</div>
+                <div style="font-size: 14px">Confirmation Number:</div>
+              </q-card-section>
+            </q-card>
+          </div>
         </div>
+        <div v-else class="centered-page-item text-primary">No active declarations for this vessel.</div>
+        <br />
+        <div class="centered-page-item">Past Declarations</div>
+
+        <div
+          v-if="oleVessel !== undefined && Object.keys(oleVessel.deactivatedDeclarations).length > 0"
+        >
+          <div class="q-pa-md column">
+            <q-card
+              v-for="(obj, index) in oleVessel.deactivatedDeclarations"
+              :key="index"
+              class="my-card bg-blue-grey-4 text-white"
+            >
+              <q-card-section>
+                <div class="row no-wrap">
+                  <div class="col-md-4 text-h6">{{ obj["declarationCode"] }}</div>
+                  <div
+                    class="col-md-4 offset-9"
+                    style="font-size: 18px; line-height: 4px; margin-bottom: 10px"
+                  >
+                    <q-badge v-if="cartContains(obj)" color="green" align="top">In Cart</q-badge>
+                    <q-btn
+                      v-if="!cartContains(obj)"
+                      class="bg-primary justify-end"
+                      size="12px"
+                      round
+                      icon="add_shopping_cart"
+                      @click="addToCart(obj)"
+                    />
+                  </div>
+                </div>
+                <div style="font-size: 14px">{{ obj["declarationDescrip"] }}</div>
+                <div
+                  v-if="'activityDescrip' in obj"
+                  style="font-size: 14px"
+                  class="text-overflow: ellipsis"
+                >Note: {{ obj["activityDescrip"] }}</div>
+                <div
+                  style="font-size: 14px"
+                >Start Date: {{ formatDateTime(obj["transactionDate"]) }}</div>
+                <div
+                  style="font-size: 14px"
+                  v-show="obj['observerStatus'] !== 'N/A'"
+                >Observer Status: {{ obj["observerStatus"] }}</div>
+                <div style="font-size: 14px">Confirmation Number:</div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+
+        <div v-else class="centered-page-item text-primary">No past declarations for this vessel.</div>
+
+        <q-dialog v-model="obsPrompt" persistent>
+          <q-card class="q-gutter-sm">
+            <q-card-section>
+              <div class="text-h6">Observer status for this declaration?</div>
+            </q-card-section>
+
+            <q-select filled v-model="newObsStatus" :options="obsOptions"></q-select>
+
+            <q-card-actions align="right" class="text-primary">
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn
+                flat
+                label="Okay"
+                :disable="newObsStatus.length < 1"
+                v-close-popup
+                @click="newObsChosen()"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="gearPrompt" persistent>
+          <q-card class="q-gutter-sm">
+            <q-card-section>
+              <div class="text-h6">Describe Activity/Gear/Fishery</div>
+            </q-card-section>
+
+            <q-input
+              stack-label
+              v-model="newGearNote"
+              filled
+              type="textarea"
+              lazy-rules
+              :rules="[val => val.length >= 3 || 'Sufficient details required for other gear type declaration']"
+            />
+
+            <q-card-actions align="right" class="text-primary">
+              <q-btn flat label="Cancel" v-close-popup />
+              <q-btn
+                flat
+                label="Okay"
+                :disable="newGearNote.length < 3"
+                v-close-popup
+                @click="newOtherGearChosen()"
+              />
+            </q-card-actions>
+          </q-card>
+        </q-dialog>
       </div>
-
-      <div v-else class="centered-page-item text-primary">No past declarations for this vessel.</div>
-
-      <q-dialog v-model="obsPrompt" persistent>
-        <q-card class="q-gutter-sm">
-          <q-card-section>
-            <div class="text-h6">Observer status for this declaration?</div>
-          </q-card-section>
-
-          <q-select filled v-model="newObsStatus" :options="obsOptions"></q-select>
-
-          <q-card-actions align="right" class="text-primary">
-            <q-btn flat label="Cancel" v-close-popup />
-            <q-btn
-              flat
-              label="Okay"
-              :disable="newObsStatus.length < 1"
-              v-close-popup
-              @click="newObsChosen()"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog v-model="gearPrompt" persistent>
-        <q-card class="q-gutter-sm">
-          <q-card-section>
-            <div class="text-h6">Describe Activity/Gear/Fishery</div>
-          </q-card-section>
-
-          <q-input
-            stack-label
-            v-model="newGearNote"
-            filled
-            type="textarea"
-            lazy-rules
-            :rules="[val => val.length >= 3 || 'Sufficient details required for other gear type declaration']"
-          />
-
-          <q-card-actions align="right" class="text-primary">
-            <q-btn flat label="Cancel" v-close-popup />
-            <q-btn
-              flat
-              label="Okay"
-              :disable="newGearNote.length < 3"
-              v-close-popup
-              @click="newOtherGearChosen()"
-            />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
+      <div v-else>
+        <p class="centered-page-item text-primary">No OLEVessel Doc found</p>
+      </div>
     </div>
     <div v-else>
       <p class="centered-page-item text-primary">No active vessel</p>
@@ -196,6 +222,7 @@ export default class Declarations extends Vue {
   private gearPrompt: boolean = false;
   private newGearNote: string = '';
   private activeVesselId: string = '';
+  private vessels: [] = [];
   private storeNewDec: Declaration = {
     type: 'ole-declaration',
     declarationCode: 999,
@@ -221,8 +248,6 @@ export default class Declarations extends Vue {
       'all_doc_types',
       queryOptions
     );
-
-    console.log(permissionsQuery);
 
     const permissionsDoc = permissionsQuery.rows[0].doc;
 
@@ -286,7 +311,7 @@ export default class Declarations extends Vue {
   }
 
   private cartContains(newDeclaration: Declaration) {
-    for (const cartDecs of this.oleVessel.cartDeclarations!) {
+    for (const cartDecs of this.oleVessel!.cartDeclarations!) {
       if (newDeclaration.declarationCode === cartDecs.declarationCode) {
         return true;
       }
@@ -298,7 +323,7 @@ export default class Declarations extends Vue {
   private addToCart(copyDec: Declaration) {
     const newDeclaration = { ...copyDec };
     const okayArray: number[] = this.dualRules[newDeclaration.declarationCode];
-    for (const cartDec of this.oleVessel.cartDeclarations!) {
+    for (const cartDec of this.oleVessel!.cartDeclarations!) {
       if (!okayArray.includes(cartDec.declarationCode)) {
         this.$q.notify({
           color: 'red-5',
@@ -348,12 +373,12 @@ export default class Declarations extends Vue {
   // to cart process as well.
   private async finishAddingToCart() {
     // Add new dec to oleVessel
-    if (this.oleVessel.cartDeclarations!.length > 0) {
-      this.oleVessel.cartDeclarations = this.oleVessel.cartDeclarations!.concat(
+    if (this.oleVessel!.cartDeclarations!.length > 0) {
+      this.oleVessel!.cartDeclarations = this.oleVessel!.cartDeclarations!.concat(
         this.storeNewDec
       );
     } else {
-      this.oleVessel.cartDeclarations = [this.storeNewDec];
+      this.oleVessel!.cartDeclarations = [this.storeNewDec];
     }
 
     // Update couch
@@ -377,6 +402,30 @@ export default class Declarations extends Vue {
     }
   }
 
+  private vesselsFilterFn(val: string, update: any, abort: any) {
+    update(async () => {
+      try {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+          start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '\u9999',
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+
+        const vessels = await masterDb.view(
+          'obs_web',
+          'all_vessel_names',
+          queryOptions
+        );
+        this.vessels = vessels.rows.map((row: any) => row.doc);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }
+
   private formatDateTime(date: any) {
     return moment(date).format('MM/DD/YYYY, HH:mm');
   }
@@ -392,19 +441,27 @@ export default class Declarations extends Vue {
     });
   }
 
-  private get oleVessel(): OLEVessel {
-    return this.oleDoc;
+  private get oleVessel(): OLEVessel | undefined {
+    if (Object.keys(this.oleDoc).length !== 0) {
+      return this.oleDoc;
+    } else { console.log('hit here'); }
+    return undefined;
   }
 
   @Watch('vessel.activeVessel')
   private async handler3(newVal: string, oldVal: string) {
-    this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
-      ? this.vessel.activeVessel.coastGuardNumber
-      : this.vessel.activeVessel.stateRegulationNumber;
-    try {
-      this.dbReturn = this.getOleVessel();
-    } catch (err) {
-      console.log('failed couch attempt');
+    if (this.vessel.activeVessel !== undefined) {
+      this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
+        ? this.vessel.activeVessel.coastGuardNumber
+        : this.vessel.activeVessel.stateRegulationNumber;
+      try {
+        this.dbReturn = this.getOleVessel();
+      } catch (err) {
+        console.log('failed couch attempt');
+      }
+    } else {
+      this.activeVesselId = '';
+      this.oleDoc = {};
     }
   }
 
