@@ -11,12 +11,12 @@
       columnResizeMode="expand"
       @cell-edit-init="onCellEditInit"
       :reorderableColumns="true"
-      data-key="_id"
+      :data-key="uniqueKey"
       stateStorage="local"
       :stateKey="state.debriefer.program + '-' + type"
     >
       <template #empty>No data available</template>
-      <template #header>
+      <template v-if="!simple" #header>
         <div style="text-align:left">
           <MultiSelect
             v-model="displayColumns"
@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="!simple" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -69,13 +69,15 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
+          <Button v-if="col.type === 'popup'" label="Expand Data" @click="show(slotProps, col.popupColumns)" />
+          <span v-else style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
         </template>
-         <template #filter>
+        <template #filter v-if="!simple">
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
         </template>
       </Column>
     </DataTable>
+    <prime-table-dialog :showDialog.sync="showPopup" :data="popupData" :field="popupField" :columns="popupColumns" />
   </div>
 </template>
 
@@ -89,10 +91,14 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
+import Button from 'primevue/button';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import moment from 'moment';
+import PrimeTableDialog from './PrimeTableDialog.vue';
 
+Vue.component('PrimeTableDialog', PrimeTableDialog);
+Vue.component('Button', Button);
 Vue.component('Dropdown', Dropdown);
 Vue.component('DataTable', DataTable);
 Vue.component('Calendar', Calendar);
@@ -105,7 +111,9 @@ export default createComponent({
     columns: Array,
     value: Array,
     isEditable: Boolean,
-    type: String
+    type: String,
+    simple: Boolean,
+    uniqueKey: String
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -121,8 +129,12 @@ export default createComponent({
 
     const tableType = state.debriefer.program + '-' + props.type;
     const selected: any = ref([]);
-
     const stateDisplayCols = state.debriefer.displayColumns;
+
+    const popupData: any = ref({});
+    const popupField: any = ref('');
+    const showPopup: any = ref(false);
+    const popupColumns: any = ref([]);
 
     const displayColumns = computed({
       get: () => {
@@ -167,9 +179,18 @@ export default createComponent({
       }
     }
 
+    function getIndex(data: any) {
+      const keyId = props.uniqueKey ? props.uniqueKey : '';
+      const findItem: any = {};
+      findItem[keyId] = get(data, keyId);
+      const index = findIndex(props.value, findItem);
+      return index;
+    }
+
     function formatValue(slotProps: any, type: string) {
       const value = props.value ? props.value : [];
-      const index = findIndex(props.value, { _id: slotProps.data._id });
+      const index = getIndex(slotProps.data);
+
       let val: any = get(value[index], slotProps.column.field);
       if (type === 'date') {
         val = moment(val).format('MM/DD/YYYY HH:mm');
@@ -183,7 +204,7 @@ export default createComponent({
 
     function onCellEdit(newValue: any, slotProps: any, type: string) {
       const valueHolder: any = props.value ? props.value : {};
-      const index = findIndex(props.value, { _id: slotProps.data._id });
+      const index = getIndex(slotProps.data);
       let editingCellRow: any = valueHolder[index];
       if (!editingCellRow) {
         editingCellRow = { ...slotProps.data };
@@ -196,12 +217,15 @@ export default createComponent({
       set(editingCellRow, slotProps.column.field, newValue);
       valueHolder[index] = editingCellRow;
 
-      masterDB
-        .put(valueHolder[index]._id, editingCellRow, valueHolder[index]._rev)
-        .then((response: any) => {
-          valueHolder[index]._rev = response.rev;
-        });
+      context.emit('save', editingCellRow);
       context.emit('update:value', valueHolder);
+    }
+
+    function show(slotProps: any, columns: any) {
+      popupField.value = slotProps.column.field;
+      popupData.value = slotProps.data;
+      showPopup.value = true;
+      popupColumns.value = columns;
     }
 
     return {
@@ -217,7 +241,12 @@ export default createComponent({
       formatValue,
       tableType,
       selected,
-      state
+      state,
+      show,
+      popupData,
+      popupField,
+      showPopup,
+      popupColumns
     };
   }
 });
