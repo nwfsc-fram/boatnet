@@ -34,13 +34,13 @@ export default class BoatnetButtonToggle extends Vue {
 
   private async getList() {
    if (this.docType) {
-     let list: any = []
+     let list: any = [];
      if (this.docTypeDb) {
        list = await getOptions(this.appMode.toString(), this.docType, this.docTypeDb, this.displayFields);
      } else {
        list = await getOptions(this.appMode.toString(), this.docType, 'user', this.displayFields);
      }
-      for (const row of list) {
+     for (const row of list) {
         const label = formatDisplayValue(row, [this.displayFields]);
         const value = this.valueField ? formatDisplayValue(row, [this.valueField]) : row.doc;
         const description = get(row, 'doc.' + 'description') ? get(row, 'doc.' + 'description') + ' ' : '';
@@ -54,9 +54,9 @@ export default class BoatnetButtonToggle extends Vue {
   private getDescription() {
     if (this.optionsList.filter((row: any) => row.value === this.val).length > 0
       && this.optionsList.filter((row: any) => row.value === this.val)[0].description) {
-      return this.optionsList.filter((row: any) => row.value === this.val)[0].description
+      return this.optionsList.filter((row: any) => row.value === this.val)[0].description;
     } else {
-      return ''
+      return '';
     }
   }
 

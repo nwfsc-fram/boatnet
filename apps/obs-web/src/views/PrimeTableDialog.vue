@@ -42,7 +42,7 @@ export default createComponent({
 
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
-    let editingCellRows: any = ref({});
+    const editingCellRows: any = ref({});
 
     const tableData = computed({
       get: () => {
@@ -57,7 +57,7 @@ export default createComponent({
     }
 
     function save(data: any) {
-      let currRecord: any = props.data ? props.data : {};
+      const currRecord: any = props.data ? props.data : {};
       const id = currRecord._id;
       const rev = currRecord._rev;
       masterDB.put(id, currRecord, rev).then((response: any) => {

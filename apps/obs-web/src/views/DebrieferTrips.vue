@@ -252,7 +252,6 @@ export default createComponent({
     }
 
     async function getTrips() {
-      const masterDB: Client<any> = couchService.masterDB;
       const tripsHolder = [];
       try {
         const options: ListOptions = {

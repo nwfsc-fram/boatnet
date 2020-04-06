@@ -5,7 +5,7 @@ export function getSelected(program: string, tableType: string) {
     vals = vals['selection'];
     const ids: any[] = [];
     for (const val of vals) {
-        ids.push(val._id)
+        ids.push(val._id);
     }
     console.log(ids);
     return ids;
