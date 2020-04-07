@@ -47,7 +47,8 @@ export default createComponent({
     const tableData = computed({
       get: () => {
         const fieldName = props.field ? props.field : '';
-        return get(props.data, fieldName);
+        const currData = get(props.data, fieldName);
+        return currData ? currData : [];
       },
       set: (val: any) => undefined
     });

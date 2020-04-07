@@ -14,12 +14,16 @@
           label="Type"
         />
         <div style="display: inline-block" class="q-pa-md">
-          <div class="text-body2" style="color: #027be3">Start Date:</div>
-          <pCalendar v-model="startDate" @date-select="getTripsByDate" />
+          <div class="p-float-label q-px-md">
+            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" />
+            <label for="startDate" style="color: #027be3">Start Date</label>
+          </div>
         </div>
         <div style="display: inline-block" class="q-pa-md">
-          <div class="text-body2" style="color: #027be3">End Date:</div>
-          <pCalendar v-model="endDate" @date-select="getTripsByDate" />
+          <div class="p-float-label">
+            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" />
+            <label for="endDate" style="color: #027be3">End Date</label>
+          </div>
         </div>
 
         <q-table
@@ -28,8 +32,6 @@
           :data="trips"
           :columns="columns"
           :row-key="row => row.legacy.tripId"
-          selection="multiple"
-          :selected.sync="selected"
           :pagination.sync="pagination"
         ></q-table>
       </q-card-section>
@@ -134,9 +136,7 @@ export default createComponent({
     const endDate = computed({
       get: () => {
         const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
-        const end = evalPeriod.endDate
-          ? new Date(evalPeriod.endDate)
-          : null;
+        const end = evalPeriod.endDate ? new Date(evalPeriod.endDate) : null;
         return end;
       },
       set: (val: any) => {
@@ -160,12 +160,11 @@ export default createComponent({
 
     async function initTrips() {
       const tripsHolder: any[] = [];
-      const tripIds = props.evaluationPeriod && props.evaluationPeriod.tripIds
-          ? props.evaluationPeriod.tripIds : [];
+      const tripIds = state.debriefer.tripIds;
       if (tripIds.length > 0) {
         try {
           const options: ListOptions = {
-            keys: props.evaluationPeriod ? props.evaluationPeriod.tripIds : []
+            keys: tripIds
           };
           const tripDocs = await masterDB.listWithDocs(options);
           for (const trip of tripDocs.rows) {
@@ -182,8 +181,11 @@ export default createComponent({
       immediate: true
     };
 
-    watch(() => props.evaluationPeriod && props.evaluationPeriod.tripIds
-          ? props.evaluationPeriod.tripIds : [],
+    watch(
+      () =>
+        props.evaluationPeriod && props.evaluationPeriod.tripIds
+          ? props.evaluationPeriod.tripIds
+          : [],
       initTrips,
       watcherOptions
     );
@@ -232,8 +234,10 @@ export default createComponent({
             { key: observerId }
           );
           for (const trip of tripDocs.rows) {
-            if (moment(trip.doc.departureDate).isAfter(
-                startDate.value.toString()) &&
+            if (
+              moment(trip.doc.departureDate).isAfter(
+                startDate.value.toString()
+              ) &&
               moment(trip.doc.returnDate).isBefore(endDate.value.toString())
             ) {
               tripsHolder.push(trip.doc);
@@ -249,7 +253,7 @@ export default createComponent({
     function save() {
       const observerId = state.debriefer.observers;
       const tripIds: number[] = [];
-      for (const val of selected.value) {
+      for (const val of trips.value) {
         tripIds.push(val._id);
       }
 
@@ -262,12 +266,12 @@ export default createComponent({
         debriefer: state.user.activeUserAlias.personDocId,
         evalType: curr.value,
         startDate: curr.startDate,
-        endDate: curr.endDate,
-        tripIds
+        endDate: curr.endDate
       };
 
       if (evalPeriod && evalPeriod.id) {
-        masterDB.put(evalPeriod.id, evalPeriod, evalPeriod.rev)
+        masterDB
+          .put(evalPeriod.id, evalPeriod, evalPeriod.rev)
           .then((response: any) => {
             update(evalPeriod, response);
           });
@@ -276,6 +280,7 @@ export default createComponent({
           update(evalPeriod, response);
         });
       }
+      store.dispatch('debriefer/setTripIds', tripIds);
       closeDialog();
     }
 
