@@ -31,41 +31,63 @@
                 </q-input>
             </div>
             <div class="row items-start logbook-element">
-                <div class="text-h6 text-grey-7" style="position: relative; top: 7px">Departure:&nbsp;</div>
-                <q-field v-model="tripCatch.departureDateTime" dense autogrow title="Date/Time the vessel departed port"  style="width: 45%; margin-right: 5px">
+                <div class="text-h6 text-grey-7" style="position: relative; top: 4px">Depart:&nbsp;</div>
+                <q-field v-model="tripCatch.departureDateTime" dense autogrow title="Date/Time the vessel departed port"  style="width: 42%; margin-right: 5px">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="tripCatch.departureDateTime" @input="() => {departureTime = '', $refs.qDateProxy.hide()}"/>
+                    </q-popup-proxy>
                     <template v-slot:control>
                         {{ formatDate(tripCatch.departureDateTime) }}
-                    </template>
-                    <template v-slot:prepend>
-                        <q-icon name="edit" class="cursor-pointer">
-                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="tripCatch.departureDateTime" @input="() => {departureTime = '', $refs.qDateProxy.hide()}"/>
-                        </q-popup-proxy>
-                        </q-icon>
                     </template>
                     <template v-slot:before>
                         <div class="text-h6"> Date</div>
                     </template>
                 </q-field>
 
-                <q-input v-model="departureTime" dense autogrow title="Time the vessel departed port" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 25%">
+                <q-input
+                    v-model="departureTime"
+                    dense
+                    autogrow
+                    title="Time the vessel departed port"
+                    mask="##:##"
+                    :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
+                    style="width: 30%">
                     <template v-slot:before>
                         <div class="text-h6">Time</div>
                     </template>
                 </q-input>
             </div>
             <div class="row items-start logbook-element">
-                <q-select v-model="tripCatch.departureState" dense autogrow title="State where the vessel departed for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA','OR', 'WA']">
+                <q-select
+                v-model="tripCatch.departureState"
+                dense
+                autogrow
+                title="State where the vessel departed for fishing activities (WA, OR, CA)"
+                style="width: 42%; margin-right: 5px"
+                :options="['CA','OR', 'WA']"
+                >
                     <template v-slot:before>
                         <div class="text-h6">State</div>
                     </template>
                 </q-select>
 
-                <q-input v-model="tripCatch.departurePortCode" dense autogrow title="Port code where the vessel departed. The port code is the same as the PacFIN port code" style="width: 56.3%" mask="XXXX">
+                <q-select
+                v-model="tripCatch.departurePortCode"
+                dense
+                autogrow
+                title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
+                style="width: 56.3%"
+                :options="portOptions"
+                :option-label="opt => opt.name + ' (' + opt.code + ')'"
+                :option-value="opt => opt.code"
+                @filter="portFilterFn"
+                emit-value
+                :display-value="tripCatch.departurePortCode"
+                >
                     <template v-slot:before>
                         <div class="text-h6">Port Code</div>
                     </template>
-                </q-input>
+                </q-select>
             </div>
         </div>
         <div class="row items-start">
@@ -77,23 +99,19 @@
                 </q-input>
             </div>
             <div class="row items-start logbook-element">
-                <div class="text-h6 text-grey-7" style="position: relative; top: 7px">Return:&nbsp;</div>
-                <q-field v-model="tripCatch.returnDateTime" dense autogrow title="Date/Time the vessel returned to port for offload" style="width: 52%; margin-right: 5px">
-                    <template v-slot:control>
-                        {{ formatDate(tripCatch.returnDateTime) }}
-                    </template>
-                    <template v-slot:prepend>
-                        <q-icon name="edit" class="cursor-pointer">
+                <div class="text-h6 text-grey-7" style="position: relative; top: 4px">Return:&nbsp;</div>
+                <q-field v-model="tripCatch.returnDateTime" dense autogrow title="Date/Time the vessel returned to port for offload" style="width: 42%; margin-right: 5px">
                         <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
                             <q-date v-model="tripCatch.returnDateTime" @input="() => {returnTime = '', $refs.qDateProxy.hide()}"/>
                         </q-popup-proxy>
-                        </q-icon>
+                    <template v-slot:control>
+                        {{ formatDate(tripCatch.returnDateTime) }}
                     </template>
                     <template v-slot:before>
                         <div class="text-h6">Date</div>
                     </template>
                 </q-field>
-                <q-input v-model="returnTime" dense autogrow title="Time the vessel returned to port" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 25%">
+                <q-input v-model="returnTime" dense autogrow title="Time the vessel returned to port" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 30%">
                     <template v-slot:before>
                         <div class="text-h6">Time</div>
                     </template>
@@ -106,11 +124,23 @@
                     </template>
                 </q-select>
 
-                <q-input v-model="tripCatch.returnPortCode" dense autogrow title="Port code where the vessel returned. The port code is the same as the PacFIN port code" style="width: 56.3%" mask="XXXX">
+                <q-select
+                v-model="tripCatch.returnPortCode"
+                dense
+                autogrow
+                title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
+                style="width: 56.3%"
+                :options="portOptions"
+                :option-label="opt => opt.name + ' (' + opt.code + ')'"
+                :option-value="opt => opt.code"
+                @filter="portFilterFn"
+                emit-value
+                :display-value="tripCatch.returnPortCode"
+                >
                     <template v-slot:before>
                         <div class="text-h6">Port Code</div>
                     </template>
-                </q-input>
+                </q-select>
             </div>
         </div>
         <div class="row items-start">
@@ -280,20 +310,32 @@
             dense
             hide-bottom
             >
+                <template v-slot:header="props">
+                    <q-tr :props="props">
+                        <q-th
+                            v-for="col in props.cols"
+                            :key="col.name"
+                            :props="props"
+                            :id="col.name"
+                        >
+                            {{ col.label }}
+                        </q-th>
+                    </q-tr>
+                </template>
                 <template v-slot:body="props">
                     <q-tr :props="props" @click.native="{{ selectHaul(tripCatch.hauls.indexOf(props.row) + 1) }}">
-                        <q-td key="haulNum" :props="props">{{ tripCatch.hauls.indexOf(props.row) + 1 }}</q-td>
-                        <q-td key="gearTypeCode" :props="props">{{ props.row.gearTypeCode }}</q-td>
-                        <q-td key="startDateTime" :props="props">{{ formatDateTime(props.row.startDateTime) }}</q-td>
-                        <q-td key="startDepth" :props="props">{{ props.row.startDepth }}</q-td>
-                        <q-td key="startLatitude" :props="props">{{ props.row.startLatitude }}</q-td>
-                        <q-td key="startLongitude" :props="props">{{ props.row.startLongitude }}</q-td>
-                        <q-td key="endDateTime" :props="props">{{ formatDateTime(props.row.endDateTime) }}</q-td>
-                        <q-td key="endDepth" :props="props">{{ props.row.endDepth }}</q-td>
-                        <q-td key="endLatitude" :props="props">{{ props.row.endLatitude }}</q-td>
-                        <q-td key="endLongitude" :props="props">{{ props.row.endLongitude }}</q-td>
-                        <q-td key="targetStrategy" :props="props">{{ props.row.targetStrategy }}</q-td>
-                        <q-td key="comments" :props="props">{{ props.row.comments }}</q-td>
+                        <q-td headers="haulNum" key="haulNum" :props="props">{{ tripCatch.hauls.indexOf(props.row) + 1 }}</q-td>
+                        <q-td headers="gearTypeCode" key="gearTypeCode" :props="props">{{ props.row.gearTypeCode }}</q-td>
+                        <q-td headers="startDateTime" key="startDateTime" :props="props">{{ formatDateTime(props.row.startDateTime) }}</q-td>
+                        <q-td headers="startDepth" key="startDepth" :props="props">{{ props.row.startDepth }}</q-td>
+                        <q-td headers="startLatitude" key="startLatitude" :props="props">{{ props.row.startLatitude }}</q-td>
+                        <q-td headers="startLongitude" key="startLongitude" :props="props">{{ props.row.startLongitude }}</q-td>
+                        <q-td headers="endDateTime" key="endDateTime" :props="props">{{ formatDateTime(props.row.endDateTime) }}</q-td>
+                        <q-td headers="endDepth" key="endDepth" :props="props">{{ props.row.endDepth }}</q-td>
+                        <q-td headers="endLatitude" key="endLatitude" :props="props">{{ props.row.endLatitude }}</q-td>
+                        <q-td headers="endLongitude" key="endLongitude" :props="props">{{ props.row.endLongitude }}</q-td>
+                        <q-td headers="targetStrategy" key="targetStrategy" :props="props">{{ props.row.targetStrategy }}</q-td>
+                        <q-td headers="comments" key="comments" :props="props">{{ props.row.comments }}</q-td>
                     </q-tr>
                 </template>
             </q-table>
@@ -453,8 +495,9 @@
                         >
                             <template v-slot:body="props">
                                 <q-tr :props="props" @click.native="{{ selectedCatch = tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row) + 1 }}">
+                                    <q-td key="action" :props="props"><q-btn round size="xs" color="red" icon="clear" @click.native="removeCatch(tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row))"></q-btn></q-td>
                                     <q-td key="catchDisposition" :props="props">{{ props.row.catchDisposition }}</q-td>
-                                    <q-td key="speciesCode" :props="props">{{ props.row.speciesCode ? props.row.speciesCode.wcgopSpeciesCode : '' }}</q-td>
+                                    <q-td key="speciesCode" :props="props">{{ props.row.speciesCode }}</q-td>
                                     <q-td key="estimatedWeight" :props="props">{{ props.row.estimatedWeight }}</q-td>
                                     <q-td key="catchCount" :props="props">{{ props.row.catchCount }}</q-td>
                                     <q-td key="calcWeightType" :props="props">{{ props.row.calcWeightType }}</q-td>
@@ -467,7 +510,7 @@
                         <br>
                         <div v-if="selectedCatch" style="border: 2px solid #153547; border-radius: 5px; padding: 10px;">
                             <div class="text-h4 text-secondary">
-                                <span v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode">{{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode.commonName }} -</span>
+                                <span v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode">{{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -</span>
                                 {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
                             </div>
                             <div class="row items-start">
@@ -482,16 +525,20 @@
                                     dense
                                     autogrow
                                     title="WCGOP species code (3 or 4 digits)"
-                                    :option-label="opt => opt.commonName +  ' ( PACFIN: '  + opt.pacfinCode + ') ( WCGOP: ' + opt.wcgopSpeciesCode + ')'"
-                                    :option-value="opt => opt"
+                                    :option-label="opt => opt.commonName +  ' ('  + opt.speciesCode + ')'"
+                                    :option-value="opt => opt.speciesCode"
                                     :options="speciesCodeSelectOptions"
                                     use-input
                                     @filter="speciesFilterFn"
                                     emit-value
+                                    :display-value="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode"
                                     >
                                     <template v-slot:before>
                                         <div class="text-h6">Species Code</div>
                                     </template>
+                                    <!-- <template v-slot:default>
+                                        {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }}
+                                    </template> -->
                                     <template v-slot:append>
                                         <q-btn v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode" round size="xs" color="secondary" icon="clear" @click="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode = null"></q-btn>
                                     </template>
@@ -642,6 +689,7 @@ export default createComponent({
     const catchSelected: any = [];
 
     const catchColumns = [
+        {name: 'action', label: '', field: 'action', required: false, align: 'left', sortable: false},
         {name: 'catchDisposition', label: 'Disposition', field: 'catchDisposition', required: false, align: 'left', sortable: true},
         {name: 'speciesCode', label: 'Species Code', field: 'speciesCode', required: false, align: 'left', sortable: true},
         {name: 'estimatedWeight', label: 'Estimated Weight', field: 'estimatedWeight', required: false, align: 'left', sortable: true},
@@ -651,6 +699,10 @@ export default createComponent({
         {name: 'timeOnDeck', label: 'Time On Deck', field: 'timeOnDeck', required: false, align: 'left', sortable: true},
         {name: 'comments', label: 'Comments', field: 'comments', required: false, align: 'right', sortable: true}
     ];
+
+    const removeCatch = (catchIndex: number) => {
+        tripCatch.hauls[selectedHaul.value - 1].catch.splice(catchIndex, 1);
+    };
 
     const fisheryOptions: any = [];
     const getFisheryOptions = async () => {
@@ -720,19 +772,18 @@ export default createComponent({
         const queryOptions = {
         reduce: false,
         include_docs: true,
-        key: 'ifq-species-groupings'
+        key: 'ifq-species-codes'
         };
 
-        const speciesGroupings = await masterDb.view(
+        const speciesCodes = await masterDb.view(
         'obs_web',
         'all_doc_types',
         queryOptions,
         );
 
-        const groupings = speciesGroupings.rows[0].doc.groupings;
-        for (const row of groupings) {
-            // const value = row.commonName + ' : (pacfin: ' + row.pacfinCode + ') : (wcgop: ' + row.wcgopSpeciesCode + ')';
-            const value = {commonName: row.commonName, pacfinCode: row.pacfinCode, wcgopSpeciesCode: row.wcgopSpeciesCode };
+        const codes = speciesCodes.rows[0].doc.codes;
+        for (const row of codes) {
+            const value = {speciesCode: row.speciesCode, commonName: row.commonName};
             if (speciesCodeOptions.map( (species: any) => species.commonName).indexOf(row.commonName) === -1 ) {
                 speciesCodeOptions.push(value);
             }
@@ -759,9 +810,41 @@ export default createComponent({
         update( () => {
             speciesCodeSelectOptions.value = speciesCodeOptions.filter( (option: any) => {
                 return option.commonName.toLowerCase().includes(val.toLowerCase())
-                || option.pacfinCode.toLowerCase().includes(val.toLowerCase())
-                || option.wcgopSpeciesCode.toLowerCase().includes(val.toLowerCase());
+                || option.speciesCode.toLowerCase().includes(val.toLowerCase());
                 });
+        });
+    };
+
+    let ports: any = [];
+    const getPorts = async () => {
+            const masterDb = couchService.masterDB;
+            const queryOptions = {
+            start_key: '',
+            inclusive_end: true,
+            descending: false,
+            include_docs: true
+            };
+
+            ports = await masterDb.view(
+            'obs_web',
+            'all_port_names',
+            queryOptions
+            );
+            ports = ports.rows.map((row: any) => row.doc);
+            console.log(ports);
+    };
+    const portOptions: any = ref([]);
+    const portFilterFn = (val: string, update: any, abort: any) => {
+        if (val === '') {
+            update( () => {
+                portOptions.value = ports;
+            });
+            return;
+        }
+        update( () => {
+            portOptions.value = ports.filter( (option: any) => {
+                return option;
+            });
         });
     };
 
@@ -853,6 +936,7 @@ export default createComponent({
         getSpeciesCodeOptions();
         getFisheryOptions();
         getGearTypeOptions();
+        getPorts();
         if (context.root.$route.params.id === 'new') {
             const dummyTrip: any = {
                 tripNum: '00000',
@@ -866,7 +950,9 @@ export default createComponent({
                 fishTicketNumber: [],
                 hauls: [],
                 departureDateTime: moment().format(),
-                returnDateTime: moment().format()
+                returnDateTime: moment().format(),
+                vesselName: state.vessel.activeVessel.vesselName,
+                vesselNumber: state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber
             };
 
             for (const key of Object.keys(dummyTrip)) {
@@ -910,9 +996,12 @@ export default createComponent({
         catchPagination,
         catchSelected,
         catchColumns,
+        removeCatch,
         speciesCodeOptions,
         speciesCodeSelectOptions,
-        speciesFilterFn
+        speciesFilterFn,
+        portOptions,
+        portFilterFn
     };
   }
 });

@@ -148,7 +148,7 @@ export default createComponent({
       }
     });
 
-    
+
 
     async function getBooleanLookup() {
       lookupsList.value = ['true', 'false'];

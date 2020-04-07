@@ -20,37 +20,37 @@
 <script lang="ts">
     import { createComponent, ref, reactive, computed } from '@vue/composition-api';
     import Compressor from 'compressorjs';
-import { Emit } from 'vue-property-decorator';
+    import { Emit } from 'vue-property-decorator';
 
-export default createComponent({
-    props: {
-        label: String,
-        trip: Object
-    },
-    setup(props, context) {
+    export default createComponent({
+        props: {
+            label: String,
+            trip: Object
+        },
+        setup(props, context) {
 
-        let files: any = ref([])
-        let fileUrls: any = ref([]);
+            const files: any = ref([]);
+            const fileUrls: any = ref([]);
 
-        const handleImage = (event: any) => {
-            files.value.push(event!.target!.files[0]);
-            const newItemIndex = files.value.length -1;
-            fileUrls.value[newItemIndex] = URL.createObjectURL(files.value[newItemIndex]);
+            const handleImage = (event: any) => {
+                files.value.push(event!.target!.files[0]);
+                const newItemIndex = files.value.length - 1;
+                fileUrls.value[newItemIndex] = URL.createObjectURL(files.value[newItemIndex]);
+            };
+
+            const getImageUrl = (file: any) => {
+                return URL.createObjectURL(file);
+            };
+
+            const removeAtIndex = (index: number) => {
+                files.value.splice(index, 1);
+            };
+
+            return {
+                handleImage, files, getImageUrl, removeAtIndex
+            };
         }
-
-        const getImageUrl = (file: any) => {
-            return URL.createObjectURL(file);
-        }
-
-        const removeAtIndex = (index: number) => {
-            files.value.splice(index, 1);
-        }
-
-        return {
-            handleImage, files, getImageUrl, removeAtIndex
-        }
-    }
-});
+    });
 </script>
 
 <style scoped>

@@ -229,10 +229,6 @@ export default class LogBookCapture extends Vue {
     private maxDate: any = new Date(moment().format());
     private tripsApiNum: any = 0;
 
-    private myAction() {
-        console.log('doing this')
-    }
-
     private handleImage(event: any) {
         this.file = event!.target!.files[0];
         this.fileUrl = URL.createObjectURL(this.file);
@@ -560,7 +556,7 @@ export default class LogBookCapture extends Vue {
     }
 
     private scrollToBottom() {
-        window.scrollTo(0,document.body.scrollHeight);
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
     private created() {
