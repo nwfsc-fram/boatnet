@@ -12,7 +12,7 @@
           :isEditable="true"
           type="Edits"
           :simple="true"
-          uniqueKey="fishTicketNumber"
+          :uniqueKey="uniqueKey"
           @save="save"
         />
       </q-card-section>
@@ -37,7 +37,8 @@ export default createComponent({
     showDialog: Boolean,
     data: Object,
     columns: Array,
-    field: String
+    field: String,
+    uniqueKey: String
   },
 
   setup(props, context) {

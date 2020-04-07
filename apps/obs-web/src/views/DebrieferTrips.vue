@@ -144,8 +144,48 @@ export default createComponent({
         key: 'wcgopFishery'
       },
       // first receiver
-      // skipper
-
+      {
+        field: 'firstReceivers',
+        header: 'First Receivers',
+        type: 'popup',
+        key: 'wcgopFR',
+        uniqueKey: '_id',
+        popupColumns: [
+          {
+            field: 'dealerName',
+            header: 'Dealer Name',
+            type: 'input',
+            key: 'dealerName'
+          },
+          {
+            field: 'dealerNumber',
+            header: 'Dealer Number',
+            type: 'input',
+            key: 'dealerNumber'
+          }
+        ]
+      },
+      {
+        field: 'vessel.captains',
+        header: 'Skippers',
+        type: 'popup',
+        key: 'wcgopCaptains',
+        uniqueKey: '_id',
+        popupColumns: [
+          {
+            field: 'firstName',
+            header: 'First Name',
+            type: 'input',
+            key: 'firstName'
+          },
+          {
+            field: 'lastName',
+            header: 'Last Name',
+            type: 'input',
+            key: 'lastName'
+          }
+        ]
+      },
       {
         field: 'departureDate',
         header: 'Departure Date',
@@ -189,7 +229,6 @@ export default createComponent({
         type: 'number',
         key: 'wcgopObsLog'
       },
-
       {
         field: 'crewSize',
         header: '# Crew',
@@ -217,6 +256,7 @@ export default createComponent({
         header: 'Fish Tickets',
         type: 'popup',
         key: 'wcgopFishTickets',
+        uniqueKey: 'fishTicketNumber',
         popupColumns: [
           {
             field: 'fishTicketNumber',

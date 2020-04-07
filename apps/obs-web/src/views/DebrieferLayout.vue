@@ -330,21 +330,21 @@ export default createComponent({
       }
     }
 
-    async function getTripsByDate(evaluationPeriod: any) {
+    async function getTripsByDate(evalPeriod: any) {
       const tripIds: any[] = [];
       try {
         const tripDocs: any = await masterDB.viewWithDocs(
           'obs_web',
           'wcgop_trips_by_observerId',
-          { key: evaluationPeriod.observer }
+          { key: evalPeriod.observer }
         );
         for (const trip of tripDocs.rows) {
           if (
             moment(trip.doc.departureDate).isAfter(
-              evaluationPeriod.startDate.toString()
+              evalPeriod.startDate.toString()
             ) &&
             moment(trip.doc.returnDate).isBefore(
-              evaluationPeriod.endDate.toString()
+              evalPeriod.endDate.toString()
             )
           ) {
             tripIds.push(trip.id);

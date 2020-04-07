@@ -69,7 +69,11 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <Button v-if="col.type === 'popup'" label="Expand Data" @click="show(slotProps, col.popupColumns)" />
+          <Button
+            v-if="col.type === 'popup'"
+            label="Expand Data"
+            @click="show(slotProps, col.popupColumns, col.uniqueKey)"
+          />
           <span v-else style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
         </template>
         <template #filter v-if="!simple">
@@ -77,7 +81,13 @@
         </template>
       </Column>
     </DataTable>
-    <prime-table-dialog :showDialog.sync="showPopup" :data="popupData" :field="popupField" :columns="popupColumns" />
+    <prime-table-dialog
+      :showDialog.sync="showPopup"
+      :data="popupData"
+      :field="popupField"
+      :columns="popupColumns"
+      :uniqueKey="popupUniqueKey"
+    />
   </div>
 </template>
 
@@ -135,6 +145,7 @@ export default createComponent({
     const popupField: any = ref('');
     const showPopup: any = ref(false);
     const popupColumns: any = ref([]);
+    const popupUniqueKey: any = ref('');
 
     const displayColumns = computed({
       get: () => {
@@ -221,11 +232,12 @@ export default createComponent({
       context.emit('update:value', valueHolder);
     }
 
-    function show(slotProps: any, columns: any) {
+    function show(slotProps: any, columns: any, uniqueKey: string) {
       popupField.value = slotProps.column.field;
       popupData.value = slotProps.data;
       showPopup.value = true;
       popupColumns.value = columns;
+      popupUniqueKey.value = uniqueKey;
     }
 
     return {
@@ -246,7 +258,8 @@ export default createComponent({
       popupData,
       popupField,
       showPopup,
-      popupColumns
+      popupColumns,
+      popupUniqueKey
     };
   }
 });
