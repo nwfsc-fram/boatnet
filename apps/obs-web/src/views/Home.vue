@@ -1,4 +1,5 @@
 <template>
+  <div>
   <q-page class="flex flex-center q-pa-md">
     <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
       {{alert.message}}
@@ -78,7 +79,7 @@
               </q-card>
         </div>
     </div>
-    <div v-else>
+    <div v-if="onlineStatus">
       <div class="flex flex-center">
         <img alt="noaa logo" src="../assets/NOAA_logo.svg" class="hero-logo">
       </div>
@@ -104,7 +105,12 @@
         <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
       </div>
   </div>
+
   </q-page>
+    <div v-if="!onlineStatus" style="text-align: center; position: relative; bottom: 45px">
+      <q-btn color="primary" flat round @click="determineNetworStatus" icon="refresh"></q-btn>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -112,7 +118,7 @@ import { mapState } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 import { State, Action, Getter } from 'vuex-class';
-import { AlertState, VesselState, PermitState, UserState } from '../_store/types/types';
+import { AlertState, VesselState, PermitState, UserState, GeneralState } from '../_store/types/types';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -139,6 +145,10 @@ export default class Home extends Vue {
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Getter('syncStatus', { namespace: 'pouchState'}) private syncStatus: any;
 
+  @State('general') private general!: GeneralState;
+  @Getter('getOnlineStatus', { namespace: 'general'}) private onlineStatus: any;
+  @Action('setOnlineStatus', { namespace: 'general'}) private setOnlineStatus: any;
+
   private userRoles: string[] = [];
   private mytrips: any[] = [];
   private trip: any = {};
@@ -146,6 +156,7 @@ export default class Home extends Vue {
   private updatedTrip: any = {};
   private activeUser: boolean = false;
   private offlineTrips: any = null;
+  private online: boolean = this.onlineStatus;
 
   constructor() {
     super();
@@ -386,6 +397,8 @@ export default class Home extends Vue {
       limit: 1
     };
 
+    this.offlineTrips = null;
+
     try {
       const userquery = await db.view<any>(
       'obs_web',
@@ -393,8 +406,10 @@ export default class Home extends Vue {
       queryOptions
       );
       console.log('ONLINE');
+      this.setOnlineStatus(true);
     } catch (err) {
       console.log('OFFLINE');
+      this.setOnlineStatus(false);
       await this.getOfflineDocs();
     }
   }

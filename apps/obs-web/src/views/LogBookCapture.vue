@@ -1,6 +1,6 @@
 <template>
 
-    <div class="q-pa-md  q-gutter-md">
+    <div id="lb" class="q-pa-md  q-gutter-md">
 
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
             {{alert.message}}
@@ -19,17 +19,7 @@
         option-value="_id"
         ></q-select>
 
-        <q-uploader
-            url="https://nwfsc.noaa.gov/observer-web/upload"
-            label="multiple images"
-            multiple
-            batch
-            style="max-width: 450px"
-            accept=".jpg, image/*"
-        >
-        </q-uploader>
-
-          <div style="text-align: center">
+        <!-- <div style="text-align: center">
             <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Picture
                 <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
             </label>
@@ -42,43 +32,40 @@
             <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Take Picture
                 <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
             </label>
-          </div>
+        </div> -->
 
-                  <div>
-          <p style="padding-left: 20px">
-            <strong >Trip Dates (start to end)</strong>
-          </p>
-          <span>
-            <pCalendar
-              v-if="tripDates"
-              v-model="tripDates"
-              :maxDate="maxDate"
-              :inline="true"
-              :touchUI="false"
-              placeholder="start / end"
-              selectionMode="range"
-              onfocus="blur();"
-              style="width: 100%; height: 330px"
-              >
-            </pCalendar>
+        <div>
+            <span>
+                <span class="text-h6">Trip Dates</span>
+                <pCalendar
+                    v-if="tripDates"
+                    v-model="tripDates"
+                    :maxDate="maxDate"
+                    :inline="false"
+                    :touchUI="true"
+                    placeholder="start / end"
+                    selectionMode="range"
+                    style="width: 100%"
+                    >
+                </pCalendar>
 
-            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
-            <pCalendar
-              v-model="departureTime"
-              :showTime="true"
-              :timeOnly="true"
-              hourFormat="24"
-              onfocus="blur();"
-              :touchUI="false"
-              style="margin-left: 10px"
-            >
-            </pCalendar>
-            </div>
+                <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 0px ; font-weight: bold">Departure Time (24H)
+                    <pCalendar
+                        v-model="departureTime"
+                        :showTime="true"
+                        :timeOnly="true"
+                        hourFormat="24"
+                        onfocus="blur();"
+                        :touchUI="false"
+                        style=""
+                    >
+                    </pCalendar>
 
-          </span>
+                </div>
+            </span>
         </div>
 
-      <div class="q-pa-md">
+      <div>
 
         <q-select
           label="Start Port"
@@ -117,10 +104,6 @@
           style="padding-bottom: 5px"
         ></q-select>
 
-        <p style="margin: 0">
-          <strong :disabled="trip.readOnly">Permits</strong>
-        </p>
-
         <q-select
           v-model="trip.activeTrip.permits"
           dense
@@ -129,6 +112,7 @@
           multiple
           use-chips
           stack-label
+          label="Permits"
           :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
           option-value="permitNumber"
           :options="getVesselPermits"
@@ -183,8 +167,12 @@
         <div style="text-align: center">
             <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
         </div>
-        <q-btn style="float: right" v-if="file && tripComplete()" color="primary" label="submit" @click="submitImage"></q-btn>
-        <br>&nbsp;
+
+        <file-uploader
+            v-if="tripComplete()"
+            label="Logbook Captures"
+            :trip="trip.activeTrip"
+        />
 
     </div>
 
@@ -204,12 +192,18 @@ import { AuthState, authService } from '@boatnet/bn-auth';
 
 import { WcgopTrip, Fishery, Vessel } from '@boatnet/bn-models';
 
+import FileUploader from '../components/FileUploader.vue';
+
 import moment from 'moment';
 import { Notify } from 'quasar';
 
 import { newTripsApiTrip } from '@boatnet/bn-common';
 
-@Component
+@Component({
+  components: {
+    'file-uploader': FileUploader
+  }
+})
 export default class LogBookCapture extends Vue {
     @State('trip') private trip!: TripState;
     @State('permit') private permit!: PermitState;
@@ -559,6 +553,10 @@ export default class LogBookCapture extends Vue {
         if (this.trip.activeTrip) {
         this.trip.activeTrip.departureDate = moment(value).format();
         }
+    }
+
+    private scrollToBottom() {
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
     private created() {

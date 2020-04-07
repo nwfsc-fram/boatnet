@@ -75,6 +75,7 @@ export interface ObserverAvailabilityState {
 export interface GeneralState {
   portDecoder: any[];
   appVersion: string;
+  isOnline: boolean;
   // ports: string[];
   // fisheries: string[];
   // targetTypes: string[];

@@ -57,7 +57,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/trips" exact>
+        <q-item :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="directions" />
           </q-item-section>
@@ -67,7 +67,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/declarations" exact>
+        <q-item :to="onlineStatus ? '/declarations' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="how_to_vote" />
           </q-item-section>
@@ -77,7 +77,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item to="/log-book-capture" exact>
+        <q-item :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="camera_alt" />
           </q-item-section>
@@ -97,7 +97,7 @@
           :content-inset-level=".5"
         >
 
-          <q-item to="/e-logbook/new" exact @click="leftDrawerOpen = false">
+          <q-item :to="onlineStatus ? '/e-logbook/new' : ''" exact @click="leftDrawerOpen = false" :disabled="!onlineStatus">
             <q-item-section avatar>
               <q-icon name="notes" />
             </q-item-section>
@@ -135,17 +135,6 @@
             <q-item-label caption>observers/staff view all ots trips</q-item-label>
           </q-item-section>
         </q-item>
-
-
-        <!-- <q-item to="/observer-availability" exact>
-          <q-item-section avatar>
-            <q-icon name="fa fa-calendar-alt" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Observer Availability</q-item-label>
-            <q-item-label caption>manage my availability (bbserver role)</q-item-label>
-          </q-item-section>
-        </q-item>-->
 
         <q-expansion-item
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
@@ -189,16 +178,6 @@
               <q-item-label caption>manage selection targets</q-item-label>
             </q-item-section>
           </q-item>
-
-          <!-- <q-item to="/observer-assignment" exact>
-                  <q-item-section avatar>
-                    <q-icon name="fa fa-binoculars" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Observer Assignment</q-item-label>
-                    <q-item-label caption>assign observers to selected trips</q-item-label>
-                  </q-item-section>
-          </q-item>-->
 
           <q-item to="/permits" exact>
             <q-item-section avatar>
@@ -300,7 +279,7 @@
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item style="cursor:pointer" to="/user-config" exact>
+        <q-item style="cursor:pointer" :to="onlineStatus ? '/user-config' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="person" />
           </q-item-section>
@@ -407,7 +386,7 @@ import { Action, Getter, State } from 'vuex-class';
 import { Platform } from 'quasar';
 import router from '../router';
 import { AlertState } from '../_store/index';
-import { TripState, VesselState, UserState } from '../_store/types/types';
+import { TripState, VesselState, UserState, GeneralState } from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import {
   CouchDBCredentials,
@@ -438,6 +417,10 @@ export default class DefaultLayout extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
   @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
+
+  @State('general') private general!: GeneralState;
+  @Getter('getOnlineStatus', { namespace: 'general'}) private onlineStatus: any;
+
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
   private syncIsComplete: boolean = false;
