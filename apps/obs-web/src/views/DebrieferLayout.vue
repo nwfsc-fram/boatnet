@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="q-pa-md" style="float:left">
+    <div class="q-pl-md q-pt-md q-pr-md" style="float:left">
       <div>Program</div>
       <q-btn-toggle
         v-model="program"
@@ -12,10 +12,10 @@
       />
     </div>
     <div v-if="program === 'wcgop'">
-      <div class="q-pa-md" style="float:left; width:35%">
+      <div class="q-pt-md">
         <q-select
           use-input
-          style="display: inline-block; width: 60%"
+          style="display: inline-block"
           v-model="observer"
           :options="observerList"
           label="Observer"
@@ -25,14 +25,12 @@
           hide-selected
         />
         <q-toggle
-          class="q-ma-sm"
+          class="q-px-md"
           style="display: inline-block"
           label="Show All"
           v-model="showAll"
           @input="getWcgopObservers()"
         />
-      </div>
-      <div class="q-pa-md">
         <q-select
           style="display: inline-block; width: 25%"
           :disable="observer === '' ? true : false"
@@ -44,7 +42,7 @@
         <q-btn
           round
           :disable="observer === '' ? true : false"
-          class="q-ma-xs"
+          class="q-mx-xs"
           style="display: inline-block"
           color="white"
           text-color="black"
@@ -54,7 +52,7 @@
         <q-btn
           round
           :disable="observer === '' ? true : false"
-          class="q-ma-xs"
+          class="q-mx-xs"
           style="display: inline-block"
           color="white"
           text-color="black"
@@ -71,6 +69,29 @@
           icon="delete"
           @click="showDeleteDialog = true"
         />
+      </div>
+      <div>
+        <q-expansion-item
+          style="width: 25%"
+          expand-separator
+          class="q-pl-md text-primary"
+          icon="filter_list"
+          label="Additional Filters"
+          default-closed
+        >
+          <div class="q-pl-md">
+            <q-select
+              use-input
+              v-model="cruiseId"
+              :options="cruiseIdList"
+              label="Trip Id"
+              @filter="filterLookups"
+              @input="selectCruise"
+              fill-input
+              hide-selected
+            />
+          </div>
+        </q-expansion-item>
       </div>
     </div>
     <div v-else>
