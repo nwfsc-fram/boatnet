@@ -11,7 +11,7 @@
 
       <q-card-actions align="right">
         <q-btn flat label="Cancel" color="primary" @click="close"/>
-        <q-btn flat label="Save" color="primary" @click="save"/>
+        <q-btn flat :label="title.indexOf('Delete') !== -1 ? 'Yes' : 'Save'" color="primary" @click="save"/>
       </q-card-actions>
     </q-card>
   </q-dialog>

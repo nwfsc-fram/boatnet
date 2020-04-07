@@ -39,6 +39,7 @@
           v-model="evaluationPeriod"
           :options="evaluations"
           label="Previous Eval Periods"
+          @input="getTripsByDate"
         />
         <q-btn
           round
@@ -59,6 +60,16 @@
           text-color="black"
           icon="edit"
           @click="edit"
+        />
+        <q-btn
+          round
+          :disable="observer === '' ? true : false"
+          class="q-ma-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="delete"
+          @click="showDeleteDialog = true"
         />
       </div>
     </div>
@@ -110,9 +121,13 @@
 
     <app-cruise-dialog :showDialog.sync="showCruiseDialog" :cruise="cruise" />
 
+    <boatnet-input-dialog title="Delete Confirmation" :show.sync="showDeleteDialog" @save="deleteEvalPeriod()">
+      <div>Delete evaluation period: <b>{{ evaluationPeriod.label }}</b>?</div>
+    </boatnet-input-dialog>
+
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'"/>
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'" />
         <app-debriefer-ashop-data v-else />
       </TabPanel>
       <TabPanel header="Errors" :active="activeTab === 'qa'">
@@ -146,6 +161,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
+import { findIndex } from 'lodash';
 
 Vue.component('TabPanel', TabPanel);
 Vue.component('TabView', TabView);
@@ -178,6 +194,7 @@ export default createComponent({
     const cruise: AshopCruise = ref({});
     const cruiseIdList: any = ref([]);
     let cruiseIdFilterList: any[] = [];
+    const showDeleteDialog: any = ref(false);
 
     const cruiseStartDate = computed(() =>
       cruise.value && cruise.value.startDate
@@ -313,6 +330,32 @@ export default createComponent({
       }
     }
 
+    async function getTripsByDate(evalPeriod: any) {
+      const tripIds: any[] = [];
+      try {
+        const tripDocs: any = await masterDB.viewWithDocs(
+          'obs_web',
+          'wcgop_trips_by_observerId',
+          { key: evalPeriod.observer }
+        );
+        for (const trip of tripDocs.rows) {
+          if (
+            moment(trip.doc.departureDate).isAfter(
+              evalPeriod.startDate.toString()
+            ) &&
+            moment(trip.doc.returnDate).isBefore(
+              evalPeriod.endDate.toString()
+            )
+          ) {
+            tripIds.push(trip.id);
+          }
+        }
+        store.dispatch('debriefer/setTripIds', tripIds);
+      } catch (err) {
+        console.log('could not get trips from evaluation period');
+      }
+    }
+
     async function selectObserver() {
       store.dispatch('debriefer/updateObservers', observer.value.value);
       evaluationPeriod.value = {};
@@ -407,6 +450,15 @@ export default createComponent({
       showEvaluationDialog.value = true;
     }
 
+    function deleteEvalPeriod() {
+      const id = evaluationPeriod.value.id;
+      const index = findIndex(evaluations.value, { id });
+      evaluations.value.splice(index, 1);
+      masterDB.delete(id, evaluationPeriod.value.rev);
+      evaluationPeriod.value = {};
+      store.dispatch('debriefer/setTripIds', []);
+    }
+
     function editCruise() {
       showCruiseDialog.value = true;
     }
@@ -435,7 +487,10 @@ export default createComponent({
       filterLookups,
       add,
       edit,
-      editCruise
+      deleteEvalPeriod,
+      editCruise,
+      getTripsByDate,
+      showDeleteDialog
     };
   }
 });

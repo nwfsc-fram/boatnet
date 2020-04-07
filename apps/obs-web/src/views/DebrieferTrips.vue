@@ -5,6 +5,9 @@
       :columns="columns"
       :isEditable="true"
       type="Trips"
+      :simple="false"
+      uniqueKey="_id"
+      @save="save"
     />
   </div>
 </template>
@@ -34,12 +37,14 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
+import { findIndex } from 'lodash';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
 
 export default createComponent({
   setup(props, context) {
+    const masterDB: Client<any> = couchService.masterDB;
     const state: any = context.root.$store.state;
     const debriefer: any = state.debriefer;
 
@@ -48,12 +53,37 @@ export default createComponent({
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
-      { field: 'crewSize', header: 'Crew Size', type: 'number', key: 'ashopCrewSize' },
-      { field: 'departurePort.name', header: 'Departure Port', type: 'input', key: 'ashopDeparturePort' },
+      {
+        field: 'crewSize',
+        header: 'Crew Size',
+        type: 'number',
+        key: 'ashopCrewSize'
+      },
+      {
+        field: 'departurePort.name',
+        header: 'Departure Port',
+        type: 'input',
+        key: 'ashopDeparturePort'
+      },
       // fish in hold at start?
-      { field: 'departureDate', header: 'Departure Date', type: 'date', key: 'ashopDepartureDate' },
-      { field: 'returnPort.name', header: 'Return Port', type: 'input', key: 'ashopReturnPort' },
-      { field: 'returnDate', header: 'Return Date', type: 'date', key: 'ashopReturnDate' },
+      {
+        field: 'departureDate',
+        header: 'Departure Date',
+        type: 'date',
+        key: 'ashopDepartureDate'
+      },
+      {
+        field: 'returnPort.name',
+        header: 'Return Port',
+        type: 'input',
+        key: 'ashopReturnPort'
+      },
+      {
+        field: 'returnDate',
+        header: 'Return Date',
+        type: 'date',
+        key: 'ashopReturnDate'
+      },
       {
         field: 'didFishingOccur',
         header: 'Did Fishing Occur?',
@@ -61,7 +91,7 @@ export default createComponent({
         key: 'ashopFishingOccur'
       },
       // bait used
-       { field: 'notes', header: 'Comments', type: 'input', key: 'ashopNotes' }
+      { field: 'notes', header: 'Comments', type: 'input', key: 'ashopNotes' }
     ];
 
     const wcgopColumns = [
@@ -74,41 +104,137 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopStatus'
       },
-      { field: 'observer.firstName', header: 'Obs. First Name', type: 'input', key: 'wcgopObsFirstName' },
-      { field: 'observer.lastName', header: 'Obs. Last Name', type: 'input', key: 'wcgopObsLastName' },
-      { field: 'vessel.vesselName', header: 'Vessel', type: 'input', key: 'wcgopVessel' },
+      {
+        field: 'observer.firstName',
+        header: 'Obs. First Name',
+        type: 'input',
+        key: 'wcgopObsFirstName'
+      },
+      {
+        field: 'observer.lastName',
+        header: 'Obs. Last Name',
+        type: 'input',
+        key: 'wcgopObsLastName'
+      },
+      {
+        field: 'vessel.vesselName',
+        header: 'Vessel',
+        type: 'input',
+        key: 'wcgopVessel'
+      },
       // permit
-      { field: 'coastGuardNumber', header: 'USCG#', type: 'input', key: 'wcgopCoastGuard' },
+      {
+        field: 'coastGuardNumber',
+        header: 'USCG#',
+        type: 'input',
+        key: 'wcgopCoastGuard'
+      },
       // state reg #
       {
         field: 'program.name',
         header: 'Program',
         type: 'toggle',
-        list: ['Catch Shares', 'Open Access'], key: 'wcgopProgramName'
+        list: ['Catch Shares', 'Open Access'],
+        key: 'wcgopProgramName'
       },
       {
         field: 'fishery.description',
         header: 'Fishery',
-        type: 'input', key: 'wcgopFishery'
+        type: 'input',
+        key: 'wcgopFishery'
       },
       // first receiver
-      // skipper
-
-      { field: 'departureDate', header: 'Departure Date', type: 'date', key: 'wcgopDepartureDate' },
-      { field: 'returnDate', header: 'Return Date', type: 'date', key: 'wcgopReturnDate' },
+      {
+        field: 'firstReceivers',
+        header: 'First Receivers',
+        type: 'popup',
+        key: 'wcgopFR',
+        uniqueKey: '_id',
+        popupColumns: [
+          {
+            field: 'dealerName',
+            header: 'Dealer Name',
+            type: 'input',
+            key: 'dealerName'
+          },
+          {
+            field: 'dealerNumber',
+            header: 'Dealer Number',
+            type: 'input',
+            key: 'dealerNumber'
+          }
+        ]
+      },
+      {
+        field: 'vessel.captains',
+        header: 'Skippers',
+        type: 'popup',
+        key: 'wcgopCaptains',
+        uniqueKey: '_id',
+        popupColumns: [
+          {
+            field: 'firstName',
+            header: 'First Name',
+            type: 'input',
+            key: 'firstName'
+          },
+          {
+            field: 'lastName',
+            header: 'Last Name',
+            type: 'input',
+            key: 'lastName'
+          }
+        ]
+      },
+      {
+        field: 'departureDate',
+        header: 'Departure Date',
+        type: 'date',
+        key: 'wcgopDepartureDate'
+      },
+      {
+        field: 'returnDate',
+        header: 'Return Date',
+        type: 'date',
+        key: 'wcgopReturnDate'
+      },
       {
         field: 'legacy.isNoFishingActivity',
         header: 'No Fishing Activity?',
         type: 'boolean',
         key: 'wcgopFishingActivity'
       },
-      { field: 'isPartialTrip', header: 'Partial Trip?', type: 'boolean', key: 'wcgopPartialTrip' },
-      { field: 'isFishProcessed', header: 'Fish Processed?', type: 'boolean', key: 'wcgopFishProcessed' },
-      { field: 'logbookType', header: 'Logbook type', type: 'number', key: 'wcgopLogbookType' },
+      {
+        field: 'isPartialTrip',
+        header: 'Partial Trip?',
+        type: 'boolean',
+        key: 'wcgopPartialTrip'
+      },
+      {
+        field: 'isFishProcessed',
+        header: 'Fish Processed?',
+        type: 'boolean',
+        key: 'wcgopFishProcessed'
+      },
+      {
+        field: 'logbookType',
+        header: 'Logbook type',
+        type: 'number',
+        key: 'wcgopLogbookType'
+      },
       { field: 'logbookNum', header: 'Logbook Num', key: 'wcgopLogbookNum' },
-      { field: 'observerLogbookNum', header: 'Obs Logbook #', type: 'number', key: 'wcgopObsLog' },
-
-      { field: 'crewSize', header: '# Crew', type: 'number', key: 'wcgopCrewSize' },
+      {
+        field: 'observerLogbookNum',
+        header: 'Obs Logbook #',
+        type: 'number',
+        key: 'wcgopObsLog'
+      },
+      {
+        field: 'crewSize',
+        header: '# Crew',
+        type: 'number',
+        key: 'wcgopCrewSize'
+      },
       {
         field: 'departurePort.name',
         header: 'Departure Port',
@@ -125,9 +251,29 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopReturnPort'
       },
-      // FT#
-      // state
-      // date
+      {
+        field: 'fishTickets',
+        header: 'Fish Tickets',
+        type: 'popup',
+        key: 'wcgopFishTickets',
+        uniqueKey: 'fishTicketNumber',
+        popupColumns: [
+          {
+            field: 'fishTicketNumber',
+            header: 'Ticket #',
+            type: 'input',
+            key: 'ticket'
+          },
+          {
+            field: 'stateAgency',
+            header: 'State',
+            type: 'toggle',
+            key: 'state',
+            list: ['C', 'O', 'W']
+          },
+          { field: 'createdDate', header: 'Date', type: 'date', key: 'date' }
+        ]
+      },
       { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopNotes' }
     ];
 
@@ -146,7 +292,6 @@ export default createComponent({
     }
 
     async function getTrips() {
-      const masterDB: Client<any> = couchService.masterDB;
       const tripsHolder = [];
       try {
         const options: ListOptions = {
@@ -162,9 +307,17 @@ export default createComponent({
       }
     }
 
+    function save(data: any) {
+      masterDB.put(data._id, data, data._rev).then((response: any) => {
+        const index = findIndex(trips.value, { _id: data._id });
+        trips.value[index]._rev = response.rev;
+      });
+    }
+
     return {
       columns,
-      trips
+      trips,
+      save
     };
   }
 });

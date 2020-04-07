@@ -10,15 +10,14 @@
       editMode="cell"
       columnResizeMode="expand"
       @cell-edit-init="onCellEditInit"
-      @cell-edit-complete="onCellEditComplete"
       :reorderableColumns="true"
-      data-key="_id"
+      :data-key="uniqueKey"
       stateStorage="local"
       :stateKey="state.debriefer.program + '-' + type"
     >
       <template #empty>No data available</template>
-      <template #header>
-        <div style="text-align:left; float:left">
+      <template v-if="!simple" #header>
+        <div style="text-align:left">
           <MultiSelect
             v-model="displayColumns"
             :options="columnOptions"
@@ -31,14 +30,9 @@
             </template>
           </MultiSelect>
         </div>
-        <!--<div class="text-h6 q-pl-md" style="text-align:center; float:left">{{title}}</div>-->
-        <div style="text-align: right">
-          <i class="pi pi-search" style="margin: 4px 4px 0px 0px;"></i>
-          <InputText v-model="filters['global']" placeholder="Global Search" size="50" />
-        </div>
       </template>
 
-      <Column selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="!simple" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -55,7 +49,6 @@
             :options="lookupsList"
             :placeholder="cellVal"
             @before-show="getBooleanLookup"
-            @change="saveDropDown($event, slotProps)"
             @input="onCellEdit($event, slotProps, col.type)"
           />
           <Dropdown
@@ -65,7 +58,6 @@
             :placeholder="cellVal"
             :filter="true"
             @before-show="getLookupInfo(col.list, col.lookupField, col.lookupKey)"
-            @change="saveDropDown($event, slotProps)"
             @input="onCellEdit($event, slotProps, col.type)"
           />
           <InputText
@@ -77,30 +69,46 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
+          <Button
+            v-if="col.type === 'popup'"
+            label="Expand Data"
+            @click="show(slotProps, col.popupColumns, col.uniqueKey)"
+          />
+          <span v-else style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
         </template>
-        <!-- <template #filter>
+        <template #filter v-if="!simple">
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
-        </template>-->
+        </template>
       </Column>
     </DataTable>
+    <prime-table-dialog
+      :showDialog.sync="showPopup"
+      :data="popupData"
+      :field="popupField"
+      :columns="popupColumns"
+      :uniqueKey="popupUniqueKey"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent, ref, computed } from '@vue/composition-api';
+import { createComponent, ref, reactive, computed } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { get, set } from 'lodash';
+import { get, set, findIndex } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
+import Button from 'primevue/button';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import moment from 'moment';
+import PrimeTableDialog from './PrimeTableDialog.vue';
 
+Vue.component('PrimeTableDialog', PrimeTableDialog);
+Vue.component('Button', Button);
 Vue.component('Dropdown', Dropdown);
 Vue.component('DataTable', DataTable);
 Vue.component('Calendar', Calendar);
@@ -113,14 +121,16 @@ export default createComponent({
     columns: Array,
     value: Array,
     isEditable: Boolean,
-    type: String
+    type: String,
+    simple: Boolean,
+    uniqueKey: String
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state = store.state;
 
-    const filters: any = {};
+    const filters: any = reactive({});
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -129,8 +139,13 @@ export default createComponent({
 
     const tableType = state.debriefer.program + '-' + props.type;
     const selected: any = ref([]);
-
     const stateDisplayCols = state.debriefer.displayColumns;
+
+    const popupData: any = ref({});
+    const popupField: any = ref('');
+    const showPopup: any = ref(false);
+    const popupColumns: any = ref([]);
+    const popupUniqueKey: any = ref('');
 
     const displayColumns = computed({
       get: () => {
@@ -147,8 +162,6 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       }
     });
-
-
 
     async function getBooleanLookup() {
       lookupsList.value = ['true', 'false'];
@@ -177,11 +190,19 @@ export default createComponent({
       }
     }
 
+    function getIndex(data: any) {
+      const keyId = props.uniqueKey ? props.uniqueKey : '';
+      const findItem: any = {};
+      findItem[keyId] = get(data, keyId);
+      const index = findIndex(props.value, findItem);
+      return index;
+    }
+
     function formatValue(slotProps: any, type: string) {
-      let val: any = get(
-        props.value ? props.value[slotProps.index] : {},
-        slotProps.column.field
-      );
+      const value = props.value ? props.value : [];
+      const index = getIndex(slotProps.data);
+
+      let val: any = get(value[index], slotProps.column.field);
       if (type === 'date') {
         val = moment(val).format('MM/DD/YYYY HH:mm');
       }
@@ -194,7 +215,8 @@ export default createComponent({
 
     function onCellEdit(newValue: any, slotProps: any, type: string) {
       const valueHolder: any = props.value ? props.value : {};
-      let editingCellRow: any = valueHolder[slotProps.index];
+      const index = getIndex(slotProps.data);
+      let editingCellRow: any = valueHolder[index];
       if (!editingCellRow) {
         editingCellRow = { ...slotProps.data };
       }
@@ -204,35 +226,18 @@ export default createComponent({
         newValue = Number(newValue);
       }
       set(editingCellRow, slotProps.column.field, newValue);
-      valueHolder[slotProps.index] = editingCellRow;
+      valueHolder[index] = editingCellRow;
+
+      context.emit('save', editingCellRow);
       context.emit('update:value', valueHolder);
     }
 
-    function onCellEditComplete(event: any) {
-      save(event.index, event.field);
-    }
-
-    function saveDropDown(originalEvent: any, slotProps: any) {
-      save(slotProps.index, slotProps.column.field);
-    }
-
-    function save(index: number, field: string) {
-      const editingCellRow = props.value ? props.value[index] : {};
-      const valueHolder: any = props.value ? props.value : {};
-
-      if (!editingCellRow) {
-        return;
-      }
-      const editingCellValue: any = get(editingCellRow, field);
-      if (editingCellValue) {
-        set(valueHolder, index, editingCellRow);
-        context.emit('update:value', valueHolder);
-      }
-      masterDB
-        .put(valueHolder[index]._id, editingCellRow, valueHolder[index]._rev)
-        .then((response: any) => {
-          valueHolder[index]._rev = response.rev;
-        });
+    function show(slotProps: any, columns: any, uniqueKey: string) {
+      popupField.value = slotProps.column.field;
+      popupData.value = slotProps.data;
+      showPopup.value = true;
+      popupColumns.value = columns;
+      popupUniqueKey.value = uniqueKey;
     }
 
     return {
@@ -242,16 +247,19 @@ export default createComponent({
       cellVal,
       onCellEditInit,
       onCellEdit,
-      onCellEditComplete,
       getLookupInfo,
       getBooleanLookup,
       lookupsList,
-      save,
-      saveDropDown,
       formatValue,
       tableType,
       selected,
-      state
+      state,
+      show,
+      popupData,
+      popupField,
+      showPopup,
+      popupColumns,
+      popupUniqueKey
     };
   }
 });
