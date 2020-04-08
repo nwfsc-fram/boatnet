@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../../../dist/out-tsc/apps/survey/surv-hm",
-    "types": []
-  },
-  "exclude": ["src/test.ts", "**/*.spec.ts"],
-  "include": ["**/*.ts"]
-}
