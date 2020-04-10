@@ -8,7 +8,7 @@
         <br>
         <span v-for="file of files" :key="files.indexOf(file)">
             <img :src="getImageUrl(file)" :alt="file.name" style="width: 300px">
-            <q-btn style="position: relative; top: -12px; right: 30px" size="sm" icon="clear" round color="primary" @click="removeAtIndex(files.indexOf(file))"></q-btn>
+            <q-btn style="position: relative; top: -20px; left: -40px" size="sm" icon="clear" round color="primary" @click="removeAtIndex(files.indexOf(file))"></q-btn>
         </span>
 
         <div>
@@ -45,21 +45,21 @@
 
             const store = context.root.$store;
             const state = store.state;
-            let transferring : any = ref(false);
-            let applied: any = ref(true);
+            const transferring: any = ref(false);
+            const applied: any = ref(true);
 
             const handleImage = (event: any) => {
-                new Compressor(event!.target!.files[0], {
+                const newFile = new Compressor(event!.target!.files[0], {
                     quality: 0.6,
                     maxWidth: 1200,
                     maxHeight: 1200,
                     success(result) {
-                        files.value.push(result)
+                        files.value.push(result);
                         const newItemIndex = files.value.length - 1;
                         fileUrls.value[newItemIndex] = URL.createObjectURL(files.value[newItemIndex]);
                         applied.value = false;
                     }
-                })
+                });
             };
 
             const getImageUrl = (file: any) => {
@@ -72,7 +72,7 @@
                 props.trip!._attachments = {};
             };
 
-            let tripsApiNum : any = undefined;
+            let tripsApiNum: any;
             const submitImage = async () => {
 
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
@@ -93,11 +93,10 @@
 
                     reader.onload = async () => {
                         result = reader.result;
-                        props.trip!._attachments[fileName] =
-                                {
-                                content_type: file.type,
-                                    data: result.split(',')[1]
-                                };
+                        props.trip!._attachments[fileName] = {
+                            content_type: file.type,
+                            data: result.split(',')[1]
+                        };
                         props.trip!.changeLog.unshift(
                             {
                                 updatedBy: authService.getCurrentUser()!.username,
@@ -105,8 +104,8 @@
                                 change: 'added/updated logbook capture'
                             }
                         );
-                    }
-                };
+                    };
+                }
 
                 const masterDB: Client<any> = couchService.masterDB;
                 const postToCouch = async () => {
@@ -125,17 +124,17 @@
                             });
                             context.root.$router.push({ path: '/home' });
                         });
-                    }
+                    };
 
                 if (props.submitAction! === 'Submit Image(s)') {
-                    setTimeout(postToCouch, 500 )
+                    setTimeout(postToCouch, 500 );
                 }
                 applied.value = true;
                 return;
             };
 
             const getAttachments = async () => {
-                if (props.trip!._attachments) {
+                if (Object.keys(props.trip!._attachments).length > 0) {
                     transferring.value = true;
                     const masterDb: Client<any> = couchService.masterDB;
                     const queryOptions: any = {
@@ -167,10 +166,10 @@
                     }
                     transferring.value = false;
                 }
-            }
+            };
             onMounted( () => {
                 getAttachments();
-            })
+            });
 
             return {
                 handleImage, files, getImageUrl, removeAtIndex, transferring, submitImage, applied
