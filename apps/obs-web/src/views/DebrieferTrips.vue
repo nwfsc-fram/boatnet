@@ -3,7 +3,6 @@
     <prime-table
       :value="trips"
       :columns="columns"
-      :isEditable="true"
       type="Trips"
       :simple="false"
       uniqueKey="_id"
@@ -95,39 +94,50 @@ export default createComponent({
     ];
 
     const wcgopColumns = [
-      { field: 'legacy.tripId', header: 'Id', type: 'number', key: 'wcgopId' },
+      {
+        field: 'legacy.tripId',
+        header: 'Id',
+        type: 'number',
+        key: 'wcgopId',
+        isEditable: false
+      },
       {
         field: 'tripStatus.description',
         header: 'Status',
         type: 'toggle',
         lookupKey: 'trip-status',
         lookupField: 'description',
-        key: 'wcgopStatus'
+        key: 'wcgopStatus',
+        isEditable: true
       },
       {
         field: 'observer.firstName',
         header: 'Obs. First Name',
         type: 'input',
-        key: 'wcgopObsFirstName'
+        key: 'wcgopObsFirstName',
+        isEditable: false
       },
       {
         field: 'observer.lastName',
         header: 'Obs. Last Name',
         type: 'input',
-        key: 'wcgopObsLastName'
+        key: 'wcgopObsLastName',
+        isEditable: false
       },
       {
         field: 'vessel.vesselName',
         header: 'Vessel',
         type: 'input',
-        key: 'wcgopVessel'
+        key: 'wcgopVessel',
+        isEditable: true
       },
       // permit
       {
         field: 'coastGuardNumber',
         header: 'USCG#',
         type: 'input',
-        key: 'wcgopCoastGuard'
+        key: 'wcgopCoastGuard',
+        isEditable: true
       },
       // state reg #
       {
@@ -135,13 +145,15 @@ export default createComponent({
         header: 'Program',
         type: 'toggle',
         list: ['Catch Shares', 'Open Access'],
-        key: 'wcgopProgramName'
+        key: 'wcgopProgramName',
+        isEditable: true
       },
       {
         field: 'fishery.description',
         header: 'Fishery',
         type: 'input',
-        key: 'wcgopFishery'
+        key: 'wcgopFishery',
+        isEditable: true
       },
       // first receiver
       {
@@ -150,6 +162,8 @@ export default createComponent({
         type: 'popup',
         key: 'wcgopFR',
         uniqueKey: '_id',
+        isEditable: false,
+
         popupColumns: [
           {
             field: 'dealerName',
@@ -171,6 +185,7 @@ export default createComponent({
         type: 'popup',
         key: 'wcgopCaptains',
         uniqueKey: '_id',
+        isEditable: false,
         popupColumns: [
           {
             field: 'firstName',
@@ -190,50 +205,63 @@ export default createComponent({
         field: 'departureDate',
         header: 'Departure Date',
         type: 'date',
-        key: 'wcgopDepartureDate'
+        key: 'wcgopDepartureDate',
+        isEditable: true
       },
       {
         field: 'returnDate',
         header: 'Return Date',
         type: 'date',
-        key: 'wcgopReturnDate'
+        key: 'wcgopReturnDate',
+        isEditable: true
       },
       {
         field: 'legacy.isNoFishingActivity',
         header: 'No Fishing Activity?',
         type: 'boolean',
-        key: 'wcgopFishingActivity'
+        key: 'wcgopFishingActivity',
+        isEditable: true
       },
       {
         field: 'isPartialTrip',
         header: 'Partial Trip?',
         type: 'boolean',
-        key: 'wcgopPartialTrip'
+        key: 'wcgopPartialTrip',
+        isEditable: true
       },
       {
         field: 'isFishProcessed',
         header: 'Fish Processed?',
         type: 'boolean',
-        key: 'wcgopFishProcessed'
+        key: 'wcgopFishProcessed',
+        isEditable: true
       },
       {
         field: 'logbookType',
         header: 'Logbook type',
         type: 'number',
-        key: 'wcgopLogbookType'
+        key: 'wcgopLogbookType',
+        isEditable: true
       },
-      { field: 'logbookNum', header: 'Logbook Num', key: 'wcgopLogbookNum' },
+      {
+        field: 'logbookNum',
+        header: 'Logbook Num',
+        key: 'wcgopLogbookNum',
+        isEditable: true
+      },
       {
         field: 'observerLogbookNum',
         header: 'Obs Logbook #',
         type: 'number',
-        key: 'wcgopObsLog'
+        key: 'wcgopObsLog',
+        isEditable: true
       },
       {
         field: 'crewSize',
         header: '# Crew',
         type: 'number',
-        key: 'wcgopCrewSize'
+        key: 'wcgopCrewSize',
+        isEditable: true
       },
       {
         field: 'departurePort.name',
@@ -241,7 +269,8 @@ export default createComponent({
         type: 'toggle',
         lookupKey: 'port',
         lookupField: 'name',
-        key: 'wcgopDeparturePort'
+        key: 'wcgopDeparturePort',
+        isEditable: true
       },
       {
         field: 'returnPort.name',
@@ -249,7 +278,8 @@ export default createComponent({
         type: 'toggle',
         lookupKey: 'port',
         lookupField: 'name',
-        key: 'wcgopReturnPort'
+        key: 'wcgopReturnPort',
+        isEditable: true
       },
       {
         field: 'fishTickets',
@@ -257,6 +287,7 @@ export default createComponent({
         type: 'popup',
         key: 'wcgopFishTickets',
         uniqueKey: 'fishTicketNumber',
+        isEditable: false,
         popupColumns: [
           {
             field: 'fishTicketNumber',
@@ -274,7 +305,13 @@ export default createComponent({
           { field: 'createdDate', header: 'Date', type: 'date', key: 'date' }
         ]
       },
-      { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopNotes' }
+      {
+        field: 'notes',
+        header: 'Notes',
+        type: 'input',
+        key: 'wcgopNotes',
+        isEditable: true
+      }
     ];
 
     setColumns();

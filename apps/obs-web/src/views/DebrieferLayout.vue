@@ -13,23 +13,21 @@
     </div>
     <div v-if="program === 'wcgop'">
       <div class="q-pt-md">
-        <q-select
-          use-input
-          style="display: inline-block"
-          v-model="observer"
-          :options="observerList"
+        <debriefer-select-comp
           label="Observer"
-          @input="selectObserver"
-          @filter="filterLookups"
-          fill-input
-          hide-selected
+          style="display: inline-block"
+          :val.sync="observer"
+          lookupView="all_wcgop_observers"
+          lookupLabel="value"
+          lookupValue="id"
+          :lookupQueryOptions="observerQueryOptions"
+          @select="selectObserver"
         />
         <q-toggle
           class="q-px-md"
           style="display: inline-block"
           label="Show All"
           v-model="showAll"
-          @input="getWcgopObservers()"
         />
         <q-select
           style="display: inline-block; width: 25%"
@@ -80,32 +78,30 @@
           default-closed
         >
           <div class="q-pl-md">
-            <q-select
-              use-input
-              v-model="cruiseId"
-              :options="cruiseIdList"
+            <debriefer-select-comp
               label="Trip Id"
-              @filter="filterLookups"
-              @input="selectCruise"
-              fill-input
-              hide-selected
+              :val.sync="tripId"
+              lookupView="wcgop_trips_by_observerId"
+              lookupLabel="value"
+              lookupValue="id"
+              :lookupQueryOptions="{}"
+              @select="selectTripId"
             />
           </div>
         </q-expansion-item>
       </div>
     </div>
     <div v-else>
-      <q-select
-        use-input
+      <debriefer-select-comp
         class="q-pa-md"
         style="display: inline-block; width: 25%"
-        v-model="cruiseId"
-        :options="cruiseIdList"
         label="Cruise Id"
-        @filter="filterLookups"
-        @input="selectCruise"
-        fill-input
-        hide-selected
+        :val.sync="cruiseId"
+        lookupView="ashop_cruise"
+        lookupLabel="key"
+        lookupValue="key"
+        :lookupQueryOptions="{}"
+        @select="selectCruise"
       />
       <q-btn
         round
@@ -114,7 +110,7 @@
         color="white"
         text-color="black"
         icon="edit"
-        @click="editCruise"
+        @click="showCruiseDialog = true"
       />
       <div class="q-pa-md" style="display: inline-block; width: 20%">
         <b>Observer:</b>
@@ -142,8 +138,15 @@
 
     <app-cruise-dialog :showDialog.sync="showCruiseDialog" :cruise="cruise" />
 
-    <boatnet-input-dialog title="Delete Confirmation" :show.sync="showDeleteDialog" @save="deleteEvalPeriod()">
-      <div>Delete evaluation period: <b>{{ evaluationPeriod.label }}</b>?</div>
+    <boatnet-input-dialog
+      title="Delete Confirmation"
+      :show.sync="showDeleteDialog"
+      @save="deleteEvalPeriod()"
+    >
+      <div>
+        Delete evaluation period:
+        <b>{{ evaluationPeriod.label }}</b>?
+      </div>
     </boatnet-input-dialog>
 
     <TabView class="q-ma-md">
@@ -183,7 +186,10 @@ import Column from 'primevue/column';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
 import { findIndex } from 'lodash';
+import { getTripsByDates } from '../helpers/getFields';
+import DebrieferSelectComp from './DebrieferSelectComp.vue';
 
+Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 Vue.component('TabPanel', TabPanel);
 Vue.component('TabView', TabView);
 Vue.component('DataTable', DataTable);
@@ -197,25 +203,30 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
+    const masterDB: Client<any> = couchService.masterDB;
 
-    const observer: any = ref('');
+    const observer: any = ref({});
     const showAll: any = ref(false);
 
-    let observerFilterList: any[] = [];
-    const observerList: any = ref([]);
     const evaluations: any = ref([]);
+    const evaluationPeriod: any = ref({});
+    const tripId: any = ref({});
+
+    const cruiseId: any = ref({});
+    const cruise: AshopCruise = ref({});
 
     const showEvaluationDialog: any = ref(false);
     const showCruiseDialog: any = ref(false);
-    const masterDB: Client<any> = couchService.masterDB;
-
+    const showDeleteDialog: any = ref(false);
     const dialogEvalPeriod = ref({});
 
-    const cruiseId: any = ref('');
-    const cruise: AshopCruise = ref({});
-    const cruiseIdList: any = ref([]);
-    let cruiseIdFilterList: any[] = [];
-    const showDeleteDialog: any = ref(false);
+    const observerQueryOptions = computed(() => {
+      const queryOptions: ListOptions = {};
+      if (!showAll.value) {
+        queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
+      }
+      return queryOptions;
+    });
 
     const cruiseStartDate = computed(() =>
       cruise.value && cruise.value.startDate
@@ -267,129 +278,39 @@ export default createComponent({
       }
     });
 
-    const evaluationPeriod = computed({
-      get: () => {
-        return state.debriefer.evaluationPeriod;
-      },
-      set: (val) => {
-        store.dispatch('debriefer/updateEvaluationPeriod', val);
-        store.dispatch('debriefer/setTripIds', val.tripIds);
-      }
-    });
-
-    function filterLookups(val: any, update: any) {
-      update(() => {
-        const needle = val.toLowerCase();
-        if (state.debriefer.program === 'wcgop') {
-          observerList.value = observerFilterList.filter(
-            (v: any) =>
-              v.label
-                .toString()
-                .toLowerCase()
-                .indexOf(needle) > -1
-          );
-        } else {
-          cruiseIdList.value = cruiseIdFilterList.filter(
-            (v: any) =>
-              v.label
-                .toString()
-                .toLowerCase()
-                .indexOf(needle) > -1
-          );
-        }
-      });
+    function clearData() {
+      store.dispatch('debriefer/setTripIds', []);
     }
-
-    async function getWcgopObservers() {
-      const queryOptions: ListOptions = {};
-      if (!showAll.value) {
-        queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
-      }
-      observerList.value = await getLookups(
-        'all_wcgop_observers',
-        'value',
-        'id',
-        queryOptions
-      );
-      observerFilterList = observerList.value;
-    }
-    useAsync(getWcgopObservers);
-
-    async function getCruiseIds() {
-      cruiseIdList.value = await getLookups('ashop_cruise', 'key', 'key', {});
-      cruiseIdFilterList = cruiseIdList.value;
-    }
-    useAsync(getCruiseIds);
-
-    async function getLookups(
-      view: string,
-      label: string,
-      value: string,
-      queryOptions: any
-    ) {
-      const lookupVals: any[] = [];
-      try {
-        const results = await masterDB
-          .view<any>('obs_web', view, queryOptions)
-          .then((response: any) => {
-            for (const row of response.rows) {
-              lookupVals.push({ label: row[label], value: row[value] });
-            }
-            lookupVals.sort((a: any, b: any) => {
-              if (a.label > b.label) {
-                return 1;
-              }
-              if (b.label > a.label) {
-                return -1;
-              }
-              return 0;
-            });
-          });
-        return lookupVals;
-      } catch (err) {
-        console.log(err);
-      }
-    }
+    clearData();
 
     async function getTripsByDate(evalPeriod: any) {
+      store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       const tripIds: any[] = [];
-      try {
-        const tripDocs: any = await masterDB.viewWithDocs(
-          'obs_web',
-          'wcgop_trips_by_observerId',
-          { key: evalPeriod.observer }
-        );
-        for (const trip of tripDocs.rows) {
-          if (
-            moment(trip.doc.departureDate).isAfter(
-              evalPeriod.startDate.toString()
-            ) &&
-            moment(trip.doc.returnDate).isBefore(
-              evalPeriod.endDate.toString()
-            )
-          ) {
-            tripIds.push(trip.id);
-          }
-        }
-        store.dispatch('debriefer/setTripIds', tripIds);
-      } catch (err) {
-        console.log('could not get trips from evaluation period');
+      const trips: any = await getTripsByDates(
+        evalPeriod.startDate.toString(),
+        evalPeriod.endDate.toString(),
+        evalPeriod.observer
+      );
+      for (const trip of trips) {
+        tripIds.push(trip._id);
       }
+      store.dispatch('debriefer/setTripIds', tripIds);
     }
 
-    async function selectObserver() {
-      store.dispatch('debriefer/updateObservers', observer.value.value);
+    async function selectObserver(id: string) {
+      clearData();
+      store.dispatch('debriefer/updateObservers', id);
       evaluationPeriod.value = {};
-      await getEvaluationPeriods();
+      await getEvaluationPeriods(id);
     }
 
-    async function selectCruise() {
-      store.dispatch('debriefer/setCruiseIds', cruiseId.value.value);
+    async function selectCruise(id: string) {
+      store.dispatch('debriefer/setCruiseIds', id);
       try {
         const results = await masterDB.viewWithDocs<any>(
           'obs_web',
           'ashop_cruise',
-          { key: cruiseId.value.value }
+          { key: id }
         );
         if (results.rows[0] && results.rows[0].doc) {
           cruise.value = results.rows[0].doc;
@@ -404,9 +325,13 @@ export default createComponent({
       }
     }
 
-    async function closeEvalDialog() {
-      evaluationPeriod.value = formatEvaluationPeriod(evaluationPeriod.value);
-      await getEvaluationPeriods();
+    function selectTripId(id: string) {
+      store.dispatch('debriefer/setTripIds', [id]);
+    }
+
+    async function closeEvalDialog(evalPeriod: any) {
+      evaluationPeriod.value = formatEvaluationPeriod(evalPeriod);
+      await getEvaluationPeriods(observer.value.value);
     }
 
     function formatDate(date: string) {
@@ -429,24 +354,30 @@ export default createComponent({
       };
     }
 
-    async function getEvaluationPeriods() {
+    async function getEvaluationPeriods(id: string) {
       const evaluationPeriods: any[] = [];
-      const debrieferId = state.user.activeUserAlias.personDocId;
       let results: any;
       try {
         results = await masterDB
           .viewWithDocs<any>('obs_web', 'evaluation_periods', {
-            key: observer.value.value
+            key: id
           })
           .then((response: any) => {
             for (const row of response.rows) {
-              if (row.doc.debriefer === debrieferId) {
-                const startDate = moment(row.doc.startDate).format('MM/DD/YY');
-                const endDate = moment(row.doc.endDate).format('MM/DD/YY');
-                const formattedVal = formatEvaluationPeriod(row.doc);
-                evaluationPeriods.push(formattedVal);
-              }
+              const startDate = moment(row.doc.startDate).format('MM/DD/YY');
+              const endDate = moment(row.doc.endDate).format('MM/DD/YY');
+              const formattedVal = formatEvaluationPeriod(row.doc);
+              evaluationPeriods.push(formattedVal);
             }
+            evaluationPeriods.sort((a: any, b: any) => {
+              if (moment(a.startDate).isBefore(b.startDate)) {
+                return 1;
+              } else if (moment(a.startDate).isAfter(b.startDate)) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
             evaluations.value = evaluationPeriods;
           });
       } catch (err) {
@@ -454,7 +385,7 @@ export default createComponent({
       }
     }
 
-    useAsync(getEvaluationPeriods);
+    useAsync(getEvaluationPeriods(observer.value.value));
 
     function add() {
       dialogEvalPeriod.value = {
@@ -477,11 +408,7 @@ export default createComponent({
       evaluations.value.splice(index, 1);
       masterDB.delete(id, evaluationPeriod.value.rev);
       evaluationPeriod.value = {};
-      store.dispatch('debriefer/setTripIds', []);
-    }
-
-    function editCruise() {
-      showCruiseDialog.value = true;
+      clearData();
     }
 
     return {
@@ -490,7 +417,6 @@ export default createComponent({
       evaluationPeriod,
       dialogEvalPeriod,
       closeEvalDialog,
-      observerList,
       evaluations,
       observers,
       vesselName,
@@ -498,20 +424,19 @@ export default createComponent({
       cruiseEndDate,
       cruise,
       selectCruise,
-      cruiseIdList,
       cruiseId,
       selectObserver,
       showCruiseDialog,
       showEvaluationDialog,
       showAll,
-      getWcgopObservers,
-      filterLookups,
       add,
       edit,
       deleteEvalPeriod,
-      editCruise,
       getTripsByDate,
-      showDeleteDialog
+      showDeleteDialog,
+      tripId,
+      selectTripId,
+      observerQueryOptions
     };
   }
 });

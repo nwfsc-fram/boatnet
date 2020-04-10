@@ -67,6 +67,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import moment from 'moment';
 import { get } from 'lodash';
+import { getTripsByDates } from '../helpers/getFields';
 
 export default createComponent({
   props: {
@@ -158,37 +159,11 @@ export default createComponent({
       }
     });
 
-    async function initTrips() {
-      const tripsHolder: any[] = [];
-      const tripIds = state.debriefer.tripIds;
-      if (tripIds.length > 0) {
-        try {
-          const options: ListOptions = {
-            keys: tripIds
-          };
-          const tripDocs = await masterDB.listWithDocs(options);
-          for (const trip of tripDocs.rows) {
-            tripsHolder.push(trip);
-          }
-        } catch (err) {
-          console.log('could not get trips');
-        }
-      }
-      trips.value = tripsHolder;
-    }
-
     const watcherOptions: WatchOptions = {
       immediate: true
     };
 
-    watch(
-      () =>
-        props.evaluationPeriod && props.evaluationPeriod.tripIds
-          ? props.evaluationPeriod.tripIds
-          : [],
-      initTrips,
-      watcherOptions
-    );
+    watch(() => props.showDialog, getTripsByDate, watcherOptions);
 
     async function getEvaluationPeriodLookups() {
       const lookupsList: string[] = [];
@@ -225,29 +200,7 @@ export default createComponent({
 
     async function getTripsByDate() {
       const observerId = state.debriefer.observers;
-      if (startDate.value && endDate.value) {
-        const tripsHolder: any[] = [];
-        try {
-          const tripDocs: any = await masterDB.viewWithDocs(
-            'obs_web',
-            'wcgop_trips_by_observerId',
-            { key: observerId }
-          );
-          for (const trip of tripDocs.rows) {
-            if (
-              moment(trip.doc.departureDate).isAfter(
-                startDate.value.toString()
-              ) &&
-              moment(trip.doc.returnDate).isBefore(endDate.value.toString())
-            ) {
-              tripsHolder.push(trip.doc);
-            }
-          }
-          trips.value = tripsHolder;
-        } catch (err) {
-          console.log('could not get trips');
-        }
-      }
+      trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
     }
 
     function save() {
@@ -280,6 +233,7 @@ export default createComponent({
           update(evalPeriod, response);
         });
       }
+      store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       store.dispatch('debriefer/setTripIds', tripIds);
       closeDialog();
     }
@@ -289,7 +243,7 @@ export default createComponent({
       evalPeriod._rev = response.rev;
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       selected.value = [];
-      context.emit('closeEvalDialog');
+      context.emit('closeEvalDialog', evalPeriod);
     }
 
     function closeDialog() {

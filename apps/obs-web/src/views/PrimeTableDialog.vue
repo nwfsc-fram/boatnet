@@ -9,7 +9,6 @@
         <prime-table
           :value="tableData"
           :columns="columns"
-          :isEditable="true"
           type="Edits"
           :simple="true"
           :uniqueKey="uniqueKey"

@@ -42,7 +42,7 @@
         :sortable="true"
         headerStyle="width: 150px"
       >
-        <template v-if="isEditable" #editor="slotProps">
+        <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
             v-if="col.type === 'boolean'"
             v-model="cellVal"
@@ -120,7 +120,6 @@ export default createComponent({
   props: {
     columns: Array,
     value: Array,
-    isEditable: Boolean,
     type: String,
     simple: Boolean,
     uniqueKey: String
