@@ -234,18 +234,11 @@
     <q-dialog v-model="closeAlert">
       <div style="text-align: center; background-color: white; height: 100%; width: 100%">
 
-          <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Logbook Picture
-              <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
-          </label>
-
-          <div v-if="file" style="padding-top: 5%">
-              <div class="text-h6">Logbook Capture</div>
-              <img :src="fileUrl" style="width: 95%">
-          </div>
-
-          <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Take Logbook Picture
-              <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
-          </label>
+          <file-uploader
+            label="Logbook Capture"
+            :trip="trip.activeTrip"
+            submitAction="Add Image(s)"
+          />
 
           <div v-if="activeTrip">
             <div class="text-h6">
@@ -299,6 +292,9 @@ import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
+
+import FileUploader from '../components/FileUploader.vue';
+Vue.component('file-uploader', FileUploader);
 
 import {
   WcgopTrip,
@@ -379,12 +375,6 @@ export default class Trips extends Vue {
 
   constructor() {
       super();
-  }
-
-  private handleImage(event: any) {
-      this.file = event!.target!.files[0];
-      this.fileUrl = URL.createObjectURL(this.file);
-      console.log(this.file);
   }
 
     private get openTrips() {
@@ -609,19 +599,6 @@ export default class Trips extends Vue {
       }
 
       this.activeTrip = trip;
-      // if (moment(this.activeTrip.departureDate).isAfter(moment(), 'day')) {
-      //   Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(moment().format()));
-      // } else {
-      //   Vue.set(this.activeTrip, 'captainAffirmedDepartureDate', new Date(this.activeTrip.departureDate));
-      // }
-      // if (moment(this.activeTrip.returnDate).isAfter(moment(), 'day')) {
-      //   Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(moment().format()));
-      // } else {
-      //   Vue.set(this.activeTrip, 'captainAffirmedReturnDate', new Date(this.activeTrip.returnDate));
-      // }
-      // this.tripDates[0] = this.activeTrip.captainAffirmedDepartureDate;
-      // this.tripDates[1] = this.activeTrip.captainAffirmedReturnDate;
-
       this.closeAlert = true;
       this.tripDates = [];
     }
@@ -1015,12 +992,6 @@ private async getAuthorizedVessels() {
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
-    // if (newVal[0]) {
-    //   this.activeTrip!.captainAffirmedDepartureDate = JSON.parse(JSON.stringify(newVal[0]));
-    // }
-    // if (newVal[1]) {
-    //   this.activeTrip!.captainAffirmedReturnDate = JSON.parse(JSON.stringify(newVal[1]));
-    // }
     if (newVal[0]) {
       this.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
       if (!newVal[1]) {

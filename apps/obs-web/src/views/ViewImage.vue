@@ -39,22 +39,30 @@ export default createComponent({
                     queryOptions
                 );
 
-                const filename = Object.keys(response.rows[0].doc._attachments)[0];
 
-                const byteCharacters = atob(response.rows[0].doc._attachments[filename].data);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                for (const attachment of Object.keys(response.rows[0].doc._attachments)) {
+                    console.log(attachment);
+                    const filename = attachment;
+
+                    const byteCharacters = atob(response.rows[0].doc._attachments[filename].data);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], {type: response.rows[0].doc._attachments[filename].content_type});
+
+                    const url = URL.createObjectURL(blob);
+                    const img = document.createElement('img');
+                    img.width = document.body.clientWidth / 2;
+                    img.src = url;
+
+                    const div = document.createElement('div');
+                    div.innerHTML = filename;
+
+                    document.getElementById('imagesholder')!.appendChild(div);
+                    document.getElementById('imagesholder')!.appendChild(img);
                 }
-                const byteArray = new Uint8Array(byteNumbers);
-                const blob = new Blob([byteArray], {type: response.rows[0].doc._attachments[filename].content_type});
-
-                const url = URL.createObjectURL(blob);
-                const img = document.createElement('img');
-                img.width = document.body.clientWidth / 2;
-                img.src = url;
-
-                document.getElementById('imagesholder')!.appendChild(img);
             }
 
         });

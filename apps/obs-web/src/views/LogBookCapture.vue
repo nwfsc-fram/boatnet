@@ -134,11 +134,10 @@
         </q-select>
 
         <div v-if="trip.activeTrip.fishery.description === 'Electronic Monitoring EFP'">
-          <strong :disabled="trip.readOnly">Maximized Retention?</strong><br>
+          <strong>Maximized Retention?</strong><br>
           <q-btn-toggle
           v-model="trip.activeTrip.maximizedRetention"
           toggle-color="primary"
-          :disabled="trip.readOnly"
           :options="[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -154,7 +153,6 @@
           <q-btn-toggle
           v-model="trip.activeTrip.isSelected"
           toggle-color="primary"
-          :disabled="trip.readOnly"
           :options="[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -164,14 +162,11 @@
         </div>
         </div>
 
-        <div style="text-align: center">
-            <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
-        </div>
-
         <file-uploader
             v-if="tripComplete()"
-            label="Logbook Captures"
+            label="Logbook Capture"
             :trip="trip.activeTrip"
+            submitAction="Submit Image(s)"
         />
 
     </div>
