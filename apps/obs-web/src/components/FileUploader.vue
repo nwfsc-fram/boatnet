@@ -1,23 +1,23 @@
 <template>
-    <div style="">
-        <div class="text-h6">{{ label }}</div>
+    <div style="text-align: center; display: flex; justify-content: center; align-items: center;">
+        <div style="width: 320px;">
+            <div class="text-h6">{{ label }}</div>
 
-        <label class="cameraButton shadow-2 bg-primary text-white">Capture
-            <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
-        </label>
-        <br>
-        <span v-for="file of files" :key="files.indexOf(file)">
-            <img :src="getImageUrl(file)" :alt="file.name" style="width: 300px">
-            <q-btn style="position: relative; top: -20px; left: -40px" size="sm" icon="clear" round color="primary" @click="removeAtIndex(files.indexOf(file))"></q-btn>
-        </span>
-
-        <div>
-            <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage()">{{ submitAction }}</q-btn>
-            <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
-            <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
-            <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
+            <label class="cameraButton shadow-2 bg-primary text-white">Capture
+                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
+            </label>&nbsp;
+            <br>
+            <div class="container" v-for="file of files" :key="files.indexOf(file)">
+                <img :src="getImageUrl(file)" :alt="file.name" style="width: 320px">
+                <q-btn class="button" size="sm" icon="clear" round color="red" @click="removeAtIndex(files.indexOf(file))"></q-btn>
+            </div>
+            <span>
+                <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage()">{{ submitAction }}</q-btn>
+                <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+                <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
+                <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
+            </span>
         </div>
-
     </div>
 </template>
 
@@ -187,6 +187,7 @@
         border-radius: 4px;
         text-transform: uppercase;
         font-weight: bold;
+        cursor: pointer;
     }
 
     label.cameraButton input[accept*="camera"] {
@@ -201,6 +202,25 @@
 
     label {
         margin: 0
+    }
+
+    .container {
+        position: relative;
+        width: 100%;
+    }
+
+    .container img {
+        width: 100%;
+        height: auto;
+    }
+
+    .container .button {
+        position: absolute;
+        top: 35px;
+        left: 290px;
+        transform: translate(-20%, -90%);
+        -ms-transform: translate(-20%, -90%);
+        cursor: pointer;
     }
 
 </style>

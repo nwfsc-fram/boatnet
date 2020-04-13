@@ -167,6 +167,7 @@
             label="Logbook Capture"
             :trip="trip.activeTrip"
             submitAction="Submit Image(s)"
+            style=""
         />
 
     </div>
