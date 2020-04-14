@@ -118,7 +118,7 @@
                 </q-input>
             </div>
             <div class="row items-start logbook-element">
-                <q-select v-model="tripCatch.returnPortState" dense autogrow title="State where the vessel returned for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA', 'OR', 'WA']">
+                <q-select v-model="tripCatch.returnState" dense autogrow title="State where the vessel returned for fishing activities (WA, OR, CA)" style="width: 42%; margin-right: 5px" :options="['CA', 'OR', 'WA']">
                     <template v-slot:before>
                         <div class="text-h6">State</div>
                     </template>
@@ -831,7 +831,6 @@ export default createComponent({
             queryOptions
             );
             ports = ports.rows.map((row: any) => row.doc);
-            console.log(ports);
     };
     const portOptions: any = ref([]);
     const portFilterFn = (val: string, update: any, abort: any) => {
@@ -851,9 +850,14 @@ export default createComponent({
     const getCatch = async (id: any) => {
         await getCatchApiCatch(id).then(
             (res: any) => {
-                for (const key of Object.keys(res[0])) {
-                    Vue.set(tripCatch, key, res[0][key]);
+                for (const row of res) {
+                    if (row.source === 'logbook') {
+                        for (const key of Object.keys(row)) {
+                            Vue.set(tripCatch, key, row[key]);
+                        }
+                    }
                 }
+
             }
         );
     };

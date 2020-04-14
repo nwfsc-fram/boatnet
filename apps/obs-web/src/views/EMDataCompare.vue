@@ -15,7 +15,7 @@
       </div>
 
     <q-table
-      :data="tripData"
+      :data="comp.tripData"
       :columns="columns"
       dense
       row-key="id"
@@ -25,12 +25,13 @@
       binary-state-sort
       hide-bottom
       :visible-columns="visibleColumns"
+      :sort-method="sorter"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="_id"></q-td>
           <q-td key="haul" :props="props">{{ props.row.haul ? props.row.haul : '' }}</q-td>
-          <q-td key="species" :props="props">{{ props.row.species ? capitalize(props.row.species) : '' }}</q-td>
+          <q-td key="speciesCode" :props="props">{{ props.row.speciesCode ? props.row.speciesCode : '' }}</q-td>
           <q-td key="logbookDiscard" :props="props" >{{ props.row.logbookDiscard ? props.row.logbookDiscard : '' }}</q-td>
           <q-td key="logbookRetained" :props="props" >{{ props.row.logbookRetained ? props.row.logbookRetained : '' }}</q-td>
           <q-td key="thirdPartyReview" :props="props" >{{ props.row.thirdPartyReview ? props.row.thirdPartyReview : '' }}</q-td>
@@ -64,9 +65,44 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
+
+    const sorter = (rows: any, sortBy: string, descending: boolean) => {
+
+      const data = [ ...rows ];
+
+      if (sortBy) {
+        data.sort((a: any, b: any) => {
+          if (a.haul === 'Trip' || b.haul === 'Trip') {
+            return 0;
+          } else if ( a[sortBy] > b[sortBy] ) {
+            return descending ? 1 : -1
+
+          } else if ( a[sortBy] < b[sortBy] ) {
+            return descending ? -1 : 1
+          } else {
+            return 0;
+          }
+        })
+      }
+
+      return data;
+    }
+
+        // sort: (a: any, b: any, rowA: any, rowB: any) => {
+        //   if ( a === 'Trip' || b == 'Trip') {
+        //     return 0;
+        //   } else if ( a > b ) {
+        //     return 1;
+        //   } else if ( a < b ) {
+        //     return -1;
+        //   }else {
+        //     return 0;
+        //   }
+        // }
+
     const columns: any = [
       { name: 'haul', label: 'Haul', field: 'haul', required: false, align: 'left', sortable: true },
-      { name: 'species', label: 'Species', field: 'species', required: false, align: 'left', sortable: true },
+      { name: 'speciesCode', label: 'Species Code', field: 'speciesCode', required: false, align: 'left', sortable: true },
       { name: 'logbookDiscard', label: 'Logbook Discard (lbs)', field: 'logbookDiscard', required: false, align: 'center', sortable: true },
       { name: 'logbookRetained', label: 'Logbook Retained (lbs)', field: 'logbookRetained', required: false, align: 'center', sortable: true },
       { name: 'thirdPartyReview', label: 'Third Party Review (lbs)', field: 'thirdPartyReview', required: false, align: 'center', sortable: true },
@@ -75,9 +111,11 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
+
+
     const visibleColumns: any = reactive([
       'haul',
-      'species',
+      'speciesCode',
       'logbookDiscard',
       'logbookRetained',
       'thirdPartyReview',
@@ -107,24 +145,28 @@ export default createComponent({
       for (const source of apiCatch) {
         for (const haul of source.hauls) {
           for (const species of haul.catch) {
-            if (!tripTotals[species.speciesName]) {
-              tripTotals[species.speciesName] = {};
+            if (!tripTotals[species.speciesCode]) {
+              tripTotals[species.speciesCode] = {};
             }
-            if (!tripTotals[species.speciesName][source.source]) { tripTotals[species.speciesName][source.source] = {}; }
-            if (!tripTotals[species.speciesName][source.source].discard) { tripTotals[species.speciesName][source.source].discard = 0; }
-            if (!tripTotals[species.speciesName][source.source].retained) {tripTotals[species.speciesName][source.source].retained = 0; }
-            tripTotals[species.speciesName][source.source].discard += species.discard;
-            if (source.source === 'logbook') {
-              tripTotals[species.speciesName][source.source].retained += species.retained ? species.retained : 0;
+            if (!tripTotals[species.speciesCode][source.source]) { tripTotals[species.speciesCode][source.source] = {}; }
+            if (!tripTotals[species.speciesCode][source.source].discard) { tripTotals[species.speciesCode][source.source].discard = 0; }
+            if (!tripTotals[species.speciesCode][source.source].retained) {tripTotals[species.speciesCode][source.source].retained = 0; }
+            if (species.catchDisposition === 'Discarded') {
+              tripTotals[species.speciesCode][source.source].discard += species.estimatedWeight;
+            }
+            if (source.source === 'logbook' && species.catchDisposition === 'Retained') {
+              tripTotals[species.speciesCode][source.source].retained += species.estimatedWeight ? species.estimatedWeight : 0;
             }
             if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesName]) { haulTotals[haul.haulNum][species.speciesName] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesName][source.source]) { haulTotals[haul.haulNum][species.speciesName][source.source] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesName][source.source].discard) {haulTotals[haul.haulNum][species.speciesName][source.source].discard = ''; }
-            if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesName][source.source].retained = species.retained ? species.retained : '';
+            if (!haulTotals[haul.haulNum][species.speciesCode]) { haulTotals[haul.haulNum][species.speciesCode] = {}; }
+            if (!haulTotals[haul.haulNum][species.speciesCode][source.source]) { haulTotals[haul.haulNum][species.speciesCode][source.source] = {}; }
+            if (!haulTotals[haul.haulNum][species.speciesCode][source.source].discard) {haulTotals[haul.haulNum][species.speciesCode][source.source].discard = ''; }
+            if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.retained ? species.retained : '';
             }
-            if (species.discard) {
-              haulTotals[haul.haulNum][species.speciesName][source.source].discard = species.discard;
+            if (species.catchDisposition === 'Discarded') {
+              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = species.estimatedWeight;
+            } else if (species.catchDisposition === 'Retained') {
+              haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.estimatedWeight;
             }
           }
         }
@@ -135,7 +177,7 @@ export default createComponent({
           {
             id: Math.random(),
             haul: 'Trip',
-            species: key,
+            speciesCode: key,
             logbookDiscard: tripTotals[key].logbook ? tripTotals[key].logbook.discard : '',
             logbookRetained: tripTotals[key].logbook ? tripTotals[key].logbook.retained : '',
             thirdPartyReview: tripTotals[key].thirdParty ? tripTotals[key].thirdParty.discard : '',
@@ -152,7 +194,7 @@ export default createComponent({
             {
               id: Math.random(),
               haul: key,
-              species: subKey,
+              speciesCode: subKey,
               logbookDiscard: haulTotals[key][subKey].logbook ? haulTotals[key][subKey].logbook.discard : '',
               logbookRetained: haulTotals[key][subKey].logbook ? haulTotals[key][subKey].logbook.retained : '',
               thirdPartyReview: haulTotals[key][subKey].thirdParty ? haulTotals[key][subKey].thirdParty.discard : '',
@@ -163,10 +205,21 @@ export default createComponent({
           );
         }
       }
+      tripData.sort( (a: any, b: any) => {
+        if (a.haul === 'Trip' && b.haul === 'Trip') {
+          if (a.speciesCode > b.speciesCode ) {
+            return 1;
+          } else if (a.speciesCode < b.speciesCode) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      })
     };
 
     const getPercentDifference = (val1: number, val2: number) => {
-      if (typeof val1 === 'number' && typeof val2 === 'number') {
+      if (typeof val1 === 'number' && val1 !== 0 && typeof val2 === 'number' && val2 !== 0) {
         return (((val1 - val2) / ((val1 + val2) / 2)) * 100).toFixed(2) + '%';
       } else {
         return '';
@@ -232,6 +285,16 @@ export default createComponent({
       }
     };
 
+    const comp = reactive({
+      tripData: computed(() => {
+        if (store.state.user.showLogbookRetained) {
+          return tripData
+        } else {
+          return tripData.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit))
+        }
+      })
+    })
+
     onMounted(() => {
       if (tripNum.value !== 0) {
         getAPITripData();
@@ -256,7 +319,9 @@ export default createComponent({
       showRetained,
       visibleColumns,
       toggleRetained,
-      state
+      state,
+      comp,
+      sorter
     };
   }
 });
