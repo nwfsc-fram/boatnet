@@ -1,5 +1,6 @@
 <template>
     <div class="q-pa-md q-gutter-md">
+        <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
         <div id="imagesholder"></div>
     </div>
 </template>
@@ -23,6 +24,7 @@ export default createComponent({
     setup(props, context) {
 
         const id: any = ref(context.root.$route.query.id ? context.root.$route.query.id : 0);
+        const transferring: any = ref(false);
         onMounted( async () => {
             if (id.value) {
                 const masterDB: Client<any> = couchService.masterDB;
@@ -32,7 +34,7 @@ export default createComponent({
                     attachments: true,
                     key: id.value
                 };
-
+                transferring.value = true;
                 const response: any = await masterDB.view<any>(
                     'obs_web',
                     'ots_trips_with_logbook_captures',
@@ -63,11 +65,13 @@ export default createComponent({
                     document.getElementById('imagesholder')!.appendChild(div);
                     document.getElementById('imagesholder')!.appendChild(img);
                 }
+                transferring.value = false;
             }
 
         });
 
         return {
+            transferring
         };
     }
 });

@@ -25,12 +25,13 @@
       binary-state-sort
       hide-bottom
       :visible-columns="visibleColumns"
+      :sort-method="sorter"
     >
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="_id"></q-td>
           <q-td key="haul" :props="props">{{ props.row.haul ? props.row.haul : '' }}</q-td>
-          <q-td key="species" :props="props">{{ props.row.speciesCode ? props.row.speciesCode : '' }}</q-td>
+          <q-td key="speciesCode" :props="props">{{ props.row.speciesCode ? props.row.speciesCode : '' }}</q-td>
           <q-td key="logbookDiscard" :props="props" >{{ props.row.logbookDiscard ? props.row.logbookDiscard : '' }}</q-td>
           <q-td key="logbookRetained" :props="props" >{{ props.row.logbookRetained ? props.row.logbookRetained : '' }}</q-td>
           <q-td key="thirdPartyReview" :props="props" >{{ props.row.thirdPartyReview ? props.row.thirdPartyReview : '' }}</q-td>
@@ -64,9 +65,44 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
+
+    const sorter = (rows: any, sortBy: string, descending: boolean) => {
+
+      const data = [ ...rows ];
+
+      if (sortBy) {
+        data.sort((a: any, b: any) => {
+          if (a.haul === 'Trip' || b.haul === 'Trip') {
+            return 0;
+          } else if ( a[sortBy] > b[sortBy] ) {
+            return descending ? 1 : -1
+
+          } else if ( a[sortBy] < b[sortBy] ) {
+            return descending ? -1 : 1
+          } else {
+            return 0;
+          }
+        })
+      }
+
+      return data;
+    }
+
+        // sort: (a: any, b: any, rowA: any, rowB: any) => {
+        //   if ( a === 'Trip' || b == 'Trip') {
+        //     return 0;
+        //   } else if ( a > b ) {
+        //     return 1;
+        //   } else if ( a < b ) {
+        //     return -1;
+        //   }else {
+        //     return 0;
+        //   }
+        // }
+
     const columns: any = [
       { name: 'haul', label: 'Haul', field: 'haul', required: false, align: 'left', sortable: true },
-      { name: 'species', label: 'Species Code', field: 'species', required: false, align: 'left', sortable: true },
+      { name: 'speciesCode', label: 'Species Code', field: 'speciesCode', required: false, align: 'left', sortable: true },
       { name: 'logbookDiscard', label: 'Logbook Discard (lbs)', field: 'logbookDiscard', required: false, align: 'center', sortable: true },
       { name: 'logbookRetained', label: 'Logbook Retained (lbs)', field: 'logbookRetained', required: false, align: 'center', sortable: true },
       { name: 'thirdPartyReview', label: 'Third Party Review (lbs)', field: 'thirdPartyReview', required: false, align: 'center', sortable: true },
@@ -75,9 +111,11 @@ export default createComponent({
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
 
+
+
     const visibleColumns: any = reactive([
       'haul',
-      'species',
+      'speciesCode',
       'logbookDiscard',
       'logbookRetained',
       'thirdPartyReview',
@@ -167,10 +205,21 @@ export default createComponent({
           );
         }
       }
+      tripData.sort( (a: any, b: any) => {
+        if (a.haul === 'Trip' && b.haul === 'Trip') {
+          if (a.speciesCode > b.speciesCode ) {
+            return 1;
+          } else if (a.speciesCode < b.speciesCode) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      })
     };
 
     const getPercentDifference = (val1: number, val2: number) => {
-      if (typeof val1 === 'number' && typeof val2 === 'number') {
+      if (typeof val1 === 'number' && val1 !== 0 && typeof val2 === 'number' && val2 !== 0) {
         return (((val1 - val2) / ((val1 + val2) / 2)) * 100).toFixed(2) + '%';
       } else {
         return '';
@@ -271,7 +320,8 @@ export default createComponent({
       visibleColumns,
       toggleRetained,
       state,
-      comp
+      comp,
+      sorter
     };
   }
 });
