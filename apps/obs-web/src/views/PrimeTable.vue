@@ -10,10 +10,9 @@
       editMode="cell"
       columnResizeMode="expand"
       @cell-edit-init="onCellEditInit"
+      @row-click="onRowSelect"
       :reorderableColumns="true"
       :data-key="uniqueKey"
-      stateStorage="local"
-      :stateKey="state.debriefer.program + '-' + type"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -56,6 +55,14 @@
             v-model="cellVal"
             :options="lookupsList"
             :placeholder="cellVal"
+            @before-show="getLookupInfo(col.list, col.lookupField, col.lookupKey)"
+            @input="onCellEdit($event, slotProps, col.type)"
+          />
+          <Dropdown
+            v-else-if="col.type === 'search-toggle'"
+            v-model="cellVal"
+            :options="lookupsList"
+            :placeholder="cellVal"
             :filter="true"
             @before-show="getLookupInfo(col.list, col.lookupField, col.lookupKey)"
             @input="onCellEdit($event, slotProps, col.type)"
@@ -69,12 +76,13 @@
           ></InputText>
         </template>
         <template #body="slotProps">
+          <span style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
           <Button
-            v-if="col.type === 'popup'"
-            label="Expand Data"
-            @click="show(slotProps, col.popupColumns, col.uniqueKey)"
+            class="p-button-secondary"
+            v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
+            label="..."
+            @click="show(slotProps, col.popupColumns, col.uniqueKey, col.popupField)"
           />
-          <span v-else style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
         </template>
         <template #filter v-if="!simple">
           <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
@@ -92,7 +100,15 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, reactive, computed } from '@vue/composition-api';
+import {
+  createComponent,
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  watch,
+  onBeforeMount
+} from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { get, set, findIndex } from 'lodash';
 import Dropdown from 'primevue/dropdown';
@@ -137,7 +153,7 @@ export default createComponent({
     const cellVal: any = ref('');
 
     const tableType = state.debriefer.program + '-' + props.type;
-    const selected: any = ref([]);
+    let selected: any = ref([]);
     const stateDisplayCols = state.debriefer.displayColumns;
 
     const popupData: any = ref({});
@@ -145,6 +161,26 @@ export default createComponent({
     const showPopup: any = ref(false);
     const popupColumns: any = ref([]);
     const popupUniqueKey: any = ref('');
+
+    onMounted(() => {
+      updateSelection();
+    });
+
+    function updateSelection() {
+      if (props.type === 'Trips') {
+        selected.value = state.debriefer.trips;
+      } else if (props.type === 'Operations') {
+        selected.value = state.debriefer.operations;
+      }
+    }
+
+    function onRowSelect(event: any) {
+      if (props.type === 'Trips') {
+        store.dispatch('debriefer/updateTrips', selected.value);
+      } else if (props.type === 'Operations') {
+        store.dispatch('debriefer/updateOperations', selected.value);
+      }
+    }
 
     const displayColumns = computed({
       get: () => {
@@ -231,8 +267,19 @@ export default createComponent({
       context.emit('update:value', valueHolder);
     }
 
-    function show(slotProps: any, columns: any, uniqueKey: string) {
-      popupField.value = slotProps.column.field;
+    function containsMultiples(slotProps: any, popupValue: string) {
+      const val = get(slotProps.data, popupValue);
+      const length = val ? val.length : 0;
+      return length > 1 ? true : false;
+    }
+
+    function show(
+      slotProps: any,
+      columns: any,
+      uniqueKey: string,
+      popupValue: string
+    ) {
+      popupField.value = popupValue;
       popupData.value = slotProps.data;
       showPopup.value = true;
       popupColumns.value = columns;
@@ -240,6 +287,7 @@ export default createComponent({
     }
 
     return {
+      containsMultiples,
       filters,
       columnOptions,
       displayColumns,
@@ -258,7 +306,8 @@ export default createComponent({
       popupField,
       showPopup,
       popupColumns,
-      popupUniqueKey
+      popupUniqueKey,
+      onRowSelect
     };
   }
 });
