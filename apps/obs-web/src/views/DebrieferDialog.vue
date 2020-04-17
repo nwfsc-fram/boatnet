@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="showDialog">
-    <q-card style="width: 800px; max-width: 80vw; height: 800px">
+    <q-card style="width: 775px; max-width: 80vw; height: 800px">
       <q-card-section>
         <div class="text-h6" style="text-align: center">Evaluation Period</div>
       </q-card-section>
@@ -15,7 +15,7 @@
         />
         <div style="display: inline-block" class="q-pa-md">
           <div class="p-float-label q-px-md">
-            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" /><!--:minDate="formattedMinDate" -->
+            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" />
             <label for="startDate" style="color: #027be3">Start Date</label>
           </div>
         </div>
@@ -72,8 +72,7 @@ import { getTripsByDates } from '../helpers/getFields';
 export default createComponent({
   props: {
     showDialog: Boolean,
-    evaluationPeriod: Object,
-    minDate: String
+    evaluationPeriod: Object
   },
 
   setup(props, context) {
@@ -81,6 +80,7 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
 
+    const selected: any = ref([]);
     const trips: any = ref([]);
 
     const defaultEvaluationPeriods: any = ref([]);
@@ -119,38 +119,51 @@ export default createComponent({
       }
     ];
 
+    const startDate = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        const start = evalPeriod.startDate
+          ? new Date(evalPeriod.startDate)
+          : null;
+        return start;
+      },
+      set: (val: any) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.startDate = new Date(val);
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
+    const endDate = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        const end = evalPeriod.endDate ? new Date(evalPeriod.endDate) : null;
+        return end;
+      },
+      set: (val: any) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.endDate = new Date(val);
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
+    const evalType = computed({
+      get: () => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        return evalPeriod.value;
+      },
+      set: (val) => {
+        const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
+        evalPeriod.value = val;
+        context.emit('update:evaluationPeriod', evalPeriod);
+      }
+    });
+
     const watcherOptions: WatchOptions = {
       immediate: true
     };
 
-    watch(() => props.showDialog, init, watcherOptions);
-
-    const startDate: any = ref(new Date());
-    const endDate = ref(new Date());
-    const formattedMinDate = ref(new Date());
-    const evalType = ref('');
-
-    async function init() {
-      const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
-      formattedMinDate.value = props.minDate ? new Date(props.minDate) : new Date();
-      if (evalPeriod.startDate) {
-        startDate.value = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
-        endDate.value = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
-        evalType.value = evalPeriod.value;
-      } else {
-        startDate.value = new Date();
-        endDate.value = new Date();
-        evalType.value = '';
-      }
-      getTripsByDate();
-    }
-
-    async function getTripsByDate() {
-      const observerId = state.debriefer.observers;
-      console.log('get trip by date')
-      console.log(startDate.value)
-      trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
-    }
+    watch(() => props.showDialog, getTripsByDate, watcherOptions);
 
     async function getEvaluationPeriodLookups() {
       const lookupsList: string[] = [];
@@ -185,6 +198,11 @@ export default createComponent({
     }
     useAsync(getEvaluationPeriodLookups);
 
+    async function getTripsByDate() {
+      const observerId = state.debriefer.observers;
+      trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
+    }
+
     function save() {
       const observerId = state.debriefer.observers;
       const tripIds: number[] = [];
@@ -199,20 +217,20 @@ export default createComponent({
         type: 'observer-evaluation-periods',
         observer: observerId,
         debriefer: state.user.activeUserAlias.personDocId,
-        evalType: evalType.value,
-        startDate: startDate.value,
-        endDate: endDate.value
+        evalType: curr.value,
+        startDate: curr.startDate,
+        endDate: curr.endDate
       };
 
       if (evalPeriod && evalPeriod.id) {
         masterDB
           .put(evalPeriod.id, evalPeriod, evalPeriod.rev)
           .then((response: any) => {
-            updateStateIdAndRev(evalPeriod, response);
+            update(evalPeriod, response);
           });
       } else {
         masterDB.post(evalPeriod).then((response: any) => {
-          updateStateIdAndRev(evalPeriod, response);
+          update(evalPeriod, response);
         });
       }
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
@@ -220,10 +238,11 @@ export default createComponent({
       closeDialog();
     }
 
-    function updateStateIdAndRev(evalPeriod: any, response: any) {
+    function update(evalPeriod: any, response: any) {
       evalPeriod._id = response.id;
       evalPeriod._rev = response.rev;
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
+      selected.value = [];
       context.emit('closeEvalDialog', evalPeriod);
     }
 
@@ -232,11 +251,11 @@ export default createComponent({
     }
 
     return {
-      formattedMinDate,
       startDate,
       endDate,
       evalType,
       columns,
+      selected,
       trips,
       pagination,
       save,

@@ -12,8 +12,7 @@ export const state: DebrieferState = {
   evaluationPeriod: {},
   tripIds: [],
   displayColumns: {},
-  trips: [],
-  operations: []
+  selectedValues: {}
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -32,15 +31,12 @@ const actions: ActionTree<DebrieferState, RootState> = {
   updateEvaluationPeriod({ commit }: any, value: any) {
     commit('updateVal', {id: 'evaluationPeriod', val: value});
   },
-  updateTrips({ commit }: any, value: any) {
-    commit('updateVal', {id: 'trips', val: value});
-  },
-  updateOperations({ commit }: any, value: any) {
-    commit('updateVal', {id: 'operations', val: value});
-  },
   updateDisplayColumns({ commit }: any, value: any) {
     commit('updateDisplayColumns', value);
   },
+  updateSelectedValues({ commit }: any, value: any) {
+    commit('updateSelectedValues', value);
+  }
 };
 
 const mutations: MutationTree<DebrieferState> = {
@@ -56,6 +52,9 @@ const mutations: MutationTree<DebrieferState> = {
   setCruiseIds(newState: any, ids: string) {
     newState.cruiseIds = ids;
   },
+  updateSelectedValues(newState: any, val: string) {
+    newState.selectedValues = val;
+  }
 };
 
 const getters: GetterTree<DebrieferState, RootState> = {
