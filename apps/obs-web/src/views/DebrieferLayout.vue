@@ -290,11 +290,6 @@ export default createComponent({
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       store.dispatch('debriefer/updateTrips', []);
       const tripIds: any[] = [];
-      /*const trips: any = await getTripsByDates(
-        evalPeriod.startDate.toString(),
-        evalPeriod.endDate.toString(),
-        evalPeriod.observer
-      );*/
       const trips: any = await getTripsByDates(
         new Date(evalPeriod.startDate),
         new Date(evalPeriod.endDate),
@@ -382,8 +377,6 @@ export default createComponent({
               }
             });
             evaluations.value = evaluationPeriods;
-            const date: any = moment(evaluationPeriods[0].endDate).add(1, 'days');
-            minDate.value = date.toString();
           });
       } catch (err) {
         console.log(err);
@@ -395,11 +388,19 @@ export default createComponent({
     function add() {
       dialogEvalPeriod.value = {};
       showEvaluationDialog.value = true;
+      const date: any = moment(evaluations.value[0].endDate).add(1, 'days');
+      minDate.value = date.toString();
     }
 
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
       showEvaluationDialog.value = true;
+      let index = findIndex(evaluations.value, { id: evaluationPeriod.value.id });
+      if (evaluations.value[index + 1]) {
+        minDate.value = moment(evaluations.value[index + 1].endDate).add(1, 'days').toString();
+      } else {
+        minDate.value = null;
+      }
     }
 
     function deleteEvalPeriod() {
