@@ -288,9 +288,9 @@ export default class DebrieferOperations extends Vue {
   private async getOperations() {
     const masterDB: Client<any> = couchService.masterDB;
     let operationIds: string[] = [];
-    let operationHolder = [];
+    const operationHolder = [];
 
-    for (let trip of this.debriefer.trips) {
+    for (const trip of this.debriefer.trips) {
       operationIds = operationIds.concat(trip.operationIDs);
     }
 

@@ -91,7 +91,7 @@ export default createComponent({
     const state = store.state;
     const tab = 'trips';
 
-    let filters: any = ref([]);
+    const filters: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
@@ -104,9 +104,9 @@ export default createComponent({
 
     function updateFilter(list: any[], label: string, idLabel: string) {
       const filterVals = [];
-      for (let val of list) {
+      for (const val of list) {
         const id = get(val, idLabel);
-        val['label'] = label + id;
+        val.label = label + id;
         filterVals.push(val);
       }
       return filterVals;
@@ -121,7 +121,7 @@ export default createComponent({
         index = findIndex(trips, item);
         trips.splice(index, 1);
         store.dispatch('debriefer/updateTrips', trips);
-      } else if (item.type ==='wcgop-operation') {
+      } else if (item.type === 'wcgop-operation') {
         index = findIndex(operations, item);
         operations.splice(index, 1);
         store.dispatch('debriefer/updateOperations', operations);

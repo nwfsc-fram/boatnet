@@ -153,7 +153,7 @@ export default createComponent({
     const cellVal: any = ref('');
 
     const tableType = state.debriefer.program + '-' + props.type;
-    let selected: any = ref([]);
+    const selected: any = ref([]);
     const stateDisplayCols = state.debriefer.displayColumns;
 
     const popupData: any = ref({});

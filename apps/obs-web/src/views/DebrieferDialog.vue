@@ -147,8 +147,6 @@ export default createComponent({
 
     async function getTripsByDate() {
       const observerId = state.debriefer.observers;
-      console.log('get trip by date')
-      console.log(startDate.value)
       trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
     }
 
