@@ -6,6 +6,7 @@
       :paginator="true"
       :rows="10"
       :selection.sync="selected"
+      scrollHeight="350px"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
