@@ -133,6 +133,7 @@
     <app-debriefer-dialog
       :showDialog.sync="showEvaluationDialog"
       :evaluationPeriod="dialogEvalPeriod"
+      :minDate="minDate"
       @closeEvalDialog="closeEvalDialog"
     />
 
@@ -212,6 +213,8 @@ export default createComponent({
     const evaluationPeriod: any = ref({});
     const tripId: any = ref({});
 
+    const minDate: any = ref('');
+
     const cruiseId: any = ref({});
     const cruise: AshopCruise = ref({});
 
@@ -285,10 +288,16 @@ export default createComponent({
 
     async function getTripsByDate(evalPeriod: any) {
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
+      store.dispatch('debriefer/updateTrips', []);
       const tripIds: any[] = [];
-      const trips: any = await getTripsByDates(
+      /*const trips: any = await getTripsByDates(
         evalPeriod.startDate.toString(),
         evalPeriod.endDate.toString(),
+        evalPeriod.observer
+      );*/
+      const trips: any = await getTripsByDates(
+        new Date(evalPeriod.startDate),
+        new Date(evalPeriod.endDate),
         evalPeriod.observer
       );
       for (const trip of trips) {
@@ -334,10 +343,6 @@ export default createComponent({
       await getEvaluationPeriods(observer.value.value);
     }
 
-    function formatDate(date: string) {
-      return moment(date).format('MM/DD/YYYY');
-    }
-
     function formatEvaluationPeriod(evalPeriod: any) {
       const startDate = moment(evalPeriod.startDate).format('MM/DD/YY');
       const endDate = moment(evalPeriod.endDate).format('MM/DD/YY');
@@ -364,8 +369,6 @@ export default createComponent({
           })
           .then((response: any) => {
             for (const row of response.rows) {
-              const startDate = moment(row.doc.startDate).format('MM/DD/YY');
-              const endDate = moment(row.doc.endDate).format('MM/DD/YY');
               const formattedVal = formatEvaluationPeriod(row.doc);
               evaluationPeriods.push(formattedVal);
             }
@@ -379,6 +382,8 @@ export default createComponent({
               }
             });
             evaluations.value = evaluationPeriods;
+            const date: any = moment(evaluationPeriods[0].endDate).add(1, 'days');
+            minDate.value = date.toString();
           });
       } catch (err) {
         console.log(err);
@@ -388,12 +393,7 @@ export default createComponent({
     useAsync(getEvaluationPeriods(observer.value.value));
 
     function add() {
-      dialogEvalPeriod.value = {
-        value: '',
-        startDate: '',
-        endDate: '',
-        tripIds: []
-      };
+      dialogEvalPeriod.value = {};
       showEvaluationDialog.value = true;
     }
 
@@ -408,35 +408,37 @@ export default createComponent({
       evaluations.value.splice(index, 1);
       masterDB.delete(id, evaluationPeriod.value.rev);
       evaluationPeriod.value = {};
+      store.dispatch('debriefer/updateEvaluationPeriod', {});
       clearData();
     }
 
     return {
       program,
       observer,
+      observerQueryOptions,
+      selectObserver,
+      showAll,
+      evaluations,
       evaluationPeriod,
+      minDate,
+      add,
+      edit,
+      deleteEvalPeriod,
       dialogEvalPeriod,
       closeEvalDialog,
-      evaluations,
+      tripId,
+      selectTripId,
+      getTripsByDate,
+      cruiseId,
+      cruise,
       observers,
       vesselName,
       cruiseStartDate,
       cruiseEndDate,
-      cruise,
       selectCruise,
-      cruiseId,
-      selectObserver,
-      showCruiseDialog,
       showEvaluationDialog,
-      showAll,
-      add,
-      edit,
-      deleteEvalPeriod,
-      getTripsByDate,
-      showDeleteDialog,
-      tripId,
-      selectTripId,
-      observerQueryOptions
+      showCruiseDialog,
+      showDeleteDialog
     };
   }
 });
