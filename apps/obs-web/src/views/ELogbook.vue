@@ -147,7 +147,7 @@
             <div class="logbook-element">
                 <q-input v-model="tripCatch.crewSize" dense title="Total number of crew on board the vessel">
                     <template v-slot:before>
-                        <div class="text-h6">Crew Size (Including Captain)</div>&nbsp;
+                        <div class="text-h6">Crew Size (Incl Captain)</div>&nbsp;
                     </template>
                     <template v-slot:append>
                         <q-btn round size="sm" icon="add" color="primary" @click="tripCatch.crewSize += 1"></q-btn>
@@ -799,6 +799,61 @@ export default createComponent({
         });
     };
 
+    const validPacfinCodes: any = [];
+    const getValidPacfinCodes = async () => {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'ifq-species-codes'
+        };
+
+        const speciesCodes = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions,
+        );
+
+        const codes = speciesCodes.rows[0].doc.codes;
+
+        for (const row of codes) {
+            validPacfinCodes.push(row.speciesCode);
+        }
+    };
+
+    const getTaxonomyAliases = async () => {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+            include_docs: true
+        };
+
+        const taxonomyAliases = await masterDb.view(
+            'Taxonomy',
+            'pacfin-code-for-wcgop-alias',
+            queryOptions
+        );
+
+        for (const row of taxonomyAliases.rows) {
+            if (validPacfinCodes.includes(row.doc.taxonomy.pacfinSpeciesCode)) {
+                for (const name of row.doc.commonNames) {
+                    const value = {speciesCode: row.doc.taxonomy.pacfinSpeciesCode, commonName: name};
+                    if (speciesCodeOptions.map( (species: any) => species.commonName).indexOf(row.commonName) === -1 ) {
+                        speciesCodeOptions.push(value);
+                    }
+                }
+            }
+        }
+        speciesCodeOptions.sort( (a: any, b: any) => {
+            if (a.commonName > b.commonName) {
+                return 1;
+            } else if (a.commonName < b.commonName) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+    };
+
     const speciesCodeSelectOptions: any = ref([]);
     const speciesFilterFn = (val: string, update: any, abort: any) => {
         if (val === '') {
@@ -937,7 +992,9 @@ export default createComponent({
     );
 
     onMounted( () => {
-        getSpeciesCodeOptions();
+        getValidPacfinCodes();
+        getTaxonomyAliases();
+        // getSpeciesCodeOptions();
         getFisheryOptions();
         getGearTypeOptions();
         getPorts();

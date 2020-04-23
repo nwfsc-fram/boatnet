@@ -130,7 +130,7 @@ export default createComponent({
                         trip.stage = 'capture';
                         trip.status = 'waiting for logbook data';
                         trip.actions.splice(trip.actions.indexOf('view data'), 1);
-                        trip.actions.splice(trip.actions.indexOf('compare'), 1)
+                        trip.actions.splice(trip.actions.indexOf('compare'), 1);
                         trip.statusDate = trip.changeLog ? trip.changeLog[0].updateDate : trip.createdDate;
                     }
                 }

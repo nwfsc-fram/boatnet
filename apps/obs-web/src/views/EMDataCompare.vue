@@ -75,18 +75,18 @@ export default createComponent({
           if (a.haul === 'Trip' || b.haul === 'Trip') {
             return 0;
           } else if ( a[sortBy] > b[sortBy] ) {
-            return descending ? 1 : -1
+            return descending ? 1 : -1;
 
           } else if ( a[sortBy] < b[sortBy] ) {
-            return descending ? -1 : 1
+            return descending ? -1 : 1;
           } else {
             return 0;
           }
-        })
+        });
       }
 
       return data;
-    }
+    };
 
         // sort: (a: any, b: any, rowA: any, rowB: any) => {
         //   if ( a === 'Trip' || b == 'Trip') {
@@ -215,7 +215,7 @@ export default createComponent({
             return 0;
           }
         }
-      })
+      });
     };
 
     const getPercentDifference = (val1: number, val2: number) => {
@@ -288,12 +288,12 @@ export default createComponent({
     const comp = reactive({
       tripData: computed(() => {
         if (store.state.user.showLogbookRetained) {
-          return tripData
+          return tripData;
         } else {
-          return tripData.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit))
+          return tripData.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit));
         }
       })
-    })
+    });
 
     onMounted(() => {
       if (tripNum.value !== 0) {
