@@ -32,9 +32,9 @@
             </div>
             <div class="row items-start logbook-element">
                 <div class="text-h6 text-grey-7" style="position: relative; top: 4px">Depart:&nbsp;</div>
-                <q-field v-model="tripCatch.departureDateTime" dense autogrow title="Date/Time the vessel departed port"  style="width: 42%; margin-right: 5px">
-                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="tripCatch.departureDateTime" @input="() => {departureTime = '', $refs.qDateProxy.hide()}"/>
+                <q-field v-model="tripCatch.departureDateTime" dense autogrow title="Date/Time the vessel departed port" style="width: 42%; margin-right: 5px">
+                    <q-popup-proxy ref="qDateProxy1" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="tripCatch.departureDateTime" @input="() => {departureTime = '', $refs.qDateProxy1.hide()}"/>
                     </q-popup-proxy>
                     <template v-slot:control>
                         {{ formatDate(tripCatch.departureDateTime) }}
@@ -101,8 +101,8 @@
             <div class="row items-start logbook-element">
                 <div class="text-h6 text-grey-7" style="position: relative; top: 4px">Return:&nbsp;</div>
                 <q-field v-model="tripCatch.returnDateTime" dense autogrow title="Date/Time the vessel returned to port for offload" style="width: 42%; margin-right: 5px">
-                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="tripCatch.returnDateTime" @input="() => {returnTime = '', $refs.qDateProxy.hide()}"/>
+                        <q-popup-proxy ref="qDateProxy2" transition-show="scale" transition-hide="scale">
+                            <q-date v-model="tripCatch.returnDateTime" @input="() => {returnTime = '', $refs.qDateProxy2.hide()}"/>
                         </q-popup-proxy>
                     <template v-slot:control>
                         {{ formatDate(tripCatch.returnDateTime) }}
@@ -150,9 +150,9 @@
                         <div class="text-h6">Crew Size (Incl Captain)</div>&nbsp;
                     </template>
                     <template v-slot:append>
-                        <q-btn round size="sm" icon="add" color="primary" @click="tripCatch.crewSize += 1"></q-btn>
+                        <q-btn round size="xs" icon="add" color="primary" @click="tripCatch.crewSize += 1"></q-btn>
                         &nbsp;
-                        <q-btn round size="sm" icon="remove" color="secondary" @click="tripCatch.crewSize -= 1"></q-btn>
+                        <q-btn round size="xs" icon="remove"  @click="tripCatch.crewSize -= 1"></q-btn>
                         &nbsp;
                     </template>
                 </q-input>
@@ -268,15 +268,11 @@
                 </div>
 
                 <q-field v-model="tripCatch.fishTicketDate" dense autogrow title="Date/Time the vessel returned to port for offload">
+                    <q-popup-proxy ref="qDateProxy5" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="tripCatch.fishTicketDate" @input="() => {$refs.qDateProxy5.hide()}"/>
+                    </q-popup-proxy>
                     <template v-slot:control>
                         {{ formatDate(tripCatch.fishTicketDate) }}
-                    </template>
-                    <template v-slot:prepend>
-                        <q-icon name="edit" class="cursor-pointer">
-                        <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                            <q-date v-model="tripCatch.fishTicketDate" @input="() => $refs.qDateProxy.hide()"/>
-                        </q-popup-proxy>
-                        </q-icon>
                     </template>
                     <template v-slot:before>
                         <div class="text-h6">Fish Ticket Date</div>
@@ -350,17 +346,17 @@
                             <div class="text-h6">Gear Type</div>
                         </template>
                     </q-select>
-                    <q-input v-if="tripCatch.hauls[selectedHaul - 1].gearTypeCode === '19 : hook & line'" v-model="tripCatch.hauls[selectedHaul - 1].gearPerSet" dense autogrow title="Total number of pots or hooks set (Mandatory for FG hauls)" mask="###">
+                    <q-input v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].gearPerSet" dense autogrow title="Total number of pots or hooks set (Mandatory for FG hauls)" mask="###">
                         <template v-slot:before>
                             <div class="text-h6">Gear Per Set</div>
                         </template>
                     </q-input>
-                    <q-input v-if="tripCatch.hauls[selectedHaul - 1].gearTypeCode === '19 : hook & line'" v-model="tripCatch.hauls[selectedHaul - 1].gearLost" dense autogrow title="Number of pots or hooks lost (Mandatory for FG hauls)" mask="###">
+                    <q-input v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].gearLost" dense autogrow title="Number of pots or hooks lost (Mandatory for FG hauls)" mask="###">
                         <template v-slot:before>
                             <div class="text-h6">Gear Lost</div>
                         </template>
                     </q-input>
-                    <q-input v-if="tripCatch.hauls[selectedHaul - 1].gearTypeCode === '19 : hook & line'" v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg" dense autogrow title="Average hooks per set" mask="###">
+                    <q-input v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg" dense autogrow title="Average hooks per set" mask="###">
                         <template v-slot:before>
                             <div class="text-h6">Avg Hooks Per Set</div>
                         </template>
@@ -370,7 +366,7 @@
                             <div class="text-h6">Net Type</div>
                         </template>
                     </q-input>
-                    <q-input v-if="tripCatch.hauls[selectedHaul - 1].gearTypeCode === '10 : Pot'" v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity" dense autogrow title="Total estimated weight (lbs) the codened can hold" mask="#####">
+                    <q-input v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity" dense autogrow title="Total estimated weight (lbs) the codened can hold" mask="#####">
                         <template v-slot:before>
                             <div class="text-h6">Codend Capacity</div>
                         </template>
@@ -391,18 +387,14 @@
                     <div class="text-h4 text-secondary">Start</div>
                     <div class="row items-start">
                         <q-field v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" dense autogrow title="Date and time the gear was set" style="width: 55%; margin-right: 5px">
+                            <q-popup-proxy ref="qDateProxy3" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" @input="() => {$refs.qDateProxy3.hide()}"/>
+                            </q-popup-proxy>
                             <template v-slot:control>
                                 {{ formatDate(tripCatch.hauls[selectedHaul - 1].startDateTime) }}
                             </template>
-                            <template v-slot:prepend>
-                                <q-icon name="edit" class="cursor-pointer">
-                                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" @input="() => {$refs.qDateProxy.hide()}"/>
-                                </q-popup-proxy>
-                                </q-icon>
-                            </template>
                             <template v-slot:before>
-                                <div class="text-h6">Date</div>
+                                <div class="text-h6"> Date</div>
                             </template>
                         </q-field>
                         <q-input v-model="haulStartTime" dense autogrow title="Date and time the gear was set" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
@@ -433,18 +425,14 @@
                     <div class="text-h4 text-secondary">End</div>
                     <div class="row items-start">
                         <q-field v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" dense autogrow title="Date the gear was retrieved" style="width: 55%; margin-right: 5px">
+                            <q-popup-proxy ref="qDateProxy4" transition-show="scale" transition-hide="scale">
+                                <q-date v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" @input="() => {$refs.qDateProxy4.hide()}"/>
+                            </q-popup-proxy>
                             <template v-slot:control>
                                 {{ formatDate(tripCatch.hauls[selectedHaul - 1].endDateTime) }}
                             </template>
-                            <template v-slot:prepend>
-                                <q-icon name="edit" class="cursor-pointer">
-                                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                                    <q-date v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" @input="() => {$refs.qDateProxy.hide()}"/>
-                                </q-popup-proxy>
-                                </q-icon>
-                            </template>
                             <template v-slot:before>
-                                <div class="text-h6">Date</div>
+                                <div class="text-h6"> Date</div>
                             </template>
                         </q-field>
                         <q-input v-model="haulEndTime" dense autogrow title="Time the gear was retrieved" mask="##:##" :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']" style="width: 43.3%">
@@ -623,13 +611,13 @@ export default createComponent({
             if (tripCatch[attribute]) {
                 return 'bg-primary text-white';
             } else {
-                return 'bg-secondary text-white';
+                return 'text-primary';
             }
         } else {
             if (!tripCatch[attribute]) {
                 return 'bg-primary text-white';
             } else {
-                return 'bg-secondary text-white';
+                return 'text-primary';
             }
         }
     };
