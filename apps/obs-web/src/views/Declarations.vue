@@ -81,12 +81,34 @@
         </div>
         <div v-else class="centered-page-item text-primary">No active declarations for this vessel.</div>
         <br />
-        <div class="centered-page-item">Past Declarations</div>
+
+        <div class="centered-page-item">
+          Past Declarations
+          <q-btn
+            :color="getBtnColor()"
+            size="sm"
+            :disable="oleVessel === undefined || Object.keys(oleVessel.deactivatedDeclarations).length < 1"
+            @click="setTablePref()"
+          >{{ pastDecCards ? 'View As Table' : 'View As Cards'}}</q-btn>
+        </div>
 
         <div
           v-if="oleVessel !== undefined && Object.keys(oleVessel.deactivatedDeclarations).length > 0"
         >
-          <div class="q-pa-md column">
+          <div class="row items-start" v-if="!pastDecCards">
+            <q-table
+              :data="oleVessel.deactivatedDeclarations"
+              :columns="columns"
+              :pagination.sync="pagination"
+              row-key="_id"
+              dense
+              hide-bottom
+            >
+              
+            </q-table>
+          </div>
+
+          <div class="q-pa-md column" v-else>
             <q-card
               v-for="(obj, index) in oleVessel.deactivatedDeclarations"
               :key="index"
@@ -187,6 +209,7 @@
     <div v-else>
       <p class="centered-page-item text-primary">No active vessel</p>
     </div>
+
   </div>
 </template>
 
@@ -209,6 +232,14 @@ const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
 @Component
 export default class Declarations extends Vue {
+  private get oleVessel(): OLEVessel | undefined {
+    if (Object.keys(this.oleDoc).length !== 0) {
+      return this.oleDoc;
+    } else {
+      console.log('oleDoc missing');
+    }
+    return undefined;
+  }
   @State('vessel') private vessel!: VesselState;
   @State('user') private user!: UserState;
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
@@ -220,6 +251,7 @@ export default class Declarations extends Vue {
   private obsPrompt: boolean = false;
   private newObsStatus: string = '';
   private gearPrompt: boolean = false;
+  private pastDecCards: boolean = true;
   private newGearNote: string = '';
   private activeVesselId: string = '';
   private vessels: [] = [];
@@ -232,6 +264,63 @@ export default class Declarations extends Vue {
   private dualRules: any = dropdownTree['Allowed Dual Declarations'];
   private ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   private obsOptions: string[] = dropdownTree['Observed Options'];
+
+  private columns = [
+    {
+      name: 'declarationCode',
+      label: 'Declaration Code',
+      field: 'declarationCode',
+      required: true,
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'declarationDescrip',
+      label: 'Declaration Description',
+      field: 'declarationDescrip',
+      required: true,
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'activityDescrip',
+      label: 'Activity Description',
+      field: 'activityDescrip',
+      required: false,
+      align: 'left',
+      sortable: false
+    },
+    {
+      name: 'transactionDate',
+      label: 'Start Date',
+      field: 'transactionDate',
+      required: true,
+      align: 'left',
+      sortable: true,
+      format: (val: any) => this.formatDateTime(val)
+    },
+    {
+      name: 'observerStatus',
+      label: 'Observer Status',
+      field: 'observerStatus',
+      required: false,
+      align: 'left',
+      sortable: true
+    },
+    {
+      name: 'confirmationNumber',
+      label: 'Confirmation Number',
+      field: 'confirmationNumber',
+      required: false,
+      align: 'left',
+      sortable: true
+    }
+  ];
+
+  private pagination = {
+    descending: false,
+    rowsPerPage: 0
+  };
 
   private async getAuthorizedVessels() {
     this.authorizedVessels = [];
@@ -281,17 +370,72 @@ export default class Declarations extends Vue {
   private async getOleVessel() {
     console.log('fetching declarations from couch');
     try {
-      const masterDB: Client<any> = couchService.masterDB;
+      const masterDB = couchService.masterDB;
 
       const options = {
         include_docs: true,
         key: this.activeVesselId
       };
-      const vessels: any = await masterDB.view<any>(
+      let vessels: any = await masterDB.view(
         'OLEDeclarations',
         'all_ole_vessels',
         options
       );
+
+      // If not ole vessle doc is returned make a new one
+      if (!(vessels.rows.length  > 0)) {
+        const newDoc: OLEVessel = this.vessel.activeVessel.coastGuardNumber
+        ? { type: 'olevessel',
+            vesselName: this.vessel.activeVessel.vesselName,
+            coastGuardNumber: this.vessel.activeVessel.coastGuardNumber,
+            vesselPasscode: 1234,
+            vesselDocNumber: 1234,
+            lepOpenAccess: '',
+            vmsTech: '',
+            ifqAcct: 'Not sure what this is',
+            activeDeclarations: [],
+            deactivatedDeclarations: [],
+            cartDeclarations: [],
+            createdBy: '',
+            createdDate: '',
+            isDeleted: false,
+            changeLog: []}
+        : { type: 'olevessel',
+            vesselName: this.vessel.activeVessel.vesselName,
+            stateRegulationNumber: this.vessel.activeVessel.stateRegulationNumber,
+            vesselPasscode: 1234,
+            vesselDocNumber: 1234,
+            lepOpenAccess: '',
+            vmsTech: '',
+            ifqAcct: 'Not sure what this is',
+            activeDeclarations: [],
+            deactivatedDeclarations: [],
+            cartDeclarations: [],
+            createdBy: '',
+            createdDate: '',
+            isDeleted: false,
+            changeLog: []};
+
+        // Update couch
+        const uout = await masterDB.post(newDoc).then(
+          setTimeout(() => {
+            this.$q.notify({
+              color: 'green-4',
+              textColor: 'white',
+              icon: 'cloud_done',
+              message: 'new OLEVesssel doc created'
+            });
+          }, 500)
+        );
+
+        // Fetch new doc
+        vessels = await masterDB.view(
+          'OLEDeclarations',
+          'all_ole_vessels',
+          options
+        );
+      }
+
       for (const v of vessels.rows) {
         this.oleDoc = v.doc;
       }
@@ -369,6 +513,22 @@ export default class Declarations extends Vue {
     this.finishAddingToCart();
   }
 
+  private setTablePref() {
+    this.pastDecCards = !this.pastDecCards;
+  }
+
+  private getBtnColor() {
+    if (this.pastDecCards) {
+      return 'primary';
+    } else {
+      return 'secondary';
+    }
+  }
+
+  private formatDateTime(date: any) {
+    return moment(date).format('MM/DD/YYYY, HH:mm');
+  }
+
   // Had to split this part out so that qdialog could finish the add
   // to cart process as well.
   private async finishAddingToCart() {
@@ -426,10 +586,6 @@ export default class Declarations extends Vue {
     });
   }
 
-  private formatDateTime(date: any) {
-    return moment(date).format('MM/DD/YYYY, HH:mm');
-  }
-
   private notifySuccess(message: string) {
     Notify.create({
       message: 'Success: ' + message,
@@ -439,13 +595,6 @@ export default class Declarations extends Vue {
       icon: 'check',
       multiLine: true
     });
-  }
-
-  private get oleVessel(): OLEVessel | undefined {
-    if (Object.keys(this.oleDoc).length !== 0) {
-      return this.oleDoc;
-    } else { console.log('hit here'); }
-    return undefined;
   }
 
   @Watch('vessel.activeVessel')
