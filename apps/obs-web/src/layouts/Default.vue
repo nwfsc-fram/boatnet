@@ -211,19 +211,6 @@
         >
                 <q-item
                   v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-efp-management" exact
-                >
-                  <q-item-section avatar>
-                    <q-icon name="table"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>EM EFP Management</q-item-label>
-                    <q-item-label caption>manage EM EFP roster</q-item-label>
-                  </q-item-section>
-                </q-item>
-
-                <q-item
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
                   to="/em-task-management" exact @click="leftDrawerOpen = false"
                 >
                   <q-item-section avatar>
@@ -272,6 +259,19 @@
                   <q-item-section>
                     <q-item-label>Vido Footage Management</q-item-label>
                     <q-item-label caption>manage EM footage</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item
+                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+                  to="/em-efp-management" exact
+                >
+                  <q-item-section avatar>
+                    <q-icon name="table"/>
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>EM EFP Management</q-item-label>
+                    <q-item-label caption>manage EM EFP roster</q-item-label>
                   </q-item-section>
                 </q-item>
 

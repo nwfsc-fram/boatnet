@@ -341,7 +341,22 @@
             <div class="row items-start">
                 <div class="logbook-element">
                     <div class="text-h4 text-secondary">Haul {{ selectedHaul }}</div>
-                    <q-select v-model="tripCatch.hauls[selectedHaul - 1].gearTypeCode" dense autogrow title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope), 10 = pot, 19 = hook & line" :options="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)', '10 : Pot', '19 : hook & line']">
+                    <q-select
+                        v-model="tripCatch.hauls[selectedHaul - 1].gearTypeCode"
+                        dense
+                        autogrow
+                        title="1 : Groundfish trawl, footrope < 8 inches (small footrope), 2 : Groundfish trawl, footrope > 8 inches (large footrope), 3 : Midwater Trawl, 4 : Danish/Scottish Seine (trawl), 5 : Other Trawl Gear, 10 : Pot, 19 : hook & line, 20 : Longline (snap) (fixed gear)"
+                        :options="[
+                        '1 : Groundfish trawl, footrope < 8 inches (small footrope)',
+                        '2 : Groundfish trawl, footrope > 8 inches (large footrope)',
+                        '3 : Midwater Trawl',
+                        '4 : Danish/Scottish Seine (trawl)',
+                        '5 : Other Trawl Gear',
+                        '10 : Pot',
+                        '19 : hook & line',
+                        '20 : Longline (snap) (fixed gear)'
+                        ]"
+                    >
                         <template v-slot:before>
                             <div class="text-h6">Gear Type</div>
                         </template>
