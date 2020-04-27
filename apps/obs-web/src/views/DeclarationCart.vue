@@ -18,7 +18,7 @@
     <div
       v-if="cartEmpty"
       class="text-primary centered-page-item"
-    >The declarations cart is currently emtpy. To add a declaration click "ADD DECLARATION TO CART" above.</div>
+    >The declarations cart is currently empty. To add a declaration click "ADD DECLARATION TO CART" above.</div>
 
     <div v-if="Object.keys(oleVessel).length > 0">
       <div class="q-pa-md column">
@@ -149,15 +149,6 @@ export default class DeclarationCart extends Vue {
     } catch (err) {
       this.errorAlert(err);
     }
-  }
-
-  private isAuthorized(authorizedRoles: string[]) {
-    for (const role of authorizedRoles) {
-      if (this.userRoles.includes(role)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private formatDateTime(date: any) {
