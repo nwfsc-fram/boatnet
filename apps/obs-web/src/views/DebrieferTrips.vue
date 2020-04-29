@@ -111,6 +111,14 @@ export default createComponent({
         isEditable: true
       },
       {
+        field: 'tripScore',
+        header: 'Trip Score',
+        type: 'toggle',
+        list: ['Pass', 'Fail'],
+        key: 'wcgopTripScore',
+        isEditable: true
+      },
+      {
         field: 'observer.firstName',
         header: 'Obs. First Name',
         type: 'input',
@@ -157,13 +165,12 @@ export default createComponent({
       },
       // first receiver
       {
-        field: 'firstReceivers',
+        field: 'firstReceivers[0].dealerName',
         header: 'First Receivers',
-        type: 'popup',
+        type: 'toggle',
         key: 'wcgopFR',
         uniqueKey: '_id',
         isEditable: false,
-
         popupColumns: [
           {
             field: 'dealerName',
@@ -180,11 +187,12 @@ export default createComponent({
         ]
       },
       {
-        field: 'vessel.captains',
-        header: 'Skippers',
+        field: 'vessel.captains[0].firstName',
+        header: 'Skipper First Name',
         type: 'popup',
-        key: 'wcgopCaptains',
+        key: 'wcgopCaptainsF',
         uniqueKey: '_id',
+        popupField: 'vessel.captains',
         isEditable: false,
         popupColumns: [
           {
@@ -200,6 +208,13 @@ export default createComponent({
             key: 'lastName'
           }
         ]
+      },
+      {
+        field: 'vessel.captains[0].lastName',
+        header: 'Skippers Last Name',
+        type: 'input',
+        key: 'wcgopCaptainsL',
+        isEditable: true,
       },
       {
         field: 'departureDate',
@@ -266,7 +281,7 @@ export default createComponent({
       {
         field: 'departurePort.name',
         header: 'Departure Port',
-        type: 'toggle',
+        type: 'search-toggle',
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopDeparturePort',
@@ -275,35 +290,53 @@ export default createComponent({
       {
         field: 'returnPort.name',
         header: 'Return Port',
-        type: 'toggle',
+        type: 'search-toggle',
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopReturnPort',
         isEditable: true
       },
       {
-        field: 'fishTickets',
-        header: 'Fish Tickets',
+        field: 'fishTickets[0].fishTicketNumber',
+        header: 'FT #',
         type: 'popup',
-        key: 'wcgopFishTickets',
+        key: 'wcgopFT',
+        isEditable: true,
         uniqueKey: 'fishTicketNumber',
-        isEditable: false,
+        popupField: 'fishTickets',
         popupColumns: [
           {
             field: 'fishTicketNumber',
             header: 'Ticket #',
             type: 'input',
-            key: 'ticket'
+            key: 'ticket',
+            isEditable: true
           },
           {
             field: 'stateAgency',
             header: 'State',
             type: 'toggle',
             key: 'state',
-            list: ['C', 'O', 'W']
+            list: ['C', 'O', 'W'],
+            isEditable: true
           },
-          { field: 'createdDate', header: 'Date', type: 'date', key: 'date' }
+          { field: 'createdDate', header: 'Date', type: 'date', key: 'date', isEditable: true }
         ]
+      },
+      {
+        field: 'fishTickets[0].stateAgency',
+        header: 'State',
+        type: 'toggle',
+        key: 'wcgopState',
+        isEditable: true,
+        list: ['C', 'O', 'W']
+      },
+      {
+        field: 'fishTickets[0].fishTicketDate',
+        header: 'Date',
+        type: 'date',
+        key: 'wcgopDate',
+        isEditable: true
       },
       {
         field: 'notes',

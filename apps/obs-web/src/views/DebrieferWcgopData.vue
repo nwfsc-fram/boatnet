@@ -3,8 +3,20 @@
     <div style="text-align: right">
       <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
     </div>
+    <div>
+      Filters:
+      <q-chip
+        v-for="filter of filters"
+        :key="filter.label"
+        removable
+        color="primary"
+        text-color="white"
+        icon="directions_boat"
+        @remove="remove(filter)"
+      >{{ filter.label }}</q-chip>
+    </div>
     <div class="q-gutter-y-md">
-      <q-card v-if="showData">
+      <q-card>
         <q-tabs
           v-model="tab"
           dense
@@ -56,31 +68,78 @@
 
 
 <script lang="ts">
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { date } from 'quasar';
-import { convertToObject } from 'typescript';
+import {
+  createComponent,
+  reactive,
+  computed,
+  ref,
+  watch
+} from '@vue/composition-api';
+import moment from 'moment';
+import { AshopCruise } from '@boatnet/bn-models';
+import { newCruiseApiTrip } from '@boatnet/bn-common';
+import { pouchService } from '@boatnet/bn-pouch';
+import { get, set, findIndex } from 'lodash';
 
-@Component
-export default class DebrieferData extends Vue {
-  @Prop({ default: true })
-  private showErrors!: boolean;
-  @Prop({ default: true })
-  private showData!: boolean;
+export default createComponent({
+  props: {
+    showErrors: Boolean,
+    showData: Boolean
+  },
+  setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
+    const tab = 'trips';
 
-  private tab = 'trips';
+    const filters: any = ref([]);
 
-  private showBoth() {
-    this.showErrors = true;
-    this.showData = true;
+    watch(() => state.debriefer.trips, update);
+    watch(() => state.debriefer.operations, update);
+
+    function update() {
+      filters.value = [];
+      filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
+      filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul ', 'operationNum'));
+    }
+
+    function updateFilter(list: any[], label: string, idLabel: string) {
+      const filterVals = [];
+      for (const val of list) {
+        const id = get(val, idLabel);
+        val.label = label + id;
+        filterVals.push(val);
+      }
+      return filterVals;
+    }
+
+    function remove(item: any) {
+      let index = -1;
+      const trips = state.debriefer.trips;
+      const operations = state.debriefer.operations;
+
+      if (item.type === 'wcgop-trip') {
+        index = findIndex(trips, item);
+        trips.splice(index, 1);
+        store.dispatch('debriefer/updateTrips', trips);
+      } else if (item.type === 'wcgop-operation') {
+        index = findIndex(operations, item);
+        operations.splice(index, 1);
+        store.dispatch('debriefer/updateOperations', operations);
+      }
+    }
+
+    function openNewDebriefingTab() {
+      const route = '/observer-web/debriefer/qa';
+      window.open(route, '_blank');
+      context.emit('update:showErrors', false);
+    }
+
+    return {
+      openNewDebriefingTab,
+      filters,
+      tab,
+      remove
+    };
   }
-
-  private openNewDebriefingTab() {
-    const route = '/observer-web/debriefer/qa';
-    window.open(route, '_blank');
-    this.showErrors = false;
-  }
-}
+});
 </script>

@@ -61,6 +61,14 @@ export default class DebrieferOperations extends Vue {
       key: 'wcgopOpHaulNum'
     },
     {
+        field: 'haulScore',
+        header: 'Haul Score',
+        type: 'toggle',
+        list: ['Pass', 'Fail'],
+        key: 'wcgopHaulScore',
+        isEditable: true
+      },
+    {
       field: 'observerTotalCatch.measurement.value',
       header: 'OTC',
       type: 'number',
@@ -272,34 +280,29 @@ export default class DebrieferOperations extends Vue {
     { field: 'notes', header: 'Notes', type: 'input', key: 'ashopOpNotes' }
   ];
 
+  @Watch('debriefer.trips')
+  private async onTripsChange() {
+    this.getOperations();
+  }
+
   private async getOperations() {
     const masterDB: Client<any> = couchService.masterDB;
     let operationIds: string[] = [];
-    const tripIds: any[] = getSelected(this.debriefer.program, 'Trips');
+    const operationHolder = [];
+
+    for (const trip of this.debriefer.trips) {
+      operationIds = operationIds.concat(trip.operationIDs);
+    }
 
     try {
-      // get trips
-      const tripOptions: ListOptions = {
-        keys: tripIds
-      };
-
-      const trips = await masterDB.listWithDocs(tripOptions);
-      for (const row of trips.rows) {
-        operationIds = operationIds.concat(row.operationIDs);
-      }
-
-      // get operations
       const options: ListOptions = {
         keys: operationIds
       };
-
       const operations = await masterDB.listWithDocs(options);
       for (const operation of operations.rows) {
-        //  for (const locationRow of operation.locations) {
-        const opLoc = Object.assign({}, operation);
-        //   opLoc.location = locationRow;
-        this.WcgopOperations.push(opLoc);
+        operationHolder.push(operation);
       }
+      this.WcgopOperations = operationHolder;
     } catch (err) {
       this.error(err);
     }

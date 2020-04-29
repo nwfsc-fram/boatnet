@@ -3,6 +3,7 @@
     <q-form @submit="onSubmit">
 
       <q-btn-toggle
+        v-if="!isAuthorized(['enforcement'])"
         v-model="worksheetModel"
         dense
         toggle-color="primary"
@@ -570,6 +571,15 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  private isAuthorized(authorizedRoles: string[]) {
+    for (const role of authorizedRoles) {
+      if (this.userRoles.includes(role)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   private get oleVessel(): OLEVessel {
     return this.oleDoc;
   }
@@ -587,6 +597,12 @@ export default class Dropdowns extends Vue {
       this.dbReturn = this.getOleVessel();
     } catch (err) {
       console.log('failed couch attempt');
+    }
+
+    // if ole staff set toggle to just drop down menu
+    if (this.isAuthorized(['enforcement'])) {
+      this.worksheetModel = false;
+      this.databaseObject.showBoolArr[0] = false;
     }
   }
 
