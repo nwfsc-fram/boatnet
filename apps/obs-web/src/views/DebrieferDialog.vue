@@ -15,13 +15,13 @@
         />
         <div style="display: inline-block" class="q-pa-md">
           <div class="p-float-label q-px-md">
-            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" :minDate="formattedMinDate" />
+            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" /><!--:minDate="formattedMinDate"-->
             <label for="startDate" style="color: #027be3">Start Date</label>
           </div>
         </div>
         <div style="display: inline-block" class="q-pa-md">
           <div class="p-float-label">
-            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" :minDate="formattedMinDate" />
+            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" />
             <label for="endDate" style="color: #027be3">End Date</label>
           </div>
         </div>

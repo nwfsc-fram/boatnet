@@ -36,6 +36,17 @@
                   v-model="slotProps.node.data[slotProps.column.field]"
                   :placeholder="slotProps.node.data[slotProps.column.field]"
                   :options="lookupsList"
+                  :optionLabel="'doc.' + col.lookupField"
+                  optionValue="doc"
+                  @input="onCellEdit($event, slotProps, col)"
+                  @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
+                />
+                <Dropdown
+                  v-else-if="col.type === 'toggle-search'"
+                  :style="'width: ' + col.width + 'px'"
+                  v-model="slotProps.node.data[slotProps.column.field]"
+                  :placeholder="slotProps.node.data[slotProps.column.field]"
+                  :options="lookupsList"
                   :filter="true"
                   :optionLabel="'doc.' + col.lookupField"
                   optionValue="doc"
@@ -47,9 +58,9 @@
                   debounce="500"
                   v-model="slotProps.node.data[slotProps.column.field]"
                   @input="onCellEdit($event, slotProps, col)"
-                  />
+                />
               </div>
-              <span v-else>{{slotProps.node.data[slotProps.column.field]}}</span>
+              <span v-else>{{ displayData(slotProps, col.type) }}</span>
             </template>
           </pColumn>
         </pTreeTable>
@@ -101,11 +112,15 @@ export default class BoatnetTreeTable extends Vue {
     }
   }
 
-  private onCellEdit(event: any, slotProps: any, col: any) {
-    if (slotProps.column.field === 'name') {
-      slotProps.node.data.name = event.displayName;
-      slotProps.node.data.catchContent = event;
+  private displayData(data: any, colType: string) {
+    let value: any = data.node.data[data.column.field];
+    if (value && colType === 'double' && value % 1 !== 0) {
+      value = value.toFixed(2);
     }
+    return value;
+  }
+
+  private onCellEdit(event: any, slotProps: any, col: any) {
     if (col.type === 'toggle') {
       slotProps.node.data[slotProps.column.field] = event[col.lookupField];
     } else {
@@ -172,10 +187,8 @@ export default class BoatnetTreeTable extends Vue {
 </script>
 
 <style >
-
 tr {
   font-weight: bold;
   height: 40px !important;
 }
-
 </style>

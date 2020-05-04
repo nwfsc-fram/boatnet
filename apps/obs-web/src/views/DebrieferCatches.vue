@@ -8,8 +8,7 @@
       :isEditable="true"
       :program="program"
       @save="save"
-    >
-    </boatnet-tree-table>
+    ></boatnet-tree-table>
   </div>
 </template>
 
@@ -59,14 +58,14 @@ export default createComponent({
         {
           name: 'disposition',
           required: true,
-          label: 'R/D',
+          label: 'Disposition',
           align: 'left',
           field: 'disposition',
           width: '60',
           isEditable: true,
           type: 'toggle',
           lookupView: 'catch-disposition',
-          lookupField: 'description'
+          lookupField: 'abbreviation'
         },
         {
           name: 'weightMethod',
@@ -75,7 +74,7 @@ export default createComponent({
           field: 'weightMethod',
           width: '150',
           isEditable: true,
-          type: 'toggle',
+          type: 'toggle-search',
           lookupView: 'weight-method',
           lookupField: 'description'
         },
@@ -86,7 +85,7 @@ export default createComponent({
           field: 'name',
           width: '150',
           isEditable: true,
-          type: 'toggle',
+          type: 'toggle-search',
           lookupView: 'taxonomy-alias',
           lookupField: 'displayName'
         },
@@ -97,7 +96,7 @@ export default createComponent({
           field: 'discardReason',
           width: '100',
           isEditable: true,
-          type: 'toggle',
+          type: 'toggle-search',
           lookupView: 'discard-reason',
           lookupField: 'description'
         },
@@ -106,6 +105,7 @@ export default createComponent({
           align: 'left',
           label: 'Weight (lbs)',
           field: 'weight',
+          type: 'double',
           width: '100',
           isEditable: true
         },
@@ -133,8 +133,7 @@ export default createComponent({
           const operationId = operation._id;
           let disposition = c.disposition ? c.disposition.description : '';
           const wm = c.weightMethod ? c.weightMethod.description : '';
-          let weight: any = c.weight ? c.weight.value : null;
-          weight = weight && weight % 1 !== 0 ? weight.toFixed(2) : weight;
+          const weight: any = c.weight ? c.weight.value : null;
           const catchContent = c.catchContent;
           const name = catchContent ? catchContent.name : '';
           const children: any[] = [];
@@ -149,25 +148,42 @@ export default createComponent({
 
           if (c.children) {
             for (const child of c.children) {
-              const discardReason = child.discardReason ? child.discardReason.description : '';
+              const discardReason = child.discardReason
+                ? child.discardReason.description
+                : '';
               const catchContents = child.catchContent;
-              const catchName = catchContents ? catchContents.commonNames[0] : '';
-              let childWeight = child.weight ? child.weight.value : null;
-              childWeight =
-                childWeight && childWeight % 1 !== 0
-                  ? childWeight.toFixed(2)
-                  : childWeight;
+              const catchName = catchContents
+                ? catchContents.commonNames[0]
+                : '';
+              const childWeight = child.weight ? child.weight.value : null;
               const units = child.weight ? child.weight.units : '';
               const childCount = child.sampleCount;
+
+              const baskets: any[] = [];
+              if (child.baskets) {
+                let basketCount = 0;
+                for (const basket of child.baskets) {
+                  baskets.push({
+                    key: key + '_' + childIndex + '_' + basketCount,
+                    data: {
+                      weight: basket.weight.value,
+                      count: basket.count
+                    }
+                  });
+                  basketCount++;
+                }
+              }
+
               children.push({
                 key: key + '_' + childIndex,
                 data: {
                   discardReason,
-                  catchName,
-                  catchContents,
+                  name: catchName,
+                  catchContent: catchContents,
                   weight: childWeight,
                   count: childCount
-                }
+                },
+                children: baskets
               });
               childIndex++;
             }
@@ -227,6 +243,12 @@ export default createComponent({
             catches[ids[1]].children[ids[2]][columnName].value = data.value;
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].sampleCount = data.value;
+          }
+        } else if (ids.length === 4) {
+          if (columnName === 'weight') {
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value = data.value;
+          } else if (columnName === 'count') {
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] = data.value;
           }
         }
         operationRecord.catches = catches;
