@@ -1,7 +1,13 @@
 <template>
   <div>
-    <div class="text-h6">Catch Baskets</div>
-    <prime-table :value="WcgopCatchBaskets" :columns="columns" type="CatchBaskets"/>    
+    <div class="text-h6">Baskets</div>
+    <prime-table
+      :value="WcgopCatchBaskets"
+      :columns="columns"
+      type="Baskets"
+      uniqueKey="basketWeight"
+      :simple="false"
+    />
   </div>
 </template>
 
@@ -29,7 +35,6 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
-import { getSelected } from '../helpers/localStorage';
 
 @Component
 export default class DebrieferOperations extends Vue {
@@ -43,74 +48,56 @@ export default class DebrieferOperations extends Vue {
   private pagination = { rowsPerPage: 50 };
 
   private columns = [
-    { field: 'legacy.tripId', header: 'Trip Id' },
+    { field: 'tripId', header: 'Trip Id' },
     { field: 'operationNum', header: 'Haul #' },
-    { field: 'catch.catchNum', header: 'Catch #' },
-    { field: 'catch.disposition.description', header: 'Catch Disposition' },
-    { field: 'catch.weightMethod.description', header: 'Catch WM' },
-    { field: 'catch.weight.value', header: 'Catch Weight (lbs)' }
+    { field: 'catchNum', header: 'Catch #' },
+    { field: 'disposition', header: 'R/D' },
+    { field: 'species', header: 'Species Name' },
+    { field: 'basketWeight', header: 'Basket Weight' },
+    { field: 'count', header: 'Count' }
   ];
 
-   private async getCatchBaskets() {
-    const masterDB: Client<any> = couchService.masterDB;
-    const operationIds: any[] = getSelected(this.debriefer.program, 'Operations');
-
-    try {
-      const options: ListOptions = {
-        keys: operationIds
-      };
-
-      const operations = await masterDB.listWithDocs(
-        options
-      );
-
-      for (const operation of operations.rows) {
-        for (const catchRow of operation.catches) {
-          if (catchRow.baskets != null) {
-            for (const catchBasketRow of catchRow.baskets) {
-              const opCatch = Object.assign({}, operation);
-              opCatch.key = operation.key;
-             // opCatch.trip = this.debriefer.WcgopOperationTripDict[operation._id];
-              opCatch.catch = catchRow;
-              opCatch.catch.basket = catchBasketRow;
-              this.WcgopCatchBaskets.push(opCatch);
-            }
-          }
-        }
+  private async getCatchBaskets() {
+    this.WcgopCatchBaskets = [
+      {
+        tripId: 38605,
+        operationNum: 1,
+        catchNum: 20,
+        disposition: 'D',
+        species: 'Pacific Dogfish',
+        basketWeight: 48.5,
+        count: 8
+      },
+      {
+        tripId: 38605,
+        operationNum: 1,
+        catchNum: 20,
+        disposition: 'D',
+        species: 'Pacific Dogfish',
+        basketWeight: 50,
+        count: 9
+      },
+      {
+        tripId: 38605,
+        operationNum: 1,
+        catchNum: 20,
+        disposition: 'D',
+        species: 'Pacific Dogfish',
+        basketWeight: 41
+      },
+      {
+        tripId: 38605,
+        operationNum: 1,
+        catchNum: 20,
+        disposition: 'D',
+        species: 'Pacific Dogfish',
+        basketWeight: 53
       }
-
-      console.log(this.WcgopCatchBaskets);
-    } catch (err) {
-      this.error(err);
-    }
+    ];
   }
 
   private created() {
     this.getCatchBaskets();
-  }
-
-  private formatDate(inputDate: any) {
-    return date.formatDate(inputDate, 'MM/DD/YYYY');
-  }
-
-  private nullValueCheck(input: any, round: boolean) {
-    if (input) {
-      if (round) {
-        return input.value.toFixed(2);
-      } else {
-        return input.value;
-      }
-    }
-
-    return '';
-  }
-
-  private nullDescriptionCheck(input: any) {
-    if (input != null) {
-      return input.description;
-    }
-
-    return '';
   }
 }
 </script>

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="text-h6">Catch Species</div>
     <prime-table :value="WcgopCatchSpecies" :columns="columns" type="CatchSpecies"/>
   </div>
 </template>
@@ -45,9 +44,12 @@ export default class DebrieferOperations extends Vue {
     { field: 'legacy.tripId', header: 'Trip Id', key: 'tripId' },
     { field: 'operationNum', header: 'Haul #', key: 'haulNum' },
     { field: 'catch.catchNum', header: 'Catch #', key: 'catchNum' },
-    { field: 'catch.disposition.description', header: 'Catch Disposition', key: 'catchDisc' },
-    { field: 'catch.weightMethod.description', header: 'Catch WM', key: 'catchWM' },
-    { field: 'catch.weight.value', header: 'Catch Weight (lbs)', key: 'catchLbs' }
+    { field: 'catch.disposition.description', header: 'R/D', key: 'catchDisc' },
+    { field: 'species', header: 'Species Name', key: 'catchWM' },
+    { field: 'discard', header: 'Discard Reason', key: 'catchDiscard' },
+    { field: 'bm', header: 'BM', key: 'catchBM' },
+    { field: 'sex', header: 'Sex', key: 'catchSex' },
+    { field: 'length', header: 'Length', key: 'catchLength' }
   ];
 
   private async getCatchSpecies() {

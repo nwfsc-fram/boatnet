@@ -140,7 +140,7 @@
     <app-cruise-dialog :showDialog.sync="showCruiseDialog" :cruise="cruise" />
 
     <boatnet-input-dialog
-      title="Delete Confirmation"
+      :settings="deleteDialogSettings"
       :show.sync="showDeleteDialog"
       @save="deleteEvalPeriod()"
     >
@@ -223,6 +223,19 @@ export default createComponent({
     const showDeleteDialog: any = ref(false);
     const dialogEvalPeriod = ref({});
 
+    const deleteDialogSettings = {
+      title: 'Confirm Delete',
+      width: 600,
+      height: 200,
+      confirmationLabel: 'Yes'
+    }
+
+    function clearFilters() {
+      store.dispatch('debriefer/updateTrips', []);
+      store.dispatch('debriefer/updateOperations', []);
+    }
+    clearFilters()
+
     const observerQueryOptions = computed(() => {
       const queryOptions: ListOptions = {};
       if (!showAll.value) {
@@ -289,6 +302,7 @@ export default createComponent({
     async function getTripsByDate(evalPeriod: any) {
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
       store.dispatch('debriefer/updateTrips', []);
+      store.dispatch('debriefer/updateOperations', []);
       const tripIds: any[] = [];
       const trips: any = await getTripsByDates(
         new Date(evalPeriod.startDate),
@@ -395,7 +409,7 @@ export default createComponent({
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
       showEvaluationDialog.value = true;
-      let index = findIndex(evaluations.value, { id: evaluationPeriod.value.id });
+      const index = findIndex(evaluations.value, { id: evaluationPeriod.value.id });
       if (evaluations.value[index + 1]) {
         minDate.value = moment(evaluations.value[index + 1].endDate).add(1, 'days').toString();
       } else {
@@ -439,7 +453,8 @@ export default createComponent({
       selectCruise,
       showEvaluationDialog,
       showCruiseDialog,
-      showDeleteDialog
+      showDeleteDialog,
+      deleteDialogSettings
     };
   }
 });

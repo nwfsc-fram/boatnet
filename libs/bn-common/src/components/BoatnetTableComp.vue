@@ -16,7 +16,7 @@
     </div>
 
     <boatnet-input-dialog
-      :title="action === 'add' ? 'Add ' + config.name : 'Edit ' + config.name"
+      :settings="dialogSettings"
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
@@ -55,6 +55,13 @@ export default class BoatnetTableComp extends Vue {
   private created() {
     this.config = get(this.appConfig, this.configName);
   }
+
+  private dialogSettings = {
+    title: this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name,
+    width: 600,
+    height: 200,
+    confirmationLabel: 'Yes'
+  };
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];

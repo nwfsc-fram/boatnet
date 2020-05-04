@@ -132,7 +132,7 @@ export default createComponent({
 
     async function init() {
       const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
-      formattedMinDate.value = props.minDate ? new Date(props.minDate) : null;
+      formattedMinDate.value = props.minDate ? new Date(props.minDate) : new Date();
       if (evalPeriod.startDate) {
         startDate.value = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
         endDate.value = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
