@@ -119,7 +119,7 @@ export default class BoatnetTreeTable extends Vue {
   }
 
   private edit(data: any) {
-    if (this.editingRow != data.node.key) {
+    if (this.editingRow !== data.node.key) {
       this.editingRow = data.node.key;
     }
   }
@@ -141,11 +141,10 @@ export default class BoatnetTreeTable extends Vue {
       field
     );
     if (data.column.field === 'name') {
-      for (let i = 0; i < this.lookupsList.length; i++) {
-        this.lookupsList[i].doc.displayName = get(
-          this.lookupsList[i],
-          'doc.' + field
-        );
+      let i = 0;
+      for (const item of this.lookupsList) {
+        this.lookupsList[i].doc.displayName = get(item, 'doc.' + field);
+        i++;
       }
     }
   }

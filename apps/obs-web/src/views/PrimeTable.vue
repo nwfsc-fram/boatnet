@@ -241,7 +241,7 @@ export default createComponent({
       let val: any = get(value[index], slotProps.column.field);
       if (type === 'date') {
         val = moment(val).format('MM/DD/YYYY HH:mm');
-      } else if (val && type === 'double' && val % 1 != 0) {
+      } else if (val && type === 'double' && val % 1 !== 0) {
         val = val.toFixed(2);
       }
       return val;

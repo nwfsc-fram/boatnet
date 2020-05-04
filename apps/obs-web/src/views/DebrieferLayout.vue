@@ -228,13 +228,13 @@ export default createComponent({
       width: 600,
       height: 200,
       confirmationLabel: 'Yes'
-    }
+    };
 
     function clearFilters() {
       store.dispatch('debriefer/updateTrips', []);
       store.dispatch('debriefer/updateOperations', []);
     }
-    clearFilters()
+    clearFilters();
 
     const observerQueryOptions = computed(() => {
       const queryOptions: ListOptions = {};

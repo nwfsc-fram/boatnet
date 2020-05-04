@@ -128,18 +128,18 @@ export default createComponent({
 
       for (const operation of debriefer.operations) {
         for (const c of operation.catches) {
-          let tripId = operation.legacy.tripId;
-          let operationNum = operation.operationNum;
-          let operationId = operation._id;
+          const tripId = operation.legacy.tripId;
+          const operationNum = operation.operationNum;
+          const operationId = operation._id;
           let disposition = c.disposition ? c.disposition.description : '';
-          let wm = c.weightMethod ? c.weightMethod.description : '';
+          const wm = c.weightMethod ? c.weightMethod.description : '';
           let weight: any = c.weight ? c.weight.value : null;
-          weight = weight && weight % 1 != 0 ? weight.toFixed(2) : weight;
-          let catchContent = c.catchContent;
-          let name = catchContent ? catchContent.name : '';
-          let children: any[] = [];
+          weight = weight && weight % 1 !== 0 ? weight.toFixed(2) : weight;
+          const catchContent = c.catchContent;
+          const name = catchContent ? catchContent.name : '';
+          const children: any[] = [];
           let childIndex = 0;
-          let key = operationId + '_' + catchIndex;
+          const key = operationId + '_' + catchIndex;
 
           if (disposition === 'Retained') {
             disposition = 'R';
@@ -148,25 +148,23 @@ export default createComponent({
           }
 
           if (c.children) {
-            for (let child of c.children) {
-              let discardReason = child.discardReason
-                ? child.discardReason.description
-                : '';
-              let catchContent = child.catchContent;
-              let name = catchContent ? catchContent.commonNames[0] : '';
+            for (const child of c.children) {
+              const discardReason = child.discardReason ? child.discardReason.description : '';
+              const catchContents = child.catchContent;
+              const catchName = catchContents ? catchContents.commonNames[0] : '';
               let childWeight = child.weight ? child.weight.value : null;
               childWeight =
-                childWeight && childWeight % 1 != 0
+                childWeight && childWeight % 1 !== 0
                   ? childWeight.toFixed(2)
                   : childWeight;
-              let units = child.weight ? child.weight.units : '';
-              let childCount = child.sampleCount;
+              const units = child.weight ? child.weight.units : '';
+              const childCount = child.sampleCount;
               children.push({
                 key: key + '_' + childIndex,
                 data: {
                   discardReason,
-                  name,
-                  catchContent,
+                  catchName,
+                  catchContents,
                   weight: childWeight,
                   count: childCount
                 }
@@ -199,36 +197,36 @@ export default createComponent({
 
     async function save(data: any) {
       const masterDB: Client<any> = couchService.masterDB;
-      let ids = data.key.split('_');
+      const ids = data.key.split('_');
       const columnName = data.column;
 
       try {
-        let operationRecord = await masterDB.get(ids[0]);
-        let catches = operationRecord.catches;
+        const operationRecord = await masterDB.get(ids[0]);
+        const catches = operationRecord.catches;
 
         if (ids.length === 2) {
           if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
             catches[ids[1]][columnName] = {
               description: data.value.description,
               _id: data.value._id
-            }
+            };
           } else if (columnName === 'name') {
-            catches[ids[1]]['catchContent'] = data.value;
+            catches[ids[1]].catchContent = data.value;
           } else if (columnName === 'weight') {
-            catches[ids[1]][columnName].value = data.value
+            catches[ids[1]][columnName].value = data.value;
           }
         } else if (ids.length === 3) {
           if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
             catches[ids[1]].children[ids[2]][columnName] = {
               description: data.value.description,
               _id: data.value._id
-            }
+            };
           } else if (columnName === 'name') {
-            catches[ids[1]].children[ids[2]]['catchContent'] = data.value;
+            catches[ids[1]].children[ids[2]].catchContent = data.value;
           } else if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]][columnName].value = data.value;
-          }else if (columnName === 'count') {
-            catches[ids[1]].children[ids[2]]['sampleCount'] = data.value;
+          } else if (columnName === 'count') {
+            catches[ids[1]].children[ids[2]].sampleCount = data.value;
           }
         }
         operationRecord.catches = catches;

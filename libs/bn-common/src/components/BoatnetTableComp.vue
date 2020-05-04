@@ -52,16 +52,16 @@ export default class BoatnetTableComp extends Vue {
   private appConfig!: BoatnetConfig;
   private config: any;
 
-  private created() {
-    this.config = get(this.appConfig, this.configName);
-  }
-
   private dialogSettings = {
     title: this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name,
     width: 600,
     height: 200,
     confirmationLabel: 'Yes'
   };
+
+  private created() {
+    this.config = get(this.appConfig, this.configName);
+  }
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];
