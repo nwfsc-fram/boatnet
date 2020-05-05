@@ -121,7 +121,7 @@ export default class BoatnetTreeTable extends Vue {
   }
 
   private onCellEdit(event: any, slotProps: any, col: any) {
-    if (col.type === 'toggle') {
+    if (col.type === 'toggle' || col.type === 'toggle-search') {
       slotProps.node.data[slotProps.column.field] = event[col.lookupField];
     } else {
       slotProps.node.data[slotProps.column.field] = event;

@@ -74,7 +74,7 @@
           expand-separator
           class="q-pl-md text-primary"
           icon="filter_list"
-          label="Additional Filters"
+          label="Search"
           default-closed
         >
           <div class="q-pl-md">
@@ -231,8 +231,11 @@ export default createComponent({
     };
 
     function clearFilters() {
+      store.dispatch('debriefer/setTripIds', []);
       store.dispatch('debriefer/updateTrips', []);
       store.dispatch('debriefer/updateOperations', []);
+      state.debriefer.trips.splice(0, state.debriefer.trips.length);
+      state.debriefer.operations.splice(0, state.debriefer.operations.length);
     }
     clearFilters();
 
@@ -294,15 +297,9 @@ export default createComponent({
       }
     });
 
-    function clearData() {
-      store.dispatch('debriefer/setTripIds', []);
-    }
-    clearData();
-
     async function getTripsByDate(evalPeriod: any) {
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
-      store.dispatch('debriefer/updateTrips', []);
-      store.dispatch('debriefer/updateOperations', []);
+      clearFilters();
       const tripIds: any[] = [];
       const trips: any = await getTripsByDates(
         new Date(evalPeriod.startDate),
@@ -316,7 +313,7 @@ export default createComponent({
     }
 
     async function selectObserver(id: string) {
-      clearData();
+      clearFilters();
       store.dispatch('debriefer/updateObservers', id);
       evaluationPeriod.value = {};
       await getEvaluationPeriods(id);
@@ -402,8 +399,11 @@ export default createComponent({
     function add() {
       dialogEvalPeriod.value = {};
       showEvaluationDialog.value = true;
-      const date: any = moment(evaluations.value[0].endDate).add(1, 'days');
-      minDate.value = date.toString();
+      if (evaluations.value.length > 0) {
+        minDate.value = moment(evaluations.value[0].endDate).add(1, 'days').toString();
+      } else {
+        minDate.value = null;
+      }
     }
 
     function edit() {
@@ -424,7 +424,7 @@ export default createComponent({
       masterDB.delete(id, evaluationPeriod.value.rev);
       evaluationPeriod.value = {};
       store.dispatch('debriefer/updateEvaluationPeriod', {});
-      clearData();
+      clearFilters();
     }
 
     return {
