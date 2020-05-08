@@ -15,6 +15,7 @@ import Declarations from './views/Declarations.vue';
 import AddDeclaration from './views/AddDeclaration.vue';
 import DeclarationCart from './views/DeclarationCart.vue';
 import DeclarationReceipt from './views/DeclarationReceipt.vue';
+import OLEEFPManagement from './views/OLEEFPManagement.vue';
 import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OTSManagement from './views/OTSManagement.vue';
 import ManageUsers from './views/ManageUsers.vue';
@@ -99,6 +100,12 @@ const router = new Router({
         },
         {
           path: '/declaration-receipt', name: 'Declaration Receipt', component: DeclarationReceipt
+        },
+        {
+          path: '/ole-efp-management', name: 'OLE EFP Management', component: OLEEFPManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['enforcement'])) { return next(); } else { return next('/login'); }
+          }
         },
         {
           path: '/permits', name: 'Permits', component: Permits,

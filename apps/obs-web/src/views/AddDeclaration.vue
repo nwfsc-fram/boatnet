@@ -207,7 +207,6 @@ import { VesselState, UserState, AlertState } from '../_store/types/types';
 
 
 /* tslint:disable:no-var-requires  */
-// I don't think I need this still...
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
 @Component({})
@@ -537,7 +536,9 @@ export default class Dropdowns extends Vue {
     } else {
       this.efpOptions2 = efpCatOptions;
       this.databaseObject.showefpQ2 = true;
-      this.model6 = 'EM';
+      if (this.modelefp1 === 'Electronic Monitoring') {
+        this.model6 = 'EM';
+      }
       this.databaseObject.showObsQuestion = true;
     }
   }
