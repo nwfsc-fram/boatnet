@@ -161,11 +161,12 @@ export default createComponent({
 
               const baskets: any[] = [];
               if (child.baskets) {
-                let basketCount = 0;
+                let basketCount = 1;
                 for (const basket of child.baskets) {
                   baskets.push({
                     key: key + '_' + childIndex + '_' + basketCount,
                     data: {
+                      name: 'Basket ' + basketCount,
                       weight: basket.weight.value,
                       count: basket.count
                     }

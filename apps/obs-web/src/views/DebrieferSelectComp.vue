@@ -8,6 +8,7 @@
     @input="select"
     fill-input
     hide-selected
+    clearable
   />
 </template>
 <script lang="ts">
@@ -44,7 +45,7 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-       return props.val ? props.val : {};
+        return props.val ? props.val : {};
       },
       set: (value: any) => {
         context.emit('update:val', value);
@@ -54,7 +55,11 @@ export default createComponent({
     watch(() => props.lookupQueryOptions, populateLookups, watcherOptions);
 
     function select(input: any) {
-      context.emit('select', input.value);
+      if (input && input.value) {
+        context.emit('select', input.value);
+      } else {
+        context.emit('select', null);
+      }
     }
 
     function filter(val: any, update: any) {

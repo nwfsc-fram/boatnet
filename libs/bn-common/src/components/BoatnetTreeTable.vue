@@ -28,7 +28,9 @@
                 @click="edit(slotProps)"
               />
               <div
-                v-else-if="slotProps.node.key === editingRow && col.isEditable && slotProps.node.data[slotProps.column.field]"
+                v-else-if="slotProps.node.key === editingRow &&
+                           col.isEditable &&
+                           slotProps.node.data[slotProps.column.field]"
               >
                 <Dropdown
                   v-if="col.type === 'toggle'"
@@ -182,7 +184,6 @@ export default class BoatnetTreeTable extends Vue {
     this.selected = [];
     this.$emit('select', undefined);
   }
-
 }
 </script>
 

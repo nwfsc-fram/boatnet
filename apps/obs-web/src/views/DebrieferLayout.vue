@@ -1,134 +1,94 @@
 <template>
   <div>
-    <div class="q-pl-md q-pt-md q-pr-md" style="float:left">
-      <div>Program</div>
-      <q-btn-toggle
-        v-model="program"
-        toggle-color="primary"
-        :options="[
-            {label: 'WCGOP', value: 'wcgop'},
-            {label: 'A-SHOP', value: 'ashop'}
-          ]"
-      />
-    </div>
-    <div v-if="program === 'wcgop'">
-      <div class="q-pt-md">
-        <debriefer-select-comp
-          label="Observer"
-          style="display: inline-block"
-          :val.sync="observer"
-          lookupView="all_wcgop_observers"
-          lookupLabel="value"
-          lookupValue="id"
-          :lookupQueryOptions="observerQueryOptions"
-          @select="selectObserver"
-        />
-        <q-toggle
-          class="q-px-md"
-          style="display: inline-block"
-          label="Show All"
-          v-model="showAll"
-        />
-        <q-select
-          style="display: inline-block; width: 25%"
-          :disable="observer === '' ? true : false"
-          v-model="evaluationPeriod"
-          :options="evaluations"
-          label="Previous Eval Periods"
-          @input="getTripsByDate"
-        />
-        <q-btn
-          round
-          :disable="observer === '' ? true : false"
-          class="q-mx-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="add"
-          @click="add"
-        />
-        <q-btn
-          round
-          :disable="observer === '' ? true : false"
-          class="q-mx-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="edit"
-          @click="edit"
-        />
-        <q-btn
-          round
-          :disable="observer === '' ? true : false"
-          class="q-ma-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="delete"
-          @click="showDeleteDialog = true"
-        />
-      </div>
-      <div>
-        <q-expansion-item
-          style="width: 25%"
-          expand-separator
-          class="q-pl-md text-primary"
-          icon="filter_list"
-          label="Search"
-          default-closed
+    <TabView class="q-ma-md">
+      <TabPanel header="WCGOP" :active="true">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="bg-grey-3 text-black"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+          narrow-indicator
         >
-          <div class="q-pl-md">
-            <debriefer-select-comp
-              label="Trip Id"
-              :val.sync="tripId"
-              lookupView="wcgop_trips_by_observerId"
-              lookupLabel="value"
-              lookupValue="id"
-              :lookupQueryOptions="{}"
-              @select="selectTripId"
-            />
-          </div>
-        </q-expansion-item>
-      </div>
-    </div>
-    <div v-else>
-      <debriefer-select-comp
-        class="q-pa-md"
-        style="display: inline-block; width: 25%"
-        label="Cruise Id"
-        :val.sync="cruiseId"
-        lookupView="ashop_cruise"
-        lookupLabel="key"
-        lookupValue="key"
-        :lookupQueryOptions="{}"
-        @select="selectCruise"
-      />
-      <q-btn
-        round
-        class="q-ma-xs"
-        style="display: inline-block"
-        color="white"
-        text-color="black"
-        icon="edit"
-        @click="showCruiseDialog = true"
-      />
-      <div class="q-pa-md" style="display: inline-block; width: 20%">
-        <b>Observer:</b>
-        <div>{{ observers }}</div>
-      </div>
-      <div class="q-pa-md" style="display: inline-block; width: 10%">
-        <b>Vessel Name:</b>
-        <div>{{ vesselName }}</div>
-      </div>
-      <div class="q-pa-md" style="display: inline-block; width: 10%">
-        <b>Start Date:</b>
-        <div>{{ cruiseStartDate }}</div>
-      </div>
-      <div class="q-pa-md" style="display: inline-block; width: 10%">
-        <b>End Date:</b>
-        <div>{{ cruiseEndDate }}</div>
-      </div>
-    </div>
+          <q-tab name="mails" label="Evaluation" />
+          <q-tab name="alarms" label="Search" />
+        </q-tabs>
+
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="mails">
+            <div v-if="program === 'wcgop'">
+              <div>
+                <debriefer-select-comp
+                  label="Observer"
+                  style="display: inline-block"
+                  :val.sync="observer"
+                  lookupView="all_wcgop_observers"
+                  lookupLabel="value"
+                  lookupValue="id"
+                  :lookupQueryOptions="observerQueryOptions"
+                  @select="selectObserver"
+                />
+                <q-toggle
+                  class="q-px-md"
+                  style="display: inline-block"
+                  label="Show All"
+                  v-model="showAll"
+                />
+                <q-select
+                  style="display: inline-block; width: 40%"
+                  :disable="observer === '' ? true : false"
+                  v-model="evaluationPeriod"
+                  :options="evaluations"
+                  label="Previous Eval Periods"
+                  @input="getTripsByDate"
+                />
+                <q-btn
+                  round
+                  :disable="observer === '' ? true : false"
+                  class="q-mx-xs"
+                  style="display: inline-block"
+                  color="white"
+                  text-color="black"
+                  icon="add"
+                  @click="add"
+                />
+                <q-btn
+                  round
+                  :disable="observer === '' ? true : false"
+                  class="q-mx-xs"
+                  style="display: inline-block"
+                  color="white"
+                  text-color="black"
+                  icon="edit"
+                  @click="edit"
+                />
+                <q-btn
+                  round
+                  :disable="observer === '' ? true : false"
+                  class="q-ma-xs"
+                  style="display: inline-block"
+                  color="white"
+                  text-color="black"
+                  icon="delete"
+                  @click="showDeleteDialog = true"
+                />
+              </div>
+              <div></div>
+            </div>
+          </q-tab-panel>
+
+          <q-tab-panel name="alarms">
+            <div class="q-pl-md">
+              <app-debriefer-wcgop-search />
+            </div>
+          </q-tab-panel>
+        </q-tab-panels>
+      </TabPanel>
+      <TabPanel header="A-SHOP">
+        <app-debriefer-layout-ashop />
+      </TabPanel>
+    </TabView>
 
     <app-debriefer-dialog
       :showDialog.sync="showEvaluationDialog"
@@ -136,8 +96,6 @@
       :minDate="minDate"
       @closeEvalDialog="closeEvalDialog"
     />
-
-    <app-cruise-dialog :showDialog.sync="showCruiseDialog" :cruise="cruise" />
 
     <boatnet-input-dialog
       :settings="deleteDialogSettings"
@@ -181,7 +139,7 @@ import {
   CouchDBCredentials,
   couchService
 } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
+import { Client, CouchDoc, ListOptions, FindOptions } from 'davenport';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import moment from 'moment';
@@ -211,17 +169,14 @@ export default createComponent({
 
     const evaluations: any = ref([]);
     const evaluationPeriod: any = ref({});
-    const tripId: any = ref({});
 
     const minDate: any = ref('');
 
-    const cruiseId: any = ref({});
-    const cruise: AshopCruise = ref({});
-
     const showEvaluationDialog: any = ref(false);
-    const showCruiseDialog: any = ref(false);
     const showDeleteDialog: any = ref(false);
     const dialogEvalPeriod = ref({});
+
+    const tab = 'mails';
 
     const deleteDialogSettings = {
       title: 'Confirm Delete',
@@ -245,42 +200,6 @@ export default createComponent({
         queryOptions.key = state.user.activeUserAlias.personDocId; // setting debrieferId
       }
       return queryOptions;
-    });
-
-    const cruiseStartDate = computed(() =>
-      cruise.value && cruise.value.startDate
-        ? moment(cruise.value.startDate).format('MM/DD/YYYY')
-        : ''
-    );
-    const cruiseEndDate = computed(() =>
-      cruise.value && cruise.value.endDate
-        ? moment(cruise.value.endDate).format('MM/DD/YYYY')
-        : ''
-    );
-    const vesselName = computed(() =>
-      cruise.value && cruise.value.vessel && cruise.value.vessel.vesselName
-        ? cruise.value.vessel.vesselName
-        : ''
-    );
-
-    const observers = computed({
-      get: () => {
-        let names = '';
-        const length = cruise.value.observers
-          ? cruise.value.observers.length
-          : 0;
-        for (let i = 0; i < length; i++) {
-          names +=
-            cruise.value.observers[i].firstName +
-            ' ' +
-            cruise.value.observers[i].lastName;
-          if (i < length - 1) {
-            names += ', ';
-          }
-        }
-        return names;
-      },
-      set: (id) => undefined
     });
 
     const program = computed({
@@ -317,31 +236,6 @@ export default createComponent({
       store.dispatch('debriefer/updateObservers', id);
       evaluationPeriod.value = {};
       await getEvaluationPeriods(id);
-    }
-
-    async function selectCruise(id: string) {
-      store.dispatch('debriefer/setCruiseIds', id);
-      try {
-        const results = await masterDB.viewWithDocs<any>(
-          'obs_web',
-          'ashop_cruise',
-          { key: id }
-        );
-        if (results.rows[0] && results.rows[0].doc) {
-          cruise.value = results.rows[0].doc;
-          store.dispatch('debriefer/setTripIds', results.rows[0].doc.trips);
-        } else {
-          cruise.value = {};
-          store.dispatch('debriefer/setTripIds', []);
-        }
-      } catch (err) {
-        store.dispatch('debriefer/setTripIds', []);
-        console.log(err);
-      }
-    }
-
-    function selectTripId(id: string) {
-      store.dispatch('debriefer/setTripIds', [id]);
     }
 
     async function closeEvalDialog(evalPeriod: any) {
@@ -400,7 +294,9 @@ export default createComponent({
       dialogEvalPeriod.value = {};
       showEvaluationDialog.value = true;
       if (evaluations.value.length > 0) {
-        minDate.value = moment(evaluations.value[0].endDate).add(1, 'days').toString();
+        minDate.value = moment(evaluations.value[0].endDate)
+          .add(1, 'days')
+          .toString();
       } else {
         minDate.value = null;
       }
@@ -409,9 +305,13 @@ export default createComponent({
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
       showEvaluationDialog.value = true;
-      const index = findIndex(evaluations.value, { id: evaluationPeriod.value.id });
+      const index = findIndex(evaluations.value, {
+        id: evaluationPeriod.value.id
+      });
       if (evaluations.value[index + 1]) {
-        minDate.value = moment(evaluations.value[index + 1].endDate).add(1, 'days').toString();
+        minDate.value = moment(evaluations.value[index + 1].endDate)
+          .add(1, 'days')
+          .toString();
       } else {
         minDate.value = null;
       }
@@ -441,20 +341,11 @@ export default createComponent({
       deleteEvalPeriod,
       dialogEvalPeriod,
       closeEvalDialog,
-      tripId,
-      selectTripId,
       getTripsByDate,
-      cruiseId,
-      cruise,
-      observers,
-      vesselName,
-      cruiseStartDate,
-      cruiseEndDate,
-      selectCruise,
       showEvaluationDialog,
-      showCruiseDialog,
       showDeleteDialog,
-      deleteDialogSettings
+      deleteDialogSettings,
+      tab
     };
   }
 });
