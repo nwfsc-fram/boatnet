@@ -6,6 +6,7 @@ import BoatnetCommonInputComponent from './components/BoatnetCommonInputComponen
 import BoatnetCustomKeyboard from './components/BoatnetCustomKeyboard.vue';
 import BoatnetDate from './components/BoatnetDate.vue';
 import BoatnetDatetime from './components/BoatnetDatetime.vue';
+import BoatnetDrawer from './components/BoatnetDrawer.vue';
 import BoatnetWarningDialog from './components/BoatnetWarningDialog.vue';
 import BoatnetTableComp from './components/BoatnetTableComp.vue';
 import BoatnetInputDialog from './components/BoatnetInputDialog.vue';
@@ -21,6 +22,8 @@ import BoatnetSummary from './components/BoatnetSummary.vue';
 import BoatnetTable from './components/BoatnetTable.vue';
 import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
 import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
+import BoatnetPushButton from './components/BoatnetPushButton.vue';
+import BoatnetPickList from './components/BoatnetPickList.vue';
 
 import BoatnetLogin from './views/BoatnetLogin.vue';
 
@@ -40,6 +43,7 @@ const Components: any = {
   BoatnetCustomKeyboard,
   BoatnetDate,
   BoatnetDatetime,
+  BoatnetDrawer,
   BoatnetWarningDialog,
   BoatnetTableComp,
   BoatnetInputDialog,
@@ -52,6 +56,8 @@ const Components: any = {
   BoatnetLocation,
   BoatnetLocations,
   BoatnetLogin,
+  BoatnetPickList,
+  BoatnetPushButton,
   BoatnetSummary,
   BoatnetTable,
   BoatnetTabPanel,
