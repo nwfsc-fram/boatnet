@@ -1,5 +1,6 @@
 <template>
     <div>
+        <q-page>
         <boatnet-summary
             currentScreen="Species"
             :current="currentCatch"
@@ -19,6 +20,89 @@
           />
         </template>
         </boatnet-summary>
+        {{ currentCatch }}
+        </q-page>
+
+        <boatnet-drawer
+        :show.sync="openDrawer"
+        side="right"
+        >
+            <template v-slot:main>
+                <div class="row">
+                    <div class="col">
+                        <boatnet-pick-list
+                            title="Species"
+                            docType="taxonomy-alias"
+                            :displayFields="['commonNames[0]']"
+                            :val.sync="currentCatch.species"
+                            :searchable="true"
+                            :showFrequentToggle="true"
+                        >
+                        </boatnet-pick-list>
+                    </div>
+
+                    <div class="col">
+                        <boatnet-push-button
+                            title="Disposition"
+                            docType="catch-disposition"
+                            :displayFields="['description']"
+                            :val.sync="currentCatch.disposition"
+                            class="q-ma-md"
+                        >
+                        </boatnet-push-button>
+
+                        <boatnet-button-toggle-comp
+                            title="Weight Method"
+                            :val.sync="currentCatch.weightMethod"
+                            :showDescription="true"
+                            docType="weight-method"
+                            docTypeDb="lookups"
+                            :displayFields="['lookupVal']"
+                            valueField="lookupVal"
+                        >
+                        </boatnet-button-toggle-comp>
+
+                        <div class=q-ma-md><b>Extrapolation</b></div>
+                        <boatnet-keyboard-select-list
+                            :val.sync="currentCatch.catchWeight"
+                            title="Catch Weight"
+                            keyboardType="numeric"
+                            valType="string"
+                            class="q-ma-md"
+                        >
+                        </boatnet-keyboard-select-list>
+                        <boatnet-keyboard-select-list
+                            :val.sync="currentCatch.numFish"
+                            title="Total Number of Fish"
+                            keyboardType="numeric"
+                            valType="string"
+                            class="q-ma-md"
+                        >
+                        </boatnet-keyboard-select-list>
+
+                        <boatnet-button-toggle-comp
+                            v-if="currentCatch.disposition &&  currentCatch.disposition.description === 'Discarded'"
+                            title="Discard Reason"
+                            :val.sync="currentCatch.discardReason"
+                            :showDescription="true"
+                            docType="discard-reason"
+                            docTypeDb="lookups"
+                            :displayFields="['lookupVal']"
+                            valueField="lookupVal"
+                        >
+                        </boatnet-button-toggle-comp>
+
+                        <div style="text-align: center">
+                            <br><br>
+                            <q-btn color="primary">Update</q-btn>
+                        </div>
+
+                    </div>
+                </div>
+            
+
+            </template>
+        </boatnet-drawer>
 
     </div>
 </template>
@@ -36,13 +120,17 @@ export default createComponent({
     const router = context.root.$router;
     const currentCatch = ref(store.state.tripsState.currentCatch);
     const currentHaul = ref(store.state.tripsState.currentHaul);
+    const openDrawer = ref(true);
 
-    const add = () => {console.log('add to catch')};
-    const edit = () => {console.log('edit catch')};
-    const del = () => {console.log('delete')};
-    const modify = () => {console.log('modify catch')};
-    const handleGoToWtCnt = () => {console.log('handle go to wt cnt')};
-    const handleSelectCatch = () => {console.log('handle select catch')};
+    const add = () => {
+                        openDrawer.value = true;
+                        console.log('add to catch');
+                        };
+    const edit = () => {console.log('edit catch'); };
+    const del = () => {console.log('delete'); };
+    const modify = () => {console.log('modify catch'); };
+    const handleGoToWtCnt = () => {console.log('handle go to wt cnt'); };
+    const handleSelectCatch = () => {console.log('handle select catch'); };
 
     const wcgopCatchTreeSettings = {
       rowKey: 'catchNum',
@@ -59,7 +147,7 @@ export default createComponent({
     const expandedKeys: any = [];
 
     const nodes = computed(() => {
-        const nodes: any = [
+        const tempNodes = [
             {
             key: '0',
             data: {
@@ -99,7 +187,7 @@ export default createComponent({
             {
             key: '1',
             data: {
-                disposition: 'retained',
+                disposition: 'discarded',
                 discardReason: 'blah',
                 name: 'fish',
                 weight: 7,
@@ -107,8 +195,8 @@ export default createComponent({
             }
             },
         ];
-        return nodes;
-    })
+        return tempNodes;
+    });
 
     onMounted( () => {
         if (!currentHaul.value.catches || currentHaul.value.catches.length === 0) {
@@ -129,7 +217,7 @@ export default createComponent({
             ];
         }
         store.dispatch('tripsState/setCurrentCatch', currentHaul.value.catches[0]);
-    })
+    });
 
     return {
         store,
@@ -143,7 +231,8 @@ export default createComponent({
         nodes,
         expandedKeys,
         wcgopCatchTreeSettings,
-        handleSelectCatch
+        handleSelectCatch,
+        openDrawer
     };
   }
 });
