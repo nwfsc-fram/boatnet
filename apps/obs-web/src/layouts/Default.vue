@@ -87,7 +87,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-if="!isAuthorized(['enforcement'])" :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
+        <q-item v-if="isAuthorized(['captain', 'staff', 'debriefer'])" :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="camera_alt" />
           </q-item-section>
