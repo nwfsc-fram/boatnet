@@ -10,14 +10,14 @@
     </p>
     <br />
 
-    <div class="centered-page-item q-pa-md q-gutter-sm">
+    <div class="centered-page-item">
       <q-select
         v-if="isAuthorized(['enforcement'])"
         v-model="vessel.activeVessel"
         label="Staff - Select ANY vessel"
         dense
-        use-input
         fill-input
+        use-input
         hide-selected
         @filter="vesselsFilterFn"
         :options="vessels"
@@ -31,7 +31,6 @@
         v-model="vessel.activeVessel"
         label="Vessel"
         dense
-        use-input
         fill-input
         hide-selected
         :options="authorizedVessels"
@@ -376,14 +375,14 @@ export default class Declarations extends Vue {
         include_docs: true,
         key: this.activeVesselId
       };
-      let vessels: any = await masterDB.view(
+      let ovessels: any = await masterDB.view(
         'OLEDeclarations',
         'all_ole_vessels',
         options
       );
 
       // If not ole vessle doc is returned make a new one
-      if (!(vessels.rows.length  > 0)) {
+      if (!(ovessels.rows.length  > 0)) {
         const newDoc: OLEVessel = this.vessel.activeVessel.coastGuardNumber
         ? { type: 'olevessel',
             vesselName: this.vessel.activeVessel.vesselName,
@@ -429,17 +428,17 @@ export default class Declarations extends Vue {
         );
 
         // Fetch new doc
-        vessels = await masterDB.view(
+        ovessels = await masterDB.view(
           'OLEDeclarations',
           'all_ole_vessels',
           options
         );
       }
 
-      for (const v of vessels.rows) {
+      for (const v of ovessels.rows) {
         this.oleDoc = v.doc;
       }
-      return vessels;
+      return ovessels;
     } catch (err) {
       this.errorAlert(err);
     }
