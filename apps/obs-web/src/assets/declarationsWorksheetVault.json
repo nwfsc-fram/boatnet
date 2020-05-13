@@ -101,17 +101,6 @@
         "31 ‐ Limited entry demersal trawl, shorebased IFQ",
         "231"
     ],
-    "EFP": {
-        "Trawl Gear (Midwater)": ["Non-Whiting IFQ [20]"],
-        "Trawl Gear (Bottom)": ["Bottom Trawl IFQ [30]"],
-        "Cowcod": ["Other Gear (or Activity) [69]"],
-        "Deep Side Buoy Gear": ["Other Gear (or Activity) [69]"],
-        "Electronic Monitoring": ["Non-Whiting IFQ [20]", "Whiting Shorebased IFQ [21]", "Whiting CV (Mothership Sector) [23]", "Whiting MS [23]", "Bottom Trawl IFQ [30]"],
-        "Real Good Fish": ["NA"],
-        "SFCFA": ["Other Gear (or Activity) [69]"],
-        "CPS": ["Other Gear (or Activity) [69]"],
-        "Cook (OR Rockfish)": ["Groundfish (line*) [35]"]
-    },
     "Observed Options": [
         "Observer", 
         "Electronic Monitoring", 

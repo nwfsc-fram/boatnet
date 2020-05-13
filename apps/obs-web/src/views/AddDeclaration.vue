@@ -201,13 +201,12 @@ import moment from 'moment';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { Notify } from 'quasar';
-import { Vessel, OLEVessel, Declaration} from '@boatnet/bn-models';
+import { Vessel, OLEVessel, Declaration, EFPEntry } from '@boatnet/bn-models';
 import {CouchDBInfo, CouchDBCredentials, couchService} from '@boatnet/bn-couch';
 import { VesselState, UserState, AlertState } from '../_store/types/types';
 
 
 /* tslint:disable:no-var-requires  */
-// I don't think I need this still...
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
 @Component({})
@@ -262,7 +261,8 @@ export default class Dropdowns extends Vue {
   // EFP stuff
   private modelefp1: string = '';
   private modelefp2: string = '';
-  private efpOptions = Object.keys(dropdownTree.EFP);
+  private efpCollection: EFPEntry = {};
+  private efpOptions: string[] = [];
   private efpOptions2: string[] = [];
 
   private confirm = false;
@@ -527,17 +527,28 @@ export default class Dropdowns extends Vue {
 
   // This fucnction controls the EFP version of the worksheet
   private efpCategoryChosen() {
-    const efpCatOptions = dropdownTree.EFP[this.modelefp1];
+    const efpCatOptions = this.efpCollection[this.modelefp1];
     this.clearEntriesBelow(2);
     this.modelefp2 = '';
     this.databaseObject.showefpQ2 = false;
     if (efpCatOptions.length === 1) {
       this.decChoiceDisplay = dropdownTree['Leaf Nodes'][efpCatOptions[0]];
       this.databaseObject.showObsQuestion = true;
+      this.newDeclaration.declarationCode = Number('2'.concat(
+        this.decChoiceDisplay.split(' ‐ ')[0]
+      ));
+      this.newDeclaration.declarationDescrip = this.decChoiceDisplay.split(' ‐ ')[1].replace(/†/g, '');
+
+      // if listed dec is 69, make a note of what EFP it was for
+      if (this.newDeclaration.declarationCode === 269) {
+      this.newDeclaration.activityDescrip = `EFP - ${this.modelefp1}`;
+      }
     } else {
       this.efpOptions2 = efpCatOptions;
       this.databaseObject.showefpQ2 = true;
-      this.model6 = 'EM';
+      if (this.modelefp1 === 'Electronic Monitoring') {
+        this.model6 = 'EM';
+      }
       this.databaseObject.showObsQuestion = true;
     }
   }
@@ -546,6 +557,10 @@ export default class Dropdowns extends Vue {
   private efpDeclarationChosen() {
     this.decChoiceDisplay = dropdownTree['Leaf Nodes'][this.modelefp2];
     this.databaseObject.cartAddBool = true;
+    this.newDeclaration.declarationCode = Number('2'.concat(
+      this.decChoiceDisplay.split(' ‐ ')[0]
+    ));
+    this.newDeclaration.declarationDescrip = this.decChoiceDisplay.split(' ‐ ')[1].replace(/†/g, '');
   }
 
   private async getOleVessel() {
@@ -584,7 +599,7 @@ export default class Dropdowns extends Vue {
     return this.oleDoc;
   }
 
-  private created() {
+  private async created() {
     this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
       ? this.vessel.activeVessel.coastGuardNumber
       : this.vessel.activeVessel.stateRegulationNumber;
@@ -597,6 +612,26 @@ export default class Dropdowns extends Vue {
       this.dbReturn = this.getOleVessel();
     } catch (err) {
       console.log('failed couch attempt');
+    }
+
+    // Get EFPs from couch
+    try {
+      const masterDB = couchService.masterDB;
+
+      const options = {
+        include_docs: true,
+        key: null
+      };
+      const efpResult: any = await masterDB.view(
+        'OLEDeclarations',
+        'oleefps',
+        options
+      );
+
+      this.efpCollection = efpResult.rows[0].doc.efpCollection;
+      this.efpOptions = Object.keys(this.efpCollection);
+    }  catch (err) {
+      this.errorAlert(err);
     }
 
     // if ole staff set toggle to just drop down menu

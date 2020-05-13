@@ -57,7 +57,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
+        <q-item  :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="directions" />
           </q-item-section>
@@ -77,7 +77,17 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
+        <q-item v-if="isAuthorized(['enforcement'])" :to="onlineStatus ? '/ole-efp-management' : ''" exact :disabled="!onlineStatus">
+          <q-item-section avatar>
+            <q-icon name="table" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>EFP Management</q-item-label>
+            <q-item-label caption>add or edit current EFPs in the declarations app</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item v-if="isAuthorized(['captain', 'staff', 'debriefer'])" :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="camera_alt" />
           </q-item-section>
