@@ -1,14 +1,15 @@
 <template>
-  <q-select
-    use-input
+  <multiselect
+    style="width: 400px"
     v-model="valueHolder"
+    :placeholder="label"
     :options="options"
-    :label="label"
-    @filter="filter"
+    :multiple="multiple ? true : false"
+    label="label"
+    trackBy="value"
     @input="select"
-    fill-input
-    hide-selected
-    clearable
+    :limit="2"
+    :limit-text="limitText"
   />
 </template>
 <script lang="ts">
@@ -24,15 +25,19 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { useAsync } from 'vue-async-function';
 import Vue, { WatchOptions } from 'vue';
 import { get } from 'lodash';
+import Multiselect from 'vue-multiselect';
+
+Vue.component('multiselect', Multiselect);
 
 export default createComponent({
   props: {
     label: String,
-    val: Object,
+    val: Array,
     lookupView: String,
     lookupLabel: String,
     lookupValue: String,
-    lookupQueryOptions: Object
+    lookupQueryOptions: Object,
+    multiple: Boolean
   },
 
   setup(props, context) {
@@ -45,34 +50,33 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-        return props.val ? props.val : {};
+        return props.val;
       },
       set: (value: any) => {
+        if (!props.multiple) {
+          value = value ? [value] : [];
+        }
         context.emit('update:val', value);
       }
     });
 
     watch(() => props.lookupQueryOptions, populateLookups, watcherOptions);
 
-    function select(input: any) {
-      if (input && input.value) {
-        context.emit('select', input.value);
-      } else {
-        context.emit('select', null);
-      }
+    function limitText(count: number) {
+      return 'and ' + count + ' more';
     }
 
-    function filter(val: any, update: any) {
-      update(() => {
-        const needle = val.toLowerCase();
-        options.value = filterList.filter(
-          (v: any) =>
-            v.label
-              .toString()
-              .toLowerCase()
-              .indexOf(needle) > -1
-        );
-      });
+    function select(values: any) {
+      if (props.multiple) {
+        const ids: string[] = [];
+        for (let val of values) {
+          ids.push(val.value);
+        }
+        context.emit('select', ids);
+      } else {
+        values = values ? values.value : values;
+        context.emit('select', values);
+      }
     }
 
     async function getLookups(
@@ -120,10 +124,12 @@ export default createComponent({
 
     return {
       select,
-      filter,
+      limitText,
       options,
       valueHolder
     };
   }
 });
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

@@ -58,7 +58,7 @@ export default createComponent({
         {
           name: 'disposition',
           required: true,
-          label: 'Disposition',
+          label: 'D',
           align: 'left',
           field: 'disposition',
           width: '60',
@@ -101,6 +101,15 @@ export default createComponent({
           lookupField: 'description'
         },
         {
+          name: 'basketCnt',
+          align: 'left',
+          label: 'Basket Cnt',
+          field: 'basketCnt',
+          type: 'double',
+          width: '70',
+          isEditable: false
+        },
+        {
           name: 'weight',
           align: 'left',
           label: 'Weight (lbs)',
@@ -108,6 +117,15 @@ export default createComponent({
           type: 'double',
           width: '100',
           isEditable: true
+        },
+        {
+          name: 'avgWt',
+          align: 'left',
+          label: 'Avg Wt (lbs)',
+          field: 'avgWt',
+          type: 'double',
+          width: '100',
+          isEditable: false
         },
         {
           name: 'count',
@@ -158,9 +176,11 @@ export default createComponent({
               const childWeight = child.weight ? child.weight.value : null;
               const units = child.weight ? child.weight.units : '';
               const childCount = child.sampleCount;
+              let basketCnt = undefined;
 
               const baskets: any[] = [];
               if (child.baskets) {
+                basketCnt = child.baskets.length;
                 let basketCount = 1;
                 for (const basket of child.baskets) {
                   baskets.push({
@@ -168,7 +188,8 @@ export default createComponent({
                     data: {
                       name: 'Basket ' + basketCount,
                       weight: basket.weight.value,
-                      count: basket.count
+                      count: basket.count,
+                      avgWt: basket.weight.value / basket.count
                     }
                   });
                   basketCount++;
@@ -178,6 +199,7 @@ export default createComponent({
               children.push({
                 key: key + '_' + childIndex,
                 data: {
+                  basketCnt,
                   discardReason,
                   name: catchName,
                   catchContent: catchContents,
