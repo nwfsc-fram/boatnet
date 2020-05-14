@@ -29,17 +29,11 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
-import { getSelected } from '../helpers/localStorage';
 
 @Component
 export default class DebrieferOperations extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
-
-  @Action('addOperationId', { namespace: 'debriefer' })
-  private addOperationId: any;
-  @Action('removeOperationId', { namespace: 'debriefer' })
-  private removeOperationId: any;
 
   private WcgopTrips: WcgopTrip[] = [];
   private WcgopOperations: WcgopOperation[] = [];
@@ -52,13 +46,15 @@ export default class DebrieferOperations extends Vue {
       field: 'legacy.tripId',
       header: 'Trip Id',
       type: 'number',
-      key: 'wcgopOpTripId'
+      key: 'wcgopOpTripId',
+      width: '80'
     },
     {
       field: 'operationNum',
       header: 'Haul #',
       type: 'number',
-      key: 'wcgopOpHaulNum'
+      key: 'wcgopOpHaulNum',
+      width: '60'
     },
     {
         field: 'haulScore',
@@ -66,128 +62,150 @@ export default class DebrieferOperations extends Vue {
         type: 'toggle',
         list: ['Pass', 'Fail'],
         key: 'wcgopHaulScore',
-        isEditable: true
+        isEditable: true,
+      width: '100'
       },
     {
       field: 'observerTotalCatch.measurement.value',
-      header: 'OTC',
-      type: 'number',
-      key: 'wcgopOpOTC'
+      header: 'OTC (lbs)',
+      type: 'double',
+      key: 'wcgopOpOTC',
+      width: '100'
     },
     {
       field: 'observerTotalCatch.weightMethod.description',
       header: 'WT Method',
       type: 'input',
-      key: 'wcgopOpWM'
+      key: 'wcgopOpWM',
+      width: '150'
     },
     {
       field: 'gearPerformance.description',
       header: 'Gear Perf',
       type: 'input',
-      key: 'wcgopGearPerf'
+      key: 'wcgopGearPerf',
+      width: '150'
     },
     {
       field: 'totalGearSegments',
       header: 'Total Gear',
       type: 'number',
-      key: 'wcgopOpTotGear'
+      key: 'wcgopOpTotGear',
+      width: '100'
     },
     {
       field: 'gearSegmentsLost',
       header: 'Lost Gear',
       type: 'number',
-      key: 'wcgopOpTotGearLost'
+      key: 'wcgopOpTotGearLost',
+      width: '100'
     },
     // sea bird avoidance
     {
       field: 'avgSoakTime.value',
       header: 'Average Soak Time',
       type: 'number',
-      key: 'wcgopOpAvgSoakTime'
+      key: 'wcgopOpAvgSoakTime',
+      width: '100'
     },
     {
       field: 'beaufortValue',
       header: 'Beaufort',
       type: 'number',
-      key: 'wcgopOpBeaufort'
+      key: 'wcgopOpBeaufort',
+      width: '70'
     },
-    { field: 'fit', header: 'Fit #', type: 'number', key: 'wcgopOpFit' },
+    { field: 'fit', header: 'Fit #', type: 'number', key: 'wcgopOpFit',
+      width: '70' },
     {
       field: 'calWeight',
       header: 'Cal WT',
       type: 'number',
-      key: 'wcgopOpCalWeight'
+      key: 'wcgopOpCalWeight',
+      width: '70'
     },
     {
       field: 'biolist',
       header: 'Biolist',
       type: 'number',
-      key: 'wcgopOpBiolist'
+      key: 'wcgopOpBiolist',
+      width: '100'
     },
     {
       field: 'locations[0].locationDate',
       header: 'Start Date',
       type: 'date',
-      key: 'wcgopOpStartDate'
+      key: 'wcgopOpStartDate',
+      width: '150'
     },
     {
       field: 'locations[1].locationDate',
       header: 'End Date',
       type: 'date',
-      key: 'wcgopOpEndDate'
+      key: 'wcgopOpEndDate',
+      width: '150'
     },
     {
       field: 'locations[0].location.coordinates[0]',
-      header: 'Start latitude',
-      type: 'number',
-      key: 'wcgopOpStartLat'
+      header: 'Start lat',
+      type: 'double',
+      key: 'wcgopOpStartLat',
+      width: '125'
     },
     {
       field: 'locations[1].location.coorindates[0]',
-      header: 'End latitude',
-      type: 'number',
-      key: 'wcgopOpEndLat'
+      header: 'End lat',
+      type: 'double',
+      key: 'wcgopOpEndLat',
+      width: '125'
     },
     {
       field: 'locations[0].location.coordinates[1]',
-      header: 'Start longitude',
-      type: 'number',
-      key: 'wcgopOpStartLong'
+      header: 'Start long',
+      type: 'double',
+      key: 'wcgopOpStartLong',
+      width: '125'
     },
     {
       field: 'locations[1].location.coorindates[1]',
-      header: 'End longitude',
-      type: 'number',
-      key: 'wcgopOpEndLong'
+      header: 'End long',
+      type: 'double',
+      key: 'wcgopOpEndLong',
+      width: '125'
     },
     // depth
     {
       field: 'gearType.description',
       header: 'Gear Type',
       type: 'input',
-      key: 'wcgopOpGearType'
+      key: 'wcgopOpGearType',
+      width: '250'
     },
     {
       field: 'legacy.isBrdPresent',
       header: 'BRD',
       type: 'boolean',
-      key: 'wcgopOpIsBRDPresent'
+      key: 'wcgopOpIsBRDPresent',
+      width: '100'
     },
     // HLFC
     {
       field: 'targetStrategy',
       header: 'Target Strategy',
       type: 'input',
-      key: 'wcgopOptargetStrategy'
+      key: 'wcgopOptargetStrategy',
+      width: '100'
     },
     {
       field: 'isEfpUsed',
       header: 'EFP',
       type: 'boolean',
-      key: 'wcgopOpEFPUsed'
+      key: 'wcgopOpEFPUsed',
+      width: '80'
     },
     // MMSBST
-    { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopOpNotes' }
+    { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopOpNotes',
+      width: '200' }
   ];
 
   private ashopColumns = [

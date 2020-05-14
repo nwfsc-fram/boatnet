@@ -99,7 +99,8 @@ export default createComponent({
         header: 'Id',
         type: 'number',
         key: 'wcgopId',
-        isEditable: false
+        isEditable: false,
+        width: '70'
       },
       {
         field: 'tripStatus.description',
@@ -108,36 +109,41 @@ export default createComponent({
         lookupKey: 'trip-status',
         lookupField: 'description',
         key: 'wcgopStatus',
-        isEditable: true
+        isEditable: true,
+        width: '150'
       },
       {
         field: 'tripScore',
-        header: 'Trip Score',
+        header: 'Score',
         type: 'toggle',
         list: ['Pass', 'Fail'],
         key: 'wcgopTripScore',
-        isEditable: true
+        isEditable: true,
+        width: '120'
       },
       {
         field: 'observer.firstName',
         header: 'Obs. First Name',
         type: 'input',
         key: 'wcgopObsFirstName',
-        isEditable: false
+        isEditable: false,
+        width: '100'
       },
       {
         field: 'observer.lastName',
         header: 'Obs. Last Name',
         type: 'input',
         key: 'wcgopObsLastName',
-        isEditable: false
+        isEditable: false,
+        width: '100'
       },
       {
         field: 'vessel.vesselName',
         header: 'Vessel',
         type: 'input',
         key: 'wcgopVessel',
-        isEditable: true
+        isEditable: true,
+        width: '120'
       },
       // permit
       {
@@ -145,7 +151,8 @@ export default createComponent({
         header: 'USCG#',
         type: 'input',
         key: 'wcgopCoastGuard',
-        isEditable: true
+        isEditable: true,
+        width: '80'
       },
       // state reg #
       {
@@ -154,14 +161,16 @@ export default createComponent({
         type: 'toggle',
         list: ['Catch Shares', 'Open Access'],
         key: 'wcgopProgramName',
-        isEditable: true
+        isEditable: true,
+        width: '150'
       },
       {
         field: 'fishery.description',
         header: 'Fishery',
         type: 'input',
         key: 'wcgopFishery',
-        isEditable: true
+        isEditable: true,
+        width: '250'
       },
       // first receiver
       {
@@ -171,6 +180,7 @@ export default createComponent({
         key: 'wcgopFR',
         uniqueKey: '_id',
         isEditable: false,
+        width: '120',
         popupColumns: [
           {
             field: 'dealerName',
@@ -194,6 +204,7 @@ export default createComponent({
         uniqueKey: '_id',
         popupField: 'vessel.captains',
         isEditable: false,
+        width: '120',
         popupColumns: [
           {
             field: 'firstName',
@@ -215,68 +226,78 @@ export default createComponent({
         type: 'input',
         key: 'wcgopCaptainsL',
         isEditable: true,
+        width: '100'
       },
       {
         field: 'departureDate',
         header: 'Departure Date',
         type: 'date',
         key: 'wcgopDepartureDate',
-        isEditable: true
+        isEditable: true,
+        width: '150'
       },
       {
         field: 'returnDate',
         header: 'Return Date',
         type: 'date',
         key: 'wcgopReturnDate',
-        isEditable: true
+        isEditable: true,
+        width: '150'
       },
       {
         field: 'legacy.isNoFishingActivity',
-        header: 'No Fishing Activity?',
+        header: 'Fishing Activity?',
         type: 'boolean',
         key: 'wcgopFishingActivity',
-        isEditable: true
+        isEditable: true,
+        width: '120'
       },
       {
         field: 'isPartialTrip',
         header: 'Partial Trip?',
         type: 'boolean',
         key: 'wcgopPartialTrip',
-        isEditable: true
+        isEditable: true,
+        width: '120'
       },
       {
         field: 'isFishProcessed',
         header: 'Fish Processed?',
         type: 'boolean',
         key: 'wcgopFishProcessed',
-        isEditable: true
+        isEditable: true,
+        width: '120'
       },
       {
         field: 'logbookType',
         header: 'Logbook type',
         type: 'number',
         key: 'wcgopLogbookType',
-        isEditable: true
+        isEditable: true,
+        width: '80'
       },
       {
         field: 'logbookNum',
         header: 'Logbook Num',
         key: 'wcgopLogbookNum',
-        isEditable: true
+        isEditable: true,
+        width: '80'
       },
       {
         field: 'observerLogbookNum',
         header: 'Obs Logbook #',
         type: 'number',
         key: 'wcgopObsLog',
-        isEditable: true
+        isEditable: true,
+        width: '80'
       },
       {
         field: 'crewSize',
         header: '# Crew',
         type: 'number',
         key: 'wcgopCrewSize',
-        isEditable: true
+        isEditable: true,
+        width: '80'
       },
       {
         field: 'departurePort.name',
@@ -285,7 +306,8 @@ export default createComponent({
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopDeparturePort',
-        isEditable: true
+        isEditable: true,
+        width: '200'
       },
       {
         field: 'returnPort.name',
@@ -294,7 +316,8 @@ export default createComponent({
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopReturnPort',
-        isEditable: true
+        isEditable: true,
+        width: '200'
       },
       {
         field: 'fishTickets[0].fishTicketNumber',
@@ -304,6 +327,7 @@ export default createComponent({
         isEditable: true,
         uniqueKey: 'fishTicketNumber',
         popupField: 'fishTickets',
+        width: '150',
         popupColumns: [
           {
             field: 'fishTicketNumber',
@@ -329,21 +353,24 @@ export default createComponent({
         type: 'toggle',
         key: 'wcgopState',
         isEditable: true,
-        list: ['C', 'O', 'W']
+        list: ['C', 'O', 'W'],
+        width: '80'
       },
       {
         field: 'fishTickets[0].fishTicketDate',
         header: 'Date',
         type: 'date',
         key: 'wcgopDate',
-        isEditable: true
+        isEditable: true,
+        width: '150'
       },
       {
         field: 'notes',
         header: 'Notes',
         type: 'input',
         key: 'wcgopNotes',
-        isEditable: true
+        isEditable: true,
+        width: '300'
       }
     ];
 

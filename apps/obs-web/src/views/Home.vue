@@ -88,9 +88,11 @@
         <br>
         <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
 
-        <q-btn label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+        <q-btn v-if="isAuthorized(['enforcement'])" label="EFP Management" to="/ole-efp-management" color="primary" exact style="margin: 5px"></q-btn>
 
-        <q-btn label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
+        <q-btn v-if="isAuthorized(['captain', 'staff', 'debriefer'])" label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn v-if="isAuthorized(['captain', 'staff', 'debriefer'])" label="Logbook Capture" to="/log-book-capture" color="primary" exact style="margin: 5px"></q-btn>
 
         <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" label="E Logbook" to="/e-logbook/new" color="primary" exact style="margin: 5px"></q-btn>
 

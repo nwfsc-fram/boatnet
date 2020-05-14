@@ -23,7 +23,7 @@
     </div>
 
     <boatnet-input-dialog
-      :title="action === 'add' ? getPositionName(locationHolder.length) : getPositionName(current.__index)"
+      :settings="locationDialog"
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
@@ -101,6 +101,13 @@ export default class BoatnetLocations extends Vue {
       type: 'Point',
       coordinates: []
     }
+  };
+
+  private locationDialog = {
+    title: this.action === 'add' ? this.getPositionName(this.locationHolder.length) : this.getPositionName(this.current.__index),
+    width: 600,
+    height: 200,
+    confirmationLabel: 'Yes'
   };
 
   private settings = {

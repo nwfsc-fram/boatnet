@@ -29,9 +29,8 @@
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
-          <q-tab name="catchSpecies" label="Catch Species" />
-          <q-tab name="catchBaskets" label="Catch Baskets" />
-          <q-tab name="specimens" label="Specimens" />
+          <q-tab name="catchBaskets" label="Baskets" />
+          <q-tab name="catchSpecies" label="Biospecimens" />
         </q-tabs>
 
         <q-separator />
@@ -49,16 +48,12 @@
             <app-debriefer-catches></app-debriefer-catches>
           </q-tab-panel>
 
-          <q-tab-panel name="catchSpecies">
-            <app-debriefer-catch-species></app-debriefer-catch-species>
-          </q-tab-panel>
-
           <q-tab-panel name="catchBaskets">
             <app-debriefer-catch-baskets></app-debriefer-catch-baskets>
           </q-tab-panel>
 
-          <q-tab-panel name="specimens">
-            <app-debriefer-catch-specimens></app-debriefer-catch-specimens>
+          <q-tab-panel name="catchSpecies">
+            <app-debriefer-catch-species></app-debriefer-catch-species>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -99,14 +94,18 @@ export default createComponent({
     function update() {
       filters.value = [];
       filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
-      filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul ', 'operationNum'));
+      filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul', 'operationNum'));
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
       const filterVals = [];
       for (const val of list) {
         const id = get(val, idLabel);
-        val.label = label + id;
+        if (label === 'Haul') {
+          val.label = 'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
+        } else {
+          val.label = label + ': ' + id;
+        }
         filterVals.push(val);
       }
       return filterVals;

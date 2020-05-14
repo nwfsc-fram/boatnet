@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@boatnet/bn-auth": "^0.1.11",
-    "@boatnet/bn-models": "^0.2.3",
+    "@boatnet/bn-models": "^0.2.9",
+    "@boatnet/bn-couch": "^0.1.6",
+    "davenport": "^2.8.2",
     "coordinate-parser": "^1.0.2",
     "quasar": "1.8.5",
     "vue": "^2.6.6",

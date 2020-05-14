@@ -1,82 +1,272 @@
 <template>
   <div>
-    <div class="text-h6">Catch</div>
-    <prime-table :value="WcgopCatches" :columns="columns" type="Catch" />
+    <boatnet-tree-table
+      :nodes.sync="WcgopCatches"
+      :settings="wcgopCatchTreeSettings"
+      :expanded-keys="expandedKeys"
+      p-scrollable-body
+      :isEditable="true"
+      :program="program"
+      @save="save"
+    ></boatnet-tree-table>
   </div>
 </template>
 
-
 <script lang="ts">
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { createComponent, ref, computed, watch } from '@vue/composition-api';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { getOptions } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
 import {
-  TripState,
-  PermitState,
-  UserState,
-  GeneralState,
-  DebrieferState
-} from '../_store/types/types';
-import {
-  WcgopTrip,
-  WcgopOperation,
-  WcgopCatch,
-  WcgopSpecimen,
-  Basket
-} from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
-import { convertToObject } from 'typescript';
-import { getSelected } from '../helpers/localStorage';
+  CouchDBInfo,
+  CouchDBCredentials,
+  couchService
+} from '@boatnet/bn-couch';
+import { Client, ListOptions } from 'davenport';
 
-@Component
-export default class DebrieferOperations extends Vue {
-  @Action('error', { namespace: 'alert' }) private error: any;
-  @State('debriefer') private debriefer!: DebrieferState;
+export default createComponent({
+  setup(props, context) {
+    const state = context.root.$store.state;
+    const debriefer: any = state.debriefer;
+    const WcgopCatches: any = ref([]);
+    const expandedKeys: any = ref([]);
+    const program = state.debriefer.program;
 
-  private WcgopTrips: WcgopTrip[] = [];
-  private WcgopOperations: WcgopOperation[] = [];
-  private WcgopCatches: WcgopCatch[] = [];
-  private pagination = { rowsPerPage: 50 };
+    const lookupsList: any = ref([]);
 
-  private columns = [
-    { field: 'legacy.tripId', header: 'Trip Id' },
-    { field: 'operationNum', header: 'Haul #' },
-    { field: 'catch.catchNum', header: 'Catch #' },
-    { field: 'catch.disposition.description', header: 'Catch Disposition' },
-    { field: 'catch.weightMethod.description', header: 'Catch WM' },
-    { field: 'catch.catchContent.name', header: 'Species' },
-    { field: 'catch.weight.value', header: 'Catch Weight (lbs)' }
-  ];
+    const wcgopCatchTreeSettings = {
+      rowKey: 'name',
+      columns: [
+        {
+          name: 'tripId',
+          required: true,
+          label: 'Trip #',
+          align: 'left',
+          field: 'tripId',
+          width: '150',
+          expander: true,
+          isEditable: false
+        },
+        {
+          name: 'operationNum',
+          required: true,
+          label: 'Haul #',
+          align: 'left',
+          field: 'operationNum',
+          width: '80',
+          isEditable: false
+        },
+        {
+          name: 'disposition',
+          required: true,
+          label: 'Disposition',
+          align: 'left',
+          field: 'disposition',
+          width: '60',
+          isEditable: true,
+          type: 'toggle',
+          lookupView: 'catch-disposition',
+          lookupField: 'abbreviation'
+        },
+        {
+          name: 'weightMethod',
+          align: 'left',
+          label: 'WM',
+          field: 'weightMethod',
+          width: '150',
+          isEditable: true,
+          type: 'toggle-search',
+          lookupView: 'weight-method',
+          lookupField: 'description'
+        },
+        {
+          name: 'name',
+          align: 'left',
+          label: 'Name',
+          field: 'name',
+          width: '150',
+          isEditable: true,
+          type: 'toggle-search',
+          lookupView: 'taxonomy-alias',
+          lookupField: 'displayName'
+        },
+        {
+          name: 'discardReason',
+          align: 'left',
+          label: 'Discard Reason',
+          field: 'discardReason',
+          width: '100',
+          isEditable: true,
+          type: 'toggle-search',
+          lookupView: 'discard-reason',
+          lookupField: 'description'
+        },
+        {
+          name: 'weight',
+          align: 'left',
+          label: 'Weight (lbs)',
+          field: 'weight',
+          type: 'double',
+          width: '100',
+          isEditable: true
+        },
+        {
+          name: 'count',
+          align: 'left',
+          label: 'Count',
+          field: 'count',
+          width: '100',
+          isEditable: true
+        }
+      ]
+    };
 
-  private async getCatches() {
-    const masterDB: Client<any> = couchService.masterDB;
-    const operationIds: any[] = getSelected(this.debriefer.program, 'Operations');
+    watch(() => state.debriefer.operations, getCatches);
 
-    try {
-      const options: ListOptions = {
-        keys: operationIds
-      };
+    function getCatches() {
+      const catches: any[] = [];
+      let catchIndex = 0;
 
-      const operations = await masterDB.listWithDocs(options);
+      for (const operation of debriefer.operations) {
+        for (const c of operation.catches) {
+          const tripId = operation.legacy.tripId;
+          const operationNum = operation.operationNum;
+          const operationId = operation._id;
+          let disposition = c.disposition ? c.disposition.description : '';
+          const wm = c.weightMethod ? c.weightMethod.description : '';
+          const weight: any = c.weight ? c.weight.value : null;
+          const catchContent = c.catchContent;
+          const name = catchContent ? catchContent.name : '';
+          const children: any[] = [];
+          let childIndex = 0;
+          const key = operationId + '_' + catchIndex;
 
-      for (const operation of operations.rows) {
-        for (const catchRow of operation.catches) {
-          const opCatch = Object.assign({}, operation);
-          opCatch.key = catchRow._id;
-          opCatch.catch = catchRow;
-          this.WcgopCatches.push(opCatch);
+          if (disposition === 'Retained') {
+            disposition = 'R';
+          } else if (disposition === 'Discarded') {
+            disposition = 'D';
+          }
+
+          if (c.children) {
+            for (const child of c.children) {
+              const discardReason = child.discardReason
+                ? child.discardReason.description
+                : '';
+              const catchContents = child.catchContent;
+              const catchName = catchContents
+                ? catchContents.commonNames[0]
+                : '';
+              const childWeight = child.weight ? child.weight.value : null;
+              const units = child.weight ? child.weight.units : '';
+              const childCount = child.sampleCount;
+
+              const baskets: any[] = [];
+              if (child.baskets) {
+                let basketCount = 1;
+                for (const basket of child.baskets) {
+                  baskets.push({
+                    key: key + '_' + childIndex + '_' + basketCount,
+                    data: {
+                      name: 'Basket ' + basketCount,
+                      weight: basket.weight.value,
+                      count: basket.count
+                    }
+                  });
+                  basketCount++;
+                }
+              }
+
+              children.push({
+                key: key + '_' + childIndex,
+                data: {
+                  discardReason,
+                  name: catchName,
+                  catchContent: catchContents,
+                  weight: childWeight,
+                  count: childCount
+                },
+                children: baskets
+              });
+              childIndex++;
+            }
+          }
+
+          catches.push({
+            key,
+            data: {
+              tripId,
+              operationNum,
+              operationId,
+              catchNum: c.catchNum,
+              disposition,
+              weightMethod: wm,
+              name,
+              catchContent,
+              weight
+            },
+            children
+          });
+          catchIndex++;
         }
       }
-    } catch (err) {
-      this.error(err);
+      WcgopCatches.value = catches;
     }
-  }
+    getCatches();
 
-  private created() {
-    this.getCatches();
+    async function save(data: any) {
+      const masterDB: Client<any> = couchService.masterDB;
+      const ids = data.key.split('_');
+      const columnName = data.column;
+
+      try {
+        const operationRecord = await masterDB.get(ids[0]);
+        const catches = operationRecord.catches;
+
+        if (ids.length === 2) {
+          if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
+            catches[ids[1]][columnName] = {
+              description: data.value.description,
+              _id: data.value._id
+            };
+          } else if (columnName === 'name') {
+            catches[ids[1]].catchContent = data.value;
+          } else if (columnName === 'weight') {
+            catches[ids[1]][columnName].value = data.value;
+          }
+        } else if (ids.length === 3) {
+          if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
+            catches[ids[1]].children[ids[2]][columnName] = {
+              description: data.value.description,
+              _id: data.value._id
+            };
+          } else if (columnName === 'name') {
+            catches[ids[1]].children[ids[2]].catchContent = data.value;
+          } else if (columnName === 'weight') {
+            catches[ids[1]].children[ids[2]][columnName].value = data.value;
+          } else if (columnName === 'count') {
+            catches[ids[1]].children[ids[2]].sampleCount = data.value;
+          }
+        } else if (ids.length === 4) {
+          if (columnName === 'weight') {
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value = data.value;
+          } else if (columnName === 'count') {
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] = data.value;
+          }
+        }
+        operationRecord.catches = catches;
+        await masterDB.put(operationRecord._id, operationRecord, operationRecord._rev);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    return {
+      WcgopCatches,
+      wcgopCatchTreeSettings,
+      expandedKeys,
+      program,
+      lookupsList,
+      save
+    };
   }
-}
+});
 </script>

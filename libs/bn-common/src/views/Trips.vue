@@ -42,7 +42,6 @@
 
 <script lang="ts">
 import { Point } from 'geojson';
-import { Client, CouchDoc } from 'davenport';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
 import { AlertState, TripState } from '@boatnet/bn-common';

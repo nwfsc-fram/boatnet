@@ -8,6 +8,7 @@
     @input="select"
     fill-input
     hide-selected
+    clearable
   />
 </template>
 <script lang="ts">
@@ -22,6 +23,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { useAsync } from 'vue-async-function';
 import Vue, { WatchOptions } from 'vue';
+import { get } from 'lodash';
 
 export default createComponent({
   props: {
@@ -43,7 +45,7 @@ export default createComponent({
 
     const valueHolder = computed({
       get: () => {
-       return props.val ? props.val : {};
+        return props.val ? props.val : {};
       },
       set: (value: any) => {
         context.emit('update:val', value);
@@ -53,7 +55,11 @@ export default createComponent({
     watch(() => props.lookupQueryOptions, populateLookups, watcherOptions);
 
     function select(input: any) {
-      context.emit('select', input.value);
+      if (input && input.value) {
+        context.emit('select', input.value);
+      } else {
+        context.emit('select', null);
+      }
     }
 
     function filter(val: any, update: any) {
@@ -82,7 +88,7 @@ export default createComponent({
           .view<any>('obs_web', view, queryOptions)
           .then((response: any) => {
             for (const row of response.rows) {
-              lookupVals.push({ label: row[label], value: row[value] });
+              lookupVals.push({ label: get(row, label), value: row[value] });
             }
             lookupVals.sort((a: any, b: any) => {
               if (a.label > b.label) {

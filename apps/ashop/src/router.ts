@@ -11,6 +11,7 @@ import Settings from './views/Settings.vue';
 import NonFishingDays from './views/NonFishingDays.vue';
 import NonFishingDayDetails from './views/NonFishingDayDetails.vue';
 import Cruise from './views/Cruise.vue';
+import Catch from './views/Catch.vue';
 
 import { authService } from '@boatnet/bn-auth';
 import store from './_store';
@@ -126,6 +127,20 @@ const router = new Router({
               { name: 'nonFishingDayPlaceholder', link: '' }
             ]
            }
+        },
+        {
+          path: '/catch',
+          name: 'catch',
+          component: Catch,
+          meta: {
+            breadcrumb: [
+              { name: 'Trip', link: '' },
+              { name: 'tripIdPlaceholder', link: ''},
+              { name: 'Hauls', link: '/hauls'},
+              { name: 'haulIdPlaceholder', link: ''},
+              { name: 'Catch', link: '/catch'}
+            ]
+          }
         }
       ]
     }
