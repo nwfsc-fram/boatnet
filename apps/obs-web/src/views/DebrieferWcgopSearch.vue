@@ -63,7 +63,7 @@
         <pCalendar
           v-model="startDate"
           @date-select="dateFilter"
-          @clear-click="clearDates"
+          @clear-click="dateFilter"
           :showButtonBar="true"
         />
         <label for="endDate" style="color: #027be3">Start Date</label>
@@ -74,7 +74,7 @@
         <pCalendar
           v-model="endDate"
           @date-select="dateFilter"
-          @clear-click="clearDates"
+          @clear-click="dateFilter"
           :showButtonBar="true"
         />
         <label for="endDate" style="color: #027be3">End Date</label>
@@ -122,7 +122,7 @@ export default createComponent({
     const fisheryList: any = ref([]);
 
     async function select(view: string, field: string, vals: any) {
-      let ids: string[] = [];
+      const ids: string[] = [];
       for (const val of vals) {
         ids.push(val.value);
       }
@@ -130,7 +130,6 @@ export default createComponent({
     }
 
     async function dateFilter() {
-      let formattedDates = [];
       if (startDate.value && endDate.value) {
         const dates = [
           moment(startDate.value).format(),
@@ -140,11 +139,6 @@ export default createComponent({
       } else {
         await updateFilters('wcgop_trips_by_date', 'returnDate', []);
       }
-    }
-
-    function clearDates() {
-      filters['wcgop_trips_by_date'] = {};
-      //updateRecords();
     }
 
     function updateFilters(view: string, field: string, val: any) {
@@ -158,8 +152,8 @@ export default createComponent({
 
     async function updateRecords() {
       const tripIds: any[] = [];
-      let views = Object.keys(filters);
-      let queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
+      const views = Object.keys(filters);
+      const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
       let keyVals = {};
 
       if (views.length <= 0) {
@@ -187,16 +181,14 @@ export default createComponent({
               let filterIn = true;
               for (let i = 1; i < views.length; i++) {
                 const viewName = views[i];
-                if (
-                  viewName === 'wcgop_trips_by_date' &&
-                  (moment(row.doc.returnDate).isBefore(
-                    filters[viewName].val[0]
-                  ) ||
-                    moment(row.doc.returnDate).isAfter(
-                      filters[viewName].val[1]
-                    ))
-                ) {
-                  filterIn = false;
+
+                if (viewName === 'wcgop_trips_by_date') {
+                  if (
+                    moment(row.doc.returnDate).isBefore(filters[viewName].val[0]) ||
+                    moment(row.doc.returnDate).isAfter(filters[viewName].val[1])
+                  ) {
+                    filterIn = false;
+                  }
                 } else {
                   const rowVal = get(row.doc, filters[viewName].field);
                   if (indexOf(filters[viewName].val, rowVal) === -1) {
@@ -225,7 +217,6 @@ export default createComponent({
     return {
       select,
       dateFilter,
-      clearDates,
       startDate,
       endDate,
       vessel,

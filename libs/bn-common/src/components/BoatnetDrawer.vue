@@ -31,9 +31,7 @@ export default createComponent({
 
         const toggleShow = () => {
             context.emit('update:show', !props.show);
-        }
-
-        onMounted( () => {} )
+        };
 
         return {
             toggleShow

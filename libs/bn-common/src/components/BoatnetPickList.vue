@@ -73,7 +73,7 @@ export default createComponent({
         const setSelected = (item: any) => {
             context.emit('update:val', item);
             context.emit('save');
-        }
+        };
 
         const frequent =
         [
@@ -105,33 +105,32 @@ export default createComponent({
             'STRY',
             'THDS',
             'YTRK'
-        ]
+        ];
 
 
-        const filtered = (options: any) => {
+        const filtered = (optionVals: any) => {
             if (searchText.value.length > 0) {
-                return options.filter( (option: any) => {
+                return optionVals.filter( (option: any) => {
                     if (option.commonNames) {
                         return option.commonNames[0].toLowerCase().includes(searchText.value.toLowerCase()) ||
-                        (option.taxonomy.pacfinSpeciesCode ? option.taxonomy.pacfinSpeciesCode.toLowerCase() : '').includes(searchText.value.toLowerCase())
-                    }
-                     else if (option.name) {
+                        (option.taxonomy.pacfinSpeciesCode ? option.taxonomy.pacfinSpeciesCode.toLowerCase() : '').includes(searchText.value.toLowerCase());
+                    } else if (option.name) {
                         return option.name.toLowerCase().includes(searchText.value.toLowerCase()) ||
-                        (option.code ? option.code.toLowerCase() : '').includes(searchText.value.toLowerCase())
+                        (option.code ? option.code.toLowerCase() : '').includes(searchText.value.toLowerCase());
                     }
                 });
             } else if (scope.value === 'Frequent') {
-                return options.filter( (option: any) => {
+                return optionVals.filter( (option: any) => {
                     if (option.commonNames && option.taxonomy && option.taxonomy.pacfinSpeciesCode) {
-                        return frequent.includes(option.taxonomy.pacfinSpeciesCode)
+                        return frequent.includes(option.taxonomy.pacfinSpeciesCode);
                     } else if (option.name) {
-                        return frequent.includes(option.code)
+                        return frequent.includes(option.code);
                     }
-                })
+                });
             } else {
-                return options;
+                return optionVals;
             }
-        }
+        };
 
         const watcherOptions: WatchOptions = {
             immediate: false
@@ -140,7 +139,7 @@ export default createComponent({
         watch(
             () => scope.value,
             (newVal: any, oldVal: any) => {
-                searchText.value = ''
+                searchText.value = '';
             },
             watcherOptions
         );
@@ -150,16 +149,16 @@ export default createComponent({
                 const results = await getOptions(appConfig.survey, docType,
                                     'lookups', props.displayFields);
                 for (const result of results) {
-                    options.value.push(result.doc)
+                    options.value.push(result.doc);
                 }
                 if (docType === 'taxonomy-alias') {
-                    const groupings = await getOptions(appConfig.survey, 'catch-grouping', 'lookups', ['commonNames[0]'] )
+                    const groupings = await getOptions(appConfig.survey, 'catch-grouping', 'lookups', ['commonNames[0]'] );
                     for (const grouping of groupings) {
                         if (!options.value.map( (opt: any) => {
                             if (opt.taxonomy && opt.taxonomy.pacfinSpeciesCode) {
-                                return opt.taxonomy.pacfinSpeciesCode
+                                return opt.taxonomy.pacfinSpeciesCode;
                             } else {
-                                return
+                                return;
                             }
                         }).includes(grouping.doc.code)) {
                             options.value.push(grouping.doc);
@@ -167,7 +166,7 @@ export default createComponent({
                     }
                 }
             }
-        )
+        );
 
         return {
             options, setSelected, scope, searchText, filtered

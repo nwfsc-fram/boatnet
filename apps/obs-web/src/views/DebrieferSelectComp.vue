@@ -42,7 +42,6 @@ export default createComponent({
 
   setup(props, context) {
     const options: any = ref([]);
-    let filterList: any[] = [];
 
     const watcherOptions: WatchOptions = {
       immediate: true
@@ -69,7 +68,7 @@ export default createComponent({
     function select(values: any) {
       if (props.multiple) {
         const ids: string[] = [];
-        for (let val of values) {
+        for (const val of values) {
           ids.push(val.value);
         }
         context.emit('select', ids);
@@ -105,7 +104,6 @@ export default createComponent({
             });
           });
         options.value = lookupVals;
-        filterList = lookupVals;
       } catch (err) {
         console.log(err);
       }

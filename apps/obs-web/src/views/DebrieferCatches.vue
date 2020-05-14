@@ -176,7 +176,7 @@ export default createComponent({
               const childWeight = child.weight ? child.weight.value : null;
               const units = child.weight ? child.weight.units : '';
               const childCount = child.sampleCount;
-              let basketCnt = undefined;
+              let basketCnt;
 
               const baskets: any[] = [];
               if (child.baskets) {
