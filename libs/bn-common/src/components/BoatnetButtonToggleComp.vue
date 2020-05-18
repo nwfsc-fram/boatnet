@@ -3,8 +3,33 @@
     <div>
       <b>{{title}}</b>
     </div>
-    <q-btn-toggle v-model="valueHolder" toggle-color="primary" :options="optionsList" @input="save" />
+    <q-btn-toggle
+      v-model="valueHolder" toggle-color="primary"
+      :options="splitAt ? optionsList.slice(0, splitAt) : optionsList"
+      @input="save"
+      spread
+    />
+
+    <q-btn-toggle
+      v-if="splitAt"
+      v-model="valueHolder"
+      toggle-color="primary"
+      :options="optionsList.length - splitAt > splitAt ? optionsList.slice(splitAt, splitAt * 2) : optionsList.slice(splitAt, optionsList.length)"
+      @input="save"
+      spread
+    />
+
+    <q-btn-toggle
+      v-if="optionsList.length - splitAt > splitAt"
+      v-model="valueHolder"
+      toggle-color="primary"
+      :options="optionsList.slice(splitAt * 2, optionsList.length)"
+      @input="save"
+      :spread="optionsList.length - (splitAt * 2) > 3"
+    />
+
     <div v-if="this.val && showDescription">{{ getDescription() }}</div>
+
   </div>
 </template>
 
@@ -27,6 +52,7 @@ export default class BoatnetButtonToggle extends Vue {
   @Prop() private displayFields!: any;
   @Prop() private valueField!: any;
   @Prop() private showDescription!: any;
+  @Prop() private splitAt!: number;
   private optionsList: any = [];
 
   @Getter('appMode', { namespace: 'appSettings' })
