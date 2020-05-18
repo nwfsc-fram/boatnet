@@ -24,12 +24,22 @@ function sortByProperty(array: any, displayFields: any) {
   return array.sort((val1: any, val2: any) => {
     const val1Name = formatDisplayValue(val1, displayFields);
     const val2Name = formatDisplayValue(val2, displayFields);
-    if (val1Name > val2Name) {
-      return 1;
-    } else if (val1Name < val2Name) {
-      return -1;
+    if (isNaN(parseInt(val1Name)) && isNaN(parseInt(val2Name))) { // not numbers
+      if (val1Name > val2Name) {
+        return 1;
+      } else if (val1Name < val2Name) {
+        return -1;
+      } else {
+        return 0;
+      }
     } else {
-      return 0;
+      if (parseInt(val1Name) > parseInt(val2Name)) { //numbers
+        return 1;
+      } else if (parseInt(val1Name) < parseInt(val2Name)) {
+        return -1;
+      } else {
+        return 0;
+      }
     }
   });
 }

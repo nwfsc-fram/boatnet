@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <span>
         <q-page>
         <boatnet-summary
             currentScreen="Species"
@@ -59,26 +59,27 @@
                             docTypeDb="lookups"
                             :displayFields="['lookupVal']"
                             valueField="lookupVal"
+                            :splitAt="5"
                         >
                         </boatnet-button-toggle-comp>
 
-                        <div class=q-ma-md><b>Extrapolation</b></div>
-                        <boatnet-keyboard-select-list
-                            :val.sync="currentCatch.catchWeight"
-                            title="Catch Weight"
-                            keyboardType="numeric"
-                            valType="string"
-                            class="q-ma-md"
-                        >
-                        </boatnet-keyboard-select-list>
-                        <boatnet-keyboard-select-list
-                            :val.sync="currentCatch.numFish"
-                            title="Total Number of Fish"
-                            keyboardType="numeric"
-                            valType="string"
-                            class="q-ma-md"
-                        >
-                        </boatnet-keyboard-select-list>
+                        <span class=q-ma-md><b>Extrapolation</b></span>
+                        <div class="q-ml-md">
+                            <boatnet-keyboard-select-list
+                                :val.sync="currentCatch.catchWeight"
+                                title="Catch Weight"
+                                keyboardType="numeric"
+                                valType="string"
+                            >
+                            </boatnet-keyboard-select-list>
+                            <boatnet-keyboard-select-list
+                                :val.sync="currentCatch.numFish"
+                                title="Total Number of Fish"
+                                keyboardType="numeric"
+                                valType="string"
+                            >
+                            </boatnet-keyboard-select-list>
+                        </div>
 
                         <boatnet-button-toggle-comp
                             v-if="currentCatch.disposition &&  currentCatch.disposition.description === 'Discarded'"
@@ -89,6 +90,7 @@
                             docTypeDb="lookups"
                             :displayFields="['lookupVal']"
                             valueField="lookupVal"
+                            :splitAt="5"
                         >
                         </boatnet-button-toggle-comp>
 
@@ -99,12 +101,11 @@
 
                     </div>
                 </div>
-            
 
             </template>
         </boatnet-drawer>
 
-    </div>
+    </span>
 </template>
 
 <script lang="ts">

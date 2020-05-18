@@ -1,12 +1,12 @@
 <template>
-    <q-layout  >
+
         <q-drawer
             v-model="show"
             :side="side"
             bordered
             :width="640"
+            :breakpoint="640"
             content-class="bg-grey-3"
-            overlay
         >
 
 
@@ -15,7 +15,7 @@
             <slot name="main"/>
         </template>
         </q-drawer>
-    </q-layout>
+
 </template>
 
 <script lang="ts">

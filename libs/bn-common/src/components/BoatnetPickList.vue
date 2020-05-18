@@ -15,9 +15,8 @@
         <boatnet-keyboard-select-list
             :val.sync="searchText"
             displayName="Search"
-            keyboardType="normal"
+            keyboardType="compact"
             valType="string"
-            class="q-ma-md"
         >
             <template v-slot:after>
                 <q-icon v-if="searchText.length > 0" name="clear" @click="searchText = ''"></q-icon>
