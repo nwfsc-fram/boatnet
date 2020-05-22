@@ -5,7 +5,7 @@
         <pTreeTable
           :value="nodes"
           :expandedKeys="expandedKeys"
-          selectionMode="checkbox"
+          :selectionMode="selectionMode ? selectionMode : 'checkbox'"
           :selectionKeys.sync="selectedKey1"
           @node-select="select"
           @node-unselect="unSelect"
@@ -94,6 +94,7 @@ export default class BoatnetTreeTable extends Vue {
   @Prop() public selectionKeys!: any;
   @Prop() public isEditable!: any;
   @Prop() public program!: string;
+  @Prop() public selectionMode!: string;
 
   public selected: any[] = [];
 

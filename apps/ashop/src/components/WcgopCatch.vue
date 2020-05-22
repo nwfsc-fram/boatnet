@@ -1,6 +1,10 @@
 <template>
     <span>
         <q-page>
+        <div style="padding: 10px">
+            <q-btn color="primary" @click="expandAll" >Expand All</q-btn>&nbsp;
+            <q-btn color="grey" @click="collapseAll" > Collapse All </q-btn>
+        </div>
         <boatnet-summary
             currentScreen="Species"
             :current="currentCatch"
@@ -17,6 +21,8 @@
             :settings="wcgopCatchTreeSettings"
             :expanded-keys="expandedKeys"
             @select="handleSelectCatch"
+            selectionMode="single"
+            :isEditable="false"
           />
         </template>
         </boatnet-summary>
@@ -34,7 +40,7 @@
                             title="Species"
                             docType="taxonomy-alias"
                             :displayFields="['commonNames[0]']"
-                            :val.sync="currentCatch.species"
+                            :val.sync="catchModel.species"
                             :searchable="true"
                             :showFrequentToggle="true"
                         >
@@ -46,14 +52,14 @@
                             title="Disposition"
                             docType="catch-disposition"
                             :displayFields="['description']"
-                            :val.sync="currentCatch.disposition"
+                            :val.sync="catchModel.disposition"
                             class="q-ma-md"
                         >
                         </boatnet-push-button>
 
                         <boatnet-button-toggle-comp
                             title="Weight Method"
-                            :val.sync="currentCatch.weightMethod"
+                            :val.sync="catchModel.weightMethod"
                             :showDescription="true"
                             docType="weight-method"
                             docTypeDb="lookups"
@@ -66,14 +72,14 @@
                         <span class=q-ma-md><b>Extrapolation</b></span>
                         <div class="q-ml-md">
                             <boatnet-keyboard-select-list
-                                :val.sync="currentCatch.catchWeight"
+                                :val.sync="catchModel.catchWeight"
                                 title="Catch Weight"
                                 keyboardType="numeric"
                                 valType="string"
                             >
                             </boatnet-keyboard-select-list>
                             <boatnet-keyboard-select-list
-                                :val.sync="currentCatch.numFish"
+                                :val.sync="catchModel.numFish"
                                 title="Total Number of Fish"
                                 keyboardType="numeric"
                                 valType="string"
@@ -82,9 +88,9 @@
                         </div>
 
                         <boatnet-button-toggle-comp
-                            v-if="currentCatch.disposition &&  currentCatch.disposition.description === 'Discarded'"
+                            v-if="catchModel.disposition &&  catchModel.disposition.description === 'Discarded'"
                             title="Discard Reason"
-                            :val.sync="currentCatch.discardReason"
+                            :val.sync="catchModel.discardReason"
                             :showDescription="true"
                             docType="discard-reason"
                             docTypeDb="lookups"
@@ -96,8 +102,10 @@
 
                         <div style="text-align: center">
                             <br><br>
-                            <q-btn color="primary">Update</q-btn>
+                            <q-btn color="primary" @click="updateCatch">Update</q-btn>
                         </div>
+
+                        {{ catchModel }}
 
                     </div>
                 </div>
@@ -109,8 +117,9 @@
 </template>
 
 <script lang="ts">
-import { createComponent, reactive, computed, ref, onMounted } from '@vue/composition-api';
+import { createComponent, reactive, computed, ref, onMounted, watch } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { WatchOptions } from 'vue';
 
 import BoatnetSummary from '@boatnet/bn-common';
 Vue.component(BoatnetSummary);
@@ -122,6 +131,18 @@ export default createComponent({
     const currentCatch = ref(store.state.tripsState.currentCatch);
     const currentHaul = ref(store.state.tripsState.currentHaul);
     const openDrawer = ref(true);
+    const catchModel = ref(
+        {
+            species: {},
+            disposition: {
+                type: 'catch-disposition',
+                description: 'Discarded'
+                },
+            weightMethod: '',
+            catchWeight: '',
+            numFish: '',
+            discardReason: ''
+        });
 
     const add = () => {
                         openDrawer.value = true;
@@ -136,68 +157,120 @@ export default createComponent({
     const wcgopCatchTreeSettings = {
       rowKey: 'catchNum',
       columns: [
-        { name: 'disposition', required: true, label: 'R/D', align: 'left', field: 'disposition', width: '8%' },
-        { name: 'weightMethod', align: 'left', label: 'WM', field: 'weightMethod', width: '8%' },
-        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '44%', expander: true },
-        { name: 'weight', align: 'left', label: 'Weight', field: 'weight', width: '12%' },
-        { name: 'count', align: 'left', label: 'Count', field: 'count', width: '12%' },
-        { name: 'discardReason', align: 'left', label: 'Discard Reason', field: 'discardReason', width: '16%' }
+        { name: 'disposition', required: true, label: 'R/D', align: 'left', field: 'disposition', width: '40' },
+        { name: 'weightMethod', align: 'left', label: 'WM', field: 'weightMethod', width: '40' },
+        { name: 'name', align: 'left', label: 'Name', field: 'name', width: '240', expander: true },
+        { name: 'weight', align: 'left', label: 'Weight', field: 'weight', width: '80' },
+        { name: 'count', align: 'left', label: 'Count', field: 'count', width: '80' },
+        { name: 'discardReason', align: 'left', label: 'Discard Reason', field: 'discardReason', width: '120' }
       ]
     };
 
-    const expandedKeys: any = [];
+    const expandedKeys = ref({});
 
     const nodes = computed(() => {
         const tempNodes = [
             {
             key: '0',
             data: {
-                disposition: 'retained',
-                weightMethod: 17,
-                discardReason: 'blah',
-                name: 'fish',
-                weight: 7,
+                disposition: 'D',
+                weightMethod: 14,
+                name: 'Visual Experience',
+                weight: 77,
                 count: 7
             },
             children: [
-                {
-                key: '0-0',
-                data: {
-                    disposition: 'retained',
-                    discardReason: 'halp',
-                    name: 'dewa',
-                    weight: 8,
-                    count: 3
-                },
-                children: [
                     {
-                    key: '0-0-0',
+                    key: '0-0',
                     data: {
-                        disposition: 'retained',
-                        discardReason: 'halp',
-                        name: 'dewa',
-                        weight: 8,
+                        discardReason: '7',
+                        name: 'DOVR',
+                        weight: 56,
+                        count: 4
+                    },
+                    catch: 3
+                    },
+                    {
+                    key: '0-1',
+                    data: {
+                        discardReason: '9',
+                        name: 'SABL',
+                        weight: 21,
                         count: 3
+                    },
+                    catch: 4
                     }
-                    }
-                ]
-                }
-
-            ]
+                ],
+            catch: 1
             },
             {
             key: '1',
             data: {
-                disposition: 'discarded',
-                discardReason: 'blah',
-                name: 'fish',
-                weight: 7,
+                disposition: 'R',
+                weightMethod: 9,
+                name: 'Length/Weight',
+                weight: 65,
                 count: 7
-            }
+            },
+            catch: 2,
+            children: [
+                    {
+                    key: '1-0',
+                    data: {
+                        discardReason: '',
+                        name: 'AKSK',
+                        weight: 56,
+                        count: 4
+                    },
+                    catch: 3
+                    },
+                    {
+                    key: '1-1',
+                    data: {
+                        discardReason: '9',
+                        name: 'YEYE',
+                        weight: 21,
+                        count: 3
+                    },
+                    catch: 4
+                    }
+                ],
             },
         ];
         return tempNodes;
     });
+
+    const updateCatch = () => {
+        console.log(catchModel.value);
+        console.log('TO DO!!!');
+    }
+
+    const expandAll = () => {
+        console.log('expand all - to do');
+    }
+
+    const collapseAll = () => {
+        expandedKeys.value = {};
+    }
+
+    const watcherOptions: WatchOptions = {
+        immediate: false
+    };
+
+    const storedDiscardReason = ref('');
+    watch(
+        () => catchModel.value.disposition,
+        (newVal, oldVal) => {
+            console.log(newVal);
+            if (newVal.description === 'Retained') {
+                storedDiscardReason.value = catchModel.value.discardReason;
+                catchModel.value.discardReason = '';
+            } else {
+                catchModel.value.discardReason = storedDiscardReason.value;
+            }
+        },
+        watcherOptions
+    );
 
     onMounted( () => {
         if (!currentHaul.value.catches || currentHaul.value.catches.length === 0) {
@@ -222,6 +295,7 @@ export default createComponent({
 
     return {
         store,
+        catchModel,
         currentCatch,
         currentHaul,
         add,
@@ -233,7 +307,10 @@ export default createComponent({
         expandedKeys,
         wcgopCatchTreeSettings,
         handleSelectCatch,
-        openDrawer
+        openDrawer,
+        updateCatch,
+        expandAll,
+        collapseAll
     };
   }
 });
