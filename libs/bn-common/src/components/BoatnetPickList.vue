@@ -7,7 +7,6 @@
             v-if="showFrequentToggle"
             :options="['All', 'Frequent']"
             :val.sync="scope"
-
             class="q-ma-md"
         >
         </boatnet-push-button>
@@ -23,7 +22,7 @@
             </template>
         </boatnet-keyboard-select-list>
 
-        <q-scroll-area style="height: 500px;" class="q-ma-md">
+        <q-scroll-area ref="scrollArea" style="height: 500px;" class="q-ma-md">
             <q-list bordered separator>
                 <q-item
                     v-for="(item) in filtered(options)"
@@ -68,48 +67,54 @@ export default createComponent({
         const index: any = ref(0);
         const scope: any = ref('All');
         const searchText: any = ref('');
+        let selected: any = null;
 
         const setSelected = (item: any) => {
             context.emit('update:val', item);
             context.emit('save');
+            selected = item;
         };
 
         const frequent =
-        [
-            'ZMIS',
-            'ARTH',
-            'CHLB',
-            'CLPR',
-            'CNRY',
-            'DBRK',
-            'DOVR',
-            'EGLS',
-            'INVT',
-            'LCOD',
-            'LSKT',
-            'LSPN',
-            'MBOT',
-            'NSLP',
-            'PCOD',
-            'PDAB',
-            'PHLB',
-            'POP',
-            'PTRL',
-            'REX',
-            'SABL',
-            'SKAT',
-            'SRMP',
-            'SSOL',
-            'SSPN',
-            'STRY',
-            'THDS',
-            'YTRK'
-        ];
+            [
+                'ZMIS',
+                'ARTH',
+                'CHLB',
+                'CLPR',
+                'CNRY',
+                'DBRK',
+                'DOVR',
+                'EGLS',
+                'INVT',
+                'LCOD',
+                'LSKT',
+                'LSPN',
+                'MBOT',
+                'NSLP',
+                'PCOD',
+                'PDAB',
+                'PHLB',
+                'POP',
+                'PTRL',
+                'REX',
+                'SABL',
+                'SKAT',
+                'SRMP',
+                'SSOL',
+                'SSPN',
+                'STRY',
+                'THDS',
+                'YTRK'
+            ];
 
+        const scrollArea: any = ref(null);
 
         const filtered = (optionVals: any) => {
             if (searchText.value.length > 0) {
-                return optionVals.filter( (option: any) => {
+                if (!selected) {
+                    scrollArea.value!.setScrollPosition(0);
+                }
+                let results = optionVals.filter( (option: any) => {
                     if (option.commonNames) {
                         return option.commonNames[0].toLowerCase().includes(searchText.value.toLowerCase()) ||
                         (option.taxonomy.pacfinSpeciesCode ? option.taxonomy.pacfinSpeciesCode.toLowerCase() : '').includes(searchText.value.toLowerCase());
@@ -118,15 +123,27 @@ export default createComponent({
                         (option.code ? option.code.toLowerCase() : '').includes(searchText.value.toLowerCase());
                     }
                 });
+                if (!results.includes(selected) && selected) {
+                    results.unshift(selected);
+                }
+                return results;
             } else if (scope.value === 'Frequent') {
-                return optionVals.filter( (option: any) => {
+                let results = optionVals.filter( (option: any) => {
                     if (option.commonNames && option.taxonomy && option.taxonomy.pacfinSpeciesCode) {
                         return frequent.includes(option.taxonomy.pacfinSpeciesCode);
                     } else if (option.name) {
                         return frequent.includes(option.code);
                     }
-                });
+                })
+                if (!results.includes(selected) && selected) {
+                    results.unshift(selected);
+                    scrollArea.value!.setScrollPosition(0);
+                }
+                return results;
             } else {
+                if (scrollArea && scrollArea.value && !selected) {
+                    scrollArea.value!.setScrollPosition(0);
+                }
                 return optionVals;
             }
         };
@@ -168,7 +185,7 @@ export default createComponent({
         );
 
         return {
-            options, setSelected, scope, searchText, filtered
+            options, setSelected, scope, searchText, filtered, scrollArea
         };
     }
 });
