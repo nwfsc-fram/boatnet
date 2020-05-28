@@ -1,6 +1,6 @@
 <template>
   <div>
-    <prime-table
+   <prime-table
       :value="trips"
       :columns="columns"
       type="Trips"
@@ -106,6 +106,7 @@ export default createComponent({
         field: 'tripStatus.description',
         header: 'Status',
         type: 'toggle',
+        listType: 'fetch',
         lookupKey: 'trip-status',
         lookupField: 'description',
         key: 'wcgopStatus',
@@ -116,6 +117,7 @@ export default createComponent({
         field: 'tripScore',
         header: 'Score',
         type: 'toggle',
+        listType: 'template',
         list: ['Pass', 'Fail'],
         key: 'wcgopTripScore',
         isEditable: true,
@@ -123,17 +125,10 @@ export default createComponent({
       },
       {
         field: 'observer.firstName',
-        header: 'Obs. First Name',
+        displayField: ['observer.firstName', 'observer.lastName'],
+        header: 'Observer',
         type: 'input',
         key: 'wcgopObsFirstName',
-        isEditable: false,
-        width: '100'
-      },
-      {
-        field: 'observer.lastName',
-        header: 'Obs. Last Name',
-        type: 'input',
-        key: 'wcgopObsLastName',
         isEditable: false,
         width: '100'
       },
@@ -159,7 +154,9 @@ export default createComponent({
         field: 'program.name',
         header: 'Program',
         type: 'toggle',
-        list: ['Catch Shares', 'Open Access'],
+        listType: 'fetch',
+        lookupKey: 'program',
+        lookupField: 'name',
         key: 'wcgopProgramName',
         isEditable: true,
         width: '150'
@@ -167,7 +164,11 @@ export default createComponent({
       {
         field: 'fishery.description',
         header: 'Fishery',
-        type: 'input',
+        type: 'toggle',
+        listType: 'fetch',
+        search: true,
+        lookupKey: 'fishery',
+        lookupField: 'description',
         key: 'wcgopFishery',
         isEditable: true,
         width: '250'
@@ -177,6 +178,7 @@ export default createComponent({
         field: 'firstReceivers[0].dealerName',
         header: 'First Receivers',
         type: 'toggle',
+        listType: 'fetch',
         key: 'wcgopFR',
         uniqueKey: '_id',
         isEditable: false,
@@ -198,35 +200,17 @@ export default createComponent({
       },
       {
         field: 'vessel.captains[0].firstName',
-        header: 'Skipper First Name',
-        type: 'popup',
-        key: 'wcgopCaptainsF',
+        displayField: ['vessel.captains[0].firstName', 'vessel.captains[0].lastName'],
+        header: 'Skipper',
+        type: 'toggle',
+        listType: 'fetch',
+        lookupKey: 'fishery',
+        lookupField: 'description',
+        key: 'wcgopCaptains',
         uniqueKey: '_id',
         popupField: 'vessel.captains',
         isEditable: false,
-        width: '120',
-        popupColumns: [
-          {
-            field: 'firstName',
-            header: 'First Name',
-            type: 'input',
-            key: 'firstName'
-          },
-          {
-            field: 'lastName',
-            header: 'Last Name',
-            type: 'input',
-            key: 'lastName'
-          }
-        ]
-      },
-      {
-        field: 'vessel.captains[0].lastName',
-        header: 'Skippers Last Name',
-        type: 'input',
-        key: 'wcgopCaptainsL',
-        isEditable: true,
-        width: '100'
+        width: '120'
       },
       {
         field: 'departureDate',
@@ -247,7 +231,8 @@ export default createComponent({
       {
         field: 'legacy.isNoFishingActivity',
         header: 'Fishing Activity?',
-        type: 'boolean',
+        type: 'toggle',
+        listType: 'boolean',
         key: 'wcgopFishingActivity',
         isEditable: true,
         width: '120'
@@ -255,7 +240,8 @@ export default createComponent({
       {
         field: 'isPartialTrip',
         header: 'Partial Trip?',
-        type: 'boolean',
+        type: 'toggle',
+        listType: 'boolean',
         key: 'wcgopPartialTrip',
         isEditable: true,
         width: '120'
@@ -263,7 +249,8 @@ export default createComponent({
       {
         field: 'isFishProcessed',
         header: 'Fish Processed?',
-        type: 'boolean',
+        type: 'toggle',
+        listType: 'boolean',
         key: 'wcgopFishProcessed',
         isEditable: true,
         width: '120'
@@ -302,7 +289,9 @@ export default createComponent({
       {
         field: 'departurePort.name',
         header: 'Departure Port',
-        type: 'search-toggle',
+        type: 'toggle',
+        listType: 'fetch',
+        search: true,
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopDeparturePort',
@@ -312,7 +301,9 @@ export default createComponent({
       {
         field: 'returnPort.name',
         header: 'Return Port',
-        type: 'search-toggle',
+        type: 'toggle',
+        listType: 'fetch',
+        search: true,
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopReturnPort',
