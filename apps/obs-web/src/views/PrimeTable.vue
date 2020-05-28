@@ -24,6 +24,7 @@
             optionLabel="header"
             placeholder="Select Columns"
             style="width: 20em"
+            appendTo="body"
           >
             <template #value="slotProps">
               <div>Display Columns</div>
@@ -44,29 +45,22 @@
       >
         <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
-            v-if="col.type === 'boolean'"
+            v-if="col.type === 'toggle'"
             v-model="cellVal"
             :options="lookupsList"
             :placeholder="cellVal"
-            @before-show="getBooleanLookup"
-            @input="onCellEdit($event, slotProps, col.type)"
+            :filter="col.search ? true : false"
+            :optionLabel="col.listType === 'fetch' ? 'doc.' + col.lookupField : 'value'"
+            :optionValue="col.listType === 'fetch' ? 'doc' : 'value'"
+            @before-show="getLookupInfo(col.list, col.listType, col.lookupField, col.lookupKey)"
+            @input="onCellEdit($event, slotProps, col.listType)"
+            appendTo="body"
           />
-          <Dropdown
-            v-else-if="col.type === 'toggle'"
+          <Calendar
+            v-else-if="col.type === 'date'"
             v-model="cellVal"
-            :options="lookupsList"
-            :placeholder="cellVal"
-            @before-show="getLookupInfo(col.list, col.lookupField, col.lookupKey)"
             @input="onCellEdit($event, slotProps, col.type)"
-          />
-          <Dropdown
-            v-else-if="col.type === 'search-toggle'"
-            v-model="cellVal"
-            :options="lookupsList"
-            :placeholder="cellVal"
-            :filter="true"
-            @before-show="getLookupInfo(col.list, col.lookupField, col.lookupKey)"
-            @input="onCellEdit($event, slotProps, col.type)"
+            appendTo="body"
           />
           <InputText
             v-else
@@ -77,7 +71,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span style="pointer-events: none">{{ formatValue(slotProps, col.type) }}</span>
+          <span style="pointer-events: none">
+            {{ formatValue(slotProps, col.type, col.displayField) }}
+          </span>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -123,6 +119,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import moment from 'moment';
 import PrimeTableDialog from './PrimeTableDialog.vue';
+import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -199,30 +196,28 @@ export default createComponent({
       }
     });
 
-    async function getBooleanLookup() {
-      lookupsList.value = ['true', 'false'];
-    }
-
     async function getLookupInfo(
       list: any[],
+      listType: string,
       displayField: string,
       key: string
     ) {
-      if (!list) {
-        const lookupListHolder: any = [];
+      if (listType === 'boolean') {
+        lookupsList.value = [
+          { value: true },
+          { value: false}
+        ];
+      } else if (!list) {
         const mode = state.debriefer.program;
-        const view = mode + '-lookups';
-        const results = await masterDB
-          .viewWithDocs('obs_web', view, { key })
-          .then((response: any) => {
-            for (const row of response.rows) {
-              const val = get(row.doc, displayField);
-              lookupListHolder.push(val);
-            }
-            lookupsList.value = lookupListHolder;
-          });
+        lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
+          displayField
+        ]);
       } else {
-        lookupsList.value = list;
+        let lookupVals = [];
+        for (const listItem of list) {
+          lookupVals.push({ value: listItem });
+        }
+        lookupsList.value = lookupVals;
       }
     }
 
@@ -234,11 +229,26 @@ export default createComponent({
       return index;
     }
 
-    function formatValue(slotProps: any, type: string) {
+    function formatValue(slotProps: any, type: string, displayField: string[]) {
       const value = props.value ? props.value : [];
       const index = getIndex(slotProps.data);
 
-      let val: any = get(value[index], slotProps.column.field);
+      let val: any;
+
+      if (displayField) {
+        let fieldIndex = 0;
+        for (const field of displayField) {
+          if (fieldIndex === 0) {
+            val = get(value[index], field);
+          } else {
+            val = val + ' ' + get(value[index], field);
+          }
+          fieldIndex++;
+        }
+      } else {
+        val = get(value[index], slotProps.column.field);
+      }
+
       if (type === 'date') {
         val = moment(val).format('MM/DD/YYYY HH:mm');
       } else if (val && type === 'double' && val % 1 !== 0) {
@@ -249,21 +259,37 @@ export default createComponent({
 
     function onCellEditInit(event: any) {
       cellVal.value = get(event.data, event.field).toString();
+      if (cellVal.value.indexOf(':') !== -1) {
+        cellVal.value = new Date(cellVal.value);
+      }
     }
 
     function onCellEdit(newValue: any, slotProps: any, type: string) {
       const valueHolder: any = props.value ? props.value : {};
       const index = getIndex(slotProps.data);
+      let fields: string = slotProps.column.field;
       let editingCellRow: any = valueHolder[index];
       if (!editingCellRow) {
         editingCellRow = { ...slotProps.data };
       }
       if (type === 'boolean') {
-        newValue = newValue === 'true';
+        newValue = newValue;
+        cellVal.value = newValue.toString();
       } else if (type === 'number') {
         newValue = Number(newValue);
+      } else if (type === 'date') {
+        newValue = moment(newValue).format();
+      } else if (type === 'fetch') {
+        const fieldArr: string[] = fields.split('.');
+        fieldArr.splice(fieldArr.length - 1, 1);
+        fields = fieldArr.join('.');
+
+        const updateCellValFieldsArr: string[] = slotProps.column.field.split('.');
+        updateCellValFieldsArr.splice(0, 1);
+        const updateCellValFields = updateCellValFieldsArr.join('.');
+        cellVal.value = get(newValue, updateCellValFields);
       }
-      set(editingCellRow, slotProps.column.field, newValue);
+      set(editingCellRow, fields, newValue);
       valueHolder[index] = editingCellRow;
 
       context.emit('save', editingCellRow);
@@ -298,7 +324,6 @@ export default createComponent({
       onCellEditInit,
       onCellEdit,
       getLookupInfo,
-      getBooleanLookup,
       lookupsList,
       formatValue,
       tableType,
