@@ -20,7 +20,7 @@
       :show.sync="showDialog"
       @save="action === 'add' ? saveAdd() : saveEdit()"
     >
-     <div style="display: flex; flex-flow: column wrap; align-items: stretch; height: 400px;">
+     <div style="display: flex; flex-flow: column wrap; align-items: stretch;">
           <div v-for="config1 of config.formConfig" :key="config.formConfig.indexOf(config1)">
             <boatnet-common-input-component :config="config1" :model="currRow"></boatnet-common-input-component>
           </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator';
 import moment from 'moment';
 import { TripState, AppSettings, BoatnetConfig } from '@boatnet/bn-common';
 import { Action, Getter, State } from 'vuex-class';
@@ -52,16 +52,25 @@ export default class BoatnetTableComp extends Vue {
   private appConfig!: BoatnetConfig;
   private config: any;
 
-  private dialogSettings = {
-    title: this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name,
-    width: 600,
-    height: 200,
-    confirmationLabel: 'Yes'
-  };
+  @Getter('appMode', { namespace: 'appSettings' })
+  private appMode!: AppSettings;
 
   private created() {
     this.config = get(this.appConfig, this.configName);
+    if (this.config.width) {
+      this.dialogSettings.width = this.config.width;
+    }
+    if (this.config.height) {
+      this.dialogSettings.height = this.config.height;
+    }
   }
+
+  private dialogSettings = {
+    title: this.action ? (this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name) : '',
+    width: 600,
+    height: 600,
+    confirmationLabel: 'Yes'
+  };
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];
@@ -106,5 +115,21 @@ export default class BoatnetTableComp extends Vue {
     this.$emit('save');
     this.selected = [];
   }
+
+  @Watch('action')
+  private handler2(newVal: string, oldVal: string) {
+    if (newVal === 'add') {
+      this.dialogSettings.title = 'Add ' + this.config.name;
+      if (this.appMode.toString() === 'wcgop') {
+        this.dialogSettings.confirmationLabel = 'Add';
+      }
+    } else if (newVal === 'edit') {
+      this.dialogSettings.title = 'Edit ' + this.config.name;
+      if (this.appMode.toString() === 'wcgop') {
+        this.dialogSettings.confirmationLabel = 'Update';
+      }
+    }
+  }
+
 }
 </script>
