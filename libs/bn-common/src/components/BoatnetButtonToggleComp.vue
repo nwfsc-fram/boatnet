@@ -20,7 +20,7 @@
     />
 
     <q-btn-toggle
-      v-if="optionsList.length - splitAt > splitAt"
+      v-if="splitAt && optionsList.length - splitAt > splitAt"
       v-model="valueHolder"
       toggle-color="primary"
       :options="optionsList.slice(splitAt * 2, optionsList.length)"
