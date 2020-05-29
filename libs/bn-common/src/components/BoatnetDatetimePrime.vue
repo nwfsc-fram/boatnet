@@ -1,6 +1,9 @@
 <template>
   <div class="q-px-md q-py-sm">
-    <div class="p-float-label">
+    <div>
+      <b>{{ config.displayName }}</b>
+    </div>
+    <div :class="{active: config.inline}">
       <pCalendar
         v-model="dateVal"
         :showTime="config.showTime"
@@ -13,7 +16,6 @@
         onfocus="blur()"
         id="date"
       />
-      <label for="date">{{config.displayName}}</label>
     </div>
   </div>
 </template>
@@ -63,4 +65,8 @@ export default class BoatnetDatetimePrime extends Vue {
   width: 100%;
   height: 40px;
 }
+.active {
+  height: 375px;
+}
+
 </style>

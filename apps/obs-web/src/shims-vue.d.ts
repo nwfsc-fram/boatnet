@@ -6,6 +6,7 @@ declare module '*.vue' {
 declare module 'quasar';
 declare module 'pouchdb-utils';
 declare module 'vue-async-function';
+declare module 'vue-multiselect';
 
 declare module 'quasar-calendar';
 declare module 'coordinate-parser';

@@ -39,6 +39,7 @@ import DebrieferCatchSpecimens from './views/DebrieferCatchSpecimens.vue';
 import DebrieferDialog from './views/DebrieferDialog.vue';
 import DebrieferLayoutAshop from './views/DebrieferLayoutAshop.vue';
 import DebrieferWcgopSearch from './views/DebrieferWcgopSearch.vue';
+import DebrieferWcgopEvaluation from './views/DebrieferWcgopEvaluation.vue';
 import CruiseDialog from './views/CruiseDialog.vue';
 // Vue.use(VueResource);
 
@@ -84,6 +85,7 @@ Vue.component('appDebrieferWcgopData', DebrieferWcgopData);
 Vue.component('appDebrieferAshopData', DebrieferAshopData);
 Vue.component('appDebrieferLayoutAshop', DebrieferLayoutAshop);
 Vue.component('appDebrieferWcgopSearch', DebrieferWcgopSearch);
+Vue.component('appDebrieferWcgopEvaluation', DebrieferWcgopEvaluation);
 Vue.component('appCruiseDialog', CruiseDialog);
 
 Vue.config.productionTip = false;

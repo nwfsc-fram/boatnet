@@ -3,11 +3,12 @@
     <debriefer-select-comp
       label="Observer"
       style="display: inline-block"
-      :val.sync="observer"
+      :val.sync="observers"
       lookupView="all_wcgop_observers"
       lookupLabel="value"
       lookupValue="id"
-      @select="observerFilter"
+      :multiple="true"
+      @select="select('wcgop_trips_by_observerId', 'observer._id', observers)"
     />
     <debriefer-select-comp
       label="Status"
@@ -17,15 +18,10 @@
       lookupView="all_doc_types"
       lookupLabel="doc.description"
       lookupValue="id"
+      :multiple="true"
       :lookupQueryOptions="{ key: 'trip-status', include_docs: true }"
-      @select="statusFilter"
+      @select="select('wcgop_trips_by_statusId', 'tripStatus._id', status)"
     />
-    <div style="display: inline-block" class="q-pa-md">
-      <div class="p-float-label q-px-xs">
-        <pCalendar v-model="dateRange" selectionMode="range" />
-        <label for="endDate" style="color: #027be3">Date Range</label>
-      </div>
-    </div>
     <debriefer-select-comp
       label="Vessel Name"
       style="display: inline-block"
@@ -35,7 +31,8 @@
       lookupLabel="value"
       lookupValue="id"
       :lookupQueryOptions="{}"
-      @select="vesselFilter"
+      :multiple="true"
+      @select="select('wcgop_trips_by_vesselId', 'vessel._id', vessel)"
     />
     <debriefer-select-comp
       label="Fishery"
@@ -46,7 +43,8 @@
       lookupLabel="doc.description"
       lookupValue="id"
       :lookupQueryOptions="{ key: 'fishery', include_docs: true }"
-      @select="fisheryFilter"
+      :multiple="true"
+      @select="select('wcgop_trips_by_fisheryId', 'fishery._id', fishery)"
     />
     <debriefer-select-comp
       style="display: inline-block"
@@ -56,43 +54,50 @@
       lookupView="wcgop_trips_by_observerId"
       lookupLabel="value"
       lookupValue="id"
+      :multiple="true"
       :lookupQueryOptions="{}"
       @select="selectTripId"
     />
+    <div style="display: inline-block" class="q-pa-md">
+      <div class="p-float-label q-px-xs">
+        <pCalendar
+          v-model="startDate"
+          @date-select="dateFilter"
+          @clear-click="dateFilter"
+          :showButtonBar="true"
+        />
+        <label for="endDate" style="color: #027be3">Start Date</label>
+      </div>
+    </div>
+    <div style="display: inline-block" class="q-pa-md">
+      <div class="p-float-label q-px-xs">
+        <pCalendar
+          v-model="endDate"
+          @date-select="dateFilter"
+          @clear-click="dateFilter"
+          :showButtonBar="true"
+        />
+        <label for="endDate" style="color: #027be3">End Date</label>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  createComponent,
-  ref,
-  reactive,
-  computed,
-  watch
-} from '@vue/composition-api';
+import { createComponent, ref } from '@vue/composition-api';
 import Vue from 'vue';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
 import { useAsync } from 'vue-async-function';
-import {
-  CouchDBInfo,
-  CouchDBCredentials,
-  couchService
-} from '@boatnet/bn-couch';
+import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions, FindOptions } from 'davenport';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
-import { findIndex, get, remove } from 'lodash';
+import { findIndex, get, remove, indexOf } from 'lodash';
 import { getTripsByDates } from '../helpers/getFields';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
+import Multiselect from 'vue-multiselect';
 
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
-Vue.component('TabPanel', TabPanel);
-Vue.component('TabView', TabView);
-Vue.component('DataTable', DataTable);
-Vue.component('Column', Column);
+Vue.component('multiselect', Multiselect);
 
 export default createComponent({
   setup(props, context) {
@@ -100,93 +105,133 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
 
-    const filters: any = [];
+    const filters: any = {};
+    const rows: any = [];
 
-    const observer: any = ref({});
-    const status: any = ref({});
-    const dateRange: any = ref([]);
-    const vessel: any = ref({});
-    const fishery: any = ref({});
-    const tripId: any = ref({});
+    const observers: any = ref([]);
+    const status: any = ref([]);
+    const startDate: any = ref();
+    const endDate: any = ref();
+    const vessel: any = ref([]);
+    const fishery: any = ref([]);
+    const tripId: any = ref([]);
 
-    async function observerFilter(id: string) {
-      await filter('wcgop_trips_by_observerId', 'observer._id', id);
-    }
+    const observerList: any = ref([]);
+    const vesselList: any = ref([]);
+    const statusList: any = ref([]);
+    const fisheryList: any = ref([]);
 
-    async function statusFilter(id: string) {
-      await filter('wcgop_trips_by_statusId', 'tripStatus._id', id);
+    async function select(view: string, field: string, vals: any) {
+      const ids: string[] = [];
+      for (const val of vals) {
+        ids.push(val.value);
+      }
+      await updateFilters(view, field, ids);
     }
 
     async function dateFilter() {
-      if (dateRange.value[0] && dateRange.value[1]) {
-        await filter('wcgop_trips_by_date', 'departureDate', dateRange.value);
-      }
-    }
-
-    async function vesselFilter(id: string) {
-      await filter('wcgop_trips_by_vesselId', 'vessel._id', id);
-    }
-
-    async function fisheryFilter(id: string) {
-      await filter('wcgop_trips_by_fisheryId', 'fishery._id', id);
-    }
-
-    async function filter(view: string, field: string, id: string) {
-      let tripIds: string[] = [];
-      tripId.value = {}
-      const index = findIndex(filters, { view: view });
-      if (index >= 0) {
-        filters[index] = { view: view, field: field, id: id };
+      if (startDate.value && endDate.value) {
+        const dates = [
+          moment(startDate.value).format(),
+          moment(endDate.value).format()
+        ];
+        await updateFilters('wcgop_trips_by_date', 'returnDate', dates);
       } else {
-        filters.push({ view: view, field: field, id: id });
+        await updateFilters('wcgop_trips_by_date', 'returnDate', []);
       }
-      // when a filter is cleared (value = '') remove it from filters
-      remove(filters, (n: any) => { return !n.id; });
+    }
+
+    function updateFilters(view: string, field: string, val: any) {
+      if (val.length > 0) {
+        filters[view] = { field, val };
+      } else if (filters[view] && val.length === 0) {
+        delete filters[view];
+      }
+      updateRecords();
+    }
+
+    async function updateRecords() {
+      const tripIds: any[] = [];
+      const views = Object.keys(filters);
+      const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
+      let keyVals = {};
+
+      if (views.length <= 0) {
+        store.dispatch('debriefer/setTripIds', []);
+        vesselList.value = [];
+        fisheryList.value = [];
+        statusList.value = [];
+        observerList.value = [];
+      }
+
+      if (queryView === 'wcgop_trips_by_date') {
+        keyVals = {
+          start_key: filters[queryView].val[0],
+          end_key: filters[queryView].val[1]
+        };
+      } else {
+        keyVals = { keys: filters[queryView].val };
+      }
 
       try {
-        if (filters.length > 0) {
-          const results = await masterDB
-            .viewWithDocs('obs_web', filters[0].view, { key: filters[0].id })
-            .then((response: any) => {
-              for (const row of response.rows) {
-                let filterIn = true;
-                for (const filter of filters) {
-                  if (filter.id != get(row.doc, filter.field)) {
+        const results = await masterDB
+          .viewWithDocs('obs_web', queryView, keyVals)
+          .then((response: any) => {
+            for (const row of response.rows) {
+              let filterIn = true;
+              for (let i = 1; i < views.length; i++) {
+                const viewName = views[i];
+
+                if (viewName === 'wcgop_trips_by_date') {
+                  if (
+                    moment(row.doc.returnDate).isBefore(filters[viewName].val[0]) ||
+                    moment(row.doc.returnDate).isAfter(filters[viewName].val[1])
+                  ) {
+                    filterIn = false;
+                  }
+                } else {
+                  const rowVal = get(row.doc, filters[viewName].field);
+                  if (indexOf(filters[viewName].val, rowVal) === -1) {
                     filterIn = false;
                   }
                 }
-                if (filterIn) {
-                  tripIds.push(row.id);
-                }
               }
-            });
-          store.dispatch('debriefer/setTripIds', tripIds);
-        }
+              if (filterIn) {
+                tripIds.push(row.id);
+              }
+            }
+          });
+        store.dispatch('debriefer/setTripIds', tripIds);
       } catch (e) {
         console.log('error getting trips ' + e);
       }
     }
 
     function selectTripId(id: string) {
-      store.dispatch('debriefer/setTripIds', [id]);
-      vessel.value = {};
-      fishery.value = {};
-      observer.value = {};
+      store.dispatch('debriefer/setTripIds', id);
+      vessel.value = [];
+      fishery.value = [];
+      observers.value = [];
     }
 
     return {
-      observerFilter,
-      statusFilter,
-      vesselFilter,
-      fisheryFilter,
-      dateRange,
+      select,
+      dateFilter,
+      startDate,
+      endDate,
       vessel,
-      observer,
+      observers,
       status,
       fishery,
       tripId,
-      selectTripId
+      selectTripId,
+      observerList,
+      vesselList,
+      fisheryList,
+      statusList
     };
   }
 });
 </script>
+
+<style src="../../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css"></style>
