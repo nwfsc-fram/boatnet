@@ -213,7 +213,7 @@ export default createComponent({
           displayField
         ]);
       } else {
-        let lookupVals = [];
+        const lookupVals = [];
         for (const listItem of list) {
           lookupVals.push({ value: listItem });
         }
