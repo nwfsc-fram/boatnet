@@ -10,3 +10,5 @@ declare module 'vue-multiselect';
 
 declare module 'quasar-calendar';
 declare module 'coordinate-parser';
+
+declare module 'vue-timeselector';

@@ -50,17 +50,31 @@
             </pCalendar>
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
-            <pCalendar
-              v-model="departureTime"
-              :showTime="true"
-              :timeOnly="true"
-              hourFormat="24"
-              onfocus="blur();"
-              :touchUI="false"
-              style="margin-left: 10px"
-            >
-            </pCalendar>
+              <pCalendar
+                v-model="departureTime"
+                :showTime="true"
+                :timeOnly="true"
+                hourFormat="24"
+                onfocus="blur();"
+                :touchUI="false"
+                style="margin-left: 10px"
+              >
+              </pCalendar>
             </div>
+
+              <br>
+            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
+              <timeselector
+                name="Departure Time"
+                v-model="departureTime"
+              >
+                <!-- <template v-slot:clear-ico>
+                    <span></span>
+                </template> -->
+              </timeselector>
+              <hr>
+            </div>
+
 
           </span>
         </div>
@@ -237,6 +251,9 @@ Vue.component('file-uploader', FileUploader);
 
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
+
+import Timeselector from 'vue-timeselector';
+Vue.component('timeselector', Timeselector);
 
 import { date, Notify } from 'quasar';
 import request from 'request';
@@ -1237,6 +1254,14 @@ label.cameraButton {
 
 label.cameraButton input[accept*="camera"] {
   display: none;
+}
+
+.timeselector__box__item--is-selected {
+  background-color: #007EC6 !important
+}
+
+.vtimeselector__input {
+  border: none !important
 }
 
 </style>
