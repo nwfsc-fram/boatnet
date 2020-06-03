@@ -10,8 +10,7 @@
       @node-select="select"
       @node-unselect="unSelect"
       sortMode="single"
-      
-      style="height: 300px"
+      style="height: 450px"
     >
       <template #header>
         <div style="text-align:left">
