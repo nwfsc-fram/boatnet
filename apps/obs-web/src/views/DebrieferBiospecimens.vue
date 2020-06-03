@@ -179,8 +179,8 @@ export default createComponent({
                 if (child.specimens) {
                   for (const specimen of child.specimens) {
                     const dissections: any[] = [];
-                    if(specimen.biostructures) {
-                      for(const dissection of specimen.biostructures) {
+                    if (specimen.biostructures) {
+                      for (const dissection of specimen.biostructures) {
                         dissections.push({
                           type: dissection.structureType ? dissection.structureType.description : '',
                           barcode: dissection.label
@@ -200,7 +200,7 @@ export default createComponent({
                       maturity: specimen.visualMaturity,
                       adiposePresent: specimen.isAdiposePresent ? 'Y' : 'N',
                       biosampleMethod: specimen.biosampleMethod.description,
-                      dissections: dissections,
+                      dissections,
                       _id: specimen._id
                     });
                   }

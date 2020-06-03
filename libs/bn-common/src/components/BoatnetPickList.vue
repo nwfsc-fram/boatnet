@@ -114,7 +114,7 @@ export default createComponent({
                 if (!selected) {
                     scrollArea.value!.setScrollPosition(0);
                 }
-                let results = optionVals.filter( (option: any) => {
+                const results = optionVals.filter( (option: any) => {
                     if (option.commonNames) {
                         return option.commonNames[0].toLowerCase().includes(searchText.value.toLowerCase()) ||
                         (option.taxonomy.pacfinSpeciesCode ? option.taxonomy.pacfinSpeciesCode.toLowerCase() : '').includes(searchText.value.toLowerCase());
@@ -128,13 +128,13 @@ export default createComponent({
                 }
                 return results;
             } else if (scope.value === 'Frequent') {
-                let results = optionVals.filter( (option: any) => {
+                const results = optionVals.filter( (option: any) => {
                     if (option.commonNames && option.taxonomy && option.taxonomy.pacfinSpeciesCode) {
                         return frequent.includes(option.taxonomy.pacfinSpeciesCode);
                     } else if (option.name) {
                         return frequent.includes(option.code);
                     }
-                })
+                });
                 if (!results.includes(selected) && selected) {
                     results.unshift(selected);
                     scrollArea.value!.setScrollPosition(0);
