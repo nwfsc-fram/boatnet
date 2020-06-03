@@ -222,14 +222,24 @@
                     </div>
                 </div>
 
-                <q-field v-model="tripCatch.fishTicketDate" outlined label="Fish Ticket Date" dense autogrow title="Date/Time the vessel returned to port for offload">
+                <!-- <q-field v-model="tripCatch.fishTicketDate" outlined dense autogrow title="Date/Time the vessel returned to port for offload">
                     <q-popup-proxy ref="qDateProxy5" transition-show="scale" transition-hide="scale">
                         <q-date v-model="tripCatch.fishTicketDate" @input="() => {$refs.qDateProxy5.hide()}"/>
                     </q-popup-proxy>
                     <template v-slot:control>
+                        <span style="color: hotpink">Fish Ticket Date&nbsp;</span>
                         {{ formatDate(tripCatch.fishTicketDate) }}
                     </template>
 
+                </q-field> -->
+
+                <q-field v-model="tripCatch.fishTicketDate" dense autogrow outlined label="Fish Ticket Date" title="Date the vessel returned to port for offload">
+                    <q-popup-proxy ref="qDateProxy1" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="tripCatch.fishTicketDate" @input="() => {fishTicketDate = '', $refs.qDateProxy1.hide()}"/>
+                    </q-popup-proxy>
+                    <template v-slot:control>
+                        {{ formatDate(tripCatch.fishTicketDate) }}
+                    </template>
                 </q-field>
             </div>
 
@@ -317,7 +327,7 @@
                     </q-input>
                     <q-input v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg" dense autogrow outlined label="Avg Hooks Per Set" title="Average hooks per set" mask="###">
                     </q-input>
-                    <q-input v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].netType" dense autogrow outlined label="Net Type" title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)" mask="" hint="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)" style="margin-bottom: 15px">
+                    <q-input v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].netType" dense autogrow outlined label="Net Type" title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)">
                     </q-input>
                     <q-input v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)" v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity" dense autogrow outlined label="Codend Capacity" title="Total estimated weight (lbs) the codened can hold" mask="#####">
                     </q-input>
@@ -944,6 +954,7 @@ export default createComponent({
                 hauls: [],
                 departureDateTime: moment().format(),
                 returnDateTime: moment().format(),
+                fishTicketDate: moment().format(),
                 vesselName: state.vessel.activeVessel.vesselName,
                 vesselNumber: state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber
             };

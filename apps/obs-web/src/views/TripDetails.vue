@@ -45,11 +45,11 @@
               placeholder="start / end"
               selectionMode="range"
               onfocus="blur();"
-              style="width: 100%; height: 330px"
+              style="width: 100%; height: 360px"
               >
             </pCalendar>
 
-            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
+            <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
               <pCalendar
                 v-model="departureTime"
                 :showTime="true"
@@ -60,17 +60,15 @@
                 style="margin-left: 10px"
               >
               </pCalendar>
-            </div>
+            </div> -->
 
-              <br>
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
               <timeselector
                 name="Departure Time"
                 v-model="departureTime"
+                :interval="{h:1, m:1}"
+                displayFormat="HH:mm"
               >
-                <!-- <template v-slot:clear-ico>
-                    <span></span>
-                </template> -->
               </timeselector>
               <hr>
             </div>
@@ -1257,11 +1255,19 @@ label.cameraButton input[accept*="camera"] {
 }
 
 .timeselector__box__item--is-selected {
-  background-color: #007EC6 !important
+  background-color: #007EC6 !important;
 }
 
 .vtimeselector__input {
-  border: none !important
+  border: none !important;
+}
+
+.vtimeselector__input:focus {
+  outline: none !important;
+}
+
+.vtimeselector__clear {
+  display: none;
 }
 
 </style>
