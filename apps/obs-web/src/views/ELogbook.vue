@@ -808,8 +808,7 @@ export default createComponent({
                     portOptions.value = ports.filter((port: any) => port.AGID === 'O');
                 } else if (tripCatch.departureState && tripCatch.departureState === 'WA') {
                     portOptions.value = ports.filter((port: any) => port.AGID === 'W');
-                }
-                else {
+                } else {
                     portOptions.value = ports;
                 }
             });
