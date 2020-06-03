@@ -14,6 +14,9 @@
       @row-click="onRowSelect"
       :reorderableColumns="true"
       :data-key="uniqueKey"
+      :resizableColumns="true"
+      stateStorage="local"
+      :stateKey="tableType"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>

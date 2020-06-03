@@ -39,7 +39,7 @@ export default createComponent({
         {
           name: 'tripId',
           required: true,
-          label: 'Trip #',
+          header: 'Trip #',
           align: 'left',
           field: 'tripId',
           width: '150',
@@ -49,7 +49,7 @@ export default createComponent({
         {
           name: 'operationNum',
           required: true,
-          label: 'Haul #',
+          header: 'Haul #',
           align: 'left',
           field: 'operationNum',
           width: '80',
@@ -58,7 +58,7 @@ export default createComponent({
         {
           name: 'disposition',
           required: true,
-          label: 'D',
+          header: 'D',
           align: 'left',
           field: 'disposition',
           width: '60',
@@ -70,7 +70,7 @@ export default createComponent({
         {
           name: 'weightMethod',
           align: 'left',
-          label: 'WM',
+          header: 'WM',
           field: 'weightMethod',
           width: '150',
           isEditable: true,
@@ -81,7 +81,7 @@ export default createComponent({
         {
           name: 'name',
           align: 'left',
-          label: 'Name',
+          header: 'Name',
           field: 'name',
           width: '150',
           isEditable: true,
@@ -92,7 +92,7 @@ export default createComponent({
         {
           name: 'discardReason',
           align: 'left',
-          label: 'Discard Reason',
+          header: 'Discard Reason',
           field: 'discardReason',
           width: '100',
           isEditable: true,
@@ -103,7 +103,7 @@ export default createComponent({
         {
           name: 'basketCnt',
           align: 'left',
-          label: 'Basket Cnt',
+          header: 'Basket Cnt',
           field: 'basketCnt',
           type: 'double',
           width: '70',
@@ -112,7 +112,7 @@ export default createComponent({
         {
           name: 'weight',
           align: 'left',
-          label: 'Weight (lbs)',
+          header: 'Weight (lbs)',
           field: 'weight',
           type: 'double',
           width: '100',
@@ -121,7 +121,7 @@ export default createComponent({
         {
           name: 'avgWt',
           align: 'left',
-          label: 'Avg Wt (lbs)',
+          header: 'Avg Wt (lbs)',
           field: 'avgWt',
           type: 'double',
           width: '100',
@@ -130,7 +130,7 @@ export default createComponent({
         {
           name: 'count',
           align: 'left',
-          label: 'Count',
+          header: 'Count',
           field: 'count',
           width: '100',
           isEditable: true

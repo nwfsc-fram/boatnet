@@ -1,73 +1,91 @@
 <template>
   <span>
-    <q-scroll-area style="height: 470px">
-      <div>
-        <pTreeTable
-          :value="nodes"
-          :expandedKeys="expandedKeys"
-          :selectionMode="selectionMode ? selectionMode : 'checkbox'"
-          :selectionKeys.sync="selectedKey1"
-          @node-select="select"
-          @node-unselect="unSelect"
-          sortMode="single"
-          style="height: 470px"
-        >
-          <pColumn
-            v-for="col of settings.columns"
-            :key="settings.columns[col]"
-            :field="col.field"
-            :header="col.label"
-            :expander="col.expander"
-            :headerStyle="'width: ' + col.width + 'px'"
+    <pTreeTable
+      :value="nodes"
+      :filters="filters"
+      filterMode="lenient"
+      :expandedKeys="expandedKeys"
+      :selectionMode="selectionMode ? selectionMode : 'checkbox'"
+      :selectionKeys.sync="selectedKey1"
+      @node-select="select"
+      @node-unselect="unSelect"
+      sortMode="single"
+      
+      style="height: 300px"
+    >
+      <template #header>
+        <div style="text-align:left">
+          <MultiSelect
+            v-model="columns"
+            :options="columnOptions"
+            optionLabel="header"
+            placeholder="Select Columns"
+            style="width: 20em"
+            appendTo="body"
           >
-            <template #body="slotProps">
-              <Button
-                v-if="col.label === 'Edit'"
-                icon="pi pi-pencil"
-                class="p-button-secondary"
-                @click="edit(slotProps)"
-              />
-              <div
-                v-else-if="slotProps.node.key === editingRow &&
+            <template #value>
+              <div>Display Columns</div>
+            </template>
+          </MultiSelect>
+        </div>
+      </template>
+      <pColumn
+        v-for="col of columns"
+        :key="columns[col]"
+        :field="col.field"
+        :header="col.header"
+        :expander="col.expander"
+        :headerStyle="'width: ' + col.width + 'px'"
+      >
+        <template #filter>
+          <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+        </template>
+        <template #body="slotProps">
+          <Button
+            v-if="col.header === 'Edit'"
+            icon="pi pi-pencil"
+            class="p-button-secondary"
+            @click="edit(slotProps)"
+          />
+          <div
+            v-else-if="slotProps.node.key === editingRow &&
                            col.isEditable &&
                            slotProps.node.data[slotProps.column.field]"
-              >
-                <Dropdown
-                  v-if="col.type === 'toggle'"
-                  :style="'width: ' + col.width + 'px'"
-                  v-model="slotProps.node.data[slotProps.column.field]"
-                  :placeholder="slotProps.node.data[slotProps.column.field]"
-                  :options="lookupsList"
-                  :optionLabel="'doc.' + col.lookupField"
-                  optionValue="doc"
-                  @input="onCellEdit($event, slotProps, col)"
-                  @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
-                />
-                <Dropdown
-                  v-else-if="col.type === 'toggle-search'"
-                  :style="'width: ' + col.width + 'px'"
-                  v-model="slotProps.node.data[slotProps.column.field]"
-                  :placeholder="slotProps.node.data[slotProps.column.field]"
-                  :options="lookupsList"
-                  :filter="true"
-                  :optionLabel="'doc.' + col.lookupField"
-                  optionValue="doc"
-                  @input="onCellEdit($event, slotProps, col)"
-                  @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
-                />
-                <q-input
-                  v-else
-                  debounce="500"
-                  v-model="slotProps.node.data[slotProps.column.field]"
-                  @input="onCellEdit($event, slotProps, col)"
-                />
-              </div>
-              <span v-else>{{ displayData(slotProps, col.type) }}</span>
-            </template>
-          </pColumn>
-        </pTreeTable>
-      </div>
-    </q-scroll-area>
+          >
+            <Dropdown
+              v-if="col.type === 'toggle'"
+              :style="'width: ' + col.width + 'px'"
+              v-model="slotProps.node.data[slotProps.column.field]"
+              :placeholder="slotProps.node.data[slotProps.column.field]"
+              :options="lookupsList"
+              :optionLabel="'doc.' + col.lookupField"
+              optionValue="doc"
+              @input="onCellEdit($event, slotProps, col)"
+              @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
+            />
+            <Dropdown
+              v-else-if="col.type === 'toggle-search'"
+              :style="'width: ' + col.width + 'px'"
+              v-model="slotProps.node.data[slotProps.column.field]"
+              :placeholder="slotProps.node.data[slotProps.column.field]"
+              :options="lookupsList"
+              :filter="true"
+              :optionLabel="'doc.' + col.lookupField"
+              optionValue="doc"
+              @input="onCellEdit($event, slotProps, col)"
+              @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
+            />
+            <q-input
+              v-else
+              debounce="500"
+              v-model="slotProps.node.data[slotProps.column.field]"
+              @input="onCellEdit($event, slotProps, col)"
+            />
+          </div>
+          <span v-else>{{ displayData(slotProps, col.type) }}</span>
+        </template>
+      </pColumn>
+    </pTreeTable>
   </span>
 </template>
 
@@ -97,16 +115,20 @@ export default class BoatnetTreeTable extends Vue {
   @Prop() public selectionMode!: string;
 
   public selected: any[] = [];
+  private filters: any = {};
 
   private selectedKey1: any = null;
   private editingRow = '';
 
   private lookupsList: any[] = [];
 
+  private columns: any[] = this.settings.columns;
+  private columnOptions: any[] = [...this.columns];
+
   private created() {
-    const cols: any[] = this.settings.columns;
+    const cols: any[] = this.columns;
     if (this.isEditable && cols.findIndex((s) => s.name === 'Edit') === -1) {
-      this.settings.columns.push({
+      this.columns.push({
         name: 'Edit',
         align: 'left',
         label: 'Edit',
@@ -190,7 +212,9 @@ export default class BoatnetTreeTable extends Vue {
 
 <style >
 tr {
-  font-weight: bold;
   height: 40px !important;
+}
+.p-inputtext {
+  background-color: inherit !important;
 }
 </style>

@@ -29,7 +29,6 @@
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
-          <q-tab name="catchBaskets" label="Baskets" />
           <q-tab name="catchSpecies" label="Biospecimens" />
         </q-tabs>
 
@@ -48,12 +47,8 @@
             <app-debriefer-catches></app-debriefer-catches>
           </q-tab-panel>
 
-          <q-tab-panel name="catchBaskets">
-            <app-debriefer-catch-baskets></app-debriefer-catch-baskets>
-          </q-tab-panel>
-
           <q-tab-panel name="catchSpecies">
-            <app-debriefer-catch-species></app-debriefer-catch-species>
+            <app-debriefer-biospecimens></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
