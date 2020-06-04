@@ -44,6 +44,8 @@ import CruiseDialog from './views/CruiseDialog.vue';
 import VueCompositionApi from '@vue/composition-api';
 import { colors } from 'quasar';
 
+import 'vue2-timepicker/dist/VueTimepicker.css';
+
 colors.setBrand('primary', '#007EC6');
 colors.setBrand('secondary', '#153547');
 
