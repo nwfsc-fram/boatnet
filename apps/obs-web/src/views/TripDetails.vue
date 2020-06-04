@@ -332,7 +332,7 @@ export default class TripDetails extends Vue {
     );
 
     this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
-    this.fisheryOptions = this.fisheryOptions.filter((option: any) => option.description === "Electronic Monitoring EFP"); // only EM EFP
+    this.fisheryOptions = this.fisheryOptions.filter((option: any) => option.description === 'Electronic Monitoring EFP'); // only EM EFP
 
     // this.fisheryOptions.sort( (a: any, b: any) => {
     //   if (a.description > b.description) {
