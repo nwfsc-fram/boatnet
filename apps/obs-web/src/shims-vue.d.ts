@@ -12,3 +12,4 @@ declare module 'quasar-calendar';
 declare module 'coordinate-parser';
 
 declare module 'vue-timeselector';
+declare module 'vue2-timepicker';

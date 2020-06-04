@@ -68,9 +68,15 @@
                 v-model="departureTime"
                 :interval="{h:1, m:1}"
                 displayFormat="HH:mm"
+                style="max-width: 300px"
               >
               </timeselector>
               <hr>
+            </div>
+
+            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
+              <timepicker manual-input hide-clear-button close-on-complete v-model="testTime" @change="updateDepartureDate">
+              </timepicker>
             </div>
 
 
@@ -205,7 +211,7 @@
       <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
         <q-btn label="Cancel" @click="goToTrips"/>
         &nbsp;
-        <q-btn label="Create Trip" color="primary" @click="createTrip"/>
+        <q-btn label="Create Trip" color="primary" @click="createTrip" :disable="disableCreate"/>
         <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
         <br>&nbsp;
       </div>
@@ -253,6 +259,9 @@ Vue.component('pCalendar', Calendar);
 import Timeselector from 'vue-timeselector';
 Vue.component('timeselector', Timeselector);
 
+import VueTimepicker from 'vue2-timepicker';
+Vue.component('timepicker', VueTimepicker);
+
 import { date, Notify } from 'quasar';
 import request from 'request';
 import moment from 'moment';
@@ -297,6 +306,8 @@ export default class TripDetails extends Vue {
   private fileUrl: any = null;
   private transferring: boolean = false;
   private newImage: boolean = false;
+  private testTime: any = null;
+  private disableCreate: boolean = false;
 
   constructor() {
     super();
@@ -321,16 +332,19 @@ export default class TripDetails extends Vue {
     );
 
     this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
+    this.fisheryOptions = this.fisheryOptions.filter((option: any) => option.description === "Electronic Monitoring EFP"); // only EM EFP
 
-    this.fisheryOptions.sort( (a: any, b: any) => {
-      if (a.description > b.description) {
-        return 1;
-      } else if (a.description < b.description) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
+    // this.fisheryOptions.sort( (a: any, b: any) => {
+    //   if (a.description > b.description) {
+    //     return 1;
+    //   } else if (a.description < b.description) {
+    //     return -1;
+    //   } else {
+    //     return 0;
+    //   }
+    // });
+
+    this.trip.activeTrip!.fishery = this.fisheryOptions[0];  // set to EM EFP
   }
 
   private permitsFilterFn(val: string, update: any, abort: any) {
@@ -461,6 +475,7 @@ export default class TripDetails extends Vue {
 
     // REQUIRES A FISHERY!
     if (this.trip.activeTrip!.fishery!.description !== '') {
+      this.disableCreate = true;
       const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
@@ -735,6 +750,14 @@ export default class TripDetails extends Vue {
   set departureTime(value) {
     if (this.trip.activeTrip) {
       this.trip.activeTrip.departureDate = moment(value).format();
+    }
+  }
+
+  private updateDepartureDate(value: any) {
+    if (this.trip.activeTrip) {
+      if (value.data.HH && value.data.mm) {
+        this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).format();
+      }
     }
   }
 
@@ -1268,6 +1291,16 @@ label.cameraButton input[accept*="camera"] {
 
 .vtimeselector__clear {
   display: none;
+}
+
+.active {
+  height: inherit !important;
+  background-color: #007EC6 !important;
+}
+
+.display-time {
+  border: 1px solid lightgray !important;
+  border-radius: 4px;
 }
 
 </style>
