@@ -10,7 +10,6 @@
       @node-select="select"
       @node-unselect="unSelect"
       sortMode="single"
-      style="height: 450px"
     >
       <template #header>
         <div style="text-align:left">
@@ -129,8 +128,8 @@ export default class BoatnetTreeTable extends Vue {
     if (this.isEditable && cols.findIndex((s) => s.name === 'Edit') === -1) {
       this.columns.push({
         name: 'Edit',
+        header: 'Edit',
         align: 'left',
-        label: 'Edit',
         width: '40'
       });
     }
@@ -209,7 +208,7 @@ export default class BoatnetTreeTable extends Vue {
 }
 </script>
 
-<style >
+<style scoped>
 tr {
   height: 40px !important;
 }

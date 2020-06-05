@@ -79,12 +79,17 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab = 'trips';
+    const tab: any = ref('trips');
 
     const filters: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
+    watch(() => state.debriefer.evaluationPeriod, setToTripTab);
+
+    function setToTripTab() {
+      tab.value = 'trips';
+    }
 
     function update() {
       filters.value = [];
