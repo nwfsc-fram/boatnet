@@ -90,7 +90,7 @@
             title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
             style="width: 56.3%"
             :options="portOptions"
-            :option-label="opt => opt.NAME + ' (' + opt.PCID + ') - ' + opt.AGID"
+            :option-label="opt => opt.NAME + ' (' + opt.PCID + ')'"
             :option-value="opt => opt.PCID"
             @filter="departurePortFilterFn"
             emit-value
@@ -160,7 +160,7 @@
             title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
             style="width: 56.3%"
             :options="portOptions"
-            :option-label="opt => opt.NAME + ' (' + opt.PCID + ') - ' + opt.AGID"
+            :option-label="opt => opt.NAME + ' (' + opt.PCID + ')'"
             :option-value="opt => opt.PCID"
             @filter="returnPortFilterFn"
             emit-value
