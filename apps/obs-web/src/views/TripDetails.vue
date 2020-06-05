@@ -62,7 +62,7 @@
               </pCalendar>
             </div> -->
 
-            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
+            <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
               <timeselector
                 name="Departure Time"
                 v-model="departureTime"
@@ -72,7 +72,7 @@
               >
               </timeselector>
               <hr>
-            </div>
+            </div> -->
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
               <timepicker manual-input hide-clear-button close-on-complete v-model="testTime" @change="updateDepartureDate">
