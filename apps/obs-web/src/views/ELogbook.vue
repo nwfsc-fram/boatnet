@@ -86,6 +86,7 @@
             dense
             autogrow
             outlined
+            use-input
             label="Port Code"
             title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
             style="width: 56.3%"
@@ -156,6 +157,7 @@
             dense
             autogrow
             outlined
+            use-input
             label="Port Code"
             title="Port code where the vessel departed. The port code is the same as the PacFIN port code"
             style="width: 56.3%"
@@ -1398,30 +1400,32 @@ export default createComponent({
 
     const portOptions: any = ref([]);
     const departurePortFilterFn = (val: string, update: any, abort: any) => {
-      if (val === '') {
+
         update(() => {
           if (tripCatch.departureState && tripCatch.departureState === 'CA') {
             portOptions.value = ports.filter((port: any) => port.AGID === 'C');
-          } else if (
-            tripCatch.departureState &&
-            tripCatch.departureState === 'OR'
-          ) {
+          } else if (tripCatch.departureState && tripCatch.departureState === 'OR') {
             portOptions.value = ports.filter((port: any) => port.AGID === 'O');
-          } else if (
-            tripCatch.departureState &&
-            tripCatch.departureState === 'WA'
-          ) {
+          } else if (tripCatch.departureState && tripCatch.departureState === 'WA' ) {
             portOptions.value = ports.filter((port: any) => port.AGID === 'W');
           } else {
             portOptions.value = ports;
           }
+
+          if (val !== '') {
+            portOptions.value = portOptions.value.filter((port: any) => {
+              return (
+                port.NAME.includes(val.toUpperCase()) ||
+                port.PCID.includes(val.toUpperCase())
+              );
+            });
+          }
         });
         return;
-      }
     };
 
     const returnPortFilterFn = (val: string, update: any, abort: any) => {
-      if (val === '') {
+
         update(() => {
           if (tripCatch.returnState && tripCatch.returnState === 'CA') {
             portOptions.value = ports.filter((port: any) => port.AGID === 'C');
@@ -1432,9 +1436,17 @@ export default createComponent({
           } else {
             portOptions.value = ports;
           }
+
+          if (val !== '') {
+            portOptions.value = portOptions.value.filter((port: any) => {
+              return (
+                port.NAME.includes(val.toUpperCase()) ||
+                port.PCID.includes(val.toUpperCase())
+              );
+            });
+          }
         });
         return;
-      }
     };
 
     const getCatch = async (id: any) => {
