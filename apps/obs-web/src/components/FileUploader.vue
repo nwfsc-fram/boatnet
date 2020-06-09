@@ -4,7 +4,7 @@
             <div class="text-h6">{{ label }}</div>
 
             <label class="cameraButton shadow-2 bg-primary text-white">Capture
-                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture="user">
+                <input @change="handleImage($event)" type="file" accept="image/*" capture="user">
                 <!-- <input @change="handleImage($event)" type="file" accept="image/*" capture="user"> -->
             </label>&nbsp;
             <br>

@@ -233,13 +233,11 @@
 
     <q-dialog v-model="closeAlert">
       <div style="text-align: center; background-color: white; height: 100%; width: 100%">
-        <div style="padding: 3% 3% 9% 3%; background-color: lightgrey">
-          <div class="text-h6 text-black" style="float: left">
-            Close Trip
+        <div style="padding: 3% 3% 9% 3%">
+          <div style="float: left">
+            <q-icon color="secondary" name="close" size="md" @click="closeAlert = false; file = null" ></q-icon>
           </div>
           <div style="float: right">
-            <q-btn color="secondary" size="md" @click="closeAlert = false; file = null" >cancel</q-btn>
-            &nbsp;
             <q-btn :disable="!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate" v-if="activeTrip" :color="(!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
             &nbsp;
             <q-spinner-radio v-if="transferring" color="red" size="3em"/>
