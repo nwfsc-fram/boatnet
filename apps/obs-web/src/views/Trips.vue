@@ -87,6 +87,9 @@
               mobile: {{ formatTel(trip.observer.cellPhone) }}
               </sup>
           </div>
+          <div v-if="trip.isWaived">
+            Observer Coverage Waived
+          </div>
         </q-card-section>
         <div style="float: right">
             <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
@@ -773,6 +776,7 @@ export default class Trips extends Vue {
                             returnDate: '',
                             returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: false,
+                            isWaived: false,
                             fishery: {description: ''},
                             tripStatus: {
                               description: 'open'
