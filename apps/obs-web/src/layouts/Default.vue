@@ -87,37 +87,6 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-if="isAuthorized(['captain', 'staff', 'debriefer'])" :to="onlineStatus ? '/log-book-capture' : ''" exact :disabled="!onlineStatus">
-          <q-item-section avatar>
-            <q-icon name="camera_alt" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Log Book Capture</q-item-label>
-            <q-item-label caption>capture + upload logbook photos</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-expansion-item
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-          label="Logbook"
-          icon="camera_alt"
-          v-model="lbExpanded"
-          @click="emExpanded = false; bmExpanded = false"
-          :header-inset-level="0"
-          :content-inset-level=".5"
-        >
-
-          <q-item :to="onlineStatus ? '/e-logbook/new' : ''" exact @click="leftDrawerOpen = false" :disabled="!onlineStatus">
-            <q-item-section avatar>
-              <q-icon name="notes" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>E Logbook</q-item-label>
-              <q-item-label caption>paperless logbook</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-expansion-item>
-
         <q-item
           to="/debriefer/data"
           exact
@@ -267,8 +236,18 @@
                     <q-icon name="videocam"/>
                   </q-item-section>
                   <q-item-section>
-                    <q-item-label>Vido Footage Management</q-item-label>
+                    <q-item-label>Video Footage Management</q-item-label>
                     <q-item-label caption>manage EM footage</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :to="onlineStatus ? '/e-logbook/new' : ''" exact @click="leftDrawerOpen = false" :disabled="!onlineStatus">
+                  <q-item-section avatar>
+                    <q-icon name="notes" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>E Logbook</q-item-label>
+                    <q-item-label caption>paperless logbook</q-item-label>
                   </q-item-section>
                 </q-item>
 
