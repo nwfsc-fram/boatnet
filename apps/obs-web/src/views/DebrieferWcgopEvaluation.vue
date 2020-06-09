@@ -162,7 +162,7 @@ export default createComponent({
 
     async function getTripsByDate(evalPeriod: any) {
       if (evalPeriod) {
-        store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod[0]);
+        store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
         clearFilters();
         const tripIds: any[] = [];
         const trips: any = await getTripsByDates(

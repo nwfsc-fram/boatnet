@@ -39,7 +39,7 @@ export default createComponent({
         {
           name: 'tripId',
           required: true,
-          label: 'Trip #',
+          header: 'Trip #',
           align: 'left',
           field: 'tripId',
           width: '150',
@@ -49,7 +49,7 @@ export default createComponent({
         {
           name: 'operationNum',
           required: true,
-          label: 'Haul #',
+          header: 'Haul #',
           align: 'left',
           field: 'operationNum',
           width: '80',
@@ -58,7 +58,7 @@ export default createComponent({
         {
           name: 'disposition',
           required: true,
-          label: 'D',
+          header: 'D',
           align: 'left',
           field: 'disposition',
           width: '60',
@@ -70,7 +70,7 @@ export default createComponent({
         {
           name: 'weightMethod',
           align: 'left',
-          label: 'WM',
+          header: 'WM',
           field: 'weightMethod',
           width: '150',
           isEditable: true,
@@ -81,7 +81,7 @@ export default createComponent({
         {
           name: 'name',
           align: 'left',
-          label: 'Name',
+          header: 'Name',
           field: 'name',
           width: '150',
           isEditable: true,
@@ -92,7 +92,7 @@ export default createComponent({
         {
           name: 'discardReason',
           align: 'left',
-          label: 'Discard Reason',
+          header: 'Discard Reason',
           field: 'discardReason',
           width: '100',
           isEditable: true,
@@ -103,7 +103,7 @@ export default createComponent({
         {
           name: 'basketCnt',
           align: 'left',
-          label: 'Basket Cnt',
+          header: 'Basket Cnt',
           field: 'basketCnt',
           type: 'double',
           width: '70',
@@ -112,7 +112,7 @@ export default createComponent({
         {
           name: 'weight',
           align: 'left',
-          label: 'Weight (lbs)',
+          header: 'Weight (lbs)',
           field: 'weight',
           type: 'double',
           width: '100',
@@ -121,7 +121,7 @@ export default createComponent({
         {
           name: 'avgWt',
           align: 'left',
-          label: 'Avg Wt (lbs)',
+          header: 'Avg Wt (lbs)',
           field: 'avgWt',
           type: 'double',
           width: '100',
@@ -130,7 +130,7 @@ export default createComponent({
         {
           name: 'count',
           align: 'left',
-          label: 'Count',
+          header: 'Count',
           field: 'count',
           width: '100',
           isEditable: true
@@ -140,97 +140,113 @@ export default createComponent({
 
     watch(() => state.debriefer.operations, getCatches);
 
-    function getCatches() {
+    async function getCatches() {
       const catches: any[] = [];
       let catchIndex = 0;
 
-      for (const operation of debriefer.operations) {
-        for (const c of operation.catches) {
-          const tripId = operation.legacy.tripId;
-          const operationNum = operation.operationNum;
-          const operationId = operation._id;
-          let disposition = c.disposition ? c.disposition.description : '';
-          const wm = c.weightMethod ? c.weightMethod.description : '';
-          const weight: any = c.weight ? c.weight.value : null;
-          const catchContent = c.catchContent;
-          const name = catchContent ? catchContent.name : '';
-          const children: any[] = [];
-          let childIndex = 0;
-          const key = operationId + '_' + catchIndex;
+      const masterDB: Client<any> = couchService.masterDB;
+      let operationIds: string[] = [];
+      const operationHolder = [];
 
-          if (disposition === 'Retained') {
-            disposition = 'R';
-          } else if (disposition === 'Discarded') {
-            disposition = 'D';
-          }
-
-          if (c.children) {
-            for (const child of c.children) {
-              const discardReason = child.discardReason
-                ? child.discardReason.description
-                : '';
-              const catchContents = child.catchContent;
-              const catchName = catchContents
-                ? catchContents.commonNames[0]
-                : '';
-              const childWeight = child.weight ? child.weight.value : null;
-              const units = child.weight ? child.weight.units : '';
-              const childCount = child.sampleCount;
-              let basketCnt;
-
-              const baskets: any[] = [];
-              if (child.baskets) {
-                basketCnt = child.baskets.length;
-                let basketCount = 1;
-                for (const basket of child.baskets) {
-                  baskets.push({
-                    key: key + '_' + childIndex + '_' + basketCount,
-                    data: {
-                      name: 'Basket ' + basketCount,
-                      weight: basket.weight.value,
-                      count: basket.count,
-                      avgWt: basket.weight.value / basket.count
-                    }
-                  });
-                  basketCount++;
-                }
-              }
-
-              children.push({
-                key: key + '_' + childIndex,
-                data: {
-                  basketCnt,
-                  discardReason,
-                  name: catchName,
-                  catchContent: catchContents,
-                  weight: childWeight,
-                  count: childCount
-                },
-                children: baskets
-              });
-              childIndex++;
-            }
-          }
-
-          catches.push({
-            key,
-            data: {
-              tripId,
-              operationNum,
-              operationId,
-              catchNum: c.catchNum,
-              disposition,
-              weightMethod: wm,
-              name,
-              catchContent,
-              weight
-            },
-            children
-          });
-          catchIndex++;
-        }
+      for (const trip of debriefer.trips) {
+        operationIds = operationIds.concat(trip.operationIDs);
       }
-      WcgopCatches.value = catches;
+
+      try {
+        const options: ListOptions = {
+          keys: operationIds
+        };
+        const operations = await masterDB.listWithDocs(options);
+        for (const operation of operations.rows) {
+          for (const c of operation.catches) {
+            const tripId = operation.legacy.tripId;
+            const operationNum = operation.operationNum;
+            const operationId = operation._id;
+            let disposition = c.disposition ? c.disposition.description : '';
+            const wm = c.weightMethod ? c.weightMethod.description : '';
+            const weight: any = c.weight ? c.weight.value : null;
+            const catchContent = c.catchContent;
+            const name = catchContent ? catchContent.name : '';
+            const children: any[] = [];
+            let childIndex = 0;
+            const key = operationId + '_' + catchIndex;
+
+            if (disposition === 'Retained') {
+              disposition = 'R';
+            } else if (disposition === 'Discarded') {
+              disposition = 'D';
+            }
+
+            if (c.children) {
+              for (const child of c.children) {
+                const discardReason = child.discardReason
+                  ? child.discardReason.description
+                  : '';
+                const catchContents = child.catchContent;
+                const catchName = catchContents
+                  ? catchContents.commonNames[0]
+                  : '';
+                const childWeight = child.weight ? child.weight.value : null;
+                const units = child.weight ? child.weight.units : '';
+                const childCount = child.sampleCount;
+                let basketCnt;
+
+                const baskets: any[] = [];
+                if (child.baskets) {
+                  basketCnt = child.baskets.length;
+                  let basketCount = 1;
+                  for (const basket of child.baskets) {
+                    baskets.push({
+                      key: key + '_' + childIndex + '_' + basketCount,
+                      data: {
+                        name: 'Basket ' + basketCount,
+                        weight: basket.weight.value,
+                        count: basket.count,
+                        avgWt: basket.weight.value / basket.count
+                      }
+                    });
+                    basketCount++;
+                  }
+                }
+
+                children.push({
+                  key: key + '_' + childIndex,
+                  data: {
+                    basketCnt,
+                    discardReason,
+                    name: catchName,
+                    catchContent: catchContents,
+                    weight: childWeight,
+                    count: childCount
+                  },
+                  children: baskets
+                });
+                childIndex++;
+              }
+            }
+
+            catches.push({
+              key,
+              data: {
+                tripId,
+                operationNum,
+                operationId,
+                catchNum: c.catchNum,
+                disposition,
+                weightMethod: wm,
+                name,
+                catchContent,
+                weight
+              },
+              children
+            });
+            catchIndex++;
+          }
+        }
+        WcgopCatches.value = catches;
+      } catch (err) {
+        console.log('error fetching operations from couch: ' + err);
+      }
     }
     getCatches();
 
@@ -244,7 +260,11 @@ export default createComponent({
         const catches = operationRecord.catches;
 
         if (ids.length === 2) {
-          if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
+          if (
+            columnName === 'weightMethod' ||
+            columnName === 'discardReason' ||
+            columnName === 'disposition'
+          ) {
             catches[ids[1]][columnName] = {
               description: data.value.description,
               _id: data.value._id
@@ -255,7 +275,11 @@ export default createComponent({
             catches[ids[1]][columnName].value = data.value;
           }
         } else if (ids.length === 3) {
-          if (columnName === 'weightMethod' || columnName === 'discardReason' || columnName === 'disposition') {
+          if (
+            columnName === 'weightMethod' ||
+            columnName === 'discardReason' ||
+            columnName === 'disposition'
+          ) {
             catches[ids[1]].children[ids[2]][columnName] = {
               description: data.value.description,
               _id: data.value._id
@@ -269,13 +293,19 @@ export default createComponent({
           }
         } else if (ids.length === 4) {
           if (columnName === 'weight') {
-            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value = data.value;
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
+              data.value;
           } else if (columnName === 'count') {
-            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] = data.value;
+            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
+              data.value;
           }
         }
         operationRecord.catches = catches;
-        await masterDB.put(operationRecord._id, operationRecord, operationRecord._rev);
+        await masterDB.put(
+          operationRecord._id,
+          operationRecord,
+          operationRecord._rev
+        );
       } catch (err) {
         console.log(err);
       }

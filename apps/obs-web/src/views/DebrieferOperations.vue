@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="text-h6">Hauls</div>
     <prime-table :value="WcgopOperations" :columns="columns" type="Operations" uniqueKey="_id"/>
   </div>
 </template>

@@ -29,7 +29,6 @@
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
-          <q-tab name="catchBaskets" label="Baskets" />
           <q-tab name="catchSpecies" label="Biospecimens" />
         </q-tabs>
 
@@ -48,12 +47,8 @@
             <app-debriefer-catches></app-debriefer-catches>
           </q-tab-panel>
 
-          <q-tab-panel name="catchBaskets">
-            <app-debriefer-catch-baskets></app-debriefer-catch-baskets>
-          </q-tab-panel>
-
           <q-tab-panel name="catchSpecies">
-            <app-debriefer-catch-species></app-debriefer-catch-species>
+            <app-debriefer-biospecimens></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -84,12 +79,17 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab = 'trips';
+    const tab: any = ref('trips');
 
     const filters: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
+    watch(() => state.debriefer.evaluationPeriod, setToTripTab);
+
+    function setToTripTab() {
+      tab.value = 'trips';
+    }
 
     function update() {
       filters.value = [];

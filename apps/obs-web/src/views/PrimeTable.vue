@@ -14,6 +14,11 @@
       @row-click="onRowSelect"
       :reorderableColumns="true"
       :data-key="uniqueKey"
+      :resizableColumns="true"
+      stateStorage="local"
+      :stateKey="tableType"
+      :rowsPerPageOptions="[10,25,50, 100]"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
