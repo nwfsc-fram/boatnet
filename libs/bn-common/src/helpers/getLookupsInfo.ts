@@ -24,7 +24,7 @@ function sortByProperty(array: any, displayFields: any) {
   return array.sort((val1: any, val2: any) => {
     const val1Name = formatDisplayValue(val1, displayFields);
     const val2Name = formatDisplayValue(val2, displayFields);
-    if (isNaN(parseInt(val1Name)) && isNaN(parseInt(val2Name))) { // not numbers
+    if (isNaN(parseInt(val1Name, 10)) && isNaN(parseInt(val2Name, 10))) { // not numbers
       if (val1Name > val2Name) {
         return 1;
       } else if (val1Name < val2Name) {
@@ -33,9 +33,9 @@ function sortByProperty(array: any, displayFields: any) {
         return 0;
       }
     } else {
-      if (parseInt(val1Name) > parseInt(val2Name)) { //numbers
+      if (parseInt(val1Name, 10) > parseInt(val2Name, 10)) { // numbers
         return 1;
-      } else if (parseInt(val1Name) < parseInt(val2Name)) {
+      } else if (parseInt(val1Name, 10) < parseInt(val2Name, 10)) {
         return -1;
       } else {
         return 0;
