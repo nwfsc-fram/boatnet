@@ -21,7 +21,7 @@ import OTSManagement from './views/OTSManagement.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import UserDetails from './views/UserDetails.vue';
 import UserConfig from './views/UserConfig.vue';
-import LogBookCapture from './views/LogBookCapture.vue';
+import LogMissingTrip from './views/LogMissingTrip.vue';
 import Login from './views/Login.vue';
 import EMEFPManagement from './views/EMEFPManagement.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
@@ -162,7 +162,7 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
-        { path: '/log-book-capture', name: 'Log Book Capture', component: LogBookCapture },
+        { path: '/log-missing-trip', name: 'Log Missing Trip', component: LogMissingTrip },
         { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook },
         {
           path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,

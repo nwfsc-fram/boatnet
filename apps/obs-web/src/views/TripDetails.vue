@@ -75,7 +75,7 @@
             </div> -->
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker manual-input hide-clear-button v-model="testTime" @change="updateDepartureDate">
+              <timepicker manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
               </timepicker>
             </div>
 
@@ -306,7 +306,7 @@ export default class TripDetails extends Vue {
   private fileUrl: any = null;
   private transferring: boolean = false;
   private newImage: boolean = false;
-  private testTime: any = null;
+  private departureTime: any = null;
   private disableCreate: boolean = false;
 
   constructor() {
@@ -740,22 +740,32 @@ export default class TripDetails extends Vue {
     }
   }
 
-  get departureTime(): Date | undefined {
-    if (this.trip.activeTrip) {
-      return new Date(moment(this.trip.activeTrip.departureDate).format());
-    }
-  }
+  // get departureTime(): Date | undefined {
+  //   if (this.trip.activeTrip) {
+  //     return new Date(moment(this.trip.activeTrip.departureDate).format());
+  //   }
+  // }
 
-  set departureTime(value) {
-    if (this.trip.activeTrip) {
-      this.trip.activeTrip.departureDate = moment(value).format();
+  // set departureTime(value) {
+  //   if (this.trip.activeTrip) {
+  //     this.trip.activeTrip.departureDate = moment(value).format();
+  //   }
+  // }
+
+  private setDepartureTime() {
+    if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
+      this.departureTime = {
+        HH: moment(this.trip.activeTrip.departureDate).format('HH'),
+        mm: moment(this.trip.activeTrip.departureDate).format('mm')
+      };
     }
   }
 
   private updateDepartureDate(value: any) {
+    console.log(value);
     if (this.trip.activeTrip) {
       if (value.data.HH && value.data.mm) {
-        this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).format();
+        this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).second(0).format();
       }
     }
   }
@@ -1107,6 +1117,7 @@ private async getMinDate() {
     this.getBookedDates();
     this.getPorts();
     this.getFisheryOptions();
+    this.setDepartureTime();
     if (this.trip.activeTrip!.departureDate) {
       this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
     }

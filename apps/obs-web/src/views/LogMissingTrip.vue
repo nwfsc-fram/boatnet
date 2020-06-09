@@ -8,31 +8,10 @@
                 <q-btn flat label="Dismiss" @click="clearAlert"/>
             </template>
         </q-banner>
-
-        <q-select
-        v-model="vessel.activeVessel"
-        label="Vessel"
-        dense
-        fill-input
-        :options="authorizedVessels"
-        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-        option-value="_id"
-        ></q-select>
-
-        <!-- <div style="text-align: center">
-            <label v-if="!file" class="cameraButton shadow-2 bg-primary text-white">Take Picture
-                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
-            </label>
-
-            <div v-if="file" style="padding-top: 5%">
-                <div class="text-h6">Logbook Capture</div>
-                <img :src="fileUrl" style="width: 95%">
-            </div>
-
-            <label v-if="file" class="cameraButton shadow-2 bg-primary text-white">Re-Take Picture
-                <input @change="handleImage($event)" type="file" accept="image/*;capture=camera" capture>
-            </label>
-        </div> -->
+        <div style="text-align: center; color:red"><b>Warning: This form should be used to enter landed, un-logged trips only.</b></div>
+        <div class="text-h6">
+            <b>{{ vessel.activeVessel.vesselName }} ( {{ vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber }} )</b>
+        </div>
 
         <div>
             <span>
@@ -49,7 +28,12 @@
                     >
                 </pCalendar>
 
-                <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 0px ; font-weight: bold">Departure Time (24H)
+                <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
+                    <timepicker manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
+                    </timepicker>
+                </div>
+
+                <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 0px ; font-weight: bold">Departure Time (24H)
                     <pCalendar
                         v-model="departureTime"
                         :showTime="true"
@@ -60,8 +44,7 @@
                         style=""
                     >
                     </pCalendar>
-
-                </div>
+                </div> -->
             </span>
         </div>
 
@@ -104,7 +87,7 @@
           style="padding-bottom: 5px"
         ></q-select>
 
-        <q-select
+        <!-- <q-select
           v-model="trip.activeTrip.permits"
           dense
           bg-color="white"
@@ -131,7 +114,7 @@
               <span v-else>{{ scope.opt.permitNumber }}</span>
             </q-chip>
           </template>
-        </q-select>
+        </q-select> -->
 
         <div v-if="trip.activeTrip.fishery.description === 'Electronic Monitoring EFP'">
           <strong>Maximized Retention?</strong><br>
@@ -169,6 +152,10 @@
             submitAction="Submit Image(s)"
             style=""
         />
+
+        <div style="text-align: center">All details (including logbook capture) must be completed before missing trip can be submitted.</div>
+
+        <q-btn style="float: right" color="primary" label="Cancel" @click="goToTrips"/>
 
     </div>
 
@@ -224,6 +211,7 @@ export default class LogBookCapture extends Vue {
     private transferring: boolean = false;
     private maxDate: any = new Date(moment().format());
     private tripsApiNum: any = 0;
+    private departureTime: any = null;
 
     private handleImage(event: any) {
         this.file = event!.target!.files[0];
@@ -291,42 +279,6 @@ export default class LogBookCapture extends Vue {
 
     }
 
-    // private async getImages() {
-
-    //     const parent = document.getElementById('imagesholder');
-    //     while (parent!.firstChild) {
-    //         parent!.firstChild.remove();
-    //     }
-
-    //     const docs = await pouchService.db.allDocs({attachments: true} );
-    //     for (const row of docs.rows) {
-    //         if (row.doc.type === 'logbook-capture') {
-    //             const filename = Object.keys(row.doc._attachments)[0];
-    //             console.log(row.doc._attachments[filename].data);
-
-    //             const byteCharacters = atob(row.doc._attachments[filename].data);
-    //             const byteNumbers = new Array(byteCharacters.length);
-    //             for (let i = 0; i < byteCharacters.length; i++) {
-    //                 byteNumbers[i] = byteCharacters.charCodeAt(i);
-    //             }
-    //             const byteArray = new Uint8Array(byteNumbers);
-    //             const blob = new Blob([byteArray], {type: row.doc._attachments[filename].content_type});
-
-    //             // this.dbImage = blob;
-    //             // this.dbImageUrl = URL.createObjectURL(blob);
-
-    //             const url = URL.createObjectURL(blob);
-    //             const img = document.createElement('img');
-    //             img.width = 300;
-    //             img.src = url;
-
-    //             document.getElementById('imagesholder')!.appendChild(img);
-
-    //             // this.dbImageUrl = URL.createObjectURL(this.dbImage);
-    //         }
-    //     }
-    // }
-
     private newTrip() {
         const newTrip: WcgopTrip = {
                             createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
@@ -339,7 +291,7 @@ export default class LogBookCapture extends Vue {
                             departureDate: '',
                             departurePort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             returnDate: '',
-                            returnPort: {name: 'SAME AS START', pacfinPortCode: '', pacfinPortGroupCode: '' },
+                            returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: undefined,
                             fishery: {description: undefined},
                             tripStatus: {
@@ -404,16 +356,19 @@ export default class LogBookCapture extends Vue {
         );
 
         this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
+        this.fisheryOptions = this.fisheryOptions.filter((option: any) => option.description === 'Electronic Monitoring EFP'); // only EM EFP
 
-        this.fisheryOptions.sort( (a: any, b: any) => {
-        if (a.description > b.description) {
-            return 1;
-        } else if (a.description < b.description) {
-            return -1;
-        } else {
-            return 0;
-        }
-        });
+        // this.fisheryOptions.sort( (a: any, b: any) => {
+        // if (a.description > b.description) {
+        //     return 1;
+        // } else if (a.description < b.description) {
+        //     return -1;
+        // } else {
+        //     return 0;
+        // }
+        // });
+
+        this.trip.activeTrip!.fishery = this.fisheryOptions[0];  // set to EM EFP
     }
 
     private async getAuthorizedVessels() {
@@ -539,21 +494,33 @@ export default class LogBookCapture extends Vue {
         }
     }
 
-    get departureTime(): Date | undefined {
+    private updateDepartureDate(value: any) {
         if (this.trip.activeTrip) {
-        return new Date(moment(this.trip.activeTrip.departureDate).format());
+            if (value.data.HH && value.data.mm) {
+                this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).second(0).format();
+            }
         }
     }
 
-    set departureTime(value) {
-        if (this.trip.activeTrip) {
-        this.trip.activeTrip.departureDate = moment(value).format();
-        }
-    }
+    // get departureTime(): Date | undefined {
+    //     if (this.trip.activeTrip) {
+    //     return new Date(moment(this.trip.activeTrip.departureDate).format());
+    //     }
+    // }
+
+    // set departureTime(value) {
+    //     if (this.trip.activeTrip) {
+    //     this.trip.activeTrip.departureDate = moment(value).format();
+    //     }
+    // }
 
     private scrollToBottom() {
         window.scrollTo(0, document.body.scrollHeight);
     }
+
+  private goToTrips() {
+    this.$router.push({ path: '/trips/' });
+  }
 
     private created() {
         this.newTrip();
@@ -572,6 +539,13 @@ export default class LogBookCapture extends Vue {
         }
         if (newVal[1]) {
         this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+        }
+    }
+
+    @Watch('trip.activeTrip.departurePort', {deep: true})
+    private handler3(newVal: any, oldVal: any) {
+        if (this.trip.activeTrip && (this.trip.activeTrip.returnPort === oldVal)) {
+            this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
         }
     }
 
