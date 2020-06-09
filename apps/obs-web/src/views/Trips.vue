@@ -233,6 +233,18 @@
 
     <q-dialog v-model="closeAlert">
       <div style="text-align: center; background-color: white; height: 100%; width: 100%">
+        <div style="padding: 3% 3% 9% 3%; background-color: lightgrey">
+          <div class="text-h6 text-black" style="float: left">
+            Close Trip
+          </div>
+          <div style="float: right">
+            <q-btn color="secondary" size="md" @click="closeAlert = false; file = null" >cancel</q-btn>
+            &nbsp;
+            <q-btn :disable="!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate" v-if="activeTrip" :color="(!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
+            &nbsp;
+            <q-spinner-radio v-if="transferring" color="red" size="3em"/>
+          </div>
+        </div>
 
           <file-uploader
             label="Logbook Capture"
@@ -265,14 +277,7 @@
             <br><br><br>
           </div>
         <br>
-        <div class="text-primary" style="padding-left: 5%">
-          <q-btn color="primary" size="md" @click="closeAlert = false; file = null">cancel</q-btn>
-          &nbsp;
-          <q-btn v-if="activeTrip && activeTrip.captainAffirmedDepartureDate && activeTrip.captainAffirmedReturnDate" color="red" size="md" @click="closeActiveTrip">close trip</q-btn>
-          &nbsp;
-          <q-spinner-radio v-if="transferring" color="red" size="3em"/>
-          <br><br>
-        </div>
+
       </div>
     </q-dialog>
 
@@ -765,7 +770,7 @@ export default class Trips extends Vue {
                             departureDate: '',
                             departurePort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             returnDate: '',
-                            returnPort: {name: 'SAME AS START', pacfinPortCode: '', pacfinPortGroupCode: '' },
+                            returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: false,
                             fishery: {description: ''},
                             tripStatus: {

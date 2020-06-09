@@ -75,7 +75,7 @@
             </div> -->
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker manual-input hide-clear-button close-on-complete v-model="testTime" @change="updateDepartureDate">
+              <timepicker manual-input hide-clear-button v-model="testTime" @change="updateDepartureDate">
               </timepicker>
             </div>
 
@@ -409,7 +409,6 @@ export default class TripDetails extends Vue {
           queryOptions
         );
         this.ports = ports.rows.map((row: any) => row.doc);
-        this.ports.unshift({ name: 'SAME AS START' });
       } catch (err) {
         console.log(err);
       }
@@ -1154,6 +1153,9 @@ private async getMinDate() {
           change: 'Departure Port changed from ' + oldVal.name + ' to ' + newVal.name
         }
       );
+    }
+    if (this.trip.activeTrip && (this.trip.activeTrip.returnPort === oldVal)) {
+      this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
     }
   }
 
