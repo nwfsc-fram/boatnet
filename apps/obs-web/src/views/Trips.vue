@@ -17,8 +17,8 @@
 
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
-        <q-btn class="bg-primary text-white q-ma-md" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
-        <q-btn v-else color="blue-grey-2" class="q-ma-md" @click="maxTripsAlert = true">New Trip</q-btn>
+        <q-btn class="bg-primary text-white q-ma-xs" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
+        <q-btn v-else color="blue-grey-2" class="q-ma-xs" @click="maxTripsAlert = true">New Trip</q-btn>
         <q-btn class="bg-secondary text-white q-ma-md" color="secondary" :to="'/log-missing-trip'" label="log missing trip"></q-btn>
         <br><br>
       </div>
