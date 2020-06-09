@@ -173,6 +173,17 @@
           </q-btn-toggle>
         </div>
 
+        <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode"></div>
+        <strong :disabled="trip.readOnly">Coverage Waived? (Staff Only)</strong><br>
+        <q-btn-toggle
+        v-model="trip.activeTrip.isWaived"
+        toggle-color="primary"
+        :disabled="trip.readOnly"
+        :options="[
+          {label: 'Yes', value: true},
+          {label: 'No', value: false}
+        ]"></q-btn-toggle>
+
     <q-dialog v-model="missingRequired">
         <q-card>
           <q-card-section>
@@ -308,9 +319,19 @@ export default class TripDetails extends Vue {
   private newImage: boolean = false;
   private departureTime: any = null;
   private disableCreate: boolean = false;
+  private userRoles: string[] = [];
 
   constructor() {
     super();
+  }
+
+  private isAuthorized(authorizedRoles: string[]) {
+    for (const role of authorizedRoles) {
+      if (this.userRoles.includes(role)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private getDate(myDate: string) {
@@ -1110,6 +1131,9 @@ private async getMinDate() {
       }
 
     });
+    if ( authService.getCurrentUser() ) {
+      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+    }
     this.getMaxDate();
     this.getMinDate();
     this.getOtsTargets();
