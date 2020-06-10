@@ -8,9 +8,7 @@
       </q-banner>
 
   <div :disabled="trip.readOnly">
-
-        <div class="text-h6 q-pa-md" style="margin-bottom: 10px;">
-          <!-- {{ vessel.activeVessel.vesselName }} -->
+        <div class="text-h6 q-pa-md" >
           <div v-if="trip.activeTrip.fishery.description"> {{ trip.activeTrip.fishery.description }}</div>
 
           <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
@@ -30,12 +28,24 @@
         </div>
 
         <div>
-          <p style="padding-left: 20px">
-            <strong :disabled="trip.readOnly">Trip Dates (start to end)</strong>
-          </p>
+          <span style="padding-left: 20px">
+            <strong style="position: relative; top: 1px" :disabled="trip.readOnly">Trip Dates</strong>
+          </span>&nbsp;
+          <q-toggle
+            v-model="trip.activeTrip.isSingleDayTrip"
+            color="primary"
+            label="Single Day Trip"
+            :disable="trip.readOnly"
+            @input="updateDates"
+          ></q-toggle>
+          <div style="padding-left: 20px">
+            <p v-if="trip.activeTrip.isSingleDayTrip">Select trip date</p>
+            <p v-else>Select trip start and end dates</p>
+          </div>
           <span>
             <pCalendar
-              v-if="tripDates"
+              :disabled="trip.readOnly"
+              v-if="!trip.activeTrip.isSingleDayTrip"
               v-model="tripDates"
               :minDate="minDate"
               :maxDate="maxDate"
@@ -44,6 +54,22 @@
               :touchUI="false"
               placeholder="start / end"
               selectionMode="range"
+              onfocus="blur();"
+              style="width: 100%; height: 360px"
+              >
+            </pCalendar>
+
+            <pCalendar
+              :disabled="trip.readOnly"
+              v-if="trip.activeTrip.isSingleDayTrip"
+              v-model="tripDate"
+              :minDate="minDate"
+              :maxDate="maxDate"
+              :disabledDates="invalidDates"
+              :inline="true"
+              :touchUI="false"
+              placeholder="date"
+              selectionMode="single"
               onfocus="blur();"
               style="width: 100%; height: 360px"
               >
@@ -75,11 +101,9 @@
             </div> -->
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
+              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
               </timepicker>
             </div>
-
-
           </span>
         </div>
 
@@ -163,7 +187,7 @@
           <q-btn-toggle
           v-model="trip.activeTrip.maximizedRetention"
           toggle-color="primary"
-          :disabled="trip.readOnly"
+          :disable="trip.readOnly"
           :options="[
               {label: 'Yes', value: true},
               {label: 'No', value: false},
@@ -173,16 +197,17 @@
           </q-btn-toggle>
         </div>
 
-        <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode"></div>
-        <strong :disabled="trip.readOnly">Coverage Waived? (Staff Only)</strong><br>
-        <q-btn-toggle
-        v-model="trip.activeTrip.isWaived"
-        toggle-color="primary"
-        :disabled="trip.readOnly"
-        :options="[
-          {label: 'Yes', value: true},
-          {label: 'No', value: false}
-        ]"></q-btn-toggle>
+        <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
+          <strong :disable="trip.readOnly">Coverage Waived? (Staff Only)</strong><br>
+          <q-btn-toggle
+          v-model="trip.activeTrip.isWaived"
+          toggle-color="primary"
+          :disable="trip.readOnly"
+          :options="[
+            {label: 'Yes', value: true},
+            {label: 'No', value: false}
+          ]"></q-btn-toggle>
+        </div>
 
     <q-dialog v-model="missingRequired">
         <q-card>
@@ -305,6 +330,7 @@ export default class TripDetails extends Vue {
   private startYearMonth: string = moment().format('YYYY/MM');
   private endYearMonth: string = moment().format('YYYY/MM');
   private tripDates: any = [];
+  private tripDate: any = null;
   private invalidDates: any[] = [];
   private minDate: any = null;
   private maxDate: any = null;
@@ -320,6 +346,7 @@ export default class TripDetails extends Vue {
   private departureTime: any = null;
   private disableCreate: boolean = false;
   private userRoles: string[] = [];
+  private savedMaxRetention: any = null;
 
   constructor() {
     super();
@@ -477,25 +504,7 @@ export default class TripDetails extends Vue {
     return vesselPermits;
   }
 
-  private async createTrip() {
-
-    // REQIRES A START AND END DATE
-    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
-      Notify.create({
-        message: '<b>A trip must have a start and end date</b>',
-            position: 'center',
-            color: 'primary',
-            timeout: 2000,
-            icon: 'warning',
-            html: true,
-            multiLine: true
-        });
-      return;
-    }
-
-    // REQUIRES A FISHERY!
-    if (this.trip.activeTrip!.fishery!.description !== '') {
-      this.disableCreate = true;
+  private async handleSavedSelections() {
       const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
@@ -547,6 +556,7 @@ export default class TripDetails extends Vue {
             });
 
             tripSelection = vesselSelections[fisheryName].shift();
+            vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
 
             // const sel1 = vesselSelections[fisheryName][0].selectionDate;
             // const sel2 = vesselSelections[fisheryName][1].selectionDate;
@@ -557,6 +567,7 @@ export default class TripDetails extends Vue {
             // }
           } else {
             tripSelection = vesselSelections[fisheryName].pop();
+            vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
           }
           // no longer need to save here as a selection is added later
           // if (vesselSelections._id) {
@@ -664,41 +675,86 @@ export default class TripDetails extends Vue {
         }
 
       }
+  }
 
-      const newApiTrip = {
-        vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
-        vesselName: this.trip.activeTrip!.vessel!.vesselName,
-        departurePort: this.trip.activeTrip!.departurePort!.name,
-        departureDate: this.trip.activeTrip!.departureDate,
-        returnPort: this.trip.activeTrip!.returnPort!.name,
-        returnDate: this.trip.activeTrip!.returnDate,
-        permits: this.trip.activeTrip!.permits,
-        fisheries: this.trip.activeTrip!.fisheries,
-        createdBy: this.trip.activeTrip!.createdBy,
-        createdDate: this.trip.activeTrip!.createdDate
-      };
+  private async createTrip() {
 
-      this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
-
-      try {
-        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
-        this.trip.activeTrip!.tripNum = this.tripsApiNum;
-      } catch (err) {
-        console.log(err);
-      }
-      console.log(this.trip.activeTrip!.tripNum);
-      const masterDB: Client<any> = couchService.masterDB;
-      await masterDB.post(this.trip.activeTrip).then( () => {
-        Notify.create({
-          message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-            position: 'top',
+    // REQIRES A START AND END DATE
+    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
+      Notify.create({
+        message: '<b>A trip must have a start and end date</b>',
+            position: 'center',
             color: 'primary',
-            timeout: 7000,
+            timeout: 2000,
+            icon: 'warning',
             html: true,
             multiLine: true
         });
-        this.$router.push({ path: '/trips/' });
+      return;
+    }
+
+    // REQUIRES A DEPARTURE TIME
+    if (!this.departureTime) {
+      Notify.create({
+        message: '<b>A trip must have a departure time.</b>',
+        position: 'center',
+        color: 'primary',
+        timeout: 2000,
+        icon: 'warning',
+        html: true,
+        multiLine: true
       });
+      return;
+    }
+
+    // REQUIRES A FISHERY!
+    if (this.trip.activeTrip!.fishery!.description !== '') {
+      this.disableCreate = true;
+
+      this.handleSavedSelections().then( async () => {
+        const newApiTrip = {
+          vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
+          vesselName: this.trip.activeTrip!.vessel!.vesselName,
+          departurePort: this.trip.activeTrip!.departurePort!.name,
+          departureDate: this.trip.activeTrip!.departureDate,
+          returnPort: this.trip.activeTrip!.returnPort!.name,
+          returnDate: this.trip.activeTrip!.returnDate,
+          permits: this.trip.activeTrip!.permits,
+          fisheries: this.trip.activeTrip!.fisheries,
+          createdBy: this.trip.activeTrip!.createdBy,
+          createdDate: this.trip.activeTrip!.createdDate
+        };
+
+        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+
+        try {
+          await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
+          this.trip.activeTrip!.tripNum = this.tripsApiNum;
+        } catch (err) {
+          Notify.create({
+            message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
+            position: 'top',
+            color: 'red',
+            timeout: 7000,
+            multiLine: true
+          });
+          return;
+        }
+        console.log(this.trip.activeTrip!.tripNum);
+        const masterDB: Client<any> = couchService.masterDB;
+        await masterDB.post(this.trip.activeTrip).then( () => {
+          Notify.create({
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+              position: 'top',
+              color: 'primary',
+              timeout: 7000,
+              html: true,
+              multiLine: true
+          });
+          this.$router.push({ path: '/trips/' });
+        });
+      });
+
 
     } else {
       this.missingRequired = true;
@@ -782,12 +838,9 @@ export default class TripDetails extends Vue {
     }
   }
 
-  private updateDepartureDate(value: any) {
-    console.log(value);
-    if (this.trip.activeTrip) {
-      if (value.data.HH && value.data.mm) {
-        this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).second(0).format();
-      }
+  private updateDepartureDate() {
+    if (this.departureTime) {
+      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
     }
   }
 
@@ -875,6 +928,7 @@ private async getMinDate() {
 }
 
   private async getBookedDates() {
+    this.trip.readOnly = true;
     const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
     const masterDB: Client<any> = couchService.masterDB;
     const queryOptions: any = {
@@ -921,6 +975,9 @@ private async getMinDate() {
     } catch (err) {
       console.log(err);
     }
+    if (this.trip.activeTrip!.tripStatus!.description === 'open') {
+      this.trip.readOnly = false;
+    }
   }
 
   private startDateOptionsFn(val: string) {
@@ -965,8 +1022,26 @@ private async getMinDate() {
         }
       );
 
+    } else if (this.savedMaxRetention === true && !this.trip.activeTrip!.maximizedRetention) {
+      this.handleSavedSelections().then(async () => {
+        await masterDB.put(
+          this.trip.activeTrip!._id as string,
+          this.trip.activeTrip,
+          this.trip.activeTrip!._rev as string
+          ).then( async () => {
+            this.transferring = false;
+            Notify.create({
+              message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+              position: 'top',
+              color: 'primary',
+              timeout: 7000,
+              html: true,
+              multiLine: true
+            });
+            this.$router.push({ path: '/trips' });
+          });
+      });
     } else {
-
       await masterDB.put(
         this.trip.activeTrip!._id as string,
         this.trip.activeTrip,
@@ -1117,6 +1192,21 @@ private async getMinDate() {
         this.ports = ports.rows.map((row: any) => row.doc);
   }
 
+  private updateDates() {
+    if (this.trip.activeTrip!.isSingleDayTrip) {
+      if (this.trip.activeTrip!.returnDate) {
+        this.tripDate = new Date(this.trip.activeTrip!.returnDate);
+      }
+    } else {
+      if (this.trip.activeTrip!.departureDate) {
+        this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
+      }
+      if (this.trip.activeTrip!.returnDate) {
+        this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
+      }
+    }
+  }
+
   private async created() {
     this.getEmRoster().then( () => {
       let emPermit = null;
@@ -1142,36 +1232,49 @@ private async getMinDate() {
     this.getPorts();
     this.getFisheryOptions();
     this.setDepartureTime();
-    if (this.trip.activeTrip!.departureDate) {
-      this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
-    }
-    if (this.trip.activeTrip!.returnDate) {
-      this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
-    }
-
+    this.updateDates();
+    this.savedMaxRetention = this.trip.activeTrip!.maximizedRetention;
   }
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
-    if (newVal[0]) {
-      if (
-          moment(newVal[0]).diff(moment(), 'day') < 2 && !newVal[1]
-          // && this.trip.activeTrip!.departureDate !== moment(newVal[0]).format() && moment(newVal[0]) >= moment()
-        ) {
-          this.daysWarn = true;
+      if (newVal[0]) {
+        this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+        if (!newVal[1]) {
+          this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
         }
-      this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-      if (!newVal[1]) {
-        this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
       }
-    }
-    if (newVal[1]) {
-      this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+      if (newVal[1]) {
+        this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+      }
+
+      if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
+        this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
+        this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
+      }
+
+      if (this.departureTime) {
+        this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+      }
+
+      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0]) {
+        this.daysWarn = true;
+      }
+
+  }
+
+  @Watch('tripDate')
+  private handler9(newVal: any, oldVal: any) {
+
+    this.trip.activeTrip!.departureDate = moment(newVal).format();
+    this.trip.activeTrip!.returnDate = moment(newVal).format();
+
+    if (this.departureTime) {
+      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
     }
 
-    if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
-      this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
-      this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
+    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48) {
+      this.daysWarn = true;
     }
   }
 

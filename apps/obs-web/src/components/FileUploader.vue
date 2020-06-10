@@ -4,7 +4,7 @@
             <div class="text-h6">{{ label }}</div>
 
             <label class="cameraButton shadow-2 bg-primary text-white">Capture
-                <input @change="handleImage($event)" type="file" accept="image/*">
+                <input id="imageInput" @change="handleImage($event)" type="file" accept="image/*">
                 <!-- <input @change="handleImage($event)" type="file" accept="image/*" capture="user"> -->
             </label>&nbsp;
             <br>
@@ -13,7 +13,7 @@
                 <q-btn class="button" size="sm" icon="clear" round color="red" @click="removeAtIndex(files.indexOf(file))"></q-btn>
             </div>
             <span>
-                <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage()">{{ submitAction }}</q-btn>
+                <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage">{{ submitAction }}</q-btn>
                 <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
                 <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
                 <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
@@ -61,6 +61,8 @@
                         applied.value = false;
                     }
                 });
+                // @ts-ignore
+                document.getElementById('imageInput')!.value = '';
             };
 
             const getImageUrl = (file: any) => {
@@ -69,6 +71,7 @@
 
             const removeAtIndex = (index: number) => {
                 files.value.splice(index, 1);
+                fileUrls.value.splice(index, 1);
                 applied.value = false;
                 props.trip!._attachments = {};
             };
