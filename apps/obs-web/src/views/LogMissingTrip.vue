@@ -16,14 +16,34 @@
         <div>
             <span>
                 <span class="text-h6">Trip Dates</span>
+                {{ trip.activeTrip.departureDate }} | {{ trip.activeTrip.returnDate }}
+                <q-toggle
+                    v-model="trip.activeTrip.isSingleDayTrip"
+                    color="primary"
+                    label="Single Day Trip"
+                    :disabled="trip.readOnly"
+                    @input="updateDates"
+                ></q-toggle>
                 <pCalendar
-                    v-if="tripDates"
+                    v-if="!trip.activeTrip.isSingleDayTrip"
                     v-model="tripDates"
                     :maxDate="maxDate"
                     :inline="false"
                     :touchUI="true"
-                    placeholder="start / end"
+                    placeholder="trip start / end"
                     selectionMode="range"
+                    style="width: 100%"
+                    >
+                </pCalendar>
+
+                <pCalendar
+                    v-if="trip.activeTrip.isSingleDayTrip"
+                    v-model="tripDate"
+                    :maxDate="maxDate"
+                    :inline="false"
+                    :touchUI="true"
+                    placeholder="trip date"
+                    selectionMode="single"
                     style="width: 100%"
                     >
                 </pCalendar>
@@ -204,6 +224,7 @@ export default class LogBookCapture extends Vue {
     private dbImageUrl: any = null;
 
     private tripDates: any = [];
+    private tripDate: any = null;
     private ports: any = [];
     private fisheryOptions: Fishery = [];
     private authorizedVessels: Vessel = [];
@@ -293,6 +314,7 @@ export default class LogBookCapture extends Vue {
                             returnDate: '',
                             returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: undefined,
+                            isSingleDayTrip: false,
                             fishery: {description: undefined},
                             tripStatus: {
                               description: 'closed'
@@ -530,17 +552,32 @@ export default class LogBookCapture extends Vue {
     }
 
     @Watch('tripDates')
-    private handler2(newVal: string, oldVal: string) {
+    private handler1(newVal: string, oldVal: string) {
         if (newVal[0]) {
-        this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-        if (!newVal[1]) {
-            this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
-        }
+            this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+            if (!newVal[1]) {
+                this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
+            }
         }
         if (newVal[1]) {
         this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
         }
+
+        if (this.departureTime) {
+            this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+        }
     }
+
+  @Watch('tripDate')
+  private handler2(newVal: any, oldVal: any) {
+    this.trip.activeTrip!.departureDate = moment(newVal).format();
+    this.trip.activeTrip!.returnDate = moment(newVal).format();
+
+    if (this.departureTime) {
+        this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+    }
+
+  }
 
     @Watch('trip.activeTrip.departurePort', {deep: true})
     private handler3(newVal: any, oldVal: any) {

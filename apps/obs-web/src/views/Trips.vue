@@ -90,6 +90,7 @@
           <div v-if="trip.isWaived">
             Observer Coverage Waived
           </div>
+          <div v-if="trip.maximizedRetention">MR</div>
         </q-card-section>
         <div style="float: right">
             <q-btn flat @click="cancelTrip(trip)">Cancel</q-btn>
@@ -240,10 +241,10 @@
       <div style="text-align: center; background-color: white; height: 100%; width: 100%">
         <div style="padding: 3% 3% 9% 3%">
           <div style="float: left">
-            <q-icon color="secondary" name="close" size="md" @click="closeAlert = false; file = null" ></q-icon>
+            <q-icon color="secondary" name="close" size="md" @click="clearValues" ></q-icon>
           </div>
           <div style="float: right">
-            <q-btn :disable="!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate" v-if="activeTrip" :color="(!activeTrip.captainAffirmedDepartureDate || !activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
+            <q-btn :disable="!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate || trip.activeTrip.captainAffirmedDepartureDate === 'Invalid date' || trip.activeTrip.captainAffirmedReturnDate === 'Invalid date'" v-if="activeTrip" :color="(!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
             &nbsp;
             <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           </div>
@@ -258,22 +259,38 @@
 
           <div v-if="activeTrip">
             <div class="text-h6">
-              planned trip dates:
+              planned trip date(s):
             </div>
-            <div>
-              start: {{ formatDateTime(this.activeTrip.departureDate) }} - end: {{ formatFullDate(this.activeTrip.returnDate) }}
+            <div v-if="trip.activeTrip.isSingleDayTrip">
+              single day trip: {{ formatFullDate(trip.activeTrip.returnDate) }}
+            </div>
+            <div v-else>
+              start: {{ formatDateTime(trip.activeTrip.departureDate) }} - end: {{ formatFullDate(trip.activeTrip.returnDate) }}
             </div>
           </div>
           <div>
             <br>
             <div class="text-h6">Select Actual Trip Dates:</div>
             <pCalendar
+              v-if="!trip.activeTrip.isSingleDayTrip"
               v-model="tripDates"
               :touchUI="false"
               :inline="true"
               :maxDate="maxDate"
               placeholder="start / end"
               selectionMode="range"
+              onfocus="blur();"
+              style="width: 100%; height: 330px">
+            </pCalendar>
+
+            <pCalendar
+              v-if="trip.activeTrip.isSingleDayTrip"
+              v-model="tripDate"
+              :touchUI="false"
+              :inline="true"
+              :maxDate="maxDate"
+              placeholder="start / end"
+              selectionMode="single"
               onfocus="blur();"
               style="width: 100%; height: 330px">
             </pCalendar>
@@ -353,6 +370,7 @@ export default class Trips extends Vue {
   private startYearMonth: string = moment().format('YYYY/MM');
   private endYearMonth: string = moment().format('YYYY/MM');
   private tripDates: any = [];
+  private tripDate: any = null;
   private minDate: any = new Date();
   private maxDate = new Date();
   private nextSelections: any = [];
@@ -544,7 +562,7 @@ export default class Trips extends Vue {
             }
 
           }
-    );
+      );
     }
 
     private isAuthorized(authorizedRoles: string[]) {
@@ -573,7 +591,6 @@ export default class Trips extends Vue {
           change: 'trip closed'
         }
       );
-      console.log(trip);
       const masterDB: Client<any> = couchService.masterDB;
       this.transferring = true;
       return await masterDB.put(
@@ -601,6 +618,7 @@ export default class Trips extends Vue {
     }
 
     private closeConfirm(trip: any) {
+      this.trip.activeTrip = trip;
       if (!moment(trip.departureDate).isSameOrBefore(moment(), 'day')) { // trip hasn't started yet.
         // Dialog - warn trip must have started to be closed. did you mean cancel?
         this.tripNotStartedAlert = true;
@@ -610,6 +628,16 @@ export default class Trips extends Vue {
       this.activeTrip = trip;
       this.closeAlert = true;
       this.tripDates = [];
+      this.tripDate = null;
+    }
+
+    private clearValues() {
+      this.file = null;
+      this.tripDate = null;
+      this.tripDates = [];
+      this.trip.activeTrip!.captainAffirmedDepartureDate = undefined;
+      this.trip.activeTrip!.captainAffirmedReturnDate = undefined;
+      this.closeAlert = false;
     }
 
     private async saveSelection() {
@@ -686,22 +714,8 @@ export default class Trips extends Vue {
     }
 
     private async closeActiveTrip() {
-      if (this.file) {
-        const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
-        let result: any;
-        const reader = new FileReader();
-        reader.readAsDataURL(this.file);
-        reader.onload = async () => {
-          result = reader.result;
-          this.activeTrip._attachments = {
-                    [fileName] : {
-                        content_type: this.file.type,
-                        data: result.split(',')[1]
-                    }
-                };
-
-          this.activeTrip!.closingReason = 'taken';
-          await this.closeTrip(this.activeTrip).then(
+          this.trip.activeTrip!.closingReason = 'taken';
+          await this.closeTrip(this.trip.activeTrip).then(
             async () => {
               this.cancelAlert = false;
               this.closeAlert = false;
@@ -712,22 +726,6 @@ export default class Trips extends Vue {
               });
             }
           );
-        };
-      } else {
-          this.activeTrip!.closingReason = 'taken';
-          await this.closeTrip(this.activeTrip).then(
-            async () => {
-              this.cancelAlert = false;
-              this.closeAlert = false;
-              this.file = null;
-              this.closeAlert = false;
-              await this.getNextSelections().then( () => {
-              location.reload();
-              });
-            }
-          );
-      }
-
     }
 
     private review(trip: any) {
@@ -777,6 +775,7 @@ export default class Trips extends Vue {
                             returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: false,
                             isWaived: false,
+                            isSingleDayTrip: false,
                             fishery: {description: ''},
                             tripStatus: {
                               description: 'open'
@@ -881,7 +880,6 @@ private async storeOfflineData() {
     ).then(
       (res: any) => {
       userTripsDoc = res.rows[0].doc;
-      console.log(userTripsDoc);
       userTripsDoc.openTrips = this.openTrips;
       userTripsDoc.activeVessel = this.vessel.activeVessel.vesselName;
       userTripsDoc.nextSelections = this.nextSelections;
@@ -909,7 +907,9 @@ private async storeOfflineData() {
           include_docs: true
         }
       ).then(
-        (res: any) => console.log(res.rows[0].doc)
+        (res: any) => {
+          return;
+        }
       );
     }
   );
@@ -993,7 +993,7 @@ private async getAuthorizedVessels() {
   }
 
   @Watch('vessel.activeVessel')
-  private async handler3(newVal: string, oldVal: string) {
+  private async handler1(newVal: string, oldVal: string) {
     this.nextSelections = [];
     this.getVesselTrips();
     this.getNextSelections();
@@ -1003,14 +1003,20 @@ private async getAuthorizedVessels() {
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
     if (newVal[0]) {
-      this.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
+      this.trip.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
       if (!newVal[1]) {
-        this.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
+        this.trip.activeTrip!.captainAffirmedDepartureDate = moment(newVal[0]).format();
       }
     }
     if (newVal[1]) {
-      this.activeTrip!.captainAffirmedReturnDate = moment(newVal[1]).format();
+      this.trip.activeTrip!.captainAffirmedReturnDate = moment(newVal[1]).format();
     }
+  }
+
+  @Watch('tripDate')
+  private handler3(newVal: string, oldVal: string) {
+    this.trip.activeTrip!.captainAffirmedDepartureDate = moment(newVal).format();
+    this.trip.activeTrip!.captainAffirmedReturnDate = moment(newVal).format();
   }
 
 }
