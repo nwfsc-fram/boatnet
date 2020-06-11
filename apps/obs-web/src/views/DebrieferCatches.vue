@@ -22,6 +22,7 @@ import {
   couchService
 } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
+import { updateCatchWeight } from '@boatnet/bn-expansions';
 
 export default createComponent({
   setup(props, context) {
@@ -142,8 +143,7 @@ export default createComponent({
 
     async function getCatches() {
       const catches: any[] = [];
-      let catchIndex = 0;
-
+      
       const masterDB: Client<any> = couchService.masterDB;
       let operationIds: string[] = [];
       const operationHolder = [];
@@ -158,6 +158,7 @@ export default createComponent({
         };
         const operations = await masterDB.listWithDocs(options);
         for (const operation of operations.rows) {
+          let catchIndex = 0;
           for (const c of operation.catches) {
             const tripId = operation.legacy.tripId;
             const operationNum = operation.operationNum;
@@ -288,6 +289,7 @@ export default createComponent({
             catches[ids[1]].children[ids[2]].catchContent = data.value;
           } else if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]][columnName].value = data.value;
+            catches[ids[1]] = updateCatchWeight(catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].sampleCount = data.value;
           }
@@ -295,6 +297,7 @@ export default createComponent({
           if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
               data.value;
+            catches[ids[1]] = updateCatchWeight(catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
               data.value;
@@ -306,6 +309,7 @@ export default createComponent({
           operationRecord,
           operationRecord._rev
         );
+        await getCatches();
       } catch (err) {
         console.log(err);
       }
