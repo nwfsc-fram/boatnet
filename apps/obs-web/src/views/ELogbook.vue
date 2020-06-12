@@ -949,28 +949,18 @@ export default createComponent({
 
     const addHaul = () => {
       tripCatch.hauls.push({
-        startDateTime: moment().format(),
-        endDateTime: moment().format()
+        startDateTime: '',
+        endDateTime: ''
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
-      haulStartTime.value = moment(
-        tripCatch.hauls[selectedHaul.value - 1].startDateTime
-      ).format('hh:mm');
-      haulEndTime.value = moment(
-        tripCatch.hauls[selectedHaul.value - 1].endDateTime
-      ).format('hh:mm');
+      haulStartTime.value = '';
+      haulEndTime.value = '';
     };
 
     const selectHaul = (haulIndex: number) => {
       selectedHaul.value = haulIndex;
       selectedCatch.value = null;
-      haulStartTime.value = moment(
-        tripCatch.hauls[selectedHaul.value - 1].startDateTime
-      ).format('hh:mm');
-      haulEndTime.value = moment(
-        tripCatch.hauls[selectedHaul.value - 1].endDateTime
-      ).format('hh:mm');
     };
 
     const haulPagination = {

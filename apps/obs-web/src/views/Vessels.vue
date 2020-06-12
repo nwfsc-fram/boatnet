@@ -99,8 +99,8 @@ private columns = [
     {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
     sortable: true, align: 'left' },
     {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: true },
-    {name: 'registeredLength', label: 'Registered Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
-    {name: 'port', label: 'Port', field: 'Home Port', required: true, align: 'left', sortable: true },
+    {name: 'registeredLength', label: 'Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
+    {name: 'port', label: 'Home Port', field: 'port', required: true, align: 'left', sortable: true },
     {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: true },
     {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: false },
     {name: 'emHardware', label: 'EM Hardware', field: 'emHardware', required: false, align: 'left', sortable: true },
@@ -229,7 +229,7 @@ private newVessel() {
         }
         return 0;
         }
-    )
+    );
 
     const ids = matchedVessels.map( (vessel: any) => vessel.id);
     try {
