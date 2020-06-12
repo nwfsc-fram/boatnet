@@ -92,6 +92,7 @@ private vessels: Vessel[] = [];
 private vesselNames: any = [];
 private loading: boolean = false;
 private searchText: string = '';
+private cancel: boolean = false;
 
 private columns = [
     {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
@@ -215,7 +216,7 @@ private newVessel() {
 }
 
   private async getSearchVessels(searchString: string) {
-    this.vessels = [];
+    this.cancel = false;
     const matchedVessels = this.vesselNames.filter((vessel: any) => vessel.vesselNameAndReg.toLowerCase().includes(searchString.toLowerCase()));
     matchedVessels.sort((a: any, b: any) => {
         const keyA = a.vesselNameAndReg.toLowerCase();
@@ -233,7 +234,11 @@ private newVessel() {
     const ids = matchedVessels.map( (vessel: any) => vessel.id);
     try {
         const db = couchService.masterDB;
+        this.vessels = [];
         for (const id of ids.splice(0, 20)) {
+            if (this.cancel) {
+                return;
+            }
             const doc = await db.get(id);
             this.vessels.push(doc);
         }
@@ -245,7 +250,10 @@ private newVessel() {
 
   @Watch('vessel.filterText')
   private async handler3(newVal: string, oldVal: string) {
-    this.getSearchVessels(newVal);
+    this.cancel = true;
+    setTimeout(() => {
+        this.getSearchVessels(newVal);
+    }, 300);
   }
 
 }
