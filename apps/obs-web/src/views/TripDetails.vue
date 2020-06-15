@@ -731,14 +731,15 @@ export default class TripDetails extends Vue {
           await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
           this.trip.activeTrip!.tripNum = this.tripsApiNum;
         } catch (err) {
-          Notify.create({
-            message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
-            position: 'top',
-            color: 'red',
-            timeout: 7000,
-            multiLine: true
-          });
-          return;
+          // Notify.create({
+          //   message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
+          //   position: 'top',
+          //   color: 'red',
+          //   timeout: 7000,
+          //   multiLine: true
+          // });
+          // return;
+          console.log(err);
         }
         console.log(this.trip.activeTrip!.tripNum);
         const masterDB: Client<any> = couchService.masterDB;
