@@ -289,7 +289,7 @@ export default createComponent({
             catches[ids[1]].children[ids[2]].catchContent = data.value;
           } else if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]][columnName].value = data.value;
-            catches[ids[1]] = updateCatchWeight(catches[ids[1]]);
+            catches[ids[1]] = updateCatchWeight(20, catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].sampleCount = data.value;
           }
@@ -297,7 +297,7 @@ export default createComponent({
           if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
               data.value;
-            catches[ids[1]] = updateCatchWeight(catches[ids[1]]);
+            catches[ids[1]] = updateCatchWeight(20, catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
               data.value;
