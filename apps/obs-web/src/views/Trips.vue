@@ -363,9 +363,6 @@ Vue.component('pCalendar', Calendar);
 import { Notify } from 'quasar';
 import { pouchService } from '@boatnet/bn-pouch/lib';
 
-import JsonCSV from 'vue-json-csv';
-Vue.component('download-csv', JsonCSV);
-
 import * as jsonexport from 'jsonexport/dist';
 
 import _ from 'lodash';

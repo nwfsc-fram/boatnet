@@ -39,7 +39,6 @@
     "register-service-worker": "^1.5.2",
     "v-offline": "^1.1.0",
     "vue": "^2.6.6",
-    "vue-json-csv": "^1.2.11",
     "vue-multiselect": "^2.1.6",
     "vue-router": "^3.0.1",
     "vue-timeselector": "^1.0.0",
