@@ -1,7 +1,7 @@
 <template>
   <span>
     <pTreeTable
-      :value="nodes"
+      :value.sync="nodes"
       :filters="filters"
       filterMode="lenient"
       :expandedKeys="expandedKeys"
