@@ -436,7 +436,7 @@ export default class Trips extends Vue {
     private async exportCsv() {
       try {
           const csv = await jsonexport(this.userTrips);
-          this.csv = csv
+          this.csv = csv;
           this.saveFile();
       } catch (err) {
           console.error(err);
@@ -444,10 +444,10 @@ export default class Trips extends Vue {
     }
 
     private saveFile() {
-      const data = this.csv
-      const blob = new Blob([data], {type: 'text/csv'})
-      const e = document.createEvent('MouseEvents'),
-      a = document.createElement('a');
+      const data = this.csv;
+      const blob = new Blob([data], {type: 'text/csv'});
+      const e = document.createEvent('MouseEvents');
+      const a = document.createElement('a');
       a.download = this.vessel.activeVessel.vesselName + ' (' + (this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber) + ') trips.csv';
       a.href = window.URL.createObjectURL(blob);
       a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
@@ -592,7 +592,7 @@ export default class Trips extends Vue {
     private getMatchingVessels(ids: any[]) {
       const db = couchService.masterDB;
       const tempVessels: any = [];
-      ids.splice(0, 80).forEach( async (id) => {
+      ids.splice(0, 100).forEach( async (id) => {
         try {
           const doc = await db.get(id);
           tempVessels.push(doc);
