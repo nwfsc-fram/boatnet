@@ -101,7 +101,7 @@
             </div> -->
 
             <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
+              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button v-model="departureTime" lazy @input="updateDepartureDate">
               </timepicker>
             </div>
           </span>
@@ -347,6 +347,7 @@ export default class TripDetails extends Vue {
   private disableCreate: boolean = false;
   private userRoles: string[] = [];
   private savedMaxRetention: any = null;
+  private departureTimeEntered: boolean = false;
 
   constructor() {
     super();
@@ -694,7 +695,7 @@ export default class TripDetails extends Vue {
     }
 
     // REQUIRES A DEPARTURE TIME
-    if (!this.departureTime) {
+    if (!this.departureTimeEntered) {
       Notify.create({
         message: '<b>A trip must have a departure time.</b>',
         position: 'center',
@@ -842,7 +843,8 @@ export default class TripDetails extends Vue {
   private updateDepartureDate() {
     if (this.departureTime) {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-    }
+      this.departureTimeEntered = true;
+ }
   }
 
   get returnDate(): Date | undefined {
@@ -1006,6 +1008,35 @@ private async getMinDate() {
   }
 
   private async updateTrip() {
+
+    // REQIRES A START AND END DATE
+    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
+      Notify.create({
+        message: '<b>A trip must have a start and end date</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+      return;
+    }
+
+    // REQUIRES A DEPARTURE TIME
+    if (!this.departureTimeEntered) {
+      Notify.create({
+        message: '<b>A trip must have a departure time.</b>',
+        position: 'center',
+        color: 'primary',
+        timeout: 2000,
+        icon: 'warning',
+        html: true,
+        multiLine: true
+      });
+      return;
+    }
+
     this.transferring = true;
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
@@ -1234,39 +1265,67 @@ private async getMinDate() {
     this.getFisheryOptions();
     this.setDepartureTime();
     this.updateDates();
+    if (this.trip.activeTrip!.departureDate) {
+      this.departureTimeEntered = true;
+    }
     this.savedMaxRetention = this.trip.activeTrip!.maximizedRetention;
+  }
+
+  @Watch('trip.activeTrip.isSingleDayTrip')
+  private handler11(newVal: boolean, oldVal: boolean) {
+      this.departureTimeEntered = false;
+      this.departureTime = {
+        mm: '00',
+        HH: '00'
+      };
   }
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
-      if (newVal[0]) {
+    if (newVal[0]) {
+      this.departureTime = {
+        mm: '00',
+        HH: '00'
+      };
+      this.departureTimeEntered = false;
+    }
+
+    if (newVal[0]) {
         this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
         if (!newVal[1]) {
-          this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
+          this.trip.activeTrip!.returnDate = undefined;
+          // this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
         }
       }
-      if (newVal[1]) {
-        this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
-      }
 
-      if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
-        this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
-        this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
-      }
+    if (newVal[1]) {
+      this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+    }
 
-      if (this.departureTime) {
-        this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-      }
+    if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
+      this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
+      this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
+    }
 
-      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0]) {
-        this.daysWarn = true;
-      }
+    if (this.departureTime) {
+      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+    }
+
+    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0]) {
+      this.daysWarn = true;
+    }
 
   }
 
   @Watch('tripDate')
   private handler9(newVal: any, oldVal: any) {
-
+    if (oldVal) {
+      this.departureTimeEntered = false;
+      this.departureTime = {
+        mm: '00',
+        HH: '00'
+      };
+    }
     this.trip.activeTrip!.departureDate = moment(newVal).format();
     this.trip.activeTrip!.returnDate = moment(newVal).format();
 

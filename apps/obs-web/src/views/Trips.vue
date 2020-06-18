@@ -21,37 +21,52 @@
         <q-btn v-else color="blue-grey-2" class="q-ma-xs" @click="maxTripsAlert = true">New Trip</q-btn>
         <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" :to="'/log-missing-trip'" label="missing trip"></q-btn>
         <br>
+
+        <q-btn
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && userTrips.length > 0"
+          @click="exportCsv"
+          color="green-7"
+        >
+        Export Trips
+        </q-btn>
+
       </div>
       <div v-else>
         <p>No active vessel</p>
       </div>
 
       <q-select
-      v-model="vessel.activeVessel"
-      label="Vessel"
-      dense
-      fill-input
-      :options="authorizedVessels"
-      :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-      option-value="_id"
+        v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode"
+        v-model="vessel.activeVessel"
+        label="Staff - Select ANY vessel"
+        dense
+        use-input
+        fill-input
+        hide-selected
+        clearable
+        debounce="500"
+        @filter="vesselsFilterFn"
+        :options="vessels"
+        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+        option-value="_id"
+        @click.native="vessel.activeVessel = undefined"
       ></q-select>
 
       <q-select
-      v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode"
-      v-model="vessel.activeVessel"
-      label="Staff - Select ANY vessel"
-      dense
-      use-input
-      fill-input
-      hide-selected
-      @filter="vesselsFilterFn"
-      :options="vessels"
-      :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
-      option-value="_id"
-      @click.native="vessel.activeVessel = undefined"
+        v-else
+        v-model="vessel.activeVessel"
+        label="Vessel"
+        dense
+        fill-input
+        :options="authorizedVessels"
+        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
+        option-value="_id"
       ></q-select>
 
+
     </div>
+
+
 
   <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
     <div class="row items-start" >
@@ -64,7 +79,7 @@
         <q-card-section>
           <div  class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
             <span>
-              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }} {{ formatDepartureTime(trip.departureDate) }} </span> -
               <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
             </span>
             <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
@@ -295,6 +310,13 @@
               style="width: 100%; height: 330px">
             </pCalendar>
 
+          <div style="padding: 3% 3% 9% 3%">
+            <div style="float: right">
+              <q-btn :disable="!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate || trip.activeTrip.captainAffirmedDepartureDate === 'Invalid date' || trip.activeTrip.captainAffirmedReturnDate === 'Invalid date'" v-if="activeTrip" :color="(!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
+              &nbsp;
+              <q-spinner-radio v-if="transferring" color="red" size="3em"/>
+            </div>
+          </div>
             <br><br><br>
           </div>
         <br>
@@ -341,6 +363,13 @@ Vue.component('pCalendar', Calendar);
 import { Notify } from 'quasar';
 import { pouchService } from '@boatnet/bn-pouch/lib';
 
+import JsonCSV from 'vue-json-csv';
+Vue.component('download-csv', JsonCSV);
+
+import * as jsonexport from 'jsonexport/dist';
+
+import _ from 'lodash';
+
 @Component
 export default class Trips extends Vue {
   @State('trip') private trip!: TripState;
@@ -355,7 +384,7 @@ export default class Trips extends Vue {
   @Getter('closedTripsTable', {namespace: 'user'}) private closedTripsTable: any;
 
   private userTrips: any = [];
-  private vessels = [];
+  private vessels: any[] = [];
   private maxTripsAlert = false;
   private cancelAlert = false;
   private closeAlert = false;
@@ -380,6 +409,9 @@ export default class Trips extends Vue {
   private fileUrl: any = null;
   private transferring: boolean = false;
   private loading = false;
+  private vesselNames: any[] = [];
+  private cancel: boolean = false;
+  private csv: any = 'initial';
 
   private pagination = {
     sortBy: 'departureDate',
@@ -403,6 +435,28 @@ export default class Trips extends Vue {
   constructor() {
       super();
   }
+
+    private async exportCsv() {
+      try {
+          const csv = await jsonexport(this.userTrips);
+          this.csv = csv
+          this.saveFile();
+      } catch (err) {
+          console.error(err);
+      }
+    }
+
+    private saveFile() {
+      const data = this.csv
+      const blob = new Blob([data], {type: 'text/csv'})
+      const e = document.createEvent('MouseEvents'),
+      a = document.createElement('a');
+      a.download = this.vessel.activeVessel.vesselName + ' (' + (this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber) + ') trips.csv';
+      a.href = window.URL.createObjectURL(blob);
+      a.dataset.downloadurl = ['text/json', a.download, a.href].join(':');
+      e.initEvent('click', true, false);
+      a.dispatchEvent(e);
+    }
 
     private get openTrips() {
       if (this.vessel.activeVessel) {
@@ -538,31 +592,45 @@ export default class Trips extends Vue {
 
     }
 
+    private getMatchingVessels(ids: any[]) {
+      const db = couchService.masterDB;
+      const tempVessels: any = [];
+      ids.splice(0, 80).forEach( async (id) => {
+        try {
+          const doc = await db.get(id);
+          tempVessels.push(doc);
+        } catch (err) {
+          console.log(err);
+        }
+      });
+      this.vessels = tempVessels;
+    }
+
     private vesselsFilterFn(val: string, update: any, abort: any) {
-    update(
-        async () => {
-            try {
-                const masterDb = couchService.masterDB;
-                const queryOptions = {
-                  start_key: val.toLowerCase(),
-                  end_key: val.toLowerCase() + '\u9999' ,
-                  inclusive_end: true,
-                  descending: false,
-                  include_docs: true
-                };
 
-                const vessels = await masterDb.view(
-                  'obs_web',
-                  'all_vessel_names',
-                  queryOptions
-                );
-                this.vessels = vessels.rows.map((row: any) => row.doc);
-            } catch (err) {
-                console.log(err);
+      setTimeout(() => {
+        update(
+            () => {
+              this.cancel = false;
+              const matchedVessels = this.vesselNames.filter((vessel: any) => vessel.vesselNameAndReg.toLowerCase().includes(val.toLowerCase()));
+              matchedVessels.sort((a: any, b: any) => {
+                  const keyA = a.vesselNameAndReg.toLowerCase();
+                  const keyB = b.vesselNameAndReg.toLowerCase();
+                  if (keyA < keyB) {
+                      return -1;
+                  }
+                  if (keyA > keyB) {
+                      return 1;
+                  }
+                  return 0;
+                  }
+              );
+
+              const ids = matchedVessels.map( (vessel: any) => vessel.id);
+              this.getMatchingVessels(ids);
             }
-
-          }
-      );
+          );
+      }, 1500);
     }
 
     private isAuthorized(authorizedRoles: string[]) {
@@ -800,6 +868,10 @@ export default class Trips extends Vue {
     return moment(date).format('MMM Do');
   }
 
+  private formatDepartureTime(date: any) {
+    return moment(date).format('HH:mm');
+  }
+
   private formatFullDate(date: any) {
     return moment(date).format('MM/DD/YYYY');
   }
@@ -867,53 +939,81 @@ private async getVesselTrips() {
 }
 
 private async storeOfflineData() {
-  const db = pouchService.db;
-  let userTripsDoc: any = {};
+  if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) {
+    const db = pouchService.db;
+    let userTripsDoc: any = {};
 
-  try {
-    await db.query(
-      'my_index/by_type', {
-        key: 'user-trips',
-        include_docs: true,
-        limit: 1
-      }
-    ).then(
-      (res: any) => {
-      userTripsDoc = res.rows[0].doc;
-      userTripsDoc.openTrips = this.openTrips;
-      userTripsDoc.activeVessel = this.vessel.activeVessel.vesselName;
-      userTripsDoc.nextSelections = this.nextSelections;
-      userTripsDoc.storedDate = moment().format();
-      }
-    );
-
-  } catch (err) {
-    console.log(err);
-    userTripsDoc = {
-      type: 'user-trips',
-      openTrips: this.openTrips,
-      activeVessel: this.vessel.activeVessel.vesselName,
-      nextSelections: this.nextSelections,
-      storedDate: moment().format()
-    };
-  }
-
-  await db.post(userTripsDoc).then(
-    async () => {
+    try {
       await db.query(
         'my_index/by_type', {
-          limit: 10,
           key: 'user-trips',
-          include_docs: true
+          include_docs: true,
+          limit: 1
         }
       ).then(
         (res: any) => {
-          return;
+        userTripsDoc = res.rows[0].doc;
+        userTripsDoc.openTrips = this.openTrips;
+        userTripsDoc.activeVessel = this.vessel.activeVessel.vesselName;
+        userTripsDoc.nextSelections = this.nextSelections;
+        userTripsDoc.storedDate = moment().format();
         }
       );
+
+    } catch (err) {
+      console.log(err);
+      userTripsDoc = {
+        type: 'user-trips',
+        openTrips: this.openTrips,
+        activeVessel: this.vessel.activeVessel.vesselName,
+        nextSelections: this.nextSelections,
+        storedDate: moment().format()
+      };
     }
-  );
+
+    await db.post(userTripsDoc).then(
+      async () => {
+        await db.query(
+          'my_index/by_type', {
+            limit: 10,
+            key: 'user-trips',
+            include_docs: true
+          }
+        ).then(
+          (res: any) => {
+            return;
+          }
+        );
+      }
+    );
+  }
 }
+
+private async getVesselNames() {
+    const masterDB: Client<any> = couchService.masterDB;
+    try {
+        this.loading = true;
+        const queryOptions: any = {
+          include_docs: false
+        };
+
+        const vessels = await masterDB.view<any>(
+            'obs_web',
+            'all_vessel_names',
+            queryOptions
+            );
+
+
+        this.vesselNames = vessels.rows.map( (row: any) => {
+            return {vesselNameAndReg: row.value, id: row.id};
+        });
+
+        this.loading = false;
+
+    } catch (err) {
+        this.errorAlert(err);
+    }
+  }
 
 private async getAuthorizedVessels() {
     const masterDB: Client<any> = couchService.masterDB;
@@ -983,6 +1083,7 @@ private async getAuthorizedVessels() {
 
   private async created() {
     // this.setActiveVessel();
+    this.getVesselNames();
     this.getAuthorizedVessels();
     this.getVesselTrips();
     if ( authService.getCurrentUser() ) {

@@ -837,15 +837,16 @@
                     title="Number of fish for a species (Yellow Eye RF, PHLB, Species of concern...Salmon, Green Sturgeon, Eulachon). Not required for all species"
                     mask="###"
                   ></q-input>
-                  <q-input
+                  <q-select
                     class="logbook-element"
                     v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].calcWeightType"
                     dense
                     autogrow
                     outlined
                     label="Weight Calculation Method"
-                    title="Description of how the catch was calculated (EstWeight, FromAverageWt, FromLength, CaclField)"
-                  ></q-input>
+                    title="Description of how the catch was calculated"
+                    :options="['Estimated Weight', 'From Length', 'From Average Weight', 'Calculated Field']"
+                  ></q-select>
                   <q-input
                     class="logbook-element"
                     v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].length"
