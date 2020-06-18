@@ -264,7 +264,7 @@ export default class VesselDetails extends Vue {
                 try {
                     const masterDB = couchService.masterDB;
                     const queryOptions = {
-                        limit: 5,
+                        limit: 10,
                         start_key: val.toLowerCase(),
                         inclusive_end: true,
                         descending: false,

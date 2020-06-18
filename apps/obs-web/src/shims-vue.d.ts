@@ -13,3 +13,4 @@ declare module 'coordinate-parser';
 
 declare module 'vue-timeselector';
 declare module 'vue2-timepicker';
+declare module 'jsonexport/dist';

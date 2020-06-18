@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-bind:style="{ minWidth: columns.length * 100 + 'px' }">
         <DataTable
             :value="data"
             :filters="filters"
