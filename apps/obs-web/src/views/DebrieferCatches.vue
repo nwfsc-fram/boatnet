@@ -289,7 +289,8 @@ export default createComponent({
             catches[ids[1]].children[ids[2]].catchContent = data.value;
           } else if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]][columnName].value = data.value;
-            catches[ids[1]] = updateCatchWeight(20, catches[ids[1]]);
+            const wm: number = getWeightMethodNum(catches[ids[1]].weightMethod.description);
+            catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].sampleCount = data.value;
           }
@@ -297,7 +298,8 @@ export default createComponent({
           if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
               data.value;
-            catches[ids[1]] = updateCatchWeight(20, catches[ids[1]]);
+            const wm: number = getWeightMethodNum(catches[ids[1]].weightMethod.description);
+            catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
               data.value;
@@ -312,6 +314,46 @@ export default createComponent({
         await getCatches();
       } catch (err) {
         console.log(err);
+      }
+    }
+
+    function getWeightMethodNum(weightMethod: string) {
+      if (weightMethod === 'Actual weight') {
+        return 1;
+      } else if (weightMethod === 'Bin/trawl alley estimate') {
+        return 2;
+      } else if (weightMethod === 'Basket weight determination') {
+        return 3;
+      } else if (weightMethod === 'Visual estimate') {
+        return 4;
+      } else if (weightMethod === '"OTC - retained') {
+        return 5;
+      } else if (weightMethod === 'Other') {
+        return 6;
+      } else if (weightMethod === 'Vessel estimate') {
+        return 7;
+      } else if (weightMethod === 'Extrapolation (LL)') {
+        return 8;
+      } else if (weightMethod === 'Length/weight') {
+        return 9;
+      } else if (weightMethod === 'Codend') {
+        return 10;
+      } else if (weightMethod === 'Retained + Discard') {
+        return 11;
+      } else if (weightMethod === 'Delivery weights') {
+        return 12;
+      } else if (weightMethod === 'Tally sample') {
+        return 13;
+      } else if (weightMethod === 'Visual Experience') {
+        return 14;
+      } else if (weightMethod === 'PHLB length weight extrapolation') {
+        return 19;
+      } else if (weightMethod === 'Actual Weight  - Whole Haul') {
+        return 20;
+      } else if (weightMethod === 'Actual Weight - Subsample') {
+        return 21;
+      } else {
+        return -1;
       }
     }
 
