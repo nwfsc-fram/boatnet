@@ -603,32 +603,57 @@ export default class Trips extends Vue {
       this.vessels = tempVessels;
     }
 
-    private vesselsFilterFn(val: string, update: any, abort: any) {
+  private vesselsFilterFn(val: string, update: any, abort: any) {
+    update(async () => {
+      try {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+          start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '\u9999',
+          inclusive_end: true,
+          descending: false,
+          include_docs: true,
+          limit: 30
+        };
 
-      setTimeout(() => {
-        update(
-            () => {
-              this.cancel = false;
-              const matchedVessels = this.vesselNames.filter((vessel: any) => vessel.vesselNameAndReg.toLowerCase().includes(val.toLowerCase()));
-              matchedVessels.sort((a: any, b: any) => {
-                  const keyA = a.vesselNameAndReg.toLowerCase();
-                  const keyB = b.vesselNameAndReg.toLowerCase();
-                  if (keyA < keyB) {
-                      return -1;
-                  }
-                  if (keyA > keyB) {
-                      return 1;
-                  }
-                  return 0;
-                  }
-              );
+        const vessels = await masterDb.view(
+          'obs_web',
+          'all_vessel_names',
+          queryOptions
+        );
+        this.vessels = vessels.rows.map((row: any) => row.doc);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }
 
-              const ids = matchedVessels.map( (vessel: any) => vessel.id);
-              this.getMatchingVessels(ids);
-            }
-          );
-      }, 1500);
-    }
+    // private vesselsFilterFn(val: string, update: any, abort: any) {
+
+    //   setTimeout(() => {
+    //     update(
+    //         () => {
+    //           this.cancel = false;
+    //           const matchedVessels = this.vesselNames.filter((vessel: any) => vessel.vesselNameAndReg.toLowerCase().includes(val.toLowerCase()));
+    //           matchedVessels.sort((a: any, b: any) => {
+    //               const keyA = a.vesselNameAndReg.toLowerCase();
+    //               const keyB = b.vesselNameAndReg.toLowerCase();
+    //               if (keyA < keyB) {
+    //                   return -1;
+    //               }
+    //               if (keyA > keyB) {
+    //                   return 1;
+    //               }
+    //               return 0;
+    //               }
+    //           );
+
+    //           const ids = matchedVessels.map( (vessel: any) => vessel.id);
+    //           this.getMatchingVessels(ids);
+    //         }
+    //       );
+    //   }, 1500);
+    // }
 
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
