@@ -11,11 +11,11 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "@boatnet/bn-auth": "^0.1.11",
+    "@boatnet/bn-auth": "^0.1.18",
     "@boatnet/bn-common": "file:..\\..\\libs\\bn-common",
     "@boatnet/bn-couch": "^0.1.6",
     "@boatnet/bn-models": "^0.2.9",
-    "@boatnet/bn-pouch": "^0.2.6",
+    "@boatnet/bn-pouch": "^0.2.12",
     "@boatnet/bn-util": "^0.1.1",
     "@quasar/extras": "^1.0.0",
     "@vue/composition-api": "^0.3.4",
