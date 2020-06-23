@@ -40,6 +40,8 @@ import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
+import RackBiospecimens from './views/RackBiospecimens.vue';
+import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -81,6 +83,8 @@ const router = new Router({
         },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
+        { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
+        { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         {
           path: '/debriefer/:activeTab', name: 'Debriefer', component: DebrieferLayout,
           props: (route) => ({ activeTab: String(route.params.activeTab) }),

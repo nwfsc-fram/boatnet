@@ -57,7 +57,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item  :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
+        <q-item :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="directions" />
           </q-item-section>
@@ -77,7 +77,12 @@
           </q-item-section>
         </q-item>
 
-        <q-item v-if="isAuthorized(['enforcement'])" :to="onlineStatus ? '/ole-efp-management' : ''" exact :disabled="!onlineStatus">
+        <q-item
+          v-if="isAuthorized(['enforcement'])"
+          :to="onlineStatus ? '/ole-efp-management' : ''"
+          exact
+          :disabled="!onlineStatus"
+        >
           <q-item-section avatar>
             <q-icon name="table" />
           </q-item-section>
@@ -87,19 +92,56 @@
           </q-item-section>
         </q-item>
 
-        <q-item
-          to="/debriefer/data"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+        <q-expansion-item
+          label="Debriefer Tools"
+          icon="beenhere"
+          v-model="debrieferExpanded"
+          @click="emExpanded = false; lbExpanded = false; bmExpanded = false"
+          :header-inset-level="0"
+          :content-inset-level=".5"
         >
-          <q-item-section avatar>
-            <q-icon name="beenhere" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Debriefer</q-item-label>
-            <q-item-label caption>debrief observed trips</q-item-label>
-          </q-item-section>
-        </q-item>
+          <q-item
+            to="/debriefer/data"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="create" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>QA Data</q-item-label>
+              <q-item-label caption>View/Edit observer data</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            to="/rack"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="scanner" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Rack Biospecimens</q-item-label>
+              <q-item-label caption>Scan Biospecimens</q-item-label>
+            </q-item-section>
+          </q-item>
+
+           <q-item
+            to="/assign"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Assign Observers</q-item-label>
+              <q-item-label caption>Assign Observers to debriefers</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-expansion-item>
 
         <q-item
           to="/all-trips"
@@ -107,7 +149,7 @@
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
         >
           <q-item-section avatar>
-            <q-icon name="table_chart"/>
+            <q-icon name="table_chart" />
           </q-item-section>
           <q-item-section>
             <q-item-label>All Trips</q-item-label>
@@ -120,7 +162,7 @@
           label="Boatnet Management"
           icon="settings"
           v-model="bmExpanded"
-          @click="emExpanded = false; lbExpanded = false"
+          @click="emExpanded = false; lbExpanded = false; debrieferExpanded = false"
           :header-inset-level="0"
           :content-inset-level=".5"
         >
@@ -184,91 +226,107 @@
           label="Electronic Monitoring"
           icon="videocam"
           v-model="emExpanded"
-          @click="bmExpanded = false; lbExpanded = false"
+          @click="bmExpanded = false; lbExpanded = false; debrieferExpanded = false"
           :header-inset-level="0"
           :content-inset-level=".5"
         >
-                <q-item
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-task-management" exact @click="leftDrawerOpen = false"
-                >
-                  <q-item-section avatar>
-                    <q-icon name="check"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Task Management</q-item-label>
-                    <q-item-label caption>manage 3rd party review/audit</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-task-management"
+            exact
+            @click="leftDrawerOpen = false"
+          >
+            <q-item-section avatar>
+              <q-icon name="check" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Task Management</q-item-label>
+              <q-item-label caption>manage 3rd party review/audit</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-data-compare" exact  @click="leftDrawerOpen = false"
-                >
-                  <q-item-section avatar>
-                    <q-icon name="compare"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Data Comparison</q-item-label>
-                    <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-data-compare"
+            exact
+            @click="leftDrawerOpen = false"
+          >
+            <q-item-section avatar>
+              <q-icon name="compare" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Data Comparison</q-item-label>
+              <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-rate-management" exact
-                >
-                  <q-item-section avatar>
-                    <q-icon name="rate_review"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Review/Audit Rate Management</q-item-label>
-                    <q-item-label caption>set/edit various rates</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-rate-management"
+            exact
+          >
+            <q-item-section avatar>
+              <q-icon name="rate_review" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Review/Audit Rate Management</q-item-label>
+              <q-item-label caption>set/edit various rates</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item
-                  style="color: lightgrey"
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="" exact
-                >
-                  <q-item-section avatar>
-                    <q-icon name="videocam"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>Video Footage Management</q-item-label>
-                    <q-item-label caption>manage EM footage</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item
+            style="color: lightgrey"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to
+            exact
+          >
+            <q-item-section avatar>
+              <q-icon name="videocam" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Video Footage Management</q-item-label>
+              <q-item-label caption>manage EM footage</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item :to="onlineStatus ? '/e-logbook/new' : ''" exact @click="leftDrawerOpen = false" :disabled="!onlineStatus">
-                  <q-item-section avatar>
-                    <q-icon name="notes" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>E Logbook</q-item-label>
-                    <q-item-label caption>paperless logbook</q-item-label>
-                  </q-item-section>
-                </q-item>
+          <q-item
+            :to="onlineStatus ? '/e-logbook/new' : ''"
+            exact
+            @click="leftDrawerOpen = false"
+            :disabled="!onlineStatus"
+          >
+            <q-item-section avatar>
+              <q-icon name="notes" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>E Logbook</q-item-label>
+              <q-item-label caption>paperless logbook</q-item-label>
+            </q-item-section>
+          </q-item>
 
-                <q-item
-                  v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-                  to="/em-efp-management" exact
-                >
-                  <q-item-section avatar>
-                    <q-icon name="table"/>
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>EM EFP Management</q-item-label>
-                    <q-item-label caption>manage EM EFP roster</q-item-label>
-                  </q-item-section>
-                </q-item>
-
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-efp-management"
+            exact
+          >
+            <q-item-section avatar>
+              <q-icon name="table" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>EM EFP Management</q-item-label>
+              <q-item-label caption>manage EM EFP roster</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-item-label header>Settings</q-item-label>
 
-        <q-item style="cursor:pointer" :to="onlineStatus ? '/user-config' : ''" exact :disabled="!onlineStatus">
+        <q-item
+          style="cursor:pointer"
+          :to="onlineStatus ? '/user-config' : ''"
+          exact
+          :disabled="!onlineStatus"
+        >
           <q-item-section avatar>
             <q-icon name="person" />
           </q-item-section>
@@ -298,13 +356,12 @@
     <q-page-container>
       <q-dialog v-model="syncStatusExists" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%">
-            <div
-              style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-h6"
-            >
+          <q-card-section
+            style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%"
+          >
+            <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-h6">
               LOADING DATA
-              <br>
+              <br />
               <span
                 v-if="syncStatus"
               >{{ syncStatus.db === 'lookups-dev' ? 'Lookups':'User' }} DB - {{ syncStatus.pending }} docs remaining.</span>
@@ -318,30 +375,26 @@
               color="primary"
               track-color="grey-3"
             >
-            <q-avatar size="90px">
-              <img src="../assets/NOAA_logo.svg">
-            </q-avatar>
+              <q-avatar size="90px">
+                <img src="../assets/NOAA_logo.svg" />
+              </q-avatar>
             </q-circular-progress>
-            <br /><br/>
-            <span class="text-h6">
-              please be patient - this only happens once
-            </span>
+            <br />
+            <br />
+            <span class="text-h6">please be patient - this only happens once</span>
           </q-card-section>
         </q-card>
       </q-dialog>
 
       <q-dialog v-model="isIndexing" full-width full-height seamless>
         <q-card>
-          <q-card-section style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%">
-            <div
-              style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold"
-              class="text-h6"
-            >
+          <q-card-section
+            style="padding: 0 5px 0 5px; margin: 0; text-align: center; position: relative; top: 10%"
+          >
+            <div style="padding: 0; margin: 10px 0 10px 5px; font-weight: bold" class="text-h6">
               INDEXING DATA
-              <br>
-              <span v-if="isIndexing">
-                {{ toIndex }} remaining.
-              </span>
+              <br />
+              <span v-if="isIndexing">{{ toIndex }} remaining.</span>
             </div>
             <q-circular-progress
               v-if="isIndexing"
@@ -352,14 +405,13 @@
               color="primary"
               track-color="grey-3"
             >
-            <q-avatar size="90px">
-              <img src="../assets/NOAA_logo.svg">
-            </q-avatar>
+              <q-avatar size="90px">
+                <img src="../assets/NOAA_logo.svg" />
+              </q-avatar>
             </q-circular-progress>
-            <br/><br/>
-            <span class="text-h6">
-              please be patient
-            </span>
+            <br />
+            <br />
+            <span class="text-h6">please be patient</span>
           </q-card-section>
         </q-card>
       </q-dialog>
@@ -375,7 +427,12 @@ import { Action, Getter, State } from 'vuex-class';
 import { Platform } from 'quasar';
 import router from '../router';
 import { AlertState } from '../_store/index';
-import { TripState, VesselState, UserState, GeneralState } from '../_store/types/types';
+import {
+  TripState,
+  VesselState,
+  UserState,
+  GeneralState
+} from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import {
   CouchDBCredentials,
@@ -408,7 +465,8 @@ export default class DefaultLayout extends Vue {
   @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
 
   @State('general') private general!: GeneralState;
-  @Getter('getOnlineStatus', { namespace: 'general'}) private onlineStatus: any;
+  @Getter('getOnlineStatus', { namespace: 'general' })
+  private onlineStatus: any;
 
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
@@ -416,6 +474,7 @@ export default class DefaultLayout extends Vue {
   private isIndexing: boolean = false;
   private toIndex: number = 0;
   private indexed: number = 0;
+  private debrieferExpanded: boolean = false;
   private bmExpanded: boolean = false;
   private emExpanded: boolean = false;
   private lbExpanded: boolean = false;
@@ -438,7 +497,8 @@ export default class DefaultLayout extends Vue {
   private get getPercent() {
     return (
       (this.syncStatus.docs_read /
-      (this.syncStatus.docs_read + this.syncStatus.pending)) * 100
+        (this.syncStatus.docs_read + this.syncStatus.pending)) *
+      100
     );
   }
 
@@ -481,13 +541,12 @@ export default class DefaultLayout extends Vue {
     }
     return false;
   }
-
 }
 </script>
 
 <style>
 .q-field__label {
-  color: #007EC6 !important;
+  color: #007ec6 !important;
 }
 
 .q-field__native {

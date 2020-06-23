@@ -231,7 +231,7 @@ export default createComponent({
                       operationRev,
                       species,
                       disposition,
-                      specimen: specimen,
+                      specimen,
                       _id: specimen._id
                     });
                   }
@@ -252,19 +252,12 @@ export default createComponent({
         data.operationRev
       );
       // drill down to specific specimen that was updated and set value
-      for (let i = 0; i < operationData.catches.length; i++) {
-        if (operationData.catches[i].children) {
-          for (let j = 0; j < operationData.catches[i].children.length; j++) {
-            if (operationData.catches[i].children[j].specimens) {
-              for (
-                let k = 0;
-                k < operationData.catches[i].children[j].specimens.length;
-                k++
-              ) {
-                if (
-                  operationData.catches[i].children[j].specimens[k]._id ===
-                  data._id
-                ) {
+      for (const [i, operation] of operationData.catches.entries()) {
+        if (operation.children) {
+          for (const [j, child] of operation.children.entries()) {
+            if (child.specimens) {
+              for (const [k, specimen] of child.specimens.entries()) {
+                if (specimen._id === data._id) {
                   operationData.catches[i].children[j].specimens[k] =
                     data.specimen;
                   console.log('successfully updated ' + data._id);
@@ -279,8 +272,8 @@ export default createComponent({
         .then((response: any) => {
           // update rev for all records from the same haul #.
           // This ensures future saves will be successful
-          for (let i = 0; i < WcgopBiospecimens.value.length; i++) {
-            if (WcgopBiospecimens.value[i].operationId === data.operationId) {
+          for (const [i, bio] of WcgopBiospecimens.value.entries()) {
+            if (bio.operationId === data.operationId) {
               WcgopBiospecimens.value[i].operationRev = response.rev;
             }
           }
