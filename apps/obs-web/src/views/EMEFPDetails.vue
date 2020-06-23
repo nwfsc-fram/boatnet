@@ -14,8 +14,8 @@
             <q-select
               v-model="emefp.activeEmefp.vessel"
               label="Vessel"
-              :options="options"
-              @filter="filterFn"
+              :options="vessels"
+              @filter="vesselsFilterFn"
               use-input
               fill-input
               hide-selected
@@ -28,7 +28,7 @@
 
             <div class="text-h6" >{{ emefp.activeEmefp.emEfpNumber }}</div>
 
-            <div style="diplay: flex">
+            <div style="diplay: flex" v-if="emefp.activeEmefp.vessel">
               <div>Vessel: {{ emefp.activeEmefp.vessel.vesselName ? emefp.activeEmefp.vessel.vesselName : '' }}</div>
               <div>Vessel ID: {{ emefp.activeEmefp.vessel.coastGuardNumber ? emefp.activeEmefp.vessel.coastGuardNumber : emefp.activeEmefp.vessel.stateRegulationNumber }}</div>
               <div>LE Permit: <span v-if="emefp.activeEmefp.lePermit">{{ emefp.activeEmefp.lePermit.permitNumber ? emefp.activeEmefp.lePermit.permitNumber : emefp.activeEmefp.lePermit }}</span></div>
@@ -99,6 +99,8 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
+import { Notify } from 'quasar';
+
 @Component
 export default class EMEFPDetails extends Vue {
     @State('emefp') private emefp!: EmefpState;
@@ -166,56 +168,57 @@ export default class EMEFPDetails extends Vue {
         }
     }
 
-  private async filterFn(val: string, update: any, abort: any) {
-    if (val === '') {
-      update(() => {
-        this.options = this.vessels;
-      });
-      return;
-    }
-    update(() => {
-      const searchString = val.toLowerCase();
-      this.options = this.vessels.filter(
-        (vessel: any) => vessel.vesselName.toLowerCase().indexOf(searchString) > -1
-      );
-    });
-
-  }
-
-  private async getVessels() {
-    try {
-      const masterDB = couchService.masterDB;
-      const queryOptions = {
-            key: 'vessel',
+  private vesselsFilterFn(val: string, update: any, abort: any) {
+    update(async () => {
+      if (val === '') {
+        try {
+          const masterDb = couchService.masterDB;
+          const queryOptions = {
+            start_key: '',
+            end_key: '' + '\u9999',
+            inclusive_end: true,
+            descending: false,
             include_docs: true,
-            reduce: false
+            limit: 30
           };
 
-      const vessels = await masterDB.view(
-        'obs_web',
-        'all_doc_types',
-        queryOptions
-      );
-
-      this.vessels = vessels.rows.map( (row: any) => row.doc).sort(
-        (a: any, b: any) => {
-          if (a.vesselName > b.vesselName) {
-            return 1;
-          } else if (a.vesselName < b.vesselName) {
-            return -1;
-          } else {
-            return 0;
-          }
+          const vessels = await masterDb.view(
+            'obs_web',
+            'all_vessel_names',
+            queryOptions
+          );
+          this.vessels = vessels.rows.map((row: any) => row.doc);
+        } catch (err) {
+          console.log(err);
         }
-      );
-    } catch (err) {
-      console.log(err);
+      } else {
+        try {
+          const masterDb = couchService.masterDB;
+          const queryOptions = {
+            start_key: val.toLowerCase(),
+            end_key: val.toLowerCase() + '\u9999',
+            inclusive_end: true,
+            descending: false,
+            include_docs: true,
+            limit: 30
+          };
+
+          const vessels = await masterDb.view(
+            'obs_web',
+            'all_vessel_names',
+            queryOptions
+          );
+          this.vessels = vessels.rows.map((row: any) => row.doc);
+        } catch (err) {
+          console.log(err);
+        }
     }
+    });
   }
 
   private created() {
       this.getOptions();
-      this.getVessels();
+      // this.getVessels();
   }
 
   get efpTypes() {
@@ -237,39 +240,21 @@ export default class EMEFPDetails extends Vue {
     }
   }
 
-  private async updateVessel(vesselName: string) {
-
-      try {
-        const masterDB: Client<any> = couchService.masterDB;
-
-
-        const vessels = await masterDB.view<any>(
-          'obs_web',
-          'all_vessels',
-        );
-
-        const formattedVessels = [];
-        for (const row of vessels.rows) {
-            formattedVessels.push(row.value);
-        }
-
-        const vessel = formattedVessels.find((formattedVessel) => formattedVessel.vesselName === vesselName );
-        console.log(vessel);
-        if (this.emefp.activeEmefp) {
-          if (vessel.coastGuardNumber) {
-            this.emefp.activeEmefp.vesselCGNumber = vessel.coastGuardNumber;
-          } else {
-            this.emefp.activeEmefp.vesselCGNumber = vessel.stateRegulationNumber;
-          }
-          this.emefp.activeEmefp.vesselId = vessel._id;
-        }
-
-      } catch (err) {
-          this.error(err);
-      }
-  }
-
   private async saveEmEfp() {
+    // Enforce Required Fields
+    if (this.emefp.activeEmefp.efpTypes.length < 1 || this.emefp.activeEmefp.gear.length < 1 || !this.emefp.activeEmefp.lePermit || !this.emefp.activeEmefp.vessel ) {
+      Notify.create({
+        message: '<b>All fields are required (except notes), please complete missing info</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+      return;
+    }
+
     const masterDB: Client<any> = couchService.masterDB;
     if (this.emefp.newEmEfp) {
       try {
