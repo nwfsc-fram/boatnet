@@ -25,6 +25,7 @@
         <q-btn
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && userTrips.length > 0"
           @click="exportCsv"
+          id="exportTrips"
           color="green-7"
         >
         Export Trips
@@ -1175,6 +1176,18 @@ label.cameraButton {
 
 label.cameraButton input[accept*="camera"] {
   display: none;
+}
+
+@media only screen and (max-width: 760px) {
+  #exportTrips {
+    display: none;
+  }
+}
+
+@media screen and (max-height: 760px) {
+  #exportTrips {
+    display: none;
+  }
 }
 
 </style>
