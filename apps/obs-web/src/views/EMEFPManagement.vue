@@ -27,11 +27,11 @@
           <q-td key="id"></q-td>
           <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName ? props.row.vessel.vesselName : '' }}</q-td>
           <q-td key="vesselCGNumber" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber }}</q-td>
-          <q-td key="lePermit" :props="props">{{ getLEPermit(props.row) }}</q-td>
-          <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber }}</q-td>
+          <q-td key="lePermit" :props="props">{{ props.row.lePermit ? getLEPermit(props.row) : '' }}</q-td>
+          <q-td key="emEfpNumber" :props="props">{{ props.row.emEfpNumber ? props.row.emEfpNumber : '' }}</q-td>
           <q-td key="efpTypes" :props="props">
-              {{ getArrayValues(props.row.efpTypes.map((type) => type.description )) }}</q-td>
-          <q-td key="gear" :props="props">{{ getArrayValues(props.row.gear.map((gear) => gear.description)) }}</q-td>
+              {{ props.row.efpTypes.length > 0  ? getArrayValues(props.row.efpTypes.map((type) => type.description )) : '' }}</q-td>
+          <q-td key="gear" :props="props">{{ props.row.gear.length > 0  ? getArrayValues(props.row.gear.map((gear) => gear.description)) : '' }}</q-td>
           <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
         </q-tr>
         </template>
@@ -110,7 +110,15 @@ private async getEmEfp() {
 
         this.EM_EFP = emefp.rows.map((row: any) => row.doc);
 
-
+        this.EM_EFP.sort( (a: any, b: any) => {
+            if (a.emEfpNumber > b.emEfpNumber) {
+                return -1;
+            } else if (a.emEfpNumber < b.emEfpNumber) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
     } catch (err) {
         this.error(err);
     }
@@ -158,7 +166,7 @@ private emefpDetails(efp: EmEfp) {
             createdDate: moment().format(),
             type: EmEfpTypeName,
             emEfpNumber: 'EM-' + newEmNum.toString(),
-            vessel: {},
+            vessel: undefined,
             efpTypes: [],
         };
         this.emefp.activeEmefp = efp;
