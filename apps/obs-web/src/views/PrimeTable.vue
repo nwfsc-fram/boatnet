@@ -208,10 +208,7 @@ export default createComponent({
       key: string
     ) {
       if (listType === 'boolean') {
-        lookupsList.value = [
-          { value: true },
-          { value: false}
-        ];
+        lookupsList.value = [{ value: true }, { value: false }];
       } else if (!list) {
         const mode = state.debriefer.program;
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
@@ -263,7 +260,8 @@ export default createComponent({
     }
 
     function onCellEditInit(event: any) {
-      cellVal.value = get(event.data, event.field).toString();
+      const value = get(event.data, event.field);
+      cellVal.value = value ? value.toString() : '';
       if (cellVal.value.indexOf(':') !== -1) {
         cellVal.value = new Date(cellVal.value);
       }

@@ -1,6 +1,12 @@
 <template>
   <div>
-    <prime-table :value="WcgopBiospecimens" :columns="columns" type="Specimens" uniqueKey="_id" />
+    <prime-table
+      :value="WcgopBiospecimens"
+      :columns="columns"
+      type="Specimens"
+      uniqueKey="_id"
+      @save="save"
+    />
   </div>
 </template>
 
@@ -12,15 +18,17 @@ import router from 'vue-router';
 import { State, Action, Getter } from 'vuex-class';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { DebrieferState } from '../_store/types/types';
-import { WcgopOperation, WcgopCatch, WcgopSpecimen } from '@boatnet/bn-models';
+import { BaseOperation } from '@boatnet/bn-models';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
 import { getSelected } from '../helpers/localStorage';
+import { findIndex } from 'lodash';
 
 export default createComponent({
   setup(props, context) {
+    const masterDB: Client<any> = couchService.masterDB;
     const state = context.root.$store.state;
     const debriefer = state.debriefer;
     const WcgopBiospecimens: any = ref([]);
@@ -55,95 +63,130 @@ export default createComponent({
         width: '60'
       },
       {
-        field: 'biosampleMethod',
+        field: 'specimen.biosampleMethod.description',
         header: 'BM',
-        type: 'number',
+        type: 'toggle',
+        listType: 'fetch',
         key: 'wcgopBioBM',
-        width: '60'
+        lookupKey: 'biospecimen-sample-method',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200'
       },
       {
-        field: 'sex',
+        field: 'specimen.sex',
         header: 'Sex',
-        type: 'input',
+        type: 'toggle',
+        listType: 'template',
+        list: ['F', 'M', 'U'],
         key: 'wcgopBioSex',
+        isEditable: true,
         width: '60'
       },
       {
-        field: 'length',
+        field: 'specimen.length.value',
         header: 'Length',
         type: 'number',
         key: 'wcgopBioLength',
-        width: '60'
+        width: '60',
+        isEditable: true
       },
       {
-        field: 'width',
+        field: 'specimen.width.value',
         header: 'Width',
         type: 'number',
         key: 'wcgopBioWidth',
-        width: '60'
+        width: '60',
+        isEditable: true
       },
       {
-        field: 'viability',
+        field: 'specimen.viability.description',
         header: 'Viability',
-        type: 'number',
+        type: 'toggle',
+        lookupKey: 'viability',
+        lookupField: 'description',
+        isEditable: true,
+        listType: 'fetch',
         key: 'wcgopBioVia',
         width: '100'
       },
       {
-        field: 'maturity',
+        field: 'specimen.maturity.description',
         header: 'Maturity',
-        type: 'number',
+        type: 'toggle',
+        listType: 'fetch',
+        isEditable: true,
+        lookupKey: 'maturity',
+        lookupField: 'description',
         key: 'wcgopBioMaturity',
         width: '100'
       },
       {
-        field: 'adiposePresent',
+        field: 'specimen.adiposePresent',
         header: 'Adi',
-        type: 'number',
+        type: 'toggle',
+        listTyle: 'template',
+        list: ['Y', 'N'],
+        isEditable: true,
         key: 'wcgopBioAdi',
         width: '60'
       },
       {
-        field: 'dissections[0].type',
+        field: 'specimen.biostructures[0].structureType.description',
         header: 'Type 1',
-        type: 'number',
+        type: 'toggle',
+        listType: 'fetch',
         key: 'wcgopBioType1',
-        width: '100'
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200'
       },
       {
-        field: 'dissections[0].barcode',
+        field: 'specimen.biostructures[0].label',
         header: '# 1',
         type: 'number',
         key: 'wcgopBioBarcode1',
-        width: '80'
+        width: '80',
+        isEditable: true
       },
       {
-        field: 'dissections[1].type',
+        field: 'specimen.biostructures[1].structureType.description',
         header: 'Type 2',
-        type: 'number',
+        type: 'toggle',
+        listType: 'fetch',
         key: 'wcgopBioType2',
-        width: '100'
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200'
       },
       {
-        field: 'dissections[1].barcode',
+        field: 'specimen.biostructures[1].label',
         header: '# 2',
         type: 'number',
         key: 'wcgopBioBarcode2',
-        width: '80'
+        width: '80',
+        isEditable: true
       },
       {
-        field: 'dissections[2].type',
+        field: 'specimen.biostructures[2].structureType.description',
         header: 'Type 3',
-        type: 'number',
+        type: 'toggle',
+        listType: 'fetch',
         key: 'wcgopBioType3',
-        width: '100'
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200'
       },
       {
-        field: 'dissections[2].barcode',
+        field: 'specimen.biostructures[2].label',
         header: '# 3',
         type: 'number',
         key: 'wcgopBioBarcode3',
-        width: '80'
+        width: '80',
+        isEditable: true
       }
     ];
 
@@ -151,7 +194,6 @@ export default createComponent({
 
     async function getBiospecimens() {
       const bioSpecimens = [];
-      const masterDB: Client<any> = couchService.masterDB;
       let operationIds: string[] = [];
       const operationHolder = [];
 
@@ -168,39 +210,28 @@ export default createComponent({
           const tripId = operation.legacy.tripId;
           const operationNum = operation.operationNum;
           const operationId = operation._id;
+          const operationRev = operation._rev;
 
           for (const catches of operation.catches) {
-            let disposition = catches.disposition ? catches.disposition.description : '';
+            let disposition = catches.disposition
+              ? catches.disposition.description
+              : '';
             disposition = disposition === 'Retained' ? 'R' : 'D';
             if (catches.children) {
               for (const child of catches.children) {
                 const species = child.catchContent
-                  ? child.catchContent.commonNames[0] : '';
+                  ? child.catchContent.commonNames[0]
+                  : '';
                 if (child.specimens) {
                   for (const specimen of child.specimens) {
-                    const dissections: any[] = [];
-                    if (specimen.biostructures) {
-                      for (const dissection of specimen.biostructures) {
-                        dissections.push({
-                          type: dissection.structureType ? dissection.structureType.description : '',
-                          barcode: dissection.label
-                        });
-                      }
-                    }
                     bioSpecimens.push({
                       tripId,
                       operationNum,
                       operationId,
+                      operationRev,
                       species,
                       disposition,
-                      sex: specimen.sex,
-                      length: specimen.length ? specimen.length.value : null,
-                      width: specimen.width ? specimen.width.value : null,
-                      viability: specimen.viability,
-                      maturity: specimen.visualMaturity,
-                      adiposePresent: specimen.isAdiposePresent ? 'Y' : 'N',
-                      biosampleMethod: specimen.biosampleMethod.description,
-                      dissections,
+                      specimen: specimen,
                       _id: specimen._id
                     });
                   }
@@ -215,9 +246,51 @@ export default createComponent({
       }
     }
 
+    async function save(data: any) {
+      const operationData: BaseOperation = await masterDB.get(
+        data.operationId,
+        data.operationRev
+      );
+      // drill down to specific specimen that was updated and set value
+      for (let i = 0; i < operationData.catches.length; i++) {
+        if (operationData.catches[i].children) {
+          for (let j = 0; j < operationData.catches[i].children.length; j++) {
+            if (operationData.catches[i].children[j].specimens) {
+              for (
+                let k = 0;
+                k < operationData.catches[i].children[j].specimens.length;
+                k++
+              ) {
+                if (
+                  operationData.catches[i].children[j].specimens[k]._id ===
+                  data._id
+                ) {
+                  operationData.catches[i].children[j].specimens[k] =
+                    data.specimen;
+                  console.log('successfully updated ' + data._id);
+                }
+              }
+            }
+          }
+        }
+      }
+      masterDB
+        .put(data.operationId, operationData, data.operationRev)
+        .then((response: any) => {
+          // update rev for all records from the same haul #.
+          // This ensures future saves will be successful
+          for (let i = 0; i < WcgopBiospecimens.value.length; i++) {
+            if (WcgopBiospecimens.value[i].operationId === data.operationId) {
+              WcgopBiospecimens.value[i].operationRev = response.rev;
+            }
+          }
+        });
+    }
+
     return {
       WcgopBiospecimens,
-      columns
+      columns,
+      save
     };
   }
 });
