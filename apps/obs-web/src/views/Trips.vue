@@ -260,7 +260,7 @@
             <q-icon color="secondary" name="close" size="md" @click="clearValues" ></q-icon>
           </div>
           <div style="float: right">
-            <q-btn :disable="!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate || trip.activeTrip.captainAffirmedDepartureDate === 'Invalid date' || trip.activeTrip.captainAffirmedReturnDate === 'Invalid date'" v-if="activeTrip" :color="(!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
+            <q-btn v-if="activeTrip" color="red" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
             &nbsp;
             <q-spinner-radio v-if="transferring" color="red" size="3em"/>
           </div>
@@ -313,7 +313,7 @@
 
           <div style="padding: 3% 3% 9% 3%">
             <div style="float: right">
-              <q-btn :disable="!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate || trip.activeTrip.captainAffirmedDepartureDate === 'Invalid date' || trip.activeTrip.captainAffirmedReturnDate === 'Invalid date'" v-if="activeTrip" :color="(!trip.activeTrip.captainAffirmedDepartureDate || !trip.activeTrip.captainAffirmedReturnDate)? 'grey': 'red'" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
+              <q-btn v-if="activeTrip" color="red" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
               &nbsp;
               <q-spinner-radio v-if="transferring" color="red" size="3em"/>
             </div>
@@ -629,33 +629,6 @@ export default class Trips extends Vue {
     });
   }
 
-    // private vesselsFilterFn(val: string, update: any, abort: any) {
-
-    //   setTimeout(() => {
-    //     update(
-    //         () => {
-    //           this.cancel = false;
-    //           const matchedVessels = this.vesselNames.filter((vessel: any) => vessel.vesselNameAndReg.toLowerCase().includes(val.toLowerCase()));
-    //           matchedVessels.sort((a: any, b: any) => {
-    //               const keyA = a.vesselNameAndReg.toLowerCase();
-    //               const keyB = b.vesselNameAndReg.toLowerCase();
-    //               if (keyA < keyB) {
-    //                   return -1;
-    //               }
-    //               if (keyA > keyB) {
-    //                   return 1;
-    //               }
-    //               return 0;
-    //               }
-    //           );
-
-    //           const ids = matchedVessels.map( (vessel: any) => vessel.id);
-    //           this.getMatchingVessels(ids);
-    //         }
-    //       );
-    //   }, 1500);
-    // }
-
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
         if (this.userRoles.includes(role)) {
@@ -805,18 +778,36 @@ export default class Trips extends Vue {
     }
 
     private async closeActiveTrip() {
-          this.trip.activeTrip!.closingReason = 'taken';
-          await this.closeTrip(this.trip.activeTrip).then(
-            async () => {
-              this.cancelAlert = false;
-              this.closeAlert = false;
-              this.file = null;
-              this.closeAlert = false;
-              await this.getNextSelections().then( () => {
-              location.reload();
-              });
-            }
-          );
+      if (
+        !this.trip.activeTrip!.captainAffirmedDepartureDate ||
+        !this.trip.activeTrip!.captainAffirmedReturnDate ||
+        this.trip.activeTrip!.captainAffirmedDepartureDate === 'Invalid date' ||
+        this.trip.activeTrip!.captainAffirmedReturnDate === 'Invalid date'
+      ) {
+        Notify.create({
+              message: '<b>Please select actual trip start and end dates</b>',
+              position: 'center',
+              color: 'primary',
+              timeout: 3000,
+              icon: 'warning',
+              html: true,
+              multiLine: true
+          });
+        return;
+      }
+
+      this.trip.activeTrip!.closingReason = 'taken';
+      await this.closeTrip(this.trip.activeTrip).then(
+        async () => {
+          this.cancelAlert = false;
+          this.closeAlert = false;
+          this.file = null;
+          this.closeAlert = false;
+          await this.getNextSelections().then( () => {
+          location.reload();
+          });
+        }
+      );
     }
 
     private review(trip: any) {
