@@ -133,6 +133,7 @@ export default class OtsTrips extends Vue {
     }
 
     this.columns = [
+        {field: 'tripNum', header: 'Trip #'},
         {field: 'createdDate', header: 'Created Date'},
         {field: 'createdBy', header: 'Created By'},
         {field: 'vessel.vesselName', header: 'Vessel Name'},

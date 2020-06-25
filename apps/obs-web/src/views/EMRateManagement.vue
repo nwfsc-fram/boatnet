@@ -235,18 +235,19 @@ export default createComponent({
                 }
                 const updates: any = {
                     updatedBy: authService.getCurrentUser()!.username,
-                    updatedDate: moment().format()
+                    updateDate: moment().format(),
+                    app: 'Observer Web'
                 };
                 if (emRates.reviewRate !== oldRates.reviewRate) {
-                    updates.changes = 'reviewRate changed from ' + oldRates.reviewRate + ' to ' + emRates.reviewRate;
+                    updates.change = 'reviewRate changed from ' + oldRates.reviewRate + ' to ' + emRates.reviewRate;
                 } else if (emRates.auditRate !== oldRates.auditRate) {
-                    updates.changes = 'auditRate changed from ' + oldRates.auditRate + ' to ' + emRates.auditRate;
+                    updates.change = 'auditRate changed from ' + oldRates.auditRate + ' to ' + emRates.auditRate;
                 } else if (emRates.haulsReviewRate !== oldRates.haulsReviewRate) {
-                    updates.changes = 'haulsReviewRate changed from ' + oldRates.haulsReviewRate + ' to ' + emRates.haulsReviewRate;
+                    updates.change = 'haulsReviewRate changed from ' + oldRates.haulsReviewRate + ' to ' + emRates.haulsReviewRate;
                 } else if (emRates.ifqReviewThreshold !== oldRates.ifqReviewThreshold) {
-                    updates.changes = 'ifqReviewThreshold changed from ' + oldRates.ifqReviewThreshold + ' to ' + emRates.ifqReviewThreshold;
+                    updates.change = 'ifqReviewThreshold changed from ' + oldRates.ifqReviewThreshold + ' to ' + emRates.ifqReviewThreshold;
                 } else if (emRates.ifqAuditThreshold !== oldRates.ifqAuditThreshold) {
-                    updates.changes = 'ifqAuditThreshold changed from ' + oldRates.ifqAuditThreshold + ' to ' + emRates.ifqAuditThreshold;
+                    updates.change = 'ifqAuditThreshold changed from ' + oldRates.ifqAuditThreshold + ' to ' + emRates.ifqAuditThreshold;
                 } else {
                     return;
                 }
