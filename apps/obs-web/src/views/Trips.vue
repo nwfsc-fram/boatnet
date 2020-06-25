@@ -646,13 +646,13 @@ export default class Trips extends Vue {
 
     private async closeTrip(trip: any) {
       trip.tripStatus.description = 'closed';
-      if (!trip.changelog) { trip.changeLog = []; }
 
       trip.changeLog.unshift(
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format(),
-          change: 'trip closed'
+          change: 'trip closed',
+          app: 'Observer Web'
         }
       );
       const masterDB: Client<any> = couchService.masterDB;
@@ -867,7 +867,8 @@ export default class Trips extends Vue {
                               {
                                 updatedBy: authService.getCurrentUser()!.username,
                                 updateDate: moment().format(),
-                                change: 'trip created'
+                                change: 'trip created',
+                                app: 'Observer Web'
                               }
                             ]
                             };
@@ -953,7 +954,7 @@ private async getVesselTrips() {
 }
 
 private async storeOfflineData() {
-  if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])) {
+  if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode) {
     const db = pouchService.db;
     let userTripsDoc: any = {};
 
@@ -1030,6 +1031,10 @@ private async getVesselNames() {
   }
 
 private async getAuthorizedVessels() {
+  if (this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !this.user.captainMode) {
+    return;
+    }
+
     const masterDB: Client<any> = couchService.masterDB;
 
     const queryOptions = {

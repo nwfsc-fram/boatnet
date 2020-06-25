@@ -13,7 +13,7 @@
                 </div>
                 <div class="col2" style="margin: 20px; width: 235px">
                     <div><b>Fishery:</b> {{ trip.fishery.description }}</div>
-                    <div><b>Permits:</b> {{ trip.permits.map( (permit) => permit.permitNumber ) }}</div>
+                    <!-- <div><b>Permits:</b> {{ trip.permits.map( (permit) => permit.permitNumber ) }}</div> -->
                     <div><b>Notes:</b> {{ trip.notes }}</div>
                 </div>
                 <div class="col6" style="margin: 20px">
@@ -26,7 +26,7 @@
 
             <div v-if="trip.changeLog">
                 <div class="text-h6 text-primary">Change Log</div>
-                <div v-for="item of trip.changeLog" :key="trip.changeLog.indexOf(item)">::: {{ item.updateDate }} ::: <b>{{ item.updatedBy }}</b> ::: {{ item.change }} </div>
+                <div v-for="item of trip.changeLog" :key="trip.changeLog.indexOf(item)">::: {{ item.updateDate }} ::: <b>{{ item.updatedBy }}</b> ::: {{ item.change }} ::: {{ item.app }}</div>
             </div>
 
                 <q-btn icon="chevron_left" style="float: right" color="primary" @click="navigateBack">back</q-btn>

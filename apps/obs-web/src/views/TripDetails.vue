@@ -301,6 +301,7 @@ Vue.component('timepicker', VueTimepicker);
 import { date, Notify } from 'quasar';
 import request from 'request';
 import moment from 'moment';
+import _ from 'lodash';
 
 @Component
 export default class TripDetails extends Vue {
@@ -348,6 +349,7 @@ export default class TripDetails extends Vue {
   private userRoles: string[] = [];
   private savedMaxRetention: any = null;
   private departureTimeEntered: boolean = false;
+  private oldTrip: any = null;
 
   constructor() {
     super();
@@ -1167,7 +1169,8 @@ private async getMinDate() {
           {
             updatedBy: authService.getCurrentUser()!.username,
             updateDate: moment().format(),
-            change: 'added/updated logbook capture'
+            change: 'added/updated logbook capture',
+            app: 'Observer Web'
           }
         );
         const masterDB: Client<any> = couchService.masterDB;
@@ -1340,100 +1343,41 @@ private async getMinDate() {
 
   @Watch('trip.activeTrip.departurePort', {deep: true})
   private handler3(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
-      }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Departure Port changed from ' + oldVal.name + ' to ' + newVal.name
-        }
-      );
-    }
     if (this.trip.activeTrip && (this.trip.activeTrip.returnPort === oldVal)) {
       this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
     }
   }
 
-  @Watch('trip.activeTrip.returnPort', {deep: true})
-  private handler4(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
-      }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Return Port changed from ' + oldVal.name + ' to ' + newVal.name
+  @Watch('trip.activeTrip', {deep: true})
+  private handler77(newVal: any, oldVal: any) {
+    if ( !this.trip.newTrip ) { // only logging changes to existing trips
+      if ( !this.trip.activeTrip!.changeLog ) { this.trip.activeTrip!.changeLog = []; }
+      try {
+        let oldValString: string = '';
+        let newValString: string = '';
+        for (const attrib of Object.keys(newVal)) {
+          if ( !_.isEqual(newVal[attrib], this.oldTrip[attrib] ) && attrib !== 'changeLog') { // import _ from 'lodash' FTW!
+            if ( typeof newVal[attrib] === 'object' ) {
+              oldValString = JSON.stringify(_.pick(this.oldTrip[attrib], ['name', 'state']));  // remove all but desired properties - returns a new object.
+              newValString = JSON.stringify(_.pick(newVal[attrib], ['name', 'state', 'non-existent-property'])); // property will not be in new object if not found in old object.
+            } else {
+              oldValString = this.oldTrip[attrib];
+              newValString = newVal[attrib];
+            }
+            this.trip.activeTrip!.changeLog.unshift(
+              {
+                updatedBy: authService.getCurrentUser()!.username,
+                updateDate: moment().format(),
+                change: attrib + ' changed from ' + oldValString + ' to ' + newValString,
+                app: 'Observer Web'
+              }
+            );
+          }
         }
-      );
-    }
-  }
-
-  @Watch('trip.activeTrip.departureDate', {deep: true})
-  private handler5(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
+      } catch (err) {
+        console.log(err);
       }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Departure Date changed from ' + moment(oldVal).format() + ' to ' + moment(newVal).format()
-        }
-      );
-    }
-  }
-
-  @Watch('trip.activeTrip.returnDate', {deep: true})
-  private handler6(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
-      }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Return Date changed from ' + moment(oldVal).format() + ' to ' + moment(newVal).format()
-        }
-      );
-    }
-  }
-
-  @Watch('trip.activeTrip.maximizedRetention', {deep: true})
-  private handler7(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
-      }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Maximized Retention changed from ' + oldVal + ' to ' + newVal
-        }
-      );
-    }
-  }
-
-  @Watch('trip.activeTrip.notes', {deep: true})
-  private handler8(newVal: any, oldVal: any) {
-    if (!this.trip.newTrip) {
-      if (!this.trip.activeTrip!.changeLog) {
-        this.trip.activeTrip!.changeLog = [];
-      }
-      this.trip.activeTrip!.changeLog.unshift(
-        {
-          updatedBy: authService.getCurrentUser()!.username,
-          updateDate: moment().format(),
-          change: 'Notes updated: ' + newVal
-        }
-      );
+      this.oldTrip = JSON.parse(JSON.stringify(newVal));  // try catch will log error on page load, then store a copy of activeTrip in this.oldTrip
     }
   }
 
