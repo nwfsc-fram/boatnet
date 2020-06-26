@@ -651,7 +651,8 @@ export default class Trips extends Vue {
         {
           updatedBy: authService.getCurrentUser()!.username,
           updateDate: moment().format(),
-          change: 'trip closed',
+          property: 'tripStatus.description',
+          newVal: 'closed',
           app: 'Observer Web'
         }
       );
@@ -867,7 +868,8 @@ export default class Trips extends Vue {
                               {
                                 updatedBy: authService.getCurrentUser()!.username,
                                 updateDate: moment().format(),
-                                change: 'trip created',
+                                property: 'tripStatus.description',
+                                newVal: 'trip created',
                                 app: 'Observer Web'
                               }
                             ]

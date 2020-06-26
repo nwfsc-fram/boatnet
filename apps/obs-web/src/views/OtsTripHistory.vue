@@ -26,7 +26,7 @@
 
             <div v-if="trip.changeLog">
                 <div class="text-h6 text-primary">Change Log</div>
-                <div v-for="item of trip.changeLog" :key="trip.changeLog.indexOf(item)">::: {{ item.updateDate }} ::: <b>{{ item.updatedBy }}</b> ::: {{ item.change }} ::: {{ item.app }}</div>
+                <div v-for="item of trip.changeLog" :key="trip.changeLog.indexOf(item)">::: {{ item.updateDate }} ::: <b>{{ item.updatedBy }}</b> ::: {{ item.property }} ::: {{ item.oldVal }} :: {{ item.newVal }} ::: {{ item.change }} ::: {{ item.app }}</div>
             </div>
 
                 <q-btn icon="chevron_left" style="float: right" color="primary" @click="navigateBack">back</q-btn>
