@@ -105,7 +105,8 @@
                             {
                                 updatedBy: authService.getCurrentUser()!.username,
                                 updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-                                change: 'added/updated logbook capture'
+                                property: '_attachments',
+                                newVal: 'added/updated logbook capture'
                             }
                         );
                     };

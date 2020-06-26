@@ -275,8 +275,10 @@ export default class LogBookCapture extends Vue {
             this.trip.activeTrip!.changeLog.unshift(
                 {
                     updatedBy: authService.getCurrentUser()!.username,
-                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-                change: 'added/updated logbook capture'
+                    updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+                    property: '_attachments',
+                    newVal: 'added/updated logbook capture',
+                    app: 'Observer Web'
                 }
             );
             const masterDB: Client<any> = couchService.masterDB;
@@ -324,7 +326,9 @@ export default class LogBookCapture extends Vue {
                                     {
                                         updatedBy: authService.getCurrentUser()!.username,
                                         updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-                                        change: 'trip logged'
+                                        property: 'tripStatus',
+                                        newVal: 'trip logged',
+                                        app: 'Observer Web'
                                     }
                                 ]
                             };

@@ -91,7 +91,7 @@
 
             <div style="padding: 2%">
                 <div class="text-h6">Change Log:</div>
-                <div v-for="item in emRates.changeLog" :key="emRates.changeLog.indexOf(item)"> {{ item.updatedDate }} - {{ item.updatedBy }} - {{ item.changes }} </div>
+                <div v-for="item in emRates.changeLog" :key="emRates.changeLog.indexOf(item)"> {{ item.updatedDate }} - {{ item.updatedBy }} - {{ item.property }} - {{ item.oldVal }} - {{ item.newVal }} ( {{ item.change }}) - {{ item.app }} </div>
             </div>
         </div>
     </div>
@@ -239,15 +239,25 @@ export default createComponent({
                     app: 'Observer Web'
                 };
                 if (emRates.reviewRate !== oldRates.reviewRate) {
-                    updates.change = 'reviewRate changed from ' + oldRates.reviewRate + ' to ' + emRates.reviewRate;
+                    updates.property = 'reviewRate';
+                    updates.oldVal = oldRates.reviewRate;
+                    updates.newVal = emRates.reviewRate;
                 } else if (emRates.auditRate !== oldRates.auditRate) {
-                    updates.change = 'auditRate changed from ' + oldRates.auditRate + ' to ' + emRates.auditRate;
+                    updates.property = 'auditRate';
+                    updates.oldVal = oldRates.auditRate;
+                    updates.newVal = emRates.auditRate;
                 } else if (emRates.haulsReviewRate !== oldRates.haulsReviewRate) {
-                    updates.change = 'haulsReviewRate changed from ' + oldRates.haulsReviewRate + ' to ' + emRates.haulsReviewRate;
+                    updates.property = 'haulsReviewRate';
+                    updates.oldVal = oldRates.haulsReviewRate;
+                    updates.newVal = emRates.haulsReviewRate;
                 } else if (emRates.ifqReviewThreshold !== oldRates.ifqReviewThreshold) {
-                    updates.change = 'ifqReviewThreshold changed from ' + oldRates.ifqReviewThreshold + ' to ' + emRates.ifqReviewThreshold;
+                    updates.property = 'ifqReviewThreshold';
+                    updates.oldVal = oldRates.ifqReviewThreshold;
+                    updates.newVal = emRates.ifqReviewThreshold;
                 } else if (emRates.ifqAuditThreshold !== oldRates.ifqAuditThreshold) {
-                    updates.change = 'ifqAuditThreshold changed from ' + oldRates.ifqAuditThreshold + ' to ' + emRates.ifqAuditThreshold;
+                    updates.property = 'ifqAuditThreshold';
+                    updates.oldVal = oldRates.ifqAuditThreshold;
+                    updates.newVal = emRates.ifqAuditThreshold;
                 } else {
                     return;
                 }

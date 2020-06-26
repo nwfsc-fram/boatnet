@@ -1169,7 +1169,8 @@ private async getMinDate() {
           {
             updatedBy: authService.getCurrentUser()!.username,
             updateDate: moment().format(),
-            change: 'added/updated logbook capture',
+            property: '_attachments',
+            newVal: 'added/updated logbook capture',
             app: 'Observer Web'
           }
         );
@@ -1314,7 +1315,7 @@ private async getMinDate() {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
     }
 
-    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0]) {
+    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0] && this.trip.activeTrip!.tripStatus!.description === 'open') {
       this.daysWarn = true;
     }
 
@@ -1356,7 +1357,7 @@ private async getMinDate() {
         let oldValString: string = '';
         let newValString: string = '';
         for (const attrib of Object.keys(newVal)) {
-          if ( !_.isEqual(newVal[attrib], this.oldTrip[attrib] ) && attrib !== 'changeLog') { // import _ from 'lodash' FTW!
+          if ( !_.isEqual(newVal[attrib], this.oldTrip[attrib] ) && attrib !== 'changeLog') { // import _ from 'lodash'
             if ( typeof newVal[attrib] === 'object' ) {
               oldValString = JSON.stringify(_.pick(this.oldTrip[attrib], ['name', 'state']));  // remove all but desired properties - returns a new object.
               newValString = JSON.stringify(_.pick(newVal[attrib], ['name', 'state', 'non-existent-property'])); // property will not be in new object if not found in old object.
@@ -1368,7 +1369,9 @@ private async getMinDate() {
               {
                 updatedBy: authService.getCurrentUser()!.username,
                 updateDate: moment().format(),
-                change: attrib + ' changed from ' + oldValString + ' to ' + newValString,
+                property: attrib,
+                oldVal: oldValString,
+                newVal: newValString,
                 app: 'Observer Web'
               }
             );
