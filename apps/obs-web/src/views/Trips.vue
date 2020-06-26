@@ -1033,8 +1033,8 @@ private async getVesselNames() {
   }
 
 private async getAuthorizedVessels() {
-  if (this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !this.user.captainMode) {
-    return;
+    if (this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !this.user.captainMode) {
+      return;
     }
 
     const masterDB: Client<any> = couchService.masterDB;
