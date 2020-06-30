@@ -15,7 +15,7 @@
     >
 
       <template #header>
-        <div style="text-align:left; float:left">
+        <div style="text-align:left">
           <MultiSelect
             v-model="columns"
             :options="columnOptions"
@@ -29,10 +29,9 @@
           </MultiSelect>
         </div>
 
-        <div style="text-align: right">
-            <i class="pi pi-search" style="margin: 4px 4px 0px 0px;"></i>
-            <InputText v-model="filters['global']" placeholder="Global Search" size="50" />
-        </div>
+        <span>
+          <InputText v-model="filters['global']" placeholder="Global Search" />
+        </span>
       </template>
 
       <Column
@@ -161,6 +160,7 @@ export default class OtsTrips extends Vue {
 
 <style scoped>
   .p-inputtext {
-    background-color: inherit !important;
+    background-color: white !important;
+    padding: 5px !important;
   }
 </style>

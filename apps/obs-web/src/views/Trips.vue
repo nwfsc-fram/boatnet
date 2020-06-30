@@ -273,7 +273,7 @@
             submitAction="Add Image(s)"
           />
 
-          <div v-if="activeTrip">
+          <div v-if="trip.activeTrip">
             <div class="text-h6">
               planned trip date(s):
             </div>
@@ -284,9 +284,14 @@
               start: {{ formatDateTime(trip.activeTrip.departureDate) }} - end: {{ formatFullDate(trip.activeTrip.returnDate) }}
             </div>
           </div>
-          <div>
+          <div v-if="trip.activeTrip">
             <br>
-            <div class="text-h6">Select Actual Trip Dates:</div>
+            <div class="text-h6" v-if="trip.activeTrip.isSingleDayTrip && !tripDate">Select Actual Trip Date</div>
+            <div class="text-h6" v-else-if="tripDate">Trip Date Selected</div>
+            <div class="text-h6" v-else-if="!tripDates[0]">Select Actual Trip Start</div>
+            <div class="text-h6" v-else-if="!tripDates[1]">Select Actual Trip End</div>
+            <div class="text-h6" v-else>Trip Dates Selected</div>
+
             <pCalendar
               v-if="!trip.activeTrip.isSingleDayTrip"
               v-model="tripDates"

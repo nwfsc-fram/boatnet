@@ -38,9 +38,11 @@
             :disable="trip.readOnly"
             @input="updateDates"
           ></q-toggle>
-          <div style="padding-left: 20px">
-            <p v-if="trip.activeTrip.isSingleDayTrip">Select trip date</p>
-            <p v-else>Select trip start and end dates</p>
+          <div style="padding: 20px 0 0 20px; font-weight: bold">
+            <p v-if="trip.activeTrip.isSingleDayTrip">Select Trip Date</p>
+            <p v-else-if="!tripDates[0]">Select Trip Start</p>
+            <p v-else-if="!tripDates[1]">Select Trip End</p>
+            <p v-else>Trip Dates Selected</p>
           </div>
           <span>
             <pCalendar
