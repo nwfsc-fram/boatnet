@@ -99,6 +99,7 @@
           @click="emExpanded = false; lbExpanded = false; bmExpanded = false"
           :header-inset-level="0"
           :content-inset-level=".5"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item
             to="/debriefer/data"
