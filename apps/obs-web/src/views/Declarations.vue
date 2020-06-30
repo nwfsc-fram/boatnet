@@ -440,7 +440,9 @@ export default class Declarations extends Vue {
       }
       return ovessels;
     } catch (err) {
-      this.errorAlert(err);
+      // I want to  change this back to errorAlert, but need
+      console.log(err);
+      // this.errorAlert(err);
     }
   }
 
@@ -619,16 +621,17 @@ export default class Declarations extends Vue {
       this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
         ? this.vessel.activeVessel.coastGuardNumber
         : this.vessel.activeVessel.stateRegulationNumber;
+
+      try {
+        this.dbReturn = this.getOleVessel();
+      } catch (err) {
+        console.log('failed couch attempt');
+      }
     }
     if (authService.getCurrentUser()) {
       this.userRoles = JSON.parse(
         JSON.stringify(authService.getCurrentUser()!.roles)
       );
-    }
-    try {
-      this.dbReturn = this.getOleVessel();
-    } catch (err) {
-      console.log('failed couch attempt');
     }
   }
 }
