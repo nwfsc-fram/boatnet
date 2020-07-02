@@ -300,6 +300,7 @@
               :maxDate="maxDate"
               placeholder="start / end"
               selectionMode="range"
+              :selectOtherMonths="true"
               onfocus="blur();"
               style="width: 100%; height: 330px">
             </pCalendar>
@@ -312,6 +313,7 @@
               :maxDate="maxDate"
               placeholder="start / end"
               selectionMode="single"
+              :selectOtherMonths="true"
               onfocus="blur();"
               style="width: 100%; height: 330px">
             </pCalendar>
