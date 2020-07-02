@@ -56,6 +56,7 @@
               :touchUI="false"
               placeholder="start / end"
               selectionMode="range"
+              :selectOtherMonths="true"
               onfocus="blur();"
               style="width: 100%; height: 360px"
               >
@@ -72,6 +73,7 @@
               :touchUI="false"
               placeholder="date"
               selectionMode="single"
+              :selectOtherMonths="true"
               onfocus="blur();"
               style="width: 100%; height: 360px"
               >
