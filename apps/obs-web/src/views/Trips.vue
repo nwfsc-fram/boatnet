@@ -626,7 +626,7 @@ export default class Trips extends Vue {
             limit: 20,
             start_key: val.toLowerCase(),
             end_key: val.toLowerCase() + '\u9999'
-          }
+          };
 
           const vessels = await masterDb.view(
             'obs_web',
@@ -1021,22 +1021,22 @@ private async storeOfflineData() {
 private async getVesselNames() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
-          const masterDb = couchService.masterDB;
-          const queryOptions: any = {
-            inclusive_end: true,
-            descending: false,
-            include_docs: true,
-            limit: 20,
-            start_key: '',
-            end_key: '' + '\u9999'
-          }
+        const masterDb = couchService.masterDB;
+        const queryOptions: any = {
+          inclusive_end: true,
+          descending: false,
+          include_docs: true,
+          limit: 20,
+          start_key: '',
+          end_key: '' + '\u9999'
+        };
 
-          const vessels = await masterDb.view(
-            'obs_web',
-            'all_vessel_names',
-            queryOptions
-          );
-          this.vesselNames = vessels.rows.map((row: any) => row.doc);
+        const vessels = await masterDb.view(
+          'obs_web',
+          'all_vessel_names',
+          queryOptions
+        );
+        this.vesselNames = vessels.rows.map((row: any) => row.doc);
 
         this.loading = false;
 

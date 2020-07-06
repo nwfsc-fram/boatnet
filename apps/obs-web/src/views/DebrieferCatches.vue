@@ -143,7 +143,7 @@ export default createComponent({
 
     async function getCatches() {
       const catches: any[] = [];
-      
+
       const masterDB: Client<any> = couchService.masterDB;
       let operationIds: string[] = [];
       const operationHolder = [];
