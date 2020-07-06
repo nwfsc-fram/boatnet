@@ -614,22 +614,27 @@ export default class Trips extends Vue {
   private vesselsFilterFn(val: string, update: any, abort: any) {
     update(async () => {
       try {
-        const masterDb = couchService.masterDB;
-        const queryOptions = {
-          start_key: val.toLowerCase(),
-          end_key: val.toLowerCase() + '\u9999',
-          inclusive_end: true,
-          descending: false,
-          include_docs: true,
-          limit: 30
-        };
+        if (val === '') {
+          this.vessels = this.vesselNames;
+          return;
+        } else {
+          const masterDb = couchService.masterDB;
+          const queryOptions: any = {
+            inclusive_end: true,
+            descending: false,
+            include_docs: true,
+            limit: 20,
+            start_key: val.toLowerCase(),
+            end_key: val.toLowerCase() + '\u9999'
+          }
 
-        const vessels = await masterDb.view(
-          'obs_web',
-          'all_vessel_names',
-          queryOptions
-        );
-        this.vessels = vessels.rows.map((row: any) => row.doc);
+          const vessels = await masterDb.view(
+            'obs_web',
+            'all_vessel_names',
+            queryOptions
+          );
+          this.vessels = vessels.rows.map((row: any) => row.doc);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -1016,21 +1021,22 @@ private async storeOfflineData() {
 private async getVesselNames() {
     const masterDB: Client<any> = couchService.masterDB;
     try {
-        this.loading = true;
-        const queryOptions: any = {
-          include_docs: false
-        };
+          const masterDb = couchService.masterDB;
+          const queryOptions: any = {
+            inclusive_end: true,
+            descending: false,
+            include_docs: true,
+            limit: 20,
+            start_key: '',
+            end_key: '' + '\u9999'
+          }
 
-        const vessels = await masterDB.view<any>(
+          const vessels = await masterDb.view(
             'obs_web',
             'all_vessel_names',
             queryOptions
-            );
-
-
-        this.vesselNames = vessels.rows.map( (row: any) => {
-            return {vesselNameAndReg: row.value, id: row.id};
-        });
+          );
+          this.vesselNames = vessels.rows.map((row: any) => row.doc);
 
         this.loading = false;
 
