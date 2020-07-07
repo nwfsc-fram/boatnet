@@ -30,7 +30,12 @@
         </div>
 
         <span>
-          <InputText v-model="filters['global']" placeholder="Global Search" />
+          <InputText
+            v-model="filters['global']"
+            placeholder="Global Search"
+            onfocus="this.placeholder = ''"
+            onblur="this.placeholder = 'Global Search'"
+          />
         </span>
       </template>
 
@@ -162,5 +167,7 @@ export default class OtsTrips extends Vue {
   .p-inputtext {
     background-color: white !important;
     padding: 5px !important;
+    border: 1px solid rgb(170, 169, 169) !important;
+    border-radius: 3px !important;
   }
 </style>

@@ -42,6 +42,7 @@ import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 import RackBiospecimens from './views/RackBiospecimens.vue';
 import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
+import MissedTripLog from './views/MissedTripLog.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -149,6 +150,12 @@ const router = new Router({
         },
         {
           path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OtsTripHistory,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/missed-trips', name: 'Missed Trip Log', component: MissedTripLog,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

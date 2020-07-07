@@ -17,6 +17,16 @@
 
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
+
+        <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments).length > 0" style="background-color: red; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
+          <span v-if="closedTrips.filter( (trip) => !trip._attachments).length === 1">
+            WARNING: 1 closed trip is missing logbook image(s).  Please correct as soon as possible.
+          </span>
+          <span v-else>
+            WARNING: {{ closedTrips.filter( (trip) => !trip._attachments).length }} closed trips are missing logbook image(s).  Please correct as soon as possible.
+          </span>
+        </div>
+
         <q-btn class="bg-primary text-white q-ma-xs" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-xs" @click="maxTripsAlert = true">New Trip</q-btn>
         <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" :to="'/log-missing-trip'" label="missing trip"></q-btn>
@@ -66,8 +76,6 @@
 
 
     </div>
-
-
 
   <div v-if="openTrips.length > 0" class="centered-page-item">Active Trips</div>
     <div class="row items-start" >
@@ -173,6 +181,7 @@
       </q-card-section>
       <div style="float: left; padding-left: 15px">
         <q-icon size="sm" v-if="trip._attachments" name="camera_alt"></q-icon>
+        <q-icon size="sm" v-else name="error_outline" title="missing logbook capture"></q-icon>
       </div>
       <div style="float:right">
         <q-btn flat @click="review(trip)">review</q-btn>
@@ -194,7 +203,7 @@
     >
       <template v-slot:body="props">
         <q-tr :props="props"  @click.native="review(props.row)">
-          <q-td key="_attachments" :props="props"><q-icon :name="hasAttachments(props.row._attachments)"></q-icon></q-td>
+          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row._attachments)"></q-icon></q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
           <q-td key="returnDate" :props="props">{{ formatFullDate(props.row.returnDate) }}</q-td>
@@ -653,6 +662,16 @@ export default class Trips extends Vue {
     private hasAttachments(attachments: any) {
       if (attachments) {
         return 'camera_alt';
+      } else {
+        return 'error_outline';
+      }
+    }
+
+    private getColor(attachments: any) {
+      if (attachments) {
+        return 'black';
+      } else {
+        return 'red';
       }
     }
 
