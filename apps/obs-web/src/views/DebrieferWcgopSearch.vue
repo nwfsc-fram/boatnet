@@ -87,12 +87,7 @@
 import { createComponent, ref } from '@vue/composition-api';
 import Vue from 'vue';
 import { useAsync } from 'vue-async-function';
-import { couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions, FindOptions } from 'davenport';
 import moment from 'moment';
-import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
-import { findIndex, get, remove, indexOf } from 'lodash';
-import { getTripsByDates } from '../helpers/getFields';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 
@@ -103,7 +98,6 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const masterDB: Client<any> = couchService.masterDB;
 
     // store filters in an object where the:
     // key: view name
@@ -151,60 +145,8 @@ export default createComponent({
       } else if (filters[view] && val.length === 0) {
         delete filters[view];
       }
-      updateRecords();
-    }
-
-    async function updateRecords() {
-      let tripIds: any[] = [];
-      const views = Object.keys(filters);
-      if (views.length === 0) {
-        vesselList.value = [];
-        fisheryList.value = [];
-        statusList.value = [];
-        observerList.value = [];
-      } else {
-        const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
-        let keyVals = {};
-        if (queryView === 'wcgop_trips_by_date') {
-          keyVals = {
-            start_key: filters[queryView].val[0],
-            end_key: filters[queryView].val[1]
-          };
-        } else {
-          keyVals = { keys: filters[queryView].val };
-        }
-        try {
-          const results = await masterDB
-            .viewWithDocs('obs_web', queryView, keyVals)
-            .then((response: any) => {
-              tripIds = response.rows
-                .filter((row: any) => {
-                  let keep: boolean = true;
-                  if (views.length > 1) {
-                    for (let i = 1; i < views.length; i++) {
-                      console.log('checking ' + views[i])
-                      if (views[i] === 'wcgop_trips_by_date') {
-                        if (moment(row.doc.returnDate).isBefore(filters[views[i]].val[0]) ||
-                          moment(row.doc.returnDate).isAfter(filters[views[i]].val[1])) {
-                          keep = false;
-                        }
-                      } else {
-                        const rowVal = get(row.doc, filters[views[i]].field);
-                        if (indexOf(filters[views[i]].val, rowVal) === -1) {
-                          keep = false;
-                        }
-                      }
-                    }
-                  }
-                  return keep;
-                })
-                .map((row: any) => row.id);
-            });
-        } catch (e) {
-          console.log('error getting trips ' + e);
-        }
-      }
-      store.dispatch('debriefer/setTripIds', tripIds);
+      store.dispatch('debriefer/updateTripSearchFilters', {});
+      store.dispatch('debriefer/updateTripSearchFilters', filters);
     }
 
     function selectTripId(id: string) {

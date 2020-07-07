@@ -99,7 +99,6 @@ import { Client, CouchDoc, ListOptions, FindOptions } from 'davenport';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
 import { findIndex } from 'lodash';
-import { getTripsByDates } from '../helpers/getFields';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 
@@ -164,18 +163,8 @@ export default createComponent({
       if (evalPeriod) {
         store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
         clearFilters();
-        const tripIds: any[] = [];
-        const trips: any = await getTripsByDates(
-          new Date(evalPeriod.startDate),
-          new Date(evalPeriod.endDate),
-          evalPeriod.observer
-        );
-        for (const trip of trips) {
-          tripIds.push(trip._id);
-        }
-        store.dispatch('debriefer/setTripIds', tripIds);
       } else {
-        store.dispatch('debriefer/setTripIds', []);
+        store.dispatch('debriefer/updateEvaluationPeriod', {});
       }
     }
 

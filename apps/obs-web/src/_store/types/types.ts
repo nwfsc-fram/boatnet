@@ -20,6 +20,7 @@ export interface DebrieferState {
   displayColumns: any;
   trips: any[];
   operations: any[];
+  tripSearchFilters: any;
 }
 
 export interface TripState {
