@@ -8,7 +8,7 @@
                 <q-btn flat label="Dismiss" @click="clearAlert"/>
             </template>
         </q-banner>
-        <div style="text-align: center; color:red"><b>Warning: This form should be used to enter landed, un-logged trips only.</b></div>
+        <div style="text-align: center; background-color: red; color:white; padding: 10px; border-radius: 4px"><b>WARNING: This form should be used to enter landed, un-logged trips only.</b></div>
         <div class="text-h6">
             <b>{{ vessel.activeVessel.vesselName }} ( {{ vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber }} )</b>
         </div>
@@ -80,6 +80,8 @@
           dense
           fill-input
           stack-label
+          use-input
+          hide-selected
         ></q-select>
 
         <q-select
@@ -92,6 +94,8 @@
           :option-label="opt => opt.name"
           option-value="_id"
           :options="ports"
+          use-input
+          hide-selected
         ></q-select>
 
         <q-select
@@ -317,6 +321,7 @@ export default class LogBookCapture extends Vue {
                             returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: undefined,
                             isSingleDayTrip: false,
+                            isMissingTrip: true,
                             fishery: {description: undefined},
                             tripStatus: {
                               description: 'closed'
@@ -457,6 +462,7 @@ export default class LogBookCapture extends Vue {
             const masterDb = couchService.masterDB;
             const queryOptions = {
                 start_key: val.toLowerCase(),
+                end_key: val.toLowerCase() + '\u9999',
                 inclusive_end: true,
                 descending: false,
                 include_docs: true
@@ -481,6 +487,7 @@ export default class LogBookCapture extends Vue {
             const masterDb = couchService.masterDB;
             const queryOptions = {
                 start_key: val.toLowerCase(),
+                end_key: val.toLowerCase() + '\u9999',
                 inclusive_end: true,
                 descending: false,
                 include_docs: true
@@ -493,7 +500,6 @@ export default class LogBookCapture extends Vue {
             );
 
             this.ports = ports.rows.map((row: any) => row.doc);
-            this.ports.unshift({ name: 'SAME AS START' });
         } catch (err) {
             console.log(err);
         }
@@ -523,7 +529,7 @@ export default class LogBookCapture extends Vue {
     private updateDepartureDate(value: any) {
         if (this.trip.activeTrip) {
             if (value.data.HH && value.data.mm) {
-                this.trip.activeTrip.departureDate = moment(this.trip.activeTrip.departueDate).minute(value.data.mm).hour(value.data.HH).second(0).format();
+                this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
             }
         }
     }

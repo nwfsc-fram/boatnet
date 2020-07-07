@@ -124,6 +124,8 @@
           fill-input
           stack-label
           :readonly="trip.readOnly"
+          use-input
+          hide-selected
         ></q-select>
 
         <q-select
@@ -137,6 +139,8 @@
           option-value="_id"
           :options="ports"
           :readonly="trip.readOnly"
+          use-input
+          hide-selected
         ></q-select>
 
         <q-select
@@ -229,7 +233,7 @@
       <q-card>
         <q-card-section>
         <div class="text-h6">
-          Trip start date is less than 48 hours from now! If selected for observer coverage an observer will be provided ASAP but trip may be delayed up to 48 hours.
+          Trip start time is less than 48 hours from now! If selected for observer coverage an observer will be provided ASAP but trip may be delayed up to 48 hours.
         </div>
         </q-card-section>
         <q-card-section class="float-right">
@@ -429,6 +433,7 @@ export default class TripDetails extends Vue {
         const queryOptions = {
           // limit: 5,
           start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '\u9999',
           inclusive_end: true,
           descending: false,
           include_docs: true
@@ -453,6 +458,7 @@ export default class TripDetails extends Vue {
         const queryOptions = {
           // limit: 5,
           start_key: val.toLowerCase(),
+          end_key: val.toLowerCase() + '\u9999',
           inclusive_end: true,
           descending: false,
           include_docs: true
@@ -850,7 +856,11 @@ export default class TripDetails extends Vue {
     if (this.departureTime) {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
       this.departureTimeEntered = true;
- }
+
+      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48) {
+        this.daysWarn = true;
+      }
+    }
   }
 
   get returnDate(): Date | undefined {
@@ -1086,14 +1096,26 @@ private async getMinDate() {
         this.trip.activeTrip!._rev as string
         ).then( async () => {
             this.transferring = false;
-            Notify.create({
-              message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-              position: 'top',
-              color: 'primary',
-              timeout: 7000,
-              html: true,
-              multiLine: true
-            });
+            if (this.trip.activeTrip!.tripStatus!.description === 'open') {
+              Notify.create({
+                message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+                position: 'top',
+                color: 'primary',
+                timeout: 7000,
+                html: true,
+                multiLine: true
+              });
+            } else {
+              Notify.create({
+                message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip has been updated!<br></div>',
+                position: 'top',
+                color: 'primary',
+                timeout: 7000,
+                html: true,
+                multiLine: true
+              });
+            }
+
             this.$router.push({ path: '/trips' });
             });
     }
@@ -1319,10 +1341,6 @@ private async getMinDate() {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
     }
 
-    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48 && newVal[0] !== oldVal[0] && this.trip.activeTrip!.tripStatus!.description === 'open') {
-      this.daysWarn = true;
-    }
-
   }
 
   @Watch('tripDate')
@@ -1341,9 +1359,6 @@ private async getMinDate() {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
     }
 
-    if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48) {
-      this.daysWarn = true;
-    }
   }
 
   @Watch('trip.activeTrip.departurePort', {deep: true})

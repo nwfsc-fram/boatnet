@@ -148,13 +148,30 @@
           to="/all-trips"
           exact
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
+          @click="leftDrawerOpen = false"
         >
           <q-item-section avatar>
             <q-icon name="table_chart" />
           </q-item-section>
           <q-item-section>
             <q-item-label>All Trips</q-item-label>
-            <q-item-label caption>observers/staff view all ots trips</q-item-label>
+            <q-item-label caption>view all ots trips</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          :to="onlineStatus ? '/missed-trips' : ''"
+          exact
+          :disabled="!onlineStatus"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          @click="leftDrawerOpen = false"
+        >
+          <q-item-section avatar>
+            <q-icon name="error_outline" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Missed Trips</q-item-label>
+            <q-item-label caption>trips added after they occurred</q-item-label>
           </q-item-section>
         </q-item>
 
