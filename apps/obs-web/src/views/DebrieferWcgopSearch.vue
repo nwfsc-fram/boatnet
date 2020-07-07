@@ -105,7 +105,10 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
 
-    const filters: any = {};
+    // store filters in an object where the:
+    // key: view name
+    // value: array of selected values
+    let filters: any = {};
     const rows: any = [];
 
     const observers: any = ref([]);
@@ -122,6 +125,7 @@ export default createComponent({
     const fisheryList: any = ref([]);
 
     async function select(view: string, field: string, vals: any) {
+      tripId.value = [];
       const ids: string[] = [];
       for (const val of vals) {
         ids.push(val.value);
@@ -151,64 +155,61 @@ export default createComponent({
     }
 
     async function updateRecords() {
-      const tripIds: any[] = [];
+      let tripIds: any[] = [];
       const views = Object.keys(filters);
-      const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
-      let keyVals = {};
-
-      if (views.length <= 0) {
-        store.dispatch('debriefer/setTripIds', []);
+      if (views.length === 0) {
         vesselList.value = [];
         fisheryList.value = [];
         statusList.value = [];
         observerList.value = [];
-      }
-
-      if (queryView === 'wcgop_trips_by_date') {
-        keyVals = {
-          start_key: filters[queryView].val[0],
-          end_key: filters[queryView].val[1]
-        };
       } else {
-        keyVals = { keys: filters[queryView].val };
-      }
-
-      try {
-        const results = await masterDB
-          .viewWithDocs('obs_web', queryView, keyVals)
-          .then((response: any) => {
-            for (const row of response.rows) {
-              let filterIn = true;
-              for (let i = 1; i < views.length; i++) {
-                const viewName = views[i];
-
-                if (viewName === 'wcgop_trips_by_date') {
-                  if (
-                    moment(row.doc.returnDate).isBefore(filters[viewName].val[0]) ||
-                    moment(row.doc.returnDate).isAfter(filters[viewName].val[1])
-                  ) {
-                    filterIn = false;
+        const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
+        let keyVals = {};
+        if (queryView === 'wcgop_trips_by_date') {
+          keyVals = {
+            start_key: filters[queryView].val[0],
+            end_key: filters[queryView].val[1]
+          };
+        } else {
+          keyVals = { keys: filters[queryView].val };
+        }
+        try {
+          const results = await masterDB
+            .viewWithDocs('obs_web', queryView, keyVals)
+            .then((response: any) => {
+              tripIds = response.rows
+                .filter((row: any) => {
+                  let keep: boolean = true;
+                  if (views.length > 1) {
+                    for (let i = 1; i < views.length; i++) {
+                      console.log('checking ' + views[i])
+                      if (views[i] === 'wcgop_trips_by_date') {
+                        if (moment(row.doc.returnDate).isBefore(filters[views[i]].val[0]) ||
+                          moment(row.doc.returnDate).isAfter(filters[views[i]].val[1])) {
+                          keep = false;
+                        }
+                      } else {
+                        const rowVal = get(row.doc, filters[views[i]].field);
+                        if (indexOf(filters[views[i]].val, rowVal) === -1) {
+                          keep = false;
+                        }
+                      }
+                    }
                   }
-                } else {
-                  const rowVal = get(row.doc, filters[viewName].field);
-                  if (indexOf(filters[viewName].val, rowVal) === -1) {
-                    filterIn = false;
-                  }
-                }
-              }
-              if (filterIn) {
-                tripIds.push(row.id);
-              }
-            }
-          });
-        store.dispatch('debriefer/setTripIds', tripIds);
-      } catch (e) {
-        console.log('error getting trips ' + e);
+                  return keep;
+                })
+                .map((row: any) => row.id);
+            });
+        } catch (e) {
+          console.log('error getting trips ' + e);
+        }
       }
+      store.dispatch('debriefer/setTripIds', tripIds);
     }
 
     function selectTripId(id: string) {
       store.dispatch('debriefer/setTripIds', id);
+      filters = {};
       vessel.value = [];
       fishery.value = [];
       observers.value = [];
