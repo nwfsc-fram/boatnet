@@ -6,6 +6,8 @@
       type="Trips"
       :simple="false"
       uniqueKey="_id"
+      :enableSelection="true"
+      :isFullSize="isFullSize"
       @save="save"
     />
   </div>
@@ -44,6 +46,9 @@ import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
 
 export default createComponent({
+  props: {
+    isFullSize: Boolean
+  },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
     const state: any = context.root.$store.state;
@@ -378,7 +383,6 @@ export default createComponent({
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
-    watch(() => state.debriefer.tripIds, getTrips);
 
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
@@ -455,22 +459,6 @@ export default createComponent({
         columns.value = ashopColumns;
       } else {
         columns.value = wcgopColumns;
-      }
-    }
-
-    async function getTrips() {
-      const tripsHolder = [];
-      try {
-        const options: ListOptions = {
-          keys: state.debriefer.tripIds
-        };
-        const result = await masterDB.listWithDocs(options);
-        for (const row of result.rows) {
-          tripsHolder.push(row);
-        }
-        trips.value = tripsHolder;
-      } catch (err) {
-        console.log('error');
       }
     }
 

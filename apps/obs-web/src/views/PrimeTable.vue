@@ -6,7 +6,7 @@
       :paginator="true"
       :rows="10"
       :selection.sync="selected"
-      scrollHeight="350px"
+      :scrollHeight="isFullSize ? '600px' : '350px'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -38,7 +38,7 @@
         </div>
       </template>
 
-      <Column v-if="!simple" selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="enableSelection" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -141,7 +141,9 @@ export default createComponent({
     value: Array,
     type: String,
     simple: Boolean,
-    uniqueKey: String
+    uniqueKey: String,
+    enableSelection: Boolean,
+    isFullSize: Boolean
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;

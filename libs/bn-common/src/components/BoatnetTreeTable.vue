@@ -5,10 +5,6 @@
       :filters="filters"
       filterMode="lenient"
       :expandedKeys="expandedKeys"
-      :selectionMode="selectionMode ? selectionMode : 'checkbox'"
-      :selectionKeys.sync="selectedKey1"
-      @node-select="select"
-      @node-unselect="unSelect"
       sortMode="single"
     >
       <template #header>
@@ -185,25 +181,6 @@ export default class BoatnetTreeTable extends Vue {
         i++;
       }
     }
-  }
-
-  private select(node: any) {
-    // if (this.selected.length > 0 && this.selected[0].__index === row.__index) {
-    //   this.selected = [];
-    //   this.$emit('select', undefined);
-    // } else {
-    //   this.selected = [row.catch];
-    //   // delete row.__index; // This was here because __index is not in our models
-    //   this.$emit('select', row.catch);
-    // }
-    console.log(node.catch);
-    this.selected = [node.catch];
-    this.$emit('select', node.catch);
-  }
-
-  private unSelect(node: any) {
-    this.selected = [];
-    this.$emit('select', undefined);
   }
 }
 </script>

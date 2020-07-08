@@ -25,6 +25,9 @@ import { Client, ListOptions } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
 
 export default createComponent({
+  props: {
+    isFullSize: Boolean
+  },
   setup(props, context) {
     const state = context.root.$store.state;
     const debriefer: any = state.debriefer;

@@ -36,19 +36,19 @@
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
-            <app-debriefer-trips></app-debriefer-trips>
+            <app-debriefer-trips :isFullSize="false"></app-debriefer-trips>
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="false"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
-            <app-debriefer-catches></app-debriefer-catches>
+            <app-debriefer-catches :isFullSize="false"></app-debriefer-catches>
           </q-tab-panel>
 
           <q-tab-panel name="catchSpecies">
-            <app-debriefer-biospecimens></app-debriefer-biospecimens>
+            <app-debriefer-biospecimens :isFullSize="false"></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -128,7 +128,7 @@ export default createComponent({
     }
 
     function openNewDebriefingTab() {
-      const route = '/observer-web/debriefer/qa';
+      const route = '/table/' + tab.value;
       window.open(route, '_blank');
       context.emit('update:showErrors', false);
     }

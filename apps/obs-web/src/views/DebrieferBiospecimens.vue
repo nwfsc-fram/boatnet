@@ -5,6 +5,8 @@
       :columns="columns"
       type="Specimens"
       uniqueKey="_id"
+      :enableSelection="false"
+      :isFullSize="isFullSize"
       @save="save"
     />
   </div>
@@ -27,6 +29,9 @@ import { getSelected } from '../helpers/localStorage';
 import { findIndex } from 'lodash';
 
 export default createComponent({
+  props: {
+    isFullSize: Boolean
+  },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
     const state = context.root.$store.state;

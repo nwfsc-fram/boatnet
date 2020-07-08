@@ -1,6 +1,13 @@
 <template>
   <div>
-    <prime-table :value="WcgopOperations" :columns="columns" type="Operations" uniqueKey="_id"/>
+    <prime-table
+      :value="WcgopOperations"
+      :columns="columns"
+      type="Operations"
+      uniqueKey="_id"
+      :enableSelection="false"
+      :isFullSize="isFullSize"
+    />
   </div>
 </template>
 
@@ -31,6 +38,7 @@ import { convertToObject } from 'typescript';
 
 @Component
 export default class DebrieferOperations extends Vue {
+  @Prop() private isFullSize!: boolean;
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
@@ -56,14 +64,14 @@ export default class DebrieferOperations extends Vue {
       width: '60'
     },
     {
-        field: 'haulScore',
-        header: 'Haul Score',
-        type: 'toggle',
-        list: ['Pass', 'Fail'],
-        key: 'wcgopHaulScore',
-        isEditable: true,
+      field: 'haulScore',
+      header: 'Haul Score',
+      type: 'toggle',
+      list: ['Pass', 'Fail'],
+      key: 'wcgopHaulScore',
+      isEditable: true,
       width: '100'
-      },
+    },
     {
       field: 'observerTotalCatch.measurement.value',
       header: 'OTC (lbs)',
@@ -114,8 +122,13 @@ export default class DebrieferOperations extends Vue {
       key: 'wcgopOpBeaufort',
       width: '70'
     },
-    { field: 'fit', header: 'Fit #', type: 'number', key: 'wcgopOpFit',
-      width: '70' },
+    {
+      field: 'fit',
+      header: 'Fit #',
+      type: 'number',
+      key: 'wcgopOpFit',
+      width: '70'
+    },
     {
       field: 'calWeight',
       header: 'Cal WT',
@@ -203,8 +216,13 @@ export default class DebrieferOperations extends Vue {
       width: '80'
     },
     // MMSBST
-    { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopOpNotes',
-      width: '200' }
+    {
+      field: 'notes',
+      header: 'Notes',
+      type: 'input',
+      key: 'wcgopOpNotes',
+      width: '200'
+    }
   ];
 
   private ashopColumns = [
