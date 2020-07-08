@@ -30,7 +30,12 @@
 
                 <div style="text-align: right">
                     <i class="pi pi-search" style="margin: 4px 4px 0px 0px;"></i>
-                    <InputText v-model="filters['global']" placeholder="Global Search" size="50" />
+                    <InputText
+                        v-model="filters['global']"
+                        placeholder="Global Search"
+                        onfocus="this.placeholder = ''"
+                        onblur="this.placeholder = 'Global Search'"
+                    />
                 </div>
             </template>
 
@@ -199,6 +204,9 @@ export default createComponent({
 
 <style scoped>
   .p-inputtext {
-    background-color: inherit !important;
+    background-color: white !important;
+    padding: 5px !important;
+    border: 1px solid rgb(170, 169, 169) !important;
+    border-radius: 3px !important;
   }
 </style>
