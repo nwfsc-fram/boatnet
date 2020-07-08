@@ -22,7 +22,6 @@
                     color="primary"
                     label="Single Day Trip"
                     :disabled="trip.readOnly"
-                    @input="updateDates"
                 ></q-toggle>
                 <pCalendar
                     v-if="!trip.activeTrip.isSingleDayTrip"
@@ -82,6 +81,7 @@
           stack-label
           use-input
           hide-selected
+          clearable
         ></q-select>
 
         <q-select
@@ -96,6 +96,7 @@
           :options="ports"
           use-input
           hide-selected
+          clearable
         ></q-select>
 
         <q-select
@@ -253,7 +254,7 @@ export default class LogBookCapture extends Vue {
             returnPort: this.trip.activeTrip!.returnPort!.name,
             returnDate: this.trip.activeTrip!.returnDate,
             permits: this.trip.activeTrip!.permits,
-            fisheries: this.trip.activeTrip!.fisheries,
+            fisheries: this.trip.activeTrip!.fishery!.description,
             createdBy: this.trip.activeTrip!.createdBy,
             createdDate: this.trip.activeTrip!.createdDate
         };

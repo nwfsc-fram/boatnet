@@ -748,7 +748,7 @@ export default class TripDetails extends Vue {
           returnPort: this.trip.activeTrip!.returnPort!.name,
           returnDate: this.trip.activeTrip!.returnDate,
           permits: this.trip.activeTrip!.permits,
-          fisheries: this.trip.activeTrip!.fisheries,
+          fisheries: this.trip.activeTrip!.fishery!.description,
           createdBy: this.trip.activeTrip!.createdBy,
           createdDate: this.trip.activeTrip!.createdDate
         };
