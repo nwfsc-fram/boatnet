@@ -104,13 +104,15 @@
         <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
       </div>
       <br>
-      <div  style="display: block; text-align: center" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
-        <q-btn label="All Trips" to="/all-trips" color="primary" exact style="margin: 5px"></q-btn>
-        <q-btn label="Missed Trips" to="/missed-trips" color="primary" exact style="margin: 5px"></q-btn>
-        <q-btn label="Vessel Managment" to="/vessels" color="primary" exact style="margin: 5px"></q-btn>
-        <q-btn label="User Management" to="/manage-users" color="primary" exact style="margin: 5px"></q-btn>
-        <q-btn label="OTS Management" to="/ots-management" color="primary" exact style="margin: 5px"></q-btn>
-      </div>
+      <span v-if="activeUser && !isSyncing">
+        <div style="display: block; text-align: center" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
+          <q-btn label="All Trips" to="/all-trips" color="primary" exact style="margin: 5px"></q-btn>
+          <q-btn label="Missed Trips" to="/missed-trips" color="primary" exact style="margin: 5px"></q-btn>
+          <q-btn label="Vessel Managment" to="/vessels" color="primary" exact style="margin: 5px"></q-btn>
+          <q-btn label="User Management" to="/manage-users" color="primary" exact style="margin: 5px"></q-btn>
+          <q-btn label="OTS Management" to="/ots-management" color="primary" exact style="margin: 5px"></q-btn>
+        </div>
+      </span>
   </div>
 
   </q-page>
