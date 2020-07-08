@@ -119,16 +119,16 @@ export function updateTripsApiTrip(activeTrip: any) {
         tripsApiTrip.changeLog.push({
             changedBy: authService.getCurrentUser()!.username,
             changedDate: moment().format(),
-            previousDeparturePort: tripsApiTrip.departurePort,
+            previousDeparturePort: tripsApiTrip.departurePort.name,
             previousDepartureDate: tripsApiTrip.departureDate,
-            previousReturnPort: tripsApiTrip.returnPort,
+            previousReturnPort: tripsApiTrip.returnPort.name,
             previousReturnDate: tripsApiTrip.returnDate
         });
 
         tripsApiTrip.updatedBy = authService.getCurrentUser()!.username;
         tripsApiTrip.updatedDate = moment().format();
-        tripsApiTrip.departurePort = activeTrip!.departurePort;
-        tripsApiTrip.departureDate = activeTrip!.departureDate;
+        tripsApiTrip.departurePort = activeTrip!.departurePort.name;
+        tripsApiTrip.departureDate = activeTrip!.departureDate.name;
         tripsApiTrip.returnPort = activeTrip!.returnPort;
         tripsApiTrip.returnDate = activeTrip!.returnDate;
 

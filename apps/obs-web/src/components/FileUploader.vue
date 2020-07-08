@@ -82,7 +82,19 @@
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
 
                 if ( props.trip!.tripNum === 0) {
-                    await newTripsApiTrip(props.trip).then( (res: any) => tripsApiNum = res.tripNum);
+                    const newApiTrip = {
+                        vesselId: props.trip!.vesselId,
+                        vesselName: props.trip!.vessel!.vesselName,
+                        departurePort: props.trip!.departurePort!.name,
+                        departureDate: props.trip!.departureDate,
+                        returnPort: props.trip!.returnPort!.name,
+                        returnDate: props.trip!.returnDate,
+                        permits: props.trip!.permits,
+                        fisheries: props.trip!.fishery!.description,
+                        createdBy: props.trip!.createdBy,
+                        createdDate: props.trip!.createdDate
+                    };
+                    await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
                     props.trip!.tripNum = tripsApiNum;
                 }
 
