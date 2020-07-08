@@ -18,7 +18,7 @@
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
 
-        <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments).length > 0" style="background-color: red; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
+        <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length > 0" style="background-color: red; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
           <span v-if="closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length === 1">
             WARNING: 1 closed trip is missing logbook image(s).  Please correct as soon as possible.
           </span>
