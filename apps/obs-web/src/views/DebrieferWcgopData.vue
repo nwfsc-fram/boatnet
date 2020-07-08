@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="text-align: right">
+    <div v-if="showPopout" style="text-align: right">
       <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
     </div>
     <div>
@@ -36,19 +36,19 @@
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
-            <app-debriefer-trips :isFullSize="false"></app-debriefer-trips>
+            <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations :isFullSize="false"></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="isFullSize"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
-            <app-debriefer-catches :isFullSize="false"></app-debriefer-catches>
+            <app-debriefer-catches :isFullSize="isFullSize"></app-debriefer-catches>
           </q-tab-panel>
 
           <q-tab-panel name="catchSpecies">
-            <app-debriefer-biospecimens :isFullSize="false"></app-debriefer-biospecimens>
+            <app-debriefer-biospecimens :isFullSize="isFullSize"></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -74,18 +74,25 @@ import { get, set, findIndex } from 'lodash';
 export default createComponent({
   props: {
     showErrors: Boolean,
-    showData: Boolean
+    showPopout: Boolean,
+    startingTab: String,
+    isFullSize: Boolean
   },
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab: any = ref('trips');
+    const tab: any = ref('');
 
     const filters: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
+
+    function initTab() {
+      tab.value = props.startingTab;
+    }
+    initTab();
 
     function setToTripTab() {
       tab.value = 'trips';
@@ -95,6 +102,7 @@ export default createComponent({
       filters.value = [];
       filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
       filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul', 'operationNum'));
+      setToTripTab();
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
@@ -134,9 +142,9 @@ export default createComponent({
     }
 
     return {
+      tab,
       openNewDebriefingTab,
       filters,
-      tab,
       remove
     };
   }

@@ -18,7 +18,7 @@
 
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'" />
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :showPopout="true" :isFullSize="false"/>
         <app-debriefer-ashop-data v-else />
       </TabPanel>
       <TabPanel header="Errors" :active="activeTab === 'qa'">
