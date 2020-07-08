@@ -321,11 +321,12 @@ export default class LogBookCapture extends Vue {
                             returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
                             isSelected: undefined,
                             isSingleDayTrip: false,
-                            isMissingTrip: true,
+                            isMissedTrip: true,
                             fishery: {description: undefined},
                             tripStatus: {
                               description: 'closed'
                             },
+                            closingReason: 'missed trip',
                             maximizedRetention: null,
                             changeLog: [
                                     {

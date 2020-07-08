@@ -19,11 +19,11 @@
       <div v-if="vessel.activeVessel">
 
         <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments).length > 0" style="background-color: red; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
-          <span v-if="closedTrips.filter( (trip) => !trip._attachments).length === 1">
+          <span v-if="closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length === 1">
             WARNING: 1 closed trip is missing logbook image(s).  Please correct as soon as possible.
           </span>
           <span v-else>
-            WARNING: {{ closedTrips.filter( (trip) => !trip._attachments).length }} closed trips are missing logbook image(s).  Please correct as soon as possible.
+            WARNING: {{ closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length }} closed trips are missing logbook image(s).  Please correct as soon as possible.
           </span>
         </div>
 
@@ -203,8 +203,9 @@
     >
       <template v-slot:body="props">
         <q-tr :props="props"  @click.native="review(props.row)">
-          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row._attachments)"></q-icon></q-td>
+          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)"></q-icon></q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
+          <q-td key="tripStatus" :props="props">{{ props.row.closingReason }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
           <q-td key="returnDate" :props="props">{{ formatFullDate(props.row.returnDate) }}</q-td>
           <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
@@ -429,7 +430,7 @@ export default class Trips extends Vue {
 
   private pagination = {
     sortBy: 'departureDate',
-    descending: false,
+    descending: true,
     rowsPerPage: 0,
     };
 
@@ -438,6 +439,7 @@ export default class Trips extends Vue {
   private columns = [
     {name: '_attachments', label: '', field: '_attachments', required: false, align: 'left', sortable: true},
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
+    {name: 'tripStatus', label: 'Status', field: 'closingReason', required: false, align: 'left', sortable: true},
     {name: 'departureDate', label: 'Departure Date / Time', field: 'departureDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
     {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b)},
     {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: false, align: 'left', sortable: true, sort: (a: any, b: any) => (a.name).localeCompare(b.name)},
@@ -516,12 +518,12 @@ export default class Trips extends Vue {
           }
         ).sort((a: any, b: any) => {
             const keyA = moment(a.departureDate);
-            const keyB = moment(b.returnDate);
+            const keyB = moment(b.departureDate);
             if (keyA < keyB) {
-              return -1;
+              return 1;
             }
             if (keyA > keyB) {
-              return 1;
+              return -1;
             }
             return 0;
           });
@@ -659,11 +661,15 @@ export default class Trips extends Vue {
       return false;
     }
 
-    private hasAttachments(attachments: any) {
-      if (attachments) {
-        return 'camera_alt';
+    private hasAttachments(trip: any) {
+      if (trip.closingReason !== 'cancelled') {
+        if (trip._attachments) {
+          return 'camera_alt';
+        } else {
+          return 'error_outline';
+        }
       } else {
-        return 'error_outline';
+        return '';
       }
     }
 
