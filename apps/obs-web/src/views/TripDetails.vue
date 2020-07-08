@@ -120,6 +120,7 @@
           @filter="startPortsFilterFn"
           :option-label="opt => opt.name"
           option-value="_id"
+          clearable
           dense
           fill-input
           stack-label
@@ -137,6 +138,7 @@
           stack-label
           :option-label="opt => opt.name"
           option-value="_id"
+          clearable
           :options="ports"
           :readonly="trip.readOnly"
           use-input
@@ -710,6 +712,19 @@ export default class TripDetails extends Vue {
     if (!this.departureTimeEntered) {
       Notify.create({
         message: '<b>A trip must have a departure time.</b>',
+        position: 'center',
+        color: 'primary',
+        timeout: 2000,
+        icon: 'warning',
+        html: true,
+        multiLine: true
+      });
+      return;
+    }
+
+    if (!this.trip.activeTrip!.departurePort || !this.trip.activeTrip!.returnPort) {
+      Notify.create({
+        message: '<b>A trip must have a departure and return port.</b>',
         position: 'center',
         color: 'primary',
         timeout: 2000,
