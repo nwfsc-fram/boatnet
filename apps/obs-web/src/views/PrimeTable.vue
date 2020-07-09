@@ -6,7 +6,7 @@
       :filters="filters"
       :paginator="true"
       :rows="10"
-      selectionMode="multiple"
+      :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
       :scrollHeight="isFullSize ? '700px' : '350px'"
