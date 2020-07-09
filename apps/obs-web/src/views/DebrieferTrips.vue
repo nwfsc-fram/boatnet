@@ -388,6 +388,23 @@ export default createComponent({
 
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
+    watch(() => state.debriefer.tripIds, getTrips);
+
+    async function getTrips() {
+      const tripsHolder = [];
+      try {
+        const options: ListOptions = {
+          keys: state.debriefer.tripIds
+        };
+        const result = await masterDB.listWithDocs(options);
+        for (const row of result.rows) {
+          tripsHolder.push(row);
+        }
+        trips.value = tripsHolder;
+      } catch (err) {
+        console.log('error');
+      }
+    }
 
     async function loadTripsByEvaluationPeriod() {
       const observer = state.debriefer.observers;
