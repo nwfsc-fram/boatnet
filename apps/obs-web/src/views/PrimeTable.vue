@@ -1,12 +1,15 @@
 <template>
   <div>
     <DataTable
+      class="p-datatable-striped"
       :value="value"
       :filters="filters"
       :paginator="true"
       :rows="10"
+      selectionMode="multiple"
+      :first="pageStart"
       :selection.sync="selected"
-      :scrollHeight="isFullSize ? '600px' : '350px'"
+      :scrollHeight="isFullSize ? '700px' : '350px'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -18,6 +21,7 @@
       stateStorage="local"
       :stateKey="tableType"
       :rowsPerPageOptions="[10,25,50, 100]"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
     >
       <template #empty>No data available</template>
@@ -150,7 +154,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
-    const filters: any = reactive({});
+    let filters: any = ref({});
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -159,6 +163,7 @@ export default createComponent({
 
     const tableType = state.debriefer.program + '-' + props.type;
     const selected: any = ref([]);
+    const pageStart: any = ref(1);
     const stateDisplayCols = state.debriefer.displayColumns;
 
     const popupData: any = ref({});
@@ -174,17 +179,18 @@ export default createComponent({
     function updateSelection() {
       if (props.type === 'Trips') {
         selected.value = state.debriefer.trips;
-      } else if (props.type === 'Operations') {
-        selected.value = state.debriefer.operations;
+      } else if (props.type === 'Specimens') {
+        selected.value = state.debriefer.specimens.selected;
+        pageStart.value = state.debriefer.specimens.page;
       }
     }
 
     function onRowSelect(event: any) {
       if (props.type === 'Trips') {
         store.dispatch('debriefer/updateTrips', selected.value);
-      } else if (props.type === 'Operations') {
+      } /*else if (props.type === 'Operations') {
         store.dispatch('debriefer/updateOperations', selected.value);
-      }
+      }*/
     }
 
     const displayColumns = computed({
@@ -333,6 +339,7 @@ export default createComponent({
       formatValue,
       tableType,
       selected,
+      pageStart,
       state,
       show,
       popupData,

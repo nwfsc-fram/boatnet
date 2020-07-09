@@ -51,7 +51,8 @@ export default createComponent({
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
-    const state: any = context.root.$store.state;
+    const store = context.root.$store;
+    const state: any = store.state;
     const debriefer: any = state.debriefer;
 
     const columns: any = ref([]);
@@ -383,6 +384,7 @@ export default createComponent({
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
+    watch(() => state.debriefer.trips, getOperations);
 
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
@@ -460,6 +462,31 @@ export default createComponent({
       } else {
         columns.value = wcgopColumns;
       }
+    }
+
+    // fetch operation docs for selected trips
+    async function getOperations() {
+      let operationIds: any[] = [];
+      let operations: any[] = [];
+      for (const trip of state.debriefer.trips) {
+        operationIds = operationIds.concat(trip.operationIDs);
+      }
+
+      if (operationIds.length > 0) {
+        try {
+          const operationOptions: ListOptions = {
+            keys: operationIds
+          };
+          const operationDocs = await masterDB.listWithDocs(operationOptions);
+          operations = operationDocs.rows;
+          operations.sort((a: any, b: any) => {
+            return (a.legacy.tripId + a.operationNum) - (b.legacy.tripId + b.operationNum);
+          });
+        } catch (err) {
+          console.log('cannot fetch operation docs ' + err);
+        }
+      }
+      store.dispatch('debriefer/updateOperations', operations);
     }
 
     function save(data: any) {

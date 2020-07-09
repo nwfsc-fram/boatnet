@@ -29,7 +29,7 @@
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
-          <q-tab name="catchSpecies" label="Biospecimens" />
+          <q-tab name="biospecimens" label="Biospecimens" />
         </q-tabs>
 
         <q-separator />
@@ -47,7 +47,7 @@
             <app-debriefer-catches :isFullSize="isFullSize"></app-debriefer-catches>
           </q-tab-panel>
 
-          <q-tab-panel name="catchSpecies">
+          <q-tab-panel name="biospecimens">
             <app-debriefer-biospecimens :isFullSize="isFullSize"></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
@@ -86,7 +86,6 @@ export default createComponent({
     const filters: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
-    watch(() => state.debriefer.operations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
 
     function initTab() {
@@ -101,7 +100,6 @@ export default createComponent({
     function update() {
       filters.value = [];
       filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
-      filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul', 'operationNum'));
       setToTripTab();
     }
 

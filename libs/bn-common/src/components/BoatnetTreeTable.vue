@@ -6,6 +6,9 @@
       filterMode="lenient"
       :expandedKeys="expandedKeys"
       sortMode="single"
+      :paginator="true"
+      :rows="10"
+      style="height: 800px"
     >
       <template #header>
         <div style="text-align:left">
@@ -30,53 +33,67 @@
         :header="col.header"
         :expander="col.expander"
         :headerStyle="'width: ' + col.width + 'px'"
+        :style="'width:' +  col.width + 'px'"
       >
         <template #filter>
-          <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+          <div :style="'min-width:' +  col.width + 'px; max-width: ' +  50 + 'px'">
+            <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+          </div>
         </template>
         <template #body="slotProps">
-          <Button
-            v-if="col.header === 'Edit'"
-            icon="pi pi-pencil"
-            class="p-button-secondary"
-            @click="edit(slotProps)"
-          />
-          <div
-            v-else-if="slotProps.node.key === editingRow &&
+          <div :style="'min-width:' +  col.width + 'px'">
+            <Button
+              v-if="col.header === 'Edit'"
+              icon="pi pi-pencil"
+              class="p-button-secondary"
+              @click="edit(slotProps)"
+            />
+            <div
+              v-else-if="slotProps.node.key === editingRow &&
                            col.isEditable &&
                            slotProps.node.data[slotProps.column.field]"
-          >
-            <Dropdown
-              v-if="col.type === 'toggle'"
-              :style="'width: ' + col.width + 'px'"
-              v-model="slotProps.node.data[slotProps.column.field]"
-              :placeholder="slotProps.node.data[slotProps.column.field]"
-              :options="lookupsList"
-              :optionLabel="'doc.' + col.lookupField"
-              optionValue="doc"
-              @input="onCellEdit($event, slotProps, col)"
-              @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
-            />
-            <Dropdown
-              v-else-if="col.type === 'toggle-search'"
-              :style="'width: ' + col.width + 'px'"
-              v-model="slotProps.node.data[slotProps.column.field]"
-              :placeholder="slotProps.node.data[slotProps.column.field]"
-              :options="lookupsList"
-              :filter="true"
-              :optionLabel="'doc.' + col.lookupField"
-              optionValue="doc"
-              @input="onCellEdit($event, slotProps, col)"
-              @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
-            />
-            <q-input
-              v-else
-              debounce="500"
-              v-model="slotProps.node.data[slotProps.column.field]"
-              @input="onCellEdit($event, slotProps, col)"
-            />
+            >
+              <Dropdown
+                v-if="col.type === 'toggle'"
+                :style="'width: ' + col.width + 'px'"
+                v-model="slotProps.node.data[slotProps.column.field]"
+                :placeholder="slotProps.node.data[slotProps.column.field]"
+                :options="lookupsList"
+                :optionLabel="'doc.' + col.lookupField"
+                optionValue="doc"
+                @input="onCellEdit($event, slotProps, col)"
+                @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
+              />
+              <Dropdown
+                v-else-if="col.type === 'toggle-search'"
+                :style="'width: ' + col.width + 'px'"
+                v-model="slotProps.node.data[slotProps.column.field]"
+                :placeholder="slotProps.node.data[slotProps.column.field]"
+                :options="lookupsList"
+                :filter="true"
+                :optionLabel="'doc.' + col.lookupField"
+                optionValue="doc"
+                @input="onCellEdit($event, slotProps, col)"
+                @before-show="getOptionsList(col.lookupView, [col.lookupField], slotProps)"
+              />
+              <q-input
+                v-else
+                debounce="500"
+                v-model="slotProps.node.data[slotProps.column.field]"
+                @input="onCellEdit($event, slotProps, col)"
+              />
+            </div>
+            <span v-else>
+              <a v-if="col.type === 'link'" :href="col.to" target="_blank" class="tooltip" v-on:click="select(slotProps, col.highlightIds)">
+                {{ displayData(slotProps, col.type, col.field) }}
+                <span
+                  class="tooltiptext"
+                  style="pointer-events: none"
+                >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
+              </a>
+              <div v-else>{{ displayData(slotProps, col.type, col.field) }}</div>
+            </span>
           </div>
-          <span v-else>{{ displayData(slotProps, col.type) }}</span>
         </template>
       </pColumn>
     </pTreeTable>
@@ -108,6 +125,7 @@ export default class BoatnetTreeTable extends Vue {
   @Prop() public program!: string;
   @Prop() public selectionMode!: string;
 
+
   public selected: any[] = [];
   private filters: any = {};
 
@@ -131,8 +149,13 @@ export default class BoatnetTreeTable extends Vue {
     }
   }
 
-  private displayData(data: any, colType: string) {
-    let value: any = data.node.data[data.column.field];
+  private select(data: any, field: any) {
+    const ids = data.node.data[field];
+    this.$emit('selected', ids);
+  }
+
+  private displayData(data: any, colType: string, colField: string) {
+    let value: any = data.node.data[colField];
     if (value && colType === 'double' && value % 1 !== 0) {
       value = value.toFixed(2);
     }
@@ -185,11 +208,42 @@ export default class BoatnetTreeTable extends Vue {
 }
 </script>
 
-<style scoped>
+<style>
 tr {
   height: 40px !important;
 }
-.p-inputtext {
+input.p-column-filter.p-inputtext.p-component {
   background-color: inherit !important;
+}
+thead.p-treetable-thead {
+  display: block;
+  overflow: hidden;
+}
+
+tbody.p-treetable-tbody {
+  display: block;
+  position: relative;
+  height: 600px;
+  overflow: auto;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
 }
 </style>

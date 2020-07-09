@@ -1,7 +1,7 @@
 <template>
   <div>
     <prime-table
-      :value="WcgopOperations"
+      :value="debriefer.operations"
       :columns="columns"
       type="Operations"
       uniqueKey="_id"
@@ -42,10 +42,6 @@ export default class DebrieferOperations extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-  private WcgopTrips: WcgopTrip[] = [];
-  private WcgopOperations: WcgopOperation[] = [];
-  private pagination = { rowsPerPage: 50 };
-  private selected: any = [];
   private columns: any[] = [];
 
   private wcgopColumns = [
@@ -315,34 +311,6 @@ export default class DebrieferOperations extends Vue {
     { field: 'notes', header: 'Notes', type: 'input', key: 'ashopOpNotes' }
   ];
 
-  @Watch('debriefer.trips')
-  private async onTripsChange() {
-    this.getOperations();
-  }
-
-  private async getOperations() {
-    const masterDB: Client<any> = couchService.masterDB;
-    let operationIds: string[] = [];
-    const operationHolder = [];
-
-    for (const trip of this.debriefer.trips) {
-      operationIds = operationIds.concat(trip.operationIDs);
-    }
-
-    try {
-      const options: ListOptions = {
-        keys: operationIds
-      };
-      const operations = await masterDB.listWithDocs(options);
-      for (const operation of operations.rows) {
-        operationHolder.push(operation);
-      }
-      this.WcgopOperations = operationHolder;
-    } catch (err) {
-      this.error(err);
-    }
-  }
-
   private created() {
     this.columns = [];
     if (this.debriefer.program === 'ashop') {
@@ -350,7 +318,6 @@ export default class DebrieferOperations extends Vue {
     } else {
       this.columns = this.wcgopColumns;
     }
-    this.getOperations();
   }
 
   private formatDate(inputDate: any) {

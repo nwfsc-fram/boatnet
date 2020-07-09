@@ -33,8 +33,9 @@ export default createComponent({
     isFullSize: Boolean
   },
   setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
-    const state = context.root.$store.state;
     const debriefer = state.debriefer;
     const WcgopBiospecimens: any = ref([]);
 
@@ -198,56 +199,53 @@ export default createComponent({
     watch(() => state.debriefer.operations, getBiospecimens);
 
     async function getBiospecimens() {
+      const selectedVals: any[] = [];
       const bioSpecimens = [];
-      let operationIds: string[] = [];
-      const operationHolder = [];
+      for (const operation of state.debriefer.operations) {
+        const tripId = operation.legacy.tripId;
+        const operationNum = operation.operationNum;
+        const operationId = operation._id;
+        const operationRev = operation._rev;
 
-      for (const trip of debriefer.trips) {
-        operationIds = operationIds.concat(trip.operationIDs);
-      }
-
-      try {
-        const options: ListOptions = {
-          keys: operationIds
-        };
-        const operations = await masterDB.listWithDocs(options);
-        for (const operation of operations.rows) {
-          const tripId = operation.legacy.tripId;
-          const operationNum = operation.operationNum;
-          const operationId = operation._id;
-          const operationRev = operation._rev;
-
-          for (const catches of operation.catches) {
-            let disposition = catches.disposition
-              ? catches.disposition.description
-              : '';
-            disposition = disposition === 'Retained' ? 'R' : 'D';
-            if (catches.children) {
-              for (const child of catches.children) {
-                const species = child.catchContent
-                  ? child.catchContent.commonNames[0]
-                  : '';
-                if (child.specimens) {
-                  for (const specimen of child.specimens) {
-                    bioSpecimens.push({
-                      tripId,
-                      operationNum,
-                      operationId,
-                      operationRev,
-                      species,
-                      disposition,
-                      specimen,
-                      _id: specimen._id
-                    });
+        for (const catches of operation.catches) {
+          let disposition = catches.disposition
+            ? catches.disposition.description
+            : '';
+          disposition = disposition === 'Retained' ? 'R' : 'D';
+          if (catches.children) {
+            for (const child of catches.children) {
+              const species = child.catchContent
+                ? child.catchContent.commonNames[0]
+                : '';
+              if (child.specimens) {
+                for (const specimen of child.specimens) {
+                  const item = {
+                    tripId,
+                    operationNum,
+                    operationId,
+                    operationRev,
+                    species,
+                    disposition,
+                    specimen,
+                    _id: specimen._id
+                  };
+                  if (state.debriefer.specimens.indexOf(specimen._id) !== -1) {
+                    selectedVals.push(item);
                   }
+                  bioSpecimens.push(item);
                 }
               }
             }
           }
         }
-        WcgopBiospecimens.value = bioSpecimens;
-      } catch (err) {
-        console.log(err + 'error fetching biospecimens');
+      }
+      WcgopBiospecimens.value = bioSpecimens;
+      if (selectedVals.length > 0) {
+        let pageStart = bioSpecimens.indexOf(selectedVals[0]);
+        store.dispatch('debriefer/updateSpecimens', {
+          page: pageStart,
+          selected: selectedVals
+        });
       }
     }
 

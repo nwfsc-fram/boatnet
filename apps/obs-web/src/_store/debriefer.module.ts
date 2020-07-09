@@ -14,7 +14,8 @@ export const state: DebrieferState = {
   tripIds: [],
   displayColumns: {},
   trips: [],
-  operations: []
+  operations: [],
+  specimens: []
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -41,6 +42,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateOperations({ commit }: any, value: any) {
     commit('updateVal', {id: 'operations', val: value});
+  },
+  updateSpecimens({ commit }: any, value: any) {
+    commit('updateVal', {id: 'specimens', val: value});
   },
   updateDisplayColumns({ commit }: any, value: any) {
     commit('updateDisplayColumns', value);
