@@ -97,6 +97,7 @@ import { Notify } from 'quasar';
 export default createComponent({
   setup(props, context) {
         const columns: any = [
+            {field: 'createdBy', header: 'Created By'},
             {field: 'tripNum', header: 'Trip #'},
             {field: 'vessel.vesselName', header: 'Vessel Name'},
             {field: 'vessel.vesselId', header: 'Vessel ID'},
