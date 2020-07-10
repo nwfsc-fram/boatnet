@@ -120,13 +120,13 @@
           @filter="startPortsFilterFn"
           :option-label="opt => opt.name"
           option-value="_id"
-          clearable
           dense
           fill-input
           stack-label
           :readonly="trip.readOnly"
           use-input
           hide-selected
+          @focus="trip.activeTrip.departurePort = null"
         ></q-select>
 
         <q-select
@@ -138,11 +138,11 @@
           stack-label
           :option-label="opt => opt.name"
           option-value="_id"
-          clearable
           :options="ports"
           :readonly="trip.readOnly"
           use-input
           hide-selected
+          @focus="trip.activeTrip.returnPort = null"
         ></q-select>
 
         <q-select
@@ -1378,7 +1378,7 @@ private async getMinDate() {
 
   @Watch('trip.activeTrip.departurePort', {deep: true})
   private handler3(newVal: any, oldVal: any) {
-    if (this.trip.activeTrip && (this.trip.activeTrip.returnPort === oldVal)) {
+    if (this.trip.activeTrip) {
       this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
     }
   }

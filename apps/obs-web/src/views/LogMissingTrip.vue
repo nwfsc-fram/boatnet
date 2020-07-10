@@ -16,7 +16,7 @@
         <div>
             <span>
                 <span class="text-h6">Trip Dates</span>
-                {{ trip.activeTrip.departureDate }} | {{ trip.activeTrip.returnDate }}
+                {{ formatDateTime(trip.activeTrip.departureDate) }} | {{ formatFullDate(trip.activeTrip.returnDate) }}
                 <q-toggle
                     v-model="trip.activeTrip.isSingleDayTrip"
                     color="primary"
@@ -81,7 +81,7 @@
           stack-label
           use-input
           hide-selected
-          clearable
+          @focus="trip.activeTrip.departurePort = null"
         ></q-select>
 
         <q-select
@@ -96,7 +96,7 @@
           :options="ports"
           use-input
           hide-selected
-          clearable
+          @focus="trip.activeTrip.returnPort = null"
         ></q-select>
 
         <q-select
@@ -180,6 +180,7 @@
 
         <div style="text-align: center">All details (including logbook capture) must be completed before missing trip can be submitted.</div>
 
+        <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" style="float: right" color="red" label="submit without image" @click="submitTripOnly"></q-btn>
         <q-btn style="float: right" color="primary" label="Cancel" @click="goToTrips"/>
 
     </div>
@@ -238,13 +239,63 @@ export default class LogBookCapture extends Vue {
     private maxDate: any = new Date(moment().format());
     private tripsApiNum: any = 0;
     private departureTime: any = null;
+    private userRoles: string[] = [];
+
+    private isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (this.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     private handleImage(event: any) {
         this.file = event!.target!.files[0];
         this.fileUrl = URL.createObjectURL(this.file);
     }
 
-    private async submitImage() {
+    private async submitTripOnly() {
+
+        // REQIRES A START AND END DATE
+        if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
+        Notify.create({
+            message: '<b>A trip must have a start and end date</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+        return;
+        }
+
+        if (!this.trip.activeTrip!.departurePort || !this.trip.activeTrip!.returnPort) {
+        Notify.create({
+            message: '<b>A trip must have a departure and return port.</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+        return;
+        }
+
+        if (this.trip.activeTrip!.fishery!.description === '') {
+        Notify.create({
+            message: '<b>A trip must have a fishery.</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+        return;
+        }
 
         const newApiTrip = {
             vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
@@ -264,48 +315,33 @@ export default class LogBookCapture extends Vue {
         await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
         this.trip.activeTrip!.tripNum = this.tripsApiNum;
 
-        const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
-
-        let result: any;
-        const reader = new FileReader();
-        reader.readAsDataURL(this.file);
-        reader.onload = async () => {
-            result = reader.result;
-            this.trip.activeTrip!._attachments = {
-                [fileName] : {
-                    content_type: this.file.type,
-                        data: result.split(',')[1]
-                    }
-                };
-            this.trip.activeTrip!.changeLog.unshift(
-                {
-                    updatedBy: authService.getCurrentUser()!.username,
-                    updateDate: moment().format('MM/DD/YYYY HH:mm A'),
-                    property: '_attachments',
-                    newVal: 'added/updated logbook capture',
-                    app: 'Observer Web'
-                }
-            );
-            const masterDB: Client<any> = couchService.masterDB;
-            this.transferring = true;
-            return await masterDB.post(
-                this.trip.activeTrip
-                ).then( () => {
-                    this.transferring = false;
-                    Notify.create({
-                        message: 'Logbook Capture Successfully Transferred',
-                            position: 'center',
-                            color: 'green',
-                            timeout: 2000,
-                            icon: 'emoji_emotions',
-                            html: true,
-                            multiLine: true
-                        });
-                    this.$router.push({ path: '/home' });
-                });
-        };
-
-    }
+        this.trip.activeTrip!.changeLog.unshift(
+            {
+                updatedBy: authService.getCurrentUser()!.username,
+                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+                property: '_attachments',
+                newVal: 'added/updated logbook capture',
+                app: 'Observer Web'
+            }
+        );
+        const masterDB: Client<any> = couchService.masterDB;
+        this.transferring = true;
+        return await masterDB.post(
+            this.trip.activeTrip
+            ).then( () => {
+                this.transferring = false;
+                Notify.create({
+                    message: 'Logbook Capture Successfully Transferred',
+                        position: 'center',
+                        color: 'green',
+                        timeout: 2000,
+                        icon: 'emoji_emotions',
+                        html: true,
+                        multiLine: true
+                    });
+                this.$router.push({ path: '/home' });
+            });
+    };
 
     private newTrip() {
         const newTrip: WcgopTrip = {
@@ -556,7 +592,30 @@ export default class LogBookCapture extends Vue {
     this.$router.push({ path: '/trips/' });
   }
 
+  private shortFormatDate(date: any) {
+      return moment(date).format('MMM Do');
+  }
+
+  private formatDepartureTime(date: any) {
+      return moment(date).format('HH:mm');
+  }
+
+  private formatFullDate(date: any) {
+      if (date) {
+          return moment(date).format('MM/DD/YYYY');
+      }
+  }
+
+  private formatDateTime(date: any) {
+      if (date) {
+          return moment(date).format('MM/DD/YYYY, HH:mm');
+      }
+  }
+
     private created() {
+        if ( authService.getCurrentUser() ) {
+        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+        }
         this.newTrip();
         this.getPorts();
         this.getFisheryOptions();
@@ -593,7 +652,7 @@ export default class LogBookCapture extends Vue {
 
     @Watch('trip.activeTrip.departurePort', {deep: true})
     private handler3(newVal: any, oldVal: any) {
-        if (this.trip.activeTrip && (this.trip.activeTrip.returnPort === oldVal)) {
+        if (this.trip.activeTrip ) {
             this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
         }
     }

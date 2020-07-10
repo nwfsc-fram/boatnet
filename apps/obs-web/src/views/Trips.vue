@@ -18,7 +18,7 @@
     <div class="centered-page-item" id="main">
       <div v-if="vessel.activeVessel">
 
-        <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length > 0" style="background-color: red; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
+        <div v-if="closedTrips.length > 0 && closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length > 0" style="background-color: #C62828; color: white; border-radius: 4px; padding: 10px; font-size: 14px">
           <span v-if="closedTrips.filter( (trip) => !trip._attachments && trip.closingReason !== 'cancelled').length === 1">
             WARNING: 1 closed trip is missing logbook image(s).  Please correct as soon as possible.
           </span>
@@ -88,8 +88,8 @@
         <q-card-section>
           <div  class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
             <span>
-              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }} {{ formatDepartureTime(trip.departureDate) }} </span> -
-              <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+              <span v-if="trip.departureDate">{{ shortFormatDate(trip.departureDate) }} {{ formatDepartureTime(trip.departureDate) }} </span> -
+              <span v-if="trip.returnDate">{{ shortFormatDate(trip.returnDate) }}</span>
             </span>
             <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
           </div>
@@ -152,13 +152,13 @@
     </div>
     <div class="row items-start" v-if="closedTripsTable">
 
-    <q-card v-for="(trip, i) in closedTrips" :key="i" class="my-card bg-grey-6 text-white trip-card">
+    <q-card v-for="(trip, i) in closedTrips" :key="i" :class="closedTripClass(trip)">
 
       <q-card-section>
           <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
             <span>
-              <span v-if="trip.departureDate">{{ formatDate(trip.departureDate) }}</span> -
-              <span v-if="trip.returnDate">{{ formatDate(trip.returnDate) }}</span>
+              <span v-if="trip.departureDate">{{ shortFormatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.returnDate">{{ shortFormatDate(trip.returnDate) }}</span>
             </span>
             <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
           </div>
@@ -176,12 +176,12 @@
 
       <div class="text-white">
           <span style="text-transform: capitalize;" v-if="trip.closingReason">{{ trip.closingReason }}</span>
-          <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ formatDate(trip.captainAffirmedDepartureDate) }} - {{ formatDate(trip.captainAffirmedReturnDate) }} </span>
+          <span v-if="trip.captainAffirmedDepartureDate && trip.captainAffirmedReturnDate"> - {{ shortFormatDate(trip.captainAffirmedDepartureDate) }} - {{ shortFormatDate(trip.captainAffirmedReturnDate) }} </span>
       </div>
       </q-card-section>
       <div style="float: left; padding-left: 15px">
         <q-icon size="sm" v-if="trip._attachments" name="camera_alt"></q-icon>
-        <q-icon size="sm" v-else name="error_outline" title="missing logbook capture"></q-icon>
+        <q-icon size="sm" v-else-if="!trip._attchments && trip.closingReason === 'taken'" name="error_outline" title="missing logbook capture"></q-icon>
       </div>
       <div style="float:right">
         <q-btn flat @click="review(trip)">review</q-btn>
@@ -203,7 +203,7 @@
     >
       <template v-slot:body="props">
         <q-tr :props="props"  @click.native="review(props.row)">
-          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)"></q-icon></q-td>
+          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" style="font-weight: bold"></q-icon></q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="tripStatus" :props="props">{{ props.row.closingReason }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
@@ -918,27 +918,6 @@ export default class Trips extends Vue {
       this.$router.push({path: '/trips/' + newTripNum});
       }
 
-  private formatDate(date: any) {
-    return moment(date).format('MMM Do');
-  }
-
-  private formatDepartureTime(date: any) {
-    return moment(date).format('HH:mm');
-  }
-
-  private formatFullDate(date: any) {
-    return moment(date).format('MM/DD/YYYY');
-  }
-
-  private formatDateTime(date: any) {
-    return moment(date).format('MM/DD/YYYY, HH:mm');
-  }
-
-  private formatTel(telNum: any) {
-    telNum = telNum.toString();
-    return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
-}
-
 private computedTripClass(trip: WcgopTrip) {
   if (trip.isSelected) {
     return 'my-card bg-primary text-white';
@@ -1128,6 +1107,14 @@ private async getAuthorizedVessels() {
     });
 }
 
+  private closedTripClass(trip: any) {
+    if (!trip._attachments && (trip.closingReason === 'taken' || trip.closingReason === 'missed trip')) {
+      return 'my-card bg-red-9 text-white trip-card';
+    } else {
+      return 'my-card bg-grey-6 text-white trip-card';
+    }
+  }
+
   private setTablePref() {
     this.setClosedTripsTable(!this.closedTripsTable);
   }
@@ -1138,6 +1125,27 @@ private async getAuthorizedVessels() {
     } else {
       return 'secondary';
     }
+  }
+
+  private shortFormatDate(date: any) {
+      return moment(date).format('MMM Do');
+  }
+
+  private formatDepartureTime(date: any) {
+      return moment(date).format('HH:mm');
+  }
+
+  private formatFullDate(date: any) {
+      return moment(date).format('MM/DD/YYYY');
+  }
+
+  private formatDateTime(date: any) {
+      return moment(date).format('MM/DD/YYYY, HH:mm');
+  }
+
+  private formatTel(telNum: any) {
+      telNum = telNum.toString();
+      return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
   }
 
   private async created() {
