@@ -126,7 +126,7 @@
           :readonly="trip.readOnly"
           use-input
           hide-selected
-          @focus="trip.activeTrip.departurePort = null"
+          clearable
         ></q-select>
 
         <q-select
@@ -142,7 +142,7 @@
           :readonly="trip.readOnly"
           use-input
           hide-selected
-          @focus="trip.activeTrip.returnPort = null"
+          clearable
         ></q-select>
 
         <q-select
