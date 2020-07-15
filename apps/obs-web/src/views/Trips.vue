@@ -184,6 +184,13 @@
         <q-icon size="sm" v-else-if="!trip._attchments && trip.closingReason === 'taken'" name="error_outline" title="missing logbook capture"></q-icon>
       </div>
       <div style="float:right">
+        <q-btn flat
+          v-if="trip.closingReason !== 'cancelled' &&
+          trip._attachments"
+          @click="keyLogbook(trip)"
+        >
+        Transcribe
+        </q-btn>
         <q-btn flat @click="review(trip)">review</q-btn>
       </div>
 
@@ -202,7 +209,13 @@
       hide-bottom
     >
       <template v-slot:body="props">
-        <q-tr :props="props"  @click.native="review(props.row)">
+        <q-tr :props="props">
+          <q-td key="actions" :props="props" v-if="props.row.closingReason !== 'cancelled'">
+            <q-icon name="edit" color="primary" @click.native="review(props.row)" title="edit trip"></q-icon>
+            &nbsp;
+            <q-icon name="notes" color="primary" v-if="props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data"></q-icon>
+          </q-td>
+          <q-td v-else></q-td>
           <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" style="font-weight: bold"></q-icon></q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="tripStatus" :props="props">{{ props.row.closingReason }}</q-td>
@@ -437,6 +450,7 @@ export default class Trips extends Vue {
   private selected: any = [];
 
   private columns = [
+    {name: 'actions', label: '', field: 'actions', required: false, align: 'left', sortable: true},
     {name: '_attachments', label: '', field: '_attachments', required: false, align: 'left', sortable: true},
     {name: 'tripNum', label: 'Trip Number', field: 'tripNum', required: false, align: 'left', sortable: true},
     {name: 'tripStatus', label: 'Status', field: 'closingReason', required: false, align: 'left', sortable: true},
@@ -853,6 +867,10 @@ export default class Trips extends Vue {
       this.trip.newTrip = false;
       this.trip.readOnly = true;
       this.$router.push({path: '/trips/' + trip.tripNum});
+    }
+
+    private keyLogbook(trip: any) {
+      this.$router.push({path: '/e-logbook/' + trip.tripNum})
     }
 
     private getTripDetails(trip: any, index = null) {

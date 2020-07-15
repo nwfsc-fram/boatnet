@@ -85,12 +85,12 @@
                     const newApiTrip = {
                         vesselId: props.trip!.vesselId,
                         vesselName: props.trip!.vessel!.vesselName,
-                        departurePort: props.trip!.departurePort!.name,
+                        departurePort: props.trip!.departurePort!.code ? props.trip!.departurePort!.code : props.trip!.departurePort!.name,
                         departureDate: props.trip!.departureDate,
-                        returnPort: props.trip!.returnPort!.name,
+                        returnPort: props.trip!.returnPort!.code ? props.trip!.returnPort!.code : props.trip!.returnPort!.name,
                         returnDate: props.trip!.returnDate,
                         permits: props.trip!.permits,
-                        fisheries: props.trip!.fishery!.description,
+                        fishery: props.trip!.fishery!.description,
                         createdBy: props.trip!.createdBy,
                         createdDate: props.trip!.createdDate
                     };

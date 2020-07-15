@@ -300,12 +300,12 @@ export default class LogBookCapture extends Vue {
         const newApiTrip = {
             vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
             vesselName: this.trip.activeTrip!.vessel!.vesselName,
-            departurePort: this.trip.activeTrip!.departurePort!.name,
+            departurePort: this.trip.activeTrip!.departurePort!.code ? this.trip.activeTrip!.departurePort!.code : this.trip.activeTrip!.departurePort!.name,
             departureDate: this.trip.activeTrip!.departureDate,
-            returnPort: this.trip.activeTrip!.returnPort!.name,
+            returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.returnPort!.name,
             returnDate: this.trip.activeTrip!.returnDate,
             permits: this.trip.activeTrip!.permits,
-            fisheries: this.trip.activeTrip!.fishery!.description,
+            fishery: this.trip.activeTrip!.fishery!.description,
             createdBy: this.trip.activeTrip!.createdBy,
             createdDate: this.trip.activeTrip!.createdDate
         };
