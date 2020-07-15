@@ -151,6 +151,50 @@ export function updateTripsApiTrip(activeTrip: any) {
     });
 }
 
+export function newApiCatch(tripCatch: any) {
+    return new Promise(async (resolve, reject) => {
+        const queryUrl = catchApiUrl + '/' + parseInt(tripCatch.tripNum, 10);
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + jwt,
+                },
+                body: tripCatch
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(err);
+                }
+            }
+        );
+    });
+}
+
+export function updateApiCatch(tripCatch: any) {
+    return new Promise(async (resolve, reject) => {
+        const queryUrl = catchApiUrl + '/' + parseInt(tripCatch.tripNum, 10);
+        request.put(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + jwt,
+                },
+                body: tripCatch
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(err);
+                }
+            }
+        );
+    });
+}
+
 export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
     if (moment(tripsApiTrip.departureDate).isSame(currentTrip.departureDate, 'day')
     && moment(tripsApiTrip.returnDate).isSame(currentTrip.returnDate, 'day')

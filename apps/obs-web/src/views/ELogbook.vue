@@ -316,7 +316,6 @@
             outlined
             label="Logbook Page #"
             title="Page number from vessel logbook"
-            mask="#####"
           ></q-input>
 
           <q-input
@@ -883,6 +882,10 @@
         </div>
       </div>
     </q-expansion-item>
+    <div style="float: right; margin-bottom: 20px">
+      <q-btn @click="submitLogbook" color="primary">Submit / Update</q-btn>
+
+    </div>
   </div>
 </template>
 
@@ -912,7 +915,8 @@ import moment from 'moment';
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
-import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
+import { getTripsApiTrip, getCatchApiCatch, newApiCatch, updateApiCatch } from '@boatnet/bn-common';
+import { authService } from '@boatnet/bn-auth/lib';
 
 export default createComponent({
   setup(props, context) {
@@ -1441,16 +1445,145 @@ export default createComponent({
     };
 
     const getCatch = async (id: any) => {
-      await getCatchApiCatch(id).then((res: any) => {
-        for (const row of res) {
-          if (row.source === 'logbook') {
-            for (const key of Object.keys(row)) {
-              Vue.set(tripCatch, key, row[key]);
+      await getCatchApiCatch(id).then( async (res: any) => {
+        if (res !== 'not found' && res.filter( (row: any) => row.source === 'logbook').length > 0) {
+          for (const row of res) {
+            if (row.source === 'logbook') {
+              for (const key of Object.keys(row)) {
+                Vue.set(tripCatch, key, row[key]);
+              }
             }
           }
+        } else {
+          await getTripsApiTrip(id).then((res: any) => {
+            if (res === 'Doc with specified tripNum not found') {
+              Notify.create({
+                message: '<b>Invalid trip number, can not continue</b>',
+                    position: 'center',
+                    color: 'primary',
+                    timeout: 2000,
+                    icon: 'warning',
+                    html: true,
+                    multiLine: true
+                });
+              return;
+            } else {
+              console.log(res)
+              const apiTrip: any = {
+                tripNum: res.tripNum,
+                year: moment(res.departureDate).format('YYYY'),
+
+                isEFPTrip: false,
+                isObserved: res.isSelected ? res.isSelected : false,
+                isSigned: true,
+                isVoid: false,
+                buyers: [],
+                fishTicketNumber: [],
+                hauls: [],
+
+                vesselName: res.vesselName,
+                vesselNumber: res.vesselId,
+                departureDateTime: res.departureDate,
+                departurePortCode: getPortCode(res.departurePort),
+                departureState: getPortState(res.departurePort),
+                returnDateTime: res.returnDate,
+                returnPortCode: getPortCode(res.returnPort),
+                returnState: getPortState(res.returnPort),
+                fishery: res.fishery ? res.fishery : '',
+                createdBy: authService.getCurrentUser()!.username,
+                createdDate: moment().format(),
+                source: 'logbook'
+              };
+
+              for (const key of Object.keys(apiTrip)) {
+                Vue.set(tripCatch, key, apiTrip[key]);
+              }
+            }
+          })
         }
       });
     };
+
+    const getPort = (portCodeOrName: string) => {
+      if (typeof portCodeOrName !== 'string') {
+        return null;
+      }
+      const port = ports.find( (port: any) => port.PCID.toLowerCase().includes(portCodeOrName.toLowerCase())
+                                              ||
+                                              port.NAME.toLowerCase().includes(portCodeOrName.toLowerCase())
+                                              );
+      if (port) {
+        return port;
+      } else {
+        return null;
+      }
+    }
+
+    const getPortCode = (portCode: string) => {
+      const port = getPort(portCode);
+      if (port) {
+        return port.PCID;
+      } else {
+        return '';
+      }
+    }
+
+    const getPortState = (portCode: string) => {
+      const port = getPort(portCode);
+      if (port) {
+        switch (port.AGID) {
+          case 'W':
+            return 'WA';
+            break;
+          case 'C':
+            return 'CA';
+            break;
+          case 'O':
+            return 'OR';
+            break;
+        }
+      } else {
+        return '';
+      }
+
+    }
+
+    const submitLogbook = () => {
+      tripCatch.updatedBy = authService.getCurrentUser()!.username;
+      tripCatch.updatedDate = moment().format();
+      console.log(tripCatch);
+      if (tripCatch._id && tripCatch._rev) {
+        console.log('Updating API Catch record');
+        updateApiCatch(tripCatch).then( (res) => {
+          console.log(res);
+          Notify.create({
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">Logbook Data Successfully Updated</div>',
+                position: 'top',
+                color: 'green',
+                timeout: 3000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+          context.root.$router.back();
+        })
+      } else {
+        console.log('Submitting new API Catch record');
+        newApiCatch(tripCatch).then( (res) => {
+          console.log(res);
+          Notify.create({
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">Logbook Data Successfully Submitted</div>',
+                position: 'top',
+                color: 'green',
+                timeout: 3000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+          context.root.$router.back();
+        })
+      }
+    }
 
     const formatDateTime = (val: any) => {
       if (val) {
@@ -1563,6 +1696,9 @@ export default createComponent({
           buyers: [],
           fishTicketNumber: [],
           hauls: [],
+          source: 'logbook',
+          createdBy: authService.getCurrentUser()!.username,
+          createdDate: moment().format(),
 
           vesselName: state.vessel.activeVessel.vesselName,
           vesselNumber: state.vessel.activeVessel.coastGuardNumber
@@ -1613,7 +1749,8 @@ export default createComponent({
       speciesFilterFn,
       portOptions,
       departurePortFilterFn,
-      returnPortFilterFn
+      returnPortFilterFn,
+      submitLogbook
     };
   }
 });
