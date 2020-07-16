@@ -147,10 +147,13 @@ export default createComponent({
       }
       store.dispatch('debriefer/updateTripSearchFilters', {});
       store.dispatch('debriefer/updateTripSearchFilters', filters);
+      store.dispatch('debriefer/setTripIds', []);
     }
 
     function selectTripId(id: string) {
+      console.log('ids ' + id)
       store.dispatch('debriefer/setTripIds', id);
+      store.dispatch('debriefer/updateTripSearchFilters', {});
       filters = {};
       vessel.value = [];
       fishery.value = [];

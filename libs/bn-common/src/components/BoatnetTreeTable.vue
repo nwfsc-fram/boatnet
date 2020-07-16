@@ -8,7 +8,7 @@
       sortMode="single"
       :paginator="true"
       :rows="10"
-      style="height: 800px"
+      style="height: 700px"
     >
       <template #header>
         <div style="text-align:left">

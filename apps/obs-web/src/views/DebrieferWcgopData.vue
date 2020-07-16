@@ -1,19 +1,27 @@
 <template>
   <div>
-    <div v-if="showPopout" style="text-align: right">
-      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
-    </div>
-    <div>
-      Filters:
-      <q-chip
-        v-for="filter of filters"
-        :key="filter.label"
-        removable
-        color="primary"
-        text-color="white"
-        icon="directions_boat"
-        @remove="remove(filter)"
-      >{{ filter.label }}</q-chip>
+    <div id="expand-box">
+      <div id="expand-box-header">
+        <div style="float: left">
+          Filters:
+          <q-chip
+            v-for="filter of filters"
+            :key="filter.label"
+            removable
+            color="primary"
+            text-color="white"
+            icon="directions_boat"
+            @remove="remove(filter)"
+          >{{ filter.label }}</q-chip>
+        </div>
+        <q-icon
+          v-if="showPopout"
+          style="float: right"
+          name="open_in_new"
+          size="md"
+          v-on:click="openNewDebriefingTab"
+        />
+      </div>
     </div>
     <div class="q-gutter-y-md">
       <q-card>
@@ -99,7 +107,9 @@ export default createComponent({
 
     function update() {
       filters.value = [];
-      filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
+      filters.value = filters.value.concat(
+        updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId')
+      );
       setToTripTab();
     }
 
@@ -108,7 +118,8 @@ export default createComponent({
       for (const val of list) {
         const id = get(val, idLabel);
         if (label === 'Haul') {
-          val.label = 'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
+          val.label =
+            'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
         } else {
           val.label = label + ': ' + id;
         }
@@ -134,7 +145,7 @@ export default createComponent({
     }
 
     function openNewDebriefingTab() {
-      const route = '/table/' + tab.value;
+      const route = '/observer-web/table/' + tab.value;
       window.open(route, '_blank');
       context.emit('update:showErrors', false);
     }
@@ -148,3 +159,21 @@ export default createComponent({
   }
 });
 </script>
+
+<style >
+#expand-box {
+  width: 100%;
+  padding: 0;
+  margin: 7px 0 0 0;
+}
+
+#expand-box-header {
+  margin: 0;
+  padding: 0 0 3px 2px;
+  overflow: auto;
+}
+
+#expand_box_sub_header {
+  clear: both;
+}
+</style>
