@@ -341,7 +341,7 @@ export default class LogBookCapture extends Vue {
                     });
                 this.$router.push({ path: '/home' });
             });
-    };
+    }
 
     private newTrip() {
         const newTrip: WcgopTrip = {

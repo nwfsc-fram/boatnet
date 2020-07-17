@@ -186,7 +186,8 @@
       <div style="float:right">
         <q-btn flat
           v-if="trip.closingReason !== 'cancelled' &&
-          trip._attachments"
+          trip._attachments && isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) &&
+          !user.captainMode"
           @click="keyLogbook(trip)"
         >
         Transcribe
@@ -213,7 +214,7 @@
           <q-td key="actions" :props="props" v-if="props.row.closingReason !== 'cancelled'">
             <q-icon name="edit" color="primary" @click.native="review(props.row)" title="edit trip"></q-icon>
             &nbsp;
-            <q-icon name="notes" color="primary" v-if="props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data"></q-icon>
+            <q-icon name="notes" color="primary" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data"></q-icon>
           </q-td>
           <q-td v-else></q-td>
           <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" style="font-weight: bold"></q-icon></q-td>
@@ -870,7 +871,7 @@ export default class Trips extends Vue {
     }
 
     private keyLogbook(trip: any) {
-      this.$router.push({path: '/e-logbook/' + trip.tripNum})
+      this.$router.push({path: '/e-logbook/' + trip.tripNum});
     }
 
     private getTripDetails(trip: any, index = null) {

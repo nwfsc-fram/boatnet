@@ -1,6 +1,8 @@
 <template>
-    <div class="q-pa-md q-gutter-md">
-        <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+    <div class="q-pa-md q-gutter-md relative-position" style="min-height: 200px">
+            <q-inner-loading :showing="transferring">
+                <q-spinner-radio color="primary" size="3em"/>
+            </q-inner-loading>
         <div id="imagesholder"></div>
     </div>
 </template>
