@@ -423,6 +423,7 @@
           :columns="haulColumns"
           :pagination.sync="haulPagination"
           :selected.sync="haulSelected"
+          selection="single"
           row-key="haulNum"
           dense
           hide-bottom
@@ -440,7 +441,7 @@
           <template v-slot:body="props">
             <q-tr
               :props="props"
-              @click.native="{{ selectHaul(tripCatch.hauls.indexOf(props.row) + 1) }}"
+              @click.native="{{ selectHaul(tripCatch.hauls.indexOf(props.row) + 1); haulSelected = [...props.row] }}"
             >
               <q-td
                 headers="haulNum"
@@ -493,6 +494,7 @@
             </q-tr>
           </template>
         </q-table>
+
         <br />
 
         <div
@@ -630,26 +632,72 @@
                 title="Depth of fishing gear when gear is deployed (Fathoms)"
                 mask="#####"
               ></q-input>
+              <div class="row items-start text-black text-bold">
+                <div style="width: 51.5%">Latitude</div>
+                <div>Longitude</div>
+              </div>
               <div class="row items-start">
                 <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].startLatitude"
+                  v-model="coordinates.start.lat.deg"
                   dense
                   autogrow
                   outlined
-                  label="Latitude"
-                  title="Latitude of gear deployement in decimal degrees"
-                  style="width: 50%; margin-right: 5px"
-                  mask="N###.######"
+                  debounce="500"
+                  label="DEG"
+                  title="latitude degrees"
+                  style="width: 20%; margin-right: 5px"
+                ></q-input>
+               <q-input
+                  v-model="coordinates.start.lat.min"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="MIN"
+                  title="latitude minutes"
+                  style="width: 27%; margin-right: 10px"
                 ></q-input>
                 <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].startLongitude"
+                  v-model="coordinates.start.long.deg"
                   dense
                   autogrow
                   outlined
-                  label="Longitude"
-                  title="Longitude of gear deployement in decimal degrees"
-                  style="width: 48.3%"
-                  mask="N###.######"
+                  debounce="500"
+                  label="DEG"
+                  title="longitude degrees"
+                  style="width: 20%; margin-right: 5px"
+                ></q-input>
+                <q-input
+                  v-model="coordinates.start.long.min"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="MIN"
+                  title="longitude minutes"
+                  style="width: 27%"
+                ></q-input>
+              </div>
+              <div class="row items-start">
+                <q-input
+                  v-model="coordinates.start.lat.dd"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="Decimal Degrees"
+                  title="Latitude of gear set in decimal degrees"
+                  style="width: 48.5%; margin-right: 10px"
+                ></q-input>
+                <q-input
+                  v-model="coordinates.start.long.dd"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="Decimal Degrees"
+                  title="Longitude of gear set in decimal degrees"
+                  style="width: 48.5%"
                 ></q-input>
               </div>
             </div>
@@ -696,26 +744,72 @@
                 title="Depth of fishing gear when gear is retrieved (Fathoms)"
                 mask="#####"
               ></q-input>
+              <div class="row items-start text-black text-bold">
+                <div style="width: 51.5%">Latitude</div>
+                <div>Longitude</div>
+              </div>
               <div class="row items-start">
                 <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].endLatitude"
+                  v-model="coordinates.end.lat.deg"
                   dense
                   autogrow
                   outlined
-                  label="Latitude"
-                  title="Latitude of gear retrieval in decimal degrees"
-                  style="width: 50%; margin-right: 5px"
-                  mask="N###.######"
+                  debounce="500"
+                  label="DEG"
+                  title="latitude degrees"
+                  style="width: 20%; margin-right: 5px"
+                ></q-input>
+               <q-input
+                  v-model="coordinates.end.lat.min"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="MIN"
+                  title="latitude minutes"
+                  style="width: 27%; margin-right: 10px"
                 ></q-input>
                 <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].endLongitude"
+                  v-model="coordinates.end.long.deg"
                   dense
                   autogrow
                   outlined
-                  label="Longitude"
-                  title="Longitude of gear retrieval in decimal degrees"
-                  style="width: 48.3%"
-                  mask="N###.######"
+                  debounce="500"
+                  label="DEG"
+                  title="longitude degrees"
+                  style="width: 20%; margin-right: 5px"
+                ></q-input>
+                <q-input
+                  v-model="coordinates.end.long.min"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="MIN"
+                  title="longitude minutes"
+                  style="width: 27%"
+                ></q-input>
+              </div>
+              <div class="row items-start">
+                <q-input
+                  v-model="coordinates.end.lat.dd"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="Decimal Degrees"
+                  title="Latitude of gear set in decimal degrees"
+                  style="width: 48.5%; margin-right: 10px"
+                ></q-input>
+                <q-input
+                  v-model="coordinates.end.long.dd"
+                  dense
+                  autogrow
+                  outlined
+                  debounce="500"
+                  label="Decimal Degrees"
+                  title="Longitude of gear set in decimal degrees"
+                  style="width: 48.5%"
                 ></q-input>
               </div>
             </div>
@@ -738,14 +832,14 @@
                 :columns="catchColumns"
                 :pagination.sync="catchPagination"
                 :selected.sync="catchSelected"
-                row-key="haulNum"
+                row-key="index"
                 dense
                 hide-bottom
               >
                 <template v-slot:body="props">
                   <q-tr
                     :props="props"
-                    @click.native="{{ selectedCatch = tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row) + 1 }}"
+                    @click.native="{{ selectedCatch = tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row) + 1; catchSelected = [...props.row] }}"
                   >
                     <q-td key="action" :props="props">
                       <q-btn
@@ -918,6 +1012,8 @@ Vue.component('pCalendar', Calendar);
 import { getTripsApiTrip, getCatchApiCatch, newApiCatch, updateApiCatch } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth/lib';
 
+import _ from 'lodash';
+
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
@@ -947,25 +1043,54 @@ export default createComponent({
       if (!tripCatch.hauls[selectedHaul.value - 1].catch) {
         Vue.set(tripCatch.hauls[selectedHaul.value - 1], 'catch', []);
       }
-      tripCatch.hauls[selectedHaul.value - 1].catch.push({});
+      tripCatch.hauls[selectedHaul.value - 1].catch.push({index: tripCatch.hauls[selectedHaul.value - 1].catch.length});
       selectedCatch.value =
         tripCatch.hauls[selectedHaul.value - 1].catch.length;
     };
 
     const addHaul = () => {
       tripCatch.hauls.push({
-        startDateTime: '',
-        endDateTime: ''
+        startDateTime: tripCatch.departureDateTime,
+        endDateTime: tripCatch.returnDateTime,
+        haulNum: tripCatch.hauls.length + 1
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
-      haulStartTime.value = '';
-      haulEndTime.value = '';
+      haulStartTime.value = tripCatch.departureDateTime;
+      haulEndTime.value = tripCatch.returnDateTime;
     };
 
     const selectHaul = (haulIndex: number) => {
       selectedHaul.value = haulIndex;
       selectedCatch.value = null;
+
+      haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format('HH:mm');
+      haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format('HH:mm');
+
+      coordinates.value = {
+        start: {
+          lat: { deg: '', min: '', dd: '' },
+          long: { deg: '', min: '', dd: '' }
+        },
+        end: {
+          lat: { deg: '', min: '', dd: '' },
+          long: { deg: '', min: '', dd: '' }
+        }
+      };
+
+      if (tripCatch.hauls[selectedHaul.value - 1].startLatitude) {
+        coordinates.value.start.lat.dd = tripCatch.hauls[selectedHaul.value - 1].startLatitude;
+      }
+      if (tripCatch.hauls[selectedHaul.value - 1].startLongitude) {
+        coordinates.value.start.long.dd = tripCatch.hauls[selectedHaul.value - 1].startLongitude;
+      }
+      if (tripCatch.hauls[selectedHaul.value - 1].endLatitude) {
+        coordinates.value.end.lat.dd = tripCatch.hauls[selectedHaul.value - 1].endLatitude;
+      }
+      if (tripCatch.hauls[selectedHaul.value - 1].endLongitude) {
+        coordinates.value.end.long.dd = tripCatch.hauls[selectedHaul.value - 1].endLongitude;
+      }
+
     };
 
     const haulPagination = {
@@ -1445,9 +1570,9 @@ export default createComponent({
     };
 
     const getCatch = async (id: any) => {
-      await getCatchApiCatch(id).then( async (res: any) => {
-        if (res !== 'not found' && res.filter( (row: any) => row.source === 'logbook').length > 0) {
-          for (const row of res) {
+      await getCatchApiCatch(id).then( async (res1: any) => {
+        if (res1 !== 'not found' && res1.filter( (row: any) => row.source === 'logbook').length > 0) {
+          for (const row of res1) {
             if (row.source === 'logbook') {
               for (const key of Object.keys(row)) {
                 Vue.set(tripCatch, key, row[key]);
@@ -1468,7 +1593,7 @@ export default createComponent({
                 });
               return;
             } else {
-              console.log(res)
+              console.log(res);
               const apiTrip: any = {
                 tripNum: res.tripNum,
                 year: moment(res.departureDate).format('YYYY'),
@@ -1499,7 +1624,7 @@ export default createComponent({
                 Vue.set(tripCatch, key, apiTrip[key]);
               }
             }
-          })
+          });
         }
       });
     };
@@ -1508,16 +1633,16 @@ export default createComponent({
       if (typeof portCodeOrName !== 'string') {
         return null;
       }
-      const port = ports.find( (port: any) => port.PCID.toLowerCase().includes(portCodeOrName.toLowerCase())
+      const port = ports.find( (portItem: any) => portItem.PCID.toLowerCase().includes(portCodeOrName.toLowerCase())
                                               ||
-                                              port.NAME.toLowerCase().includes(portCodeOrName.toLowerCase())
+                                              portItem.NAME.toLowerCase().includes(portCodeOrName.toLowerCase())
                                               );
       if (port) {
         return port;
       } else {
         return null;
       }
-    }
+    };
 
     const getPortCode = (portCode: string) => {
       const port = getPort(portCode);
@@ -1526,7 +1651,7 @@ export default createComponent({
       } else {
         return '';
       }
-    }
+    };
 
     const getPortState = (portCode: string) => {
       const port = getPort(portCode);
@@ -1545,8 +1670,7 @@ export default createComponent({
       } else {
         return '';
       }
-
-    }
+    };
 
     const submitLogbook = () => {
       tripCatch.updatedBy = authService.getCurrentUser()!.username;
@@ -1565,8 +1689,11 @@ export default createComponent({
                 html: true,
                 multiLine: true
             });
-          context.root.$router.back();
-        })
+          getCatch(tripCatch.tripNum).then(() => {
+            getDepartureTime();
+            getReturnTime();
+          });
+        });
       } else {
         console.log('Submitting new API Catch record');
         newApiCatch(tripCatch).then( (res) => {
@@ -1580,10 +1707,13 @@ export default createComponent({
                 html: true,
                 multiLine: true
             });
-          context.root.$router.back();
-        })
+          getCatch(tripCatch.tripNum).then(() => {
+            getDepartureTime();
+            getReturnTime();
+          });
+        });
       }
-    }
+    };
 
     const formatDateTime = (val: any) => {
       if (val) {
@@ -1597,9 +1727,107 @@ export default createComponent({
       }
     };
 
-    const watcherOptions: WatchOptions = {
-      immediate: false
+    const indexCatch = () => {
+      for (const haul of tripCatch.hauls) {
+        for (const catchItem of haul.catch) {
+          catchItem.index = haul.catch.indexOf(catchItem);
+        }
+      }
     };
+
+    const coordinates: any = ref({
+      start: {
+        lat: { deg: '', min: '', dd: '' },
+        long: { deg: '', min: '', dd: '' }
+      },
+      end: {
+        lat: { deg: '', min: '', dd: '' },
+        long: { deg: '', min: '', dd: '' }
+      }
+    });
+
+    let oldCoordVals: any = {
+      start: {
+        lat: { deg: '', min: '', dd: '' },
+        long: { deg: '', min: '', dd: '' }
+      },
+      end: {
+        lat: { deg: '', min: '', dd: '' },
+        long: { deg: '', min: '', dd: '' }
+      }
+    };
+
+    const watcherOptions: WatchOptions = {
+      immediate: false, deep: true
+    };
+
+    watch(
+      () => coordinates.value,
+      (newVal, oldVal) => {
+
+        // conversions
+        const getDecimal = (degrees: any, minutes: any) => {
+          const decimal = parseFloat((parseFloat(degrees) + (parseFloat(minutes) / 60)).toFixed(5));
+          if (decimal) {
+            return decimal;
+          } else {
+            return '';
+          }
+        };
+
+        const getDegMin = (decimal: number) => {
+          const degrees = Math.trunc(decimal);
+          const minutes = parseFloat(((decimal - degrees) * 60).toFixed(5));
+          if (degrees && minutes) {
+            return [ degrees, minutes ];
+          } else {
+            return ['', ''];
+          }
+        };
+
+        if (coordinates.value.start.lat.dd !== oldCoordVals.start.lat.dd ||
+            coordinates.value.start.long.dd !== oldCoordVals.start.long.dd ||
+            coordinates.value.end.lat.dd !== oldCoordVals.end.lat.dd ||
+            coordinates.value.end.long.dd !== oldCoordVals.end.long.dd
+        ) {
+          if (coordinates.value.start.lat.dd !== '') {
+            [coordinates.value.start.lat.deg, coordinates.value.start.lat.min] = getDegMin(coordinates.value.start.lat.dd);
+            tripCatch.hauls[selectedHaul.value - 1].startLatitude = coordinates.value.start.lat.dd;
+          }
+          if (coordinates.value.start.long.dd !== '') {
+            [coordinates.value.start.long.deg, coordinates.value.start.long.min] = getDegMin(coordinates.value.start.long.dd);
+            tripCatch.hauls[selectedHaul.value - 1].startLongitude = coordinates.value.start.long.dd;
+          }
+          if (coordinates.value.end.lat.dd !== '') {
+            [coordinates.value.end.lat.deg, coordinates.value.end.lat.min] = getDegMin(coordinates.value.end.lat.dd);
+            tripCatch.hauls[selectedHaul.value - 1].endLatitude = coordinates.value.end.lat.dd;
+          }
+          if (coordinates.value.end.long.dd !== '') {
+            [coordinates.value.end.long.deg, coordinates.value.end.long.min] = getDegMin(coordinates.value.end.long.dd);
+            tripCatch.hauls[selectedHaul.value - 1].endLongitude = coordinates.value.end.long.dd;
+          }
+        } else {
+          if (coordinates.value.start.lat.deg !== '' && coordinates.value.start.lat.min !== '') {
+            coordinates.value.start.lat.dd = getDecimal(coordinates.value.start.lat.deg, coordinates.value.start.lat.min);
+            tripCatch.hauls[selectedHaul.value - 1].startLatitude = coordinates.value.start.lat.dd;
+          }
+          if (coordinates.value.start.long.deg !== '' && coordinates.value.start.long.min !== '') {
+            coordinates.value.start.long.dd = getDecimal(coordinates.value.start.long.deg, coordinates.value.start.long.min);
+            tripCatch.hauls[selectedHaul.value - 1].startLongitude = coordinates.value.start.long.dd;
+          }
+          if (coordinates.value.end.lat.deg !== '' && coordinates.value.end.lat.min !== '') {
+            coordinates.value.end.lat.dd = getDecimal(coordinates.value.end.lat.deg, coordinates.value.end.lat.min);
+            tripCatch.hauls[selectedHaul.value - 1].endLatitude = coordinates.value.end.lat.dd;
+          }
+          if (coordinates.value.end.long.deg !== '' && coordinates.value.end.long.min !== '') {
+            coordinates.value.end.long.dd = getDecimal(coordinates.value.end.long.deg, coordinates.value.end.long.min);
+            tripCatch.hauls[selectedHaul.value - 1].endLongitude = coordinates.value.end.long.dd;
+          }
+        }
+
+        oldCoordVals = _.cloneDeep(coordinates.value);
+      }, watcherOptions
+    );
 
     const departureTime: any = ref('');
     const getDepartureTime = () => {
@@ -1717,6 +1945,7 @@ export default createComponent({
         getCatch(context.root.$route.params.id).then(() => {
           getDepartureTime();
           getReturnTime();
+          indexCatch();
         });
       }
     });
@@ -1750,13 +1979,14 @@ export default createComponent({
       portOptions,
       departurePortFilterFn,
       returnPortFilterFn,
-      submitLogbook
+      submitLogbook,
+      coordinates
     };
   }
 });
 </script>
 
-<style>
+<style scoped>
 /* body .p-inputtext {
     border-radius: 4px !important;
     background-color: #c8c8c8 !important;
@@ -1766,5 +1996,10 @@ export default createComponent({
   width: 100%;
   max-width: 350px;
   margin: 0 5px;
+}
+
+.selected {
+  background-color: #007EC6 !important;
+  color: white;
 }
 </style>

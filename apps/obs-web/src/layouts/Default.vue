@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips'].includes($route.name)"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison'].includes($route.name)"
           flat
           dense
           round
@@ -304,21 +304,6 @@
             <q-item-section>
               <q-item-label>Video Footage Management</q-item-label>
               <q-item-label caption>manage EM footage</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            :to="onlineStatus ? '/e-logbook/new' : ''"
-            exact
-            @click="leftDrawerOpen = false"
-            :disabled="!onlineStatus"
-          >
-            <q-item-section avatar>
-              <q-icon name="notes" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>E Logbook</q-item-label>
-              <q-item-label caption>paperless logbook</q-item-label>
             </q-item-section>
           </q-item>
 

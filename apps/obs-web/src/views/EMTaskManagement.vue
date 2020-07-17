@@ -1,7 +1,12 @@
 <template>
-    <div class="q-pa-md q-gutter-md">
+    <div class="q-pa-md q-gutter-md relative-position" style="min-height: 200px">
+
+        <q-inner-loading :showing="transferring">
+            <q-spinner-radio color="primary" size="3em"/>
+        </q-inner-loading>
 
         <q-table
+        v-if="!transferring"
         :data="activeTasks"
         :columns="columns"
         dense
@@ -88,14 +93,16 @@ export default createComponent({
         const getActionUrl = (action: any, row: any) => {
             if (action === 'compare') {
                 return 'em-data-compare?' + 'tripnum=' + row.tripNum;
-            } else if (action === 'view') {
+            } else if (action === 'image') {
                 return 'view-image?' + 'id=' + row._id;
-            } else if (action === 'view data') {
+            } else if (action === 'logbook') {
                 return 'e-logbook' + '/' + row.tripNum;
             }
         };
 
+        const transferring: any = ref(false);
         const getTripsWithCaptures = async () => {
+            transferring.value = true;
             try {
                 const masterDB: Client<any> = couchService.masterDB;
                 const queryOptions = {
@@ -108,35 +115,58 @@ export default createComponent({
                 'ots_trips_with_logbook_captures',
                 queryOptions
                 );
-
                 const trips = tripsWithCaptures.rows.map( (row: any) => row.doc);
+
+                const catchQueryOptions = {
+                    reduce: false,
+                    include_docs: false
+                };
+                let catchStatus: any = await masterDB.view(
+                    'trips_api_catch_status',
+                    'trips_api_catch_status',
+                    catchQueryOptions
+                );
+                catchStatus = catchStatus.rows;
+
                 for (const trip of trips) {
-                    const apiTrip: any = await getTripsApiTrip(trip.tripNum);
-                    const apiCatch: any = await getCatchApiCatch(trip.tripNum);
+                    const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['view', 'view data', 'compare', 'review'];
+                    trip.actions = ['image', 'logbook', 'compare'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
-                    if (Array.isArray(apiCatch)) {
+                    if (tripCatch.length > 0) {
 
-                        for (const dataSource of apiCatch) {
-                            if (stagePriority.indexOf(dataSource.source) > stagePriority.indexOf(trip.stage)) {
-                                trip.stage = dataSource.source;
-                                trip.statusDate = dataSource.updateDate ? dataSource.updateDate : dataSource.createdDate;
-                                trip.status = 'not selected for review';
+                        for (const dataSource of tripCatch) {
+                            if (stagePriority.indexOf(dataSource.value[0]) > stagePriority.indexOf(trip.stage)) {
+                                trip.stage = dataSource.value[0];
+                                trip.statusDate = dataSource.value[1];
+                                switch (dataSource.value[0]) {
+                                    case 'logbook':
+                                        trip.status = 'not selected for review';
+                                        break;
+                                    case 'thirdParty':
+                                        trip.status = 'thrid party review submitted';
+                                        break;
+                                    case 'nwfscAudit':
+                                        trip.status = 'NWFSC audit completed';
+                                        break;
+                                }
                             }
                         }
                     } else {
                         trip.stage = 'capture';
                         trip.status = 'waiting for logbook data';
-                        trip.actions.splice(trip.actions.indexOf('view data'), 1);
                         trip.actions.splice(trip.actions.indexOf('compare'), 1);
                         trip.statusDate = trip.changeLog ? trip.changeLog[0].updateDate : trip.createdDate;
                     }
                 }
+
+
+
                 for (const trip of trips) {
                     activeTasks.push(trip);
                 }
+                transferring.value = false;
             } catch (err) {
                 console.log(err);
             }
@@ -147,7 +177,7 @@ export default createComponent({
         });
 
         return {
-            activeTasks, columns, selected, pagination, getVesselId, getAttribute, getActionUrl
+            activeTasks, columns, selected, pagination, getVesselId, getAttribute, getActionUrl, transferring
         };
 
     }
