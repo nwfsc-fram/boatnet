@@ -1043,9 +1043,9 @@ export default createComponent({
       if (!tripCatch.hauls[selectedHaul.value - 1].catch) {
         Vue.set(tripCatch.hauls[selectedHaul.value - 1], 'catch', []);
       }
-      tripCatch.hauls[selectedHaul.value - 1].catch.push({index: tripCatch.hauls[selectedHaul.value - 1].catch.length});
-      selectedCatch.value =
-        tripCatch.hauls[selectedHaul.value - 1].catch.length;
+      tripCatch.hauls[selectedHaul.value - 1].catch.push({});
+      selectedCatch.value = tripCatch.hauls[selectedHaul.value - 1].catch.length;
+      indexCatch();
     };
 
     const addHaul = () => {
@@ -1287,6 +1287,7 @@ export default createComponent({
 
     const removeCatch = (catchIndex: number) => {
       tripCatch.hauls[selectedHaul.value - 1].catch.splice(catchIndex, 1);
+      indexCatch();
     };
 
     const fisheryOptions: any = [];
@@ -1732,6 +1733,7 @@ export default createComponent({
         for (const catchItem of haul.catch) {
           catchItem.index = haul.catch.indexOf(catchItem);
         }
+      console.log(haul.catch);
       }
     };
 
