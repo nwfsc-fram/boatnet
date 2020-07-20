@@ -152,10 +152,10 @@ export default createComponent({
             if (!tripTotals[species.speciesCode][source.source].discard) { tripTotals[species.speciesCode][source.source].discard = 0; }
             if (!tripTotals[species.speciesCode][source.source].retained) {tripTotals[species.speciesCode][source.source].retained = 0; }
             if (species.catchDisposition === 'Discarded') {
-              tripTotals[species.speciesCode][source.source].discard += species.estimatedWeight;
+              tripTotals[species.speciesCode][source.source].discard += parseFloat(species.estimatedWeight);
             }
             if (source.source === 'logbook' && species.catchDisposition === 'Retained') {
-              tripTotals[species.speciesCode][source.source].retained += species.estimatedWeight ? species.estimatedWeight : 0;
+              tripTotals[species.speciesCode][source.source].retained += parseFloat(species.estimatedWeight) ? parseFloat(species.estimatedWeight) : 0;
             }
             if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
             if (!haulTotals[haul.haulNum][species.speciesCode]) { haulTotals[haul.haulNum][species.speciesCode] = {}; }
@@ -164,9 +164,9 @@ export default createComponent({
             if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.retained ? species.retained : '';
             }
             if (species.catchDisposition === 'Discarded') {
-              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = species.estimatedWeight;
+              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.estimatedWeight);
             } else if (species.catchDisposition === 'Retained') {
-              haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.estimatedWeight;
+              haulTotals[haul.haulNum][species.speciesCode][source.source].retained = parseFloat(species.estimatedWeight);
             }
           }
         }

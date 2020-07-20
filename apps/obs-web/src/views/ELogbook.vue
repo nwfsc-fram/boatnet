@@ -14,7 +14,7 @@
       <span v-if="selectedCatch">
         &nbsp;
         <q-icon name="fa fa-fish" />
-        {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode ? tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode.commonName : '' }} -
+        {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -
         {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
       </span>
     </div>
@@ -314,7 +314,7 @@
             dense
             autogrow
             outlined
-            label="Logbook Page #"
+            label="Logbook Page #(s)"
             title="Page number from vessel logbook"
           ></q-input>
 
@@ -609,7 +609,9 @@
                   </q-popup-proxy>
                   <template
                     v-slot:control
-                  >{{ formatDate(tripCatch.hauls[selectedHaul - 1].startDateTime) }}</template>
+                    >
+                    {{ formatDate(tripCatch.hauls[selectedHaul - 1].startDateTime) }}
+                  </template>
                 </q-field>
                 <q-input
                   v-model="haulStartTime"
@@ -1043,21 +1045,35 @@ export default createComponent({
       if (!tripCatch.hauls[selectedHaul.value - 1].catch) {
         Vue.set(tripCatch.hauls[selectedHaul.value - 1], 'catch', []);
       }
-      tripCatch.hauls[selectedHaul.value - 1].catch.push({index: tripCatch.hauls[selectedHaul.value - 1].catch.length});
-      selectedCatch.value =
-        tripCatch.hauls[selectedHaul.value - 1].catch.length;
+      tripCatch.hauls[selectedHaul.value - 1].catch.push({});
+      selectedCatch.value = tripCatch.hauls[selectedHaul.value - 1].catch.length;
+      indexCatch();
+      catchSelected.value = [_.cloneDeep(tripCatch.hauls[selectedHaul.value - 1].catch[tripCatch.hauls[selectedHaul.value - 1].catch.length -1])];
     };
 
     const addHaul = () => {
       tripCatch.hauls.push({
         startDateTime: tripCatch.departureDateTime,
         endDateTime: tripCatch.returnDateTime,
-        haulNum: tripCatch.hauls.length + 1
+        haulNum: tripCatch.hauls.length + 1,
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
       haulStartTime.value = tripCatch.departureDateTime;
       haulEndTime.value = tripCatch.returnDateTime;
+
+      haulSelected.value = [_.cloneDeep(tripCatch.hauls[tripCatch.hauls.length -1])];
+
+      coordinates.value = {
+        start: {
+          lat: { deg: '', min: '', dd: '' },
+          long: { deg: '', min: '', dd: '' }
+        },
+        end: {
+          lat: { deg: '', min: '', dd: '' },
+          long: { deg: '', min: '', dd: '' }
+        }
+      };
     };
 
     const selectHaul = (haulIndex: number) => {
@@ -1099,7 +1115,7 @@ export default createComponent({
       rowsPerPage: 0
     };
 
-    const haulSelected: any = [];
+    let haulSelected: any = ref([]);
 
     const haulColumns = [
       {
@@ -1208,7 +1224,7 @@ export default createComponent({
       rowsPerPage: 0
     };
 
-    const catchSelected: any = [];
+    const catchSelected: any = ref([]);
 
     const catchColumns = [
       {
@@ -1287,6 +1303,7 @@ export default createComponent({
 
     const removeCatch = (catchIndex: number) => {
       tripCatch.hauls[selectedHaul.value - 1].catch.splice(catchIndex, 1);
+      indexCatch();
     };
 
     const fisheryOptions: any = [];
@@ -1717,7 +1734,7 @@ export default createComponent({
 
     const formatDateTime = (val: any) => {
       if (val) {
-        return moment(val).format('MMM, DD, YYYY HH:mm');
+        return moment(val).format('YYYY, MMM, DD HH:mm');
       }
     };
 
@@ -1729,8 +1746,10 @@ export default createComponent({
 
     const indexCatch = () => {
       for (const haul of tripCatch.hauls) {
-        for (const catchItem of haul.catch) {
-          catchItem.index = haul.catch.indexOf(catchItem);
+        if (haul.catch) {
+          for (const catchItem of haul.catch) {
+            catchItem.index = haul.catch.indexOf(catchItem);
+          }
         }
       }
     };
