@@ -154,7 +154,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
-    let filters: any = ref({});
+    const filters: any = ref({});
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -176,12 +176,29 @@ export default createComponent({
       updateSelection();
     });
 
+    // clear selection when evaluation period selected
+    watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
+
     function updateSelection() {
+      pageStart.value = 0;
+      let pageStartValue = 0;
+      const rowsPerPage = 10;
       if (props.type === 'Trips') {
         selected.value = state.debriefer.trips;
       } else if (props.type === 'Specimens') {
-        selected.value = state.debriefer.specimens.selected;
-        pageStart.value = state.debriefer.specimens.page;
+        const idHolder = [];
+        for (const id of state.debriefer.specimens) {
+          idHolder.push({ _id: id });
+        }
+        selected.value = idHolder;
+        if (state.debriefer.specimens.length > 0) {
+          pageStartValue = findIndex(props.value, (item: any) => {
+            return item._id === state.debriefer.specimens[0];
+          });
+          pageStart.value =
+            Math.floor(pageStartValue / rowsPerPage) * rowsPerPage;
+        }
+        state.debriefer.specimens = [];
       }
     }
 
@@ -295,7 +312,9 @@ export default createComponent({
         fieldArr.splice(fieldArr.length - 1, 1);
         fields = fieldArr.join('.');
 
-        const updateCellValFieldsArr: string[] = slotProps.column.field.split('.');
+        const updateCellValFieldsArr: string[] = slotProps.column.field.split(
+          '.'
+        );
         updateCellValFieldsArr.splice(0, 1);
         const updateCellValFields = updateCellValFieldsArr.join('.');
         cellVal.value = get(newValue, updateCellValFields);

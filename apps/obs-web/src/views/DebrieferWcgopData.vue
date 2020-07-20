@@ -52,7 +52,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="catch">
-            <app-debriefer-catches :isFullSize="isFullSize"></app-debriefer-catches>
+            <app-debriefer-catches :isFullSize="isFullSize" @changeTab="updateTab"></app-debriefer-catches>
           </q-tab-panel>
 
           <q-tab-panel name="biospecimens">
@@ -78,6 +78,8 @@ import { AshopCruise } from '@boatnet/bn-models';
 import { newCruiseApiTrip } from '@boatnet/bn-common';
 import { pouchService } from '@boatnet/bn-pouch';
 import { get, set, findIndex } from 'lodash';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 
 export default createComponent({
   props: {
@@ -92,14 +94,16 @@ export default createComponent({
     const tab: any = ref('');
 
     const filters: any = ref([]);
+    const masterDB: Client<any> = couchService.masterDB;
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
 
-    function initTab() {
-      tab.value = props.startingTab;
+    updateTab(props.startingTab ? props.startingTab : '');
+
+    function updateTab(tabName: string) {
+      tab.value = tabName;
     }
-    initTab();
 
     function setToTripTab() {
       tab.value = 'trips';
@@ -110,7 +114,7 @@ export default createComponent({
       filters.value = filters.value.concat(
         updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId')
       );
-      setToTripTab();
+      getOperations();
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
@@ -136,12 +140,37 @@ export default createComponent({
       if (item.type === 'wcgop-trip') {
         index = findIndex(trips, item);
         trips.splice(index, 1);
+        if (trips.length === 0) {
+          setToTripTab();
+        }
         store.dispatch('debriefer/updateTrips', trips);
-      } else if (item.type === 'wcgop-operation') {
-        index = findIndex(operations, item);
-        operations.splice(index, 1);
-        store.dispatch('debriefer/updateOperations', operations);
       }
+    }
+
+    // fetch operation docs for selected trips
+    async function getOperations() {
+      let operationIds: any[] = [];
+      let operations: any[] = [];
+      for (const trip of state.debriefer.trips) {
+        operationIds = operationIds.concat(trip.operationIDs);
+      }
+
+      if (operationIds.length > 0) {
+        try {
+          const operationOptions: ListOptions = {
+            keys: operationIds
+          };
+          const operationDocs = await masterDB.listWithDocs(operationOptions);
+          operations = operationDocs.rows;
+          operations.sort((a: any, b: any) => {
+            return (a.legacy.tripId + a.operationNum) - (b.legacy.tripId + b.operationNum);
+          });
+        } catch (err) {
+          console.log('cannot fetch operation docs ' + err);
+        }
+      }
+      console.log(operations);
+      store.dispatch('debriefer/updateOperations', operations);
     }
 
     function openNewDebriefingTab() {
@@ -152,6 +181,7 @@ export default createComponent({
 
     return {
       tab,
+      updateTab,
       openNewDebriefingTab,
       filters,
       remove

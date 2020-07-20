@@ -161,13 +161,13 @@ export default createComponent({
 
     function select(item: string[]) {
       store.dispatch('debriefer/updateSpecimens', item);
+      context.emit('changeTab', 'biospecimens');
     }
 
     async function getCatches() {
       const catches: any[] = [];
 
       for (const operation of state.debriefer.operations) {
-        
         let catchIndex = 0;
         for (const c of operation.catches) {
           const tripId = operation.legacy.tripId;
@@ -208,14 +208,14 @@ export default createComponent({
               let basketCnt;
               let specimensCnt;
               let specimenType = 'type: ';
-              let specimenIds: string[] = [];
+              const specimenIds: string[] = [];
 
               if (child.specimens) {
                 specimensCnt = child.specimens.length;
-                for (let specimen of child.specimens) {
+                for (const specimen of child.specimens) {
                   specimenIds.push(specimen._id);
                   if (specimen.biostructures) {
-                    for (let biostructures of specimen.biostructures) {
+                    for (const biostructures of specimen.biostructures) {
                       if (biostructures.structureType) {
                        specimenType += biostructures.structureType
                         ? biostructures.structureType.description

@@ -384,7 +384,6 @@ export default createComponent({
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
-    watch(() => state.debriefer.trips, getOperations);
 
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
@@ -420,7 +419,7 @@ export default createComponent({
     }
 
     async function getTripsBySearchParams() {
-      let filters = state.debriefer.tripSearchFilters;
+      const filters = state.debriefer.tripSearchFilters;
       const views = Object.keys(filters);
 
       if (views.length === 0) {
@@ -479,31 +478,6 @@ export default createComponent({
       } else {
         columns.value = wcgopColumns;
       }
-    }
-
-    // fetch operation docs for selected trips
-    async function getOperations() {
-      let operationIds: any[] = [];
-      let operations: any[] = [];
-      for (const trip of state.debriefer.trips) {
-        operationIds = operationIds.concat(trip.operationIDs);
-      }
-
-      if (operationIds.length > 0) {
-        try {
-          const operationOptions: ListOptions = {
-            keys: operationIds
-          };
-          const operationDocs = await masterDB.listWithDocs(operationOptions);
-          operations = operationDocs.rows;
-          operations.sort((a: any, b: any) => {
-            return (a.legacy.tripId + a.operationNum) - (b.legacy.tripId + b.operationNum);
-          });
-        } catch (err) {
-          console.log('cannot fetch operation docs ' + err);
-        }
-      }
-      store.dispatch('debriefer/updateOperations', operations);
     }
 
     function save(data: any) {

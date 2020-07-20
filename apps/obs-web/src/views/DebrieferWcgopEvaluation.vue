@@ -75,8 +75,7 @@ import {
   createComponent,
   ref,
   reactive,
-  computed,
-  watch
+  computed
 } from '@vue/composition-api';
 import Vue from 'vue';
 import Accordion from 'primevue/accordion';

@@ -26,7 +26,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
 import { getSelected } from '../helpers/localStorage';
-import { findIndex } from 'lodash';
+import { findIndex, slice } from 'lodash';
 
 export default createComponent({
   props: {
@@ -38,6 +38,7 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const debriefer = state.debriefer;
     const WcgopBiospecimens: any = ref([]);
+    const jp = require('jsonpath');
 
     const columns = [
       {
@@ -199,54 +200,53 @@ export default createComponent({
     watch(() => state.debriefer.operations, getBiospecimens);
 
     async function getBiospecimens() {
-      const selectedVals: any[] = [];
-      const bioSpecimens = [];
-      for (const operation of state.debriefer.operations) {
-        const tripId = operation.legacy.tripId;
-        const operationNum = operation.operationNum;
-        const operationId = operation._id;
-        const operationRev = operation._rev;
+      const operations = state.debriefer.operations;
+      const bioSpecimens: any[] = [];
+      const id: number = 1;
+      const specimens = jp.nodes(operations, '$..specimens');
 
-        for (const catches of operation.catches) {
-          let disposition = catches.disposition
-            ? catches.disposition.description
-            : '';
-          disposition = disposition === 'Retained' ? 'R' : 'D';
-          if (catches.children) {
-            for (const child of catches.children) {
-              const species = child.catchContent
-                ? child.catchContent.commonNames[0]
-                : '';
-              if (child.specimens) {
-                for (const specimen of child.specimens) {
-                  const item = {
-                    tripId,
-                    operationNum,
-                    operationId,
-                    operationRev,
-                    species,
-                    disposition,
-                    specimen,
-                    _id: specimen._id
-                  };
-                  if (state.debriefer.specimens.indexOf(specimen._id) !== -1) {
-                    selectedVals.push(item);
-                  }
-                  bioSpecimens.push(item);
-                }
-              }
-            }
+      for (const specimen of specimens) {
+        const fullPath = jp.stringify(specimen.path);
+        const operationPath = jp.stringify(slice(specimen.path, 0, 2));
+        const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
+        const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
+
+        const tripId = jp.value(operations, operationPath + '.legacy.tripId');
+        const operationNum = jp.value(
+          operations,
+          operationPath + '.operationNum'
+        );
+        const operationId = jp.value(operations, operationPath + '._id');
+        const operationRev = jp.value(operations, operationPath + '._rev');
+        let disposition = jp.value(
+          operations,
+          catchesPath + '.disposition.description'
+        );
+        disposition = disposition === 'Retained' ? 'R' : 'D';
+        const species = jp.value(
+          operations,
+          childrenPath + '.catchContent.commonNames[0]'
+        );
+
+        for (const indivSpecimen of specimen.value) {
+          if (indivSpecimen._id) {
+            const biospecimen = {
+              _id: indivSpecimen._id,
+              tripId,
+              operationNum,
+              operationId,
+              operationRev,
+              disposition,
+              species,
+              specimen: indivSpecimen
+            };
+            bioSpecimens.push(biospecimen);
+          } else {
+            console.log('id not found skipping record');
           }
         }
       }
       WcgopBiospecimens.value = bioSpecimens;
-      if (selectedVals.length > 0) {
-        let pageStart = bioSpecimens.indexOf(selectedVals[0]);
-        store.dispatch('debriefer/updateSpecimens', {
-          page: pageStart,
-          selected: selectedVals
-        });
-      }
     }
 
     async function save(data: any) {

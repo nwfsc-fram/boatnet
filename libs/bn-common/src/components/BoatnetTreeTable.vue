@@ -84,13 +84,13 @@
               />
             </div>
             <span v-else>
-              <a v-if="col.type === 'link'" :href="col.to" target="_blank" class="tooltip" v-on:click="select(slotProps, col.highlightIds)">
+              <span v-if="col.type === 'link'" class="tooltip fakelink" v-on:click="select(slotProps, col.highlightIds)">
                 {{ displayData(slotProps, col.type, col.field) }}
                 <span
                   class="tooltiptext"
                   style="pointer-events: none"
                 >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
-              </a>
+              </span>
               <div v-else>{{ displayData(slotProps, col.type, col.field) }}</div>
             </span>
           </div>
@@ -225,6 +225,11 @@ tbody.p-treetable-tbody {
   position: relative;
   height: 600px;
   overflow: auto;
+}
+
+.fakelink {
+  color: blue;
+  cursor: pointer;
 }
 
 /* Tooltip text */
