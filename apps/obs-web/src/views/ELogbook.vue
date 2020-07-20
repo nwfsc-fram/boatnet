@@ -1746,8 +1746,10 @@ export default createComponent({
 
     const indexCatch = () => {
       for (const haul of tripCatch.hauls) {
-        for (const catchItem of haul.catch) {
-          catchItem.index = haul.catch.indexOf(catchItem);
+        if (haul.catch) {
+          for (const catchItem of haul.catch) {
+            catchItem.index = haul.catch.indexOf(catchItem);
+          }
         }
       }
     };
