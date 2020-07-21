@@ -163,13 +163,18 @@ export default createComponent({
           const operationDocs = await masterDB.listWithDocs(operationOptions);
           operations = operationDocs.rows;
           operations.sort((a: any, b: any) => {
-            return (a.legacy.tripId + a.operationNum) - (b.legacy.tripId + b.operationNum);
+            if (a.legacy.tripId !== b.legacy.tripId) {
+              return a.legacy.tripId - b.legacy.tripId;
+            } else if (a.legacy.tripId === b.legacy.tripId) {
+              return a.operationNum - b.operationNum;
+            } else {
+              return 0;
+            }
           });
         } catch (err) {
           console.log('cannot fetch operation docs ' + err);
         }
       }
-      console.log(operations);
       store.dispatch('debriefer/updateOperations', operations);
     }
 
