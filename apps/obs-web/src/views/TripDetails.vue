@@ -292,7 +292,7 @@ import {
   WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
 
-import { newTripsApiTrip } from '@boatnet/bn-common';
+import { newTripsApiTrip, updateTripsApiTrip } from '@boatnet/bn-common';
 
 // import { username, password } from '../config/secrets'
 
@@ -1071,6 +1071,39 @@ private async getMinDate() {
     this.transferring = true;
     this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
     this.trip.activeTrip!.updatedDate = moment().format();
+
+    if (this.trip.activeTrip!.tripNum === 0 || this.trip.activeTrip!.tripNum === 1) {
+      try {
+        const newApiTrip = {
+          vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
+          vesselName: this.trip.activeTrip!.vessel!.vesselName,
+          departurePort: this.trip.activeTrip!.departurePort!.code ? this.trip.activeTrip!.departurePort!.code : this.trip.activeTrip!.departurePort!.name,
+          departureDate: this.trip.activeTrip!.departureDate,
+          returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.departurePort!.name,
+          returnDate: this.trip.activeTrip!.returnDate,
+          permits: this.trip.activeTrip!.permits,
+          fishery: this.trip.activeTrip!.fishery!.description,
+          createdBy: this.trip.activeTrip!.createdBy,
+          createdDate: this.trip.activeTrip!.createdDate
+        };
+
+        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+
+        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
+        this.trip.activeTrip!.tripNum = this.tripsApiNum;
+
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await updateTripsApiTrip(this.trip.activeTrip);
+        console.log('tripsApi trip updated');
+      } catch (err) {
+          console.log(err);
+      }
+    }
+
     const masterDB: Client<any> = couchService.masterDB;
     if (this.trip.activeTrip!.isSelected && this.trip.activeTrip!.maximizedRetention) {
 
@@ -1134,6 +1167,7 @@ private async getMinDate() {
             this.$router.push({ path: '/trips' });
             });
     }
+
   }
 
     private async saveSelection() {

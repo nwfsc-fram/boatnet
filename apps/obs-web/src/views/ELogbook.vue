@@ -1070,7 +1070,7 @@ export default createComponent({
       tripCatch.hauls[selectedHaul.value - 1].catch.push({});
       selectedCatch.value = tripCatch.hauls[selectedHaul.value - 1].catch.length;
       indexCatch();
-      catchSelected.value = [_.cloneDeep(tripCatch.hauls[selectedHaul.value - 1].catch[tripCatch.hauls[selectedHaul.value - 1].catch.length -1])];
+      catchSelected.value = [_.cloneDeep(tripCatch.hauls[selectedHaul.value - 1].catch[tripCatch.hauls[selectedHaul.value - 1].catch.length - 1])];
     };
 
     const addHaul = () => {
@@ -1084,7 +1084,7 @@ export default createComponent({
       haulStartTime.value = tripCatch.departureDateTime;
       haulEndTime.value = tripCatch.returnDateTime;
 
-      haulSelected.value = [_.cloneDeep(tripCatch.hauls[tripCatch.hauls.length -1])];
+      haulSelected.value = [_.cloneDeep(tripCatch.hauls[tripCatch.hauls.length - 1])];
 
       coordinates.value = {
         start: {
@@ -1137,7 +1137,7 @@ export default createComponent({
       rowsPerPage: 0
     };
 
-    let haulSelected: any = ref([]);
+    const haulSelected: any = ref([]);
 
     const haulColumns = [
       {
