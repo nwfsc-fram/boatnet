@@ -23,6 +23,7 @@
       :rowsPerPageOptions="[10,25,50, 100]"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      :loading="loading"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -147,7 +148,8 @@ export default createComponent({
     simple: Boolean,
     uniqueKey: String,
     enableSelection: Boolean,
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    loading: Boolean
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;

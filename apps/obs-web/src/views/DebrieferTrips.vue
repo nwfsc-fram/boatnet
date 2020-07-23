@@ -8,6 +8,7 @@
       uniqueKey="_id"
       :enableSelection="true"
       :isFullSize="isFullSize"
+      :loading="loading"
       @save="save"
     />
   </div>
@@ -57,6 +58,7 @@ export default createComponent({
 
     const columns: any = ref([]);
     const trips: any = ref([]);
+    const loading: any = ref(false);
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -419,11 +421,13 @@ export default createComponent({
     }
 
     async function getTripsBySearchParams() {
+      loading.value = true;
       const filters = state.debriefer.tripSearchFilters;
       const views = Object.keys(filters);
 
       if (views.length === 0) {
         trips.value = [];
+        loading.value = false;
         return;
       }
 
@@ -467,7 +471,9 @@ export default createComponent({
           });
       } catch (error) {
         console.log(error);
+        loading.value = false;
       }
+      loading.value = false;
     }
 
     function setColumns() {
@@ -490,7 +496,8 @@ export default createComponent({
     return {
       columns,
       trips,
-      save
+      save,
+      loading
     };
   }
 });
