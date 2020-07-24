@@ -9,7 +9,6 @@
 
   <div :disabled="trip.readOnly">
 
-    index: {{ trip.index }}
         <div style="font-weight: bold; margin: 15px 15px 0">
           <div v-if="trip.activeTrip.fishery.description"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
 
@@ -1395,7 +1394,7 @@ private async getMinDate() {
       if (this.trip.activeTrip!.departureDate && moment(this.tripDates[1]).isBefore(moment(this.trip.activeTrip!.departureDate))) {
         this.trip.activeTrip!.departureDate = moment(this.tripDates[1]).format();
         this.tripDates[0] = this.tripDates[1];
-        this.resetDepartureTime()
+        this.resetDepartureTime();
       }
 
       this.trip.activeTrip!.returnDate = moment(this.tripDates[1]).format();
