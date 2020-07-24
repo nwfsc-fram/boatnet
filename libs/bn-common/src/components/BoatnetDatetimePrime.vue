@@ -59,13 +59,13 @@ export default class BoatnetDatetimePrime extends Vue {
   }
 }
 </script>
-<style>
-.p-calendar,
+<style scoped>
+* >>> .p-calendar,
 .p-inputtext {
   width: 100%;
   height: 40px;
 }
-.active {
+* >>> .active {
   height: 375px;
 }
 

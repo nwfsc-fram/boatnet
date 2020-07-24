@@ -8,8 +8,10 @@
       </q-banner>
 
   <div :disabled="trip.readOnly">
-        <div class="text-h6 q-pa-md" >
-          <div v-if="trip.activeTrip.fishery.description"> {{ trip.activeTrip.fishery.description }}</div>
+
+    index: {{ trip.index }}
+        <div style="font-weight: bold; margin: 15px 15px 0">
+          <div v-if="trip.activeTrip.fishery.description"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
 
           <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
           <q-icon
@@ -28,87 +30,87 @@
         </div>
 
         <div>
-          <span style="padding-left: 20px">
-            <strong style="position: relative; top: 1px" :disabled="trip.readOnly">Trip Dates</strong>
-          </span>&nbsp;
-          <q-toggle
-            v-model="trip.activeTrip.isSingleDayTrip"
-            color="primary"
-            label="Single Day Trip"
-            :disable="trip.readOnly"
-            @input="updateDates"
-          ></q-toggle>
-          <div style="padding: 20px 0 0 20px; font-weight: bold">
-            <p v-if="trip.activeTrip.isSingleDayTrip">Select Trip Date</p>
-            <p v-else-if="!tripDates[0]">Select Trip Start</p>
-            <p v-else-if="!tripDates[1]">Select Trip End</p>
-            <p v-else>Trip Dates Selected</p>
+
+          <div class="trips el-height">
+            <q-toggle
+              v-model="trip.activeTrip.isSingleDayTrip"
+              color="primary"
+              label="Single Day Trip"
+              :disable="trip.readOnly"
+              @input="updateDates"
+              style="font-weight: bold"
+            ></q-toggle>
           </div>
-          <span>
-            <pCalendar
-              :disabled="trip.readOnly"
-              v-if="!trip.activeTrip.isSingleDayTrip"
-              v-model="tripDates"
-              :minDate="minDate"
-              :maxDate="maxDate"
-              :disabledDates="invalidDates"
-              :inline="true"
-              :touchUI="false"
-              placeholder="start / end"
-              selectionMode="range"
-              :selectOtherMonths="true"
-              onfocus="blur();"
-              style="width: 100%; height: 360px"
-              >
-            </pCalendar>
 
-            <pCalendar
-              :disabled="trip.readOnly"
-              v-if="trip.activeTrip.isSingleDayTrip"
-              v-model="tripDate"
-              :minDate="minDate"
-              :maxDate="maxDate"
-              :disabledDates="invalidDates"
-              :inline="true"
-              :touchUI="false"
-              placeholder="date"
-              selectionMode="single"
-              :selectOtherMonths="true"
-              onfocus="blur();"
-              style="width: 100%; height: 360px"
-              >
-            </pCalendar>
+          <div class="row items-start">
+            <div class="trips-el-height">
+              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Departure Date</span>
+                <pCalendar
+                  :disabled="trip.readOnly"
+                  v-if="!trip.activeTrip.isSingleDayTrip"
+                  v-model="tripDates[0]"
+                  :minDate="minDate"
+                  :maxDate="maxDate"
+                  :disabledDates="invalidDates"
+                  :inline="false"
+                  :touchUI="isMobile"
+                  placeholder="enter date"
+                  selectionMode="single"
+                  :selectOtherMonths="true"
+                  onfocus="blur();"
+                  style="width: 150px"
+                  @input="resetDepartureTime"
+                  >
+                </pCalendar>
+            </div>
 
-            <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 15px ; font-weight: bold">Departure Time (24H)
+            <div class="trips-el-height">
+              <span v-if="trip.activeTrip.isSingleDayTrip" class="date-label">Trip Date</span>
               <pCalendar
-                v-model="departureTime"
-                :showTime="true"
-                :timeOnly="true"
-                hourFormat="24"
+                :disabled="trip.readOnly"
+                v-if="trip.activeTrip.isSingleDayTrip"
+                v-model="tripDate"
+                :minDate="minDate"
+                :maxDate="maxDate"
+                :disabledDates="invalidDates"
+                :inline="false"
+                :touchUI="isMobile"
+                placeholder="enter date"
+                selectionMode="single"
+                :selectOtherMonths="true"
                 onfocus="blur();"
-                :touchUI="false"
-                style="margin-left: 10px"
-              >
+                style="width: 150px"
+                @input="resetDepartureTime"
+                >
               </pCalendar>
-            </div> -->
+            </div>
 
-            <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-              <timeselector
-                name="Departure Time"
-                v-model="departureTime"
-                :interval="{h:1, m:1}"
-                displayFormat="HH:mm"
-                style="max-width: 300px"
-              >
-              </timeselector>
-              <hr>
-            </div> -->
-
-            <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
+            <div v-if="trip.activeTrip.departureDate" class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
               <timepicker :disabled="trip.readOnly" manual-input hide-clear-button v-model="departureTime" lazy @input="updateDepartureDate">
               </timepicker>
             </div>
-          </span>
+
+            <div class="trips-el-height">
+              <span v-if="!trip.activeTrip.isSingleDayTrip && departureTimeEntered" class="date-label">Return Date</span>
+              <pCalendar
+                :disabled="trip.readOnly"
+                v-if="!trip.activeTrip.isSingleDayTrip && departureTimeEntered"
+                v-model="tripDates[1]"
+                :minDate="minDate"
+                :maxDate="maxDate"
+                :disabledDates="invalidDates"
+                :inline="false"
+                :touchUI="isMobile"
+                placeholder="enter date"
+                selectionMode="single"
+                :selectOtherMonths="true"
+                onfocus="blur();"
+                style="width: 150px"
+                >
+              </pCalendar>
+            </div>
+          </div>
+
         </div>
 
       <div class="q-pa-md">
@@ -872,7 +874,7 @@ export default class TripDetails extends Vue {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
       this.departureTimeEntered = true;
 
-      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48) {
+      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48  && (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode)) {
         this.daysWarn = true;
       }
     }
@@ -912,7 +914,7 @@ export default class TripDetails extends Vue {
         for (const row of openTrips) {
           if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
             if (row.doc.tripStatus.description === 'open') {
-              this.maxDate = new Date(moment(row.doc.departureDate).add(1, 'days').format());
+              this.maxDate = new Date(moment(row.doc.departureDate).format());
             }
           }
         }
@@ -945,7 +947,7 @@ private async getMinDate() {
                 (row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber) === vesselId &&
                 row.doc._id !== this.trip.activeTrip!._id
               ) {
-                  this.minDate = new Date(moment(row.doc.returnDate).subtract(1, 'days').format());
+                  this.minDate = new Date(moment(row.doc.returnDate).format());
                   if (moment(this.minDate).isSameOrBefore(moment()) ) {
                     this.minDate = new Date();
                   }
@@ -1318,6 +1320,22 @@ private async getMinDate() {
     }
   }
 
+  private get isMobile() {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private resetDepartureTime() {
+    this.departureTime = {
+        mm: '00',
+        HH: '00'
+      };
+    this.departureTimeEntered = false;
+  }
+
   private async created() {
     this.getEmRoster().then( () => {
       let emPermit = null;
@@ -1361,34 +1379,58 @@ private async getMinDate() {
 
   @Watch('tripDates')
   private handler2(newVal: string, oldVal: string) {
-    if (newVal[0]) {
-      this.departureTime = {
-        mm: '00',
-        HH: '00'
-      };
-      this.departureTimeEntered = false;
+
+    if (this.tripDates[0]) {
+      this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+
+      // if start date is after current end date
+      if (this.trip.activeTrip!.returnDate && moment(this.tripDates[0]).isAfter(moment(this.trip.activeTrip!.returnDate))) {
+        this.trip.activeTrip!.returnDate = undefined;
+        this.tripDates[1] = undefined;
+      }
     }
 
-    if (newVal[0]) {
-        this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-        if (!newVal[1]) {
-          this.trip.activeTrip!.returnDate = undefined;
-          // this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
-        }
+    if (this.tripDates[1]) {
+      // if end date is before current start date
+      if (this.trip.activeTrip!.departureDate && moment(this.tripDates[1]).isBefore(moment(this.trip.activeTrip!.departureDate))) {
+        this.trip.activeTrip!.departureDate = moment(this.tripDates[1]).format();
+        this.tripDates[0] = this.tripDates[1];
+        this.resetDepartureTime()
       }
 
-    if (newVal[1]) {
-      this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+      this.trip.activeTrip!.returnDate = moment(this.tripDates[1]).format();
     }
 
-    if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
-      this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
-      this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
-    }
+    // if (newVal[0]) {
+    //     this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+    //     if (!newVal[1]) {
+    //       this.trip.activeTrip!.returnDate = undefined;
+    //       // this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
+    //     }
+    //   }
 
-    if (this.departureTime) {
-      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-    }
+    // if (newVal[1]) {
+    //   this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+    // }
+
+    // if (moment(newVal[1]).isBefore(moment(newVal[0]))) {
+    //   this.trip.activeTrip!.departureDate = this.tripDates[1];
+    //   this.tripDates[0] = _.cloneDeep(this.tripDates[1]);
+    // }
+
+    // if (moment(newVal[0]).isAfter(moment(this.trip.activeTrip!.returnDate))) {
+    //   this.trip.activeTrip!.returnDate = newVal[0];
+    //   this.tripDates[1] = _.cloneDeep(newVal[0]);
+    // }
+
+    // if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
+    //   this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
+    //   this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
+    // }
+
+    // if (this.departureTime) {
+    //   this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+    // }
 
   }
 
@@ -1455,28 +1497,38 @@ private async getMinDate() {
 }
 </script>
 
-<style lang="stylus">
-.p-datepicker {
+<style scoped>
+
+.trips-el-height {
+  height: 40px;
+}
+
+* >>> .p-datepicker {
   padding: 0 !important
 }
 
-</style>
-
-<style>
 p {
   margin-bottom: 5px;
 }
-.q-field {
+
+.date-label {
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+* >>> .q-field {
   padding-bottom: 5px;
 }
 
-.p-inputtext {
+* >>> .p-inputtext {
   font-weight: bold !important;
   border: none !important;
   border-bottom: 1px solid rgba(0,0,0,0.24) !important;
   padding-top: 0 !important;
   border-radius: 0 !important;
   padding-left: 0 !important;
+  margin: 0 !important;
+  width: 100%;
 }
 
 label.cameraButton {
@@ -1492,30 +1544,35 @@ label.cameraButton input[accept*="camera"] {
   display: none;
 }
 
-.timeselector__box__item--is-selected {
+* >>> .timeselector__box__item--is-selected {
   background-color: #007EC6 !important;
 }
 
-.vtimeselector__input {
+* >>> .vtimeselector__input {
   border: none !important;
 }
 
-.vtimeselector__input:focus {
+* >>> .vtimeselector__input:focus {
   outline: none !important;
 }
 
-.vtimeselector__clear {
+* >>> .vtimeselector__clear {
   display: none;
 }
 
-.active {
+* >>> .active {
   height: inherit !important;
   background-color: #007EC6 !important;
 }
 
-.display-time {
-  border: 1px solid lightgray !important;
-  border-radius: 4px;
+* >>> .vue__time-picker input.display-time {
+  border: none;
+  border-bottom: 1px solid lightgrey;
+  width: 150px;
+}
+
+* >>> .vue__time-picker {
+  width: 150px
 }
 
 </style>
