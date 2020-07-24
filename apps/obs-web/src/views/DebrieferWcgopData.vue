@@ -48,7 +48,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations :isFullSize="isFullSize"></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="isFullSize" :operations="operations"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
@@ -96,7 +96,10 @@ export default createComponent({
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
 
+    let operations: any = ref([]);
+
     watch(() => state.debriefer.trips, update);
+    watch(() => state.debriefer.operations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
 
     updateTab(props.startingTab ? props.startingTab : '');
@@ -111,9 +114,18 @@ export default createComponent({
 
     function update() {
       filters.value = [];
-      filters.value = filters.value.concat(
-        updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId')
+      const trips = updateFilter(
+        state.debriefer.trips,
+        'Trip',
+        'legacy.tripId'
       );
+      filters.value = filters.value.concat(trips);
+      const hauls = updateFilter(
+        state.debriefer.operations,
+        'Haul',
+        'operationNum'
+      );
+      filters.value = filters.value.concat(hauls);
       getOperations();
     }
 
@@ -141,16 +153,23 @@ export default createComponent({
         index = findIndex(trips, item);
         trips.splice(index, 1);
         if (trips.length === 0) {
-          setToTripTab();
+          updateTab('trips');
         }
         store.dispatch('debriefer/updateTrips', trips);
+      } else {
+        index = findIndex(operations, item);
+        operations.splice(index, 1);
+        if (operations.length === 0) {
+          updateTab('operations');
+        }
+        store.dispatch('debriefer/updateOperations', operations);
       }
     }
 
     // fetch operation docs for selected trips
     async function getOperations() {
+      let ops: any[] = [];
       let operationIds: any[] = [];
-      let operations: any[] = [];
       for (const trip of state.debriefer.trips) {
         operationIds = operationIds.concat(trip.operationIDs);
       }
@@ -161,8 +180,8 @@ export default createComponent({
             keys: operationIds
           };
           const operationDocs = await masterDB.listWithDocs(operationOptions);
-          operations = operationDocs.rows;
-          operations.sort((a: any, b: any) => {
+          ops = operationDocs.rows;
+          ops.sort((a: any, b: any) => {
             if (a.legacy.tripId !== b.legacy.tripId) {
               return a.legacy.tripId - b.legacy.tripId;
             } else if (a.legacy.tripId === b.legacy.tripId) {
@@ -175,7 +194,7 @@ export default createComponent({
           console.log('cannot fetch operation docs ' + err);
         }
       }
-      store.dispatch('debriefer/updateOperations', operations);
+      operations.value = ops;
     }
 
     function openNewDebriefingTab() {
@@ -189,6 +208,7 @@ export default createComponent({
       updateTab,
       openNewDebriefingTab,
       filters,
+      operations,
       remove
     };
   }

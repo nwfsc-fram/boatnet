@@ -52,6 +52,7 @@
         :key="col.key"
         :sortable="true"
         :headerStyle="'width: ' + col.width + 'px'"
+        filterMatchMode="contains"
       >
         <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
@@ -187,6 +188,8 @@ export default createComponent({
       const rowsPerPage = 10;
       if (props.type === 'Trips') {
         selected.value = state.debriefer.trips;
+      } else if (props.type === 'Operations') {
+        selected.value = state.debriefer.operations;
       } else if (props.type === 'Specimens') {
         const idHolder = [];
         for (const id of state.debriefer.specimens) {
@@ -207,9 +210,18 @@ export default createComponent({
     function onRowSelect(event: any) {
       if (props.type === 'Trips') {
         store.dispatch('debriefer/updateTrips', selected.value);
-      } /*else if (props.type === 'Operations') {
+      } else if (props.type === 'Operations') {
+        selected.value.sort((a: any, b: any) => {
+          if (a.legacy.tripId !== b.legacy.tripId) {
+            return a.legacy.tripId - b.legacy.tripId;
+          } else if (a.legacy.tripId === b.legacy.tripId) {
+            return a.operationNum - b.operationNum;
+          } else {
+            return 0;
+          }
+        });
         store.dispatch('debriefer/updateOperations', selected.value);
-      }*/
+      }
     }
 
     const displayColumns = computed({

@@ -1,12 +1,13 @@
 <template>
   <div>
     <prime-table
-      :value="debriefer.operations"
+      :value="operations"
       :columns="columns"
       type="Operations"
       uniqueKey="_id"
-      :enableSelection="false"
+      :enableSelection="true"
       :isFullSize="isFullSize"
+      :loading="loading"
     />
   </div>
 </template>
@@ -39,6 +40,7 @@ import { convertToObject } from 'typescript';
 @Component
 export default class DebrieferOperations extends Vue {
   @Prop() private isFullSize!: boolean;
+  @Prop() private operations!: any[];
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
@@ -77,7 +79,7 @@ export default class DebrieferOperations extends Vue {
     },
     {
       field: 'observerTotalCatch.weightMethod.description',
-      header: 'WT Method',
+      header: 'OTC WT Method',
       type: 'input',
       key: 'wcgopOpWM',
       width: '150'
