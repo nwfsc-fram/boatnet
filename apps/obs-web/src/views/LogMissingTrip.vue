@@ -339,7 +339,7 @@ export default class LogBookCapture extends Vue {
                         html: true,
                         multiLine: true
                     });
-                this.$router.push({ path: '/home' });
+                this.$router.push({ path: '/trips' });
             });
     }
 
@@ -674,5 +674,53 @@ label.cameraButton {
 label.cameraButton input[accept*="camera"] {
   display: none;
 }
+
+* >>> .p-datepicker {
+  padding: 0 !important
+}
+
+* >>> .p-inputtext {
+  font-weight: bold !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(0,0,0,0.24) !important;
+  padding-top: 0 !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+  width: 100%;
+}
+
+
+* >>> .timeselector__box__item--is-selected {
+  background-color: #007EC6 !important;
+}
+
+* >>> .vtimeselector__input {
+  border: none !important;
+}
+
+* >>> .vtimeselector__input:focus {
+  outline: none !important;
+}
+
+* >>> .vtimeselector__clear {
+  display: none;
+}
+
+* >>> .active {
+  height: inherit !important;
+  background-color: #007EC6 !important;
+}
+
+* >>> .vue__time-picker input.display-time {
+  border: none;
+  border-bottom: 1px solid lightgrey;
+  width: 150px;
+}
+
+* >>> .vue__time-picker {
+  width: 150px
+}
+
 
 </style>

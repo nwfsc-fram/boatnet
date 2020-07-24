@@ -211,7 +211,7 @@
     >
       <template v-slot:body="props">
         <q-tr :props="props">
-          <q-td key="actions" :props="props" v-if="props.row.closingReason !== 'cancelled'">
+          <q-td key="actions" :props="props" v-if="props.row.closingReason !== 'cancelled'" style="cursor: pointer">
             <q-icon name="edit" color="primary" @click.native="review(props.row)" title="edit trip"></q-icon>
             &nbsp;
             <q-icon name="notes" color="primary" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data"></q-icon>
@@ -437,7 +437,7 @@ export default class Trips extends Vue {
   private file: any = null;
   private fileUrl: any = null;
   private transferring: boolean = false;
-  private loading = false;
+  private loading = true;
   private vesselNames: any[] = [];
   private cancel: boolean = false;
   private csv: any = 'initial';
@@ -545,6 +545,7 @@ export default class Trips extends Vue {
       } else {
         return [];
       }
+
     }
 
     private async getNextSelections() {
@@ -825,6 +826,7 @@ export default class Trips extends Vue {
           this.closeAlert = false;
           await this.getNextSelections().then( () => {
             location.reload();
+            this.$router.push({ path: '/trips/' });
           });
         }
       );
@@ -857,7 +859,8 @@ export default class Trips extends Vue {
           this.file = null;
           this.closeAlert = false;
           await this.getNextSelections().then( () => {
-          location.reload();
+            location.reload();
+            this.$router.push({ path: '/trips/' });
           });
         }
       );
@@ -973,7 +976,7 @@ private async getVesselTrips() {
             );
 
       this.userTrips = vesselTrips.rows.map( (trip: any) => trip.doc );
-
+      this.loading = false;
     } catch (err) {
       console.log(err);
       Notify.create({
@@ -986,7 +989,6 @@ private async getVesselTrips() {
         multiLine: true
       });
     }
-    this.loading = false;
   }
 }
 
@@ -1060,8 +1062,6 @@ private async getVesselNames() {
           queryOptions
         );
         this.vesselNames = vessels.rows.map((row: any) => row.doc);
-
-        this.loading = false;
 
     } catch (err) {
         this.errorAlert(err);
@@ -1176,7 +1176,9 @@ private async getAuthorizedVessels() {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
     this.getNextSelections();
-    setTimeout( () => {this.storeOfflineData(); }, 1000);
+    setTimeout( () => {
+      this.storeOfflineData();
+     }, 1000);
   }
 
   @Watch('vessel.activeVessel')

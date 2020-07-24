@@ -262,6 +262,10 @@ router.beforeEach((to, from, next) => {
   if (authRequired && !logged) {
     return next('/login');
   }
+
+  window.onpopstate = function(event: any) {
+    return next(router.currentRoute.path.replace(router.currentRoute.params.id, ''))
+  };
   next();
 });
 

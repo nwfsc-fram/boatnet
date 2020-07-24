@@ -686,12 +686,12 @@ export default class DynamicTripDetails extends Vue {
 }
 </script>
 
-<style>
-.p-datepicker-inline {
+<style scoped>
+* >>> .p-datepicker-inline {
   border: none;
 }
 
-.p-calendar,
+* >>> .p-calendar,
 .p-inputtext {
   width: 100%;
   height: 40px;

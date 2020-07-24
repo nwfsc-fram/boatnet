@@ -139,7 +139,7 @@
                                 html: true,
                                 multiLine: true
                             });
-                            context.root.$router.push({ path: '/home' });
+                            context.root.$router.push({ path: '/trips' });
                         });
                     };
 
