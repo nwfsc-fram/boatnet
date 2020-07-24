@@ -95,8 +95,7 @@ export default createComponent({
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
-
-    let operations: any = ref([]);
+    const operations: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
@@ -147,7 +146,7 @@ export default createComponent({
     function remove(item: any) {
       let index = -1;
       const trips = state.debriefer.trips;
-      const operations = state.debriefer.operations;
+      const ops = state.debriefer.operations;
 
       if (item.type === 'wcgop-trip') {
         index = findIndex(trips, item);
@@ -157,12 +156,12 @@ export default createComponent({
         }
         store.dispatch('debriefer/updateTrips', trips);
       } else {
-        index = findIndex(operations, item);
-        operations.splice(index, 1);
-        if (operations.length === 0) {
+        index = findIndex(ops, item);
+        ops.splice(index, 1);
+        if (ops.length === 0) {
           updateTab('operations');
         }
-        store.dispatch('debriefer/updateOperations', operations);
+        store.dispatch('debriefer/updateOperations', ops);
       }
     }
 

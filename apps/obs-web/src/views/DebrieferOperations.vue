@@ -7,7 +7,6 @@
       uniqueKey="_id"
       :enableSelection="true"
       :isFullSize="isFullSize"
-      :loading="loading"
     />
   </div>
 </template>
