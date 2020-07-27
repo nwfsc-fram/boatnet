@@ -109,7 +109,7 @@ export default class Login extends Vue {
   @Action('error', { namespace: 'alert' }) private error: any;
 
   @Action('connect', { namespace: 'baseCouch' }) private connectCouch: any;
-  @Action('connect', { namespace: 'pouchState' }) private connectPouch: any;
+  @Action('connectNoLookupsSync', { namespace: 'pouchState' }) private connectPouch: any;
   @Action('disconnect', { namespace: 'pouchState' })
   private disconnectPouch: any;
 
@@ -192,6 +192,7 @@ export default class Login extends Vue {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
           this.connectCouch(creds);
+
           this.connectPouch(creds);
 
           router.push('/'); // On successful login, navigate to home
