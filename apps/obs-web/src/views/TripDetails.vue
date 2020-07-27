@@ -1427,9 +1427,9 @@ private async getMinDate() {
     //   this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
     // }
 
-    // if (this.departureTime) {
-    //   this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-    // }
+    if (this.departureTime) {
+      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+    }
 
   }
 
