@@ -1570,8 +1570,10 @@ label.cameraButton input[accept*="camera"] {
   width: 150px;
 }
 
-* >>> .vue__time-picker {
-  width: 150px
+@media screen and (max-width: 290px){
+  * >>> .vue__time-picker {
+    width: 50px !important;
+  }
 }
 
 </style>
