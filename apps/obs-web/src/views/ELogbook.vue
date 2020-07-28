@@ -942,7 +942,7 @@
                     outlined
                     label="Estimated Total Weight"
                     title="Estimated weight in lbs"
-                    mask="#####"
+                    mask="######"
                   ></q-input>
                   <q-input
                     class="logbook-element"
@@ -1485,6 +1485,10 @@ export default createComponent({
           }
         }
       }
+      speciesCodeOptions.push({
+        speciesCode: 'UNST',
+        commonName: 'Unsorted catch not sampled'
+      });
       speciesCodeOptions.sort((a: any, b: any) => {
         if (a.commonName > b.commonName) {
           return 1;
