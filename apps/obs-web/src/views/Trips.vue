@@ -180,7 +180,7 @@
       </div>
       </q-card-section>
       <div style="float: left; padding-left: 15px">
-        <q-icon size="sm" v-if="trip._attachments" name="camera_alt"></q-icon>
+        <q-icon size="sm" v-if="trip._attachments" name="camera_alt" title="Has Logbook Image"></q-icon>
         <q-icon size="sm" v-else-if="!trip._attchments && trip.closingReason === 'taken'" name="error_outline" title="missing logbook capture"></q-icon>
       </div>
       <div style="float:right">
@@ -212,12 +212,15 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td key="actions" :props="props" v-if="props.row.closingReason !== 'cancelled'" style="cursor: pointer">
-            <q-icon name="edit" color="primary" @click.native="review(props.row)" title="edit trip"></q-icon>
+            <q-icon name="edit" color="primary" @click.native="review(props.row)" title="edit trip" style="font-weight: bold"></q-icon>
             &nbsp;
-            <q-icon name="notes" color="primary" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data"></q-icon>
+            <q-icon name="notes" color="primary" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && props.row._attachments" @click.native="keyLogbook(props.row)" title="key in logbook data" style="font-weight: bold"></q-icon>
           </q-td>
           <q-td v-else></q-td>
-          <q-td key="_attachments" :props="props"><q-icon :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" style="font-weight: bold"></q-icon></q-td>
+          <q-td key="_attachments" :props="props">
+            <q-icon v-if="props.row._attachments" :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" title="Has Logbook Image" style="font-weight: bold"></q-icon>
+            <q-icon v-if="!props.row._attachments && props.row.closingReason === 'taken'" :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" title="Logbook Image Missing" style="font-weight: bold"></q-icon>
+          </q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="tripStatus" :props="props">{{ props.row.closingReason }}</q-td>
           <q-td key="departureDate" :props="props">{{ formatDateTime(props.row.departureDate) }}</q-td>
@@ -825,7 +828,6 @@ export default class Trips extends Vue {
           this.cancelAlert = false;
           this.closeAlert = false;
           await this.getNextSelections().then( () => {
-            location.reload();
             this.$router.push({ path: '/trips/' });
           });
         }
@@ -859,7 +861,6 @@ export default class Trips extends Vue {
           this.file = null;
           this.closeAlert = false;
           await this.getNextSelections().then( () => {
-            location.reload();
             this.$router.push({ path: '/trips/' });
           });
         }
