@@ -8,7 +8,7 @@
       sortMode="single"
       :paginator="true"
       :rows="10"
-      style="height: 700px"
+      style="height: 450px"
       :rowsPerPageOptions="[10,25,50, 100]"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -89,8 +89,7 @@
               <span
                 v-if="col.type === 'link'"
                 class="tooltip fakelink"
-                v-on:click="select(slotProps, col.highlightIds)"
-              >
+                v-on:click="select(slotProps, col.highlightIds)">
                 {{ displayData(slotProps, col.type, col.field) }}
                 <span
                   class="tooltiptext"
@@ -255,7 +254,7 @@ thead.p-treetable-thead {
 tbody.p-treetable-tbody {
   display: block;
   position: relative;
-  height: 550px;
+  height: 250px;
   overflow: auto;
 }
 

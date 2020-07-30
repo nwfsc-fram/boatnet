@@ -1,6 +1,6 @@
 <template>
   <div>
-   <boatnet-tree-table
+    <boatnet-tree-table
       :nodes.sync="WcgopCatches"
       :settings="wcgopCatchTreeSettings"
       :expanded-keys="expandedKeys"
@@ -9,6 +9,7 @@
       :program="program"
       @save="save"
       @selected="select"
+      @tooltip="populate"
     ></boatnet-tree-table>
   </div>
 </template>
@@ -124,7 +125,7 @@ export default createComponent({
           type: 'link',
           to: '/observer-web/table/biospecimens',
           highlightIds: 'specimenIds',
-          tooltipLabel: 'specimenType',
+          tooltipLabel: 'toolTipInfo',
           width: '70',
           isEditable: false
         },
@@ -210,24 +211,33 @@ export default createComponent({
               const childCount = child.sampleCount;
               let basketCnt;
               let specimensCnt;
-              let specimenType = 'type: ';
+              let specimenType = '';
+              let lengths: string = '';
               const specimenIds: string[] = [];
 
               if (child.specimens) {
                 specimensCnt = child.specimens.length;
                 for (const specimen of child.specimens) {
                   specimenIds.push(specimen._id);
+                  if (specimen.length && specimen.length.value) {
+                    lengths = lengths + specimen.length.value + ',';
+                  }
                   if (specimen.biostructures) {
                     for (const biostructures of specimen.biostructures) {
                       if (biostructures.structureType) {
-                       specimenType += biostructures.structureType
-                        ? biostructures.structureType.description
-                        : '';
+                        specimenType += biostructures.structureType
+                          ? biostructures.structureType.description
+                          : '';
                       }
                     }
                   }
                 }
               }
+              lengths = lengths.slice(0, -1);
+              let toolTipInfo =
+                specimenType !== '' ? 'types: ' + specimenType : '';
+              toolTipInfo += ' ';
+              toolTipInfo += lengths !== '' ? 'lengths: ' + lengths : '';
 
               const baskets: any[] = [];
               if (child.baskets) {
@@ -254,6 +264,7 @@ export default createComponent({
                   specimenType,
                   specimenIds,
                   basketCnt,
+                  toolTipInfo,
                   discardReason,
                   name: catchName,
                   catchContent: catchContents,
