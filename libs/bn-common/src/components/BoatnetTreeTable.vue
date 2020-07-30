@@ -116,7 +116,6 @@ import { BoatnetTripsSettings } from '@boatnet/bn-common';
 import { BaseTrip } from '@boatnet/bn-models';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
 import { cloneDeep, get } from 'lodash';
-import { ClickOutside } from 'vue-click-outside';
 
 import TreeTable from 'primevue/treetable';
 Vue.component('pTreeTable', TreeTable);
