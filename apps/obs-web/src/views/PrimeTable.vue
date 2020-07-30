@@ -1,7 +1,8 @@
 <template>
   <div>
     <DataTable
-      class="p-datatable-striped"
+      :rowClass="rowClass"
+      :class="enableSelection ? 'p-datatable-striped' : ''"
       :value="value"
       :filters="filters"
       :paginator="true"
@@ -9,7 +10,7 @@
       :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
-      :scrollHeight="isFullSize ? '700px' : '350px'"
+      :scrollHeight="isFullSize ? '600px' : '250px'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -82,9 +83,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span style="pointer-events: none">
-            {{ formatValue(slotProps, col.type, col.displayField) }}
-          </span>
+          <span
+            style="pointer-events: none"
+          >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -175,6 +176,9 @@ export default createComponent({
     const popupColumns: any = ref([]);
     const popupUniqueKey: any = ref('');
 
+    let haulNumTracker = 0;
+    let rowBackground = 'highlightRow';
+
     onMounted(() => {
       updateSelection();
     });
@@ -184,8 +188,6 @@ export default createComponent({
 
     function updateSelection() {
       pageStart.value = 0;
-      let pageStartValue = 0;
-      const rowsPerPage = 10;
       if (props.type === 'Trips') {
         selected.value = state.debriefer.trips;
       } else if (props.type === 'Operations') {
@@ -197,11 +199,9 @@ export default createComponent({
         }
         selected.value = idHolder;
         if (state.debriefer.specimens.length > 0) {
-          pageStartValue = findIndex(props.value, (item: any) => {
+          pageStart.value = findIndex(props.value, (item: any) => {
             return item._id === state.debriefer.specimens[0];
           });
-          pageStart.value =
-            Math.floor(pageStartValue / rowsPerPage) * rowsPerPage;
         }
         state.debriefer.specimens = [];
       }
@@ -237,7 +237,7 @@ export default createComponent({
         currCols.value = val;
         stateDisplayCols[tableType] = val;
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
-      }
+      },
     });
 
     async function getLookupInfo(
@@ -251,7 +251,7 @@ export default createComponent({
       } else if (!list) {
         const mode = state.debriefer.program;
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
-          displayField
+          displayField,
         ]);
       } else {
         const lookupVals = [];
@@ -359,6 +359,24 @@ export default createComponent({
       popupUniqueKey.value = uniqueKey;
     }
 
+    function rowClass(data: any) {
+      const selectedIndex = findIndex(selected.value, (item: any) => {
+        return item._id === data._id;
+      });
+      if (selectedIndex !== -1) {
+        return 'plain';
+      }
+      if (!props.enableSelection) {
+         if (haulNumTracker !== data.operationNum) {
+          rowBackground = rowBackground === 'plain' ? 'highlightRow' : 'plain';
+          haulNumTracker = data.operationNum;
+          return rowBackground;
+        } else {
+          return rowBackground;
+        }
+      }
+    }
+
     return {
       containsMultiples,
       filters,
@@ -380,14 +398,19 @@ export default createComponent({
       showPopup,
       popupColumns,
       popupUniqueKey,
-      onRowSelect
+      onRowSelect,
+      rowClass,
     };
-  }
+  },
 });
 </script>
 
 <style scoped>
 .p-inputtext {
   background-color: inherit !important;
+}
+
+::v-deep .highlightRow {
+  background-color: #e9ecef !important;
 }
 </style>

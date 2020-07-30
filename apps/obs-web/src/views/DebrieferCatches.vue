@@ -1,6 +1,6 @@
 <template>
   <div>
-    <boatnet-tree-table
+   <boatnet-tree-table
       :nodes.sync="WcgopCatches"
       :settings="wcgopCatchTreeSettings"
       :expanded-keys="expandedKeys"
@@ -50,7 +50,6 @@ export default createComponent({
           align: 'left',
           field: 'tripId',
           width: '150',
-          expander: true,
           isEditable: false
         },
         {
@@ -70,9 +69,9 @@ export default createComponent({
           field: 'disposition',
           width: '60',
           isEditable: true,
-          type: 'toggle',
+          type: 'toggle-search',
           lookupView: 'catch-disposition',
-          lookupField: 'abbreviation'
+          lookupField: 'legacy.lookupVal'
         },
         {
           name: 'weightMethod',
@@ -82,6 +81,7 @@ export default createComponent({
           width: '150',
           isEditable: true,
           type: 'toggle-search',
+          expander: true,
           lookupView: 'weight-method',
           lookupField: 'description'
         },
@@ -158,6 +158,7 @@ export default createComponent({
     };
 
     watch(() => state.debriefer.trips, getCatches);
+    watch(() => state.debriefer.operations, getCatches);
 
     function select(item: string[]) {
       store.dispatch('debriefer/updateSpecimens', item);
@@ -166,9 +167,11 @@ export default createComponent({
 
     async function getCatches() {
       const catches: any[] = [];
+      let color = '#344B5F';
 
       for (const operation of state.debriefer.operations) {
         let catchIndex = 0;
+        color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
         for (const c of operation.catches) {
           const tripId = operation.legacy.tripId;
           const operationNum = operation.operationNum;
@@ -265,6 +268,7 @@ export default createComponent({
 
           catches.push({
             key,
+            style: color === '#FFFFFF' ? "background: #FFFFFF" : "background: #E9ECEF", //f4f4f4
             data: {
               tripId,
               operationNum,
