@@ -1,19 +1,27 @@
 <template>
   <div>
-    <div style="text-align: right">
-      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
-    </div>
-    <div>
-      Filters:
-      <q-chip
-        v-for="filter of filters"
-        :key="filter.label"
-        removable
-        color="primary"
-        text-color="white"
-        icon="directions_boat"
-        @remove="remove(filter)"
-      >{{ filter.label }}</q-chip>
+    <div id="expand-box">
+      <div id="expand-box-header">
+        <div style="float: left">
+          Filters:
+          <q-chip
+            v-for="filter of filters"
+            :key="filter.label"
+            removable
+            color="primary"
+            text-color="white"
+            icon="directions_boat"
+            @remove="remove(filter)"
+          >{{ filter.label }}</q-chip>
+        </div>
+        <q-icon
+          v-if="showPopout"
+          style="float: right"
+          name="open_in_new"
+          size="md"
+          v-on:click="openNewDebriefingTab"
+        />
+      </div>
     </div>
     <div class="q-gutter-y-md">
       <q-card>
@@ -29,26 +37,26 @@
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
-          <q-tab name="catchSpecies" label="Biospecimens" />
+          <q-tab name="biospecimens" label="Biospecimens" />
         </q-tabs>
 
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
-            <app-debriefer-trips></app-debriefer-trips>
+            <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="isFullSize" :operations="operations"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
-            <app-debriefer-catches></app-debriefer-catches>
+            <app-debriefer-catches :isFullSize="isFullSize" @changeTab="updateTab"></app-debriefer-catches>
           </q-tab-panel>
 
-          <q-tab-panel name="catchSpecies">
-            <app-debriefer-biospecimens></app-debriefer-biospecimens>
+          <q-tab-panel name="biospecimens">
+            <app-debriefer-biospecimens :isFullSize="isFullSize"></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -70,22 +78,34 @@ import { AshopCruise } from '@boatnet/bn-models';
 import { newCruiseApiTrip } from '@boatnet/bn-common';
 import { pouchService } from '@boatnet/bn-pouch';
 import { get, set, findIndex } from 'lodash';
+import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 
 export default createComponent({
   props: {
     showErrors: Boolean,
-    showData: Boolean
+    showPopout: Boolean,
+    startingTab: String,
+    isFullSize: Boolean
   },
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab: any = ref('trips');
+    const tab: any = ref('');
 
     const filters: any = ref([]);
+    const masterDB: Client<any> = couchService.masterDB;
+    const operations: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
+
+    updateTab(props.startingTab ? props.startingTab : '');
+
+    function updateTab(tabName: string) {
+      tab.value = tabName;
+    }
 
     function setToTripTab() {
       tab.value = 'trips';
@@ -93,8 +113,19 @@ export default createComponent({
 
     function update() {
       filters.value = [];
-      filters.value = filters.value.concat(updateFilter(state.debriefer.trips, 'Trip', 'legacy.tripId'));
-      filters.value = filters.value.concat(updateFilter(state.debriefer.operations, 'Haul', 'operationNum'));
+      const trips = updateFilter(
+        state.debriefer.trips,
+        'Trip',
+        'legacy.tripId'
+      );
+      filters.value = filters.value.concat(trips);
+      const hauls = updateFilter(
+        state.debriefer.operations,
+        'Haul',
+        'operationNum'
+      );
+      filters.value = filters.value.concat(hauls);
+      getOperations();
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
@@ -102,7 +133,8 @@ export default createComponent({
       for (const val of list) {
         const id = get(val, idLabel);
         if (label === 'Haul') {
-          val.label = 'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
+          val.label =
+            'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
         } else {
           val.label = label + ': ' + id;
         }
@@ -114,31 +146,88 @@ export default createComponent({
     function remove(item: any) {
       let index = -1;
       const trips = state.debriefer.trips;
-      const operations = state.debriefer.operations;
+      const ops = state.debriefer.operations;
 
       if (item.type === 'wcgop-trip') {
         index = findIndex(trips, item);
         trips.splice(index, 1);
+        if (trips.length === 0) {
+          updateTab('trips');
+        }
         store.dispatch('debriefer/updateTrips', trips);
-      } else if (item.type === 'wcgop-operation') {
-        index = findIndex(operations, item);
-        operations.splice(index, 1);
-        store.dispatch('debriefer/updateOperations', operations);
+      } else {
+        index = findIndex(ops, item);
+        ops.splice(index, 1);
+        if (ops.length === 0) {
+          updateTab('operations');
+        }
+        store.dispatch('debriefer/updateOperations', ops);
       }
     }
 
+    // fetch operation docs for selected trips
+    async function getOperations() {
+      let ops: any[] = [];
+      let operationIds: any[] = [];
+      for (const trip of state.debriefer.trips) {
+        operationIds = operationIds.concat(trip.operationIDs);
+      }
+
+      if (operationIds.length > 0) {
+        try {
+          const operationOptions: ListOptions = {
+            keys: operationIds
+          };
+          const operationDocs = await masterDB.listWithDocs(operationOptions);
+          ops = operationDocs.rows;
+          ops.sort((a: any, b: any) => {
+            if (a.legacy.tripId !== b.legacy.tripId) {
+              return a.legacy.tripId - b.legacy.tripId;
+            } else if (a.legacy.tripId === b.legacy.tripId) {
+              return a.operationNum - b.operationNum;
+            } else {
+              return 0;
+            }
+          });
+        } catch (err) {
+          console.log('cannot fetch operation docs ' + err);
+        }
+      }
+      operations.value = ops;
+    }
+
     function openNewDebriefingTab() {
-      const route = '/observer-web/debriefer/qa';
+      const route = '/observer-web/table/' + tab.value;
       window.open(route, '_blank');
       context.emit('update:showErrors', false);
     }
 
     return {
+      tab,
+      updateTab,
       openNewDebriefingTab,
       filters,
-      tab,
+      operations,
       remove
     };
   }
 });
 </script>
+
+<style >
+#expand-box {
+  width: 100%;
+  padding: 0;
+  margin: 7px 0 0 0;
+}
+
+#expand-box-header {
+  margin: 0;
+  padding: 0 0 3px 2px;
+  overflow: auto;
+}
+
+#expand_box_sub_header {
+  clear: both;
+}
+</style>

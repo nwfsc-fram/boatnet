@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md">
     <debriefer-select-comp
-      label="Barcode"
+      label="Search Barcode"
       style="display: inline-block; width: 30%"
       :val.sync="biospecimen"
       lookupView="biostructures_barcode"
@@ -15,7 +15,7 @@
     <div class="q-pa-sm"><b>Catch #: </b>{{ currVal.catchNum ? currVal.catchNum : null }}</div>
     <div class="q-pa-sm"><b>Species: </b>{{ currVal.species ? currVal.species : null }}</div>
     <span class="q-pa-sm"><b>Assign to Rack:</b></span>
-    <multiselect style="width: 400px" v-model="racks" :options="options" />
+    <multiselect style="width: 400px" v-model="racks" :options="options" placeholder="Rack Id" />
   </div>
 </template>
 

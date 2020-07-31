@@ -1,12 +1,16 @@
 <template>
   <div>
     <DataTable
+      :rowClass="rowClass"
+      :class="enableSelection ? 'p-datatable-striped' : ''"
       :value="value"
       :filters="filters"
       :paginator="true"
       :rows="10"
+      :selectionMode="enableSelection ? null : 'multiple'"
+      :first="pageStart"
       :selection.sync="selected"
-      scrollHeight="350px"
+      :scrollHeight="isFullSize ? '600px' : '250px'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -18,7 +22,9 @@
       stateStorage="local"
       :stateKey="tableType"
       :rowsPerPageOptions="[10,25,50, 100]"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      :loading="loading"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -38,7 +44,7 @@
         </div>
       </template>
 
-      <Column v-if="!simple" selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="enableSelection" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -47,6 +53,7 @@
         :key="col.key"
         :sortable="true"
         :headerStyle="'width: ' + col.width + 'px'"
+        filterMatchMode="contains"
       >
         <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
@@ -76,9 +83,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span style="pointer-events: none">
-            {{ formatValue(slotProps, col.type, col.displayField) }}
-          </span>
+          <span
+            style="pointer-events: none"
+          >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -141,14 +148,17 @@ export default createComponent({
     value: Array,
     type: String,
     simple: Boolean,
-    uniqueKey: String
+    uniqueKey: String,
+    enableSelection: Boolean,
+    isFullSize: Boolean,
+    loading: Boolean
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state = store.state;
 
-    const filters: any = reactive({});
+    const filters: any = ref({});
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -157,6 +167,7 @@ export default createComponent({
 
     const tableType = state.debriefer.program + '-' + props.type;
     const selected: any = ref([]);
+    const pageStart: any = ref(1);
     const stateDisplayCols = state.debriefer.displayColumns;
 
     const popupData: any = ref({});
@@ -165,15 +176,34 @@ export default createComponent({
     const popupColumns: any = ref([]);
     const popupUniqueKey: any = ref('');
 
+    let haulNumTracker = 0;
+    let rowBackground = 'highlightRow';
+
     onMounted(() => {
       updateSelection();
     });
 
+    // clear selection when evaluation period selected
+    watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
+
     function updateSelection() {
+      pageStart.value = 0;
       if (props.type === 'Trips') {
         selected.value = state.debriefer.trips;
       } else if (props.type === 'Operations') {
         selected.value = state.debriefer.operations;
+      } else if (props.type === 'Specimens') {
+        const idHolder = [];
+        for (const id of state.debriefer.specimens) {
+          idHolder.push({ _id: id });
+        }
+        selected.value = idHolder;
+        if (state.debriefer.specimens.length > 0) {
+          pageStart.value = findIndex(props.value, (item: any) => {
+            return item._id === state.debriefer.specimens[0];
+          });
+        }
+        state.debriefer.specimens = [];
       }
     }
 
@@ -181,6 +211,15 @@ export default createComponent({
       if (props.type === 'Trips') {
         store.dispatch('debriefer/updateTrips', selected.value);
       } else if (props.type === 'Operations') {
+        selected.value.sort((a: any, b: any) => {
+          if (a.legacy.tripId !== b.legacy.tripId) {
+            return a.legacy.tripId - b.legacy.tripId;
+          } else if (a.legacy.tripId === b.legacy.tripId) {
+            return a.operationNum - b.operationNum;
+          } else {
+            return 0;
+          }
+        });
         store.dispatch('debriefer/updateOperations', selected.value);
       }
     }
@@ -198,7 +237,7 @@ export default createComponent({
         currCols.value = val;
         stateDisplayCols[tableType] = val;
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
-      }
+      },
     });
 
     async function getLookupInfo(
@@ -212,7 +251,7 @@ export default createComponent({
       } else if (!list) {
         const mode = state.debriefer.program;
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
-          displayField
+          displayField,
         ]);
       } else {
         const lookupVals = [];
@@ -287,7 +326,9 @@ export default createComponent({
         fieldArr.splice(fieldArr.length - 1, 1);
         fields = fieldArr.join('.');
 
-        const updateCellValFieldsArr: string[] = slotProps.column.field.split('.');
+        const updateCellValFieldsArr: string[] = slotProps.column.field.split(
+          '.'
+        );
         updateCellValFieldsArr.splice(0, 1);
         const updateCellValFields = updateCellValFieldsArr.join('.');
         cellVal.value = get(newValue, updateCellValFields);
@@ -318,6 +359,24 @@ export default createComponent({
       popupUniqueKey.value = uniqueKey;
     }
 
+    function rowClass(data: any) {
+      const selectedIndex = findIndex(selected.value, (item: any) => {
+        return item._id === data._id;
+      });
+      if (selectedIndex !== -1) {
+        return 'plain';
+      }
+      if (!props.enableSelection) {
+         if (haulNumTracker !== data.operationNum) {
+          rowBackground = rowBackground === 'plain' ? 'highlightRow' : 'plain';
+          haulNumTracker = data.operationNum;
+          return rowBackground;
+        } else {
+          return rowBackground;
+        }
+      }
+    }
+
     return {
       containsMultiples,
       filters,
@@ -331,6 +390,7 @@ export default createComponent({
       formatValue,
       tableType,
       selected,
+      pageStart,
       state,
       show,
       popupData,
@@ -338,14 +398,19 @@ export default createComponent({
       showPopup,
       popupColumns,
       popupUniqueKey,
-      onRowSelect
+      onRowSelect,
+      rowClass,
     };
-  }
+  },
 });
 </script>
 
 <style scoped>
 .p-inputtext {
   background-color: inherit !important;
+}
+
+::v-deep .highlightRow {
+  background-color: #e9ecef !important;
 }
 </style>

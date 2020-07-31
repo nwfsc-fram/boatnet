@@ -5,6 +5,8 @@
       :columns="columns"
       type="Specimens"
       uniqueKey="_id"
+      :enableSelection="false"
+      :isFullSize="isFullSize"
       @save="save"
     />
   </div>
@@ -24,14 +26,19 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
 import { getSelected } from '../helpers/localStorage';
-import { findIndex } from 'lodash';
+import { findIndex, slice } from 'lodash';
 
 export default createComponent({
+  props: {
+    isFullSize: Boolean
+  },
   setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
-    const state = context.root.$store.state;
     const debriefer = state.debriefer;
     const WcgopBiospecimens: any = ref([]);
+    const jp = require('jsonpath');
 
     const columns = [
       {
@@ -193,57 +200,53 @@ export default createComponent({
     watch(() => state.debriefer.operations, getBiospecimens);
 
     async function getBiospecimens() {
-      const bioSpecimens = [];
-      let operationIds: string[] = [];
-      const operationHolder = [];
+      const operations = state.debriefer.operations;
+      const bioSpecimens: any[] = [];
+      const id: number = 1;
+      const specimens = jp.nodes(operations, '$..specimens');
 
-      for (const trip of debriefer.trips) {
-        operationIds = operationIds.concat(trip.operationIDs);
-      }
+      for (const specimen of specimens) {
+        const fullPath = jp.stringify(specimen.path);
+        const operationPath = jp.stringify(slice(specimen.path, 0, 2));
+        const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
+        const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
 
-      try {
-        const options: ListOptions = {
-          keys: operationIds
-        };
-        const operations = await masterDB.listWithDocs(options);
-        for (const operation of operations.rows) {
-          const tripId = operation.legacy.tripId;
-          const operationNum = operation.operationNum;
-          const operationId = operation._id;
-          const operationRev = operation._rev;
+        const tripId = jp.value(operations, operationPath + '.legacy.tripId');
+        const operationNum = jp.value(
+          operations,
+          operationPath + '.operationNum'
+        );
+        const operationId = jp.value(operations, operationPath + '._id');
+        const operationRev = jp.value(operations, operationPath + '._rev');
+        let disposition = jp.value(
+          operations,
+          catchesPath + '.disposition.description'
+        );
+        disposition = disposition === 'Retained' ? 'R' : 'D';
+        const species = jp.value(
+          operations,
+          childrenPath + '.catchContent.commonNames[0]'
+        );
 
-          for (const catches of operation.catches) {
-            let disposition = catches.disposition
-              ? catches.disposition.description
-              : '';
-            disposition = disposition === 'Retained' ? 'R' : 'D';
-            if (catches.children) {
-              for (const child of catches.children) {
-                const species = child.catchContent
-                  ? child.catchContent.commonNames[0]
-                  : '';
-                if (child.specimens) {
-                  for (const specimen of child.specimens) {
-                    bioSpecimens.push({
-                      tripId,
-                      operationNum,
-                      operationId,
-                      operationRev,
-                      species,
-                      disposition,
-                      specimen,
-                      _id: specimen._id
-                    });
-                  }
-                }
-              }
-            }
+        for (const indivSpecimen of specimen.value) {
+          if (indivSpecimen._id) {
+            const biospecimen = {
+              _id: indivSpecimen._id,
+              tripId,
+              operationNum,
+              operationId,
+              operationRev,
+              disposition,
+              species,
+              specimen: indivSpecimen
+            };
+            bioSpecimens.push(biospecimen);
+          } else {
+            console.log('id not found skipping record');
           }
         }
-        WcgopBiospecimens.value = bioSpecimens;
-      } catch (err) {
-        console.log(err + 'error fetching biospecimens');
       }
+      WcgopBiospecimens.value = bioSpecimens;
     }
 
     async function save(data: any) {

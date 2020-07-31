@@ -1,6 +1,13 @@
 <template>
   <div>
-    <prime-table :value="WcgopOperations" :columns="columns" type="Operations" uniqueKey="_id"/>
+    <prime-table
+      :value="operations"
+      :columns="columns"
+      type="Operations"
+      uniqueKey="_id"
+      :enableSelection="true"
+      :isFullSize="isFullSize"
+    />
   </div>
 </template>
 
@@ -31,13 +38,11 @@ import { convertToObject } from 'typescript';
 
 @Component
 export default class DebrieferOperations extends Vue {
+  @Prop() private isFullSize!: boolean;
+  @Prop() private operations!: any[];
   @Action('error', { namespace: 'alert' }) private error: any;
   @State('debriefer') private debriefer!: DebrieferState;
 
-  private WcgopTrips: WcgopTrip[] = [];
-  private WcgopOperations: WcgopOperation[] = [];
-  private pagination = { rowsPerPage: 50 };
-  private selected: any = [];
   private columns: any[] = [];
 
   private wcgopColumns = [
@@ -56,48 +61,61 @@ export default class DebrieferOperations extends Vue {
       width: '60'
     },
     {
-        field: 'haulScore',
-        header: 'Haul Score',
-        type: 'toggle',
-        list: ['Pass', 'Fail'],
-        key: 'wcgopHaulScore',
-        isEditable: true,
+      field: 'haulScore',
+      header: 'Haul Score',
+      type: 'toggle',
+      list: ['Pass', 'Fail'],
+      key: 'wcgopHaulScore',
+      isEditable: true,
       width: '100'
-      },
+    },
     {
       field: 'observerTotalCatch.measurement.value',
       header: 'OTC (lbs)',
       type: 'double',
       key: 'wcgopOpOTC',
-      width: '100'
+      width: '100',
+      isEditable: true
     },
     {
       field: 'observerTotalCatch.weightMethod.description',
-      header: 'WT Method',
-      type: 'input',
+      header: 'OTC WT Method',
+      type: 'toggle',
       key: 'wcgopOpWM',
-      width: '150'
+      width: '150',
+      listType: 'fetch',
+      search: true,
+      lookupKey: 'weight-method',
+      lookupField: 'description',
+      isEditable: true
     },
     {
       field: 'gearPerformance.description',
       header: 'Gear Perf',
-      type: 'input',
+      type: 'toggle',
       key: 'wcgopGearPerf',
-      width: '150'
+      width: '150',
+      listType: 'fetch',
+      search: true,
+      lookupKey: 'gear-performance',
+      lookupField: 'description',
+      isEditable: true
     },
     {
       field: 'totalGearSegments',
       header: 'Total Gear',
       type: 'number',
       key: 'wcgopOpTotGear',
-      width: '100'
+      width: '100',
+      isEditable: true
     },
     {
       field: 'gearSegmentsLost',
       header: 'Lost Gear',
       type: 'number',
       key: 'wcgopOpTotGearLost',
-      width: '100'
+      width: '100',
+      isEditable: true
     },
     // sea bird avoidance
     {
@@ -105,23 +123,35 @@ export default class DebrieferOperations extends Vue {
       header: 'Average Soak Time',
       type: 'number',
       key: 'wcgopOpAvgSoakTime',
-      width: '100'
+      width: '100',
+      isEditable: true
     },
     {
       field: 'beaufortValue',
       header: 'Beaufort',
-      type: 'number',
+      type: 'toggle',
       key: 'wcgopOpBeaufort',
-      width: '70'
+      listType: 'fetch',
+      lookupKey: 'beaufort',
+      lookupField: 'legacy.lookupVal',
+      width: '70',
+      isEditable: true
     },
-    { field: 'fit', header: 'Fit #', type: 'number', key: 'wcgopOpFit',
-      width: '70' },
+    {
+      field: 'fit',
+      header: 'Fit #',
+      type: 'number',
+      key: 'wcgopOpFit',
+      width: '70',
+      isEditable: true
+    },
     {
       field: 'calWeight',
       header: 'Cal WT',
       type: 'number',
       key: 'wcgopOpCalWeight',
-      width: '70'
+      width: '70',
+      isEditable: true
     },
     {
       field: 'biolist',
@@ -135,55 +165,67 @@ export default class DebrieferOperations extends Vue {
       header: 'Start Date',
       type: 'date',
       key: 'wcgopOpStartDate',
-      width: '150'
+      width: '150',
+      isEditable: true
     },
     {
       field: 'locations[1].locationDate',
       header: 'End Date',
       type: 'date',
       key: 'wcgopOpEndDate',
-      width: '150'
+      width: '150',
+      isEditable: true
     },
     {
       field: 'locations[0].location.coordinates[0]',
       header: 'Start lat',
       type: 'double',
       key: 'wcgopOpStartLat',
-      width: '125'
+      width: '125',
+      isEditable: true
     },
     {
       field: 'locations[1].location.coorindates[0]',
       header: 'End lat',
       type: 'double',
       key: 'wcgopOpEndLat',
-      width: '125'
+      width: '125',
+      isEditable: true
     },
     {
       field: 'locations[0].location.coordinates[1]',
       header: 'Start long',
       type: 'double',
       key: 'wcgopOpStartLong',
-      width: '125'
+      width: '125',
+      isEditable: true
     },
     {
       field: 'locations[1].location.coorindates[1]',
       header: 'End long',
       type: 'double',
       key: 'wcgopOpEndLong',
-      width: '125'
+      width: '125',
+      isEditable: true
     },
     // depth
     {
       field: 'gearType.description',
       header: 'Gear Type',
-      type: 'input',
+      type: 'toggle',
       key: 'wcgopOpGearType',
-      width: '250'
+      listType: 'fetch',
+      search: true,
+      lookupKey: 'gear-type',
+      lookupField: 'description',
+      width: '250',
+      isEditable: true
     },
     {
       field: 'legacy.isBrdPresent',
       header: 'BRD',
-      type: 'boolean',
+      type: 'toggle',
+      listType: 'boolean',
       key: 'wcgopOpIsBRDPresent',
       width: '100'
     },
@@ -198,13 +240,21 @@ export default class DebrieferOperations extends Vue {
     {
       field: 'isEfpUsed',
       header: 'EFP',
-      type: 'boolean',
+      type: 'toggle',
+      listType: 'boolean',
       key: 'wcgopOpEFPUsed',
-      width: '80'
+      width: '80',
+      isEditable: true
     },
     // MMSBST
-    { field: 'notes', header: 'Notes', type: 'input', key: 'wcgopOpNotes',
-      width: '200' }
+    {
+      field: 'notes',
+      header: 'Notes',
+      type: 'input',
+      key: 'wcgopOpNotes',
+      width: '200',
+      isEditable: true
+    }
   ];
 
   private ashopColumns = [
@@ -297,34 +347,6 @@ export default class DebrieferOperations extends Vue {
     { field: 'notes', header: 'Notes', type: 'input', key: 'ashopOpNotes' }
   ];
 
-  @Watch('debriefer.trips')
-  private async onTripsChange() {
-    this.getOperations();
-  }
-
-  private async getOperations() {
-    const masterDB: Client<any> = couchService.masterDB;
-    let operationIds: string[] = [];
-    const operationHolder = [];
-
-    for (const trip of this.debriefer.trips) {
-      operationIds = operationIds.concat(trip.operationIDs);
-    }
-
-    try {
-      const options: ListOptions = {
-        keys: operationIds
-      };
-      const operations = await masterDB.listWithDocs(options);
-      for (const operation of operations.rows) {
-        operationHolder.push(operation);
-      }
-      this.WcgopOperations = operationHolder;
-    } catch (err) {
-      this.error(err);
-    }
-  }
-
   private created() {
     this.columns = [];
     if (this.debriefer.program === 'ashop') {
@@ -332,7 +354,6 @@ export default class DebrieferOperations extends Vue {
     } else {
       this.columns = this.wcgopColumns;
     }
-    this.getOperations();
   }
 
   private formatDate(inputDate: any) {

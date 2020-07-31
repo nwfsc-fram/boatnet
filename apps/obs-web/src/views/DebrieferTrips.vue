@@ -1,11 +1,14 @@
 <template>
   <div>
-   <prime-table
+    <prime-table
       :value="trips"
       :columns="columns"
       type="Trips"
       :simple="false"
       uniqueKey="_id"
+      :enableSelection="true"
+      :isFullSize="isFullSize"
+      :loading="loading"
       @save="save"
     />
   </div>
@@ -36,19 +39,26 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
-import { findIndex } from 'lodash';
+import { findIndex, get, remove, indexOf } from 'lodash';
+import { getTripsByDates } from '../helpers/getFields';
+import moment from 'moment';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
 
 export default createComponent({
+  props: {
+    isFullSize: Boolean
+  },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
-    const state: any = context.root.$store.state;
+    const store = context.root.$store;
+    const state: any = store.state;
     const debriefer: any = state.debriefer;
 
     const columns: any = ref([]);
     const trips: any = ref([]);
+    const loading: any = ref(false);
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -200,7 +210,10 @@ export default createComponent({
       },
       {
         field: 'vessel.captains[0].firstName',
-        displayField: ['vessel.captains[0].firstName', 'vessel.captains[0].lastName'],
+        displayField: [
+          'vessel.captains[0].firstName',
+          'vessel.captains[0].lastName'
+        ],
         header: 'Skipper',
         type: 'toggle',
         listType: 'fetch',
@@ -335,7 +348,13 @@ export default createComponent({
             list: ['C', 'O', 'W'],
             isEditable: true
           },
-          { field: 'createdDate', header: 'Date', type: 'date', key: 'date', isEditable: true }
+          {
+            field: 'createdDate',
+            header: 'Date',
+            type: 'date',
+            key: 'date',
+            isEditable: true
+          }
         ]
       },
       {
@@ -367,17 +386,10 @@ export default createComponent({
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
-    watch(() => state.debriefer.tripIds, getTrips);
 
-    function setColumns() {
-      const program = state.debriefer.program;
-      columns.value = [];
-      if (program === 'ashop') {
-        columns.value = ashopColumns;
-      } else {
-        columns.value = wcgopColumns;
-      }
-    }
+    watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
+    watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
+    watch(() => state.debriefer.tripIds, getTrips);
 
     async function getTrips() {
       const tripsHolder = [];
@@ -395,6 +407,85 @@ export default createComponent({
       }
     }
 
+    async function loadTripsByEvaluationPeriod() {
+      const observer = state.debriefer.observers;
+      const evalPeriod = state.debriefer.evaluationPeriod;
+
+      if (observer && evalPeriod) {
+        trips.value = await getTripsByDates(
+          new Date(evalPeriod.startDate),
+          new Date(evalPeriod.endDate),
+          evalPeriod.observer
+        );
+      }
+    }
+
+    async function getTripsBySearchParams() {
+      loading.value = true;
+      const filters = state.debriefer.tripSearchFilters;
+      const views = Object.keys(filters);
+
+      if (views.length === 0) {
+        trips.value = [];
+        loading.value = false;
+        return;
+      }
+
+      const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
+      let keyVals = {};
+      if (queryView === 'wcgop_trips_by_date') {
+        keyVals = {
+          start_key: filters[queryView].val[0],
+          end_key: filters[queryView].val[1]
+        };
+      } else {
+        keyVals = { keys: filters[queryView].val };
+      }
+
+      try {
+        const results = await masterDB
+          .viewWithDocs('obs_web', queryView, keyVals)
+          .then((response: any) => {
+            trips.value = response.rows
+              .filter((row: any) => {
+                let keep: boolean = true;
+                if (views.length > 1) {
+                  for (let i = 1; i < views.length; i++) {
+                    if (views[i] === 'wcgop_trips_by_date') {
+                      if (moment(row.doc.returnDate).isBefore(filters[views[i]].val[0]) ||
+                        moment(row.doc.returnDate).isAfter(filters[views[i]].val[1])
+                      ) {
+                        keep = false;
+                      }
+                    } else {
+                      const rowVal = get(row.doc, filters[views[i]].field);
+                      if (indexOf(filters[views[i]].val, rowVal) === -1) {
+                        keep = false;
+                      }
+                    }
+                  }
+                }
+                return keep;
+              })
+              .map((row: any) => row.doc);
+          });
+      } catch (error) {
+        console.log(error);
+        loading.value = false;
+      }
+      loading.value = false;
+    }
+
+    function setColumns() {
+      const program = state.debriefer.program;
+      columns.value = [];
+      if (program === 'ashop') {
+        columns.value = ashopColumns;
+      } else {
+        columns.value = wcgopColumns;
+      }
+    }
+
     function save(data: any) {
       masterDB.put(data._id, data, data._rev).then((response: any) => {
         const index = findIndex(trips.value, { _id: data._id });
@@ -405,7 +496,8 @@ export default createComponent({
     return {
       columns,
       trips,
-      save
+      save,
+      loading
     };
   }
 });
