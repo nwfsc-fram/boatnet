@@ -36,9 +36,9 @@
             title="Name of the fishing vessel"
           ></q-input>
         </div>
-        <div class="row items-start logbook-element">
+        <div class="row items-start logbook-element no-wrap">
 
-          <q-input
+          <!-- <q-input
             v-model="tripCatch.departureDateTime"
             label="Departure Date"
             title="Date/Time the vessel departed port"
@@ -46,8 +46,8 @@
             autogrow
             outlined
             style="width: 46%; margin-right: 5px"
-            mask="date"
-            :rules="['date']">
+
+            >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -55,7 +55,32 @@
                 </q-popup-proxy>
               </q-icon>
             </template>
-          </q-input>
+          </q-input> -->
+        <!-- <span class="p-float-label"> -->
+          <pCalendar
+            id="departdate"
+            v-model="depDateTime"
+            :touchUI="isMobile"
+            :inline="false"
+            selectionMode="single"
+            :selectOtherMonths="true"
+            title="Date the vessel departed port"
+            :showTime="true"
+            >
+          </pCalendar>
+          <label for="departdate" class="calendar-label">Departure Date/Time</label>
+
+        <!-- </span> -->
+
+        <!-- <span class="p-float-label">
+          <pInput
+            v-model="departureTime"
+            id="departtime"
+            title="Time the vessel departed port"
+          >
+          </pInput>
+          <label for="departtime" style="color: #007EC6">Departure time</label>
+        </span>
 
           <q-input
             v-model="departureTime"
@@ -67,8 +92,8 @@
             title="Time the vessel departed port"
             mask="##:##"
             :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
-            style="padding-bottom: 0 !important; width: 52%"
-          ></q-input>
+            style="padding-bottom: 0 !important"
+          ></q-input> -->
         </div>
 
         <div class="row items-start logbook-element">
@@ -112,9 +137,25 @@
             title="Vessel Coast Guard or State Reg Number"
           ></q-input>
         </div>
-        <div class="row items-start logbook-element">
+        <div class="row items-start logbook-element no-wrap">
 
-          <q-input
+        <!-- <span class="p-float-label"> -->
+          <pCalendar
+            id="returndate"
+            v-model="retDateTime"
+            :inline="false"
+            :touchUI="isMobile"
+            selectionMode="single"
+            :selectOtherMonths="true"
+            onfocus="blur();"
+            title="Date the vessel returned to port"
+            :showTime="true"
+            >
+          </pCalendar>
+          <label for="returndate" class="calendar-label">Return Date/Time</label>
+        <!-- </span> -->
+
+          <!-- <q-input
             v-model="tripCatch.returnDateTime"
             label="Return Date"
             title="Date the vessel returned to port for offload"
@@ -122,8 +163,8 @@
             autogrow
             outlined
             style="width: 46%; margin-right: 5px"
-            mask="date"
-            :rules="['date']">
+
+            >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -143,7 +184,7 @@
             mask="##:##"
             :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
             style="padding-bottom: 0 !important; width: 52%"
-          ></q-input>
+          ></q-input> -->
         </div>
         <div class="row items-start logbook-element">
           <q-select
@@ -198,7 +239,7 @@
               </span>
             </div>
 
-            <div v-for="(buyer, i) in tripCatch.buyers" :key="i">
+            <div v-for="(buyer, i) in tripCatch.buyers" :key="i" class="list-item">
               <q-input
                 v-model="tripCatch.buyers[i]"
                 dense
@@ -302,14 +343,17 @@
           ></q-input>
         </div>
         <div class="logbook-element">
-          <q-input
+          <q-select
             v-model="tripCatch.skipperName"
+            :options="skipperOptions"
             dense
             autogrow
             outlined
             label="Skipper"
+            use-input
+            new-value-mode="add-unique"
             title="Name of the vessel captain"
-          ></q-input>
+          ></q-select>
         </div>
       </div>
       <div class="row items-start">
@@ -324,6 +368,7 @@
           ></q-input>
 
           <q-input
+            class="list-item"
             v-model="tripCatch.comment"
             dense
             autogrow
@@ -377,7 +422,7 @@
               </span>
             </div>
 
-            <div v-for="(fishTicket, i) in tripCatch.fishTicketNumber" :key="i">
+            <div v-for="(fishTicket, i) in tripCatch.fishTicketNumber" :key="i" class="list-item">
               <q-input
                 v-model="tripCatch.fishTicketNumber[i]"
                 dense
@@ -391,6 +436,7 @@
           </div>
 
           <q-input
+            class="list-item"
             v-model="tripCatch.fishTicketDate"
             label="Fish Ticket Date"
             title="Date the vessel returned to port for offload"
@@ -528,6 +574,7 @@
                         '19 : hook & line',
                         '20 : Longline (snap) (fixed gear)'
                         ]"
+                class="logbook-element"
               ></q-select>
               <q-input
                 v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -538,6 +585,7 @@
                 label="Gear Per Set"
                 title="Total number of pots or hooks set (Mandatory for FG hauls)"
                 mask="###"
+                class="logbook-element"
               ></q-input>
               <q-input
                 v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -548,6 +596,7 @@
                 label="Gear Lost"
                 title="Number of pots or hooks lost (Mandatory for FG hauls)"
                 mask="###"
+                class="logbook-element"
               ></q-input>
               <q-input
                 v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -558,6 +607,7 @@
                 label="Avg Hooks Per Set"
                 title="Average hooks per set"
                 mask="###"
+                class="logbook-element"
               ></q-input>
               <q-input
                 v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -567,6 +617,7 @@
                 outlined
                 label="Net Type"
                 title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)"
+                class="logbook-element"
               ></q-input>
               <q-input
                 v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -577,6 +628,7 @@
                 label="Codend Capacity"
                 title="Total estimated weight (lbs) the codened can hold"
                 mask="#####"
+                class="logbook-element"
               ></q-input>
               <q-select
                 v-model="tripCatch.hauls[selectedHaul - 1].targetStrategy"
@@ -592,6 +644,7 @@
                 @filter="speciesFilterFn"
                 emit-value
                 :display-value="tripCatch.hauls[selectedHaul - 1].targetStrategy"
+                class="logbook-element"
               >
                 <template v-slot:append>
                   <q-btn
@@ -611,13 +664,14 @@
                 outlined
                 label="Comments"
                 title="Notes pertaining to a specific haul record"
+                class="logbook-element"
               ></q-input>
             </div>
 
             <div class="logbook-element">
               <div class="text-h4 text-secondary">Start</div>
-              <div class="row items-start">
-                <q-input
+              <div class="row items-start calendar-logbook-element no-wrap">
+                <!-- <q-input
                   v-model="tripCatch.hauls[selectedHaul - 1].startDateTime"
                   label="Departure Date"
                   title="Date/Time the vessel departed port"
@@ -634,9 +688,20 @@
                       </q-popup-proxy>
                     </q-icon>
                   </template>
-                </q-input>
-
-                <q-input
+                </q-input> -->
+              <pCalendar
+                id="haulstartdate"
+                v-model="haulStartDateTime"
+                :touchUI="isMobile"
+                :inline="false"
+                selectionMode="single"
+                :selectOtherMonths="true"
+                title="Date the vessel departed port"
+                :showTime="true"
+                >
+              </pCalendar>
+              <label for="haulstartdate" class="calendar-label">Haul Start Date/Time</label>
+                <!-- <q-input
                   v-model="haulStartTime"
                   dense
                   autogrow
@@ -646,7 +711,7 @@
                   mask="##:##"
                   :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
                   style="width: 43.3%; padding-bottom: 0 !important"
-                ></q-input>
+                ></q-input> -->
               </div>
               <q-input
                 v-model="tripCatch.hauls[selectedHaul - 1].startDepth"
@@ -670,7 +735,7 @@
                   debounce="500"
                   label="DEG"
                   title="latitude degrees"
-                  style="width: 20%; margin-right: 5px"
+                  style="width: 20%; margin-right: 5px; margin-bottom: 5px"
                 ></q-input>
                <q-input
                   v-model="coordinates.start.lat.min"
@@ -690,7 +755,7 @@
                   debounce="500"
                   label="DEG"
                   title="longitude degrees"
-                  style="width: 20%; margin-right: 5px"
+                  style="width: 20%; margin-right: 5px; margin-bottom: 5px"
                 ></q-input>
                 <q-input
                   v-model="coordinates.start.long.min"
@@ -700,7 +765,7 @@
                   debounce="500"
                   label="MIN"
                   title="longitude minutes"
-                  style="width: 27%"
+                  style="width: 27%; margin-bottom: 5px"
                 ></q-input>
               </div>
               <div class="row items-start">
@@ -712,7 +777,7 @@
                   debounce="500"
                   label="Decimal Degrees"
                   title="Latitude of gear set in decimal degrees"
-                  style="width: 48.5%; margin-right: 10px"
+                  style="width: 48.5%; margin-right: 10px; margin-bottom: 5px"
                 ></q-input>
                 <q-input
                   v-model="coordinates.start.long.dd"
@@ -722,13 +787,28 @@
                   debounce="500"
                   label="Decimal Degrees"
                   title="Longitude of gear set in decimal degrees"
+                  :rules="[ val => val >= 0 || 'enter positive degrees - value auto-converted to negative']"
                   style="width: 48.5%"
                 ></q-input>
               </div>
             </div>
             <div class="logbook-element">
               <div class="text-h4 text-secondary">End</div>
-              <div class="row items-start">
+              <div class="row items-start calendar-logbook-element no-wrap">
+                <pCalendar
+                  id="haulenddate"
+                  v-model="haulEndDateTime"
+                  :touchUI="isMobile"
+                  :inline="false"
+                  selectionMode="single"
+                  :selectOtherMonths="true"
+                  title="Date the vessel departed port"
+                  :showTime="true"
+                  >
+                </pCalendar>
+                <label for="haulenddate" class="calendar-label">Haul End Date/Time</label>
+              </div>
+              <!-- <div class="row items-start">
                 <q-input
                   v-model="tripCatch.hauls[selectedHaul - 1].endDateTime"
                   label="Departure Date"
@@ -758,7 +838,7 @@
                   :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
                   style="width: 43.3%; padding-bottom: 0 !important"
                 ></q-input>
-              </div>
+              </div> -->
               <q-input
                 v-model="tripCatch.hauls[selectedHaul - 1].endDepth"
                 dense
@@ -781,7 +861,7 @@
                   debounce="500"
                   label="DEG"
                   title="latitude degrees"
-                  style="width: 20%; margin-right: 5px"
+                  style="width: 20%; margin-right: 5px; margin-bottom: 5px"
                 ></q-input>
                <q-input
                   v-model="coordinates.end.lat.min"
@@ -791,7 +871,7 @@
                   debounce="500"
                   label="MIN"
                   title="latitude minutes"
-                  style="width: 27%; margin-right: 10px"
+                  style="width: 27%; margin-right: 10px; margin-bottom: 5px"
                 ></q-input>
                 <q-input
                   v-model="coordinates.end.long.deg"
@@ -801,7 +881,7 @@
                   debounce="500"
                   label="DEG"
                   title="longitude degrees"
-                  style="width: 20%; margin-right: 5px"
+                  style="width: 20%; margin-right: 5px; margin-bottom: 5px"
                 ></q-input>
                 <q-input
                   v-model="coordinates.end.long.min"
@@ -811,7 +891,7 @@
                   debounce="500"
                   label="MIN"
                   title="longitude minutes"
-                  style="width: 27%"
+                  style="width: 27%; margin-bottom: 5px"
                 ></q-input>
               </div>
               <div class="row items-start">
@@ -833,6 +913,7 @@
                   debounce="500"
                   label="Decimal Degrees"
                   title="Longitude of gear set in decimal degrees"
+                  :rules="[ val => val >= 0 || 'enter positive degrees - value auto-converted to negative']"
                   style="width: 48.5%"
                 ></q-input>
               </div>
@@ -1033,6 +1114,9 @@ import moment from 'moment';
 import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
+import InputText from 'primevue/inputtext';
+Vue.component('pInput', InputText);
+
 import { getTripsApiTrip, getCatchApiCatch, newApiCatch, updateApiCatch } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth/lib';
 
@@ -1075,13 +1159,13 @@ export default createComponent({
 
     const addHaul = () => {
       tripCatch.hauls.push({
-        startDateTime: tripCatch.departureDateTime,
-        endDateTime: tripCatch.returnDateTime,
+        startDateTime: _.cloneDeep(tripCatch.departureDateTime),
+        endDateTime: _.cloneDeep(tripCatch.returnDateTime),
         haulNum: tripCatch.hauls.length + 1,
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
-      haulStartTime.value = tripCatch.departureDateTime;
+      // haulStartTime.value = tripCatch.departureDateTime;
       haulEndTime.value = tripCatch.returnDateTime;
 
       haulSelected.value = [_.cloneDeep(tripCatch.hauls[tripCatch.hauls.length - 1])];
@@ -1102,8 +1186,10 @@ export default createComponent({
       selectedHaul.value = haulIndex;
       selectedCatch.value = null;
 
-      haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format('HH:mm');
-      haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format('HH:mm');
+      getHaulStartDateTime();
+      getHaulEndDateTime();
+      // haulStartTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format('HH:mm');
+      // haulEndTime.value = moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format('HH:mm');
 
       coordinates.value = {
         start: {
@@ -1120,13 +1206,13 @@ export default createComponent({
         coordinates.value.start.lat.dd = tripCatch.hauls[selectedHaul.value - 1].startLatitude;
       }
       if (tripCatch.hauls[selectedHaul.value - 1].startLongitude) {
-        coordinates.value.start.long.dd = tripCatch.hauls[selectedHaul.value - 1].startLongitude;
+        coordinates.value.start.long.dd = + tripCatch.hauls[selectedHaul.value - 1].startLongitude;
       }
       if (tripCatch.hauls[selectedHaul.value - 1].endLatitude) {
         coordinates.value.end.lat.dd = tripCatch.hauls[selectedHaul.value - 1].endLatitude;
       }
       if (tripCatch.hauls[selectedHaul.value - 1].endLongitude) {
-        coordinates.value.end.long.dd = tripCatch.hauls[selectedHaul.value - 1].endLongitude;
+        coordinates.value.end.long.dd = + tripCatch.hauls[selectedHaul.value - 1].endLongitude;
       }
 
     };
@@ -1434,6 +1520,37 @@ export default createComponent({
       });
     };
 
+    const skipperOptions: any = ref([]);
+    const getSkipperOptions = async () => {
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'vessel-permissions'
+      };
+
+      const vesselPermissions = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
+      );
+
+      const vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
+      const authorizedPersonIds = vesselPermissions.rows[0].doc.vesselAuthorizations.filter(
+        (vessel: any) => {
+          return vessel.vesselIdNum === vesselId;
+        }
+      );
+      if (authorizedPersonIds.length > 0) {
+        for (const personId of authorizedPersonIds[0].authorizedPeople) {
+          const personAlias = await masterDb.get(personId);
+          if (personAlias.isActive && personAlias.roles.includes('captain')) {
+            skipperOptions.value.push(personAlias.firstName + ' ' + personAlias.lastName);
+          }
+        }
+      }
+    };
+
     const validPacfinCodes: any = [];
     const getValidPacfinCodes = async () => {
       const masterDb = couchService.masterDB;
@@ -1636,7 +1753,6 @@ export default createComponent({
                 });
               return;
             } else {
-              console.log(res);
               const apiTrip: any = {
                 tripNum: res.tripNum,
                 year: moment(res.departureDate).format('YYYY'),
@@ -1718,7 +1834,6 @@ export default createComponent({
     const submitLogbook = () => {
       tripCatch.updatedBy = authService.getCurrentUser()!.username;
       tripCatch.updatedDate = moment().format();
-      console.log(tripCatch);
       if (tripCatch._id && tripCatch._rev) {
         console.log('Updating API Catch record');
         updateApiCatch(tripCatch).then( (res) => {
@@ -1733,8 +1848,10 @@ export default createComponent({
                 multiLine: true
             });
           getCatch(tripCatch.tripNum).then(() => {
-            getDepartureTime();
-            getReturnTime();
+            // getDepartureTime();
+            // getReturnTime();
+            getDepDateTime();
+            getRetDateTime();
           });
         });
       } else {
@@ -1751,8 +1868,10 @@ export default createComponent({
                 multiLine: true
             });
           getCatch(tripCatch.tripNum).then(() => {
-            getDepartureTime();
-            getReturnTime();
+            // getDepartureTime();
+            // getReturnTime();
+            getDepDateTime();
+            getRetDateTime();
           });
         });
       }
@@ -1841,7 +1960,11 @@ export default createComponent({
           }
           if (coordinates.value.start.long.dd !== '') {
             [coordinates.value.start.long.deg, coordinates.value.start.long.min] = getDegMin(coordinates.value.start.long.dd);
-            tripCatch.hauls[selectedHaul.value - 1].startLongitude = coordinates.value.start.long.dd;
+            if (coordinates.value.start.long.dd > 0) {
+              tripCatch.hauls[selectedHaul.value - 1].startLongitude = - coordinates.value.start.long.dd;
+            } else {
+              tripCatch.hauls[selectedHaul.value - 1].startLongitude = coordinates.value.start.long.dd;
+            }
           }
           if (coordinates.value.end.lat.dd !== '') {
             [coordinates.value.end.lat.deg, coordinates.value.end.lat.min] = getDegMin(coordinates.value.end.lat.dd);
@@ -1849,7 +1972,11 @@ export default createComponent({
           }
           if (coordinates.value.end.long.dd !== '') {
             [coordinates.value.end.long.deg, coordinates.value.end.long.min] = getDegMin(coordinates.value.end.long.dd);
-            tripCatch.hauls[selectedHaul.value - 1].endLongitude = coordinates.value.end.long.dd;
+            if (coordinates.value.end.long.dd > 0) {
+              tripCatch.hauls[selectedHaul.value - 1].endLongitude = - coordinates.value.end.long.dd;
+            } else {
+              tripCatch.hauls[selectedHaul.value - 1].endLongitude = coordinates.value.end.long.dd;
+            }
           }
         } else {
           if (coordinates.value.start.lat.deg !== '' && coordinates.value.start.lat.min !== '') {
@@ -1858,7 +1985,7 @@ export default createComponent({
           }
           if (coordinates.value.start.long.deg !== '' && coordinates.value.start.long.min !== '') {
             coordinates.value.start.long.dd = getDecimal(coordinates.value.start.long.deg, coordinates.value.start.long.min);
-            tripCatch.hauls[selectedHaul.value - 1].startLongitude = coordinates.value.start.long.dd;
+            tripCatch.hauls[selectedHaul.value - 1].startLongitude = - coordinates.value.start.long.dd;
           }
           if (coordinates.value.end.lat.deg !== '' && coordinates.value.end.lat.min !== '') {
             coordinates.value.end.lat.dd = getDecimal(coordinates.value.end.lat.deg, coordinates.value.end.lat.min);
@@ -1866,7 +1993,7 @@ export default createComponent({
           }
           if (coordinates.value.end.long.deg !== '' && coordinates.value.end.long.min !== '') {
             coordinates.value.end.long.dd = getDecimal(coordinates.value.end.long.deg, coordinates.value.end.long.min);
-            tripCatch.hauls[selectedHaul.value - 1].endLongitude = coordinates.value.end.long.dd;
+            tripCatch.hauls[selectedHaul.value - 1].endLongitude = - coordinates.value.end.long.dd;
           }
         }
 
@@ -1874,63 +2001,132 @@ export default createComponent({
       }, watcherOptions
     );
 
-    const departureTime: any = ref('');
-    const getDepartureTime = () => {
+    const isMobile = computed(
+      () => {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    );
+
+    const depDateTime: any = ref('');
+    const getDepDateTime = () => {
       if (tripCatch.departureDateTime) {
-        departureTime.value = moment(tripCatch.departureDateTime).format(
-          'hh:mm'
-        );
+        depDateTime.value = new Date(moment(tripCatch.departureDateTime).format());
       }
     };
     watch(
-      () => departureTime.value,
+      () => depDateTime.value,
       (newVal, oldVal) => {
-        const departureDate = moment(tripCatch.departureDateTime);
-        if (newVal && newVal.indexOf(':') !== -1) {
-          departureDate.set('hour', newVal.split(':')[0]);
-          departureDate.set('minute', newVal.split(':')[1]);
-          tripCatch.departureDateTime = departureDate.format();
-        }
+        tripCatch.departureDateTime = moment(depDateTime.value).format();
       },
       watcherOptions
     );
 
-    const returnTime: any = ref('');
-    const getReturnTime = () => {
+    const retDateTime: any = ref('');
+    const getRetDateTime = () => {
       if (tripCatch.returnDateTime) {
-        returnTime.value = moment(tripCatch.returnDateTime).format('hh:mm');
+        retDateTime.value = new Date(moment(tripCatch.returnDateTime).format());
       }
     };
     watch(
-      () => returnTime.value,
+      () => retDateTime.value,
       (newVal, oldVal) => {
-        const returnDate = moment(tripCatch.returnDateTime);
-        if (newVal && newVal.indexOf(':') !== -1) {
-          returnDate.set('hour', newVal.split(':')[0]);
-          returnDate.set('minute', newVal.split(':')[1]);
-          tripCatch.returnDateTime = returnDate.format();
+        tripCatch.returnDateTime = moment(retDateTime.value).format();
+      },
+      watcherOptions
+    );
+
+    // const departureTime: any = ref('');
+    // const getDepartureTime = () => {
+    //   if (tripCatch.departureDateTime) {
+    //     departureTime.value = moment(tripCatch.departureDateTime).format('HH:mm');
+    //   }
+    // };
+
+    // watch(
+    //   () => departureTime.value,
+    //   (newVal, oldVal) => {
+    //     const departureDate = moment(tripCatch.departureDateTime);
+    //     if (newVal && newVal.indexOf(':') !== -1) {
+    //       departureDate.set('hour', newVal.split(':')[0]);
+    //       departureDate.set('minute', newVal.split(':')[1]);
+    //       tripCatch.departureDateTime = departureDate.format();
+    //     }
+    //   },
+    //   watcherOptions
+    // );
+
+    // const returnTime: any = ref('');
+    // const getReturnTime = () => {
+    //   if (tripCatch.returnDateTime) {
+    //     returnTime.value = moment(tripCatch.returnDateTime).format('HH:mm');
+    //   }
+    // };
+    // watch(
+    //   () => returnTime.value,
+    //   (newVal, oldVal) => {
+    //     const returnDate = moment(tripCatch.returnDateTime);
+    //     if (newVal && newVal.indexOf(':') !== -1) {
+    //       returnDate.set('hour', newVal.split(':')[0]);
+    //       returnDate.set('minute', newVal.split(':')[1]);
+    //       tripCatch.returnDateTime = returnDate.format();
+    //     }
+    //   },
+    //   watcherOptions
+    // );
+
+    const haulStartDateTime: any = ref('');
+    const getHaulStartDateTime = () => {
+      if (tripCatch.hauls[selectedHaul.value - 1].startDateTime) {
+        haulStartDateTime.value = new Date(moment(tripCatch.hauls[selectedHaul.value - 1].startDateTime).format());
+      }
+    };
+    watch(
+      () => haulStartDateTime.value,
+      (newVal, oldVal) => {
+        if (selectedHaul.value) {
+          tripCatch.hauls[selectedHaul.value - 1].startDateTime = moment(haulStartDateTime.value).format();
         }
       },
       watcherOptions
     );
 
-    const haulStartTime: any = ref([]);
+    const haulEndDateTime: any = ref('');
+    const getHaulEndDateTime = () => {
+      if (tripCatch.hauls[selectedHaul.value - 1].endDateTime) {
+        haulEndDateTime.value = new Date(moment(tripCatch.hauls[selectedHaul.value - 1].endDateTime).format());
+      }
+    };
     watch(
-      () => haulStartTime.value,
+      () => haulEndDateTime.value,
       (newVal, oldVal) => {
-        if (newVal && newVal.indexOf(':') !== -1) {
-          const startDate = moment(
-            tripCatch.hauls[selectedHaul.value - 1].startDateTime
-          );
-          startDate.set('hour', newVal.split(':')[0]);
-          startDate.set('minute', newVal.split(':')[1]);
-          tripCatch.hauls[
-            selectedHaul.value - 1
-          ].startDateTime = startDate.format();
+        if (selectedHaul.value) {
+          tripCatch.hauls[selectedHaul.value - 1].endDateTime = moment(haulEndDateTime.value).format();
         }
       },
       watcherOptions
     );
+
+    // const haulStartTime: any = ref([]);
+    // watch(
+    //   () => haulStartTime.value,
+    //   (newVal, oldVal) => {
+    //     if (newVal && newVal.indexOf(':') !== -1) {
+    //       const startDate = moment(
+    //         tripCatch.hauls[selectedHaul.value - 1].startDateTime
+    //       );
+    //       startDate.set('hour', newVal.split(':')[0]);
+    //       startDate.set('minute', newVal.split(':')[1]);
+    //       tripCatch.hauls[
+    //         selectedHaul.value - 1
+    //       ].startDateTime = startDate.format();
+    //     }
+    //   },
+    //   watcherOptions
+    // );
 
     const haulEndTime: any = ref([]);
     watch(
@@ -1957,6 +2153,7 @@ export default createComponent({
       getFisheryOptions();
       getGearTypeOptions();
       getPortDecoderPorts();
+      getSkipperOptions();
       // getPorts();
       if (context.root.$route.params.id === 'new') {
         const dummyTrip: any = {
@@ -1983,13 +2180,17 @@ export default createComponent({
           Vue.set(tripCatch, key, dummyTrip[key]);
         }
         setTimeout(() => {
-          getDepartureTime();
-          getReturnTime();
+          // getDepartureTime();
+          // getReturnTime();
+          getDepDateTime();
+          getRetDateTime();
         }, 500);
       } else {
         getCatch(context.root.$route.params.id).then(() => {
-          getDepartureTime();
-          getReturnTime();
+          // getDepartureTime();
+          // getReturnTime();
+          getDepDateTime();
+          getRetDateTime();
           indexCatch();
         });
       }
@@ -2005,11 +2206,12 @@ export default createComponent({
       selectedCatch,
       fisheryOptions,
       gearTypeOptions,
+      skipperOptions,
       formatDateTime,
       formatDate,
-      departureTime,
-      returnTime,
-      haulStartTime,
+      // departureTime,
+      // returnTime,
+      // haulStartTime,
       haulEndTime,
       haulPagination,
       haulSelected,
@@ -2025,22 +2227,46 @@ export default createComponent({
       departurePortFilterFn,
       returnPortFilterFn,
       submitLogbook,
-      coordinates
+      coordinates,
+      depDateTime,
+      retDateTime,
+      isMobile,
+      haulStartDateTime,
+      haulEndDateTime
     };
   }
 });
 </script>
 
 <style scoped>
-/* body .p-inputtext {
-    border-radius: 4px !important;
-    background-color: #c8c8c8 !important;
-} */
 
 .logbook-element {
   width: 100%;
   max-width: 350px;
-  margin: 0 5px;
+  margin: 5px !important;
+}
+
+.calendar-logbook-element {
+  width: 100%;
+  max-width: 350px;
+  margin: 5px 5px 5px 0 !important;
+}
+
+.list-item {
+  margin: 5px 0
+}
+
+.calendar-label{
+   font-size: 10px;
+   position: relative;
+   left: -342px;
+   top: 5px;
+   z-index: 999;
+   white-space: nowrap;
+}
+
+.no-wrap{
+  flex-wrap: none !important;
 }
 
 .selected {
@@ -2049,6 +2275,24 @@ export default createComponent({
 }
 .q-field--with-bottom {
     padding-bottom: 5px !important;
+}
+
+* >>> .p-inputtext {
+  vertical-align: baseline;
+  font-weight: bold !important;
+  width: 350px;
+  border: 1px solid rgb(187, 186, 186) !important;
+  border-radius: 4px;
+  height: 39px;
+  padding-top: 16px;
+}
+
+* >>> .p-inputtext:hover {
+  border: 1px solid black !important;
+}
+
+* >>> .p-inputtext:focus {
+  border: none !important;
 }
 
 </style>

@@ -1,24 +1,41 @@
 <template>
-    <div style="text-align: center; display: flex; justify-content: center; align-items: center;">
-        <div style="width: 320px;">
-            <div class="text-h6">{{ label }}</div>
+    <div>
+        <div style="text-align: center; display: flex; justify-content: center; align-items: center;">
+            <div style="width: 320px;">
+                <div class="text-h6">{{ label }}</div>
 
-            <label class="cameraButton shadow-2 bg-primary text-white">Capture
-                <input id="imageInput" @change="handleImage($event)" type="file" accept="image/*">
-                <!-- <input @change="handleImage($event)" type="file" accept="image/*" capture="user"> -->
-            </label>&nbsp;
-            <br>
-            <div class="container" v-for="file of files" :key="files.indexOf(file)">
-                <img :src="getImageUrl(file)" :alt="file.name" style="width: 320px">
-                <q-btn class="button" size="sm" icon="clear" round color="red" @click="removeAtIndex(files.indexOf(file))"></q-btn>
+                <label class="cameraButton shadow-2 bg-primary text-white">Capture
+                    <input id="imageInput" @change="handleImage($event)" type="file" accept="image/*">
+                    <!-- <input @change="handleImage($event)" type="file" accept="image/*" capture="user"> -->
+                </label>&nbsp;
+                <br>
+                <div class="container" v-for="file of files" :key="files.indexOf(file)">
+                    <img :src="getImageUrl(file)" :alt="file.name" style="width: 320px">
+                    <q-btn class="button" size="sm" icon="clear" round color="red" @click="removeAtIndex(files.indexOf(file))"></q-btn>
+                </div>
+                <span>
+                    <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage">{{ submitAction }}</q-btn>
+                    <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+                    <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
+                    <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
+                </span>
             </div>
-            <span>
-                <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage">{{ submitAction }}</q-btn>
-                <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
-                <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
-                <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
-            </span>
         </div>
+        <q-dialog v-model="sameDatesWarning">
+            <q-card>
+            <q-card-section>
+                <div class="text-h6">
+                A trip with the same start and end date has already been submitted - are you sure you want to submit another trip with the same dates?
+                </div>
+                <div style="float: right" >
+                    <q-btn color="primary" @click="submitAnyway" label="submit"/>
+                    &nbsp;
+                    <q-btn color="red" @click="sameDatesWarning = false" label="cancel"/>
+                </div>
+                <br><br>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -26,7 +43,7 @@
     import { createComponent, ref, reactive, computed, onMounted } from '@vue/composition-api';
     import Compressor from 'compressorjs';
     import { Emit } from 'vue-property-decorator';
-    import { newTripsApiTrip } from '@boatnet/bn-common';
+    import { newTripsApiTrip, getTripsApiTrips } from '@boatnet/bn-common';
     import { AuthState, authService } from '@boatnet/bn-auth';
     import moment from 'moment';
     import { Notify } from 'quasar';
@@ -77,9 +94,33 @@
             };
 
             let tripsApiNum: any;
+
+            const sameDatesWarning: any = ref(false);
+            const confirmedSameDaysSubmission: any = ref(false);
+
+            const submitAnyway = () => {
+                confirmedSameDaysSubmission.value = true;
+                submitImage();
+            };
+
             const submitImage = async () => {
 
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
+
+                if (confirmedSameDaysSubmission.value !== true) {
+                    const vesselTrips: any = await getTripsApiTrips('vesselId', props.trip!.vesselId);
+                    const sameDatesTrips = vesselTrips.filter(
+                        (trip: any) => {
+                            return moment(trip.departureDate).isSame(props.trip!.departureDate, 'day') && moment(trip.returnDate).isSame(props.trip!.returnDate, 'day');
+                    } );
+                    if (sameDatesTrips.length > 0) {
+                        sameDatesWarning.value = true;
+                        return;
+                    }
+                }
+
+                sameDatesWarning.value = false;
+                confirmedSameDaysSubmission.value = false;
 
                 if ( props.trip!.tripNum === 0) {
                     const newApiTrip = {
@@ -189,7 +230,7 @@
             });
 
             return {
-                handleImage, files, getImageUrl, removeAtIndex, transferring, submitImage, applied
+                handleImage, files, getImageUrl, removeAtIndex, transferring, submitImage, applied, sameDatesWarning, confirmedSameDaysSubmission, submitAnyway
             };
         }
     });

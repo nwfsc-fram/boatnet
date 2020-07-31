@@ -185,6 +185,22 @@
         <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" style="float: right" color="red" label="submit without image" @click="submitTripOnly"></q-btn>
         <q-btn style="float: right" color="primary" label="Cancel" @click="goToTrips"/>
 
+        <q-dialog v-model="sameDatesWarning">
+            <q-card>
+            <q-card-section>
+                <div class="text-h6">
+                A trip with the same start and end date has already been submitted - are you sure you want to submit another trip with the same dates?
+                </div>
+                <div style="float: right" >
+                    <q-btn color="primary" @click="submitAnyway" label="submit"/>
+                    &nbsp;
+                    <q-btn color="red" @click="sameDatesWarning = false" label="cancel"/>
+                </div>
+                <br><br>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
+
     </div>
 
 </template>
@@ -208,7 +224,7 @@ import FileUploader from '../components/FileUploader.vue';
 import moment from 'moment';
 import { Notify } from 'quasar';
 
-import { newTripsApiTrip } from '@boatnet/bn-common';
+import { newTripsApiTrip, getTripsApiTrips } from '@boatnet/bn-common';
 
 @Component({
   components: {
@@ -243,6 +259,9 @@ export default class LogBookCapture extends Vue {
     private departureTime: any = null;
     private userRoles: string[] = [];
 
+    private sameDatesWarning: boolean = false;
+    private confirmedSameDaysSubmission: boolean = false;
+
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
         if (this.userRoles.includes(role)) {
@@ -255,6 +274,11 @@ export default class LogBookCapture extends Vue {
     private handleImage(event: any) {
         this.file = event!.target!.files[0];
         this.fileUrl = URL.createObjectURL(this.file);
+    }
+
+    private submitAnyway() {
+        this.confirmedSameDaysSubmission = true;
+        this.submitTripOnly();
     }
 
     private async submitTripOnly() {
@@ -299,8 +323,25 @@ export default class LogBookCapture extends Vue {
         return;
         }
 
+        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+
+        if (!this.confirmedSameDaysSubmission) {
+            const vesselTrips: any = await getTripsApiTrips('vesselId', this.trip.activeTrip!.vesselId);
+            const sameDatesTrips = vesselTrips.filter(
+                (trip: any) => {
+                    return moment(trip.departureDate).isSame(this.trip.activeTrip!.departureDate, 'day') && moment(trip.returnDate).isSame(this.trip.activeTrip!.returnDate, 'day');
+            } );
+            if (sameDatesTrips.length > 0) {
+                this.sameDatesWarning = true;
+                return;
+            }
+        }
+
+        this.sameDatesWarning = false;
+        this.confirmedSameDaysSubmission = false;
+
         const newApiTrip = {
-            vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
+            vesselId: this.trip.activeTrip!.vesselId,
             vesselName: this.trip.activeTrip!.vessel!.vesselName,
             departurePort: this.trip.activeTrip!.departurePort!.code ? this.trip.activeTrip!.departurePort!.code : this.trip.activeTrip!.departurePort!.name,
             departureDate: this.trip.activeTrip!.departureDate,
@@ -312,7 +353,6 @@ export default class LogBookCapture extends Vue {
             createdDate: this.trip.activeTrip!.createdDate
         };
 
-        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
 
         await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
         this.trip.activeTrip!.tripNum = this.tripsApiNum;
