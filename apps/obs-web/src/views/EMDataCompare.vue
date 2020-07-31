@@ -154,7 +154,10 @@ export default createComponent({
             if (species.catchDisposition === 'Discarded') {
               tripTotals[species.speciesCode][source.source].discard += parseFloat(species.estimatedWeight);
             }
-            if (source.source === 'logbook' && species.catchDisposition === 'Retained') {
+            if (species.disposition === 'D') {
+              tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
+            }
+            if (source.source === 'logbook' && (species.catchDisposition === 'Retained')) {
               tripTotals[species.speciesCode][source.source].retained += parseFloat(species.estimatedWeight) ? parseFloat(species.estimatedWeight) : 0;
             }
             if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
@@ -167,6 +170,9 @@ export default createComponent({
               haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.estimatedWeight);
             } else if (species.catchDisposition === 'Retained') {
               haulTotals[haul.haulNum][species.speciesCode][source.source].retained = parseFloat(species.estimatedWeight);
+            }
+            if (species.disposition === 'D') {
+              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
             }
           }
         }

@@ -219,7 +219,7 @@
           <q-td v-else></q-td>
           <q-td key="_attachments" :props="props">
             <q-icon v-if="props.row._attachments" :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" title="Has Logbook Image" style="font-weight: bold"></q-icon>
-            <q-icon v-if="!props.row._attachments && props.row.closingReason === 'taken'" :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" title="Logbook Image Missing" style="font-weight: bold"></q-icon>
+            <q-icon v-if="!props.row._attachments && (props.row.closingReason !== 'cancelled')" :color="getColor(props.row._attachments)" :name="hasAttachments(props.row)" title="Logbook Image Missing" style="font-weight: bold"></q-icon>
           </q-td>
           <q-td key="tripNum" :props="props">{{ ![0,1].includes(props.row.tripNum) ? props.row.tripNum : '' }}</q-td>
           <q-td key="tripStatus" :props="props">{{ props.row.closingReason }}</q-td>

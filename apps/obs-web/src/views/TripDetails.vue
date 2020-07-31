@@ -84,16 +84,16 @@
               </pCalendar>
             </div>
 
-            <div v-if="trip.activeTrip.departureDate" class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button v-model="departureTime" lazy @input="updateDepartureDate">
+            <div class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
+              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button close-on-complete v-model="departureTime" lazy @input="updateDepartureDate">
               </timepicker>
             </div>
 
             <div class="trips-el-height">
-              <span v-if="!trip.activeTrip.isSingleDayTrip && departureTimeEntered" class="date-label">Return Date</span>
+              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Return Date</span>
               <pCalendar
                 :disabled="trip.readOnly"
-                v-if="!trip.activeTrip.isSingleDayTrip && departureTimeEntered"
+                v-if="!trip.activeTrip.isSingleDayTrip"
                 v-model="tripDates[1]"
                 :minDate="minDate"
                 :maxDate="maxDate"
