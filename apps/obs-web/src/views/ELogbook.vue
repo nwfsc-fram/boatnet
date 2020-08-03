@@ -66,6 +66,7 @@
             :selectOtherMonths="true"
             title="Date the vessel departed port"
             :showTime="true"
+            onfocus="blur()"
             >
           </pCalendar>
           <label for="departdate" class="calendar-label">Departure Date/Time</label>
@@ -147,9 +148,9 @@
             :touchUI="isMobile"
             selectionMode="single"
             :selectOtherMonths="true"
-            onfocus="blur();"
             title="Date the vessel returned to port"
             :showTime="true"
+            onfocus="blur()"
             >
           </pCalendar>
           <label for="returndate" class="calendar-label">Return Date/Time</label>
@@ -698,6 +699,7 @@
                 :selectOtherMonths="true"
                 title="Date the vessel departed port"
                 :showTime="true"
+                onfocus="blur()"
                 >
               </pCalendar>
               <label for="haulstartdate" class="calendar-label">Haul Start Date/Time</label>
@@ -804,6 +806,7 @@
                   :selectOtherMonths="true"
                   title="Date the vessel departed port"
                   :showTime="true"
+                  onfocus="blur()"
                   >
                 </pCalendar>
                 <label for="haulenddate" class="calendar-label">Haul End Date/Time</label>
