@@ -43,6 +43,7 @@ import ViewImage from './views/ViewImage.vue';
 import RackBiospecimens from './views/RackBiospecimens.vue';
 import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
 import MissedTripLog from './views/MissedTripLog.vue';
+import EmExpansions from './views/EmExpansions.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -63,6 +64,7 @@ const router = new Router({
       path: '/',
       component: DefaultLayout,
       children: [
+        { path: 'em-expansions', component: EmExpansions },
         { path: '', name: 'Home', component: Home },
         { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
