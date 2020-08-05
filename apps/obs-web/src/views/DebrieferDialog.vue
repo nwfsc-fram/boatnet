@@ -214,7 +214,6 @@ export default createComponent({
         });
       }
       store.dispatch('debriefer/updateEvaluationPeriod', evalPeriod);
-      store.dispatch('debriefer/setTripIds', tripIds);
       closeDialog();
     }
 

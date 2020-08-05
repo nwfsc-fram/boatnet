@@ -102,7 +102,7 @@
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
         >
           <q-item
-            to="/debriefer/data"
+            to="/debriefer"
             exact
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
           >

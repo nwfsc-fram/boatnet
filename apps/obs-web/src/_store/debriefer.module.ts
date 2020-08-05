@@ -10,10 +10,12 @@ export const state: DebrieferState = {
   cruiseIds: '',
   observers: '',
   evaluationPeriod: {},
+  tripSearchFilters: {},
   tripIds: [],
   displayColumns: {},
   trips: [],
-  operations: []
+  operations: [],
+  specimens: []
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -32,11 +34,17 @@ const actions: ActionTree<DebrieferState, RootState> = {
   updateEvaluationPeriod({ commit }: any, value: any) {
     commit('updateVal', {id: 'evaluationPeriod', val: value});
   },
+  updateTripSearchFilters({ commit }: any, value: any) {
+    commit('updateVal', {id: 'tripSearchFilters', val: value});
+  },
   updateTrips({ commit }: any, value: any) {
     commit('updateVal', {id: 'trips', val: value});
   },
   updateOperations({ commit }: any, value: any) {
     commit('updateVal', {id: 'operations', val: value});
+  },
+  updateSpecimens({ commit }: any, value: any) {
+    commit('updateVal', {id: 'specimens', val: value});
   },
   updateDisplayColumns({ commit }: any, value: any) {
     commit('updateDisplayColumns', value);

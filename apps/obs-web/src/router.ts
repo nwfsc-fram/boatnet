@@ -7,6 +7,7 @@ import Home from './views/Home.vue';
 import LookupEditor from './views/LookupEditor.vue';
 import Debriefer from './views/Debriefer.vue';
 import DebrieferLayout from './views/DebrieferLayout.vue';
+import DebrieferTableExpanded from './views/DebrieferTableExpanded.vue';
 import Trips from './views/Trips.vue';
 import TripDetails from './views/TripDetails.vue';
 import Permits from './views/Permits.vue';
@@ -89,12 +90,11 @@ const router = new Router({
         { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         {
-          path: '/debriefer/:activeTab', name: 'Debriefer', component: DebrieferLayout,
-          props: (route) => ({ activeTab: String(route.params.activeTab) }),
-          beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward',
-              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
-          }
+          path: '/debriefer', name: 'Debriefer', component: DebrieferLayout,
+        },
+        {
+          path: '/table/:tableType', name: 'Table', component: DebrieferTableExpanded,
+          props: (route) => ({ tableType: String(route.params.tableType)})
         },
         {
           path: '/declarations', name: 'Declaration', component: Declarations

@@ -1,8 +1,8 @@
 <template>
   <div>
     <TabView class="q-ma-md">
-      <TabPanel header="WCGOP" :active="true">
-        <TabView>
+      <TabPanel header="WCGOP" :active="true" >
+        <TabView @tab-change="clearFilters">
           <TabPanel header="Evaluation" :active="true">
             <app-debriefer-wcgop-evaluation />
           </TabPanel>
@@ -18,7 +18,7 @@
 
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="activeTab === 'data'">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'" />
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :showPopout="true" :isFullSize="false"/>
         <app-debriefer-ashop-data v-else />
       </TabPanel>
       <TabPanel header="Errors" :active="activeTab === 'qa'">
@@ -63,14 +63,12 @@ Vue.component('DataTable', DataTable);
 Vue.component('Column', Column);
 
 export default createComponent({
-  props: {
-    activeTab: String
-  },
-
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab = 'eval';
+    const activeTab = ref('data');
+
+    clearFilters();
 
     const program = computed({
       get: () => {
@@ -86,9 +84,15 @@ export default createComponent({
       }
     });
 
+    function clearFilters() {
+      store.dispatch('debriefer/updateTripSearchFilters', {});
+      store.dispatch('debriefer/updateEvaluationPeriod', {});
+    }
+
     return {
       program,
-      tab
+      activeTab,
+      clearFilters
     };
   }
 });

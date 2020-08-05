@@ -6,10 +6,15 @@ import { WcgopTrip } from '@boatnet/bn-models/lib';
 
 const jwt = authService.getCurrentUser() ? authService.getCurrentUser()!.jwtToken : '';
 
-const tripsApiBaseUrl = authService.getTripsApiUrl() ? authService.getTripsApiUrl() : '';
-const tripsApiUrl = tripsApiBaseUrl + '/api/v1/trips';
-const catchApiUrl = tripsApiBaseUrl + '/api/v1/tripCatch';
-const cruiseApiUrl = tripsApiBaseUrl + '/api/v1/cruise';
+function getTripsApiUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/trips';
+}
+function getCatchApiUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/tripCatch';
+}
+function getCruiseApiUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/cruise';
+}
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
@@ -17,7 +22,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
         formattedQuery = '?' + query + '=' + queryValue;
     }
     return new Promise( (resolve, reject) => {
-        const queryUrl = tripsApiUrl + formattedQuery;
+        const queryUrl = getTripsApiUrl() + formattedQuery;
         request.get(
             {
                 url: queryUrl,
@@ -38,7 +43,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
 
 export function getTripsApiTrip(tripNum: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = tripsApiUrl + '/' + parseInt(tripNum, 10);
+        const queryUrl = getTripsApiUrl() + '/' + parseInt(tripNum, 10);
         request.get(
             {
                 url: queryUrl,
@@ -59,7 +64,7 @@ export function getTripsApiTrip(tripNum: any) {
 
 export function getCatchApiCatch(tripNum: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = catchApiUrl + '/' + parseInt(tripNum, 10);
+        const queryUrl = getCatchApiUrl() + '/' + parseInt(tripNum, 10);
         request.get(
             {
                 url: queryUrl,
@@ -79,11 +84,11 @@ export function getCatchApiCatch(tripNum: any) {
 }
 
 export function newCruiseApiTrip(newCruise: any) {
-    return newDeployment(newCruise, cruiseApiUrl);
+    return newDeployment(newCruise, getCruiseApiUrl());
 }
 
 export function newTripsApiTrip(newTrip: any) {
-    return newDeployment(newTrip, tripsApiUrl);
+    return newDeployment(newTrip, getTripsApiUrl());
 }
 
 // calls newTrip or newCruise API
@@ -112,7 +117,7 @@ export function updateTripsApiTrip(activeTrip: any) {
     return new Promise(async (resolve, reject) => {
 
         const tripsApiTrip: any = await getTripsApiTrip(activeTrip.tripNum);
-        const queryUrl = tripsApiUrl + '/' + activeTrip.tripNum;
+        const queryUrl = getTripsApiUrl() + '/' + activeTrip.tripNum;
 
         if (!tripsApiTrip.changeLog) { tripsApiTrip.changeLog = []; }
 
@@ -153,7 +158,7 @@ export function updateTripsApiTrip(activeTrip: any) {
 
 export function newApiCatch(tripCatch: any) {
     return new Promise(async (resolve, reject) => {
-        const queryUrl = catchApiUrl + '/' + parseInt(tripCatch.tripNum, 10);
+        const queryUrl = getCatchApiUrl() + '/' + parseInt(tripCatch.tripNum, 10);
         request.post(
             {
                 url: queryUrl,
@@ -175,7 +180,7 @@ export function newApiCatch(tripCatch: any) {
 
 export function updateApiCatch(tripCatch: any) {
     return new Promise(async (resolve, reject) => {
-        const queryUrl = catchApiUrl + '/' + parseInt(tripCatch.tripNum, 10);
+        const queryUrl = getCatchApiUrl() + '/' + parseInt(tripCatch.tripNum, 10);
         request.put(
             {
                 url: queryUrl,
