@@ -1,10 +1,10 @@
 <template>
     <div>
-        {{ fresults }}
+        <!-- {{ fresults }}
         <hr/>
         {{ sums }}
         <hr/>
-        {{ displayValues }}
+        {{ displayValues }} -->
     </div>
 </template>
 
@@ -20,11 +20,12 @@
     } from '@vue/composition-api';
     import Vue, { WatchOptions } from 'vue';
 
-    import { results } from '../../../../../EM/ft_result';
+    // import { results } from '../../../../../EM/ft_result';
 
     export default createComponent({
         setup(props, context) {
-            const fresults = results.map( (row) => {
+            const results: any = [];
+            const fresults = results.map( (row: any) => {
                 return {speciesCode: row.pacfin_species_code, landedWeight: row.landed_weight_lbs};
                 }
             );
