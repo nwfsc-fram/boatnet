@@ -11,9 +11,9 @@ module.exports = {
     appleMobileWebAppCapable: 'yes' ,
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
-      // swSrc: 'service-worker.js',
-      skipWaiting: true,
-      clientsClaim: true,
+      swSrc: 'service-worker.js',
+      // skipWaiting: true,
+      // clientsClaim: true,
     }
   },
   transpileDependencies: [/[\\\/]node_modules[\\\/]quasar[\\\/]/],
