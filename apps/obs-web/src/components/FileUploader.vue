@@ -107,15 +107,59 @@
 
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
 
-                if (confirmedSameDaysSubmission.value !== true) {
-                    const vesselTrips: any = await getTripsApiTrips('vesselId', props.trip!.vesselId);
-                    const sameDatesTrips = vesselTrips.filter(
-                        (trip: any) => {
-                            return moment(trip.departureDate).isSame(props.trip!.departureDate, 'day') && moment(trip.returnDate).isSame(props.trip!.returnDate, 'day');
-                    } );
-                    if (sameDatesTrips.length > 0) {
-                        sameDatesWarning.value = true;
-                        return;
+                if (context.root.$router.currentRoute.name === 'Log Missing Trip') {
+
+                    // REQIRES A START AND END DATE
+                    if (!props.trip!.departureDate || !props.trip!.returnDate) {
+                    Notify.create({
+                        message: '<b>A trip must have a start and end date</b>',
+                            position: 'center',
+                            color: 'primary',
+                            timeout: 2000,
+                            icon: 'warning',
+                            html: true,
+                            multiLine: true
+                        });
+                    return;
+                    }
+
+                    if (!props.trip!.departurePort || !props.trip!.returnPort) {
+                    Notify.create({
+                        message: '<b>A trip must have a departure and return port.</b>',
+                        position: 'center',
+                        color: 'primary',
+                        timeout: 2000,
+                        icon: 'warning',
+                        html: true,
+                        multiLine: true
+                    });
+                    return;
+                    }
+
+                    // REQUIRES A FISHERY!
+                    if (props.trip!.fishery!.description === '') {
+                    Notify.create({
+                        message: '<b>A trip must have a fishery.</b>',
+                        position: 'center',
+                        color: 'primary',
+                        timeout: 2000,
+                        icon: 'warning',
+                        html: true,
+                        multiLine: true
+                    });
+                    return;
+                    }
+
+                    if (confirmedSameDaysSubmission.value !== true) {
+                        const vesselTrips: any = await getTripsApiTrips('vesselId', props.trip!.vesselId);
+                        const sameDatesTrips = vesselTrips.filter(
+                            (trip: any) => {
+                                return moment(trip.departureDate).isSame(props.trip!.departureDate, 'day') && moment(trip.returnDate).isSame(props.trip!.returnDate, 'day');
+                        } );
+                        if (sameDatesTrips.length > 0) {
+                            sameDatesWarning.value = true;
+                            return;
+                        }
                     }
                 }
 
@@ -130,7 +174,7 @@
                         departureDate: props.trip!.departureDate,
                         returnPort: props.trip!.returnPort!.code ? props.trip!.returnPort!.code : props.trip!.returnPort!.name,
                         returnDate: props.trip!.returnDate,
-                        permits: props.trip!.permits,
+                        permits: props.trip!.permits ? props.trip!.permits.map((permit: any) => permit.permitNumber) : [],
                         fishery: props.trip!.fishery!.description,
                         createdBy: props.trip!.createdBy,
                         createdDate: props.trip!.createdDate

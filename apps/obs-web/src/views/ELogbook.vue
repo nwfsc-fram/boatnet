@@ -418,42 +418,49 @@
                   icon="add"
                   size="sm"
                   color="primary"
-                  @click="tripCatch.fishTicketNumber.push('')"
+                  @click="tripCatch.fishTickets.push({fishTicketNumber: '', fishTicketDate: ''})"
                 ></q-btn>
               </span>
             </div>
 
-            <div v-for="(fishTicket, i) in tripCatch.fishTicketNumber" :key="i" class="list-item">
+            <div v-for="(fishTicket, i) in tripCatch.fishTickets" :key="i" class="list-item">
+              <div class="row items-start logbook-element">
               <q-input
-                v-model="tripCatch.fishTicketNumber[i]"
+                v-model="tripCatch.fishTickets[i].fishTicketNumber"
                 dense
                 autogrow
                 outlined
+                label="Number"
                 title="fish ticket number from the deleivery"
+                style="width: 46%; margin-right: 5px"
               >
-                <q-btn flat dense icon="close" @click="tripCatch.fishTicketNumber.splice(i , 1)"></q-btn>
+              <template v-slot:append>
+                <q-btn flat dense icon="close" @click="tripCatch.fishTickets.splice(i , 1)"></q-btn>
+              </template>
               </q-input>
+
+              <q-input
+                v-model="tripCatch.fishTickets[i].fishTicketDate"
+                label="Date"
+                title="Date the vessel returned to port for offload"
+                dense
+                autogrow
+                outlined
+                mask="date"
+                :rules="['date']"
+                style="width: 50%">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date v-model="tripCatch.fishTickets[i].fishTicketDate" @input="() => $refs.qDateProxy.hide()" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+              </div>
             </div>
           </div>
 
-          <q-input
-            class="list-item"
-            v-model="tripCatch.fishTicketDate"
-            label="Fish Ticket Date"
-            title="Date the vessel returned to port for offload"
-            dense
-            autogrow
-            outlined
-            mask="date"
-            :rules="['date']">
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="tripCatch.fishTicketDate" @input="() => $refs.qDateProxy.hide()" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
 
         </div>
       </div>
@@ -1765,9 +1772,9 @@ export default createComponent({
                 isSigned: true,
                 isVoid: false,
                 buyers: [],
-                fishTicketNumber: [],
+                fishTickets: [],
                 hauls: [],
-
+                permitNumber: res.permits,
                 vesselName: res.vesselName,
                 vesselNumber: res.vesselId,
                 departureDateTime: res.departureDate,
@@ -2167,7 +2174,7 @@ export default createComponent({
           isSigned: true,
           isVoid: false,
           buyers: [],
-          fishTicketNumber: [],
+          fishTickets: [],
           hauls: [],
           source: 'logbook',
           createdBy: authService.getCurrentUser()!.username,

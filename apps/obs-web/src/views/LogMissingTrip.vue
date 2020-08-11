@@ -21,51 +21,69 @@
                     v-model="trip.activeTrip.isSingleDayTrip"
                     color="primary"
                     label="Single Day Trip"
-                    :disabled="trip.readOnly"
                 ></q-toggle>
+          <div class="row items-start">
+            <div class="trips-el-height">
+              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Departure Date</span>
                 <pCalendar
-                    v-if="!trip.activeTrip.isSingleDayTrip"
-                    v-model="tripDates"
-                    :maxDate="maxDate"
-                    :inline="false"
-                    :touchUI="true"
-                    :selectOtherMonths="true"
-                    placeholder="trip start / end"
-                    selectionMode="range"
-                    style="width: 100%"
-                    >
+                  :disabled="trip.readOnly"
+                  v-if="!trip.activeTrip.isSingleDayTrip"
+                  v-model="tripDates[0]"
+                  :maxDate="maxDate"
+                  :inline="false"
+                  :touchUI="isMobile"
+                  placeholder="enter date"
+                  selectionMode="single"
+                  :selectOtherMonths="true"
+                  onfocus="blur();"
+                  style="width: 150px"
+                  @input="resetDepartureTime"
+                  >
                 </pCalendar>
+            </div>
 
-                <pCalendar
-                    v-if="trip.activeTrip.isSingleDayTrip"
-                    v-model="tripDate"
-                    :maxDate="maxDate"
-                    :inline="false"
-                    :touchUI="true"
-                    :selectOtherMonths="true"
-                    placeholder="trip date"
-                    selectionMode="single"
-                    style="width: 100%"
-                    >
-                </pCalendar>
+            <div class="trips-el-height">
+              <span v-if="trip.activeTrip.isSingleDayTrip" class="date-label">Trip Date</span>
+              <pCalendar
+                :disabled="trip.readOnly"
+                v-if="trip.activeTrip.isSingleDayTrip"
+                v-model="tripDate"
+                :maxDate="maxDate"
+                :inline="false"
+                :touchUI="isMobile"
+                placeholder="enter date"
+                selectionMode="single"
+                :selectOtherMonths="true"
+                onfocus="blur();"
+                style="width: 150px"
+                @input="resetDepartureTime"
+                >
+              </pCalendar>
+            </div>
 
-                <div v-if="trip.activeTrip.departureDate" style="margin: 15px 15px 0 15px ; font-weight: bold">Departure Time (24H)
-                    <timepicker manual-input hide-clear-button v-model="departureTime" @change="updateDepartureDate">
-                    </timepicker>
-                </div>
+            <div class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
+              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button close-on-complete v-model="departureTime" lazy @input="updateDepartureDate">
+              </timepicker>
+            </div>
 
-                <!-- <div v-if="trip.activeTrip.departureDate" style="margin: 15px 0 0 0px ; font-weight: bold">Departure Time (24H)
-                    <pCalendar
-                        v-model="departureTime"
-                        :showTime="true"
-                        :timeOnly="true"
-                        hourFormat="24"
-                        onfocus="blur();"
-                        :touchUI="false"
-                        style=""
-                    >
-                    </pCalendar>
-                </div> -->
+            <div class="trips-el-height">
+              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Return Date</span>
+              <pCalendar
+                :disabled="trip.readOnly"
+                v-if="!trip.activeTrip.isSingleDayTrip"
+                v-model="tripDates[1]"
+                :maxDate="maxDate"
+                :inline="false"
+                :touchUI="isMobile"
+                placeholder="enter date"
+                selectionMode="single"
+                :selectOtherMonths="true"
+                onfocus="blur();"
+                style="width: 150px"
+                >
+              </pCalendar>
+            </div>
+          </div>
             </span>
         </div>
 
@@ -101,20 +119,11 @@
           @focus="trip.activeTrip.returnPort = null"
         ></q-select>
 
-        <q-select
-          v-model="trip.activeTrip.fishery"
-          dense
-          label="Fishery"
-          fill-input
-          stack-label
-          :rules="[val => !!val || 'Field is required']"
-          :option-label="opt => opt.description"
-          option-value="_id"
-          :options="fisheryOptions"
-          style="padding-bottom: 5px"
-        ></q-select>
+        <p style="margin: 0">
+          <strong>Permits</strong>
+        </p>
 
-        <!-- <q-select
+        <q-select
           v-model="trip.activeTrip.permits"
           dense
           bg-color="white"
@@ -122,8 +131,7 @@
           multiple
           use-chips
           stack-label
-          label="Permits"
-          :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
+          :option-label="opt => opt.permitNumber"
           option-value="permitNumber"
           :options="getVesselPermits"
         >
@@ -141,7 +149,20 @@
               <span v-else>{{ scope.opt.permitNumber }}</span>
             </q-chip>
           </template>
-        </q-select> -->
+        </q-select>
+
+        <q-select
+          v-model="trip.activeTrip.fishery"
+          dense
+          label="Fishery"
+          fill-input
+          stack-label
+          :rules="[val => !!val || 'Field is required']"
+          :option-label="opt => opt.description"
+          option-value="_id"
+          :options="fisheryOptions"
+          style="padding-bottom: 5px"
+        ></q-select>
 
         <div v-if="trip.activeTrip.fishery.description === 'Electronic Monitoring EFP'">
           <strong>Maximized Retention?</strong><br>
@@ -261,6 +282,8 @@ export default class LogBookCapture extends Vue {
 
     private sameDatesWarning: boolean = false;
     private confirmedSameDaysSubmission: boolean = false;
+    private emRoster: any = {};
+    private departureTimeEntered: boolean = false;
 
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
@@ -285,8 +308,35 @@ export default class LogBookCapture extends Vue {
 
         // REQIRES A START AND END DATE
         if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
+            Notify.create({
+                message: '<b>A trip must have a start and end date</b>',
+                    position: 'center',
+                    color: 'primary',
+                    timeout: 2000,
+                    icon: 'warning',
+                    html: true,
+                    multiLine: true
+                });
+            return;
+        }
+
+        // REQUIRES A DEPARTURE TIME
+        if (!this.departureTimeEntered) {
         Notify.create({
-            message: '<b>A trip must have a start and end date</b>',
+            message: '<b>A trip must have a departure time.</b>',
+            position: 'center',
+            color: 'primary',
+            timeout: 2000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
+        });
+        return;
+        }
+
+        if (!this.trip.activeTrip!.departurePort || !this.trip.activeTrip!.returnPort) {
+            Notify.create({
+                message: '<b>A trip must have a departure and return port.</b>',
                 position: 'center',
                 color: 'primary',
                 timeout: 2000,
@@ -294,33 +344,33 @@ export default class LogBookCapture extends Vue {
                 html: true,
                 multiLine: true
             });
-        return;
-        }
-
-        if (!this.trip.activeTrip!.departurePort || !this.trip.activeTrip!.returnPort) {
-        Notify.create({
-            message: '<b>A trip must have a departure and return port.</b>',
-            position: 'center',
-            color: 'primary',
-            timeout: 2000,
-            icon: 'warning',
-            html: true,
-            multiLine: true
-        });
-        return;
+            return;
         }
 
         if (this.trip.activeTrip!.fishery!.description === '') {
-        Notify.create({
-            message: '<b>A trip must have a fishery.</b>',
-            position: 'center',
-            color: 'primary',
-            timeout: 2000,
-            icon: 'warning',
-            html: true,
-            multiLine: true
-        });
-        return;
+            Notify.create({
+                message: '<b>A trip must have a fishery.</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+            return;
+        }
+
+        if (typeof this.trip.activeTrip!.isSelected === 'undefined' ) {
+            Notify.create({
+                message: '<b>Was Trip Observed? is required.</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+            return;
         }
 
         this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
@@ -347,7 +397,7 @@ export default class LogBookCapture extends Vue {
             departureDate: this.trip.activeTrip!.departureDate,
             returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.returnPort!.name,
             returnDate: this.trip.activeTrip!.returnDate,
-            permits: this.trip.activeTrip!.permits,
+            permits: this.trip.activeTrip!.permits ? this.trip.activeTrip!.permits.map((permit: any) => permit.permitNumber) : [],
             fishery: this.trip.activeTrip!.fishery!.description,
             createdBy: this.trip.activeTrip!.createdBy,
             createdDate: this.trip.activeTrip!.createdDate
@@ -606,91 +656,198 @@ export default class LogBookCapture extends Vue {
         }
     }
 
-    private updateDepartureDate(value: any) {
-        if (this.trip.activeTrip) {
-            if (value.data.HH && value.data.mm) {
-                this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-            }
+    private setDepartureTime() {
+        if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
+        this.departureTime = {
+            HH: moment(this.trip.activeTrip.departureDate).format('HH'),
+            mm: moment(this.trip.activeTrip.departureDate).format('mm')
+        };
         }
     }
 
-    // get departureTime(): Date | undefined {
-    //     if (this.trip.activeTrip) {
-    //     return new Date(moment(this.trip.activeTrip.departureDate).format());
-    //     }
-    // }
+    private updateDepartureDate() {
+        if (this.departureTime) {
+        this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+        this.departureTimeEntered = true;
 
-    // set departureTime(value) {
-    //     if (this.trip.activeTrip) {
-    //     this.trip.activeTrip.departureDate = moment(value).format();
-    //     }
-    // }
+        }
+    }
+
+    get returnDate(): Date | undefined {
+        if (this.trip.activeTrip) {
+        return new Date(moment(this.trip.activeTrip.returnDate).format());
+        }
+    }
+
+    set returnDate(value) {
+        if (this.trip.activeTrip) {
+        this.trip.activeTrip.returnDate = moment(this.tripDates[1]).format();
+        }
+    }
+
+    private resetDepartureTime() {
+        this.departureTime = {
+            mm: '00',
+            HH: '00'
+        };
+        this.departureTimeEntered = false;
+    }
+
+    private updateDates() {
+        if (this.trip.activeTrip!.isSingleDayTrip) {
+        if (this.trip.activeTrip!.returnDate) {
+            this.tripDate = new Date(this.trip.activeTrip!.returnDate);
+        }
+        } else {
+        if (this.trip.activeTrip!.departureDate) {
+            this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
+        }
+        if (this.trip.activeTrip!.returnDate) {
+            this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
+        }
+        }
+    }
+
+    private get isMobile() {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return true;
+        } else {
+        return false;
+        }
+    }
 
     private scrollToBottom() {
         window.scrollTo(0, document.body.scrollHeight);
     }
 
-  private goToTrips() {
-    this.$router.push({ path: '/trips/' });
-  }
+    private goToTrips() {
+        this.$router.push({ path: '/trips/' });
+    }
 
-  private shortFormatDate(date: any) {
-      return moment(date).format('MMM Do');
-  }
+    private shortFormatDate(date: any) {
+        return moment(date).format('MMM Do');
+    }
 
-  private formatDepartureTime(date: any) {
-      return moment(date).format('HH:mm');
-  }
+    private formatDepartureTime(date: any) {
+        return moment(date).format('HH:mm');
+    }
 
-  private formatFullDate(date: any) {
-      if (date) {
-          return moment(date).format('MM/DD/YYYY');
-      }
-  }
+    private formatFullDate(date: any) {
+        if (date) {
+            return moment(date).format('MM/DD/YYYY');
+        }
+    }
 
-  private formatDateTime(date: any) {
-      if (date) {
-          return moment(date).format('MM/DD/YYYY, HH:mm');
-      }
-  }
+    private formatDateTime(date: any) {
+        if (date) {
+            return moment(date).format('MM/DD/YYYY, HH:mm');
+        }
+    }
+
+    private async getEmRoster() {
+        const masterDb = couchService.masterDB;
+        const queryOptions = {
+        key: 'emefp',
+        inclusive_end: true,
+        reduce: false,
+        include_docs: true
+        };
+
+        const EMEfpRoster = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
+        );
+
+        for (const row of EMEfpRoster.rows) {
+        this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
+        }
+
+    }
 
     private created() {
         if ( authService.getCurrentUser() ) {
-        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+            this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
         }
         this.newTrip();
         this.getPorts();
         this.getFisheryOptions();
         this.getAuthorizedVessels();
+        this.getEmRoster().then( () => {
+        let emPermit = null;
+        const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber];
+        for (const permit of this.permit.permits) {
+            if (permit.permitNumber === permitNum) {
+            emPermit = permit;
+            }
+        }
+        if (emPermit) {
+            Vue.set(this.trip.activeTrip!, 'permits', [emPermit]);
+        }
+        this.updateDates();
+        if (this.trip.activeTrip!.departureDate) {
+        this.departureTimeEntered = true;
+        }
+
+        });
+    }
+
+    @Watch('trip.activeTrip.isSingleDayTrip')
+    private handler11(newVal: boolean, oldVal: boolean) {
+        this.departureTimeEntered = false;
+        this.departureTime = {
+            mm: '00',
+            HH: '00'
+        };
     }
 
     @Watch('tripDates')
-    private handler1(newVal: string, oldVal: string) {
-        if (newVal[0]) {
-            this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-            if (!newVal[1]) {
-                this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
-            }
+    private handler2(newVal: string, oldVal: string) {
+
+        if (this.tripDates[0]) {
+        this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
+
+        // if start date is after current end date
+        if (this.trip.activeTrip!.returnDate && moment(this.tripDates[0]).isAfter(moment(this.trip.activeTrip!.returnDate))) {
+            this.trip.activeTrip!.returnDate = undefined;
+            this.tripDates[1] = undefined;
         }
-        if (newVal[1]) {
-        this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
+        }
+
+        if (this.tripDates[1]) {
+        // if end date is before current start date
+        if (this.trip.activeTrip!.departureDate && moment(this.tripDates[1]).isBefore(moment(this.trip.activeTrip!.departureDate))) {
+            this.trip.activeTrip!.departureDate = moment(this.tripDates[1]).format();
+            this.tripDates[0] = this.tripDates[1];
+            this.resetDepartureTime();
+        }
+
+        this.trip.activeTrip!.returnDate = moment(this.tripDates[1]).format();
         }
 
         if (this.departureTime) {
-            this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-        }
-    }
-
-  @Watch('tripDate')
-  private handler2(newVal: any, oldVal: any) {
-    this.trip.activeTrip!.departureDate = moment(newVal).format();
-    this.trip.activeTrip!.returnDate = moment(newVal).format();
-
-    if (this.departureTime) {
         this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+        }
+
     }
 
-  }
+    @Watch('tripDate')
+    private handler9(newVal: any, oldVal: any) {
+        if (oldVal) {
+        this.departureTimeEntered = false;
+        this.departureTime = {
+            mm: '00',
+            HH: '00'
+        };
+        }
+        this.trip.activeTrip!.departureDate = moment(newVal).format();
+        this.trip.activeTrip!.returnDate = moment(newVal).format();
+
+        if (this.departureTime) {
+        this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
+        }
+
+    }
 
     @Watch('trip.activeTrip.departurePort', {deep: true})
     private handler3(newVal: any, oldVal: any) {

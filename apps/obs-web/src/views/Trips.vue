@@ -157,7 +157,7 @@
       <q-card-section>
           <div class="text-h6" style="font-size: 14px; line-height: 4px; margin-bottom: 10px">
             <span>
-              <span v-if="trip.departureDate">{{ shortFormatDate(trip.departureDate) }}</span> -
+              <span v-if="trip.departureDate">{{ shortFormatDate(trip.departureDate) }} {{ formatDepartureTime(trip.departureDate) }}</span> -
               <span v-if="trip.returnDate">{{ shortFormatDate(trip.returnDate) }}</span>
             </span>
             <span style="float: right" v-if="trip.tripNum"><br>Trip #: {{ trip.tripNum }}</span>
@@ -870,7 +870,9 @@ export default class Trips extends Vue {
     private review(trip: any) {
       this.trip.activeTrip = trip;
       this.trip.newTrip = false;
-      this.trip.readOnly = true;
+      if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode) {
+        this.trip.readOnly = true;
+      }
       this.$router.push({path: '/trips/' + trip.tripNum});
     }
 
