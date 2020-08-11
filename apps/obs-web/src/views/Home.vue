@@ -240,7 +240,6 @@ export default class Home extends Vue {
           queryOptions
         );
 
-
         if (couchAlias.rows[0] && couchAlias.rows[0].doc.isActive === true) {
           couchAlias = couchAlias.rows[0].doc;
           if (couchAlias.firstName.toString() !== this.user.activeUser!.firstName!.toString()
@@ -449,8 +448,9 @@ export default class Home extends Vue {
 
   private async created() {
       this.getPermits();
-      this.getUserFromCouchDB();
-      this.getUserAliasfromCouchDB();
+      this.getUserFromCouchDB().then(
+        () => this.getUserAliasfromCouchDB()
+      );
       if ( authService.getCurrentUser() ) {
         this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
       }

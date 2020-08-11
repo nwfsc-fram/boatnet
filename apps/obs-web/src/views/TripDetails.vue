@@ -10,6 +10,8 @@
   <div :disabled="trip.readOnly">
 
         <div style="font-weight: bold; margin: 15px 15px 0">
+          <div v-if="trip.activeTrip.tripNum"> Trip #: {{ trip.activeTrip.tripNum }}</div>
+
           <div v-if="trip.activeTrip.fishery.description"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
 
           <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
@@ -172,7 +174,7 @@
           multiple
           use-chips
           stack-label
-          :option-label="opt => opt.permitNumber + ' - ' + opt.permitType"
+          :option-label="opt => opt.permitNumber"
           option-value="permitNumber"
           :options="getVesselPermits"
           :readonly="trip.readOnly"
@@ -748,7 +750,7 @@ export default class TripDetails extends Vue {
           departureDate: this.trip.activeTrip!.departureDate,
           returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.departurePort!.name,
           returnDate: this.trip.activeTrip!.returnDate,
-          permits: this.trip.activeTrip!.permits,
+          permits: this.trip.activeTrip!.permits ? this.trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
           fishery: this.trip.activeTrip!.fishery!.description,
           createdBy: this.trip.activeTrip!.createdBy,
           createdDate: this.trip.activeTrip!.createdDate
@@ -963,7 +965,11 @@ private async getMinDate() {
 }
 
   private async getBookedDates() {
-    this.trip.readOnly = true;
+    if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode) {
+      this.trip.readOnly = true;
+    } else {
+      this.trip.readOnly = false;
+    }
     const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
     const masterDB: Client<any> = couchService.masterDB;
     const queryOptions: any = {
@@ -1082,7 +1088,7 @@ private async getMinDate() {
           departureDate: this.trip.activeTrip!.departureDate,
           returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.departurePort!.name,
           returnDate: this.trip.activeTrip!.returnDate,
-          permits: this.trip.activeTrip!.permits,
+          permits: this.trip.activeTrip!.permits ? this.trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
           fishery: this.trip.activeTrip!.fishery!.description,
           createdBy: this.trip.activeTrip!.createdBy,
           createdDate: this.trip.activeTrip!.createdDate
@@ -1399,33 +1405,6 @@ private async getMinDate() {
 
       this.trip.activeTrip!.returnDate = moment(this.tripDates[1]).format();
     }
-
-    // if (newVal[0]) {
-    //     this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-    //     if (!newVal[1]) {
-    //       this.trip.activeTrip!.returnDate = undefined;
-    //       // this.trip.activeTrip!.returnDate = moment(newVal[0]).format();
-    //     }
-    //   }
-
-    // if (newVal[1]) {
-    //   this.trip.activeTrip!.returnDate = moment(newVal[1]).format();
-    // }
-
-    // if (moment(newVal[1]).isBefore(moment(newVal[0]))) {
-    //   this.trip.activeTrip!.departureDate = this.tripDates[1];
-    //   this.tripDates[0] = _.cloneDeep(this.tripDates[1]);
-    // }
-
-    // if (moment(newVal[0]).isAfter(moment(this.trip.activeTrip!.returnDate))) {
-    //   this.trip.activeTrip!.returnDate = newVal[0];
-    //   this.tripDates[1] = _.cloneDeep(newVal[0]);
-    // }
-
-    // if (moment(newVal[0]) < moment(this.existingTripStart) && moment(newVal[1]) > moment(this.existingTripStart)) {
-    //   this.tripDates[1] = new Date(moment(this.existingTripStart).subtract(1, 'days').format());
-    //   this.trip.activeTrip!.returnDate = moment(this.existingTripStart).subtract(1, 'days').format();
-    // }
 
     if (this.departureTime) {
       this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
