@@ -1550,7 +1550,8 @@ label.cameraButton input[accept*="camera"] {
 }
 
 * >>> .vue__time-picker input.disabled {
-  color: #1f1f1f !important
+  color: #1f1f1f !important;
+  background-color: white !important;
 }
 
 @media screen and (max-width: 290px){
