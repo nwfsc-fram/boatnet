@@ -967,7 +967,7 @@
                     </q-td>
                     <q-td key="catchDisposition" :props="props">{{ props.row.catchDisposition }}</q-td>
                     <q-td key="speciesCode" :props="props">{{ props.row.speciesCode }}</q-td>
-                    <q-td key="estimatedWeight" :props="props">{{ props.row.estimatedWeight }}</q-td>
+                    <q-td key="weight" :props="props">{{ props.row.weight }}</q-td>
                     <q-td key="catchCount" :props="props">{{ props.row.catchCount }}</q-td>
                     <q-td key="calcWeightType" :props="props">{{ props.row.calcWeightType }}</q-td>
                     <q-td key="length" :props="props">{{ props.row.length }}</q-td>
@@ -1027,11 +1027,11 @@
                   </q-select>
                   <q-input
                     class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].estimatedWeight"
+                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].weight"
                     dense
                     autogrow
                     outlined
-                    label="Estimated Total Weight"
+                    label="Weight"
                     title="Estimated weight in lbs"
                     mask="######"
                   ></q-input>
@@ -1370,9 +1370,9 @@ export default createComponent({
         sortable: true
       },
       {
-        name: 'estimatedWeight',
-        label: 'Estimated Weight',
-        field: 'estimatedWeight',
+        name: 'weight',
+        label: 'Weight',
+        field: 'weight',
         required: false,
         align: 'left',
         sortable: true
