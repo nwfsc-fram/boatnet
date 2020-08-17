@@ -638,6 +638,33 @@
                 mask="#####"
                 class="logbook-element"
               ></q-input>
+              <div class="logbook-element" v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+              >
+                <q-field
+                  v-model="tripCatch.hauls[selectedHaul - 1].isCodendLost"
+                  class="text-primary"
+                  outlined
+                  dense
+                  autogrow
+                  title="Indicates Lost Codend"
+                >
+                  <template v-slot:control>
+                    <span>Is Lost Codend?</span>&nbsp;
+                    <q-btn
+                      :class="getHaulClass('isCodendLost', 'yes')"
+                      size="sm"
+                      label="Yes"
+                      @click="tripCatch.hauls[selectedHaul - 1].isCodendLost = true"
+                    ></q-btn>&nbsp;
+                    <q-btn
+                      :class="getHaulClass('isCodendLost', 'no')"
+                      size="sm"
+                      label="No"
+                      @click="tripCatch.hauls[selectedHaul - 1].isCodendLost = false"
+                    ></q-btn>
+                  </template>
+                </q-field>
+              </div>
               <q-select
                 v-model="tripCatch.hauls[selectedHaul - 1].targetStrategy"
                 dense
@@ -1157,6 +1184,22 @@ export default createComponent({
       }
     };
 
+    const getHaulClass = (attribute: any, option: string) => {
+      if (option === 'yes') {
+        if (tripCatch.hauls[selectedHaul.value - 1][attribute]) {
+          return 'bg-primary text-white';
+        } else {
+          return 'text-primary';
+        }
+      } else {
+        if (!tripCatch.hauls[selectedHaul.value - 1][attribute]) {
+          return 'bg-secondary text-white';
+        } else {
+          return 'text-primary';
+        }
+      }
+    };
+
     const addCatch = () => {
       if (!tripCatch.hauls[selectedHaul.value - 1].catch) {
         Vue.set(tripCatch.hauls[selectedHaul.value - 1], 'catch', []);
@@ -1172,6 +1215,7 @@ export default createComponent({
         startDateTime: _.cloneDeep(tripCatch.departureDateTime),
         endDateTime: _.cloneDeep(tripCatch.returnDateTime),
         haulNum: tripCatch.hauls.length + 1,
+        isCodendLost: null
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
@@ -2212,6 +2256,7 @@ export default createComponent({
       addHaul,
       selectHaul,
       getClass,
+      getHaulClass,
       selectedHaul,
       selectedCatch,
       fisheryOptions,
