@@ -14,7 +14,7 @@
                     <q-btn class="button" size="sm" icon="clear" round color="red" @click="removeAtIndex(files.indexOf(file))"></q-btn>
                 </div>
                 <span>
-                    <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage">{{ submitAction }}</q-btn>
+                    <q-btn v-if="files.length > 0 && !applied" class="submitButton" color="primary" @click="submitImage" :disabled="disableCreate">{{ submitAction }}</q-btn>
                     <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
                     <q-btn v-if="files.length > 0 && !applied && submitAction === 'Add Image(s)'" flat color="red" icon="error">not added yet</q-btn>
                     <q-btn v-if="files.length > 0 && applied && submitAction === 'Add Image(s)'" flat color="primary" icon="check_circle">added to trip</q-btn>
@@ -28,7 +28,7 @@
                 A trip with the same start and end date has already been submitted - are you sure you want to submit another trip with the same dates?
                 </div>
                 <div style="float: right" >
-                    <q-btn color="primary" @click="submitAnyway" label="submit"/>
+                    <q-btn color="primary" @click="submitAnyway" :disable="disableCreate" label="submit"/>
                     &nbsp;
                     <q-btn color="red" @click="sameDatesWarning = false" label="cancel"/>
                 </div>
@@ -65,6 +65,7 @@
             const state = store.state;
             const transferring: any = ref(false);
             const applied: any = ref(true);
+            const disableCreate = ref(false);
 
             const handleImage = (event: any) => {
                 const newFile = new Compressor(event!.target!.files[0], {
@@ -104,6 +105,7 @@
             };
 
             const submitImage = async () => {
+                disableCreate.value = true;
 
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
 
@@ -274,7 +276,7 @@
             });
 
             return {
-                handleImage, files, getImageUrl, removeAtIndex, transferring, submitImage, applied, sameDatesWarning, confirmedSameDaysSubmission, submitAnyway
+                handleImage, files, getImageUrl, removeAtIndex, transferring, submitImage, applied, sameDatesWarning, confirmedSameDaysSubmission, submitAnyway, disableCreate
             };
         }
     });

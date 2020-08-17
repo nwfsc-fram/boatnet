@@ -26,7 +26,6 @@
             <div class="trips-el-height">
               <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Departure Date</span>
                 <pCalendar
-                  :disabled="trip.readOnly"
                   v-if="!trip.activeTrip.isSingleDayTrip"
                   v-model="tripDates[0]"
                   :maxDate="maxDate"
@@ -45,7 +44,6 @@
             <div class="trips-el-height">
               <span v-if="trip.activeTrip.isSingleDayTrip" class="date-label">Trip Date</span>
               <pCalendar
-                :disabled="trip.readOnly"
                 v-if="trip.activeTrip.isSingleDayTrip"
                 v-model="tripDate"
                 :maxDate="maxDate"
@@ -62,14 +60,13 @@
             </div>
 
             <div class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button close-on-complete v-model="departureTime" lazy @input="updateDepartureDate">
+              <timepicker manual-input hide-clear-button close-on-complete v-model="departureTime" lazy @input="updateDepartureDate">
               </timepicker>
             </div>
 
             <div class="trips-el-height">
               <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Return Date</span>
               <pCalendar
-                :disabled="trip.readOnly"
                 v-if="!trip.activeTrip.isSingleDayTrip"
                 v-model="tripDates[1]"
                 :maxDate="maxDate"
@@ -203,7 +200,7 @@
 
         <div style="text-align: center">All details (including logbook capture) must be completed before missing trip can be submitted.</div>
 
-        <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" style="float: right" color="red" label="submit without image" @click="submitTripOnly"></q-btn>
+        <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" style="float: right" color="red" label="submit without image" @click="submitTripOnly" :disabled="disableCreate"></q-btn>
         <q-btn style="float: right" color="primary" label="Cancel" @click="goToTrips"/>
 
         <q-dialog v-model="sameDatesWarning">
@@ -284,6 +281,7 @@ export default class LogBookCapture extends Vue {
     private confirmedSameDaysSubmission: boolean = false;
     private emRoster: any = {};
     private departureTimeEntered: boolean = false;
+    private disableCreate: boolean = false;
 
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
@@ -373,6 +371,7 @@ export default class LogBookCapture extends Vue {
             return;
         }
 
+        this.disableCreate = true;
         this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
 
         if (!this.confirmedSameDaysSubmission) {
@@ -769,6 +768,7 @@ export default class LogBookCapture extends Vue {
         if ( authService.getCurrentUser() ) {
             this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
         }
+        this.trip.readOnly = false;
         this.newTrip();
         this.getPorts();
         this.getFisheryOptions();
