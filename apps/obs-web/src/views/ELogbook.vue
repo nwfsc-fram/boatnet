@@ -418,7 +418,7 @@
                   icon="add"
                   size="sm"
                   color="primary"
-                  @click="tripCatch.fishTickets.push({fishTicketNumber: '', fishTicketDate: ''})"
+                  @click="addFishTicket"
                 ></q-btn>
               </span>
             </div>
@@ -439,24 +439,20 @@
               </template>
               </q-input>
 
-              <q-input
-                v-model="tripCatch.fishTickets[i].fishTicketDate"
-                label="Date"
+              <pCalendar
+                id="ftdate"
+                v-model="fishTicketDates[i]"
+                :touchUI="isMobile"
+                :inline="false"
+                selectionMode="single"
+                :selectOtherMonths="true"
                 title="Date the vessel returned to port for offload"
-                dense
-                autogrow
-                outlined
-                mask="date"
-                :rules="['date']"
-                style="width: 50%">
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date v-model="tripCatch.fishTickets[i].fishTicketDate" @input="() => $refs.qDateProxy.hide()" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
+                :showTime="false"
+                onfocus="blur()"
+                class="fish-ticket-calendar"
+                >
+              </pCalendar>
+              <label for="ftdate" class="fishticket-calendar-label">Date</label>
               </div>
             </div>
           </div>
@@ -706,24 +702,7 @@
             <div class="logbook-element">
               <div class="text-h4 text-secondary">Start</div>
               <div class="row items-start calendar-logbook-element no-wrap">
-                <!-- <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].startDateTime"
-                  label="Departure Date"
-                  title="Date/Time the vessel departed port"
-                  dense
-                  autogrow
-                  outlined
-                  style="width: 55%; margin-right: 5px"
-                  mask="date"
-                  :rules="['date']">
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="tripCatch.hauls[selectedHaul - 1].startDateTime" @input="() => $refs.qDateProxy.hide()" />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input> -->
+
               <pCalendar
                 id="haulstartdate"
                 v-model="haulStartDateTime"
@@ -737,17 +716,7 @@
                 >
               </pCalendar>
               <label for="haulstartdate" class="calendar-label">Haul Start Date/Time</label>
-                <!-- <q-input
-                  v-model="haulStartTime"
-                  dense
-                  autogrow
-                  outlined
-                  label="Time"
-                  title="Date and time the gear was set"
-                  mask="##:##"
-                  :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
-                  style="width: 43.3%; padding-bottom: 0 !important"
-                ></q-input> -->
+
               </div>
               <q-input
                 v-model="tripCatch.hauls[selectedHaul - 1].startDepth"
@@ -845,37 +814,7 @@
                 </pCalendar>
                 <label for="haulenddate" class="calendar-label">Haul End Date/Time</label>
               </div>
-              <!-- <div class="row items-start">
-                <q-input
-                  v-model="tripCatch.hauls[selectedHaul - 1].endDateTime"
-                  label="Departure Date"
-                  title="Date/Time the vessel departed port"
-                  dense
-                  autogrow
-                  outlined
-                  style="width: 55%; margin-right: 5px"
-                  mask="date"
-                  :rules="['date']">
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                        <q-date v-model="tripCatch.hauls[selectedHaul - 1].endDateTime" @input="() => $refs.qDateProxy.hide()" />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-                <q-input
-                  v-model="haulEndTime"
-                  dense
-                  autogrow
-                  outlined
-                  label="Time"
-                  title="Time the gear was retrieved"
-                  mask="##:##"
-                  :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
-                  style="width: 43.3%; padding-bottom: 0 !important"
-                ></q-input>
-              </div> -->
+
               <q-input
                 v-model="tripCatch.hauls[selectedHaul - 1].endDepth"
                 dense
@@ -2093,44 +2032,27 @@ export default createComponent({
       watcherOptions
     );
 
-    // const departureTime: any = ref('');
-    // const getDepartureTime = () => {
-    //   if (tripCatch.departureDateTime) {
-    //     departureTime.value = moment(tripCatch.departureDateTime).format('HH:mm');
-    //   }
-    // };
+    const addFishTicket = () => {
+      if (!tripCatch.fishTickets) { tripCatch.fishTickets = []; }
+      tripCatch.fishTickets.push({fishTicketNumber: '', fishTicketDate: ''});
+    };
 
-    // watch(
-    //   () => departureTime.value,
-    //   (newVal, oldVal) => {
-    //     const departureDate = moment(tripCatch.departureDateTime);
-    //     if (newVal && newVal.indexOf(':') !== -1) {
-    //       departureDate.set('hour', newVal.split(':')[0]);
-    //       departureDate.set('minute', newVal.split(':')[1]);
-    //       tripCatch.departureDateTime = departureDate.format();
-    //     }
-    //   },
-    //   watcherOptions
-    // );
+    const fishTicketDates: any = ref([]);
+    const getFishTickDates = () => {
+      for (const ft of tripCatch.fishTickets) {
+        fishTicketDates.value.push(new Date(moment(ft.fishTicketDate).format()));
+      }
+    };
 
-    // const returnTime: any = ref('');
-    // const getReturnTime = () => {
-    //   if (tripCatch.returnDateTime) {
-    //     returnTime.value = moment(tripCatch.returnDateTime).format('HH:mm');
-    //   }
-    // };
-    // watch(
-    //   () => returnTime.value,
-    //   (newVal, oldVal) => {
-    //     const returnDate = moment(tripCatch.returnDateTime);
-    //     if (newVal && newVal.indexOf(':') !== -1) {
-    //       returnDate.set('hour', newVal.split(':')[0]);
-    //       returnDate.set('minute', newVal.split(':')[1]);
-    //       tripCatch.returnDateTime = returnDate.format();
-    //     }
-    //   },
-    //   watcherOptions
-    // );
+    watch(
+      () => fishTicketDates.value,
+      (newVal, oldVal) => {
+        for (const [i, val] of fishTicketDates.value.entries()) {
+          tripCatch.fishTickets[i].fishTicketDate = val;
+        }
+      },
+      watcherOptions
+    );
 
     const haulStartDateTime: any = ref('');
     const getHaulStartDateTime = () => {
@@ -2164,24 +2086,6 @@ export default createComponent({
       watcherOptions
     );
 
-    // const haulStartTime: any = ref([]);
-    // watch(
-    //   () => haulStartTime.value,
-    //   (newVal, oldVal) => {
-    //     if (newVal && newVal.indexOf(':') !== -1) {
-    //       const startDate = moment(
-    //         tripCatch.hauls[selectedHaul.value - 1].startDateTime
-    //       );
-    //       startDate.set('hour', newVal.split(':')[0]);
-    //       startDate.set('minute', newVal.split(':')[1]);
-    //       tripCatch.hauls[
-    //         selectedHaul.value - 1
-    //       ].startDateTime = startDate.format();
-    //     }
-    //   },
-    //   watcherOptions
-    // );
-
     const haulEndTime: any = ref([]);
     watch(
       () => haulEndTime.value,
@@ -2203,12 +2107,10 @@ export default createComponent({
     onMounted(() => {
       getValidPacfinCodes();
       getTaxonomyAliases();
-      // getSpeciesCodeOptions();
       getFisheryOptions();
       getGearTypeOptions();
       getPortDecoderPorts();
       getSkipperOptions();
-      // getPorts();
       if (context.root.$route.params.id === 'new') {
         const dummyTrip: any = {
           tripNum: '00000',
@@ -2234,18 +2136,15 @@ export default createComponent({
           Vue.set(tripCatch, key, dummyTrip[key]);
         }
         setTimeout(() => {
-          // getDepartureTime();
-          // getReturnTime();
           getDepDateTime();
           getRetDateTime();
         }, 500);
       } else {
         getCatch(context.root.$route.params.id).then(() => {
-          // getDepartureTime();
-          // getReturnTime();
           getDepDateTime();
           getRetDateTime();
           indexCatch();
+          getFishTickDates();
         });
       }
     });
@@ -2264,9 +2163,6 @@ export default createComponent({
       skipperOptions,
       formatDateTime,
       formatDate,
-      // departureTime,
-      // returnTime,
-      // haulStartTime,
       haulEndTime,
       haulPagination,
       haulSelected,
@@ -2287,7 +2183,9 @@ export default createComponent({
       retDateTime,
       isMobile,
       haulStartDateTime,
-      haulEndDateTime
+      haulEndDateTime,
+      fishTicketDates,
+      addFishTicket
     };
   }
 });
@@ -2307,12 +2205,29 @@ export default createComponent({
   margin: 5px 5px 5px 0 !important;
 }
 
+.fish-ticket-calendar {
+  width: 45% !important;
+}
+
+* >>> .fish-ticket-calendar .p-inputtext {
+  width: inherit !important;
+}
+
+.fishticket-calendar-label {
+   font-size: 11px;
+   position: relative;
+   left: -140px;
+   top: 3px;
+   z-index: 999;
+   white-space: nowrap;
+}
+
 .list-item {
   margin: 5px 0
 }
 
-.calendar-label{
-   font-size: 10px;
+.calendar-label {
+   font-size: 11px;
    position: relative;
    left: -342px;
    top: 5px;
@@ -2320,7 +2235,7 @@ export default createComponent({
    white-space: nowrap;
 }
 
-.no-wrap{
+.no-wrap {
   flex-wrap: none !important;
 }
 
