@@ -22,6 +22,9 @@ export default createComponent({
   props: {
     tableType: String
   },
-  setup(props, context) {}
+  setup(props, context) {
+
+    return {};
+  }
 });
 </script>

@@ -211,8 +211,13 @@ export default class Login extends Vue {
   private handleSubmit(e: any) {
     this.clear();
     this.submitted = true;
-    const { username, password } = this;
+    // let { username, password } = this;
+    let username = this.username;
+    const password = this.password;
     if (username && password) {
+      if (username.includes('@noaa.gov')) {
+        username = username.slice(0, username.indexOf('@'));
+      }
       this.login({ username, password });
     }
   }

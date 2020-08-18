@@ -279,7 +279,7 @@ export default createComponent({
 
           catches.push({
             key,
-            style: color === '#FFFFFF' ? "background: #FFFFFF" : "background: #E9ECEF", //f4f4f4
+            style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
             data: {
               tripId,
               operationNum,
