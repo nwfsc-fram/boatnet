@@ -4,7 +4,9 @@ import request from 'request';
 import moment from 'moment';
 import { WcgopTrip } from '@boatnet/bn-models/lib';
 
-const jwt = authService.getCurrentUser() ? authService.getCurrentUser()!.jwtToken : '';
+function getJwt() {
+    return authService.getCurrentUser()!.jwtToken;
+}
 
 function getTripsApiUrl() {
     return authService.getTripsApiUrl() + '/api/v1/trips';
@@ -28,7 +30,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt
+                    authorization: 'Token ' + getJwt()
                 }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
@@ -49,7 +51,7 @@ export function getTripsApiTrip(tripNum: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt
+                    authorization: 'Token ' + getJwt()
                 }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
@@ -70,7 +72,7 @@ export function getCatchApiCatch(tripNum: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt
+                    authorization: 'Token ' + getJwt()
                 }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
@@ -99,7 +101,7 @@ function newDeployment(deployment: any, url: string) {
                 url,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt,
+                    authorization: 'Token ' + getJwt(),
                 },
                 body: deployment
             }, (err: any, response: any, body: any) => {
@@ -142,7 +144,7 @@ export function updateTripsApiTrip(activeTrip: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt,
+                    authorization: 'Token ' + getJwt(),
                 },
                 body: tripsApiTrip
             }, (err: any, response: any, body: any) => {
@@ -164,7 +166,7 @@ export function newApiCatch(tripCatch: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt,
+                    authorization: 'Token ' + getJwt(),
                 },
                 body: tripCatch
             }, (err: any, response: any, body: any) => {
@@ -186,7 +188,7 @@ export function updateApiCatch(tripCatch: any) {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + jwt,
+                    authorization: 'Token ' + getJwt(),
                 },
                 body: tripCatch
             }, (err: any, response: any, body: any) => {

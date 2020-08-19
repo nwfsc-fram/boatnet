@@ -193,7 +193,7 @@ export default class Login extends Vue {
           const creds = authService.getCouchDBCredentials();
           this.connectCouch(creds);
 
-          this.connectPouch(creds);
+          this.connectPouch(creds, false);
 
           router.push('/'); // On successful login, navigate to home
           break;

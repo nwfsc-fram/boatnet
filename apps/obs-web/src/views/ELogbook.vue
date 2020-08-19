@@ -440,7 +440,7 @@
               </q-input>
 
               <pCalendar
-                id="ftdate"
+                :id="'ftdate' + i"
                 v-model="fishTicketDates[i]"
                 :touchUI="isMobile"
                 :inline="false"
@@ -452,7 +452,7 @@
                 class="fish-ticket-calendar"
                 >
               </pCalendar>
-              <label for="ftdate" class="fishticket-calendar-label">Date</label>
+              <label :for="'ftdate' + i" class="fishticket-calendar-label">Date</label>
               </div>
             </div>
           </div>

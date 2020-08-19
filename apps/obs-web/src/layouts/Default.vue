@@ -458,6 +458,7 @@ export default class DefaultLayout extends Vue {
   @State('user') private user!: UserState;
 
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
+  @Action('reconnectNoLookupsSync', {namespace: 'pouchState'}) private reconnectNoLookupsSync: any;
   @Getter('isSyncing', { namespace: 'pouchState' }) private isSyncing: any;
   @Getter('syncStatus', { namespace: 'pouchState' }) private syncStatus: any;
   @Getter('syncDateFormatted', { namespace: 'pouchState' })
@@ -486,7 +487,7 @@ export default class DefaultLayout extends Vue {
     super();
     if (!pouchService.isConnected) {
       // Reconnect PouchDB if page refreshed but still logged in
-      this.reconnect().catch((err: any) => {
+      this.reconnectNoLookupsSync().catch((err: any) => {
         this.errorAlert(err);
       });
     }
