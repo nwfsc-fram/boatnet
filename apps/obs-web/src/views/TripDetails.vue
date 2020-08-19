@@ -87,7 +87,16 @@
             </div>
 
             <div class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker :disabled="trip.readOnly" manual-input hide-clear-button close-on-complete v-model="departureTime" lazy @input="updateDepartureDate">
+              <timepicker
+                :disabled="trip.readOnly"
+                manual-input
+                hide-clear-button
+                close-on-complete
+                v-model="departureTime"
+                lazy
+                :hour-range="getValidHours"
+                hide-disabled-hours
+                @input="updateDepartureDate">
               </timepicker>
             </div>
 
@@ -1330,6 +1339,16 @@ private async getMinDate() {
       return true;
     } else {
       return false;
+    }
+  }
+
+  private get getValidHours() {
+    if (this.existingTripEnd &&
+        moment(this.existingTripEnd).isSame(this.trip.activeTrip!.departureDate, 'day') &&
+        moment(this.existingTripStart).isSame(this.trip.activeTrip!.departureDate, 'day')) {
+      return [[parseInt(moment(this.existingTripStart).format('HH'), 10) + 1, 23]];
+    } else {
+      return [[0, 23]];
     }
   }
 
