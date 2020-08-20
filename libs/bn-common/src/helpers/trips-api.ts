@@ -217,7 +217,7 @@ export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
     }
 }
 
-export function emailCoordinators(trip: any) {
+export function emailCoordinators(trip: any, type: any) { // type - 'new' or 'update'
     return new Promise(async (resolve, reject) => {
         const queryUrl = getEmailUrl();
         request.post(
@@ -226,6 +226,7 @@ export function emailCoordinators(trip: any) {
                 json: true,
                 headers: {
                     authorization: 'Token ' + getJwt(),
+                    type
                 },
                 body: trip
             }, (err: any, response: any, body: any) => {
