@@ -583,7 +583,7 @@ export default class TripDetails extends Vue {
             });
 
             tripSelection = vesselSelections[fisheryName].shift();
-            vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
+            // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
 
             // const sel1 = vesselSelections[fisheryName][0].selectionDate;
             // const sel2 = vesselSelections[fisheryName][1].selectionDate;
@@ -594,7 +594,7 @@ export default class TripDetails extends Vue {
             // }
           } else {
             tripSelection = vesselSelections[fisheryName].pop();
-            vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
+            // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
           }
           // no longer need to save here as a selection is added later
           // if (vesselSelections._id) {
@@ -691,6 +691,8 @@ export default class TripDetails extends Vue {
           }
         }
         vesselSelections[fisheryName].push(newSelection);
+        }
+
         if (vesselSelections._id) {
           await masterDb.put(
             vesselSelections._id,
@@ -701,7 +703,6 @@ export default class TripDetails extends Vue {
           await masterDb.post(vesselSelections);
         }
 
-      }
   }
 
   private async createTrip() {
@@ -781,7 +782,7 @@ export default class TripDetails extends Vue {
           // return;
           console.log(err);
         }
-        console.log(this.trip.activeTrip!.tripNum);
+
         const masterDB: Client<any> = couchService.masterDB;
         await masterDB.post(this.trip.activeTrip).then( () => {
           Notify.create({
