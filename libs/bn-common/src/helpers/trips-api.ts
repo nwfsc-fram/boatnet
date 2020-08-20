@@ -18,6 +18,10 @@ function getCruiseApiUrl() {
     return authService.getTripsApiUrl() + '/api/v1/cruise';
 }
 
+function getEmailUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/email';
+}
+
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
     if (query) {
@@ -211,4 +215,26 @@ export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
     }   else {
         return false;
     }
+}
+
+export function emailCoordinators(trip: any) {
+    return new Promise(async (resolve, reject) => {
+        const queryUrl = getEmailUrl();
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt(),
+                },
+                body: trip
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(err);
+                }
+            }
+        );
+    });
 }

@@ -1199,13 +1199,13 @@ export default createComponent({
         coordinates.value.start.lat.dd = tripCatch.hauls[selectedHaul.value - 1].startLatitude;
       }
       if (tripCatch.hauls[selectedHaul.value - 1].startLongitude) {
-        coordinates.value.start.long.dd = + tripCatch.hauls[selectedHaul.value - 1].startLongitude;
+        coordinates.value.start.long.dd = Math.abs(tripCatch.hauls[selectedHaul.value - 1].startLongitude);
       }
       if (tripCatch.hauls[selectedHaul.value - 1].endLatitude) {
         coordinates.value.end.lat.dd = tripCatch.hauls[selectedHaul.value - 1].endLatitude;
       }
       if (tripCatch.hauls[selectedHaul.value - 1].endLongitude) {
-        coordinates.value.end.long.dd = + tripCatch.hauls[selectedHaul.value - 1].endLongitude;
+        coordinates.value.end.long.dd = Math.abs(tripCatch.hauls[selectedHaul.value - 1].endLongitude);
       }
 
     };

@@ -304,7 +304,7 @@ import {
   WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
 
-import { newTripsApiTrip, updateTripsApiTrip } from '@boatnet/bn-common';
+import { newTripsApiTrip, updateTripsApiTrip, emailCoordinators } from '@boatnet/bn-common';
 
 // import { username, password } from '../config/secrets'
 
@@ -792,6 +792,8 @@ export default class TripDetails extends Vue {
               html: true,
               multiLine: true
           });
+
+          emailCoordinators(this.trip.activeTrip);
           this.$router.push({ path: '/trips/' });
         });
       });
