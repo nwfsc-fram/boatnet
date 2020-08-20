@@ -792,8 +792,9 @@ export default class TripDetails extends Vue {
               html: true,
               multiLine: true
           });
-
-          emailCoordinators(this.trip.activeTrip);
+          if (this.trip.activeTrip!.isSelected) {
+            emailCoordinators(this.trip.activeTrip, 'NEW');
+          }
           this.$router.push({ path: '/trips/' });
         });
       });
@@ -1181,7 +1182,9 @@ private async getMinDate() {
                 multiLine: true
               });
             }
-
+            if (this.trip.activeTrip!.isSelected) {
+              emailCoordinators(this.trip.activeTrip, 'UPDATE');
+            }
             this.$router.push({ path: '/trips' });
             });
     }
