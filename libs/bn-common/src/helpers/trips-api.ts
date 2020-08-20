@@ -3,6 +3,7 @@ import { authService } from '@boatnet/bn-auth';
 import request from 'request';
 import moment from 'moment';
 import { WcgopTrip } from '@boatnet/bn-models/lib';
+import _ from 'lodash';
 
 function getJwt() {
     return authService.getCurrentUser()!.jwtToken;
@@ -217,7 +218,9 @@ export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
     }
 }
 
-export function emailCoordinators(trip: any, type: any) { // type - 'new' or 'update'
+export function emailCoordinators(trip: any, emailType: any) { // emailType - 'NEW' or 'UPDATE'
+    const payload = _.cloneDeep(trip);
+    payload.emailType = emailType;
     return new Promise(async (resolve, reject) => {
         const queryUrl = getEmailUrl();
         request.post(
@@ -226,9 +229,8 @@ export function emailCoordinators(trip: any, type: any) { // type - 'new' or 'up
                 json: true,
                 headers: {
                     authorization: 'Token ' + getJwt(),
-                    type
                 },
-                body: trip
+                body: payload,
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
