@@ -576,7 +576,7 @@
                 class="logbook-element"
               ></q-select>
               <q-input
-                v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearPerSet"
                 dense
                 autogrow
@@ -587,7 +587,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearLost"
                 dense
                 autogrow
@@ -598,7 +598,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['19 : hook & line', '10 : Pot'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg"
                 dense
                 autogrow
@@ -609,7 +609,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['1', '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].netType"
                 dense
                 autogrow
@@ -619,7 +619,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['1' , '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity"
                 dense
                 autogrow
@@ -629,7 +629,7 @@
                 mask="#####"
                 class="logbook-element"
               ></q-input>
-              <div class="logbook-element" v-if="['1 : Groundfish trawl, footrope < 8 inches (small footrope)'  , '2 : Groundfish trawl, footrope > 8 inches (large footrope)'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+              <div class="logbook-element" v-if="['1', '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
               >
                 <q-field
                   v-model="tripCatch.hauls[selectedHaul - 1].isCodendLost"
