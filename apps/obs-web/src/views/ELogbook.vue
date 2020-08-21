@@ -1727,6 +1727,9 @@ export default createComponent({
         if (res1 !== 'not found' && res1.filter( (row: any) => row.source === 'logbook').length > 0) {
           for (const row of res1) {
             if (row.source === 'logbook') {
+              if (!row.fishTickets) {
+                row.fishTickets = [];
+              }
               for (const key of Object.keys(row)) {
                 Vue.set(tripCatch, key, row[key]);
               }
