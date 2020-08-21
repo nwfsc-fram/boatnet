@@ -10,6 +10,11 @@
     </p>
     <br />
 
+    <div>
+      <q-btn @click="axiosTest"> axios
+      </q-btn>
+    </div>
+
     <div class="centered-page-item">
       <q-select
         v-if="isAuthorized(['enforcement'])"
@@ -226,6 +231,8 @@ import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
+import axios from 'axios';
+
 /* tslint:disable:no-var-requires  */
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
@@ -364,6 +371,12 @@ export default class Declarations extends Vue {
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
     }
+  }
+
+  private async axiosTest() {
+    axios.get('https://dcim.nwfsc2.noaa.gov').then(response => {
+        console.log(response.data)
+      });
   }
 
   private async getOleVessel() {
