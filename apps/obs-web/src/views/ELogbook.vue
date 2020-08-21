@@ -509,7 +509,7 @@
                 headers="gearTypeCode"
                 key="gearTypeCode"
                 :props="props"
-              >{{ props.row.gearTypeCode }}</q-td>
+              >{{ gearTypeOptions.map( (row) => row.lookupVal ).includes(props.row.gearTypeCode) ? gearTypeOptions.find( (row) => row.lookupVal === props.row.gearTypeCode).description : props.row.gearTypeCode }}</q-td>
               <q-td
                 headers="startDateTime"
                 key="startDateTime"
@@ -567,17 +567,12 @@
                 label="Gear Type"
                 dense
                 autogrow
-                title="1 : Groundfish trawl, footrope < 8 inches (small footrope), 2 : Groundfish trawl, footrope > 8 inches (large footrope), 3 : Midwater Trawl, 4 : Danish/Scottish Seine (trawl), 5 : Other Trawl Gear, 10 : Pot, 19 : hook & line, 20 : Longline (snap) (fixed gear)"
-                :options="[
-                        '1 : Groundfish trawl, footrope < 8 inches (small footrope)',
-                        '2 : Groundfish trawl, footrope > 8 inches (large footrope)',
-                        '3 : Midwater Trawl',
-                        '4 : Danish/Scottish Seine (trawl)',
-                        '5 : Other Trawl Gear',
-                        '10 : Pot',
-                        '19 : hook & line',
-                        '20 : Longline (snap) (fixed gear)'
-                        ]"
+                title="Groundfish trawl, footrope < 8 inches (small footrope), Groundfish trawl, footrope > 8 inches (large footrope), Midwater Trawl, Danish/Scottish Seine (trawl), Other Trawl Gear, Pot, hook & line, Longline (snap) (fixed gear)"
+                :options=gearTypeOptions
+                :option-label="opt => opt.description"
+                :option-value="opt => opt.lookupVal"
+                emit-value
+                :display-value="getGearTypeDescription"
                 class="logbook-element"
               ></q-select>
               <q-input
@@ -749,6 +744,7 @@
                   outlined
                   debounce="500"
                   label="MIN"
+                  :rules="[val => val < 60 || 'MIN val must be less than 60' ]"
                   title="latitude minutes"
                   style="width: 27%; margin-right: 10px"
                 ></q-input>
@@ -769,6 +765,7 @@
                   outlined
                   debounce="500"
                   label="MIN"
+                  :rules="[val => val < 60 || 'MIN val must be less than 60' ]"
                   title="longitude minutes"
                   style="width: 27%; margin-bottom: 5px"
                 ></q-input>
@@ -846,6 +843,7 @@
                   outlined
                   debounce="500"
                   label="MIN"
+                  :rules="[val => val < 60 || 'MIN val must be less than 60' ]"
                   title="latitude minutes"
                   style="width: 27%; margin-right: 10px; margin-bottom: 5px"
                 ></q-input>
@@ -866,6 +864,7 @@
                   outlined
                   debounce="500"
                   label="MIN"
+                  :rules="[val => val < 60 || 'MIN val must be less than 60' ]"
                   title="longitude minutes"
                   style="width: 27%; margin-bottom: 5px"
                 ></q-input>
@@ -1456,22 +1455,33 @@ export default createComponent({
       );
 
       const gearTypeOptionsRows = gearTypes.rows.map(
-        (row: any) => row.doc.description
+        (row: any) => row.doc
       );
-      for (const row of gearTypeOptionsRows) {
+
+      for (const row of gearTypeOptionsRows.filter( (row: any) => row.isEm === true)) {
         gearTypeOptions.push(row);
       }
 
       gearTypeOptions.sort((a: any, b: any) => {
-        if (a > b) {
+        if (parseInt(a.lookupVal) > parseInt(b.lookupVal)) {
           return 1;
-        } else if (a < b) {
+        } else if (parseInt(a.lookupVal) < parseInt(b.lookupVal)) {
           return -1;
         } else {
           return 0;
         }
       });
     };
+
+    const getGearTypeDescription = computed(
+        () => {
+          if (gearTypeOptions.map( (row: any) => row.lookupVal ).includes(tripCatch.hauls[selectedHaul.value - 1].gearTypeCode)) {
+            return gearTypeOptions.find( (row: any) => row.lookupVal === tripCatch.hauls[selectedHaul.value - 1].gearTypeCode).description
+          } else {
+            return tripCatch.hauls[selectedHaul.value - 1].gearTypeCode
+          }
+        }
+    )
 
     const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
@@ -1875,13 +1885,13 @@ export default createComponent({
 
     const formatDateTime = (val: any) => {
       if (val) {
-        return moment(val).format('YYYY, MMM, DD HH:mm');
+        return moment(val).format('MM/DD/YYYY HH:mm');
       }
     };
 
     const formatDate = (val: any) => {
       if (val) {
-        return moment(val).format('MMM, DD, YYYY');
+        return moment(val).format('MM/DD/YYYY');
       }
     };
 
@@ -2188,7 +2198,8 @@ export default createComponent({
       haulStartDateTime,
       haulEndDateTime,
       fishTicketDates,
-      addFishTicket
+      addFishTicket,
+      getGearTypeDescription
     };
   }
 });
