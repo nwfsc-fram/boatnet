@@ -2210,7 +2210,7 @@ export default createComponent({
 }
 
 * >>> .fish-ticket-calendar .p-inputtext {
-  width: inherit !important;
+  width: 100% !important;
 }
 
 .fishticket-calendar-label {

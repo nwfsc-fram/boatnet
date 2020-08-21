@@ -691,17 +691,17 @@ export default class TripDetails extends Vue {
           }
         }
         vesselSelections[fisheryName].push(newSelection);
-        }
+      }
 
-        if (vesselSelections._id) {
-          await masterDb.put(
-            vesselSelections._id,
-            vesselSelections,
-            vesselSelections._rev
-          );
-        } else {
-          await masterDb.post(vesselSelections);
-        }
+      if (vesselSelections._id) {
+        await masterDb.put(
+          vesselSelections._id,
+          vesselSelections,
+          vesselSelections._rev
+        );
+      } else {
+        await masterDb.post(vesselSelections);
+      }
 
   }
 
