@@ -60,6 +60,7 @@
               <div v-else-if="row.doc.taxonomy">{{ row.doc.taxonomy.taxonomyName }} <br>{{ row.doc.commonNames.length > 0 ? row.doc.commonNames : '' }}</div>
               <div v-else>{{ row.doc.name }}</div>
 
+              <div v-if="row.doc.isEm || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: #007EC6; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">EM</div>
               <div v-if="row.doc.isAshop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: red; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">ASHOP</div>
               <div v-if="row.doc.isWcgop || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: green; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">WCGOP</div>
               <div v-if="row.doc.isHakeSurvey || row.doc.isCommon" style="margin-left: 7px; margin-top: 4px; background-color: blue; color: white; border-radius: 5px; padding: 4px; font-weight: bold; font-size: .7em; height: 2em; line-height: 1.5em">HAKE</div>
