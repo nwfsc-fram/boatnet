@@ -242,7 +242,7 @@ import FileUploader from '../components/FileUploader.vue';
 import moment from 'moment';
 import { Notify } from 'quasar';
 
-import { newTripsApiTrip, getTripsApiTrips } from '@boatnet/bn-common';
+import { newTripsApiTrip, getTripsApiTrips, emailCoordinators } from '@boatnet/bn-common';
 
 @Component({
   components: {
@@ -411,10 +411,11 @@ export default class LogBookCapture extends Vue {
                 updatedBy: authService.getCurrentUser()!.username,
                 updateDate: moment().format('MM/DD/YYYY HH:mm A'),
                 property: '_attachments',
-                newVal: 'added/updated logbook capture',
+                newVal: 'submitted trip wihtout image capture',
                 app: 'Observer Web'
             }
         );
+        emailCoordinators(this.trip.activeTrip, 'MISSED TRIP');
         const masterDB: Client<any> = couchService.masterDB;
         this.transferring = true;
         return await masterDB.post(
@@ -422,7 +423,7 @@ export default class LogBookCapture extends Vue {
             ).then( () => {
                 this.transferring = false;
                 Notify.create({
-                    message: 'Logbook Capture Successfully Transferred',
+                    message: 'Missed Trip Submitted',
                         position: 'center',
                         color: 'green',
                         timeout: 2000,

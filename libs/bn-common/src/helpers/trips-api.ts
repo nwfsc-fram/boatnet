@@ -218,7 +218,7 @@ export function compareTrips(tripsApiTrip: any, currentTrip: WcgopTrip) {
     }
 }
 
-export function emailCoordinators(trip: any, emailType: any) { // emailType - 'NEW' or 'UPDATE'
+export function emailCoordinators(trip: any, emailType: any) { // emailType - 'NEW', 'UPDATE', 'MISSED TRIP'
     const payload = _.cloneDeep(trip);
     payload.emailType = emailType;
     return new Promise(async (resolve, reject) => {
