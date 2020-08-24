@@ -43,7 +43,7 @@
     import { createComponent, ref, reactive, computed, onMounted } from '@vue/composition-api';
     import Compressor from 'compressorjs';
     import { Emit } from 'vue-property-decorator';
-    import { newTripsApiTrip, getTripsApiTrips } from '@boatnet/bn-common';
+    import { newTripsApiTrip, getTripsApiTrips, emailCoordinators } from '@boatnet/bn-common';
     import { AuthState, authService } from '@boatnet/bn-auth';
     import moment from 'moment';
     import { Notify } from 'quasar';
@@ -183,6 +183,9 @@
                     };
                     await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
                     props.trip!.tripNum = tripsApiNum;
+                    if (context.root.$router.currentRoute.name === 'Log Missing Trip') {
+                        emailCoordinators(props.trip, 'MISSED TRIP');
+                    }
                 }
 
                 props.trip!._attachments = {};
