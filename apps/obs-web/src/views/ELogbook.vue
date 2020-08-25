@@ -1458,14 +1458,14 @@ export default createComponent({
         (row: any) => row.doc
       );
 
-      for (const row of gearTypeOptionsRows.filter( (row: any) => row.isEm === true)) {
+      for (const row of gearTypeOptionsRows.filter( (item: any) => item.isEm === true)) {
         gearTypeOptions.push(row);
       }
 
       gearTypeOptions.sort((a: any, b: any) => {
-        if (parseInt(a.lookupVal) > parseInt(b.lookupVal)) {
+        if (parseInt(a.lookupVal, 10) > parseInt(b.lookupVal, 10)) {
           return 1;
-        } else if (parseInt(a.lookupVal) < parseInt(b.lookupVal)) {
+        } else if (parseInt(a.lookupVal, 10) < parseInt(b.lookupVal, 10)) {
           return -1;
         } else {
           return 0;
@@ -1476,12 +1476,12 @@ export default createComponent({
     const getGearTypeDescription = computed(
         () => {
           if (gearTypeOptions.map( (row: any) => row.lookupVal ).includes(tripCatch.hauls[selectedHaul.value - 1].gearTypeCode)) {
-            return gearTypeOptions.find( (row: any) => row.lookupVal === tripCatch.hauls[selectedHaul.value - 1].gearTypeCode).description
+            return gearTypeOptions.find( (item: any) => item.lookupVal === tripCatch.hauls[selectedHaul.value - 1].gearTypeCode).description;
           } else {
-            return tripCatch.hauls[selectedHaul.value - 1].gearTypeCode
+            return tripCatch.hauls[selectedHaul.value - 1].gearTypeCode;
           }
         }
-    )
+    );
 
     const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
