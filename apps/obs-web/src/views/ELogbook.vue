@@ -15,7 +15,7 @@
         &nbsp;
         <q-icon name="fa fa-fish" />
         {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -
-        {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
+        {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].disposition }}
       </span>
     </div>
     <q-expansion-item
@@ -930,7 +930,7 @@
                         @click.native="removeCatch(tripCatch.hauls[selectedHaul - 1].catch.indexOf(props.row))"
                       ></q-btn>
                     </q-td>
-                    <q-td key="catchDisposition" :props="props">{{ props.row.catchDisposition }}</q-td>
+                    <q-td key="disposition" :props="props">{{ props.row.disposition }}</q-td>
                     <q-td key="speciesCode" :props="props">{{ props.row.speciesCode }}</q-td>
                     <q-td key="weight" :props="props">{{ props.row.weight }}</q-td>
                     <q-td key="catchCount" :props="props">{{ props.row.catchCount }}</q-td>
@@ -950,12 +950,12 @@
                   <span
                     v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode"
                   >{{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode }} -</span>
-                  {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition }}
+                  {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].disposition }}
                 </div>
                 <div class="row items-start">
                   <q-select
                     class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchDisposition"
+                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].disposition"
                     dense
                     autogrow
                     outlined
@@ -1336,9 +1336,9 @@ export default createComponent({
         sortable: false
       },
       {
-        name: 'catchDisposition',
+        name: 'disposition',
         label: 'Disposition',
-        field: 'catchDisposition',
+        field: 'disposition',
         required: false,
         align: 'left',
         sortable: true
