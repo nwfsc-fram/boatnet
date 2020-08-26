@@ -224,7 +224,6 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { Notify } from 'quasar';
 import { VesselState, UserState, AlertState } from '../_store/types/types';
 import moment from 'moment';
-import OracleDB from 'oracledb';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
@@ -373,31 +372,32 @@ export default class Declarations extends Vue {
 
   // Right now this function is to test where this call will come from
   private async dbTest() {
-    const dbConfig = {
-      vms: {
-        user          : 'squishy',
-        password      : 'squids',
-        connectString : '//fake.site.noaa.gov:1555/not:REAL/SCHEMA'
-      }
-    };
+    //
+    // const dbConfig = {
+    //   vms: {
+    //     user          : 'squishy',
+    //     password      : 'squids',
+    //     connectString : '//fake.site.noaa.gov:1555/not:REAL/SCHEMA'
+    //   }
+    // };
 
-    let readConnection: any;
+    // let readConnection: any;
 
-    try {
-      readConnection = await OracleDB.getConnection(dbConfig.vms);
-      const result = await readConnection.execute(
-        'SELECT * FROM fake_table'
-      );
+    // try {
+    //   readConnection = await OracleDB.getConnection(dbConfig.vms);
+    //   const result = await readConnection.execute(
+    //     'SELECT * FROM fake_table'
+    //   );
 
-    } catch (err) {
-        console.error(err);
-    } finally {
-      try {
-        await readConnection.close();
-      } catch (err) {
-          console.error(err);
-      }
-    }
+    // } catch (err) {
+    //     console.error(err);
+    // } finally {
+    //   try {
+    //     await readConnection.close();
+    //   } catch (err) {
+    //       console.error(err);
+    //   }
+    // }
   }
 
   private async getOleVessel() {
