@@ -11,8 +11,7 @@
     <br />
 
     <div>
-      <q-btn @click="axiosTest"> axios
-      </q-btn>
+      <q-btn @click="dbTest"> DB Test </q-btn>
     </div>
 
     <div class="centered-page-item">
@@ -225,13 +224,12 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { Notify } from 'quasar';
 import { VesselState, UserState, AlertState } from '../_store/types/types';
 import moment from 'moment';
+import OracleDB from 'oracledb';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
 import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
-
-import axios from 'axios';
 
 /* tslint:disable:no-var-requires  */
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
@@ -373,10 +371,33 @@ export default class Declarations extends Vue {
     }
   }
 
-  private async axiosTest() {
-    axios.get('https://dcim.nwfsc2.noaa.gov').then(response => {
-        console.log(response.data)
-      });
+  // Right now this function is to test where this call will come from
+  private async dbTest() {
+    const dbConfig = {
+      vms: {
+        user          : 'squishy',
+        password      : 'squids',
+        connectString : '//fake.site.noaa.gov:1555/not:REAL/SCHEMA'
+      }
+    };
+
+    let readConnection: any;
+
+    try {
+      readConnection = await OracleDB.getConnection(dbConfig.vms);
+      const result = await readConnection.execute(
+        'SELECT * FROM fake_table'
+      );
+
+    } catch (err) {
+        console.error(err);
+    } finally {
+      try {
+        await readConnection.close();
+      } catch (err) {
+          console.error(err);
+      }
+    }
   }
 
   private async getOleVessel() {
