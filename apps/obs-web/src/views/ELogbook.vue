@@ -1002,7 +1002,7 @@
                   ></q-input>
                   <q-input
                     class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].catchCount"
+                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCount"
                     dense
                     autogrow
                     outlined
