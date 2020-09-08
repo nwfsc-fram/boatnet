@@ -998,7 +998,7 @@
                     outlined
                     label="Weight"
                     title="Estimated weight in lbs"
-                    mask="######"
+                    :rules="[val => /^((?![a-zA-Z]).)*$/.test(val) || 'weight must be a number']"
                   ></q-input>
                   <q-input
                     class="logbook-element"
@@ -1008,7 +1008,7 @@
                     outlined
                     label="Count"
                     title="Number of fish for a species (Yellow Eye RF, PHLB, Species of concern...Salmon, Green Sturgeon, Eulachon). Not required for all species"
-                    mask="###"
+                    :rules="[val => /^((?![a-zA-Z]).)*$/.test(val) || 'count must be a number']"
                   ></q-input>
                   <q-select
                     class="logbook-element"
@@ -1028,7 +1028,7 @@
                     outlined
                     label="Length"
                     title="Length (in cm) of individual fish (Pacific Halibut)"
-                    mask="####"
+                    :rules="[val => /^((?![a-zA-Z]).)*$/.test(val) || 'length must be a number']"
                   ></q-input>
                   <q-input
                     class="logbook-element"
