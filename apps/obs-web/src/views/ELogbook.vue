@@ -500,6 +500,15 @@
               :props="props"
               @click.native="{{ selectHaul(tripCatch.hauls.indexOf(props.row) + 1); haulSelected = [...props.row] }}"
             >
+              <q-td key="action" :props="props">
+                <q-btn
+                  round
+                  size="xs"
+                  color="red"
+                  @click.native="removeHaulConfirm(tripCatch.hauls.indexOf(props.row))"
+                  icon="clear"
+                ></q-btn>
+              </q-td>
               <q-td
                 headers="haulNum"
                 key="haulNum"
@@ -1060,6 +1069,20 @@
       <q-btn @click="submitLogbook" color="primary">Submit / Update</q-btn>
 
     </div>
+    <q-dialog v-model="catchNotEmpty">
+      <q-card>
+        <q-card-section>
+          <p>Haul's Catch is not empty.</p>
+          <p>Are you sure you want to delete?</p>
+          <div style="float: right">
+            <q-btn color="red" size="md"  @click="removeHaul(selectedHaul -1)">Delete</q-btn>
+            &nbsp;
+            <q-btn color="secondary" size="md"  @click="catchNotEmpty = false">Cancel</q-btn>
+            <br><br>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -1218,6 +1241,14 @@ export default createComponent({
     const haulSelected: any = ref([]);
 
     const haulColumns = [
+      {
+        name: 'action',
+        label: '',
+        field: 'action',
+        required: false,
+        align: 'left',
+        sortable: false
+      },
       {
         name: 'haulNum',
         label: 'Haul',
@@ -1404,6 +1435,25 @@ export default createComponent({
     const removeCatch = (catchIndex: number) => {
       tripCatch.hauls[selectedHaul.value - 1].catch.splice(catchIndex, 1);
       indexCatch();
+    };
+
+    const catchNotEmpty: any = ref(false);
+
+    const removeHaulConfirm = (haulIndex: number) => {
+      if (tripCatch.hauls[haulIndex].catch && tripCatch.hauls[haulIndex].catch.length > 0) {
+        catchNotEmpty.value = true;
+      } else {
+        removeHaul(haulIndex);
+      }
+    };
+
+    const removeHaul = (haulIndex: number) => {
+      tripCatch.hauls.splice(haulIndex, 1);
+      for (const haul of tripCatch.hauls) {
+        haul.haulNum = tripCatch.hauls.indexOf(haul) + 1;
+      }
+      selectedHaul.value = null;
+      catchNotEmpty.value = false;
     };
 
     const fisheryOptions: any = [];
@@ -2165,25 +2215,28 @@ export default createComponent({
     return {
       tripCatch,
       addCatch,
+      removeCatch,
+      catchColumns,
+      catchSelected,
+      selectedCatch,
+      catchPagination,
       addHaul,
       selectHaul,
+      removeHaul,
+      removeHaulConfirm,
+      catchNotEmpty,
+      haulColumns,
+      haulSelected,
+      selectedHaul,
+      haulPagination,
       getClass,
       getHaulClass,
-      selectedHaul,
-      selectedCatch,
       fisheryOptions,
       gearTypeOptions,
       skipperOptions,
       formatDateTime,
       formatDate,
       haulEndTime,
-      haulPagination,
-      haulSelected,
-      haulColumns,
-      catchPagination,
-      catchSelected,
-      catchColumns,
-      removeCatch,
       speciesCodeOptions,
       speciesCodeSelectOptions,
       speciesFilterFn,
