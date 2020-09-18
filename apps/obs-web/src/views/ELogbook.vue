@@ -1173,15 +1173,17 @@ export default createComponent({
 
     const addHaul = () => {
       tripCatch.hauls.push({
-        startDateTime: _.cloneDeep(tripCatch.departureDateTime),
-        endDateTime: _.cloneDeep(tripCatch.returnDateTime),
+        startDateTime: null,
+        endDateTime: null,
         haulNum: tripCatch.hauls.length + 1,
-        isCodendLost: null
+        isCodendLost: null,
+        gearTypeCode: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode ? tripCatch.hauls[tripCatch.hauls.length -1 ].gearTypeCode : '',
+        targetStrategy: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy ? tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy : ''
       });
       selectedCatch.value = null;
       selectedHaul.value = tripCatch.hauls.length;
-      // haulStartTime.value = tripCatch.departureDateTime;
-      haulEndTime.value = tripCatch.returnDateTime;
+      haulStartDateTime.value = '';
+      haulEndDateTime.value = '';
 
       haulSelected.value = [_.cloneDeep(tripCatch.hauls[tripCatch.hauls.length - 1])];
 
