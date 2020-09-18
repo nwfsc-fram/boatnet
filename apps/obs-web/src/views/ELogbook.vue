@@ -1177,7 +1177,7 @@ export default createComponent({
         endDateTime: null,
         haulNum: tripCatch.hauls.length + 1,
         isCodendLost: null,
-        gearTypeCode: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode ? tripCatch.hauls[tripCatch.hauls.length -1 ].gearTypeCode : '',
+        gearTypeCode: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode ? tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode : '',
         targetStrategy: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy ? tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy : ''
       });
       selectedCatch.value = null;
