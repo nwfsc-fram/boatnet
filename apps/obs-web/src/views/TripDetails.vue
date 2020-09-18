@@ -32,7 +32,7 @@
 
         <div>
 
-          <div class="trips el-height">
+          <div class="trips-el-height">
             <q-toggle
               v-model="trip.activeTrip.isSingleDayTrip"
               color="primary"
@@ -1028,6 +1028,7 @@ private async getMinDate() {
 
     } catch (err) {
       console.log(err);
+      this.trip.readOnly = false;
     }
     if (this.trip.activeTrip!.tripStatus!.description === 'open') {
       this.trip.readOnly = false;
@@ -1512,11 +1513,6 @@ private async getMinDate() {
 
 p {
   margin-bottom: 5px;
-}
-
-.date-label {
-  margin: 0 15px;
-  font-weight: bold;
 }
 
 * >>> .q-field {
