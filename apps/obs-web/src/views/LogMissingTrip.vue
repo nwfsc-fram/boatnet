@@ -1,6 +1,6 @@
 <template>
 
-    <div id="lb" class="q-pa-md  q-gutter-md">
+    <div id="lb">
 
         <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
             {{alert.message}}
@@ -8,20 +8,23 @@
                 <q-btn flat label="Dismiss" @click="clearAlert"/>
             </template>
         </q-banner>
-        <div style="text-align: center; background-color: red; color:white; padding: 10px; border-radius: 4px"><b>WARNING: This form should be used to enter landed, un-logged trips only.</b></div>
-        <div class="text-h6">
-            <b>{{ vessel.activeVessel.vesselName }} ( {{ vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber }} )</b>
-        </div>
+        <div style="text-align: center; background-color: red; color:white; padding: 10px; border-radius: 4px; margin: 15px"><b>WARNING: This form should be used to enter landed, un-logged trips only.</b></div>
 
         <div>
-            <span>
-                <span class="text-h6">Trip Dates</span>
-                {{ formatDateTime(trip.activeTrip.departureDate) }} | {{ formatFullDate(trip.activeTrip.returnDate) }}
-                <q-toggle
-                    v-model="trip.activeTrip.isSingleDayTrip"
-                    color="primary"
-                    label="Single Day Trip"
-                ></q-toggle>
+
+        <div class="q-pa-md">
+            <span class="text-h6">Trip Dates</span>
+            {{ formatDateTime(trip.activeTrip.departureDate) }} | {{ formatFullDate(trip.activeTrip.returnDate) }}
+        </div>
+
+        <div class="trips el-height">
+            <q-toggle
+                v-model="trip.activeTrip.isSingleDayTrip"
+                color="primary"
+                label="Single Day Trip"
+            ></q-toggle>
+        </div>
+
           <div class="row items-start">
             <div class="trips-el-height">
               <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Departure Date</span>
@@ -81,10 +84,10 @@
               </pCalendar>
             </div>
           </div>
-            </span>
+
         </div>
 
-      <div>
+      <div class="q-pa-md">
 
         <q-select
           label="Start Port"
@@ -98,7 +101,7 @@
           stack-label
           use-input
           hide-selected
-          @focus="trip.activeTrip.departurePort = null"
+          clearable
         ></q-select>
 
         <q-select
@@ -113,7 +116,7 @@
           :options="ports"
           use-input
           hide-selected
-          @focus="trip.activeTrip.returnPort = null"
+          clearable
         ></q-select>
 
         <p style="margin: 0">
@@ -200,8 +203,11 @@
 
         <div style="text-align: center">All details (including logbook capture) must be completed before missing trip can be submitted.</div>
 
-        <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" style="float: right" color="red" label="submit without image" @click="submitTripOnly" :disabled="disableCreate"></q-btn>
-        <q-btn style="float: right" color="primary" label="Cancel" @click="goToTrips"/>
+        <div align="right" style="padding-right: 10px">
+            <q-btn class="text-primary" label="Cancel" @click="goToTrips"/>
+            &nbsp;
+            <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode" color="red" label="submit without image" @click="submitTripOnly" :disabled="disableCreate"></q-btn>
+        </div>
 
         <q-dialog v-model="sameDatesWarning">
             <q-card>
@@ -209,7 +215,7 @@
                 <div class="text-h6">
                 A trip with the same start and end date has already been submitted - are you sure you want to submit another trip with the same dates?
                 </div>
-                <div style="float: right" >
+                <div style="float: right;" >
                     <q-btn color="primary" @click="submitAnyway" label="submit"/>
                     &nbsp;
                     <q-btn color="red" @click="sameDatesWarning = false" label="cancel"/>

@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison'].includes($route.name)"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip'].includes($route.name)"
           flat
           dense
           round
@@ -23,7 +23,7 @@
 
         <q-toolbar-title>
           <span
-            v-if="(this.$router.currentRoute.name == 'Trips' || this.$router.currentRoute.name == 'Trip Detail') && this.vessel.activeVessel"
+            v-if="(['Trips', 'Trip Detail', 'Log Missing Trip'].includes(this.$router.currentRoute.name)) && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}

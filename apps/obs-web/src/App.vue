@@ -32,6 +32,11 @@
   width: auto !important;
 }
 
+.date-label {
+  margin: 0 15px;
+  font-weight: bold;
+}
+
 .my-card {
   width: 100%;
   max-width: 450px;
