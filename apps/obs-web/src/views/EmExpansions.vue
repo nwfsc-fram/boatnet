@@ -59,7 +59,7 @@
                 const queryOptions = {
                     reduce: false,
                     include_docs: true,
-                    key: '9876543'
+                    key: 'DANGER!'
                 };
                 const getMatches = async () => {
 
@@ -69,16 +69,16 @@
                         queryOptions
                     );
                     return matches.rows.map((row: any) => row.doc);
-                }
+                };
 
                 const results = await getMatches();
                 console.log(results);
 
                 for (const row of results) {
-                    masterDb.delete(row._id, row._rev)
+                    masterDb.delete(row._id, row._rev);
                 }
 
-            })
+            });
 
             return {};
         }
