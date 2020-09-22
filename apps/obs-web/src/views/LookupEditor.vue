@@ -619,10 +619,10 @@ export default class LookupEditor extends Vue {
 
   @Watch('foundDocs')
   private handler3(newVal: string, oldVal: string) {
-    if (this.foundDocs.length < 50) {
+    if (this.foundDocs.length < 100) {
       this.filteredFoundDocs = this.foundDocs;
     } else {
-      this.filteredFoundDocs = this.foundDocs.slice(0, 50);
+      this.filteredFoundDocs = this.foundDocs.slice(0, 100);
     }
   }
 
