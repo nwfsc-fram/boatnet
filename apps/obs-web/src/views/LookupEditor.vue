@@ -549,7 +549,7 @@ export default class LookupEditor extends Vue {
   private filterDocs() {
     this.filteredFoundDocs = [];
     if (this.searchTerm === '') {
-        this.filteredFoundDocs = this.foundDocs.slice(0, 50);
+        this.filteredFoundDocs = this.foundDocs.slice(0, 100);
     } else {
       this.filteredFoundDocs = this.foundDocs.filter(
         (item) => {

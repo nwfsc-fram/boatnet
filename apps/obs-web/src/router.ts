@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import DefaultLayout from './layouts/Default.vue';
+import PublicLayout from './layouts/Public.vue';
 import AllTrips from './views/AllTrips.vue';
 import Help from './views/Help.vue';
 import Home from './views/Home.vue';
@@ -45,6 +46,10 @@ import RackBiospecimens from './views/RackBiospecimens.vue';
 import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
 import MissedTripLog from './views/MissedTripLog.vue';
 import EmExpansions from './views/EmExpansions.vue';
+import ApiDocsHome from './views/ApiDocsHome.vue';
+import TripsApiReadme from './views/TripsApi/Readme.vue';
+import TripsApiLookups from './views/TripsApi/Lookups.vue';
+import TripsApiProgram from './views/TripsApi/Program.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -57,6 +62,17 @@ Vue.use(Router);
 const router = new Router({
   mode: 'history',
   routes: [
+    {
+      path: '/public',
+      component: PublicLayout,
+      children: [
+        {path: 'api-docs', component: ApiDocsHome},
+        {path: 'trips-api', component: TripsApiReadme},
+        {path: 'trips-api-lookups', component: TripsApiLookups},
+        {path: 'trips-api-program', component: TripsApiProgram},
+        {path: 'trips-api-spec', redirect: 'https://app.swaggerhub.com/apis/seth.gerou/Trips/0.0.1'}
+      ]
+    },
     {
       path: '/login',
       component: Login
@@ -257,7 +273,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login'];
+  const publicPages = ['/login', '/public/api-docs', '/public/trips-api', '/public/trips-api-lookups', '/public/trips-api-program'];
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
