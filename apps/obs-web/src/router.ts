@@ -46,10 +46,8 @@ import RackBiospecimens from './views/RackBiospecimens.vue';
 import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
 import MissedTripLog from './views/MissedTripLog.vue';
 import EmExpansions from './views/EmExpansions.vue';
-import ApiDocsHome from './views/ApiDocsHome.vue';
-import TripsApiReadme from './views/TripsApi/Readme.vue';
-import TripsApiLookups from './views/TripsApi/Lookups.vue';
-import TripsApiProgram from './views/TripsApi/Program.vue';
+import EMApiPortal from './views/EMApiPortal.vue';
+
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -63,17 +61,6 @@ const router = new Router({
   mode: 'history',
   routes: [
     {
-      path: '/public',
-      component: PublicLayout,
-      children: [
-        {path: 'api-docs', component: ApiDocsHome},
-        {path: 'trips-api', component: TripsApiReadme},
-        {path: 'trips-api-lookups', component: TripsApiLookups},
-        {path: 'trips-api-program', component: TripsApiProgram},
-        {path: 'trips-api-spec', redirect: 'https://app.swaggerhub.com/apis/seth.gerou/Trips/0.0.1'}
-      ]
-    },
-    {
       path: '/login',
       component: Login
     },
@@ -81,7 +68,7 @@ const router = new Router({
       path: '/',
       component: DefaultLayout,
       children: [
-        { path: 'em-expansions', component: EmExpansions },
+        { path: 'em-expansions', component: EmExpansions }, // temp - delete eventually
         { path: '', name: 'Home', component: Home },
         { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
@@ -218,6 +205,12 @@ const router = new Router({
           }
         },
         {
+          path: '/em-api-portal/', name: 'EM API Portal', component: EMApiPortal,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
           path: '/em-rate-management/', name: 'EM Rate Management', component: EMRateManagement,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
@@ -273,7 +266,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/public/api-docs', '/public/trips-api', '/public/trips-api-lookups', '/public/trips-api-program'];
+  const publicPages = ['/login'];
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
