@@ -265,6 +265,21 @@
 
           <q-item
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-api-portal"
+            exact
+            @click="leftDrawerOpen = false"
+          >
+            <q-item-section avatar>
+              <q-icon name="publish" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>API Submission Portal</q-item-label>
+              <q-item-label caption>submit logbook data and em reviews to Trips API via a web portal</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
             to="/em-data-compare"
             exact
             @click="leftDrawerOpen = false"
