@@ -55,7 +55,14 @@ import {
   onMounted,
   onServerPrefetch
 } from '@vue/composition-api';
-import { Vue } from 'vue-property-decorator';
+
+import { Vue, Watch } from 'vue-property-decorator';
+import {
+  CouchDBInfo,
+  CouchDBCredentials,
+  couchService
+} from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
 
 import { Notify } from 'quasar';
 
@@ -88,18 +95,6 @@ export default createComponent({
       return data;
     };
 
-        // sort: (a: any, b: any, rowA: any, rowB: any) => {
-        //   if ( a === 'Trip' || b == 'Trip') {
-        //     return 0;
-        //   } else if ( a > b ) {
-        //     return 1;
-        //   } else if ( a < b ) {
-        //     return -1;
-        //   }else {
-        //     return 0;
-        //   }
-        // }
-
     const columns: any = [
       { name: 'haul', label: 'Haul', field: 'haul', required: false, align: 'left', sortable: true },
       { name: 'speciesCode', label: 'Species Code', field: 'speciesCode', required: false, align: 'left', sortable: true },
@@ -110,8 +105,6 @@ export default createComponent({
       { name: 'audit', label: 'NWFSC Audit Discard (lbs)', field: 'audit', required: false, align: 'center', sortable: true },
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
-
-
 
     const visibleColumns: any = reactive([
       'haul',
@@ -142,40 +135,105 @@ export default createComponent({
       tripData.length = 0;
       tripTotals = {};
       haulTotals = {};
-      for (const source of apiCatch) {
-        for (const haul of source.hauls) {
-          for (const species of haul.catch) {
+      // for (const source of apiCatch) {
+      //   for (const haul of source.hauls) {
+      //     for (const species of haul.catch) {
+      //       const codeLookup = speciesCodes.find( ( codes: any) => species.speciesCode === codes.pacfinSpeciesCode || species.speciesCode === codes.wcgopSpeciesCode )
+      //       if (codeLookup) {
+      //         species.speciesCode = codeLookup.commonName
+      //         console.log(species.speciesCode)
+
+      //       } else {
+      //         species.speciesCode = 'fish'
+      //       }
+      //       if (!tripTotals[species.speciesCode]) {
+      //         tripTotals[species.speciesCode] = {};
+      //       }
+      //       if (!tripTotals[species.speciesCode][source.source]) { tripTotals[species.speciesCode][source.source] = {}; }
+      //       if (!tripTotals[species.speciesCode][source.source].discard) { tripTotals[species.speciesCode][source.source].discard = 0; }
+      //       if (!tripTotals[species.speciesCode][source.source].retained) {tripTotals[species.speciesCode][source.source].retained = 0; }
+      //       if (species.disposition === 'Discarded') {
+      //         tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
+      //       }
+      //       if (species.disposition === 'D') {
+      //         tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
+      //       }
+      //       if (source.source === 'logbook' && (species.disposition === 'Retained')) {
+      //         tripTotals[species.speciesCode][source.source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
+      //       }
+      //       if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
+      //       if (!haulTotals[haul.haulNum][species.speciesCode]) { haulTotals[haul.haulNum][species.speciesCode] = {}; }
+      //       if (!haulTotals[haul.haulNum][species.speciesCode][source.source]) { haulTotals[haul.haulNum][species.speciesCode][source.source] = {}; }
+      //       if (!haulTotals[haul.haulNum][species.speciesCode][source.source].discard) {haulTotals[haul.haulNum][species.speciesCode][source.source].discard = ''; }
+      //       if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.retained ? species.retained : '';
+      //       }
+      //       if (species.disposition === 'Discarded') {
+      //         haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
+      //       } else if (species.disposition === 'Retained') {
+      //         haulTotals[haul.haulNum][species.speciesCode][source.source].retained = parseFloat(species.weight);
+      //       }
+      //       if (species.disposition === 'D') {
+      //         haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
+      //       }
+      //     }
+      //   }
+      // }
+
+for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCatch']) {
+    let source = ""
+    switch (catchType) {
+      case 'logbookCatch':
+          source = 'logbook';
+          break;
+      case 'thirdPartyReviewCatch':
+          source = 'thirdParty';
+          break;
+      case 'nwfscAuditCatch':
+          source = 'nwfscAudit';
+          break;
+    }
+
+      for (const species of apiCatch[catchType]) {
+            console.log(species)
+            const codeLookup = speciesCodes.find( ( codes: any) => {
+                return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode
+              })
+            if (codeLookup) {
+              species.speciesCode = codeLookup.commonName
+              console.log(species.speciesCode)
+
+            } else {
+              species.speciesCode = 'fish error 321'
+            }
             if (!tripTotals[species.speciesCode]) {
               tripTotals[species.speciesCode] = {};
             }
-            if (!tripTotals[species.speciesCode][source.source]) { tripTotals[species.speciesCode][source.source] = {}; }
-            if (!tripTotals[species.speciesCode][source.source].discard) { tripTotals[species.speciesCode][source.source].discard = 0; }
-            if (!tripTotals[species.speciesCode][source.source].retained) {tripTotals[species.speciesCode][source.source].retained = 0; }
-            if (species.catchDisposition === 'Discarded') {
-              tripTotals[species.speciesCode][source.source].discard += parseFloat(species.estimatedWeight);
+            if (!tripTotals[species.speciesCode][source]) { tripTotals[species.speciesCode][source] = {}; }
+            if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
+            if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
+            if (species.disposition === 'Discarded') {
+              tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
             }
             if (species.disposition === 'D') {
-              tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
+              tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
             }
-            if (source.source === 'logbook' && (species.catchDisposition === 'Retained')) {
-              tripTotals[species.speciesCode][source.source].retained += parseFloat(species.estimatedWeight) ? parseFloat(species.estimatedWeight) : 0;
+            if (source === 'logbook' && (species.disposition === 'Retained')) {
+              tripTotals[species.speciesCode][source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
             }
-            if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesCode]) { haulTotals[haul.haulNum][species.speciesCode] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesCode][source.source]) { haulTotals[haul.haulNum][species.speciesCode][source.source] = {}; }
-            if (!haulTotals[haul.haulNum][species.speciesCode][source.source].discard) {haulTotals[haul.haulNum][species.speciesCode][source.source].discard = ''; }
-            if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.retained ? species.retained : '';
+            if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode][source]) { haulTotals[species.haulNum][species.speciesCode][source] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode][source].discard) {haulTotals[species.haulNum][species.speciesCode][source].discard = ''; }
+            if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
             }
-            if (species.catchDisposition === 'Discarded') {
-              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.estimatedWeight);
-            } else if (species.catchDisposition === 'Retained') {
-              haulTotals[haul.haulNum][species.speciesCode][source.source].retained = parseFloat(species.estimatedWeight);
+            if (species.disposition === 'Discarded') {
+              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
+            } else if (species.disposition === 'Retained') {
+              haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.weight);
             }
             if (species.disposition === 'D') {
-              haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
+              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
             }
-          }
-        }
       }
 
       for (const key of Object.keys(tripTotals)) {
@@ -222,7 +280,9 @@ export default createComponent({
           }
         }
       });
+      console.log(tripData)
     };
+  }
 
     const getPercentDifference = (val1: number, val2: number) => {
       if (typeof val1 === 'number' && val1 !== 0 && typeof val2 === 'number' && val2 !== 0) {
@@ -257,6 +317,22 @@ export default createComponent({
       }
 
       apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
+
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: apiTrip.tripNum
+      };
+
+      const expansionResultsQuery = await masterDb.view(
+        'TripsApi',
+        'expansion_results',
+        queryOptions
+      );
+
+      apiCatch = expansionResultsQuery.rows[0].doc;
+
       if (apiCatch === 'not found') {
         Vue.set(apiTrip, tripNum, 0);
         apiCatch = [];
@@ -301,9 +377,48 @@ export default createComponent({
       })
     });
 
+    const speciesCodes: any = [];
+    const wcgopSpeciesCodes: any = [];
+    const pacfinSpeciesCodes: any = [];
+    const getSpeciesCodes = async () => {
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: false
+      };
+
+      const speciesCodesQuery = await masterDb.view(
+        'obs_web',
+        'em-species-codes',
+        queryOptions
+      );
+
+      const codes = speciesCodesQuery.rows;
+
+      for (const row of codes) {
+        wcgopSpeciesCodes.push(row.value[1]);
+        if (row.value[0]) {
+          pacfinSpeciesCodes.push(row.value[0]);
+        }
+        speciesCodes.push(
+          {
+            commonName: row.key,
+            pacfinSpeciesCode: row.value[0],
+            wcgopSpeciesCode: row.value[1]
+          }
+        );
+      }
+      console.log(speciesCodes);
+      wcgopSpeciesCodes.sort( (a: any,b: any) => a - b)
+      console.log(wcgopSpeciesCodes);
+      pacfinSpeciesCodes.sort( (a: any, b: any) => a - b)
+      console.log(pacfinSpeciesCodes);
+    };
+
     onMounted(() => {
       if (tripNum.value !== 0) {
         getAPITripData();
+        getSpeciesCodes();
       }
       if (!store.state.user.showLogbookRetained) {
         visibleColumns.splice(visibleColumns.indexOf('logbookRetained') , 1);

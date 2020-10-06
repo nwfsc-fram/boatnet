@@ -1,0 +1,74 @@
+{
+  "source": "thirdParty",
+  "tripNum": 100123,
+  "fisherySector": "Midwater Rockfish",
+  "year": "2020",
+  "vesselName": "Fish Master 3000",
+  "vesselNumber": "321456",
+  "permitNumber": "GF99999",
+  "isEFPTrip": true,
+  "isObserved": false,
+  "crewSize": 4,
+  "departureDateTime": "2020-09-01T15:00:00Z",
+  "departureState": "WA",
+  "departurePortCode": "SEQ",
+  "returnDateTime": "2020-09-04T15:00:00Z",
+  "returnState": "WA",
+  "returnPortCode": "SEQ",
+  "buyers": [
+    "ABC Seafood Co"
+  ],
+  "skipperName": "Bill Wilson",
+  "fishTickets": [
+    {
+      "fishTicketNumber": "21df23f23e3",
+      "fishTicketDate": "2020-09-04T15:00:00Z"
+    },
+    {
+      "fishTicketNumber": "bf45t45htg4",
+      "fishTicketDate": "2020-09-04T15:00:00Z"
+    }
+  ],
+  "comment": "Is there any thing better in the world?",
+  "resubmission": false,
+  "provider": "ABC EM Provider",
+  "reviewerName": "Sue Wilson",
+  "totalReviewTime": "180",
+  "hauls": [
+    {
+      "haulNum": 1,
+      "deliveryDate": "2020-09-01T17:00:00Z",
+      "gearTypeCode": "3",
+      "startDateTime": "2020-09-01T17:00:00Z",
+      "startDepth": 40,
+      "startLatitude": 44.245,
+      "startLongitude": -124.945,
+      "endDateTime": "2020-09-01T19:00:00Z",
+      "endDepth": 43,
+      "endLatitude": 44.776,
+      "endLongitude": -124.447,
+      "codendCapacity": 3000,
+      "isCodendLost": false,
+      "comments": "camera was a little foggy",
+      "targetStrategy": "203",
+      "systemPerformance": 1,
+      "catchHandlingPerformance": 1,
+      "catch": [
+        {
+          "catchId": 1,
+          "disposition": "Discarded",
+          "fate": "11",
+          "speciesCode": "614",
+          "weight": 320
+        },
+        {
+          "catchId": 2,
+          "disposition": "Discarded",
+          "fate": "11",
+          "speciesCode": "200",
+          "weight": 200
+        }
+      ]
+    }
+  ]
+}
