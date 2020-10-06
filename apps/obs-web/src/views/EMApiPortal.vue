@@ -31,6 +31,20 @@
                 style="display: none"
                 ></q-input>
         </label>
+
+        <q-btn
+            color="primary"
+            label="load logbook example"
+            @click="loadLogbook"
+            class="q-ma-md"
+        ></q-btn>
+
+        <q-btn
+            color="primary"
+            label="load review example"
+            @click="loadReview"
+        ></q-btn>
+
         <q-scroll-area style="height: 400px; max-width: 100%">
             <q-input
                 v-model="submissionText"
@@ -120,6 +134,18 @@ export default createComponent({
 
                 parsedCatch.tripNum = parseInt(tripNum.value,10);
                 parsedCatch.source = catchType.value === 'logbook' ? 'logbook': 'thirdParty';
+                switch (catchType.value) {
+                    case 'logbook':
+                        parsedCatch.source = 'logbook';
+                        break;
+                    case 'em review':
+                        parsedCatch.source = 'thirdParty';
+                        break;
+                    case 'audit':
+                        parsedCatch.source = 'nwfscAudit';
+                        break;
+                }
+
                 if (parsedCatch._id ) {delete parsedCatch._id;}
                 if (parsedCatch._rev) {delete parsedCatch._rev;}
                 const catchSources = apiCatch.map( (row: any) => row.source)
@@ -175,7 +201,18 @@ export default createComponent({
                 disableSubmit.value = false;
                 return;
             }
+
         };
+
+        const loadLogbook = () => {
+            submissionText.value = JSON.stringify(require('../assets/logbookExample.json'), null, 2);
+        }
+
+        const loadReview = () => {
+            submissionText.value = JSON.stringify(require('../assets/reviewExample.json'), null, 2);
+        }
+
+        const reviewExample = '';
 
         watch(
         () => submissionText.value,
@@ -205,7 +242,12 @@ export default createComponent({
         watcherOptions
         );
 
-        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit};
+        onMounted( () => {
+            tripNum.value = context.root.$route.params.id;
+            catchType.value = context.root.$route.params.type;
+        })
+
+        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview};
 
         }
 });

@@ -205,6 +205,12 @@ const router = new Router({
           }
         },
         {
+          path: '/em-api-portal/:id/:type', name: 'EM API Portal', component: EMApiPortal,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
           path: '/em-api-portal/', name: 'EM API Portal', component: EMApiPortal,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }

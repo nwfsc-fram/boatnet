@@ -1,0 +1,82 @@
+{
+    "source": "logbook",
+    "tripNum": 123456,
+    "logbookPageNumber": 123,
+    "fishery": "Limited Entry Sablefish",
+    "year": 2020,
+    "vesselName": "Fish Master 3000",
+    "vesselNumber": "5664321",
+    "permitNumber": "GF9999",
+    "crewSize": 5,
+    "isEFPTrip": false,
+    "isObserved": true,
+    "isSigned": true,
+    "skipperName": "Bill Wilson",
+    "departureDateTime": "2020-03-05T11:32:53-08:00",
+    "departureState": "WA",
+    "departurePortCode": "BLL",
+    "returnDateTime": "2020-03-05T11:32:53-08:00",
+    "returnState": "WA",
+    "returnPortCode": "PAG",
+    "buyers": [
+      "Best Seafood Co",
+      "Pretty Good Seafood Co"
+    ],
+    "fishTicketNumber": [
+      {
+        "fishTicketNumber": "555452348",
+        "fishTicketDate": "2012-11-14T00:00:00Z"
+      }
+    ],
+    "comment": "here is a comment",
+    "hauls": [
+      {
+        "haulNum": 1,
+        "gearTypeCode": "2",
+        "gearPerSet": 7,
+        "gearLost": 0,
+        "avgHooksPerSeg": 9,
+        "startDateTime": "2020-03-05T11:32:53-08:00",
+        "startDepth": 80,
+        "startLatitude": 47.681706,
+        "startLongitude": -122.425239,
+        "endDateTime": "2020-03-05T11:32:53-08:00",
+        "endDepth": 60,
+        "endLatitude": 47.681706,
+        "endLongitude": -122.425239,
+        "netType": 2,
+        "codendCapacity": 120,
+        "comments": "this is a haul comment",
+        "avgDepth": 55,
+        "targetStrategy": "PCHK",
+        "catch": [
+          {
+            "disposition": "Retained",
+            "speciesCode": "CLPR",
+            "weight": 1200,
+            "catchCount": 37,
+            "calcWeightType": "Estimated Weight",
+            "length": 32,
+            "timeOnDeck": 7,
+            "comments": "this is a catch comment"
+          },
+          {
+            "disposition": "Discarded",
+            "speciesCode": "CMEL",
+            "weight": 200,
+            "catchCount": 37,
+            "calcWeightType": "Estimated Weight",
+            "comments": "this is a catch comment"
+          },
+          {
+            "disposition": "Discarded",
+            "speciesCode": "STAR",
+            "weight": 75,
+            "catchCount": 3,
+            "calcWeightType": "Estimated Weight",
+            "comments": "this is a catch comment"
+          }
+        ]
+      }
+    ]
+  }
