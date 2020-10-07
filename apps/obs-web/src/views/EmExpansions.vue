@@ -59,23 +59,39 @@
                 const queryOptions = {
                     reduce: false,
                     include_docs: true,
-                    key: 'DANGER!'
+                    // key: 'DANGER!'
                 };
                 const getMatches = async () => {
 
+                    // const matches = await masterDb.view(
+                    //     'obs_web',
+                    //     'ots_trips_by_vesselId',
+                    //     queryOptions
+                    // );
                     const matches = await masterDb.view(
                         'obs_web',
-                        'ots_trips_by_vesselId',
+                        'em-species-codes',
                         queryOptions
                     );
                     return matches.rows.map((row: any) => row.doc);
                 };
 
                 const results = await getMatches();
-                console.log(results);
+                // console.log(results);
 
                 for (const row of results) {
-                    masterDb.delete(row._id, row._rev);
+                    // masterDb.delete(row._id, row._rev);
+                    row.isActive = true;
+                    console.log(row);
+                    try {
+                    const updateDoc = await masterDb.put(
+                        row._id,
+                        row,
+                        row._rev
+                    )
+                    } catch (err) {
+                    console.log(err);
+                    }
                 }
 
             });
