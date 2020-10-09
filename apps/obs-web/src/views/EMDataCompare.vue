@@ -135,106 +135,63 @@ export default createComponent({
       tripData.length = 0;
       tripTotals = {};
       haulTotals = {};
-      // for (const source of apiCatch) {
-      //   for (const haul of source.hauls) {
-      //     for (const species of haul.catch) {
-      //       const codeLookup = speciesCodes.find( ( codes: any) => species.speciesCode === codes.pacfinSpeciesCode || species.speciesCode === codes.wcgopSpeciesCode )
-      //       if (codeLookup) {
-      //         species.speciesCode = codeLookup.commonName
-      //         console.log(species.speciesCode)
 
-      //       } else {
-      //         species.speciesCode = 'fish'
-      //       }
-      //       if (!tripTotals[species.speciesCode]) {
-      //         tripTotals[species.speciesCode] = {};
-      //       }
-      //       if (!tripTotals[species.speciesCode][source.source]) { tripTotals[species.speciesCode][source.source] = {}; }
-      //       if (!tripTotals[species.speciesCode][source.source].discard) { tripTotals[species.speciesCode][source.source].discard = 0; }
-      //       if (!tripTotals[species.speciesCode][source.source].retained) {tripTotals[species.speciesCode][source.source].retained = 0; }
-      //       if (species.disposition === 'Discarded') {
-      //         tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
-      //       }
-      //       if (species.disposition === 'D') {
-      //         tripTotals[species.speciesCode][source.source].discard += parseFloat(species.weight);
-      //       }
-      //       if (source.source === 'logbook' && (species.disposition === 'Retained')) {
-      //         tripTotals[species.speciesCode][source.source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
-      //       }
-      //       if (!haulTotals[haul.haulNum]) { haulTotals[haul.haulNum] = {}; }
-      //       if (!haulTotals[haul.haulNum][species.speciesCode]) { haulTotals[haul.haulNum][species.speciesCode] = {}; }
-      //       if (!haulTotals[haul.haulNum][species.speciesCode][source.source]) { haulTotals[haul.haulNum][species.speciesCode][source.source] = {}; }
-      //       if (!haulTotals[haul.haulNum][species.speciesCode][source.source].discard) {haulTotals[haul.haulNum][species.speciesCode][source.source].discard = ''; }
-      //       if (source.source === 'logbook') { haulTotals[haul.haulNum][species.speciesCode][source.source].retained = species.retained ? species.retained : '';
-      //       }
-      //       if (species.disposition === 'Discarded') {
-      //         haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
-      //       } else if (species.disposition === 'Retained') {
-      //         haulTotals[haul.haulNum][species.speciesCode][source.source].retained = parseFloat(species.weight);
-      //       }
-      //       if (species.disposition === 'D') {
-      //         haulTotals[haul.haulNum][species.speciesCode][source.source].discard = parseFloat(species.weight);
-      //       }
-      //     }
-      //   }
-      // }
+      for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCatch']) {
+        if (apiCatch[catchType].length > 0) {
+          let source = '';
+          switch (catchType) {
+            case 'logbookCatch':
+                source = 'logbook';
+                break;
+            case 'thirdPartyReviewCatch':
+                source = 'thirdParty';
+                break;
+            case 'nwfscAuditCatch':
+                source = 'nwfscAudit';
+                break;
+          }
+          for (const species of apiCatch[catchType]) {
+                const codeLookup = speciesCodes.find( ( codes: any) => {
+                    return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode;
+                  });
+                if (codeLookup) {
+                  species.speciesCode = codeLookup.commonName;
 
-for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCatch']) {
-    let source = ""
-    switch (catchType) {
-      case 'logbookCatch':
-          source = 'logbook';
-          break;
-      case 'thirdPartyReviewCatch':
-          source = 'thirdParty';
-          break;
-      case 'nwfscAuditCatch':
-          source = 'nwfscAudit';
-          break;
-    }
-
-      for (const species of apiCatch[catchType]) {
-            console.log(species)
-            const codeLookup = speciesCodes.find( ( codes: any) => {
-                return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode
-              })
-            if (codeLookup) {
-              species.speciesCode = codeLookup.commonName
-              console.log(species.speciesCode)
-
-            } else {
-              species.speciesCode = 'fish error 321'
-            }
-            if (!tripTotals[species.speciesCode]) {
-              tripTotals[species.speciesCode] = {};
-            }
-            if (!tripTotals[species.speciesCode][source]) { tripTotals[species.speciesCode][source] = {}; }
-            if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
-            if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
-            if (species.disposition === 'Discarded') {
-              tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
-            }
-            if (species.disposition === 'D') {
-              tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
-            }
-            if (source === 'logbook' && (species.disposition === 'Retained')) {
-              tripTotals[species.speciesCode][source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
-            }
-            if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
-            if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
-            if (!haulTotals[species.haulNum][species.speciesCode][source]) { haulTotals[species.haulNum][species.speciesCode][source] = {}; }
-            if (!haulTotals[species.haulNum][species.speciesCode][source].discard) {haulTotals[species.haulNum][species.speciesCode][source].discard = ''; }
-            if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
-            }
-            if (species.disposition === 'Discarded') {
-              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
-            } else if (species.disposition === 'Retained') {
-              haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.weight);
-            }
-            if (species.disposition === 'D') {
-              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
-            }
-      }
+                } else {
+                  species.speciesCode = 'fish error 321';
+                }
+                if (!tripTotals[species.speciesCode]) {
+                  tripTotals[species.speciesCode] = {};
+                }
+                if (!tripTotals[species.speciesCode][source]) { tripTotals[species.speciesCode][source] = {}; }
+                if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
+                if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
+                if (species.disposition === 'Discarded') {
+                  tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
+                }
+                if (species.disposition === 'D') {
+                  tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
+                }
+                if (source === 'logbook' && (species.disposition === 'Retained')) {
+                  tripTotals[species.speciesCode][source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
+                }
+                if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
+                if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
+                if (!haulTotals[species.haulNum][species.speciesCode][source]) { haulTotals[species.haulNum][species.speciesCode][source] = {}; }
+                if (!haulTotals[species.haulNum][species.speciesCode][source].discard) {haulTotals[species.haulNum][species.speciesCode][source].discard = ''; }
+                if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
+                }
+                if (species.disposition === 'Discarded') {
+                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
+                } else if (species.disposition === 'Retained') {
+                  haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.weight);
+                }
+                if (species.disposition === 'D') {
+                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
+                }
+          }
+          }
+        }
 
       for (const key of Object.keys(tripTotals)) {
         tripData.push(
@@ -280,9 +237,7 @@ for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCat
           }
         }
       });
-      console.log(tripData)
     };
-  }
 
     const getPercentDifference = (val1: number, val2: number) => {
       if (typeof val1 === 'number' && val1 !== 0 && typeof val2 === 'number' && val2 !== 0) {
@@ -396,7 +351,9 @@ for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCat
       const codes = speciesCodesQuery.rows;
 
       for (const row of codes) {
-        wcgopSpeciesCodes.push(row.value[1]);
+        if (row.value[1]) {
+          wcgopSpeciesCodes.push(row.value[1]);
+        }
         if (row.value[0]) {
           pacfinSpeciesCodes.push(row.value[0]);
         }
@@ -408,11 +365,8 @@ for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCat
           }
         );
       }
-      console.log(speciesCodes);
-      wcgopSpeciesCodes.sort( (a: any,b: any) => a - b)
-      console.log(wcgopSpeciesCodes);
-      pacfinSpeciesCodes.sort( (a: any, b: any) => a - b)
-      console.log(pacfinSpeciesCodes);
+      wcgopSpeciesCodes.sort( (a: any, b: any) => a - b);
+      pacfinSpeciesCodes.sort( (a: any, b: any) => a - b);
     };
 
     onMounted(() => {
