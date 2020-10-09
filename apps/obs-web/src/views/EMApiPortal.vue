@@ -127,13 +127,11 @@ export default createComponent({
                     disableSubmit.value = false;
                     return;
                 }
-                const apiCatch: any = await getCatchApiCatch(parseInt(tripNum.value));
-                console.log(apiCatch)
-
+                const apiCatch: any = await getCatchApiCatch(parseInt(tripNum.value, 10));
                 const parsedCatch = JSON.parse(submissionText.value);
 
-                parsedCatch.tripNum = parseInt(tripNum.value,10);
-                parsedCatch.source = catchType.value === 'logbook' ? 'logbook': 'thirdParty';
+                parsedCatch.tripNum = parseInt(tripNum.value, 10);
+                parsedCatch.source = catchType.value === 'logbook' ? 'logbook' : 'thirdParty';
                 switch (catchType.value) {
                     case 'logbook':
                         parsedCatch.source = 'logbook';
@@ -146,17 +144,14 @@ export default createComponent({
                         break;
                 }
 
-                if (parsedCatch._id ) {delete parsedCatch._id;}
-                if (parsedCatch._rev) {delete parsedCatch._rev;}
-                const catchSources = apiCatch.map( (row: any) => row.source)
+                if (parsedCatch._id ) { delete parsedCatch._id; }
+                if (parsedCatch._rev)  {delete parsedCatch._rev; }
+                const catchSources = apiCatch.map( (row: any) => row.source);
                 if (typeof apiCatch === 'string' || !catchSources.includes(parsedCatch.source)) {
-                    console.log('catch does not include catch type');
                     // no existing catch found - use newApiCatch
                     parsedCatch.createdBy = authService.getCurrentUser()!.username;
                     parsedCatch.createdDate = moment().format();
-                    console.log(parsedCatch)
                     await newApiCatch(parsedCatch).then( (res) => {
-                        console.log(res);
                         Notify.create({
                             message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' Data Successfully Updated</div>',
                                 position: 'top',
@@ -170,15 +165,13 @@ export default createComponent({
                         return;
                         });
                 } else if (apiCatch.map( (row: any) => row.source).includes(parsedCatch.source)) {
-                    console.log('catch includes catch type');
                     // existing catch of catchType found - use updateApiCatch
                     parsedCatch.updatedBy = authService.getCurrentUser()!.username;
                     parsedCatch.updatedDate = moment().format();
                     parsedCatch.resubmission = true;
                     await updateApiCatch(parsedCatch).then( (res) => {
-                        console.log(res);
                         Notify.create({
-                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' Data Successfully Updated</div>',
+                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' Data Successfully Updated' + res + '</div>',
                                 position: 'top',
                                 color: 'green',
                                 timeout: 3000,
@@ -206,11 +199,11 @@ export default createComponent({
 
         const loadLogbook = () => {
             submissionText.value = JSON.stringify(require('../assets/logbookExample.json'), null, 2);
-        }
+        };
 
         const loadReview = () => {
             submissionText.value = JSON.stringify(require('../assets/reviewExample.json'), null, 2);
-        }
+        };
 
         const reviewExample = '';
 
@@ -245,7 +238,7 @@ export default createComponent({
         onMounted( () => {
             tripNum.value = context.root.$route.params.id;
             catchType.value = context.root.$route.params.type;
-        })
+        });
 
         return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview};
 

@@ -1538,30 +1538,27 @@ export default createComponent({
     const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
       const masterDb = couchService.masterDB;
+
       const queryOptions = {
         reduce: false,
-        include_docs: true,
-        key: 'ifq-species-codes'
+        include_docs: false
       };
 
       const speciesCodes = await masterDb.view(
         'obs_web',
-        'all_doc_types',
+        'em-species-codes',
         queryOptions
       );
 
-      const codes = speciesCodes.rows[0].doc.codes;
-      for (const row of codes) {
-        const value = {
-          speciesCode: row.speciesCode,
-          commonName: row.commonName
-        };
-        if (
-          speciesCodeOptions
-            .map((species: any) => species.commonName)
-            .indexOf(row.commonName) === -1
-        ) {
-          speciesCodeOptions.push(value);
+      for (const row of speciesCodes.rows) {
+        if (row.value[0]) {
+          const value = {
+            speciesCode: row.value[0],
+            commonName: row.key
+          };
+          if (speciesCodeOptions.map((species: any) => species.commonName).indexOf(row.key) === -1) {
+            speciesCodeOptions.push(value);
+          }
         }
       }
       speciesCodeOptions.sort((a: any, b: any) => {
@@ -1604,72 +1601,6 @@ export default createComponent({
           }
         }
       }
-    };
-
-    const validPacfinCodes: any = [];
-    const getValidPacfinCodes = async () => {
-      const masterDb = couchService.masterDB;
-      const queryOptions = {
-        reduce: false,
-        include_docs: true,
-        key: 'ifq-species-codes'
-      };
-
-      const speciesCodes = await masterDb.view(
-        'obs_web',
-        'all_doc_types',
-        queryOptions
-      );
-
-      const codes = speciesCodes.rows[0].doc.codes;
-
-      for (const row of codes) {
-        validPacfinCodes.push(row.speciesCode);
-      }
-    };
-
-    const getTaxonomyAliases = async () => {
-      const masterDb = couchService.masterDB;
-      const queryOptions = {
-        include_docs: true
-      };
-
-      const taxonomyAliases = await masterDb.view(
-        'Taxonomy',
-        'pacfin-code-for-wcgop-alias',
-        queryOptions
-      );
-
-      for (const row of taxonomyAliases.rows) {
-        if (validPacfinCodes.includes(row.doc.taxonomy.pacfinSpeciesCode)) {
-          for (const name of row.doc.commonNames) {
-            const value = {
-              speciesCode: row.doc.taxonomy.pacfinSpeciesCode,
-              commonName: name
-            };
-            if (
-              speciesCodeOptions
-                .map((species: any) => species.commonName)
-                .indexOf(row.commonName) === -1
-            ) {
-              speciesCodeOptions.push(value);
-            }
-          }
-        }
-      }
-      speciesCodeOptions.push({
-        speciesCode: 'UNST',
-        commonName: 'Unsorted catch not sampled'
-      });
-      speciesCodeOptions.sort((a: any, b: any) => {
-        if (a.commonName > b.commonName) {
-          return 1;
-        } else if (a.commonName < b.commonName) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
     };
 
     const speciesCodeSelectOptions: any = ref([]);
@@ -2170,8 +2101,7 @@ export default createComponent({
     );
 
     onMounted(() => {
-      getValidPacfinCodes();
-      getTaxonomyAliases();
+      getSpeciesCodeOptions();
       getFisheryOptions();
       getGearTypeOptions();
       getPortDecoderPorts();
