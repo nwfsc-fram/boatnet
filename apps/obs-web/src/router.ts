@@ -47,7 +47,7 @@ import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue
 import MissedTripLog from './views/MissedTripLog.vue';
 import EmExpansions from './views/EmExpansions.vue';
 import EMApiPortal from './views/EMApiPortal.vue';
-
+import EMReview from './views/EMReview.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -180,6 +180,7 @@ const router = new Router({
         },
         { path: '/log-missing-trip', name: 'Log Missing Trip', component: LogMissingTrip },
         { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook },
+        { path: '/em-review/:id', name: 'EM Review', component: EMReview },
         {
           path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
           beforeEnter: (to, from, next) => {
