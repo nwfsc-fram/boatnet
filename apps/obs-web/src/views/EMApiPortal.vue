@@ -127,7 +127,7 @@ export default createComponent({
                     disableSubmit.value = false;
                     return;
                 }
-                const apiCatch: any = await getCatchApiCatch(parseInt(tripNum.value, 10));
+                let apiCatch: any = await getCatchApiCatch(parseInt(tripNum.value, 10));
                 const parsedCatch = JSON.parse(submissionText.value);
 
                 parsedCatch.tripNum = parseInt(tripNum.value, 10);
@@ -146,6 +146,9 @@ export default createComponent({
 
                 if (parsedCatch._id ) { delete parsedCatch._id; }
                 if (parsedCatch._rev)  {delete parsedCatch._rev; }
+                if (typeof apiCatch === 'string') {
+                    apiCatch = [];
+                }
                 const catchSources = apiCatch.map( (row: any) => row.source);
                 if (typeof apiCatch === 'string' || !catchSources.includes(parsedCatch.source)) {
                     // no existing catch found - use newApiCatch
@@ -208,36 +211,36 @@ export default createComponent({
         const reviewExample = '';
 
         watch(
-        () => submissionText.value,
-        (newVal, oldVal) => {
-            let parsedJson = '';
-            try {
-                parsedJson = JSON.parse(newVal);
-                jsonValid.value = 'Valid';
-            } catch (err) {
-                jsonValid.value = 'Invalid JSON: ' + JSON.stringify(err.message);
-            }
-        },
-        watcherOptions
+            () => submissionText.value,
+            (newVal, oldVal) => {
+                let parsedJson = '';
+                try {
+                    parsedJson = JSON.parse(newVal);
+                    jsonValid.value = 'Valid';
+                } catch (err) {
+                    jsonValid.value = 'Invalid JSON: ' + JSON.stringify(err.message);
+                }
+            },
+            watcherOptions
         );
 
         watch(
-        () => inputFile.value,
-        (newVal, oldVal) => {
-            if (inputFile.value.length > 0) {
-                const reader: any = new FileReader();
-                reader.readAsText(inputFile.value[0]);
-                reader.onload = () => {
-                    submissionText.value = reader.result;
-                };
-            }
-        },
-        watcherOptions
+            () => inputFile.value,
+            (newVal, oldVal) => {
+                if (inputFile.value.length > 0) {
+                    const reader: any = new FileReader();
+                    reader.readAsText(inputFile.value[0]);
+                    reader.onload = () => {
+                        submissionText.value = reader.result;
+                    };
+                }
+            },
+            watcherOptions
         );
 
         onMounted( () => {
-            tripNum.value = context.root.$route.params.id;
-            catchType.value = context.root.$route.params.type;
+            tripNum.value = context.root.$route.params.id ? context.root.$route.params.id : '';
+            catchType.value = context.root.$route.params.type ? context.root.$route.params.type : '';
         });
 
         return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview};
