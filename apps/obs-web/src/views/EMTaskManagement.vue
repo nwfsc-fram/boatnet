@@ -97,6 +97,8 @@ export default createComponent({
                 return 'view-image?' + 'id=' + row._id;
             } else if (action === 'e logbook') {
                 return 'e-logbook' + '/' + row.tripNum;
+            } else if (action === 'em review') {
+                return 'em-review' + '/' + row.tripNum;
             } else if (action === 'add logbook data') {
                 return 'em-api-portal' + '/' + row.tripNum + '/logbook';
             } else if (action === 'add em review') {
@@ -138,7 +140,7 @@ export default createComponent({
                     const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['image', 'e logbook', 'add logbook data', 'add em review', 'compare', 'add audit'];
+                    trip.actions = ['image', 'e logbook', 'em review', 'add logbook data', 'add em review', 'compare', 'add audit'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (tripCatch.length > 0) {
 
