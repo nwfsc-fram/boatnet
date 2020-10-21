@@ -6,29 +6,46 @@
       :resizableColumns="true"
       columnResizeMode="expand"
       sortMode="multiple"
-      data-key="_id"
+      data-key="id"
       :scrollable="true"
-      ref="dt"
+      :reorderableColumns="true"
+      ref="emReviewTable"
     >
       <template #header>
-        <span style="text-align:left; float: left">
+        <span style="text-align: left; float: left">
+          <q-input
+            v-model="tripNumVal"
+            label="Trip #"
+            @input="inputTripNum"
+            :loading="loadingState"
+          >
+            <template v-slot:prepend>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </span>
+
+        <span style="float: right; text-align: left">
           <MultiSelect
             v-model="columns"
             :options="columnOptions"
             optionLabel="header"
             placeholder="Select Columns"
-            style="width: 20em"
+            style="width: 20em; margin: 10px"
           >
             <template #value="slotProps">
               <div>Display Columns</div>
             </template>
           </MultiSelect>
+          <Button
+            icon="pi pi-external-link"
+            label="Export"
+            @click="exportCSV($event)"
+            class="p-button"
+            style="height: 35px; width: 100px; margin: 10px"
+          />
         </span>
-
-        <span style="float: right">
-            <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" class="p-button" />
-        </span>
-        <div style="clear:both;"></div>
+        <div style="clear: both"></div>
       </template>
       <Column
         v-for="col of columns"
@@ -60,11 +77,11 @@ import MultiSelect from 'primevue/multiselect';
 import { createComponent, ref, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 
-import { Notify } from 'quasar';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-//import { sourceType } from '@boatnet/bn-models';
+import { Catches } from '@boatnet/bn-models';
+import { get } from 'lodash';
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
@@ -76,256 +93,347 @@ export default createComponent({
     const columnOptions: any = ref([]);
 
     const data: any = ref([]);
-    const loading: any = ref(false);
     const filters: any = reactive({});
 
-    function exportCSV() {
-      //context.root.$refs.exportCSV;
-      console.log('export csv')
-        }
+    const emReviewTable = ref();
+    const tripNumVal: any = ref('');
+    const loadingState: any = ref(false);
 
     init();
 
     async function init() {
-      const tripNum = parseInt(context.root.$route.params.id);
-      const results = await masterDB.viewWithDocs('TripsApi', 'all_api_catch', {
-        key: tripNum,
-      });
-      const emReview = results.rows.filter((row: any) => 'thirdParty' === row.doc.source);
-      const logbookReview = results.rows.filter((row: any) => 'logbook' === row.doc.source);
-
-      console.log('em review')
-      console.log(JSON.stringify(emReview));
-
-      console.log('boththt')
-      console.log(results);
-
-      //for (let i = 0; i < emReview.hauls)
-
-      console.log(context.root.$route.params.id);
-      data.value = [
-        {
-          _id: 175771,
-          lbHaulId: 1,
-          emHaulId: 2,
-          match: '1EM: 1LB',
-          fishery: 'Bottom Trawl',
-          deliveryDate: '2019-02-04',
-        },
-        {
-          _id: 175772,
-          lbHaulId: 2,
-          emHaulId: 3,
-          match: '1EM: 1LB',
-          fishery: 'Fixed Gear',
-          deliveryDate: '2018-02-04',
-        },
-      ];
+      const tripNum = parseInt(context.root.$route.params.id, 10);
+      await populateTripInfo(tripNum);
 
       columns.value = [
         {
-          field: 'lbHaulId',
-          header: 'Lb Haul Id',
-          width: 120
-        },
-        {
-          field: 'emHaulId',
-          header: 'Em Fishing Event ID',
-          width: 200
-        },
-        {
-          field: 'match',
-          header: 'Match',
-          width: 100
-        },
-        {
-          field: 'fishery',
-          header: 'Fishery',
-          width: 100
-        },
-        {
-          field: 'fishTicketNum',
-          header: 'Fish Ticket #',
-          width: 150
-        },
-        {
-          field: 'deliveryDate',
-          header: 'Delivery Date',
-          width: 150
+          field: 'tripNum',
+          header: 'Trip #',
+          width: 120,
         },
         {
           field: 'vesselName',
           header: 'Vessel Name',
-          width: 150
-
+          width: 150,
         },
         {
-          field: 'vesselNum',
+          field: 'vesselNumber',
           header: 'Vessel #',
-          width: 120
+          width: 120,
         },
         {
-          field: 'tripRef',
-          header: 'Trip Reference',
-          width: 200
+          field: 'haulNum',
+          header: 'Haul #',
+          width: 100,
+        },
+        // catch
+        {
+          field: 'catchId',
+          header: 'Catch Id',
+          width: 120,
         },
         {
-          field: 'logbookPgNum',
-          header: 'Logbook Page #',
-          width: 170
+          field: 'disposition',
+          header: 'Disposition',
+          width: 150,
         },
         {
-          field: 'emDeptDate',
-          header: 'EM Departure Date Time',
-          width: 220
+          field: 'fate',
+          header: 'Fate',
+          width: 200,
         },
         {
-          field: 'emReturnDate',
-          header: 'EM Return Date Time',
-          width: 220
+          field: 'speciesCode',
+          header: 'Species Code',
+          width: 140,
         },
         {
-          field: 'emFishingEventNum',
-          header: 'EM Fishing Event #',
-          width: 220
+          field: 'weight',
+          header: 'Weight',
+          width: 100,
         },
         {
-          field: 'emFishingEventStart',
-          header: 'EM FishingEvent Start',
-          width: 220
+          field: 'length',
+          header: 'Length',
+          width: 100,
         },
         {
-          field: 'emFishingEventEnd',
-          header: 'EM Fishing Event End',
-          width: 220
+          field: 'fisherySector',
+          header: 'Fishery',
+          width: 100,
         },
         {
-          field: 'emFishingEventStartLat',
-          header: 'EM Fishing Event Start Latitude',
-          width: 220
+          field: 'year',
+          header: 'Year',
+          width: 80,
         },
         {
-          field: 'emFishingEventStartLong',
-          header: 'EM Fishing Event Start Longitude',
-          width: 220
+          field: 'permitNumber',
+          header: 'Permit #',
+          width: 120,
         },
         {
-          field: 'emFishingEventEndLat',
-          header: 'EM Fishing Event End Latitude',
-          width: 220
+          field: 'isEFPTrip',
+          header: 'EFP Trip',
+          width: 110,
         },
         {
-          field: 'emFishingEventEndLong',
-          header: 'EM Fishing Event End Longitude',
-          width: 220
+          field: 'isObserved',
+          header: 'Observed',
+          width: 120,
         },
         {
-          field: 'emPotCount',
-          header: 'EM Pot Count',
-          width: 140
+          field: 'crewSize',
+          header: 'Crew Size',
+          width: 120,
         },
         {
-          field: 'lbDeptDateTime',
-          header: 'LB Departure Date Time',
-          width: 150
+          field: 'departureDateTime',
+          header: 'Departure Date Time',
+          width: 220,
         },
         {
-          field: 'lbReturnDateTime',
-          header: 'LB Return Date Time',
-          width: 150
+          field: 'departureState',
+          header: 'Departure State',
+          width: 220,
         },
         {
-          field: 'lbHaulNum',
-          header: 'LB Haul Num',
-          width: 100
+          field: 'departurePortCode',
+          header: 'Departure Port Code',
+          width: 220,
         },
         {
-          field: 'lbHaulStartDateTime',
-          header: 'Lb Haul Start Date Time',
-          width: 220
+          field: 'returnDateTime',
+          header: 'Return Date Time',
+          width: 220,
         },
         {
-          field: 'lbHaulStartLat',
-          header: 'Lb Haul Start Latitude',
-          width: 220
+          field: 'returnState',
+          header: 'Return State',
+          width: 220,
         },
         {
-          field: 'lbHaulStartLong',
-          header: 'Lb Haul Start Longitude',
-          width: 220
+          field: 'returnPortCode',
+          header: 'Return Port Code',
+          width: 220,
+        },
+        // buyers?
+        // fish tickets
+        {
+          field: 'skipperName',
+          header: 'Skipper Name',
+          width: 220,
         },
         {
-          field: 'lbHaulEndLat',
-          header: 'Lb Haul End Latitude',
-          width: 220
+          field: 'comment',
+          header: 'Comment',
+          width: 220,
         },
         {
-          field: 'lbHaulEndLong',
-          header: 'Lb Haul End Longitude',
-          width: 220
+          field: 'resubmission',
+          header: 'Resubmission',
+          width: 150,
         },
         {
-          field: 'lbHaulStartDepth',
-          header: 'Lb Haul Start Depth',
-          width: 120
+          field: 'provider',
+          header: 'Provider',
+          width: 120,
         },
         {
-          field: 'lbHaulEndDepth',
-          header: 'Lb Haul End Depth',
-          width: 120
+          field: 'reviewerName',
+          header: 'Reviewer Name',
+          width: 170,
         },
         {
-          field: 'lbHaulAvgDepth',
-          header: 'Lb Haul Avg Depth',
-          width: 120
+          field: 'totalReviewTime',
+          header: 'Total Review Time',
+          width: 200,
+        },
+        // haul
+        {
+          field: 'deliveryDate',
+          header: 'Delivery Date',
+          width: 150,
         },
         {
-          field: 'lbPotCount',
-          header: 'Lb Pot Count',
-          width: 100
+          field: 'gearTypeCode',
+          header: 'Gear Type Code',
+          width: 170,
         },
         {
-          field: 'netType',
-          header: 'Net Type',
-          width: 120
+          field: 'startDateTime',
+          header: 'Start Date Time',
+          width: 170,
         },
         {
-          field: 'obsSpeciesCode',
-          header: 'Observer Species Code',
-          width: 150
+          field: 'startDepth',
+          header: 'Start Depth',
+          width: 150,
         },
         {
-          field: 'commonName',
-          header: 'Common Name',
-          width: 100
+          field: 'startLatitude',
+          header: 'Start Long',
+          width: 150,
         },
         {
-          field: 'emDiscardWeight',
-          header: 'EM Discard Weight',
-          width: 150
+          field: 'startLongitude',
+          header: 'Start Lat',
+          width: 150,
         },
         {
-          field: 'lbDiscardWeight',
-          header: 'Lb Discard Weight',
-          width: 150
+          field: 'endDateTime',
+          header: 'End Date Time',
+          width: 150,
         },
         {
-          field: 'lbRetainedWeight',
-          header: 'Lb Retained Weight',
-          width: 150
-        }
-
+          field: 'endDepth',
+          header: 'End Depth',
+          width: 150,
+        },
+        {
+          field: 'endLatitude',
+          header: 'End Lat',
+          width: 150,
+        },
+        {
+          field: 'endLongitude',
+          header: 'End Long',
+          width: 150,
+        },
+        {
+          field: 'codendCapacity',
+          header: 'Codend Capacity',
+          width: 170,
+        },
+        {
+          field: 'isCodendLost',
+          header: 'Codend Lost',
+          width: 150,
+        },
+        {
+          field: 'haulComments',
+          header: 'Haul Comments',
+          width: 170,
+        },
+        {
+          field: 'targetStrategy',
+          header: 'Target Strategy',
+          width: 170,
+        },
+        {
+          field: 'systemPerformance',
+          header: 'System Perf',
+          width: 150,
+        },
+        {
+          field: 'catchHandlingPerformance',
+          header: 'Catch Handling Perf',
+          width: 200,
+        },
       ];
       columnOptions.value = [...columns.value];
+    }
+
+    async function populateTripInfo(tripNum: number) {
+      data.value = [];
+      const options = { key: tripNum };
+      const results = await masterDB.viewWithDocs(
+        'TripsApi',
+        'all_api_catch',
+        options
+      );
+
+      const emDoc: any = results.rows.filter(
+        (row: any) => 'thirdParty' === row.doc.source
+      );
+      const emReview: Catches = emDoc[0] ? emDoc[0].doc : {};
+
+      const hauls = get(emReview, 'hauls', []);
+      for (let i = 0; i < hauls.length; i++) {
+        const catches = get(emReview, 'hauls[' + i + '].catch', []);
+        for (let j = 0; j < catches.length; j++) {
+          const id =
+            emReview.tripNum +
+            emReview.hauls[i].haulNum +
+            emReview.hauls[i].catch[j].catchId;
+          data.value.push({
+            id,
+            tripNum: emReview.tripNum,
+            fisherySector: emReview.fisherySector,
+            year: emReview.year,
+            vesselName: emReview.vesselName,
+            vesselNumber: emReview.vesselNumber,
+            permitNumber: emReview.permitNumber,
+            isEFPTrip: emReview.isEFPTrip,
+            isObserved: emReview.isObserved,
+            crewSize: emReview.crewSize,
+            departureDateTime: emReview.departureDateTime,
+            departureState: emReview.departureState,
+            departurePortCode: emReview.departurePortCode,
+            returnDateTime: emReview.returnDateTime,
+            returnPortState: emReview.returnPortState,
+            returnPortCode: emReview.returnPortCode,
+            skipperName: emReview.skipperName,
+            // fishTickets
+            // buyer
+
+            // haul attributes
+            comment: emReview.comment,
+            haulNum: emReview.hauls[i].haulNum,
+            deliveryDate: emReview.hauls[i].delieryDate,
+            gearTypeCode: emReview.hauls[i].gearTypeCode,
+            gearPerSet: emReview.hauls[i].gearPerSet,
+            gearLost: emReview.hauls[i].gearLost,
+            startDateTime: emReview.hauls[i].startDateTime,
+            startDepth: emReview.hauls[i].startDepth,
+            startLatitude: emReview.hauls[i].startLatitude,
+            startLongitude: emReview.hauls[i].startLongitude,
+            endDateTime: emReview.hauls[i].endDateTime,
+            endDepth: emReview.hauls[i].endDepth,
+            endLatitude: emReview.hauls[i].endLatitude,
+            endLongitude: emReview.hauls[i].endLongitude,
+            codendCapacity: emReview.hauls[i].codendCapacity,
+            isCodendLost: emReview.hauls[i].isCodendLost,
+            haulComments: emReview.hauls[i].comments,
+            targetStrategy: emReview.hauls[i].targetStrategy,
+            systemPerformance: emReview.hauls[i].systemPerformance,
+            catchHandlingPerformance:
+              emReview.hauls[i].catchHandlingPerformance,
+
+            // catch attributes
+            catchId: emReview.hauls[i].catch[j].catchId,
+            disposition: emReview.hauls[i].catch[j].disposition,
+            fate: emReview.hauls[i].catch[j].fate,
+            speciesCode: emReview.hauls[i].catch[j].speciesCode,
+            weight: emReview.hauls[i].catch[j].weight,
+            length: emReview.hauls[i].catch[j] ? emReview.hauls[i].catch[j].length : 0,
+          });
+        }
+      }
+    }
+
+    async function inputTripNum() {
+      loadingState.value = true;
+      await populateTripInfo(parseInt(tripNumVal.value, 10));
+      loadingState.value = false;
+    }
+
+    function exportCSV() {
+      if (emReviewTable && emReviewTable.value) {
+        emReviewTable.value.exportCSV();
+      }
     }
 
     return {
       columns,
       columnOptions,
       filters,
-      loading,
       data,
-      exportCSV
+      exportCSV,
+      emReviewTable,
+      tripNumVal,
+      loadingState,
+      inputTripNum,
     };
   },
 });
