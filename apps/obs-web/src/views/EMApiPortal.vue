@@ -10,7 +10,7 @@
                 label="Trip Number (6 digits)"
                 title="6 digit trip number"
                 class="portal-element"
-                :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'weight must be a number']"
+                :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'tripNum must be a number']"
             ></q-input>
             <q-select
                 v-model="catchType"

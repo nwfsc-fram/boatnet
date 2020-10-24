@@ -25,6 +25,7 @@
                 <q-td key="vesselId" :props="props" >{{ getVesselId(props.row) }}</q-td>
                 <q-td key="returnDate" :props="props" >{{ getAttribute(props.row.returnDate, 'date') }}</q-td>
                 <q-td key="stage" :props="props" >{{ getAttribute(props.row.stage) }}</q-td>
+                <q-td key="errors" :props="props" >{{ getAttribute(props.row.errors) }}</q-td>
                 <q-td key="status" :props="props" >{{ getAttribute(props.row.status) }}</q-td>
                 <q-td key="statusDate" :props="props" >{{ getAttribute(props.row.statusDate, 'date') }}</q-td>
                 <!-- <q-td key="actions" :props="cellProperties" :props="props">{{ getAttribute(props.row.actions, 'link') }}
@@ -32,7 +33,7 @@
                 </q-td> -->
                 <q-td key="actions" :props="props">
                     <span v-for="action of props.row.actions" :key="props.row.actions.indexOf(action)">
-                        <q-btn color="primary" size="sm" flat :to="getActionUrl(action, props.row)" >{{ action }} </q-btn>
+                        <q-btn color="primary" size="sm" flat @click="navigateTo(action, props.row)"  >{{ action }} </q-btn>
                     </span>
                 </q-td>
             </q-tr>
@@ -69,6 +70,7 @@ export default createComponent({
             {name: 'vesselId', label: 'Vessel Id', field: 'vesselId', required: false, align: 'left', sortable: true},
             {name: 'returnDate', label: 'End Date', field: 'returnDate', required: false, align: 'left', sortable: true},
             {name: 'stage', label: 'Stage', field: 'stage', required: false, align: 'left', sortable: true},
+            {name: 'errors', label: 'Errors', field: 'errors', required: false, align: 'left', sortable: true},
             {name: 'status', label: 'Status', field: 'status', required: false, align: 'left', sortable: true},
             {name: 'statusDate', label: 'Status Date', field: 'statusDate', required: false, align: 'left', sortable: true},
             {name: 'actions', label: 'Actions', field: 'actions', required: false, align: 'left', sortable: true},
@@ -90,23 +92,32 @@ export default createComponent({
             }
         };
 
-        const getActionUrl = (action: any, row: any) => {
-            if (action === 'compare') {
-                return 'em-data-compare?' + 'tripnum=' + row.tripNum;
-            } else if (action === 'image') {
-                return 'view-image?' + 'id=' + row._id;
-            } else if (action === 'e logbook') {
-                return 'e-logbook' + '/' + row.tripNum;
-            } else if (action === 'em review') {
-                return 'em-review' + '/' + row.tripNum;
-            } else if (action === 'add logbook data') {
-                return 'em-api-portal' + '/' + row.tripNum + '/logbook';
-            } else if (action === 'add em review') {
-                return 'em-api-portal' + '/' + row.tripNum + '/em review';
-            } else if (action === 'add audit') {
-                return 'em-api-portal' + '/' + row.tripNum + '/audit';
+        const router = context.root.$router;
+        const navigateTo = (action: any, row: any) => {
+            switch (action) {
+                case 'compare':
+                    router.push({path: '/em-data-compare?tripnum=' + row.tripNum});
+                    break;
+                case 'image':
+                    router.push({path: '/view-image?id=' + row._id});
+                    break;
+                case 'e logbook':
+                    router.push({path: '/e-logbook/' + row.tripNum});
+                    break;
+                case 'em review':
+                    router.push({path: '/em-review/' + row.tripNum});
+                    break;
+                case '+ lb data':
+                    router.push({path: '/em-api-portal/' + row.tripNum + '/logbook'});
+                    break;
+                case '+ em review':
+                    router.push({path: '/em-api-portal/' + row.tripNum + '/em review'});
+                    break;
+                case '+ audit':
+                    router.push({path: '/em-api-portal/' + row.tripNum + '/audit'});
+                    break;
             }
-        };
+        }
 
         const transferring: any = ref(false);
         const getTripsWithCaptures = async () => {
@@ -140,7 +151,7 @@ export default createComponent({
                     const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['image', 'e logbook', 'em review', 'add logbook data', 'add em review', 'compare', 'add audit'];
+                    trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ audit'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (tripCatch.length > 0) {
 
@@ -185,7 +196,7 @@ export default createComponent({
         });
 
         return {
-            activeTasks, columns, selected, pagination, getVesselId, getAttribute, getActionUrl, transferring
+            activeTasks, columns, selected, pagination, getVesselId, getAttribute, transferring, navigateTo
         };
 
     }

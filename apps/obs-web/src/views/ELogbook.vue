@@ -1008,7 +1008,11 @@
                     label="Weight"
                     title="Estimated weight in lbs"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'weight must be a number']"
-                  ></q-input>
+                  >
+                  <template v-slot:hint v-if="proAndPriSpecies.includes(tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode) && !tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].weight">
+                    Species is priority/protected - enter a weight.
+                  </template>
+                  </q-input>
                   <q-input
                     class="logbook-element"
                     v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCount"
@@ -1018,7 +1022,11 @@
                     label="Count"
                     title="Number of fish for a species (Yellow Eye RF, PHLB, Species of concern...Salmon, Green Sturgeon, Eulachon). Not required for all species"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'count must be a number']"
-                  ></q-input>
+                  >
+                  <template v-slot:hint v-if="proAndPriSpecies.includes(tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode) && !tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCount">
+                    Species is priority/protected - enter a count.
+                  </template>
+                  </q-input>
                   <q-select
                     class="logbook-element"
                     v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].calcWeightType"
@@ -1038,6 +1046,8 @@
                     label="Length"
                     title="Length (in cm) of individual fish (Pacific Halibut)"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'length must be a number']"
+                    :disabled="disableLength"
+                    :hint="disableLength ? 'Cannot enter Length if Count is greater than 1' : ''"
                   ></q-input>
                   <q-input
                     class="logbook-element"
@@ -1534,6 +1544,26 @@ export default createComponent({
           }
         }
     );
+
+    const proAndPriSpecies: any = [];
+    const getProAndPriSpecies = async () => {
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: false
+      }
+      const speciesCodes = await masterDb.view(
+        'obs_web',
+        'em-priority-protected-pacfin-codes',
+        queryOptions
+      )
+
+      for (const species of speciesCodes.rows) {
+        proAndPriSpecies.push(species.key);
+      }
+      console.log(proAndPriSpecies)
+    }
+
 
     const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
@@ -2100,12 +2130,28 @@ export default createComponent({
       watcherOptions
     );
 
+    const disableLength = ref(false);
+    watch(
+      () => tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].speciesCount,
+      (newVal, oldval) => {
+        if (newVal > 1) {
+          disableLength.value = true;
+          tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].length = undefined;
+          delete tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].length;
+        } else {
+          disableLength.value = false;
+        }
+      },
+      watcherOptions
+    )
+
     onMounted(() => {
       getSpeciesCodeOptions();
       getFisheryOptions();
       getGearTypeOptions();
       getPortDecoderPorts();
       getSkipperOptions();
+      getProAndPriSpecies();
       if (context.root.$route.params.id === 'new') {
         const dummyTrip: any = {
           tripNum: '00000',
@@ -2184,7 +2230,9 @@ export default createComponent({
       haulEndDateTime,
       fishTicketDates,
       addFishTicket,
-      getGearTypeDescription
+      getGearTypeDescription,
+      proAndPriSpecies,
+      disableLength
     };
   }
 });
@@ -2244,6 +2292,13 @@ export default createComponent({
 }
 .q-field--with-bottom {
     padding-bottom: 5px !important;
+}
+
+* >>> .q-field__bottom {
+  color: red;
+  font-weight: bolder;
+  position: relative;
+  top: -20px
 }
 
 * >>> .p-inputtext {
