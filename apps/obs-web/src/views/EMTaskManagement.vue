@@ -92,22 +92,6 @@ export default createComponent({
             }
         };
 
-        // const getActionUrl = (action: any, row: any) => {
-        //     if (action === 'compare') {
-        //         return 'em-data-compare?' + 'tripnum=' + row.tripNum;
-        //     } else if (action === 'image') {
-        //         return 'view-image?' + 'id=' + row._id;
-        //     } else if (action === 'e logbook') {
-        //         return 'e-logbook' + '/' + row.tripNum;
-        //     } else if (action === '+ lb data') {
-        //         return 'em-api-portal' + '/' + row.tripNum + '/logbook';
-        //     } else if (action === '+ em review') {
-        //         return 'em-api-portal' + '/' + row.tripNum + '/em review';
-        //     } else if (action === '+ audit') {
-        //         return 'em-api-portal' + '/' + row.tripNum + '/audit';
-        //     }
-        // };
-
         const router = context.root.$router;
         const navigateTo = (action: any, row: any) => {
             switch (action) {

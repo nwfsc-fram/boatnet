@@ -10,6 +10,10 @@
     </p>
     <br />
 
+    <div>
+      <q-btn @click="dbTest"> DB Test </q-btn>
+    </div>
+
     <div class="centered-page-item">
       <q-select
         v-if="isAuthorized(['enforcement'])"
@@ -364,6 +368,36 @@ export default class Declarations extends Vue {
 
       this.authorizedVessels.push(vesselQuery.rows[0].doc);
     }
+  }
+
+  // Right now this function is to test where this call will come from
+  private async dbTest() {
+    //
+    // const dbConfig = {
+    //   vms: {
+    //     user          : 'squishy',
+    //     password      : 'squids',
+    //     connectString : '//fake.site.noaa.gov:1555/not:REAL/SCHEMA'
+    //   }
+    // };
+
+    // let readConnection: any;
+
+    // try {
+    //   readConnection = await OracleDB.getConnection(dbConfig.vms);
+    //   const result = await readConnection.execute(
+    //     'SELECT * FROM fake_table'
+    //   );
+
+    // } catch (err) {
+    //     console.error(err);
+    // } finally {
+    //   try {
+    //     await readConnection.close();
+    //   } catch (err) {
+    //       console.error(err);
+    //   }
+    // }
   }
 
   private async getOleVessel() {

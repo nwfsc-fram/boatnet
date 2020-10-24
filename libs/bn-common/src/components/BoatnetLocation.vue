@@ -119,7 +119,7 @@ export default createComponent({
       if (latitude && latitude.replace(/[^0-9]/g, '').length === 6 &&
           longitude && longitude.replace(/[^0-9]/g, '').length === 7) {
             const position = new Coordinates(latitude + ', ' + longitude);
-            return [position.latitude, -position.longitude];
+            return [position.getLatitude(), -position.getLongitude()];
       } else {
         return [];
       }
