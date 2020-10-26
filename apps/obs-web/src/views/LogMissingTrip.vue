@@ -412,7 +412,7 @@ export default class LogBookCapture extends Vue {
         await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
         this.trip.activeTrip!.tripNum = this.tripsApiNum;
 
-        this.trip.activeTrip!.changeLog.unshift(
+        this.trip.activeTrip!.changeLog!.unshift(
             {
                 updatedBy: authService.getCurrentUser()!.username,
                 updateDate: moment().format('MM/DD/YYYY HH:mm A'),

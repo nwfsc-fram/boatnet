@@ -179,8 +179,16 @@ const router = new Router({
           }
         },
         { path: '/log-missing-trip', name: 'Log Missing Trip', component: LogMissingTrip },
-        { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook },
-        { path: '/em-review/:id', name: 'EM Review', component: EMReview },
+        { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook,
+        beforeEnter: (to, from, next) => {
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        { path: '/em-review/:id', name: 'EM Review', component: EMReview,
+        beforeEnter: (to, from, next) => {
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
         {
           path: '/em-efp-management', name: 'EM EFP Management', component: EMEFPManagement,
           beforeEnter: (to, from, next) => {

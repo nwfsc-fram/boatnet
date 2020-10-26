@@ -1263,7 +1263,7 @@ private async getMinDate() {
                       data: result.split(',')[1]
                   }
               };
-        this.trip.activeTrip!.changeLog.unshift(
+        this.trip.activeTrip!.changeLog!.unshift(
           {
             updatedBy: authService.getCurrentUser()!.username,
             updateDate: moment().format(),

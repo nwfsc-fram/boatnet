@@ -1551,19 +1551,17 @@ export default createComponent({
       const queryOptions = {
         reduce: false,
         include_docs: false
-      }
+      };
       const speciesCodes = await masterDb.view(
         'obs_web',
         'em-priority-protected-pacfin-codes',
         queryOptions
-      )
+      );
 
       for (const species of speciesCodes.rows) {
         proAndPriSpecies.push(species.key);
       }
-      console.log(proAndPriSpecies)
-    }
-
+    };
 
     const speciesCodeOptions: any = [];
     const getSpeciesCodeOptions = async () => {
@@ -2143,7 +2141,7 @@ export default createComponent({
         }
       },
       watcherOptions
-    )
+    );
 
     onMounted(() => {
       getSpeciesCodeOptions();
