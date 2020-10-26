@@ -351,14 +351,14 @@ export default createComponent({
       const emDoc: any = results.rows.filter(
         (row: any) => 'thirdParty' === row.doc.source
       );
-      const emReview: Catches = get(emDoc, '.rows[0].doc', {});
+      const emReview: Catches = get(emDoc, '[0].doc', {});
 
       const hauls = get(emReview, 'hauls', []);
       for (let i = 0; i < hauls.length; i++) {
         const catches = get(emReview, 'hauls[' + i + '].catch', []);
         for (let j = 0; j < catches.length; j++) {
           const tripId = get(emReview, 'tripNum');
-          const haulId = get(emReview, 'hauls[i].haulNum');
+          const haulId = get(emReview, 'hauls[' + i + '].haulNum');
           const catchId = get(emReview, 'hauls[' + i + '].catch[' + j + '].catchId');
           const id = tripId + haulId + catchId;
 
