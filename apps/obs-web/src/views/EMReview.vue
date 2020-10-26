@@ -95,7 +95,7 @@ export default createComponent({
     const data: any = ref([]);
     const filters: any = reactive({});
 
-    const emReviewTable = ref();
+    const emReviewTable: any = ref();
     const tripNumVal: any = ref('');
     const loadingState: any = ref(false);
 
@@ -141,6 +141,11 @@ export default createComponent({
           field: 'fate',
           header: 'Fate',
           width: 200,
+        },
+        {
+          field: 'speciesName',
+          header: 'Species Name',
+          width: 140,
         },
         {
           field: 'speciesCode',
@@ -346,19 +351,34 @@ export default createComponent({
       const emDoc: any = results.rows.filter(
         (row: any) => 'thirdParty' === row.doc.source
       );
-      const emReview: Catches = emDoc[0] ? emDoc[0].doc : {};
+      const emReview: Catches = get(emDoc, '.rows[0].doc', {});
 
       const hauls = get(emReview, 'hauls', []);
       for (let i = 0; i < hauls.length; i++) {
         const catches = get(emReview, 'hauls[' + i + '].catch', []);
         for (let j = 0; j < catches.length; j++) {
-          const id =
-            emReview.tripNum +
-            emReview.hauls[i].haulNum +
-            emReview.hauls[i].catch[j].catchId;
+          const tripId = get(emReview, 'tripNum');
+          const haulId = get(emReview, 'hauls[i].haulNum');
+          const catchId = get(emReview, 'hauls[' + i + '].catch[' + j + '].catchId');
+          const id = tripId + haulId + catchId;
+
+          const currHaul = get(emReview, 'hauls[' + i + ']', {});
+          const currCatch = get(emReview, 'hauls[' + i + '].catch[' + j + ']', {});
+
+          // given species code query view to get species name
+          const lookupOptions = { key: currCatch.speciesCode, include_docs: true };
+          let lookupInfo: any = await masterDB.view('em-views', 'wcgopCode-to-pacfinCode-map', lookupOptions);
+          lookupInfo = get(lookupInfo, 'rows[0].doc', {});
+          let speciesName = '';
+          if (lookupInfo.type === 'catch-grouping') {
+            speciesName = lookupInfo.name;
+          } else {
+            speciesName = get(lookupInfo, 'commonNames[0]', '');
+          }
+
           data.value.push({
             id,
-            tripNum: emReview.tripNum,
+            tripNum: tripId,
             fisherySector: emReview.fisherySector,
             year: emReview.year,
             vesselName: emReview.vesselName,
@@ -374,39 +394,39 @@ export default createComponent({
             returnPortState: emReview.returnPortState,
             returnPortCode: emReview.returnPortCode,
             skipperName: emReview.skipperName,
+            comment: emReview.comment,
             // fishTickets
             // buyer
 
             // haul attributes
-            comment: emReview.comment,
-            haulNum: emReview.hauls[i].haulNum,
-            deliveryDate: emReview.hauls[i].delieryDate,
-            gearTypeCode: emReview.hauls[i].gearTypeCode,
-            gearPerSet: emReview.hauls[i].gearPerSet,
-            gearLost: emReview.hauls[i].gearLost,
-            startDateTime: emReview.hauls[i].startDateTime,
-            startDepth: emReview.hauls[i].startDepth,
-            startLatitude: emReview.hauls[i].startLatitude,
-            startLongitude: emReview.hauls[i].startLongitude,
-            endDateTime: emReview.hauls[i].endDateTime,
-            endDepth: emReview.hauls[i].endDepth,
-            endLatitude: emReview.hauls[i].endLatitude,
-            endLongitude: emReview.hauls[i].endLongitude,
-            codendCapacity: emReview.hauls[i].codendCapacity,
-            isCodendLost: emReview.hauls[i].isCodendLost,
-            haulComments: emReview.hauls[i].comments,
-            targetStrategy: emReview.hauls[i].targetStrategy,
-            systemPerformance: emReview.hauls[i].systemPerformance,
-            catchHandlingPerformance:
-              emReview.hauls[i].catchHandlingPerformance,
+            haulNum: haulId,
+            deliveryDate: currHaul.deliveryDate,
+            gearTypeCode: currHaul.gearTypeCode,
+            gearPerSet: currHaul.gearPerSet,
+            gearLost: currHaul.gearLost,
+            startDateTime: currHaul.startDateTime,
+            startDepth: currHaul.startDepth,
+            startLatitude: currHaul.startLatitude,
+            startLongitude: currHaul.startLongitude,
+            endDateTime: currHaul.endDateTime,
+            endDepth: currHaul.endDepth,
+            endLatitude: currHaul.endLatitude,
+            endLongitude: currHaul.endLongitude,
+            codendCapacity: currHaul.codendCapacity,
+            isCodendLost: currHaul.isCodendLost,
+            haulComments: currHaul.comments,
+            targetStrategy: currHaul.targetStrategy,
+            systemPerformance: currHaul.systemPerformance,
+            catchHandlingPerformance: currHaul.catchHandlingPerformance,
 
             // catch attributes
-            catchId: emReview.hauls[i].catch[j].catchId,
-            disposition: emReview.hauls[i].catch[j].disposition,
-            fate: emReview.hauls[i].catch[j].fate,
-            speciesCode: emReview.hauls[i].catch[j].speciesCode,
-            weight: emReview.hauls[i].catch[j].weight,
-            length: emReview.hauls[i].catch[j] ? emReview.hauls[i].catch[j].length : 0,
+            catchId: currCatch.catchId,
+            disposition: currCatch.disposition,
+            fate: currCatch.fate,
+            speciesCode: currCatch.speciesCode,
+            speciesName,
+            weight: currCatch.weight,
+            length: get(currCatch, 'lenght', 0),
           });
         }
       }
@@ -419,9 +439,8 @@ export default createComponent({
     }
 
     function exportCSV() {
-      if (emReviewTable && emReviewTable.value) {
-        emReviewTable.value.exportCSV();
-      }
+      const tableValue = get(emReviewTable, 'value', {});
+      tableValue.exportCSV();
     }
 
     return {
