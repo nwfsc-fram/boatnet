@@ -159,7 +159,7 @@ export default createComponent({
                     if (tripCatch.length > 0) {
 
                         for (const dataSource of tripCatch) {
-                            if (dataSource.value[2]) {trip.errors[dataSource.value[0]] = dataSource.value[2]};
+                            if (dataSource.value[2]) { trip.errors[dataSource.value[0]] = dataSource.value[2]; }
                             if (stagePriority.indexOf(dataSource.value[0]) > stagePriority.indexOf(trip.stage)) {
                                 trip.stage = dataSource.value[0];
                                 trip.statusDate = dataSource.value[1];
