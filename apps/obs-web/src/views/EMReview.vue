@@ -1,70 +1,106 @@
 <template>
   <div>
-    <DataTable
-      :value="data"
-      :filters="filters"
-      :resizableColumns="true"
-      columnResizeMode="expand"
-      sortMode="multiple"
-      data-key="id"
-      :scrollable="true"
-      :reorderableColumns="true"
-      ref="emReviewTable"
-    >
-      <template #header>
-        <span style="text-align: left; float: left">
-          <q-input
-            v-model="tripNumVal"
-            label="Trip #"
-            @input="inputTripNum"
-            :loading="loadingState"
-          >
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </span>
+    <TabView class="q-ma-md">
+      <TabPanel header="Data" :active="true">
+        <DataTable
+          :value="data"
+          :filters="filters"
+          :resizableColumns="true"
+          columnResizeMode="expand"
+          sortMode="multiple"
+          data-key="id"
+          :scrollable="true"
+          :reorderableColumns="true"
+          ref="emReviewTable"
+        >
+          <template #header>
+            <span style="text-align: left; float: left">
+              <q-input
+                v-model="tripNumVal"
+                label="Trip #"
+                @input="inputTripNum"
+                :loading="loadingState"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="search" />
+                </template>
+              </q-input>
+            </span>
 
-        <span style="float: right; text-align: left">
-          <MultiSelect
-            v-model="columns"
-            :options="columnOptions"
-            optionLabel="header"
-            placeholder="Select Columns"
-            style="width: 20em; margin: 10px"
+            <span style="float: right; text-align: left">
+              <MultiSelect
+                v-model="columns"
+                :options="columnOptions"
+                optionLabel="header"
+                placeholder="Select Columns"
+                style="width: 20em; margin: 10px"
+              >
+                <template #value="slotProps">
+                  <div>Display Columns</div>
+                </template>
+              </MultiSelect>
+              <Button
+                icon="pi pi-external-link"
+                label="Export"
+                @click="exportCSV($event)"
+                class="p-button"
+                style="height: 35px; width: 100px; margin: 10px"
+              />
+            </span>
+            <div style="clear: both"></div>
+          </template>
+          <Column
+            v-for="col of columns"
+            :field="col.field"
+            :header="col.header"
+            :key="col.field"
+            :sortable="true"
+            :headerStyle="'width: ' + col.width + 'px'"
+            filterMatchMode="contains"
           >
-            <template #value="slotProps">
-              <div>Display Columns</div>
+            <template #filter>
+              <InputText
+                type="text"
+                v-model="filters[col.field]"
+                class="p-column-filter"
+              />
             </template>
-          </MultiSelect>
-          <Button
-            icon="pi pi-external-link"
-            label="Export"
-            @click="exportCSV($event)"
-            class="p-button"
-            style="height: 35px; width: 100px; margin: 10px"
-          />
-        </span>
-        <div style="clear: both"></div>
-      </template>
-      <Column
-        v-for="col of columns"
-        :field="col.field"
-        :header="col.header"
-        :key="col.field"
-        :sortable="true"
-        :headerStyle="'width: ' + col.width + 'px'"
-        filterMatchMode="contains"
-      >
-        <template #filter>
-          <InputText
-            type="text"
-            v-model="filters[col.field]"
-            class="p-column-filter"
-          />
-        </template>
-      </Column>
-    </DataTable>
+          </Column>
+        </DataTable>
+      </TabPanel>
+      <TabPanel header="Errors">
+        <DataTable
+          :value="errorData"
+          :filters="filters"
+          :resizableColumns="true"
+          columnResizeMode="expand"
+          sortMode="multiple"
+          data-key="type"
+          :scrollable="true"
+        >
+          <Column
+            v-for="col of errorColumns"
+            :field="col.field"
+            :header="col.header"
+            :key="col.field"
+            :sortable="true"
+            :headerStyle="'width: ' + col.width + 'px'"
+            filterMatchMode="contains"
+          >
+            <template #filter>
+              <InputText
+                type="text"
+                v-model="filters[col.field]"
+                class="p-column-filter"
+              />
+            </template>
+          </Column>
+        </DataTable>
+      </TabPanel>
+      <TabPanel header="Screenshot">
+        <app-view-image :id.sync="docId"/>
+      </TabPanel>
+    </TabView>
   </div>
 </template>
 
@@ -73,6 +109,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
 
 import { createComponent, ref, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
@@ -99,11 +137,34 @@ export default createComponent({
     const tripNumVal: any = ref('');
     const loadingState: any = ref(false);
 
+    const errorColumns: any = ref([]);
+    const errorData: any = ref([]);
+
+    const docId: any = ref('');
+
     init();
 
     async function init() {
       const tripNum = parseInt(context.root.$route.params.id, 10);
       await populateTripInfo(tripNum);
+
+      errorColumns.value = [
+        {
+          field: 'type',
+          header: 'Type',
+          width: 120,
+        },
+        {
+          field: 'haulNum',
+          header: 'Haul #',
+          width: 80,
+        },
+        {
+          field: 'catchId',
+          header: 'Catch Id',
+          width: 80,
+        }
+      ];
 
       columns.value = [
         {
@@ -352,6 +413,8 @@ export default createComponent({
         (row: any) => 'thirdParty' === row.doc.source
       );
       const emReview: Catches = get(emDoc, '[0].doc', {});
+      docId.value = emReview._id;
+      errorData.value = emReview.errors;
 
       const hauls = get(emReview, 'hauls', []);
       for (let i = 0; i < hauls.length; i++) {
@@ -445,6 +508,8 @@ export default createComponent({
 
     return {
       columns,
+      errorColumns,
+      errorData,
       columnOptions,
       filters,
       data,
@@ -453,6 +518,7 @@ export default createComponent({
       tripNumVal,
       loadingState,
       inputTripNum,
+      docId
     };
   },
 });
