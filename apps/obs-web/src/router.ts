@@ -178,7 +178,11 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
-        { path: '/log-missing-trip', name: 'Log Missing Trip', component: LogMissingTrip },
+        { path: '/log-missing-trip', name: 'Log Missing Trip', component: LogMissingTrip,
+        beforeEnter: (to, from, next) => {
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
         { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook,
         beforeEnter: (to, from, next) => {
           if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
@@ -202,13 +206,13 @@ const router = new Router({
           }
         },
         {
-          path: '/em-data-compare/', name: 'EM Data Comparison', component: EMDataCompare,
+          path: '/em-data-compare', name: 'EM Data Comparison', component: EMDataCompare,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/em-task-management/', name: 'EM Task Management', component: EMTaskManagement,
+          path: '/em-task-management', name: 'EM Task Management', component: EMTaskManagement,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
@@ -220,19 +224,19 @@ const router = new Router({
           }
         },
         {
-          path: '/em-api-portal/', name: 'EM API Portal', component: EMApiPortal,
+          path: '/em-api-portal', name: 'EM API Portal', component: EMApiPortal,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/em-rate-management/', name: 'EM Rate Management', component: EMRateManagement,
+          path: '/em-rate-management', name: 'EM Rate Management', component: EMRateManagement,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/view-image/', name: 'View Image', component: ViewImage,
+          path: '/view-image/:id', name: 'View Image', component: ViewImage,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
