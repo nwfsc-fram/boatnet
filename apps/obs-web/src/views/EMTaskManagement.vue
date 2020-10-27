@@ -4,7 +4,7 @@
         <q-inner-loading :showing="transferring">
             <q-spinner-radio color="primary" size="3em"/>
         </q-inner-loading>
-    <p>LATEST</p>
+    <p>LATEST 2</p>
         <q-table
         v-if="!transferring"
         :data="activeTasks"
