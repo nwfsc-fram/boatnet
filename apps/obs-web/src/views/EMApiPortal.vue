@@ -243,7 +243,7 @@ export default createComponent({
             catchType.value = context.root.$route.params.type ? context.root.$route.params.type : '';
         });
 
-        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview };
+        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview};
 
         }
 });
