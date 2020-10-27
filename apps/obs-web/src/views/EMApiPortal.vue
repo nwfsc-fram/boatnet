@@ -20,6 +20,7 @@
                 label="submission type"
                 class="portal-element"
                 :rules="[val => val.length > 0 || 'submission type is required']"
+                @input="loadExample()"
             ></q-select>
         </div>
 
@@ -200,6 +201,14 @@ export default createComponent({
 
         };
 
+        function loadExample() {
+            if (catchType.value === 'logbook') {
+                submissionText.value = JSON.stringify(require('../assets/logbookExample.json'), null, 2);
+            } else if (catchType.value === 'em review') {
+                submissionText.value = JSON.stringify(require('../assets/reviewExample.json'), null, 2);
+            }
+        }
+
         const loadLogbook = () => {
             submissionText.value = JSON.stringify(require('../assets/logbookExample.json'), null, 2);
         };
@@ -243,7 +252,7 @@ export default createComponent({
             catchType.value = context.root.$route.params.type ? context.root.$route.params.type : '';
         });
 
-        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview};
+        return {tripNum, submissionText, catchType, jsonValid, inputFile, submitEMCatch, disableSubmit, loadLogbook, loadReview, loadExample};
 
         }
 });
