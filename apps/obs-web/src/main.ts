@@ -40,6 +40,7 @@ import DebrieferLayoutAshop from './views/DebrieferLayoutAshop.vue';
 import DebrieferWcgopSearch from './views/DebrieferWcgopSearch.vue';
 import DebrieferWcgopEvaluation from './views/DebrieferWcgopEvaluation.vue';
 import CruiseDialog from './views/CruiseDialog.vue';
+import ViewImage from './views/ViewImage.vue';
 // Vue.use(VueResource);
 
 import VueCompositionApi from '@vue/composition-api';
@@ -87,6 +88,7 @@ Vue.component('appDebrieferLayoutAshop', DebrieferLayoutAshop);
 Vue.component('appDebrieferWcgopSearch', DebrieferWcgopSearch);
 Vue.component('appDebrieferWcgopEvaluation', DebrieferWcgopEvaluation);
 Vue.component('appCruiseDialog', CruiseDialog);
+Vue.component('appViewImage', ViewImage);
 
 Vue.config.productionTip = false;
 
