@@ -549,7 +549,8 @@ export default class DefaultLayout extends Vue {
   }
 
   private navigateBack() {
-    this.$router.back();
+    // this.$router.back();
+    this.$router.go(-1);
   }
 
   private isAuthorized(authorizedRoles: string[]) {

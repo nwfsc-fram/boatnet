@@ -4,7 +4,7 @@
         <q-inner-loading :showing="transferring">
             <q-spinner-radio color="primary" size="3em"/>
         </q-inner-loading>
-
+    <p>LATEST</p>
         <q-table
         v-if="!transferring"
         :data="activeTasks"
@@ -101,7 +101,7 @@ export default createComponent({
                     router.push({path: '/em-data-compare?tripnum=' + row.tripNum});
                     break;
                 case 'image':
-                    router.push({path: '/view-image?id=' + row._id});
+                    router.push({path: '/view-image/' + row._id});
                     break;
                 case 'e logbook':
                     router.push({path: '/e-logbook/' + row.tripNum});
@@ -168,7 +168,7 @@ export default createComponent({
                                         trip.status = 'not selected for review';
                                         break;
                                     case 'thirdParty':
-                                        trip.status = 'thrid party review submitted';
+                                        trip.status = 'third party review submitted';
                                         break;
                                     case 'nwfscAudit':
                                         trip.status = 'NWFSC audit completed';

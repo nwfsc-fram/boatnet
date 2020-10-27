@@ -25,7 +25,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 export default createComponent({
     setup(props, context) {
 
-        const id: any = ref(context.root.$route.query.id ? context.root.$route.query.id : 0);
+        const id: any = ref(context.root.$route.params.id ? context.root.$route.params.id : 0);
         const transferring: any = ref(false);
         onMounted( async () => {
             if (id.value) {
