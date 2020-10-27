@@ -294,9 +294,11 @@ router.beforeEach((to, from, next) => {
     return next('/login');
   }
 
-  // window.onpopstate = (event: any) => {
-  //   return next(router.currentRoute.path.replace(router.currentRoute.params.id, ''));
-  // };
+  if (router.currentRoute.name === 'Trip Detail') {
+    window.onpopstate = (event: any) => {
+      return next(router.currentRoute.path.replace(router.currentRoute.params.id, ''));
+    }
+  };
 
   next();
 });
