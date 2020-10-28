@@ -585,7 +585,7 @@
                 class="logbook-element"
               ></q-select>
               <q-input
-                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearPerSet"
                 dense
                 autogrow
@@ -596,7 +596,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearLost"
                 dense
                 autogrow
@@ -607,7 +607,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['19', '10'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg"
                 dense
                 autogrow
@@ -618,7 +618,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['1', '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].netType"
                 dense
                 autogrow
@@ -628,7 +628,7 @@
                 class="logbook-element"
               ></q-input>
               <q-input
-                v-if="['1' , '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="['1' , '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
                 v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity"
                 dense
                 autogrow
@@ -638,7 +638,7 @@
                 mask="#####"
                 class="logbook-element"
               ></q-input>
-              <div class="logbook-element" v-if="['1', '2'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+              <div class="logbook-element" v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
               >
                 <q-field
                   v-model="tripCatch.hauls[selectedHaul - 1].isCodendLost"
@@ -686,7 +686,7 @@
                     v-if="tripCatch.hauls[selectedHaul - 1].targetStrategy"
                     round
                     size="xs"
-                    color="secondary"
+                    color="primary"
                     icon="clear"
                     @click="tripCatch.hauls[selectedHaul - 1].targetStrategy = null"
                   ></q-btn>
@@ -993,7 +993,7 @@
                         v-if="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode"
                         round
                         size="xs"
-                        color="secondary"
+                        color="primary"
                         icon="clear"
                         @click="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode = null"
                       ></q-btn>
@@ -1148,7 +1148,7 @@ export default createComponent({
         }
       } else {
         if (!tripCatch[attribute]) {
-          return 'bg-secondary text-white';
+          return 'bg-primary text-white';
         } else {
           return 'text-primary';
         }
@@ -1164,7 +1164,7 @@ export default createComponent({
         }
       } else {
         if (!tripCatch.hauls[selectedHaul.value - 1][attribute]) {
-          return 'bg-secondary text-white';
+          return 'bg-primary text-white';
         } else {
           return 'text-primary';
         }

@@ -297,8 +297,8 @@ router.beforeEach((to, from, next) => {
   if (router.currentRoute.name === 'Trip Detail') {
     window.onpopstate = (event: any) => {
       return next(router.currentRoute.path.replace(router.currentRoute.params.id, ''));
-    }
-  };
+    };
+  }
 
   next();
 });
