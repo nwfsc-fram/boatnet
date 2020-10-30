@@ -369,10 +369,10 @@ export default createComponent({
       pacfinSpeciesCodes.sort( (a: any, b: any) => a - b);
     };
 
-    onMounted(() => {
+    onMounted( async () => {
       if (tripNum.value !== 0) {
-        getAPITripData();
-        getSpeciesCodes();
+        await getSpeciesCodes();
+        await getAPITripData();
       }
       if (!store.state.user.showLogbookRetained) {
         visibleColumns.splice(visibleColumns.indexOf('logbookRetained') , 1);
