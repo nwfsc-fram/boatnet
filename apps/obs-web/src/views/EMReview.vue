@@ -118,7 +118,7 @@ import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import { Catches } from '@boatnet/bn-models';
+// import { Catches } from '@boatnet/bn-models';
 import { get } from 'lodash';
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
@@ -412,7 +412,7 @@ export default createComponent({
       const emDoc: any = results.rows.filter(
         (row: any) => 'thirdParty' === row.doc.source
       );
-      const emReview: Catches = get(emDoc, '[0].doc', {});
+      const emReview: any = get(emDoc, '[0].doc', {});
       docId.value = emReview._id;
       errorData.value = emReview.errors;
 
