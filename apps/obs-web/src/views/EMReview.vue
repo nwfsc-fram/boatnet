@@ -214,13 +214,13 @@ export default createComponent({
           width: 140,
         },
         {
-          field: 'weight',
-          header: 'Weight',
+          field: 'speciesWeight',
+          header: 'Species Weight',
           width: 100,
         },
         {
-          field: 'length',
-          header: 'Length',
+          field: 'speciesLength',
+          header: 'Species Length',
           width: 100,
         },
         {
@@ -488,8 +488,8 @@ export default createComponent({
             fate: currCatch.fate,
             speciesCode: currCatch.speciesCode,
             speciesName,
-            weight: currCatch.weight,
-            length: get(currCatch, 'lenght', 0),
+            speciesWeight: currCatch.speciesWeight,
+            speciesLength: get(currCatch, 'speciesLength', 0),
           });
         }
       }
