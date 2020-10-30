@@ -941,10 +941,10 @@
                     </q-td>
                     <q-td key="disposition" :props="props">{{ props.row.disposition }}</q-td>
                     <q-td key="speciesCode" :props="props">{{ props.row.speciesCode }}</q-td>
-                    <q-td key="weight" :props="props">{{ props.row.weight }}</q-td>
-                    <q-td key="catchCount" :props="props">{{ props.row.catchCount }}</q-td>
+                    <q-td key="speciesWeight" :props="props">{{ props.row.speciesWeight }}</q-td>
+                    <q-td key="speciesCount" :props="props">{{ props.row.speciesCount }}</q-td>
                     <q-td key="calcWeightType" :props="props">{{ props.row.calcWeightType }}</q-td>
-                    <q-td key="length" :props="props">{{ props.row.length }}</q-td>
+                    <q-td key="speciesLength" :props="props">{{ props.row.speciesLength }}</q-td>
                     <q-td key="timeOnDeck" :props="props">{{ props.row.timeOnDeck }}</q-td>
                     <q-td key="comments" :props="props">{{ props.row.comments }}</q-td>
                   </q-tr>
@@ -1001,7 +1001,7 @@
                   </q-select>
                   <q-input
                     class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].weight"
+                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesWeight"
                     dense
                     autogrow
                     outlined
@@ -1009,7 +1009,7 @@
                     title="Estimated weight in lbs"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'weight must be a number']"
                   >
-                  <template v-slot:hint v-if="proAndPriSpecies.includes(tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode) && !tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].weight">
+                  <template v-slot:hint v-if="proAndPriSpecies.includes(tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode) && !tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesWeight">
                     Species is priority/protected - enter a weight.
                   </template>
                   </q-input>
@@ -1039,7 +1039,7 @@
                   ></q-select>
                   <q-input
                     class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].length"
+                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesLength"
                     dense
                     autogrow
                     outlined
@@ -1395,17 +1395,17 @@ export default createComponent({
         sortable: true
       },
       {
-        name: 'weight',
+        name: 'speciesWeight',
         label: 'Weight',
-        field: 'weight',
+        field: 'speciesWeight',
         required: false,
         align: 'left',
         sortable: true
       },
       {
-        name: 'catchCount',
+        name: 'speciesCount',
         label: 'Count',
-        field: 'catchCount',
+        field: 'speciesCount',
         required: false,
         align: 'left',
         sortable: true
@@ -1419,9 +1419,9 @@ export default createComponent({
         sortable: true
       },
       {
-        name: 'length',
-        label: 'Length',
-        field: 'length',
+        name: 'speciesLength',
+        label: 'length',
+        field: 'speciesLength',
         required: false,
         align: 'left',
         sortable: true

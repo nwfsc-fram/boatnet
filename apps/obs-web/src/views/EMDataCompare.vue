@@ -167,13 +167,13 @@ export default createComponent({
                 if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
                 if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
                 if (species.disposition === 'Discarded') {
-                  tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
+                  tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
                 }
                 if (species.disposition === 'D') {
-                  tripTotals[species.speciesCode][source].discard += parseFloat(species.weight);
+                  tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
                 }
                 if (source === 'logbook' && (species.disposition === 'Retained')) {
-                  tripTotals[species.speciesCode][source].retained += parseFloat(species.weight) ? parseFloat(species.weight) : 0;
+                  tripTotals[species.speciesCode][source].retained += parseFloat(species.speciesWeight) ? parseFloat(species.speciesWeight) : 0;
                 }
                 if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
                 if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
@@ -182,12 +182,12 @@ export default createComponent({
                 if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
                 }
                 if (species.disposition === 'Discarded') {
-                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
+                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
                 } else if (species.disposition === 'Retained') {
-                  haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.weight);
+                  haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.speciesWeight);
                 }
                 if (species.disposition === 'D') {
-                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.weight);
+                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
                 }
           }
           }

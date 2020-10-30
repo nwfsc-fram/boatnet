@@ -155,10 +155,11 @@ export default createComponent({
                     parsedCatch.createdBy = authService.getCurrentUser()!.username;
                     parsedCatch.createdDate = moment().format();
                     await newApiCatch(parsedCatch).then( (res) => {
+                        console.log(res);
                         Notify.create({
-                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' Data Successfully Updated</div>',
+                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' <br>' + res + '</div>',
                                 position: 'top',
-                                color: 'green',
+                                color: 'blue',
                                 timeout: 3000,
                                 icon: 'warning',
                                 html: true,
@@ -173,10 +174,11 @@ export default createComponent({
                     parsedCatch.updatedDate = moment().format();
                     parsedCatch.resubmission = true;
                     await updateApiCatch(parsedCatch).then( (res) => {
+                        console.log(res);
                         Notify.create({
-                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + ' Data Successfully Updated' + res + '</div>',
+                            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + catchType.value + '<br>' + res + '</div>',
                                 position: 'top',
-                                color: 'green',
+                                color: 'blue',
                                 timeout: 3000,
                                 icon: 'warning',
                                 html: true,
