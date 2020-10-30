@@ -18,6 +18,12 @@
         {{ tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].disposition }}
       </span>
     </div>
+
+      <div v-if="tripCatch.errors && tripCatch.errors.length > 0" style="background-color: #C62828; color: white; border-radius: 4px; padding: 10px; margin: 5px; font-size: 14px">
+        <p style="font-weight: bolder">Errors:</p>
+        <p v-for="(error, i) in tripCatch.errors" :key="i">{{ i + 1 }} - {{ error.type }} - {{ error.message }}</p>
+      </div>
+
     <q-expansion-item
       class="text-primary"
       expand-separator
