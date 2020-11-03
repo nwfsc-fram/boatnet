@@ -1809,18 +1809,18 @@ export default createComponent({
       }
     };
 
-    const validate = (tripCatch: any) => {
-      let errors = [];
+    const validate = (catchSubmission: any) => {
+      const errors = [];
       const tripRequired = ['vesselName', 'vesselNumber', 'departureDateTime', 'returnDateTime', 'departurePortCode', 'returnPortCode', 'tripNum', 'fishery', 'skipperName'];
       const haulRequired = ['gearTypeCode', 'targetStrategy', 'startDateTime', 'endDateTime', 'endLatitude', 'endLongitude', 'startLatitude', 'startLongitude'];
       const catchRequired = ['disposition', 'speciesCode'];
       for (const requirement of tripRequired) {
-        if (!tripCatch[requirement]) {
+        if (!catchSubmission[requirement]) {
           errors.push(requirement + ' is required.');
         }
       }
-      if (tripCatch.hauls) {
-        for (const haul of tripCatch.hauls) {
+      if (catchSubmission.hauls) {
+        for (const haul of catchSubmission.hauls) {
           for (const haulRequirement of haulRequired) {
             if (!haul[haulRequirement]) {
               errors.push('haul: ' + haul.haulNum + ' : ' + haulRequirement + ' is required.');
@@ -1830,7 +1830,7 @@ export default createComponent({
             for (const catchItem of haul.catch) {
               for (const catchRequirement of catchRequired) {
                 if (!catchItem[catchRequirement]) {
-                  errors.push('haul: ' + haul.haulNum + ' catch: ' + haul.catch.indexOf(catchItem) + ' : ' + catchRequirement + ' is required.')
+                  errors.push('haul: ' + haul.haulNum + ' catch: ' + haul.catch.indexOf(catchItem) + ' : ' + catchRequirement + ' is required.');
                 }
               }
             }
@@ -1838,7 +1838,7 @@ export default createComponent({
         }
       }
       return errors;
-    }
+    };
 
     const submitLogbook = () => {
 
@@ -1846,7 +1846,7 @@ export default createComponent({
       if (errors.length > 0) {
         console.log(errors);
         let formattedErrors = '';
-        errors.forEach((item) => {formattedErrors += item + '<br>'})
+        errors.forEach((item) => { formattedErrors += item + '<br>'; });
         Notify.create({
             message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
                 caption: formattedErrors,
@@ -1858,7 +1858,7 @@ export default createComponent({
                 multiLine: true,
                 actions: [{ label: 'dismiss', color: 'white' }],
                 textColor: 'white'
-        })
+        });
         return;
       }
 
@@ -1891,7 +1891,7 @@ export default createComponent({
             icon: 'warning',
             html: true,
             multiLine: true
-          })
+          });
         });
       } else {
         console.log('Submitting new API Catch record');
@@ -1919,7 +1919,7 @@ export default createComponent({
             icon: 'warning',
             html: true,
             multiLine: true
-          })
+          });
         });
       }
     };
