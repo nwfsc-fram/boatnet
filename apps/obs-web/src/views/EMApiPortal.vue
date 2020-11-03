@@ -167,7 +167,23 @@ export default createComponent({
                             });
                         disableSubmit.value = false;
                         return;
+                        }, (err) => {
+                        console.log(err);
+                        Notify.create({
+                            message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
+                                caption: err,
+                                position: 'left',
+                                color: 'grey-8',
+                                timeout: 0,
+                                icon: 'warning',
+                                html: true,
+                                multiLine: true,
+                                actions: [{ label: 'dismiss', color: 'white' }],
+                                textColor: 'white'
                         });
+                        disableSubmit.value = false;
+                        return;
+                    });
                 } else if (apiCatch.map( (row: any) => row.source).includes(parsedCatch.source)) {
                     // existing catch of catchType found - use updateApiCatch
                     parsedCatch.updatedBy = authService.getCurrentUser()!.username;
@@ -184,6 +200,22 @@ export default createComponent({
                                 html: true,
                                 multiLine: true
                             });
+                        disableSubmit.value = false;
+                        return;
+                    }, (err) => {
+                        console.log(err);
+                        Notify.create({
+                            message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
+                                caption: err,
+                                position: 'left',
+                                color: 'grey-8',
+                                timeout: 0,
+                                icon: 'warning',
+                                html: true,
+                                multiLine: true,
+                                actions: [{ label: 'dismiss', color: 'white' }],
+                                textColor: 'white'
+                        });
                         disableSubmit.value = false;
                         return;
                     });
