@@ -40,29 +40,11 @@
             autogrow
             label="Vessel Name"
             title="Name of the fishing vessel"
+            :rules="[val => !!val || 'Vessel Name is required']"
           ></q-input>
         </div>
         <div class="row items-start logbook-element no-wrap">
 
-          <!-- <q-input
-            v-model="tripCatch.departureDateTime"
-            label="Departure Date"
-            title="Date/Time the vessel departed port"
-            dense
-            autogrow
-            outlined
-            style="width: 46%; margin-right: 5px"
-
-            >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="tripCatch.departureDateTime" @input="() => $refs.qDateProxy.hide()" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input> -->
-        <!-- <span class="p-float-label"> -->
           <pCalendar
             id="departdate"
             v-model="depDateTime"
@@ -73,34 +55,11 @@
             title="Date the vessel departed port"
             :showTime="true"
             onfocus="blur()"
+            :rules="[val => !!val || 'Departure Date/Time is required']"
             >
           </pCalendar>
           <label for="departdate" class="calendar-label">Departure Date/Time</label>
 
-        <!-- </span> -->
-
-        <!-- <span class="p-float-label">
-          <pInput
-            v-model="departureTime"
-            id="departtime"
-            title="Time the vessel departed port"
-          >
-          </pInput>
-          <label for="departtime" style="color: #007EC6">Departure time</label>
-        </span>
-
-          <q-input
-            v-model="departureTime"
-            dense
-            autogrow
-            outlined
-            debounce="300"
-            label="Time"
-            title="Time the vessel departed port"
-            mask="##:##"
-            :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
-            style="padding-bottom: 0 !important"
-          ></q-input> -->
         </div>
 
         <div class="row items-start logbook-element">
@@ -130,6 +89,7 @@
             @filter="departurePortFilterFn"
             emit-value
             :display-value="tripCatch.departurePortCode"
+            :rules="[val => !!val || 'Departure Port Code is required']"
           ></q-select>
         </div>
       </div>
@@ -142,11 +102,11 @@
             autogrow
             label="Vessel Number"
             title="Vessel Coast Guard or State Reg Number"
+            :rules="[val => !!val || 'Vessel Id is required']"
           ></q-input>
         </div>
         <div class="row items-start logbook-element no-wrap">
 
-        <!-- <span class="p-float-label"> -->
           <pCalendar
             id="returndate"
             v-model="retDateTime"
@@ -157,41 +117,11 @@
             title="Date the vessel returned to port"
             :showTime="true"
             onfocus="blur()"
+            :rules="[val => !!val || 'Return Date is required']"
             >
           </pCalendar>
           <label for="returndate" class="calendar-label">Return Date/Time</label>
-        <!-- </span> -->
 
-          <!-- <q-input
-            v-model="tripCatch.returnDateTime"
-            label="Return Date"
-            title="Date the vessel returned to port for offload"
-            dense
-            autogrow
-            outlined
-            style="width: 46%; margin-right: 5px"
-
-            >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date v-model="tripCatch.returnDateTime" @input="() => $refs.qDateProxy.hide()" />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-
-          <q-input
-            v-model="returnTime"
-            dense
-            outlined
-            debounce="300"
-            label="Time"
-            title="Time the vessel returned to port"
-            mask="##:##"
-            :rules="[val => val.split(':')[0] < 24 || 'invalid hour', val => val.split(':')[1] < 60 || 'invalid minute']"
-            style="padding-bottom: 0 !important; width: 52%"
-          ></q-input> -->
         </div>
         <div class="row items-start logbook-element">
           <q-select
@@ -220,6 +150,7 @@
             @filter="returnPortFilterFn"
             emit-value
             :display-value="tripCatch.returnPortCode"
+            :rules="[val => !!val || 'Return Port Code is required']"
           ></q-select>
         </div>
       </div>
@@ -270,6 +201,7 @@
             autogrow
             label="Trip # (read only)"
             title="Unique 6 digit Trip id - generated by Trips API"
+            :rules="[val => !!val || 'Trip Id is required']"
           ></q-input>
         </div>
       </div>
@@ -337,6 +269,7 @@
             label="Fishery"
             title="Description of the EM fishery. Whiting, Midwater Rockfish, Fixed Gear, Bottom Trawl"
             :options="fisheryOptions"
+            :rules="[val => !!val || 'Fishery is required']"
           ></q-select>
         </div>
         <div class="logbook-element">
@@ -360,6 +293,7 @@
             use-input
             new-value-mode="add-unique"
             title="Name of the vessel captain"
+            :rules="[val => !!val || 'Skipper Name is required']"
           ></q-select>
         </div>
       </div>
@@ -439,6 +373,7 @@
                 label="Number"
                 title="fish ticket number from the deleivery"
                 style="width: 46%; margin-right: 5px"
+                :rules="[val => !!val || 'Fish Ticket Number is required']"
               >
               <template v-slot:append>
                 <q-btn flat dense icon="close" @click="tripCatch.fishTickets.splice(i , 1)"></q-btn>
@@ -456,6 +391,7 @@
                 :showTime="false"
                 onfocus="blur()"
                 class="fish-ticket-calendar"
+                :rules="[val => !!val || 'Fish Ticket Date is required']"
                 >
               </pCalendar>
               <label :for="'ftdate' + i" class="fishticket-calendar-label">Date</label>
@@ -589,6 +525,7 @@
                 emit-value
                 :display-value="getGearTypeDescription"
                 class="logbook-element"
+                :rules="[val => !!val || 'Gear Type is required']"
               ></q-select>
               <q-input
                 v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -600,6 +537,7 @@
                 title="Total number of pots or hooks set (Mandatory for FG hauls)"
                 mask="###"
                 class="logbook-element"
+                :rules="[val => !!val || 'Gear Per Set is required']"
               ></q-input>
               <q-input
                 v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -611,6 +549,7 @@
                 title="Number of pots or hooks lost (Mandatory for FG hauls)"
                 mask="###"
                 class="logbook-element"
+                :rules="[val => !!val || 'Gear Lost is required']"
               ></q-input>
               <q-input
                 v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -622,6 +561,7 @@
                 title="Average hooks per set"
                 mask="###"
                 class="logbook-element"
+                :rules="[val => !!val || 'Avg Hooks Per Set is required']"
               ></q-input>
               <q-input
                 v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -632,6 +572,7 @@
                 label="Net Type"
                 title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)"
                 class="logbook-element"
+                :rules="[val => !!val || 'Net Type is required']"
               ></q-input>
               <q-input
                 v-if="['1' , '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
@@ -643,6 +584,7 @@
                 title="Total estimated weight (lbs) the codened can hold"
                 mask="#####"
                 class="logbook-element"
+                :rules="[val => !!val || 'Codend Capacity is required']"
               ></q-input>
               <div class="logbook-element" v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
               >
@@ -686,6 +628,7 @@
                 emit-value
                 :display-value="tripCatch.hauls[selectedHaul - 1].targetStrategy"
                 class="logbook-element"
+                :rules="[val => !!val || 'Target Strategy is required']"
               >
                 <template v-slot:append>
                   <q-btn
@@ -723,6 +666,7 @@
                 title="Date the vessel departed port"
                 :showTime="true"
                 onfocus="blur()"
+                :rules="[val => !!val || 'Haul Start Date/Time is required']"
                 >
               </pCalendar>
               <label for="haulstartdate" class="calendar-label">Haul Start Date/Time</label>
@@ -795,6 +739,7 @@
                   label="Decimal Degrees"
                   title="Latitude of gear set in decimal degrees"
                   style="width: 48.5%; margin-right: 10px; margin-bottom: 5px"
+                  :rules="[val => !!val || 'Start Latitude is required']"
                 ></q-input>
                 <q-input
                   v-model="coordinates.start.long.dd"
@@ -804,7 +749,10 @@
                   debounce="500"
                   label="Decimal Degrees"
                   title="Longitude of gear set in decimal degrees"
-                  :rules="[ val => val >= 0 || 'enter positive degrees - value auto-converted to negative']"
+                  :rules="[
+                        val => !!val || 'Start Longitude is required',
+                        val => val >= 0 || 'enter positive degrees - value auto-converted to negative'
+                      ]"
                   style="width: 48.5%"
                 ></q-input>
               </div>
@@ -822,6 +770,7 @@
                   title="Date the vessel departed port"
                   :showTime="true"
                   onfocus="blur()"
+                  :rules="[val => !!val || 'Haul End Date/Time is required']"
                   >
                 </pCalendar>
                 <label for="haulenddate" class="calendar-label">Haul End Date/Time</label>
@@ -894,6 +843,7 @@
                   label="Decimal Degrees"
                   title="Latitude of gear set in decimal degrees"
                   style="width: 48.5%; margin-right: 10px"
+                  :rules="[val => !!val || 'End Latitude is required']"
                 ></q-input>
                 <q-input
                   v-model="coordinates.end.long.dd"
@@ -903,7 +853,10 @@
                   debounce="500"
                   label="Decimal Degrees"
                   title="Longitude of gear set in decimal degrees"
-                  :rules="[ val => val >= 0 || 'enter positive degrees - value auto-converted to negative']"
+                  :rules="[
+                        val => !!val || 'End Longitude is required',
+                        val => val >= 0 || 'enter positive degrees - value auto-converted to negative'
+                      ]"
                   style="width: 48.5%"
                 ></q-input>
               </div>
@@ -977,6 +930,7 @@
                     label="Catch Disposition"
                     title="Disposition of the Catch (Retained or Discard)"
                     :options="['Discarded', 'Retained']"
+                    :rules="[val => !!val || 'Disposition is required']"
                   ></q-select>
                   <q-select
                     class="logbook-element"
@@ -993,6 +947,7 @@
                     @filter="speciesFilterFn"
                     emit-value
                     :display-value="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].speciesCode"
+                    :rules="[val => !!val || 'Species Code is required']"
                   >
                     <template v-slot:append>
                       <q-btn
@@ -1050,10 +1005,9 @@
                     autogrow
                     outlined
                     label="Length"
-                    title="Length (in cm) of individual fish (Pacific Halibut)"
+                    title="Length (in cm) of individual fish"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'length must be a number']"
-                    :disabled="disableLength"
-                    :hint="disableLength ? 'Cannot enter Length if Count is greater than 1' : ''"
+                    hint="Note: Do not supply length if count is greater than 1"
                   ></q-input>
                   <q-input
                     class="logbook-element"
@@ -1133,6 +1087,7 @@ Vue.component('pInput', InputText);
 
 import { getTripsApiTrip, getCatchApiCatch, newApiCatch, updateApiCatch } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth/lib';
+import { Catches } from '@boatnet/bn-models';
 
 import _ from 'lodash';
 
@@ -1192,7 +1147,7 @@ export default createComponent({
         startDateTime: null,
         endDateTime: null,
         haulNum: tripCatch.hauls.length + 1,
-        isCodendLost: null,
+        isCodendLost: false,
         gearTypeCode: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode ? tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode : '',
         targetStrategy: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy ? tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy : ''
       });
@@ -1854,15 +1809,68 @@ export default createComponent({
       }
     };
 
+    const validate = (catchSubmission: any) => {
+      const errors = [];
+      const tripRequired = ['vesselName', 'vesselNumber', 'departureDateTime', 'returnDateTime', 'departurePortCode', 'returnPortCode', 'tripNum', 'fishery', 'skipperName'];
+      const haulRequired = ['gearTypeCode', 'targetStrategy', 'startDateTime', 'endDateTime', 'endLatitude', 'endLongitude', 'startLatitude', 'startLongitude'];
+      const catchRequired = ['disposition', 'speciesCode'];
+      for (const requirement of tripRequired) {
+        if (!catchSubmission[requirement]) {
+          errors.push(requirement + ' is required.');
+        }
+      }
+      if (catchSubmission.hauls) {
+        for (const haul of catchSubmission.hauls) {
+          for (const haulRequirement of haulRequired) {
+            if (!haul[haulRequirement]) {
+              errors.push('haul: ' + haul.haulNum + ' : ' + haulRequirement + ' is required.');
+            }
+          }
+          if (haul.catch) {
+            for (const catchItem of haul.catch) {
+              for (const catchRequirement of catchRequired) {
+                if (!catchItem[catchRequirement]) {
+                  errors.push('haul: ' + haul.haulNum + ' catch: ' + haul.catch.indexOf(catchItem) + ' : ' + catchRequirement + ' is required.');
+                }
+              }
+            }
+          }
+        }
+      }
+      return errors;
+    };
+
     const submitLogbook = () => {
+
+      const errors = validate(tripCatch);
+      if (errors.length > 0) {
+        console.log(errors);
+        let formattedErrors = '';
+        errors.forEach((item) => { formattedErrors += item + '<br>'; });
+        Notify.create({
+            message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
+                caption: formattedErrors,
+                position: 'bottom-right',
+                color: 'grey-8',
+                timeout: 0,
+                icon: 'warning',
+                html: true,
+                multiLine: true,
+                actions: [{ label: 'dismiss', color: 'white' }],
+                textColor: 'white'
+        });
+        return;
+      }
+
       tripCatch.updatedBy = authService.getCurrentUser()!.username;
       tripCatch.updatedDate = moment().format();
+      tripCatch.provider = 'elogbook';
       if (tripCatch._id && tripCatch._rev) {
         console.log('Updating API Catch record');
-        updateApiCatch(tripCatch).then( (res) => {
+        updateApiCatch(tripCatch).then( (res: any) => {
           console.log(res);
           Notify.create({
-            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">Logbook Data Successfully Updated</div>',
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">' + res + '</div>',
                 position: 'top',
                 color: 'green',
                 timeout: 3000,
@@ -1871,10 +1879,18 @@ export default createComponent({
                 multiLine: true
             });
           getCatch(tripCatch.tripNum).then(() => {
-            // getDepartureTime();
-            // getReturnTime();
             getDepDateTime();
             getRetDateTime();
+          });
+        }, (err: any) => {
+          console.log(err);
+          Notify.create({
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">ERROR: data could not be updated!<br><br>' + err + '</div>',
+            color: 'red',
+            timeout: 10000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
           });
         });
       } else {
@@ -1891,10 +1907,18 @@ export default createComponent({
                 multiLine: true
             });
           getCatch(tripCatch.tripNum).then(() => {
-            // getDepartureTime();
-            // getReturnTime();
             getDepDateTime();
             getRetDateTime();
+          });
+        }, (err: any) => {
+          console.log(err);
+          Notify.create({
+            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase">ERROR: data could not be submitted!<br><br>' + err + '</div>',
+            color: 'red',
+            timeout: 10000,
+            icon: 'warning',
+            html: true,
+            multiLine: true
           });
         });
       }
@@ -2134,21 +2158,6 @@ export default createComponent({
       watcherOptions
     );
 
-    const disableLength = ref(false);
-    watch(
-      () => tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].speciesCount,
-      (newVal, oldval) => {
-        if (newVal > 1) {
-          disableLength.value = true;
-          tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].length = undefined;
-          delete tripCatch.hauls[selectedHaul.value - 1].catch[selectedCatch.value - 1].length;
-        } else {
-          disableLength.value = false;
-        }
-      },
-      watcherOptions
-    );
-
     onMounted(() => {
       getSpeciesCodeOptions();
       getFisheryOptions();
@@ -2235,8 +2244,7 @@ export default createComponent({
       fishTicketDates,
       addFishTicket,
       getGearTypeDescription,
-      proAndPriSpecies,
-      disableLength
+      proAndPriSpecies
     };
   }
 });
