@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="q-pl-md q-pt-md"><b>Trip #</b> {{tripNumVal}}</div>
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="true">
         <DataTable
@@ -66,6 +67,7 @@
               />
             </template>
           </Column>
+          <template #empty>No records found</template>
         </DataTable>
       </TabPanel>
       <TabPanel header="Errors">
@@ -98,7 +100,7 @@
         </DataTable>
       </TabPanel>
       <TabPanel header="Screenshot">
-        <app-view-image :id.sync="docId"/>
+        <app-view-image :ids.sync="docId" />
       </TabPanel>
     </TabView>
   </div>
@@ -140,12 +142,13 @@ export default createComponent({
     const errorColumns: any = ref([]);
     const errorData: any = ref([]);
 
-    const docId: any = ref('');
+    const docId: any = ref([]);
 
     init();
 
     async function init() {
       const tripNum = parseInt(context.root.$route.params.id, 10);
+      tripNumVal.value = tripNum;
       await populateTripInfo(tripNum);
 
       errorColumns.value = [
@@ -163,7 +166,7 @@ export default createComponent({
           field: 'catchId',
           header: 'Catch Id',
           width: 80,
-        }
+        },
       ];
 
       columns.value = [
@@ -206,7 +209,7 @@ export default createComponent({
         {
           field: 'speciesName',
           header: 'Species Name',
-          width: 140,
+          width: 160,
         },
         {
           field: 'speciesCode',
@@ -317,11 +320,6 @@ export default createComponent({
         },
         // haul
         {
-          field: 'deliveryDate',
-          header: 'Delivery Date',
-          width: 150,
-        },
-        {
           field: 'gearTypeCode',
           header: 'Gear Type Code',
           width: 170,
@@ -401,8 +399,18 @@ export default createComponent({
     }
 
     async function populateTripInfo(tripNum: number) {
-      data.value = [];
       const options = { key: tripNum };
+
+      const screenshots = await masterDB.view(
+        'TripsApi',
+        'all_em_review_screenshots',
+        options
+      );
+      for (const screenshot of screenshots.rows) {
+        docId.value.push(screenshot.id);
+      }
+
+      data.value = [];
       const results = await masterDB.viewWithDocs(
         'TripsApi',
         'all_api_catch',
@@ -412,8 +420,7 @@ export default createComponent({
       const emDoc: any = results.rows.filter(
         (row: any) => 'thirdParty' === row.doc.source
       );
-      const emReview: any = get(emDoc, '[0].doc', {});
-      docId.value = emReview._id;
+      const emReview: Catches = get(emDoc, '[0].doc', {});
       errorData.value = emReview.errors;
 
       const hauls = get(emReview, 'hauls', []);
@@ -463,7 +470,6 @@ export default createComponent({
 
             // haul attributes
             haulNum: haulId,
-            deliveryDate: currHaul.deliveryDate,
             gearTypeCode: currHaul.gearTypeCode,
             gearPerSet: currHaul.gearPerSet,
             gearLost: currHaul.gearLost,
