@@ -32,12 +32,12 @@
           <q-td key="_id"></q-td>
           <q-td key="haul" :props="props">{{ props.row.haul ? props.row.haul : '' }}</q-td>
           <q-td key="speciesCode" :props="props">{{ props.row.speciesCode ? props.row.speciesCode : '' }}</q-td>
-          <q-td key="logbookDiscard" :props="props" >{{ props.row.logbookDiscard ? props.row.logbookDiscard : '' }}</q-td>
-          <q-td key="logbookRetained" :props="props" >{{ props.row.logbookRetained ? props.row.logbookRetained : '' }}</q-td>
-          <q-td key="thirdPartyReview" :props="props" >{{ props.row.thirdPartyReview ? props.row.thirdPartyReview : '' }}</q-td>
-          <q-td key="diffReviewLogbook" :props="props" :class="getClass(props.row.diffReviewLogbook)" >{{ props.row.diffReviewLogbook ? props.row.diffReviewLogbook : '' }}</q-td>
-          <q-td key="audit" :props="props">{{ props.row.audit ? props.row.audit : '' }}</q-td>
-          <q-td key="diffAuditReview" :props="props" :class="getClass(props.row.diffAuditReview)">{{ props.row.diffAuditReview ? props.row.diffAuditReview : '' }}</q-td>
+          <q-td key="logbookDiscard" :props="props" >{{ props.row.logbookDiscard ? roundVal(props.row.logbookDiscard) : '' }}</q-td>
+          <q-td key="logbookRetained" :props="props" >{{ props.row.logbookRetained ? roundVal(props.row.logbookRetained) : '' }}</q-td>
+          <q-td key="thirdPartyReview" :props="props" >{{ props.row.thirdPartyReview ? roundVal(props.row.thirdPartyReview) : '' }}</q-td>
+          <q-td key="diffReviewLogbook" :props="props" :class="getClass(props.row.diffReviewLogbook)" >{{ props.row.diffReviewLogbook ? roundVal(props.row.diffReviewLogbook) : '' }}</q-td>
+          <q-td key="audit" :props="props">{{ props.row.audit ? roundVal(props.row.audit) : '' }}</q-td>
+          <q-td key="diffAuditReview" :props="props" :class="getClass(props.row.diffAuditReview)">{{ props.row.diffAuditReview ? roundVal(props.row.diffAuditReview) : '' }}</q-td>
         </q-tr>
       </template>
     </q-table>
@@ -259,6 +259,14 @@ export default createComponent({
       return result;
     };
 
+    const roundVal = (val: number) => {
+      if (val % 1 === 0) {
+        return val;
+      } else {
+        return val.toFixed(2);
+      }
+    };
+
     const getAPITripData = async () => {
       const apiResponse: any = await getTripsApiTrip(parseInt(tripNum.value, 10));
       if (apiResponse.tripNum) {
@@ -383,6 +391,7 @@ export default createComponent({
       apiTrip,
       apiCatch,
       capitalize,
+      roundVal,
       columns,
       pagination,
       selected,
