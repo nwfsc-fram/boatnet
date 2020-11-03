@@ -237,7 +237,7 @@ const router = new Router({
         },
         {
           path: '/view-image/:id', name: 'View Image', component: ViewImage,
-          props: (route: any) => ({ id: String(route.params.id) }),
+          props: (route: any) => ({ ids: [String(route.params.id)] }),
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
