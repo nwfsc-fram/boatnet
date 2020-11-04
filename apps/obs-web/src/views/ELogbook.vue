@@ -1087,7 +1087,7 @@ Vue.component('pInput', InputText);
 
 import { getTripsApiTrip, getCatchApiCatch, newApiCatch, updateApiCatch } from '@boatnet/bn-common';
 import { authService } from '@boatnet/bn-auth/lib';
-import { Catches } from '@boatnet/bn-models';
+// import { Catches } from '@boatnet/bn-models';
 
 import _ from 'lodash';
 

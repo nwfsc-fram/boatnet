@@ -420,7 +420,7 @@ export default createComponent({
       const emDoc: any = results.rows.filter(
         (row: any) => 'thirdParty' === row.doc.source
       );
-      const emReview: Catches = get(emDoc, '[0].doc', {});
+      const emReview: any = get(emDoc, '[0].doc', {});
       errorData.value = emReview.errors;
 
       const hauls = get(emReview, 'hauls', []);
