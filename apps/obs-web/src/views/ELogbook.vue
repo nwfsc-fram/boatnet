@@ -1850,7 +1850,7 @@ export default createComponent({
         Notify.create({
             message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
                 caption: formattedErrors,
-                position: 'bottom-right',
+                position: 'top',
                 color: 'grey-8',
                 timeout: 0,
                 icon: 'warning',
@@ -1890,7 +1890,8 @@ export default createComponent({
             timeout: 10000,
             icon: 'warning',
             html: true,
-            multiLine: true
+            multiLine: true,
+            position: 'top'
           });
         });
       } else {
@@ -1918,7 +1919,8 @@ export default createComponent({
             timeout: 10000,
             icon: 'warning',
             html: true,
-            multiLine: true
+            multiLine: true,
+            position: 'top'
           });
         });
       }

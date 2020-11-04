@@ -172,7 +172,7 @@ export default createComponent({
                         Notify.create({
                             message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
                                 caption: err,
-                                position: 'left',
+                                position: 'top',
                                 color: 'grey-8',
                                 timeout: 0,
                                 icon: 'warning',
@@ -207,7 +207,7 @@ export default createComponent({
                         Notify.create({
                             message: '<div class="h5" style="height: 100%: text-align: center; color: white; text-transform: uppercase">Validation Errors: </div>',
                                 caption: err,
-                                position: 'left',
+                                position: 'top',
                                 color: 'grey-8',
                                 timeout: 0,
                                 icon: 'warning',
@@ -223,7 +223,7 @@ export default createComponent({
             } else {
                 Notify.create({
                     message: 'Missing required info',
-                    position: 'center',
+                    position: 'top',
                     color: 'red',
                     timeout: 3000,
                     icon: 'warning',
