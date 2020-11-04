@@ -41,7 +41,7 @@ export function getTripsApiTrips(query?: any, queryValue?: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(response);
+                    reject(body);
                 }
             }
         );
@@ -62,7 +62,7 @@ export function getTripsApiTrip(tripNum: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -83,7 +83,7 @@ export function getCatchApiCatch(tripNum: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -113,7 +113,7 @@ function newDeployment(deployment: any, url: string) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -156,7 +156,7 @@ export function updateTripsApiTrip(activeTrip: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -178,7 +178,7 @@ export function newApiCatch(tripCatch: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -200,7 +200,7 @@ export function updateApiCatch(tripCatch: any) {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
@@ -235,7 +235,7 @@ export function emailCoordinators(trip: any, emailType: any) { // emailType - 'N
                 if (!err && response.statusCode === 200) {
                     resolve(body);
                 } else {
-                    reject(err);
+                    reject(body);
                 }
             }
         );
