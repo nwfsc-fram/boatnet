@@ -505,7 +505,7 @@ export default createComponent({
             speciesCode: currCatch.speciesCode,
             speciesName,
             speciesWeight: currCatch.speciesWeight,
-            speciesLength: get(currCatch, 'speciesLength', 0),
+            speciesLength: get(currCatch, 'speciesLength'),
           });
         }
       }
