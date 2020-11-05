@@ -410,6 +410,11 @@ export default createComponent({
           header: 'Catch Handling Perf',
           width: 200,
         },
+        {
+          field: 'revision',
+          header: 'Revision #',
+          width: 120,
+        }
       ];
       columnOptions.value = [...columns.value];
     }
@@ -482,6 +487,7 @@ export default createComponent({
             returnPortCode: emReview.returnPortCode,
             skipperName: emReview.skipperName,
             comment: emReview.comment,
+            revision: emReview.revision,
             // fishTickets
             // buyer
 
