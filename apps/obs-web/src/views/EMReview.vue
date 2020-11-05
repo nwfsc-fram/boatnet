@@ -1,6 +1,17 @@
 <template>
   <div>
-    <div class="q-pl-md q-pt-md"><b>Trip #</b> {{tripNumVal}}</div>
+    <q-input
+    class="q-pt-md q-pl-md"
+    style="width: 200px"
+      v-model="tripNumVal"
+      label="Trip #"
+      @input="inputTripNum"
+      :loading="loadingState"
+    >
+      <template v-slot:prepend>
+        <q-icon name="search" />
+      </template>
+    </q-input>
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="true">
         <DataTable
@@ -15,20 +26,7 @@
           ref="emReviewTable"
         >
           <template #header>
-            <span style="text-align: left; float: left">
-              <q-input
-                v-model="tripNumVal"
-                label="Trip #"
-                @input="inputTripNum"
-                :loading="loadingState"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </span>
-
-            <span style="float: right; text-align: left">
+            <span style="float: left; text-align: left">
               <MultiSelect
                 v-model="columns"
                 :options="columnOptions"
@@ -40,6 +38,8 @@
                   <div>Display Columns</div>
                 </template>
               </MultiSelect>
+            </span>
+            <span style="float: right">
               <Button
                 icon="pi pi-external-link"
                 label="Export"
@@ -97,6 +97,7 @@
               />
             </template>
           </Column>
+          <template #empty>No errors found</template>
         </DataTable>
       </TabPanel>
       <TabPanel header="Screenshot">
@@ -234,6 +235,11 @@ export default createComponent({
         {
           field: 'speciesLength',
           header: 'Species Length',
+          width: 100,
+        },
+        {
+          field: 'speciesCount',
+          header: 'Species Count',
           width: 100,
         },
         {
@@ -409,6 +415,7 @@ export default createComponent({
     }
 
     async function populateTripInfo(tripNum: number) {
+      docId.value = [];
       const options = { key: tripNum };
 
       const screenshots = await masterDB.view(
@@ -506,6 +513,7 @@ export default createComponent({
             speciesName,
             speciesWeight: currCatch.speciesWeight,
             speciesLength: get(currCatch, 'speciesLength'),
+            speciesCount: get(currCatch, 'speciesCount')
           });
         }
       }
