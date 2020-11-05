@@ -153,11 +153,6 @@ export default createComponent({
 
       errorColumns.value = [
         {
-          field: 'type',
-          header: 'Type',
-          width: 120,
-        },
-        {
           field: 'haulNum',
           header: 'Haul #',
           width: 80,
@@ -167,6 +162,21 @@ export default createComponent({
           header: 'Catch Id',
           width: 80,
         },
+        {
+          field: 'field',
+          header: 'Field',
+          width: 80,
+        },
+        {
+          field: 'type',
+          header: 'Type',
+          width: 80,
+        },
+        {
+          field: 'message',
+          header: 'Message',
+          width: 110,
+        }
       ];
 
       columns.value = [
