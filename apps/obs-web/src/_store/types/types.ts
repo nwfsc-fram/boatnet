@@ -54,6 +54,7 @@ export interface UserState {
   captainMode: boolean;
   closedTripsTable: boolean;
   showLogbookRetained: boolean;
+  autoHideMenu: boolean;
 }
 
 export interface VesselState {

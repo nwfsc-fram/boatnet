@@ -165,7 +165,7 @@ export default class Home extends Vue {
   private updatedTrip: any = {};
   private activeUser: boolean = false;
   private offlineTrips: any = null;
-  private online: boolean = this.onlineStatus;
+  // private online: boolean = this.onlineStatus;
 
   constructor() {
     super();

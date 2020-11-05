@@ -15,6 +15,9 @@ const actions: ActionTree<UserState, RootState> = {
   },
   setShowLogbookRetained({ commit}: any, choice: boolean) {
     commit('setShowLogbookRetained', choice);
+  },
+  setAutoHideMenu({ commit }: any, choice: boolean) {
+    commit('setAutoHideMenu', choice);
   }
 };
 
@@ -24,6 +27,9 @@ const mutations: MutationTree<UserState> = {
   },
   setShowLogbookRetained(newState: any, choice: boolean) {
     newState.showLogbookRetained = choice;
+  },
+  setAutoHideMenu(newState: any, choice: boolean) {
+    newState.autoHideMenu = choice;
   }
 };
 
@@ -33,6 +39,9 @@ const getters: GetterTree<UserState, RootState> = {
   },
   showLogbookRetained(getstate: UserState) {
     return getstate.showLogbookRetained;
+  },
+  autoHideMenu(getstate: UserState) {
+    return getstate.autoHideMenu;
   }
 };
 
@@ -44,7 +53,8 @@ export const state: UserState = {
   unLinkedApexUsers: [],
   captainMode: false,
   closedTripsTable: false,
-  showLogbookRetained: true
+  showLogbookRetained: true,
+  autoHideMenu: true
 };
 
 export const user: Module<UserState, RootState> = {
