@@ -280,8 +280,31 @@
                                 </q-card-actions>
                             </q-card-section>
                         </q-card>
-
-                        <br><br><br><br>
+                        <br><br>
+                        <q-field
+                            v-model="user.autoHideMenu"
+                            outlined
+                            dense
+                            autogrow
+                            title="Automatically hide the hamburger menu on table screens"
+                        >
+                            <template v-slot:control>
+                            <span>Auto Hide Side Menu?</span>&nbsp;
+                            <q-btn
+                                :class="getClass('autoHideMenu', true)"
+                                size="sm"
+                                label="Yes"
+                                @click="setAutoHide(true)"
+                            ></q-btn>&nbsp;
+                            <q-btn
+                                :class="getClass('autoHideMenu', false)"
+                                size="sm"
+                                label="No"
+                                @click="setAutoHide(false)"
+                            ></q-btn>
+                            </template>
+                        </q-field>
+                        <br><br>
                         <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && user.activeUserAlias" >
                             <q-toggle v-model="user.activeUser.isActive" label="Active"/>
                             <q-toggle v-model="user.activeUser.isAshop" label="Ashop"/>
@@ -368,6 +391,9 @@ export default class UserDetails extends Vue {
     @State('alert') private alert!: AlertState;
     @Action('clear', { namespace: 'alert' }) private clearAlert: any;
     @Action('error', { namespace: 'alert' }) private errorAlert: any;
+
+    @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
+    @Action('setAutoHideMenu', { namespace: 'user'}) private setAutoHideMenu: any;
 
     private contacts: Person[] = [];
 
@@ -810,6 +836,18 @@ export default class UserDetails extends Vue {
         return moment(date).format('LL');
     }
 
+    private getClass(attribute: string, value: boolean) {
+        if (this.autoHideMenu === value) {
+            return 'bg-primary text-white';
+        } else {
+            return 'text-primary';
+        }
+    }
+
+    private setAutoHide(choice: boolean) {
+        this.setAutoHideMenu(choice);
+    }
+
     private created() {
 
         console.log(this.user.activeUser);
@@ -847,5 +885,7 @@ export default class UserDetails extends Vue {
     width: 100% !important;
     max-width: 500px !important;
 }
+
+
 
 </style>

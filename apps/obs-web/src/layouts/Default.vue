@@ -148,7 +148,7 @@
           to="/all-trips"
           exact
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
-          @click="leftDrawerOpen = false"
+          @click="autoHide"
         >
           <q-item-section avatar>
             <q-icon name="table_chart" />
@@ -164,7 +164,7 @@
           exact
           :disabled="!onlineStatus"
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-          @click="leftDrawerOpen = false"
+          @click="autoHide"
         >
           <q-item-section avatar>
             <q-icon name="error_outline" />
@@ -252,7 +252,7 @@
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
             to="/em-task-management"
             exact
-            @click="leftDrawerOpen = false"
+            @click="autoHide"
           >
             <q-item-section avatar>
               <q-icon name="check" />
@@ -267,7 +267,7 @@
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
             to="/em-api-portal"
             exact
-            @click="leftDrawerOpen = false"
+            @click="autoHide"
           >
             <q-item-section avatar>
               <q-icon name="publish" />
@@ -282,7 +282,7 @@
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
             to="/em-data-compare"
             exact
-            @click="leftDrawerOpen = false"
+            @click="autoHide"
           >
             <q-item-section avatar>
               <q-icon name="compare" />
@@ -471,6 +471,7 @@ export default class DefaultLayout extends Vue {
   @State('trip') private trip!: TripState;
   @State('vessel') private vessel!: VesselState;
   @State('user') private user!: UserState;
+  @State('general') private general!: GeneralState;
 
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Action('reconnectNoLookupsSync', {namespace: 'pouchState'}) private reconnectNoLookupsSync: any;
@@ -483,9 +484,8 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
 
-  @State('general') private general!: GeneralState;
-  @Getter('getOnlineStatus', { namespace: 'general' })
-  private onlineStatus: any;
+  @Getter('getOnlineStatus', { namespace: 'general' }) private onlineStatus: any;
+  @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
 
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
@@ -535,6 +535,12 @@ export default class DefaultLayout extends Vue {
 
   private set syncStatusExists(statusExists: boolean) {
     console.log(statusExists);
+  }
+
+  private autoHide() {
+    if (this.autoHideMenu) {
+      this.leftDrawerOpen = false;
+    }
   }
 
   private created() {

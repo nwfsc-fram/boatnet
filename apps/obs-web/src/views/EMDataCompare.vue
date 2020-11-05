@@ -260,7 +260,7 @@ export default createComponent({
     };
 
     const roundVal = (val: number) => {
-      if (val % 1 === 0) {
+      if (val % 1 === 0 || typeof val === 'string') {
         return val;
       } else {
         return val.toFixed(2);
