@@ -25,6 +25,7 @@
                 <q-td key="vesselId" :props="props" >{{ getVesselId(props.row) }}</q-td>
                 <q-td key="returnDate" :props="props" >{{ getAttribute(props.row.returnDate, 'date') }}</q-td>
                 <q-td key="stage" :props="props" >{{ getAttribute(props.row.stage) }}</q-td>
+                <q-td key="revision" :props="props" >{{ getAttribute(props.row.revision, 'revision') }}</q-td>
                 <q-td key="errors" :props="props" >{{ getAttribute(props.row.errors, 'errors') }}</q-td>
                 <q-td key="status" :props="props" >{{ getAttribute(props.row.status) }}</q-td>
                 <q-td key="statusDate" :props="props" >{{ getAttribute(props.row.statusDate, 'date') }}</q-td>
@@ -70,7 +71,8 @@ export default createComponent({
             {name: 'vesselId', label: 'Vessel Id', field: 'vesselId', required: false, align: 'left', sortable: true},
             {name: 'returnDate', label: 'End Date', field: 'returnDate', required: false, align: 'left', sortable: true},
             {name: 'stage', label: 'Stage', field: 'stage', required: false, align: 'left', sortable: true},
-            {name: 'errors', label: 'lb / rev Err', field: 'errors', required: false, align: 'left', sortable: true},
+            {name: 'revision', label: 'VER l.b. / rv.', field: 'revision', required: false, align: 'right', sortable: true},
+            {name: 'errors', label: 'ERR l.b. / rv.', field: 'errors', required: false, align: 'right', sortable: true},
             {name: 'status', label: 'Status', field: 'status', required: false, align: 'left', sortable: true},
             {name: 'statusDate', label: 'Status Date', field: 'statusDate', required: false, align: 'left', sortable: true},
             {name: 'actions', label: 'Actions', field: 'actions', required: false, align: 'left', sortable: true},
@@ -87,7 +89,7 @@ export default createComponent({
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
                 return attribute ? moment(attribute).format('MMM DD, YYYY HH:mm') : '';
-            } else if (format === 'errors') {
+            } else if ( ['errors', 'revision'].includes(format) ) {
                 return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
             } else {
                 return attribute ? attribute : '';
@@ -152,6 +154,7 @@ export default createComponent({
                 for (const trip of trips) {
                     const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.errors = {};
+                    trip.revision = {};
                     trip.stage = '';
                     trip.statusDate = '';
                     trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ audit'];
@@ -160,6 +163,7 @@ export default createComponent({
 
                         for (const dataSource of tripCatch) {
                             if (dataSource.value[2]) { trip.errors[dataSource.value[0]] = dataSource.value[2]; }
+                            if (dataSource.value[3]) { trip.revision[dataSource.value[0]] = dataSource.value[3]; }
                             if (stagePriority.indexOf(dataSource.value[0]) > stagePriority.indexOf(trip.stage)) {
                                 trip.stage = dataSource.value[0];
                                 trip.statusDate = dataSource.value[1];
