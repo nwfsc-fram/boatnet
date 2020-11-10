@@ -184,7 +184,7 @@ export default createComponent({
         {
           field: 'tripNum',
           header: 'Trip #',
-          width: 120,
+          width: 100,
         },
         {
           field: 'vesselName',
@@ -194,7 +194,7 @@ export default createComponent({
         {
           field: 'vesselNumber',
           header: 'Vessel #',
-          width: 120,
+          width: 110,
         },
         {
           field: 'haulNum',
@@ -205,7 +205,7 @@ export default createComponent({
         {
           field: 'catchId',
           header: 'Catch Id',
-          width: 120,
+          width: 110,
         },
         {
           field: 'disposition',
@@ -215,7 +215,7 @@ export default createComponent({
         {
           field: 'fate',
           header: 'Fate',
-          width: 200,
+          width: 100,
         },
         {
           field: 'speciesName',
@@ -259,12 +259,12 @@ export default createComponent({
         },
         {
           field: 'isEFPTrip',
-          header: 'EFP Trip',
+          header: 'EFP Trip?',
           width: 110,
         },
         {
           field: 'isObserved',
-          header: 'Observed',
+          header: 'Observed?',
           width: 120,
         },
         {
@@ -482,12 +482,17 @@ export default createComponent({
             departureDateTime: emReview.departureDateTime,
             departureState: emReview.departureState,
             departurePortCode: emReview.departurePortCode,
+            returnState: emReview.returnState,
             returnDateTime: emReview.returnDateTime,
             returnPortState: emReview.returnPortState,
             returnPortCode: emReview.returnPortCode,
             skipperName: emReview.skipperName,
             comment: emReview.comment,
             revision: emReview.revision,
+            provider: emReview.provider,
+            totalReviewTime: emReview.totalReviewTime,
+            resubmission: emReview.resubmission,
+            reviewerName: emReview.reviewerName,
             // fishTickets
             // buyer
 
