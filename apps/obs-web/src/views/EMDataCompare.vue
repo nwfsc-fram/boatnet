@@ -378,8 +378,8 @@ export default createComponent({
     };
 
     onMounted( async () => {
+      await getSpeciesCodes();
       if (tripNum.value !== 0) {
-        await getSpeciesCodes();
         await getAPITripData();
       }
       if (!store.state.user.showLogbookRetained) {
