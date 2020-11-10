@@ -244,8 +244,8 @@ export default createComponent({
         },
         {
           field: 'fisherySector',
-          header: 'Fishery',
-          width: 100,
+          header: 'Fishery Sector',
+          width: 175,
         },
         {
           field: 'year',
@@ -488,11 +488,12 @@ export default createComponent({
             returnPortCode: emReview.returnPortCode,
             skipperName: emReview.skipperName,
             comment: emReview.comment,
-            revision: emReview.revision,
-            provider: emReview.provider,
-            totalReviewTime: emReview.totalReviewTime,
             resubmission: emReview.resubmission,
+            provider: emReview.provider,
             reviewerName: emReview.reviewerName,
+            totalReviewTime: emReview.totalReviewTime,
+            revision: emReview.revision,
+            
             // fishTickets
             // buyer
 
