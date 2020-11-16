@@ -1821,6 +1821,12 @@ export default createComponent({
       }
       if (catchSubmission.hauls) {
         for (const haul of catchSubmission.hauls) {
+          if ( moment(haul.startDateTime).isAfter(catchSubmission.returnDateTime)) {
+            errors.push('haul: ' + haul.haulNum + ' : haul start date can not be after trip end date');
+          }
+          if ( moment(haul.endDateTime).isAfter(catchSubmission.returnDateTime)) {
+            errors.push('haul: ' + haul.haulNum + ' : haul end date can not be after trip end date');
+          }
           for (const haulRequirement of haulRequired) {
             if (!haul[haulRequirement]) {
               errors.push('haul: ' + haul.haulNum + ' : ' + haulRequirement + ' is required.');
