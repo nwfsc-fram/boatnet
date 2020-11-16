@@ -15,7 +15,6 @@
         :selected.sync="selected"
         :pagination.sync="pagination"
         binary-state-sort
-        hide-bottom
         >
         <template v-slot:body="props">
             <q-tr :props="props">
@@ -71,8 +70,8 @@ export default createComponent({
             {name: 'vesselId', label: 'Vessel Id', field: 'vesselId', required: false, align: 'left', sortable: true},
             {name: 'returnDate', label: 'End Date', field: 'returnDate', required: false, align: 'left', sortable: true},
             {name: 'stage', label: 'Stage', field: 'stage', required: false, align: 'left', sortable: true},
-            {name: 'revision', label: 'VER l.b. / rv.', field: 'revision', required: false, align: 'right', sortable: true},
-            {name: 'errors', label: 'ERR l.b. / rv.', field: 'errors', required: false, align: 'right', sortable: true},
+            {name: 'revision', label: 'Revisions l.b./rv.', field: 'revision', required: false, align: 'center', sortable: true},
+            {name: 'errors', label: 'Errors l.b./rv.', field: 'errors', required: false, align: 'center', sortable: true},
             {name: 'status', label: 'Status', field: 'status', required: false, align: 'left', sortable: true},
             {name: 'statusDate', label: 'Status Date', field: 'statusDate', required: false, align: 'left', sortable: true},
             {name: 'actions', label: 'Actions', field: 'actions', required: false, align: 'left', sortable: true},
@@ -80,7 +79,7 @@ export default createComponent({
 
         const activeTasks: any = reactive([]);
         const selected: any = [];
-        const pagination = {sortBy: 'statusDate', descending: true, rowsPerPage: 50};
+        const pagination = {sortBy: 'statusDate', descending: true, rowsPerPage: 40};
 
         const getVesselId = (row: any) => {
             return row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber;
@@ -89,7 +88,9 @@ export default createComponent({
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
                 return attribute ? moment(attribute).format('MMM DD, YYYY HH:mm') : '';
-            } else if ( ['errors', 'revision'].includes(format) ) {
+            } else if ( format === 'errors' ) {
+                return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
+            } else if ( format === 'revision' ) {
                 return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
             } else {
                 return attribute ? attribute : '';
@@ -116,6 +117,9 @@ export default createComponent({
                     break;
                 case '+ em review':
                     router.push({path: '/em-api-portal/' + row.tripNum + '/em review'});
+                    break;
+                case '+ footage':
+                    router.push({path: '/em-footage-detail/' + row.tripNum});
                     break;
                 case '+ audit':
                     router.push({path: '/em-api-portal/' + row.tripNum + '/audit'});
@@ -157,7 +161,7 @@ export default createComponent({
                     trip.revision = {};
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ audit'];
+                    trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ footage', '+ audit'];
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (tripCatch.length > 0) {
 
@@ -222,4 +226,5 @@ export default createComponent({
 tr:nth-child(even) {
   background-color: rgb(238, 238, 238);
 }
+
 </style>
