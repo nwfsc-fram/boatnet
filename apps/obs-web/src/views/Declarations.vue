@@ -10,10 +10,6 @@
     </p>
     <br />
 
-    <div>
-      <q-btn @click="dbTest"> DB Test </q-btn>
-    </div>
-
     <div class="centered-page-item">
       <q-select
         v-if="isAuthorized(['enforcement'])"
@@ -370,36 +366,6 @@ export default class Declarations extends Vue {
     }
   }
 
-  // Right now this function is to test where this call will come from
-  private async dbTest() {
-    //
-    // const dbConfig = {
-    //   vms: {
-    //     user          : 'squishy',
-    //     password      : 'squids',
-    //     connectString : '//fake.site.noaa.gov:1555/not:REAL/SCHEMA'
-    //   }
-    // };
-
-    // let readConnection: any;
-
-    // try {
-    //   readConnection = await OracleDB.getConnection(dbConfig.vms);
-    //   const result = await readConnection.execute(
-    //     'SELECT * FROM fake_table'
-    //   );
-
-    // } catch (err) {
-    //     console.error(err);
-    // } finally {
-    //   try {
-    //     await readConnection.close();
-    //   } catch (err) {
-    //       console.error(err);
-    //   }
-    // }
-  }
-
   private async getOleVessel() {
     console.log('fetching declarations from couch');
     try {
@@ -489,6 +455,7 @@ export default class Declarations extends Vue {
     return false;
   }
 
+  // Check if declaration is already in cart
   private cartContains(newDeclaration: Declaration) {
     for (const cartDecs of this.oleVessel!.cartDeclarations!) {
       if (newDeclaration.declarationCode === cartDecs.declarationCode) {
@@ -498,7 +465,7 @@ export default class Declarations extends Vue {
     return false;
   }
 
-  // Check for conflicting declarations, and add to cart if passes
+  // Check for conflicting declarations, and start to add to cart if passes
   private addToCart(copyDec: Declaration) {
     const newDeclaration = { ...copyDec };
     const okayArray: number[] = this.dualRules[newDeclaration.declarationCode];
@@ -534,6 +501,7 @@ export default class Declarations extends Vue {
     }
   }
 
+  // Reset options for declaration going into cart
   private newObsChosen() {
     this.storeNewDec.observerStatus = this.newObsStatus;
     this.newObsStatus = '';
@@ -541,6 +509,7 @@ export default class Declarations extends Vue {
     this.finishAddingToCart();
   }
 
+  // Reset options for declaration going into cart
   private newOtherGearChosen() {
     this.storeNewDec.activityDescrip = this.newGearNote;
     this.newGearNote = '';

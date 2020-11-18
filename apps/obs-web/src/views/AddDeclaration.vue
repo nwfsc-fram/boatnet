@@ -209,6 +209,8 @@ import { VesselState, UserState, AlertState } from '../_store/types/types';
 /* tslint:disable:no-var-requires  */
 const dropdownTree = require('../assets/declarationsWorksheetVault.json');
 
+
+// This is the monster set of code, for the declaration worksheet
 @Component({})
 export default class Dropdowns extends Vue {
   @State('vessel') private vessel!: VesselState;
@@ -216,7 +218,7 @@ export default class Dropdowns extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   // This object represents the state of the worksheet
-  // will probably move this into couch eventually
+  // could probably move this into couch
   private databaseObject = {
     accept: false,
     showObsQuestion: false,
@@ -231,7 +233,10 @@ export default class Dropdowns extends Vue {
     showefpQ2: false,
     showEFPNote: false
   };
+
   // Here are some page control variables that need to be reactive
+  // I think this prevents them from being able to live in
+  // couch but I may be wrong about that.
   private oleDoc: OLEVessel = {};
   private dbReturn: any = null;
   private activeVesselId: string = '';
@@ -247,6 +252,7 @@ export default class Dropdowns extends Vue {
   private decChoiceDisplay: string = '';
   private otherGearNote: string = '';
   private newDeclaration: Declaration = { type: 'ole-declaration', declarationCode: 999, declarationDescrip: '', observerStatus: 'N/A' };
+
   // Options pulled out of the json file, this information comes from OLE
   private options1 = dropdownTree.Start;
   private obsOptions: string[] = dropdownTree['Observed Options'];
@@ -258,6 +264,7 @@ export default class Dropdowns extends Vue {
   );
   private ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   private dualRules: any = dropdownTree['Allowed Dual Declarations'];
+
   // EFP stuff
   private modelefp1: string = '';
   private modelefp2: string = '';
@@ -299,17 +306,24 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Observer dropdown chosen
   private obsChosen() {
     this.databaseObject.cartAddBool = true;
     this.newDeclaration.observerStatus = this.model6;
   }
 
+  // Cook EFP can be naviagated to through federal permits
+  // while all other EFPs happen through state permits,
+  // when this declaration is picked it could be as
+  // a non-EFP so we have to ask explicitly
   private cookEfpChosen() {
     this.databaseObject.cartAddBool = true;
     this.newDeclaration.efpStatus = this.model7;
   }
 
   // When dropdown item is chosen, use that information to generate the next dropdown
+  // TODO: check out controling this through the Vue config setup we're
+  // using for other parts of boatnet
   private itemChosen(model: any, boolIndex: number) {
     this.clearEntriesBelow(boolIndex);
     if (['Exemptions', '10 ‐ Haul out exemption', '20 ‐ Outside areas exemption',
@@ -330,8 +344,9 @@ export default class Dropdowns extends Vue {
       this.databaseObject.showBoolArr[boolIndex] = true;
       return;
     }
-    // need to figure out how the real good fish thing
-    // should be listed.
+
+    // TODO: talk to OLE staff to figure out how the real good
+    // fish EFP should be handled.
     this.newDeclaration.declarationCode = Number('2'.concat(
       this.decChoiceDisplay.split(' ‐ ')[0]
     ));
@@ -358,7 +373,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // Observer status question only applies to subset of choices
+  // Special handeling for cook efp
   private handleCookEfp() {
     if (['Groundfish (line*) [35]', '35 ‐ Open access*** line gear for groundfish'].includes(this.databaseObject.decChoiceKey)
       && this.model1 !== 'Federal Permit') {
@@ -369,6 +384,10 @@ export default class Dropdowns extends Vue {
   }
 
   // When dropdowns change, all below are cleared/reset
+  // This gets a little messy with all the control variables
+  // hanging around, probably possible to clean this up,
+  // maybe as part of putting some of these into couch or
+  // changing flow over to config style generation
   private clearEntriesBelow(index: number) {
     this.databaseObject.showBoolArr.fill(false, index, 3);
     this.databaseObject.showObsQuestion = false;
@@ -421,7 +440,9 @@ export default class Dropdowns extends Vue {
   }
 
   // Check for conflicting declarations, required fields checked
-  // indirectly by qform
+  // indirectly by qform submit functionality. Data for which
+  // dec codes are compatabile is in the
+  // declarationsWorksheetVault.json file
   private checkNewDec() {
     const okayArray: number[] = this.dualRules[this.newDeclaration.declarationCode];
     console.log(okayArray);
@@ -470,7 +491,7 @@ export default class Dropdowns extends Vue {
     );
   }
 
-  // This block of functions to determine title of next dropown
+  // This block of functions used to determine title of next dropown
   private get row2Title() {
     if (this.model1 === 'Exemptions') {
       return 'Description';
@@ -489,8 +510,9 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // See if I can get all the option getters
+  // TODO: See if I can get all the option getters
   // into one function
+
   // Fill in dropdown options for question 2
   private get options2(): any {
     if (this.model1 === '') {
@@ -509,6 +531,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Determine if line note should be shown on page
   private get showLineNote(): boolean {
     if (this.modelID.concat(this.model1, this.model2, this.model3).includes('*')) {
       return true;
@@ -517,6 +540,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
+  // Determine if open access note should be shown on page
   private get showOpenAccNote(): boolean {
     if (this.decChoiceDisplay.includes('†')) {
       return true;
@@ -525,7 +549,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // This fucnction controls the EFP version of the worksheet
+  // This function controls the EFP version of the worksheet
   private efpCategoryChosen() {
     const efpCatOptions = this.efpCollection[this.modelefp1];
     this.clearEntriesBelow(2);
