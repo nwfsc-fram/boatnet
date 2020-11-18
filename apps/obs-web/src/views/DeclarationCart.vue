@@ -75,6 +75,9 @@ export default class DeclarationCart extends Vue {
   private cartEmpty: boolean = true;
   private dbReturn: any = null;
 
+  // TODO: right now this just writes to couch
+  // will need section that synchs/writes to OLE
+  // database tables
   private async submitDeclarations() {
     const masterDB = couchService.masterDB;
 
@@ -112,6 +115,8 @@ export default class DeclarationCart extends Vue {
       this.cartEmpty = true;
     }
 
+    // Could probably do something with all these signals
+    // coming back from masterDB.post
     const out = await masterDB.post(this.oleVessel);
 
     // Refetch doc
@@ -155,6 +160,7 @@ export default class DeclarationCart extends Vue {
     return moment(date).format('MM/DD/YYYY, HH:mm');
   }
 
+  // Added to cart success
   private notifySuccess(message: string) {
     Notify.create({
       message: 'Success: ' + message,
