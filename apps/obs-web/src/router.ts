@@ -48,6 +48,8 @@ import MissedTripLog from './views/MissedTripLog.vue';
 import EmExpansions from './views/EmExpansions.vue';
 import EMApiPortal from './views/EMApiPortal.vue';
 import EMReview from './views/EMReview.vue';
+import EMFootageManager from './views/EMFootageManager.vue';
+import EMFootageDetail from './views/EMFootageDetail.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -231,6 +233,18 @@ const router = new Router({
         },
         {
           path: '/em-rate-management', name: 'EM Rate Management', component: EMRateManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-footage-manager', name: 'EM Footage Manager', component: EMFootageManager,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-footage-detail/:id', name: 'EM Footage Details', component: EMFootageDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
