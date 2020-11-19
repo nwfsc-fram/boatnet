@@ -51,6 +51,10 @@ import { Notify } from 'quasar';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
+// TODO: use confirmation number from OLE Vessel table,
+// Should also have a step that holds off on confirmation
+// Until insert happens succesfully, and alternate error
+// text needs to be setup.
 @Component
 export default class Declarations extends Vue {
   @State('vessel') private vessel!: VesselState;

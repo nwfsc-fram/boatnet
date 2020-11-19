@@ -39,6 +39,7 @@ export default createComponent({
     init();
 
     async function init() {
+      screenshots.value = [];
       if (props.ids) {
         const idVals: any[] = props.ids ? props.ids : [];
         const masterDB: Client<any> = couchService.masterDB;

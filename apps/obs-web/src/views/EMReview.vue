@@ -1,6 +1,17 @@
 <template>
   <div>
-    <div class="q-pl-md q-pt-md"><b>Trip #</b> {{tripNumVal}}</div>
+    <q-input
+    class="q-pt-md q-pl-md"
+    style="width: 200px"
+      v-model="tripNumVal"
+      label="Trip #"
+      @input="inputTripNum"
+      :loading="loadingState"
+    >
+      <template v-slot:prepend>
+        <q-icon name="search" />
+      </template>
+    </q-input>
     <TabView class="q-ma-md">
       <TabPanel header="Data" :active="true">
         <DataTable
@@ -15,20 +26,7 @@
           ref="emReviewTable"
         >
           <template #header>
-            <span style="text-align: left; float: left">
-              <q-input
-                v-model="tripNumVal"
-                label="Trip #"
-                @input="inputTripNum"
-                :loading="loadingState"
-              >
-                <template v-slot:prepend>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-            </span>
-
-            <span style="float: right; text-align: left">
+            <span style="float: left; text-align: left">
               <MultiSelect
                 v-model="columns"
                 :options="columnOptions"
@@ -40,6 +38,8 @@
                   <div>Display Columns</div>
                 </template>
               </MultiSelect>
+            </span>
+            <span style="float: right">
               <Button
                 icon="pi pi-external-link"
                 label="Export"
@@ -97,6 +97,7 @@
               />
             </template>
           </Column>
+          <template #empty>No errors found</template>
         </DataTable>
       </TabPanel>
       <TabPanel header="Screenshot">
@@ -153,11 +154,6 @@ export default createComponent({
 
       errorColumns.value = [
         {
-          field: 'type',
-          header: 'Type',
-          width: 120,
-        },
-        {
           field: 'haulNum',
           header: 'Haul #',
           width: 80,
@@ -167,13 +163,28 @@ export default createComponent({
           header: 'Catch Id',
           width: 80,
         },
+        {
+          field: 'field',
+          header: 'Field',
+          width: 80,
+        },
+        {
+          field: 'type',
+          header: 'Type',
+          width: 80,
+        },
+        {
+          field: 'message',
+          header: 'Message',
+          width: 110,
+        }
       ];
 
       columns.value = [
         {
           field: 'tripNum',
           header: 'Trip #',
-          width: 120,
+          width: 100,
         },
         {
           field: 'vesselName',
@@ -183,7 +194,7 @@ export default createComponent({
         {
           field: 'vesselNumber',
           header: 'Vessel #',
-          width: 120,
+          width: 110,
         },
         {
           field: 'haulNum',
@@ -194,7 +205,7 @@ export default createComponent({
         {
           field: 'catchId',
           header: 'Catch Id',
-          width: 120,
+          width: 110,
         },
         {
           field: 'disposition',
@@ -204,7 +215,7 @@ export default createComponent({
         {
           field: 'fate',
           header: 'Fate',
-          width: 200,
+          width: 100,
         },
         {
           field: 'speciesName',
@@ -227,9 +238,14 @@ export default createComponent({
           width: 100,
         },
         {
-          field: 'fisherySector',
-          header: 'Fishery',
+          field: 'speciesCount',
+          header: 'Species Count',
           width: 100,
+        },
+        {
+          field: 'fisherySector',
+          header: 'Fishery Sector',
+          width: 175,
         },
         {
           field: 'year',
@@ -243,12 +259,12 @@ export default createComponent({
         },
         {
           field: 'isEFPTrip',
-          header: 'EFP Trip',
+          header: 'EFP Trip?',
           width: 110,
         },
         {
           field: 'isObserved',
-          header: 'Observed',
+          header: 'Observed?',
           width: 120,
         },
         {
@@ -394,11 +410,17 @@ export default createComponent({
           header: 'Catch Handling Perf',
           width: 200,
         },
+        {
+          field: 'revision',
+          header: 'Revision #',
+          width: 120,
+        }
       ];
       columnOptions.value = [...columns.value];
     }
 
     async function populateTripInfo(tripNum: number) {
+      docId.value = [];
       const options = { key: tripNum };
 
       const screenshots = await masterDB.view(
@@ -460,11 +482,18 @@ export default createComponent({
             departureDateTime: emReview.departureDateTime,
             departureState: emReview.departureState,
             departurePortCode: emReview.departurePortCode,
+            returnState: emReview.returnState,
             returnDateTime: emReview.returnDateTime,
             returnPortState: emReview.returnPortState,
             returnPortCode: emReview.returnPortCode,
             skipperName: emReview.skipperName,
             comment: emReview.comment,
+            resubmission: emReview.resubmission,
+            provider: emReview.provider,
+            reviewerName: emReview.reviewerName,
+            totalReviewTime: emReview.totalReviewTime,
+            revision: emReview.revision,
+            
             // fishTickets
             // buyer
 
@@ -495,7 +524,8 @@ export default createComponent({
             speciesCode: currCatch.speciesCode,
             speciesName,
             speciesWeight: currCatch.speciesWeight,
-            speciesLength: get(currCatch, 'speciesLength', 0),
+            speciesLength: get(currCatch, 'speciesLength'),
+            speciesCount: get(currCatch, 'speciesCount')
           });
         }
       }
