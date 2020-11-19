@@ -457,10 +457,10 @@
                 :props="props"
               >{{ tripCatch.hauls.indexOf(props.row) + 1 }}</q-td>
               <q-td
-                headers="gearTypeCode"
-                key="gearTypeCode"
+                headers="gear"
+                key="gear"
                 :props="props"
-              >{{ gearTypeOptions.map( (row) => row.lookupVal ).includes(props.row.gearTypeCode) ? gearTypeOptions.find( (row) => row.lookupVal === props.row.gearTypeCode).description : props.row.gearTypeCode }}</q-td>
+              >{{ props.row.gear }}</q-td>
               <q-td
                 headers="startDateTime"
                 key="startDateTime"
@@ -513,22 +513,23 @@
             <div class="logbook-element">
               <div class="text-h4 text-secondary">Haul {{ selectedHaul }}</div>
               <q-select
-                v-model="tripCatch.hauls[selectedHaul - 1].gearTypeCode"
+                v-model="tripCatch.hauls[selectedHaul - 1].gear"
                 outlined
                 label="Gear Type"
                 dense
                 autogrow
-                title="Groundfish trawl, footrope < 8 inches (small footrope), Groundfish trawl, footrope > 8 inches (large footrope), Midwater Trawl, Danish/Scottish Seine (trawl), Other Trawl Gear, Pot, hook & line, Longline (snap) (fixed gear)"
-                :options=gearTypeOptions
+                title="'trawl', 'hook & line', 'fish pot', or 'longline (snap)'"
+                :options=gearOptions
                 :option-label="opt => opt.description"
-                :option-value="opt => opt.lookupVal"
+                :option-value="opt => opt.lookupValue"
                 emit-value
-                :display-value="getGearTypeDescription"
+                :display-value="getGearDescription"
                 class="logbook-element"
-                :rules="[val => !!val || 'Gear Type is required']"
+                @input="tripCatch.hauls[selectedHaul - 1].netType = null"
+                :rules="[val => !!val || 'Gear is required']"
               ></q-select>
               <q-input
-                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="tripCatch.hauls[selectedHaul - 1].gear !== 'trawl'"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearPerSet"
                 dense
                 autogrow
@@ -540,7 +541,7 @@
                 :rules="[val => !!val || 'Gear Per Set is required']"
               ></q-input>
               <q-input
-                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="tripCatch.hauls[selectedHaul - 1].gear !== 'trawl'"
                 v-model="tripCatch.hauls[selectedHaul - 1].gearLost"
                 dense
                 autogrow
@@ -552,7 +553,7 @@
                 :rules="[val => !!val || 'Gear Lost is required']"
               ></q-input>
               <q-input
-                v-if="['19', '10', '20'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="tripCatch.hauls[selectedHaul - 1].gear !== 'trawl'"
                 v-model="tripCatch.hauls[selectedHaul - 1].avgHooksPerSeg"
                 dense
                 autogrow
@@ -563,19 +564,35 @@
                 class="logbook-element"
                 :rules="[val => !!val || 'Avg Hooks Per Set is required']"
               ></q-input>
-              <q-input
-                v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+              <q-select
+                v-if="tripCatch.hauls[selectedHaul - 1].gear === 'trawl'"
                 v-model="tripCatch.hauls[selectedHaul - 1].netType"
                 dense
                 autogrow
                 outlined
                 label="Net Type"
-                title="1  = Groundfish trawl, footrope < 8 inches (small footrope)  , 2  = Groundfish trawl, footrope > 8 inches (large footrope)"
+                title="Letter Code for type of net: 'B' (Bottom or Roller Trawl), 'D' (Danish or Scottish Seine), 'F' (Selective Flatfish Trawl), 'L' (Large Footrope Trawl (slope > 8&quot; footrope)), 'M' (Pelagic (mid water) Trawl), 'S' (Small Footrope Trawl (slope < 8&quot; footrope))"
+                :options="netOptions"
+                :option-label="opt => opt.description"
+                :option-value="opt => opt.lookupValue"
+                emit-value
+                :display-value="getNetDescription"
                 class="logbook-element"
                 :rules="[val => !!val || 'Net Type is required']"
-              ></q-input>
+              >
+                <template v-slot:append>
+                  <q-btn
+                    v-if="tripCatch.hauls[selectedHaul - 1].netType"
+                    round
+                    size="xs"
+                    color="primary"
+                    icon="clear"
+                    @click="tripCatch.hauls[selectedHaul - 1].netType = null"
+                  ></q-btn>
+                </template>
+                </q-select>
               <q-input
-                v-if="['1' , '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+                v-if="tripCatch.hauls[selectedHaul - 1].gear === 'trawl'"
                 v-model="tripCatch.hauls[selectedHaul - 1].codendCapacity"
                 dense
                 autogrow
@@ -586,7 +603,7 @@
                 class="logbook-element"
                 :rules="[val => !!val || 'Codend Capacity is required']"
               ></q-input>
-              <div class="logbook-element" v-if="['1', '2', '3', '4', '5'].includes(tripCatch.hauls[selectedHaul - 1].gearTypeCode)"
+              <div class="logbook-element" v-if="tripCatch.hauls[selectedHaul - 1].gear === 'trawl'"
               >
                 <q-field
                   v-model="tripCatch.hauls[selectedHaul - 1].isCodendLost"
@@ -1148,7 +1165,7 @@ export default createComponent({
         endDateTime: null,
         haulNum: tripCatch.hauls.length + 1,
         isCodendLost: false,
-        gearTypeCode: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode ? tripCatch.hauls[tripCatch.hauls.length - 1].gearTypeCode : '',
+        gear: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gear ? tripCatch.hauls[tripCatch.hauls.length - 1].gear : '',
         targetStrategy: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy ? tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy : ''
       });
       selectedCatch.value = null;
@@ -1231,9 +1248,9 @@ export default createComponent({
         sortable: true
       },
       {
-        name: 'gearTypeCode',
-        label: 'Gear Type',
-        field: 'gearTypeCode',
+        name: 'gear',
+        label: 'Gear',
+        field: 'gear',
         required: false,
         align: 'left',
         sortable: true
@@ -1462,13 +1479,13 @@ export default createComponent({
       });
     };
 
-    const gearTypeOptions: any = [];
-    const getGearTypeOptions = async () => {
+    const gearOptions: any = [];
+    const getGearOptions = async () => {
       const masterDb = couchService.masterDB;
       const queryOptions = {
         reduce: false,
         include_docs: true,
-        key: 'gear-type'
+        key: 'gear'
       };
 
       const gearTypes = await masterDb.view(
@@ -1477,18 +1494,18 @@ export default createComponent({
         queryOptions
       );
 
-      const gearTypeOptionsRows = gearTypes.rows.map(
+      const gearOptionsRows = gearTypes.rows.map(
         (row: any) => row.doc
       );
 
-      for (const row of gearTypeOptionsRows.filter( (item: any) => item.isEm === true)) {
-        gearTypeOptions.push(row);
+      for (const row of gearOptionsRows.filter( (item: any) => item.isEm === true)) {
+        gearOptions.push(row);
       }
 
-      gearTypeOptions.sort((a: any, b: any) => {
-        if (parseInt(a.lookupVal, 10) > parseInt(b.lookupVal, 10)) {
+      gearOptions.sort((a: any, b: any) => {
+        if (parseInt(a.lookupValue, 10) > parseInt(b.lookupValue, 10)) {
           return 1;
-        } else if (parseInt(a.lookupVal, 10) < parseInt(b.lookupVal, 10)) {
+        } else if (parseInt(a.lookupValue, 10) < parseInt(b.lookupValue, 10)) {
           return -1;
         } else {
           return 0;
@@ -1496,14 +1513,58 @@ export default createComponent({
       });
     };
 
-    const getGearTypeDescription = computed(
-        () => {
-          if (gearTypeOptions.map( (row: any) => row.lookupVal ).includes(tripCatch.hauls[selectedHaul.value - 1].gearTypeCode)) {
-            return gearTypeOptions.find( (item: any) => item.lookupVal === tripCatch.hauls[selectedHaul.value - 1].gearTypeCode).description;
-          } else {
-            return tripCatch.hauls[selectedHaul.value - 1].gearTypeCode;
-          }
+    const netOptions: any = [];
+    const getNetOptions = async () => {
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        reduce: false,
+        include_docs: true,
+        key: 'net-type'
+      };
+
+      const netTypes = await masterDb.view(
+        'obs_web',
+        'all_doc_types',
+        queryOptions
+      );
+
+      const netTypeOptionsRows = netTypes.rows.map(
+        (row: any) => row.doc
+      );
+
+      for (const row of netTypeOptionsRows.filter( (item: any) => item.isEm === true)) {
+        netOptions.push(row);
+      }
+
+      netOptions.sort((a: any, b: any) => {
+        if (parseInt(a.lookupValue, 10) > parseInt(b.lookupValue, 10)) {
+          return 1;
+        } else if (parseInt(a.lookupValue, 10) < parseInt(b.lookupValue, 10)) {
+          return -1;
+        } else {
+          return 0;
         }
+      });
+    };
+
+    const getGearDescription = computed (
+      () => {
+        if (tripCatch.hauls[selectedHaul.value - 1].gear) {
+          return gearOptions.find( (item: any) => item.lookupValue === tripCatch.hauls[selectedHaul.value - 1].gear).description;
+        } else {
+          return '';
+        }
+      }
+    );
+
+    const getNetDescription = computed (
+      () => {
+        if (tripCatch.hauls[selectedHaul.value - 1].netType) {
+          return netOptions.find( (item: any) => item.lookupValue === tripCatch.hauls[selectedHaul.value - 1].netType).description;
+        } else {
+          return '';
+        }
+      }
     );
 
     const proAndPriSpecies: any = [];
@@ -1812,7 +1873,7 @@ export default createComponent({
     const validate = (catchSubmission: any) => {
       const errors = [];
       const tripRequired = ['vesselName', 'vesselNumber', 'departureDateTime', 'returnDateTime', 'departurePortCode', 'returnPortCode', 'tripNum', 'fishery', 'skipperName'];
-      const haulRequired = ['gearTypeCode', 'targetStrategy', 'startDateTime', 'endDateTime', 'endLatitude', 'endLongitude', 'startLatitude', 'startLongitude'];
+      const haulRequired = ['gear', 'targetStrategy', 'startDateTime', 'endDateTime', 'endLatitude', 'endLongitude', 'startLatitude', 'startLongitude'];
       const catchRequired = ['disposition', 'speciesCode'];
       for (const requirement of tripRequired) {
         if (!catchSubmission[requirement]) {
@@ -2169,7 +2230,8 @@ export default createComponent({
     onMounted(() => {
       getSpeciesCodeOptions();
       getFisheryOptions();
-      getGearTypeOptions();
+      getGearOptions();
+      getNetOptions();
       getPortDecoderPorts();
       getSkipperOptions();
       getProAndPriSpecies();
@@ -2231,7 +2293,8 @@ export default createComponent({
       getClass,
       getHaulClass,
       fisheryOptions,
-      gearTypeOptions,
+      gearOptions,
+      netOptions,
       skipperOptions,
       formatDateTime,
       formatDate,
@@ -2251,8 +2314,9 @@ export default createComponent({
       haulEndDateTime,
       fishTicketDates,
       addFishTicket,
-      getGearTypeDescription,
-      proAndPriSpecies
+      proAndPriSpecies,
+      getGearDescription,
+      getNetDescription
     };
   }
 });
