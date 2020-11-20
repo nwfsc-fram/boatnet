@@ -109,7 +109,7 @@
 
                 props.trip!.vesselId = state.vessel.activeVessel.coastGuardNumber ? state.vessel.activeVessel.coastGuardNumber : state.vessel.activeVessel.stateRegulationNumber;
 
-                if (context.root.$router.currentRoute.name === 'Log Missing Trip') {
+                if (context.root.$router.currentRoute.name === 'Log Trip') {
 
                     // REQIRES A START AND END DATE
                     if (!props.trip!.departureDate || !props.trip!.returnDate) {
@@ -183,7 +183,7 @@
                     };
                     await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
                     props.trip!.tripNum = tripsApiNum;
-                    if (context.root.$router.currentRoute.name === 'Log Missing Trip') {
+                    if (context.root.$router.currentRoute.name === 'Log Trip') {
                         emailCoordinators(props.trip, 'MISSED TRIP');
                     }
                 }
