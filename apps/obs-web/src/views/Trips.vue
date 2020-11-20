@@ -29,7 +29,7 @@
 
         <q-btn class="bg-primary text-white q-ma-xs" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-xs" @click="maxTripsAlert = true">New Trip</q-btn>
-        <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" :to="'/log-missing-trip'" label="missing trip"></q-btn>
+        <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" :to="'/log-trip'" label="log trip"></q-btn>
         <br>
 
         <q-btn

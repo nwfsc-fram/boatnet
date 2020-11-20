@@ -1164,6 +1164,7 @@ export default createComponent({
         startDateTime: null,
         endDateTime: null,
         haulNum: tripCatch.hauls.length + 1,
+        netType: null,
         isCodendLost: false,
         gear: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].gear ? tripCatch.hauls[tripCatch.hauls.length - 1].gear : '',
         targetStrategy: tripCatch.hauls[tripCatch.hauls.length - 1] && tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy ? tripCatch.hauls[tripCatch.hauls.length - 1].targetStrategy : ''
