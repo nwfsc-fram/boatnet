@@ -117,7 +117,7 @@ export default createComponent({
           return footageDocs;
         }
       }
-    )
+    );
 
     onMounted( async () => {
       const footageQuery = await masterDB.view(
