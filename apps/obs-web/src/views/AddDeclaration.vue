@@ -373,7 +373,10 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  // Special handeling for cook efp
+  // Special handeling for cook efp, if user is not under
+  // federal permit branch, the normal is-efp question doesn't
+  // get triggered, so we need to have an additional question
+  // asking if it's under cook efp
   private handleCookEfp() {
     if (['Groundfish (line*) [35]', '35 ‐ Open access*** line gear for groundfish'].includes(this.databaseObject.decChoiceKey)
       && this.model1 !== 'Federal Permit') {
