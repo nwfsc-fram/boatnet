@@ -493,7 +493,7 @@ export default createComponent({
             reviewerName: emReview.reviewerName,
             totalReviewTime: emReview.totalReviewTime,
             revision: emReview.revision,
-            
+
             // fishTickets
             // buyer
 
