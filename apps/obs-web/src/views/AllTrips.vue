@@ -35,6 +35,7 @@
                         placeholder="Global Search"
                         onfocus="this.placeholder = ''"
                         onblur="this.placeholder = 'Global Search'"
+                        class="global-search"
                     />
                 </div>
             </template>
@@ -205,10 +206,15 @@ export default createComponent({
 </script>
 
 <style scoped>
-  .p-inputtext {
-    background-color: white !important;
-    padding: 5px !important;
-    border: 1px solid rgb(170, 169, 169) !important;
-    border-radius: 3px !important;
-  }
+    .p-inputtext {
+        background-color: white !important;
+        padding: 5px !important;
+        border: 1px solid rgb(170, 169, 169) !important;
+        border-radius: 3px !important;
+        width: 100%
+    }
+
+    .global-search {
+        width: auto !important;
+    }
 </style>

@@ -237,6 +237,17 @@
               <q-item-label caption>edit boatnet lookups, config + docs</q-item-label>
             </q-item-section>
           </q-item>
+
+          <q-item to="/species-viewer" exact>
+            <q-item-section avatar>
+              <q-icon name="pets" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Species Viewer</q-item-label>
+              <q-item-label caption>view taxonomy alias and catch grouping docs</q-item-label>
+            </q-item-section>
+          </q-item>
+
         </q-expansion-item>
 
         <q-expansion-item
@@ -290,6 +301,21 @@
             <q-item-section>
               <q-item-label>Data Comparison</q-item-label>
               <q-item-label caption>compare logbook/3rd party review/audit</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            to="/em-errors"
+            exact
+            @click="autoHide"
+          >
+            <q-item-section avatar>
+              <q-icon name="error_outline" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Errors</q-item-label>
+              <q-item-label caption>view all api submission errors</q-item-label>
             </q-item-section>
           </q-item>
 

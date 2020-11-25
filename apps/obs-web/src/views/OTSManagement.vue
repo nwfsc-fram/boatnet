@@ -136,7 +136,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 
 @Component
-export default class OtsMangement extends Vue {
+export default class OTSMangement extends Vue {
     @State('alert') private alert!: AlertState;
     @State('ots') private ots!: OTSState;
 
