@@ -1,55 +1,60 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+
 import DefaultLayout from './layouts/Default.vue';
 import PublicLayout from './layouts/Public.vue';
-import AllTrips from './views/AllTrips.vue';
-import Help from './views/Help.vue';
-import Home from './views/Home.vue';
-import LookupEditor from './views/LookupEditor.vue';
-import Debriefer from './views/Debriefer.vue';
 import DebrieferLayout from './views/DebrieferLayout.vue';
-import DebrieferTableExpanded from './views/DebrieferTableExpanded.vue';
-import Trips from './views/Trips.vue';
-import TripDetails from './views/TripDetails.vue';
-import Permits from './views/Permits.vue';
-import PermitDetails from './views/PermitDetails.vue';
-import Declarations from './views/Declarations.vue';
+
 import AddDeclaration from './views/AddDeclaration.vue';
+import ActivityDetail from './views/ActivityDetail.vue';
+import AllTrips from './views/AllTrips.vue';
+import CouchViews from './views/CouchViews.vue';
 import DeclarationCart from './views/DeclarationCart.vue';
 import DeclarationReceipt from './views/DeclarationReceipt.vue';
-import OLEEFPManagement from './views/OLEEFPManagement.vue';
-import OtsTargetDetail from './views/OtsTargetDetail.vue';
-import OTSManagement from './views/OTSManagement.vue';
-import ManageUsers from './views/ManageUsers.vue';
-import UserDetails from './views/UserDetails.vue';
-import UserConfig from './views/UserConfig.vue';
-import LogTrip from './views/LogTrip.vue';
-import Login from './views/Login.vue';
-import EMEFPManagement from './views/EMEFPManagement.vue';
-import EMEFPDetails from './views/EMEFPDetails.vue';
+import Declarations from './views/Declarations.vue';
+import Debriefer from './views/Debriefer.vue';
+import DebrieferTableExpanded from './views/DebrieferTableExpanded.vue';
+import ELogbook from './views/ELogbook.vue';
+import EMApiPortal from './views/EMApiPortal.vue';
+import EMErrors from './views/EMErrors.vue';
 import EMDataCompare from './views/EMDataCompare.vue';
-import EMTaskManagement from './views/EMTaskManagement.vue';
+import EMEFPDetails from './views/EMEFPDetails.vue';
+import EMEFPManagement from './views/EMEFPManagement.vue';
+import EMExpansions from './views/EMExpansions.vue';
+import EMFootageManager from './views/EMFootageManager.vue';
+import EMFootageDetail from './views/EMFootageDetail.vue';
 import EMRateManagement from './views/EMRateManagement.vue';
+import EMReview from './views/EMReview.vue';
+import EMTaskManagement from './views/EMTaskManagement.vue';
+import Help from './views/Help.vue';
+import Home from './views/Home.vue';
+import ManageUsers from './views/ManageUsers.vue';
+import Permits from './views/Permits.vue';
+import Login from './views/Login.vue';
+import LogTrip from './views/LogTrip.vue';
+import LookupEditor from './views/LookupEditor.vue';
+import MissedTripLog from './views/MissedTripLog.vue';
 import ObserverAssignment from './views/ObserverAssignment.vue';
 import ObserverAssignmentDetail from './views/ObserverAssignmentDetail.vue';
 import ObserverAvailability from './views/ObserverAvailability.vue';
-import ActivityDetail from './views/ActivityDetail.vue';
-import Vessels from './views/Vessels.vue';
+import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
+import OLEEFPManagement from './views/OLEEFPManagement.vue';
+import OTSManagement from './views/OTSManagement.vue';
+import OTSTargetDetail from './views/OTSTargetDetail.vue';
+import OTSTrips from './views/OTSTrips.vue';
+import OTSTripHistory from './views/OTSTripHistory.vue';
+import PermitDetails from './views/PermitDetails.vue';
+import RackBiospecimens from './views/RackBiospecimens.vue';
+import SpeciesDetail from './views/SpeciesDetail.vue';
+import SpeciesViewer from './views/SpeciesViewer.vue';
+import TripDetails from './views/TripDetails.vue';
+import Trips from './views/Trips.vue';
+import UserConfig from './views/UserConfig.vue';
+import UserDetails from './views/UserDetails.vue';
 import VesselDetails from './views/VesselDetails.vue';
-import ELogbook from './views/ELogbook.vue';
-import CouchViews from './views/CouchViews.vue';
-import OtsTrips from './views/OtsTrips.vue';
-import OtsTripHistory from './views/OtsTripHistory.vue';
+import Vessels from './views/Vessels.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
-import RackBiospecimens from './views/RackBiospecimens.vue';
-import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
-import MissedTripLog from './views/MissedTripLog.vue';
-import EmExpansions from './views/EmExpansions.vue';
-import EMApiPortal from './views/EMApiPortal.vue';
-import EMReview from './views/EMReview.vue';
-import EMFootageManager from './views/EMFootageManager.vue';
-import EMFootageDetail from './views/EMFootageDetail.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -70,24 +75,32 @@ const router = new Router({
       path: '/',
       component: DefaultLayout,
       children: [
-        { path: 'em-expansions', component: EmExpansions }, // temp - delete eventually
+        { path: 'em-expansions', component: EMExpansions }, // temp - delete eventually
         { path: '', name: 'Home', component: Home },
         { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward',
-              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        { path: '/species-viewer', name: 'Species Viewer', component: SpeciesViewer,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/species-detail/:id', name: 'Species Details', component: SpeciesDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         { path: '/couch-views', name: 'Couch Views', component: CouchViews,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward',
-              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         { path: '/view-hauls', name: 'View Hauls', component: ViewHauls,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward',
-              'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         { path: '/trips', name: 'Trips', component: Trips },
@@ -138,25 +151,25 @@ const router = new Router({
           }
         },
         {
-          path: '/ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
+          path: '/ots-target-detail', name: 'OTS Target Detail', component: OTSTargetDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
+          path: '/ots-target-detail/:id', name: 'OTS Target Detail', component: OTSTargetDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-trips', name: 'OTS Trips', component: OtsTrips,
+          path: '/ots-trips', name: 'OTS Trips', component: OTSTrips,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OtsTripHistory,
+          path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OTSTripHistory,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
@@ -245,6 +258,12 @@ const router = new Router({
         },
         {
           path: '/em-footage-detail/:id', name: 'EM Footage Details', component: EMFootageDetail,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/em-errors', name: 'EM Errors', component: EMErrors,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
