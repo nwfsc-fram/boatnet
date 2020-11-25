@@ -222,22 +222,22 @@ export default createComponent({
             data.sort( (a: any, b: any) => {
                 if (a.name.length > 0 && b.name.length > 0) {
                     if (a.name > b.name) {
-                        return 1
+                        return 1;
                     } else if (a.name < b.name) {
-                        return -1
+                        return -1;
                     } else {
-                         return 0
+                         return 0;
                     }
                 } else {
                     if (a.scientificName > b.scientificName) {
-                        return 1
+                        return 1;
                     } else if (a.scientificName < b.scientificName) {
-                        return -1
+                        return -1;
                     } else {
-                         return 0
+                         return 0;
                     }
                 }
-                })
+                });
             loading.value = false;
         };
 

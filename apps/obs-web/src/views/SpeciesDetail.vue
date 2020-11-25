@@ -115,7 +115,6 @@ export default createComponent({
             if (!couchDoc.changeLog) {couchDoc.changeLog = []; }
             speciesDoc.value = couchDoc;
             previousVersion = _.cloneDeep(couchDoc);
-            console.log(couchDoc)
         } catch (err) {
             Notify.create({
                 message: err
