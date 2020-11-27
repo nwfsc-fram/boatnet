@@ -20,7 +20,7 @@ import EMErrors from './views/EMErrors.vue';
 import EMDataCompare from './views/EMDataCompare.vue';
 import EMEFPDetails from './views/EMEFPDetails.vue';
 import EMEFPManagement from './views/EMEFPManagement.vue';
-import EMExpansions from './views/EMExpansions.vue';
+import EmExpansions from './views/EmExpansions.vue';
 import EMFootageManager from './views/EMFootageManager.vue';
 import EMFootageDetail from './views/EMFootageDetail.vue';
 import EMRateManagement from './views/EMRateManagement.vue';
@@ -40,9 +40,9 @@ import ObserverAvailability from './views/ObserverAvailability.vue';
 import ObserverDebrieferAssignment from './views/ObserverDebrieferAssignment.vue';
 import OLEEFPManagement from './views/OLEEFPManagement.vue';
 import OTSManagement from './views/OTSManagement.vue';
-import OTSTargetDetail from './views/OTSTargetDetail.vue';
-import OTSTrips from './views/OTSTrips.vue';
-import OTSTripHistory from './views/OTSTripHistory.vue';
+import OtsTargetDetail from './views/OtsTargetDetail.vue';
+import OtsTrips from './views/OtsTrips.vue';
+import OtsTripHistory from './views/OtsTripHistory.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import RackBiospecimens from './views/RackBiospecimens.vue';
 import SpeciesDetail from './views/SpeciesDetail.vue';
@@ -75,7 +75,7 @@ const router = new Router({
       path: '/',
       component: DefaultLayout,
       children: [
-        { path: 'em-expansions', component: EMExpansions }, // temp - delete eventually
+        { path: 'em-expansions', component: EmExpansions }, // temp - delete eventually
         { path: '', name: 'Home', component: Home },
         { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
@@ -151,25 +151,25 @@ const router = new Router({
           }
         },
         {
-          path: '/ots-target-detail', name: 'OTS Target Detail', component: OTSTargetDetail,
+          path: '/ots-target-detail', name: 'OTS Target Detail', component: OtsTargetDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-target-detail/:id', name: 'OTS Target Detail', component: OTSTargetDetail,
+          path: '/ots-target-detail/:id', name: 'OTS Target Detail', component: OtsTargetDetail,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-trips', name: 'OTS Trips', component: OTSTrips,
+          path: '/ots-trips', name: 'OTS Trips', component: OtsTrips,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
         {
-          path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OTSTripHistory,
+          path: '/ots-trip-history/:id', name: 'OTS Trip History', component: OtsTripHistory,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

@@ -50,7 +50,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 @Component
-export default class OTSTripHistory extends Vue {
+export default class OtsTripHistory extends Vue {
     private trip = null;
 
     private getDate(date: string) {
