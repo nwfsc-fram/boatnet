@@ -249,7 +249,7 @@ import Calendar from 'primevue/calendar';
 Vue.component('pCalendar', Calendar);
 
 @Component
-export default class OTSTargetDetail extends Vue {
+export default class OtsTargetDetail extends Vue {
   @State('ots') private ots!: OTSState;
 
   @Action('clear', { namespace: 'alert' }) private clear: any;

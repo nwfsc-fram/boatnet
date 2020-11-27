@@ -77,7 +77,7 @@ Vue.component('InputText', InputText);
 Vue.component('MultiSelect', MultiSelect);
 
 @Component
-export default class OTSTrips extends Vue {
+export default class OtsTrips extends Vue {
     private columns: any[] = [];
     private data: any[] = [];
 
