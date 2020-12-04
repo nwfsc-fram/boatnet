@@ -2,10 +2,17 @@
   <div class="q-pa-md q-gutter-md">
 
     <div v-if="speciesDoc" class="q-gutter-md">
-        <p><b>Doc. Type:</b> {{ speciesDoc.type }}</p>
-        <p><b>Name(s):</b> {{ speciesDoc.name ? speciesDoc.name : speciesDoc.commonNames }}</p>
-        <p><b>Scientific Name:</b> {{ speciesDoc.taxonomy ? speciesDoc.taxonomy.scientificName : '' }}</p>
-
+        <q-card >
+            <q-card-section>
+                <span><b>Name(s):</b> {{ speciesDoc.name ? speciesDoc.name : speciesDoc.commonNames }}</span><br>
+                <span><b>Doc. Type:</b> {{ speciesDoc.type }}</span><br>
+                <span><b>Scientific Name:</b> {{ speciesDoc.taxonomy ? speciesDoc.taxonomy.scientificName : '' }}</span>
+            </q-card-section>
+            <q-card-section v-if="speciesDoc.members && speciesDoc.members.length > 0" class="text-white bg-primary">
+                <span><b>Common Name Members:</b> {{ getMemberCommonNames(speciesDoc.members) }}</span><br>
+               <span><b>Scientific Name Members:</b> {{ getMemberScientificNames(speciesDoc.members) }}</span>
+            </q-card-section>
+        </q-card>
 
         <div class="row">
             <q-select v-model="speciesDoc.speciesCategory" :options="categoryOptions" label="Category" dense outlined class="q-ma-sm cat-input"></q-select>
@@ -22,7 +29,7 @@
         <q-toggle v-model="speciesDoc.isEmExpandable" label="isEmExpandable"></q-toggle>
         <q-toggle v-model="speciesDoc.isProtected" label="isProtected"></q-toggle>
         <q-toggle v-model="speciesDoc.isWcgopEmPriority" label="isWcgopEmPriority"></q-toggle>
-        <div>(toggle in middle position = no value set)</div>
+        <br><span style="margin-left: 35px">(toggle in middle = no value set)</span><br>
 
         <q-btn
             color="primary"
@@ -35,6 +42,25 @@
             label="cancel"
             @click="clear"
         ></q-btn>
+
+        <q-table
+        v-if="speciesDoc.changeLog && speciesDoc.changeLog.length > 0"
+        :data="speciesDoc.changeLog"
+        :columns="columns"
+        dense
+        row-key="id"
+        :title="speciesDoc.name ? speciesDoc.name : speciesDoc.commonNames[0] ? speciesDoc.commonNames[0] : speciesDoc.taxonomy.scientificName + ' ' + capitalize(speciesDoc.type) + ' Document Changelog'"
+        >
+            <template v-slot:body="props">
+                <q-tr :props="props">
+
+                    <q-td key="updatedBy" :props="props">{{ capitalize(props.row.updatedBy) }}</q-td>
+                    <q-td key="updatedDate" :props="props">{{ formatDate(props.row.updatedDate) }}</q-td>
+                    <q-td key="changes" :props="props" >{{ props.row.changes }}</q-td>
+                </q-tr>
+            </template>
+        </q-table>
+
     </div>
 
   </div>
@@ -104,10 +130,54 @@ export default createComponent({
 
     const masterDB: Client<any> = couchService.masterDB;
 
+    const columns = [
+        {name: 'updatedBy', label: 'Updated By', field: 'updatedBy', required: false, align: 'left', sortable: true},
+        {name: 'updatedDate', label: 'Updated Date', field: 'updatedDate', required: false, align: 'left', sortable: true},
+        {name: 'changes', label: 'Changes', field: 'changes', required: false, align: 'left', sortable: true}
+    ];
 
     const formatDate: any = (dateVal: any) => {
       return moment(dateVal).format('MMM DD, YYYY HH:mm');
     };
+
+    const capitalize: any = (name: string) => {
+        let formattedName = '';
+        name.split(/[.-]/).forEach( (nameSeg: string) => {
+            formattedName += _.capitalize(nameSeg) + ' '
+        })
+        return formattedName;
+    };
+
+    const getMemberCommonNames: any = (members: any) => {
+        let commonNames = '';
+        for (const member of members) {
+            if (member.commonNames) {
+                member.commonNames.forEach(
+                    (name: string) => {
+                        commonNames += name
+                        if (member.commonNames.indexOf(name) < member.commonNames.length -1) {
+                            commonNames += ', ';
+                        }
+                    }
+                )
+            }
+        }
+        return commonNames;
+    }
+
+    const getMemberScientificNames: any = (members: any) => {
+        let scientificNames = '';
+        for (const member of members) {
+
+            if (member.taxonomy) {
+                scientificNames += member.taxonomy.scientificName
+            }
+            if (members.indexOf(member) < members.length - 1) {
+                scientificNames += ', ';
+            }
+        }
+        return scientificNames;
+    }
 
     const getDoc: any = async () => {
         try {
@@ -195,7 +265,7 @@ export default createComponent({
     );
 
     return {
-        docId, speciesDoc, formatDate, submit, loading, clear, categoryOptions, subCategoryOptions
+        docId, speciesDoc, formatDate, capitalize, columns, submit, loading, clear, categoryOptions, subCategoryOptions, getMemberCommonNames, getMemberScientificNames
     };
   }
 });
@@ -210,4 +280,21 @@ export default createComponent({
 .cat-input {
     width: 185px
 }
+
+.bordered-section {
+    margin: 15px;
+    padding: 5px;
+    border: 2px solid #007EC6;
+    border-radius: 5px;
+}
+
+td {
+    padding: 5px;
+}
+
+thead {
+    background-color: #007EC6;
+    color: white;
+}
+
 </style>

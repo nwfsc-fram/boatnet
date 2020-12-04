@@ -1462,8 +1462,10 @@ export default createComponent({
         queryOptions
       );
 
-      const fisheryOptionsRows = fisheries.rows.map(
-        (row: any) => row.doc.description
+      const fisheryOptionsRows = fisheries.rows.filter( (row: any) => row.doc.isEm && row.doc.isActive ).map(
+        (row: any) => {
+         return row.doc.description
+        }
       );
       for (const row of fisheryOptionsRows) {
         fisheryOptions.push(row);
