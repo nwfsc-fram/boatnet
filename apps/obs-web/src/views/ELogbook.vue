@@ -1464,7 +1464,7 @@ export default createComponent({
 
       const fisheryOptionsRows = fisheries.rows.filter( (row: any) => row.doc.isEm && row.doc.isActive ).map(
         (row: any) => {
-         return row.doc.description
+         return row.doc.description;
         }
       );
       for (const row of fisheryOptionsRows) {
