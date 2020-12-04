@@ -143,8 +143,8 @@ export default createComponent({
     const capitalize: any = (name: string) => {
         let formattedName = '';
         name.split(/[.-]/).forEach( (nameSeg: string) => {
-            formattedName += _.capitalize(nameSeg) + ' '
-        })
+            formattedName += _.capitalize(nameSeg) + ' ';
+        });
         return formattedName;
     };
 
@@ -154,30 +154,30 @@ export default createComponent({
             if (member.commonNames) {
                 member.commonNames.forEach(
                     (name: string) => {
-                        commonNames += name
-                        if (member.commonNames.indexOf(name) < member.commonNames.length -1) {
+                        commonNames += name;
+                        if (member.commonNames.indexOf(name) < member.commonNames.length - 1) {
                             commonNames += ', ';
                         }
                     }
-                )
+                );
             }
         }
         return commonNames;
-    }
+    };
 
     const getMemberScientificNames: any = (members: any) => {
         let scientificNames = '';
         for (const member of members) {
 
             if (member.taxonomy) {
-                scientificNames += member.taxonomy.scientificName
+                scientificNames += member.taxonomy.scientificName;
             }
             if (members.indexOf(member) < members.length - 1) {
                 scientificNames += ', ';
             }
         }
         return scientificNames;
-    }
+    };
 
     const getDoc: any = async () => {
         try {
