@@ -56,6 +56,8 @@ import Vessels from './views/Vessels.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 
+import FisherySelectionMockup from './views/FisherySelectionMockup.vue';
+
 import { authService } from '@boatnet/bn-auth';
 
 // Note: Jenkins build will update this dbConfig.ts file for Prod/ Stage/ Dev etc.
@@ -304,6 +306,12 @@ const router = new Router({
         },
         {
           path: '/vessels/:id', name: 'Vessel Details', component: VesselDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/fsm', name: 'OTS Fishery Selection Mockup', component: FisherySelectionMockup,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }

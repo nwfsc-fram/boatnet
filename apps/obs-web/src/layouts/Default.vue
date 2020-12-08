@@ -67,6 +67,16 @@
           </q-item-section>
         </q-item>
 
+        <q-item :to="onlineStatus ? '/fsm' : ''" exact :disabled="!onlineStatus">
+          <q-item-section avatar>
+            <q-icon name="edit_attributes" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Fishery Selection Mockup</q-item-label>
+            <q-item-label caption>example fishery selection</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <q-item :to="onlineStatus ? '/declarations' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="how_to_vote" />
