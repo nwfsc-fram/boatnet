@@ -240,72 +240,69 @@ export default createComponent({
                 }
             );
         });
-      }
+      };
 
       const submitTrip = async () => {
         if (!trip.value.vesselId) {
           Notify.create({
             message: 'Vessel Id is required'
-          })
+          });
           return;
         }
         if (!trip.value.departureDate) {
           Notify.create({
             message: 'Departure Date/Time is required'
-          })
+          });
           return;
         }
         if (!trip.value.returnDate) {
           Notify.create({
             message: 'Return Date/Time is required'
-          })
+          });
           return;
         }
-        let response: any = ''
+
         if (trip.value._id) {
           try {
-            await updateTripsApiTrip(trip.value)
+            await updateTripsApiTrip(trip.value);
             Notify.create({
               message: 'Trip successfully updated'
-            })
+            });
           } catch (err) {
             Notify.create({
               message: err
-            })
+            });
           }
         } else {
           try {
-            await newTripsApiTrip(trip.value)
+            await newTripsApiTrip(trip.value);
             Notify.create({
               message: 'New trip successfully submitted'
-            })
+            });
           } catch (err) {
             Notify.create({
               message: err
-            })
+            });
           }
         }
-        Notify.create(
-          {message: response}
-        )
-      }
+      };
 
       const getTrips = async () => {
         trips.value = await getTripsApiTrips();
-      }
+      };
 
       const getTrip = async () => {
         tripDates.value = [];
-        trip.value = await getTripsApiTrip(parseInt(tripNum.value, 10))
+        trip.value = await getTripsApiTrip(parseInt(tripNum.value, 10));
         if (trip.value.departureDate) {
           tripDates.value[0] = new Date(moment(trip.value.departureDate).format());
         }
         if (trip.value.returnDate) {
           tripDates.value[1] = new Date(moment(trip.value.returnDate).format());
         }
-      }
+      };
 
-      const getTripsApiTrips = () => {;
+      const getTripsApiTrips = () => {
           return new Promise( (resolve, reject) => {
               const queryUrl = getTripsApiUrl() + queryString.value;
               request.get(
@@ -323,8 +320,8 @@ export default createComponent({
                       }
                   }
               );
-          })
-      }
+          });
+      };
 
       const clearTrip = () => {
           trip.value = {};
@@ -332,7 +329,7 @@ export default createComponent({
           tripDates.value = [];
           trips.value = [];
           queryString.value = '';
-      }
+      };
 
       const getVessel = async () => {
         if (mode.value === 'new') {
@@ -342,13 +339,13 @@ export default createComponent({
             'obs_web',
             'all_vessel_nums',
             {reduce: false, include_docs: true, key: trip.value.vesselId}
-          )
+          );
           if (vesselsQuery.rows[0] && vesselsQuery.rows[0].doc.vesselName) {
             validVesselId.value = true;
-            Vue.set(trip.value, 'vesselName', vesselsQuery.rows[0].doc.vesselName)
+            Vue.set(trip.value, 'vesselName', vesselsQuery.rows[0].doc.vesselName);
           }
         }
-      }
+      };
 
       onMounted(
         () => {
