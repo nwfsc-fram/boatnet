@@ -57,6 +57,7 @@ import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 
 import FisherySelectionMockup from './views/FisherySelectionMockup.vue';
+import TripsApiInterface from './views/TripsApiInterface.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -79,6 +80,7 @@ const router = new Router({
       children: [
         { path: 'em-expansions', component: EmExpansions }, // temp - delete eventually
         { path: '', name: 'Home', component: Home },
+        { path: '/trips-api-interface', name: 'Trips Api Interface', component: TripsApiInterface },
         { path: '/lookup-editor', name: 'Lookup Editor', component: LookupEditor,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }

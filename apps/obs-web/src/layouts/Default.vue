@@ -389,6 +389,13 @@
           </q-item-section>
         </q-item>
 
+        <q-item to="/trips-api-interface" exact>
+          <q-item-section avatar>
+            <q-icon name="fa fa-ship"/>
+          </q-item-section>
+          <q-item-section>Trips API Web Interface</q-item-section>
+        </q-item>
+
         <q-item to="/help" exact>
           <q-item-section avatar>
             <q-icon name="help" />
