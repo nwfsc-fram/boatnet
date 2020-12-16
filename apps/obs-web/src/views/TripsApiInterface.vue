@@ -205,24 +205,6 @@ export default createComponent({
             const tripsApiTrip: any = await getTripsApiTrip(activeTrip.tripNum);
             const queryUrl = getTripsApiUrl() + '/' + activeTrip.tripNum;
 
-            if (!tripsApiTrip.changeLog) { tripsApiTrip.changeLog = []; }
-
-            tripsApiTrip.changeLog.push({
-                changedBy: authService.getCurrentUser()!.username,
-                changedDate: moment().format(),
-                previousDeparturePort: tripsApiTrip.departurePort,
-                previousDepartureDate: tripsApiTrip.departureDate,
-                previousReturnPort: tripsApiTrip.returnPort,
-                previousReturnDate: tripsApiTrip.returnDate
-            });
-
-            tripsApiTrip.updatedBy = authService.getCurrentUser()!.username;
-            tripsApiTrip.updatedDate = moment().format();
-            tripsApiTrip.departurePort = trip.value.departurePort;
-            tripsApiTrip.departureDate = trip.value.departureDate;
-            tripsApiTrip.returnPort = trip.value.departurePort;
-            tripsApiTrip.returnDate = trip.value.returnDate;
-
             request.put(
                 {
                     url: queryUrl,
@@ -230,7 +212,7 @@ export default createComponent({
                     headers: {
                         authorization: 'Token ' + getJwt(),
                     },
-                    body: tripsApiTrip
+                    body: trip.value
                 }, (err: any, response: any, body: any) => {
                     if (!err && response.statusCode === 200) {
                         resolve(body);
