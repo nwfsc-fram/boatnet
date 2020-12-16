@@ -46,8 +46,8 @@
                     label="Departure Port"
                     :options="portOptions"
                     @filter="portsFilterFn"
-                    :option-label="opt => opt.NAME + ' (' + opt.PCID + ')'"
-                    :option-value="opt => opt.PCID"
+                    :option-label="opt => opt.description + ' (' + opt.lookupValue + ')'"
+                    :option-value="opt => opt.lookupValue"
                     emit-value
                     :display-value="trip.departurePort"
                   ></q-select>
@@ -74,8 +74,8 @@
                     label="Return Port"
                     :options="portOptions"
                     @filter="portsFilterFn"
-                    :option-label="opt => opt.NAME + ' (' + opt.PCID + ')'"
-                    :option-value="opt => opt.PCID"
+                    :option-label="opt => opt.description + ' (' + opt.lookupValue + ')'"
+                    :option-value="opt => opt.lookupValue"
                     emit-value
                     :display-value="trip.returnPort"
                   ></q-select>
@@ -158,26 +158,29 @@ export default createComponent({
 
       const portOptions: any = ref([]);
 
-      const getPortDecoderPorts = async () => {
+      const getPorts = async () => {
         const masterDb = couchService.masterDB;
         const queryOptions = {
           reduce: false,
-          include_docs: true,
-          key: 'a-port-decoder'
+          include_docs: false,
+          key: 'port'
         };
 
-        const portDecoder = await masterDb.view(
-          'obs_web',
-          'all_doc_types',
+        const ports = await masterDb.view(
+          'TripsApi',
+          'all_trips_lookups',
           queryOptions
         );
 
-        portOptions.value = portDecoder.rows[0].doc.ports;
+        portOptions.value = ports.rows.map( (row: any) => {
+          return {description: row.value[0], lookupValue: row.value[1]};
+          })
+        ;
 
         portOptions.value.sort((a: any, b: any) => {
-          if (a.NAME > b.NAME) {
+          if (a.description > b.description) {
             return 1;
-          } else if (a.NAME < b.NAME) {
+          } else if (a.description < b.description) {
             return -1;
           } else {
             return 0;
@@ -190,8 +193,8 @@ export default createComponent({
             if (val !== '') {
               portOptions.value = portOptions.value.filter((port: any) => {
                 return (
-                  port.NAME.includes(val.toUpperCase()) ||
-                  port.PCID.includes(val.toUpperCase())
+                  port.description.includes(val.toUpperCase()) ||
+                  port.lookupValue.includes(val.toUpperCase())
                 );
               });
             }
@@ -331,7 +334,7 @@ export default createComponent({
 
       onMounted(
         () => {
-          getPortDecoderPorts();
+          getPorts();
         }
       );
 
