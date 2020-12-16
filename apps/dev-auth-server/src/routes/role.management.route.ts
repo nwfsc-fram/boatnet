@@ -47,7 +47,7 @@ export async function getAllUsers(req: Request, res: any) {
   try {
     verifyRoleRead(res);
 
-    const userAppName = req.query
+    const userAppName: any = req.query
       ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 
@@ -157,7 +157,7 @@ export async function getAllUsersDetails(req: Request, res: any) {
     console.log(moment().format(), req.method, req.originalUrl, req.ip);
     verifyRoleRead(res);
 
-    const applicationName = req.query
+    const applicationName: any = req.query
       ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 
@@ -223,7 +223,7 @@ export async function getUserDetails(req: Request, res: any) {
   try {
     verifyRoleAdmin(res);
     let userDetails: any = {};
-    const username = req.query.username;
+    const username: any = req.query.username;
 
     try {
       verifyUserExists(username);
@@ -273,12 +273,12 @@ export async function getUserRole(req: Request, res: any) {
 
     let userRoles: string[] = [];
 
-    const applicationName = req.query
+    const applicationName: any = req.query
       ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 
     try {
-      userRoles = getUserRoles(req.query.username, applicationName);
+      userRoles = getUserRoles(req.query.username as any, applicationName);
     } catch (errUsernameResult) {
       res.status(404).json({
         status: 404,
@@ -355,9 +355,9 @@ export async function deleteUserRole(req: Request, res: any) {
     verifyRoleAdmin(res);
 
     let userRoles: string[] = [];
-    const targetUsername = req.query.username;
+    const targetUsername: any = req.query.username;
     const targetRole = req.query.role;
-    const applicationName = req.query.applicationName
+    const applicationName: any = req.query.applicationName
       ? req.query.applicationName
       : DEFAULT_APPLICATION_NAME;
 

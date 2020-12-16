@@ -126,24 +126,6 @@ export function updateTripsApiTrip(activeTrip: any) {
         const tripsApiTrip: any = await getTripsApiTrip(activeTrip.tripNum);
         const queryUrl = getTripsApiUrl() + '/' + activeTrip.tripNum;
 
-        if (!tripsApiTrip.changeLog) { tripsApiTrip.changeLog = []; }
-
-        tripsApiTrip.changeLog.push({
-            changedBy: authService.getCurrentUser()!.username,
-            changedDate: moment().format(),
-            previousDeparturePort: tripsApiTrip.departurePort,
-            previousDepartureDate: tripsApiTrip.departureDate,
-            previousReturnPort: tripsApiTrip.returnPort,
-            previousReturnDate: tripsApiTrip.returnDate
-        });
-
-        tripsApiTrip.updatedBy = authService.getCurrentUser()!.username;
-        tripsApiTrip.updatedDate = moment().format();
-        tripsApiTrip.departurePort = activeTrip!.departurePort.name;
-        tripsApiTrip.departureDate = activeTrip!.departureDate;
-        tripsApiTrip.returnPort = activeTrip!.returnPort.name;
-        tripsApiTrip.returnDate = activeTrip!.returnDate;
-
         request.put(
             {
                 url: queryUrl,
@@ -151,7 +133,7 @@ export function updateTripsApiTrip(activeTrip: any) {
                 headers: {
                     authorization: 'Token ' + getJwt(),
                 },
-                body: tripsApiTrip
+                body: activeTrip
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
                     resolve(body);
