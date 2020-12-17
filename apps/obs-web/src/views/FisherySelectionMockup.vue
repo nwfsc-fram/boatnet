@@ -69,10 +69,10 @@ export default createComponent({
 
     const fisheries = [
         {description: 'Pacific Halibut Directed 2A', lookupValue: 'Pacific Halibut Directed 2A'},
-        {description: 'LE Sable Fixed Gear', lookupValue: 'LE Sable Fixed Gear', sectors: [{description: 'Tier fishery (1, 2, 3)'}, {description: 'Zero Tier'}], isEm: false, isEfp: false, isFederal: true},
-        {description: 'LE Sable Fixed Gear EM', lookupValue: 'LE Sable Fixed Gear EM', sectors: [{description: 'Tier fishery (1, 2, 3)'}, {description: 'Zero Tier'}], isEm: true, isEfp: false, isFederal: true},
-        {description: 'LE Trawl ITQ', lookupValue: 'LE Trawl ITQ', sectors: [{description: 'Mothership Catcher Vessel'}, {description: 'Midwater Rockfish'}, {description: 'Bottom Trawl'}, {description: 'Fixed Gear'}, {description: 'Shoreside Hake'}], isEm: false, isEfp: false, isFederal: true},
-        {description: 'LE Trawl ITQ EM', lookupValue: 'LE Trawl ITQ EM', sectors: [{description: 'Mothership Catcher Vessel'}, {description: 'Midwater Rockfish'}, {description: 'Bottom Trawl'}, {description: 'Fixed Gear'}, {description: 'Shoreside Hake'}], isEm: true, isEfp: true, isFederal: true},
+        {description: 'LE Sablefish Fixed Gear', lookupValue: 'LE Sablefish Fixed Gear', sectors: [{description: 'Tier fishery (1, 2, 3)'}, {description: 'Zero Tier'}], isEm: false, isEfp: false, isFederal: true},
+        {description: 'LE Sablefish Fixed Gear EM', lookupValue: 'LE Sablefish Fixed Gear EM', sectors: [{description: 'Tier fishery (1, 2, 3)'}, {description: 'Zero Tier'}], isEm: true, isEfp: false, isFederal: true},
+        {description: 'LE ITQ', lookupValue: 'LE ITQ', sectors: [{description: 'Mothership Catcher Vessel'}, {description: 'Midwater Rockfish'}, {description: 'Bottom Trawl'}, {description: 'Fixed Gear'}, {description: 'Shoreside Hake'}], isEm: false, isEfp: false, isFederal: true},
+        {description: 'LE ITQ EM', lookupValue: 'LE ITQ EM', sectors: [{description: 'Mothership Catcher Vessel'}, {description: 'Midwater Rockfish'}, {description: 'Bottom Trawl'}, {description: 'Fixed Gear'}, {description: 'Shoreside Hake'}], isEm: true, isEfp: true, isFederal: true},
         {description: 'CA Cucumber Trawl', lookupValue: 'OA Cucumber Trawl', isState: true},
         {description: 'CA Halibut', lookupValue: 'CA Halibut', isState: true},
         {description: 'CA Nearshore', lookupValue: 'CA Nearshore', isState: true},
@@ -121,10 +121,10 @@ export default createComponent({
                 } else if (selections[0].description === 'EFP') {
                     return fisheries.filter( (fishery: any) => fishery.isEfp );
                 }
-            } else if (selections.length === 2 && selections[0].description === 'Federal Permit') {
+            } else if ((selections.length === 2 && selections[0].description === 'Federal Permit') || (selections.length === 2 && selections[1].description === 'LE ITQ EM')) {
                 return _.cloneDeep(selections[1].sectors);
             } else if (selections[1].isEm && (selections.length === 2 || (selections.length === 3 && !['Maximized Retention', 'Optimized Retention'].includes(selections[2].description)))) {
-                return [{description: 'Maximized Retention'}, {description: 'Optimized Retention'}];
+                return [{description: 'Maximized Retention'}, {description: 'Optimized Retention / Don\'t know'}];
             } else {
                 return [];
             }
