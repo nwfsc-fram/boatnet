@@ -31,7 +31,7 @@ export default createComponent({
     setup(props, context) {
         const store = context.root.$store;
         const state: any = store.state;
-        const initialSelection = state.debriefer.operations;
+        const initialSelection = state.debriefer.operations ? state.debriefer.operations : [];
 
         const wcgopColumns = [
             {
@@ -250,9 +250,9 @@ export default createComponent({
         }
 
         return {
-            initialSelection,
             wcgopColumns,
             selectValues,
+            initialSelection
         };
     },
 });

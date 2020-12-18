@@ -2,7 +2,7 @@
   <div>
     <div id="expand-box">
       <div id="expand-box-header">
-        <div style="float: left">
+        <div style="float: left" v-if="filters.length > 0">
           Filters:
           <q-chip
             v-for="filter of filters"
@@ -14,13 +14,6 @@
             @remove="remove(filter)"
           >{{ filter.label }}</q-chip>
         </div>
-        <q-icon
-          v-if="showPopout"
-          style="float: right"
-          name="open_in_new"
-          size="md"
-          v-on:click="openNewDebriefingTab"
-        />
       </div>
     </div>
     <div class="q-gutter-y-md">
@@ -84,7 +77,6 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 export default createComponent({
   props: {
     showErrors: Boolean,
-    showPopout: Boolean,
     startingTab: String,
     isFullSize: Boolean
   },
@@ -196,16 +188,9 @@ export default createComponent({
       operations.value = ops;
     }
 
-    function openNewDebriefingTab() {
-      const route = '/observer-web/table/' + tab.value;
-      window.open(route, '_blank');
-      context.emit('update:showErrors', false);
-    }
-
     return {
       tab,
       updateTab,
-      openNewDebriefingTab,
       filters,
       operations,
       remove

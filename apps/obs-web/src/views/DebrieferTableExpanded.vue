@@ -1,5 +1,5 @@
 <template>
-  <app-debriefer-wcgop-data :startingTab="tableType" :showPopout="false" :isFullSize="true" />
+  <app-debriefer-wcgop-data :startingTab="tableType" :isFullSize="true" />
 </template>
 
 

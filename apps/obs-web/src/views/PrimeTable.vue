@@ -40,6 +40,13 @@
               <div>Display Columns</div>
             </template>
           </MultiSelect>
+          <q-icon
+            v-if="!isFullSize"
+            style="float: right"
+            name="open_in_new"
+            size="md"
+            v-on:click="openNewDebriefingTab"
+          />
         </div>
       </template>
 
@@ -182,9 +189,9 @@ export default createComponent({
     let updateStatePermissions = false;
 
     onMounted(() => {
-      updateStatePermissions = true;
       pageStart.value = 0;
-      context.emit('selectValues', props.initialSelection);
+      selected.value = props.initialSelection;
+      updateStatePermissions = true;
     });
 
     // clear selection when evaluation period selected
@@ -349,6 +356,13 @@ export default createComponent({
       }
     }
 
+    function openNewDebriefingTab() {
+      const type = props.type ? props.type.toLowerCase() : '';
+      const route = '/observer-web/table/' + type;
+      window.open(route, '_blank');
+      context.emit('update:showErrors', false);
+    }
+
     return {
       containsMultiples,
       filters,
@@ -371,6 +385,7 @@ export default createComponent({
       popupColumns,
       popupUniqueKey,
       rowClass,
+      openNewDebriefingTab
     };
   },
 });

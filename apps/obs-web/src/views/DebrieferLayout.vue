@@ -1,24 +1,17 @@
 <template>
   <div>
-    <TabView class="q-ma-md">
-      <TabPanel header="WCGOP" :active="true" >
-        <TabView @tab-change="clearFilters">
-          <TabPanel header="Evaluation" :active="true">
-            <app-debriefer-wcgop-evaluation />
-          </TabPanel>
-          <TabPanel header="Search">
-            <app-debriefer-wcgop-search />
-          </TabPanel>
-        </TabView>
-      </TabPanel>
-      <TabPanel header="A-SHOP">
-        <app-debriefer-layout-ashop />
-      </TabPanel>
+    <TabView class="q-ma-sm">
+        <TabPanel header="Evaluation" :active="true">
+          <app-debriefer-wcgop-evaluation />
+        </TabPanel>
+        <TabPanel header="Search">
+          <app-debriefer-wcgop-search />
+        </TabPanel>
     </TabView>
 
-    <TabView class="q-ma-md">
+    <TabView class="q-ma-sm">
       <TabPanel header="Data" :active="activeTab === 'data'">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :showPopout="true" :isFullSize="false"/>
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :isFullSize="false"/>
         <app-debriefer-ashop-data v-else />
       </TabPanel>
       <TabPanel header="Errors" :active="activeTab === 'qa'">

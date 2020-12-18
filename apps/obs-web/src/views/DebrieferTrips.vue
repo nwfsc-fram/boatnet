@@ -61,7 +61,7 @@ export default createComponent({
     const columns: any = ref([]);
     const trips: any = ref([]);
     const loading: any = ref(false);
-    const initialSelection = state.debriefer.trips;
+    const initialSelection: any = state.debriefer && state.debriefer.trips ? state.debriefer.trips : [];
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -501,12 +501,12 @@ export default createComponent({
     }
 
     return {
-      initialSelection,
       columns,
       trips,
       save,
       loading,
-      selectValues
+      selectValues,
+      initialSelection
     };
   }
 });
