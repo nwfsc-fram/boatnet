@@ -137,7 +137,7 @@ export default class BoatnetTreeTable extends Vue {
 
   private expandedKeys: any = {};
 
-  public selected: any[] = [];
+  private selected: any[] = [];
   private filters: any = {};
 
   private selectedKey1: any = null;
@@ -199,7 +199,8 @@ export default class BoatnetTreeTable extends Vue {
   private filterFn(val: any, update: any, abort: any) {
     update(() => {
       const needle = val.toLowerCase();
-      this.lookupsList = this.sortedList.filter((v) => v.label.toLowerCase().indexOf(needle) > -1);});
+      this.lookupsList = this.sortedList.filter((v) => v.label.toLowerCase().indexOf(needle) > -1);
+    });
   }
 
   private onCellEdit(event: any, slotProps: any, col: any) {
@@ -219,7 +220,7 @@ export default class BoatnetTreeTable extends Vue {
   }
 
   private async getOptionsList(view: string, field: string[], data: any) {
-    let lookupList: any[] = [];
+    const lookupList: any[] = [];
     let lookupField = this.lookupFieldName;
     if (data.column.field === 'name') {
       const catchContent = data.node.data.catchContent;
@@ -230,7 +231,7 @@ export default class BoatnetTreeTable extends Vue {
         lookupField = 'commonNames[0]';
       }
     }
-    let results = await getCouchLookupInfo(this.program, 'obs_web', view, [lookupField]);
+    const results = await getCouchLookupInfo(this.program, 'obs_web', view, [lookupField]);
     for (let i = 0; i < results.length; i++) {
       lookupList[i] = { label: get(results[i].doc, lookupField), value: results[i].doc };
     }

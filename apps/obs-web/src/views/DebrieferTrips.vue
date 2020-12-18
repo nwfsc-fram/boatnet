@@ -9,7 +9,9 @@
       :enableSelection="true"
       :isFullSize="isFullSize"
       :loading="loading"
+      :initialSelection="initialSelection"
       @save="save"
+      @selectValues="selectValues"
     />
   </div>
 </template>
@@ -59,6 +61,7 @@ export default createComponent({
     const columns: any = ref([]);
     const trips: any = ref([]);
     const loading: any = ref(false);
+    const initialSelection = state.debriefer.trips;
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -493,11 +496,17 @@ export default createComponent({
       });
     }
 
+    function selectValues(data: any) {
+      store.dispatch('debriefer/updateTrips', data);
+    }
+
     return {
+      initialSelection,
       columns,
       trips,
       save,
-      loading
+      loading,
+      selectValues
     };
   }
 });

@@ -1,383 +1,259 @@
 <template>
-  <div>
-    <prime-table
-      :value="operations"
-      :columns="columns"
-      type="Operations"
-      uniqueKey="_id"
-      :enableSelection="true"
-      :isFullSize="isFullSize"
-    />
-  </div>
+    <div>
+        <prime-table
+            :value="operations"
+            :columns="wcgopColumns"
+            type="Operations"
+            uniqueKey="_id"
+            :enableSelection="true"
+            :isFullSize="isFullSize"
+            :initialSelection="initialSelection"
+            @selectValues="selectValues"
+        />
+    </div>
 </template>
 
 
 <script lang="ts">
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import {
-  TripState,
-  PermitState,
-  UserState,
-  GeneralState,
-  DebrieferState
-} from '../_store/types/types';
-import {
-  WcgopTrip,
-  WcgopOperation,
-  WcgopCatch,
-  WcgopSpecimen,
-  Basket
-} from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
-import { convertToObject } from 'typescript';
+    createComponent,
+    ref,
+    reactive,
+    computed,
+    watch,
+} from '@vue/composition-api';
 
-@Component
-export default class DebrieferOperations extends Vue {
-  @Prop() private isFullSize!: boolean;
-  @Prop() private operations!: any[];
-  @Action('error', { namespace: 'alert' }) private error: any;
-  @State('debriefer') private debriefer!: DebrieferState;
+export default createComponent({
+    props: {
+        isFullSize: Boolean,
+        operations: Array,
+    },
+    setup(props, context) {
+        const store = context.root.$store;
+        const state: any = store.state;
+        const initialSelection = state.debriefer.operations;
 
-  private columns: any[] = [];
+        const wcgopColumns = [
+            {
+                field: 'legacy.tripId',
+                header: 'Trip Id',
+                type: 'number',
+                key: 'wcgopOpTripId',
+                width: '80',
+            },
+            {
+                field: 'operationNum',
+                header: 'Haul #',
+                type: 'number',
+                key: 'wcgopOpHaulNum',
+                width: '60',
+            },
+            {
+                field: 'haulScore',
+                header: 'Haul Score',
+                type: 'toggle',
+                list: ['Pass', 'Fail'],
+                key: 'wcgopHaulScore',
+                isEditable: true,
+                width: '100',
+            },
+            {
+                field: 'observerTotalCatch.measurement.value',
+                header: 'OTC (lbs)',
+                type: 'double',
+                key: 'wcgopOpOTC',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'observerTotalCatch.weightMethod.description',
+                header: 'OTC WT Method',
+                type: 'toggle',
+                key: 'wcgopOpWM',
+                width: '150',
+                listType: 'fetch',
+                search: true,
+                lookupKey: 'weight-method',
+                lookupField: 'description',
+                isEditable: true,
+            },
+            {
+                field: 'gearPerformance.description',
+                header: 'Gear Perf',
+                type: 'toggle',
+                key: 'wcgopGearPerf',
+                width: '150',
+                listType: 'fetch',
+                search: true,
+                lookupKey: 'gear-performance',
+                lookupField: 'description',
+                isEditable: true,
+            },
+            {
+                field: 'totalGearSegments',
+                header: 'Total Gear',
+                type: 'number',
+                key: 'wcgopOpTotGear',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'gearSegmentsLost',
+                header: 'Lost Gear',
+                type: 'number',
+                key: 'wcgopOpTotGearLost',
+                width: '100',
+                isEditable: true,
+            },
+            // sea bird avoidance
+            {
+                field: 'avgSoakTime.value',
+                header: 'Average Soak Time',
+                type: 'number',
+                key: 'wcgopOpAvgSoakTime',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'beaufortValue',
+                header: 'Beaufort',
+                type: 'toggle',
+                key: 'wcgopOpBeaufort',
+                listType: 'fetch',
+                lookupKey: 'beaufort',
+                lookupField: 'legacy.lookupVal',
+                width: '70',
+                isEditable: true,
+            },
+            {
+                field: 'fit',
+                header: 'Fit #',
+                type: 'number',
+                key: 'wcgopOpFit',
+                width: '70',
+                isEditable: true,
+            },
+            {
+                field: 'calWeight',
+                header: 'Cal WT',
+                type: 'number',
+                key: 'wcgopOpCalWeight',
+                width: '70',
+                isEditable: true,
+            },
+            {
+                field: 'biolist',
+                header: 'Biolist',
+                type: 'number',
+                key: 'wcgopOpBiolist',
+                width: '100',
+            },
+            {
+                field: 'locations[0].locationDate',
+                header: 'Start Date',
+                type: 'date',
+                key: 'wcgopOpStartDate',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'locations[1].locationDate',
+                header: 'End Date',
+                type: 'date',
+                key: 'wcgopOpEndDate',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'locations[0].location.coordinates[0]',
+                header: 'Start lat',
+                type: 'double',
+                key: 'wcgopOpStartLat',
+                width: '125',
+                isEditable: true,
+            },
+            {
+                field: 'locations[1].location.coorindates[0]',
+                header: 'End lat',
+                type: 'double',
+                key: 'wcgopOpEndLat',
+                width: '125',
+                isEditable: true,
+            },
+            {
+                field: 'locations[0].location.coordinates[1]',
+                header: 'Start long',
+                type: 'double',
+                key: 'wcgopOpStartLong',
+                width: '125',
+                isEditable: true,
+            },
+            {
+                field: 'locations[1].location.coorindates[1]',
+                header: 'End long',
+                type: 'double',
+                key: 'wcgopOpEndLong',
+                width: '125',
+                isEditable: true,
+            },
+            // depth
+            {
+                field: 'gearType.description',
+                header: 'Gear Type',
+                type: 'toggle',
+                key: 'wcgopOpGearType',
+                listType: 'fetch',
+                search: true,
+                lookupKey: 'gear-type',
+                lookupField: 'description',
+                width: '250',
+                isEditable: true,
+            },
+            {
+                field: 'legacy.isBrdPresent',
+                header: 'BRD',
+                type: 'toggle',
+                listType: 'boolean',
+                key: 'wcgopOpIsBRDPresent',
+                width: '100',
+            },
+            // HLFC
+            {
+                field: 'targetStrategy',
+                header: 'Target Strategy',
+                type: 'input',
+                key: 'wcgopOptargetStrategy',
+                width: '100',
+            },
+            {
+                field: 'isEfpUsed',
+                header: 'EFP',
+                type: 'toggle',
+                listType: 'boolean',
+                key: 'wcgopOpEFPUsed',
+                width: '80',
+                isEditable: true,
+            },
+            // MMSBST
+            {
+                field: 'notes',
+                header: 'Notes',
+                type: 'input',
+                key: 'wcgopOpNotes',
+                width: '200',
+                isEditable: true,
+            },
+        ];
 
-  private wcgopColumns = [
-    {
-      field: 'legacy.tripId',
-      header: 'Trip Id',
-      type: 'number',
-      key: 'wcgopOpTripId',
-      width: '80'
-    },
-    {
-      field: 'operationNum',
-      header: 'Haul #',
-      type: 'number',
-      key: 'wcgopOpHaulNum',
-      width: '60'
-    },
-    {
-      field: 'haulScore',
-      header: 'Haul Score',
-      type: 'toggle',
-      list: ['Pass', 'Fail'],
-      key: 'wcgopHaulScore',
-      isEditable: true,
-      width: '100'
-    },
-    {
-      field: 'observerTotalCatch.measurement.value',
-      header: 'OTC (lbs)',
-      type: 'double',
-      key: 'wcgopOpOTC',
-      width: '100',
-      isEditable: true
-    },
-    {
-      field: 'observerTotalCatch.weightMethod.description',
-      header: 'OTC WT Method',
-      type: 'toggle',
-      key: 'wcgopOpWM',
-      width: '150',
-      listType: 'fetch',
-      search: true,
-      lookupKey: 'weight-method',
-      lookupField: 'description',
-      isEditable: true
-    },
-    {
-      field: 'gearPerformance.description',
-      header: 'Gear Perf',
-      type: 'toggle',
-      key: 'wcgopGearPerf',
-      width: '150',
-      listType: 'fetch',
-      search: true,
-      lookupKey: 'gear-performance',
-      lookupField: 'description',
-      isEditable: true
-    },
-    {
-      field: 'totalGearSegments',
-      header: 'Total Gear',
-      type: 'number',
-      key: 'wcgopOpTotGear',
-      width: '100',
-      isEditable: true
-    },
-    {
-      field: 'gearSegmentsLost',
-      header: 'Lost Gear',
-      type: 'number',
-      key: 'wcgopOpTotGearLost',
-      width: '100',
-      isEditable: true
-    },
-    // sea bird avoidance
-    {
-      field: 'avgSoakTime.value',
-      header: 'Average Soak Time',
-      type: 'number',
-      key: 'wcgopOpAvgSoakTime',
-      width: '100',
-      isEditable: true
-    },
-    {
-      field: 'beaufortValue',
-      header: 'Beaufort',
-      type: 'toggle',
-      key: 'wcgopOpBeaufort',
-      listType: 'fetch',
-      lookupKey: 'beaufort',
-      lookupField: 'legacy.lookupVal',
-      width: '70',
-      isEditable: true
-    },
-    {
-      field: 'fit',
-      header: 'Fit #',
-      type: 'number',
-      key: 'wcgopOpFit',
-      width: '70',
-      isEditable: true
-    },
-    {
-      field: 'calWeight',
-      header: 'Cal WT',
-      type: 'number',
-      key: 'wcgopOpCalWeight',
-      width: '70',
-      isEditable: true
-    },
-    {
-      field: 'biolist',
-      header: 'Biolist',
-      type: 'number',
-      key: 'wcgopOpBiolist',
-      width: '100'
-    },
-    {
-      field: 'locations[0].locationDate',
-      header: 'Start Date',
-      type: 'date',
-      key: 'wcgopOpStartDate',
-      width: '150',
-      isEditable: true
-    },
-    {
-      field: 'locations[1].locationDate',
-      header: 'End Date',
-      type: 'date',
-      key: 'wcgopOpEndDate',
-      width: '150',
-      isEditable: true
-    },
-    {
-      field: 'locations[0].location.coordinates[0]',
-      header: 'Start lat',
-      type: 'double',
-      key: 'wcgopOpStartLat',
-      width: '125',
-      isEditable: true
-    },
-    {
-      field: 'locations[1].location.coorindates[0]',
-      header: 'End lat',
-      type: 'double',
-      key: 'wcgopOpEndLat',
-      width: '125',
-      isEditable: true
-    },
-    {
-      field: 'locations[0].location.coordinates[1]',
-      header: 'Start long',
-      type: 'double',
-      key: 'wcgopOpStartLong',
-      width: '125',
-      isEditable: true
-    },
-    {
-      field: 'locations[1].location.coorindates[1]',
-      header: 'End long',
-      type: 'double',
-      key: 'wcgopOpEndLong',
-      width: '125',
-      isEditable: true
-    },
-    // depth
-    {
-      field: 'gearType.description',
-      header: 'Gear Type',
-      type: 'toggle',
-      key: 'wcgopOpGearType',
-      listType: 'fetch',
-      search: true,
-      lookupKey: 'gear-type',
-      lookupField: 'description',
-      width: '250',
-      isEditable: true
-    },
-    {
-      field: 'legacy.isBrdPresent',
-      header: 'BRD',
-      type: 'toggle',
-      listType: 'boolean',
-      key: 'wcgopOpIsBRDPresent',
-      width: '100'
-    },
-    // HLFC
-    {
-      field: 'targetStrategy',
-      header: 'Target Strategy',
-      type: 'input',
-      key: 'wcgopOptargetStrategy',
-      width: '100'
-    },
-    {
-      field: 'isEfpUsed',
-      header: 'EFP',
-      type: 'toggle',
-      listType: 'boolean',
-      key: 'wcgopOpEFPUsed',
-      width: '80',
-      isEditable: true
-    },
-    // MMSBST
-    {
-      field: 'notes',
-      header: 'Notes',
-      type: 'input',
-      key: 'wcgopOpNotes',
-      width: '200',
-      isEditable: true
-    }
-  ];
+        function selectValues(data: any) {
+            store.dispatch('debriefer/updateOperations', data);
+        }
 
-  private ashopColumns = [
-    {
-      field: 'tripNum',
-      header: 'Trip #',
-      type: 'number',
-      key: 'ashopOpTripNum'
+        return {
+            initialSelection,
+            wcgopColumns,
+            selectValues,
+        };
     },
-    {
-      field: 'haulNum',
-      header: 'Haul #',
-      type: 'number',
-      key: 'ashopOpHaulNum'
-    },
-    // indian fishing quote
-
-    {
-      field: 'legacy.cdqCode',
-      header: 'CDQ',
-      type: 'input',
-      key: 'ashopOpCDQ'
-    },
-    {
-      field: 'vesselType.description',
-      header: 'Vessel Type',
-      type: 'input',
-      key: 'ashopOpVesselType'
-    },
-    {
-      field: 'gearPerformance.description',
-      header: 'Gear Perf',
-      type: 'input',
-      key: 'ashopGearPerf'
-    },
-    {
-      field: 'startFishingLocation.date',
-      header: 'Deployment Date',
-      type: 'date',
-      key: 'ashopOpStartFishingLoc'
-    },
-
-    {
-      field: 'bottomDepth.value',
-      header: 'Bottom Depth',
-      type: 'number',
-      key: 'ashopOpBottomDepth'
-    },
-    {
-      field: 'fishingDepth.value',
-      header: 'Fishing  Depth',
-      type: 'number',
-      key: 'ashopOpFishingDepth'
-    },
-    // depth unit
-    // sampled by
-
-    {
-      field: 'legacy.rstCode',
-      header: 'RST',
-      type: 'input',
-      key: 'ashopOpRST'
-    },
-    {
-      field: 'legacy.rbtCode',
-      header: 'RBT',
-      type: 'input',
-      key: 'ashopOpRBT'
-    },
-    {
-      field: 'sampleDesignType',
-      header: 'Sample Design',
-      type: 'input',
-      key: 'ashopOpSampleDesign'
-    },
-    // sample type unit
-    {
-      field: 'vesselEstimatedCatch.measurement.value',
-      header: 'Vessel Est Catch',
-      type: 'number',
-      key: 'ashopOpVesselEstCatch'
-    },
-    {
-      field: 'flowScaleCatch.measurement.value',
-      header: 'Flow Scale Wt',
-      type: 'number',
-      key: 'ashopOpFlowScaleCatch'
-    },
-
-    { field: 'notes', header: 'Notes', type: 'input', key: 'ashopOpNotes' }
-  ];
-
-  private created() {
-    this.columns = [];
-    if (this.debriefer.program === 'ashop') {
-      this.columns = this.ashopColumns;
-    } else {
-      this.columns = this.wcgopColumns;
-    }
-  }
-
-  private formatDate(inputDate: any) {
-    return date.formatDate(inputDate, 'MM/DD/YYYY');
-  }
-
-  private nullValueCheck(input: any, round: boolean) {
-    if (input) {
-      if (round) {
-        return input.value.toFixed(2);
-      } else {
-        return input.value;
-      }
-    }
-
-    return '';
-  }
-
-  private nullDescriptionCheck(input: any) {
-    if (input != null) {
-      return input.description;
-    }
-
-    return '';
-  }
-}
+});
 </script>

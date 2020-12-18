@@ -15,7 +15,6 @@
       editMode="cell"
       columnResizeMode="expand"
       @cell-edit-init="onCellEditInit"
-      @row-click="onRowSelect"
       :reorderableColumns="true"
       :data-key="uniqueKey"
       :resizableColumns="true"
@@ -151,7 +150,8 @@ export default createComponent({
     uniqueKey: String,
     enableSelection: Boolean,
     isFullSize: Boolean,
-    loading: Boolean
+    loading: Boolean,
+    initialSelection: Array
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -179,50 +179,22 @@ export default createComponent({
     let haulNumTracker = 0;
     let rowBackground = 'highlightRow';
 
+    let updateStatePermissions = false;
+
     onMounted(() => {
-      updateSelection();
+      updateStatePermissions = true;
+      pageStart.value = 0;
+      context.emit('selectValues', props.initialSelection);
     });
 
     // clear selection when evaluation period selected
     watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
 
-    function updateSelection() {
-      pageStart.value = 0;
-      if (props.type === 'Trips') {
-        selected.value = state.debriefer.trips;
-      } else if (props.type === 'Operations') {
-        selected.value = state.debriefer.operations;
-      } else if (props.type === 'Specimens') {
-        const idHolder = [];
-        for (const id of state.debriefer.specimens) {
-          idHolder.push({ _id: id });
-        }
-        selected.value = idHolder;
-        if (state.debriefer.specimens.length > 0) {
-          pageStart.value = findIndex(props.value, (item: any) => {
-            return item._id === state.debriefer.specimens[0];
-          });
-        }
-        state.debriefer.specimens = [];
+    watch(selected, (updatedSelection, prevSelection) => {
+      if (updateStatePermissions) {
+        context.emit('selectValues', updatedSelection);
       }
-    }
-
-    function onRowSelect(event: any) {
-      if (props.type === 'Trips') {
-        store.dispatch('debriefer/updateTrips', selected.value);
-      } else if (props.type === 'Operations') {
-        selected.value.sort((a: any, b: any) => {
-          if (a.legacy.tripId !== b.legacy.tripId) {
-            return a.legacy.tripId - b.legacy.tripId;
-          } else if (a.legacy.tripId === b.legacy.tripId) {
-            return a.operationNum - b.operationNum;
-          } else {
-            return 0;
-          }
-        });
-        store.dispatch('debriefer/updateOperations', selected.value);
-      }
-    }
+    });
 
     const displayColumns = computed({
       get: () => {
@@ -398,7 +370,6 @@ export default createComponent({
       showPopup,
       popupColumns,
       popupUniqueKey,
-      onRowSelect,
       rowClass,
     };
   },
