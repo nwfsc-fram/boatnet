@@ -10,7 +10,7 @@
       :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
-      :scrollHeight="isFullSize ? 'calc(100vh - 450px)' : 'calc(100vh - 600px)'"
+      :scrollHeight="isFullSize ? 'calc(100vh - 450px)' : 'calc(100vh - 650px)'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -59,7 +59,7 @@
         :key="col.key"
         :sortable="true"
         :headerStyle="'width: ' + col.width + 'px'"
-        filterMatchMode="contains"
+        :filterMatchMode="col.type === 'toggle' ? 'in' : 'contains'"
       >
         <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
@@ -100,7 +100,16 @@
           />
         </template>
         <template #filter v-if="!simple">
-          <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+          <MultiSelect
+            v-if="col.type === 'toggle'"
+            :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
+            v-model="filters[col.field]"
+            @before-show="getLookupName(col.lookupKey, col.lookupField)"
+            :options="col.list ? col.list : lookupsList"
+            appendTo="body"
+            :filter="true"
+          />
+          <InputText v-else type="text" v-model="filters[col.field]" class="p-column-filter"/>
         </template>
       </Column>
     </DataTable>
@@ -239,6 +248,16 @@ export default createComponent({
         }
         lookupsList.value = lookupVals;
       }
+    }
+
+    async function getLookupName(lookupKey: string, fieldName: string) {
+      const values = [];
+      lookupsList.value = [];
+      const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
+      for (const row of result.rows) {
+        values.push(get(row.doc, fieldName))
+      }
+      lookupsList.value = values;
     }
 
     function getIndex(data: any) {
@@ -385,7 +404,8 @@ export default createComponent({
       popupColumns,
       popupUniqueKey,
       rowClass,
-      openNewDebriefingTab
+      openNewDebriefingTab,
+      getLookupName
     };
   },
 });
@@ -398,5 +418,9 @@ export default createComponent({
 
 ::v-deep .highlightRow {
   background-color: #e9ecef !important;
+}
+
+.p-multiselect-trigger {
+  background-color: transparent
 }
 </style>
