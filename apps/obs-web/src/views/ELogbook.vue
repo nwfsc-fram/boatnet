@@ -178,15 +178,20 @@
             </div>
 
             <div v-for="(buyer, i) in tripCatch.buyers" :key="i" class="list-item">
-              <q-input
+              <q-select
                 v-model="tripCatch.buyers[i]"
+                :options="buyerOptions"
+                :option-label="opt => opt.description"
+                :option-value="opt => opt.lookupValue"
+                :display-value="getBuyerDescription(i)"
+                emit-value
                 dense
                 autogrow
                 outlined
                 title="IFQ Dealer where the vessel offloaded"
               >
                 <q-btn flat dense icon="close" @click="tripCatch.buyers.splice(i , 1)"></q-btn>
-              </q-input>
+              </q-select>
             </div>
           </div>
         </div>
@@ -1676,6 +1681,40 @@ export default createComponent({
       });
     };
 
+    let buyerOptions: any = ref([]);
+    const getBuyerOptions = async () => {
+      const masterDb = couchService.masterDB;
+      const queryOptions = {
+        key: 'buyer',
+        inclusive_end: true,
+        reduce: false,
+        include_docs: false
+      };
+
+      buyerOptions.value = await masterDb.view('TripsApi', 'all_em_lookups', queryOptions);
+      buyerOptions.value = buyerOptions.value.rows.map( (row: any) => {
+        return {description: row.value[0], lookupValue: row.value[1]}
+      });
+
+      buyerOptions.value.sort((a: any, b: any) => {
+        if (a.description > b.description) {
+          return 1;
+        } else if (a.description < b.description) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    };
+
+    const getBuyerDescription = (i: number) => {
+      if (tripCatch.buyers[i]) {
+        return buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]).description;
+      } else {
+        return ''
+      }
+    }
+
     let ports: any = [];
     const getPorts = async () => {
       const masterDb = couchService.masterDB;
@@ -2238,6 +2277,7 @@ export default createComponent({
       getPortDecoderPorts();
       getSkipperOptions();
       getProAndPriSpecies();
+      getBuyerOptions();
       if (context.root.$route.params.id === 'new') {
         const dummyTrip: any = {
           tripNum: '00000',
@@ -2319,7 +2359,9 @@ export default createComponent({
       addFishTicket,
       proAndPriSpecies,
       getGearDescription,
-      getNetDescription
+      getNetDescription,
+      buyerOptions,
+      getBuyerDescription
     };
   }
 });
