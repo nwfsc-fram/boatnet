@@ -104,7 +104,7 @@
             v-if="col.type === 'toggle'"
             :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
             v-model="filters[col.field]"
-            @before-show="getLookupName(col.lookupKey, col.lookupField)"
+            @before-show="getLookupName(col.lookupKey, col.lookupField, col.listType)"
             :options="col.list ? col.list : lookupsList"
             appendTo="body"
             :filter="true"
@@ -250,14 +250,18 @@ export default createComponent({
       }
     }
 
-    async function getLookupName(lookupKey: string, fieldName: string) {
-      const values = [];
+    async function getLookupName(lookupKey: string, fieldName: string, type: string) {
+      let values: any[] = [];
       lookupsList.value = [];
-      const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
-      for (const row of result.rows) {
-        values.push(get(row.doc, fieldName))
+      if (type === 'boolean') {
+        values = [true, false];
+      } else {
+        const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
+        for (const row of result.rows) {
+          values.push(get(row.doc, fieldName))
+        }
       }
-      lookupsList.value = values;
+      lookupsList.value = values.sort();
     }
 
     function getIndex(data: any) {
@@ -357,6 +361,10 @@ export default createComponent({
       popupUniqueKey.value = uniqueKey;
     }
 
+    /**
+     * Groups rows and sets a common background color making it easier
+     * to understand what belongs to what
+     */
     function rowClass(data: any) {
       const selectedIndex = findIndex(selected.value, (item: any) => {
         return item._id === data._id;

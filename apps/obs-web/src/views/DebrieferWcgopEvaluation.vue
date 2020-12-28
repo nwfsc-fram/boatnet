@@ -21,39 +21,58 @@
         trackBy="value"
         @input="getTripsByDate"
       />
-      <q-btn
-        round
-        class="q-mx-xs"
-        style="display: inline-block"
-        color="white"
-        text-color="black"
-        icon="add"
-        @click="add"
-      />
-      <q-btn
-        round
-        class="q-mx-xs"
-        style="display: inline-block"
-        color="white"
-        text-color="black"
-        icon="edit"
-        @click="edit"
-      />
-      <q-btn
-        round
-        class="q-ma-xs"
-        style="display: inline-block"
-        color="white"
-        text-color="black"
-        icon="delete"
-        @click="showDeleteDialog = true"
-      />
+      <div style="display: inline-block">
+        <q-btn
+          round
+          class="q-mx-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="add"
+          :disable="observer.length === 0"
+          @click="add"
+        />
+        <q-tooltip v-if="observer.length === 0">
+          An observer must be selected to create an eval period
+        </q-tooltip>
+      </div>
+      <div style="display: inline-block">
+        <q-btn
+          round
+          class="q-mx-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="edit"
+          :disable="evaluationPeriod === undefined"
+          @click="edit"
+        />
+        <q-tooltip v-if="evaluationPeriod === undefined">
+          No evaluation period selected to edit
+        </q-tooltip>
+      </div>
+      <div style="display: inline-block">
+        <q-btn
+          round
+          class="q-ma-xs"
+          style="display: inline-block"
+          color="white"
+          text-color="black"
+          icon="delete"
+          :disable="evaluationPeriod === undefined"
+          @click="showDeleteDialog = true"
+        />
+        <q-tooltip v-if="evaluationPeriod === undefined">
+          No evaluation period selected to delete
+        </q-tooltip>
+      </div>
     </div>
 
     <app-debriefer-dialog
       :showDialog.sync="showEvaluationDialog"
       :evaluationPeriod="dialogEvalPeriod"
       :minDate="minDate"
+      :maxDate="maxDate"
       @closeEvalDialog="closeEvalDialog"
     />
 
@@ -126,9 +145,10 @@ export default createComponent({
     const showAll: any = ref(false);
 
     const evaluations: any = ref([]);
-    const evaluationPeriod: any = ref({});
+    const evaluationPeriod: any = ref();
 
     const minDate: any = ref('');
+    const maxDate: any = ref('');
 
     const showEvaluationDialog: any = ref(false);
     const showDeleteDialog: any = ref(false);
@@ -170,13 +190,13 @@ export default createComponent({
     async function selectObserver(id: string) {
       clearFilters();
       store.dispatch('debriefer/updateObservers', id);
-      evaluationPeriod.value = {};
+      evaluationPeriod.value = undefined;
       await getEvaluationPeriods(id);
     }
 
     async function closeEvalDialog(evalPeriod: any) {
       evaluationPeriod.value = formatEvaluationPeriod(evalPeriod);
-      await getEvaluationPeriods(observer.value.value);
+      await getEvaluationPeriods(observer.value[0].value);
     }
 
     function formatEvaluationPeriod(evalPeriod: any) {
@@ -230,9 +250,7 @@ export default createComponent({
       dialogEvalPeriod.value = {};
       showEvaluationDialog.value = true;
       if (evaluations.value.length > 0) {
-        minDate.value = moment(evaluations.value[0].endDate)
-          .add(1, 'days')
-          .toString();
+        minDate.value = evaluations.value[0].endDate;
       } else {
         minDate.value = null;
       }
@@ -241,16 +259,11 @@ export default createComponent({
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
       showEvaluationDialog.value = true;
-      const index = findIndex(evaluations.value, {
-        id: evaluationPeriod.value.id
-      });
-      if (evaluations.value[index + 1]) {
-        minDate.value = moment(evaluations.value[index + 1].endDate)
-          .add(1, 'days')
-          .toString();
-      } else {
-        minDate.value = null;
-      }
+      const currEval: number = evaluations.value.indexOf(evaluationPeriod.value)
+      const previousEvalPeriod: any = evaluations.value[currEval + 1];
+      const nextEvalPeriod: any = evaluations.value[currEval-1];
+      minDate.value = previousEvalPeriod ? previousEvalPeriod.endDate : null;
+      maxDate.value = nextEvalPeriod ? nextEvalPeriod.startDate : null;
     }
 
     function deleteEvalPeriod() {
@@ -258,7 +271,7 @@ export default createComponent({
       const index = findIndex(evaluations.value, { id });
       evaluations.value.splice(index, 1);
       masterDB.delete(id, evaluationPeriod.value.rev);
-      evaluationPeriod.value = {};
+      evaluationPeriod.value = undefined;
       store.dispatch('debriefer/updateEvaluationPeriod', {});
       clearFilters();
     }
@@ -271,6 +284,7 @@ export default createComponent({
       evaluations,
       evaluationPeriod,
       minDate,
+      maxDate,
       add,
       edit,
       deleteEvalPeriod,

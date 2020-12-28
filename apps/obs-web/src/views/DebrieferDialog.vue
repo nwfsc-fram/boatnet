@@ -15,13 +15,13 @@
         />
         <div style="display: inline-block" class="q-pa-md">
           <div class="p-float-label q-px-md">
-            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" :minDate="formattedMinDate"/><!--:minDate="formattedMinDate"-->
+            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" :minDate="formattedMinDate" :maxDate="formattedMaxDate"/><!--:minDate="formattedMinDate"-->
             <label for="startDate" style="color: #027be3">Start Date</label>
           </div>
         </div>
         <div style="display: inline-block" class="q-pa-md">
           <div class="p-float-label">
-            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" :minDate="formattedMinDate"/>
+            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" :minDate="formattedMinDate" :maxDate="formattedMaxDate"/>
             <label for="endDate" style="color: #027be3">End Date</label>
           </div>
         </div>
@@ -73,7 +73,8 @@ export default createComponent({
   props: {
     showDialog: Boolean,
     evaluationPeriod: Object,
-    minDate: String
+    minDate: String,
+    maxDate: String
   },
 
   setup(props, context) {
@@ -128,11 +129,13 @@ export default createComponent({
     const startDate: any = ref(new Date());
     const endDate = ref(new Date());
     const formattedMinDate = ref(new Date());
+    const formattedMaxDate = ref(new Date());
     const evalType = ref('');
 
     async function init() {
       const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
       formattedMinDate.value = props.minDate ? new Date(props.minDate) : new Date(1970, 1, 1);
+      formattedMaxDate.value = props.maxDate ? new Date(props.maxDate) : new Date();
       if (evalPeriod.startDate) {
         startDate.value = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
         endDate.value = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
@@ -185,10 +188,6 @@ export default createComponent({
 
     function save() {
       const observerId = state.debriefer.observers;
-      const tripIds: number[] = [];
-      for (const val of trips.value) {
-        tripIds.push(val._id);
-      }
 
       const curr = props.evaluationPeriod ? props.evaluationPeriod : {};
       const evalPeriod = {
@@ -230,6 +229,7 @@ export default createComponent({
 
     return {
       formattedMinDate,
+      formattedMaxDate,
       startDate,
       endDate,
       evalType,
