@@ -18,7 +18,7 @@
     "@boatnet/bn-pouch": "^0.2.12",
     "@boatnet/bn-util": "^0.1.1",
     "@quasar/extras": "^1.0.0",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "crypto-js": "^3.1.9-1",
     "davenport": "^2.8.2",
     "moment": "^2.24.0",
