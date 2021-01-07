@@ -2,8 +2,8 @@
   <div>
     <DataTable
       :rowClass="rowClass"
-      :class="enableSelection ? 'p-datatable-striped' : ''"
-      :value="value"
+      class="p-datatable-striped p-datatable-sm"
+      :value="formattedData"
       :filters="filters"
       :paginator="true"
       :rows="10"
@@ -59,7 +59,7 @@
         :key="col.key"
         :sortable="true"
         :headerStyle="'width: ' + col.width + 'px'"
-        :filterMatchMode="col.type === 'toggle' ? 'in' : 'contains'"
+        :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template v-if="col.isEditable" #editor="slotProps">
           <Dropdown
@@ -134,7 +134,7 @@ import {
   onBeforeMount
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { get, set, findIndex } from 'lodash';
+import { findIndex, indexOf, get, intersection, set, values } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -196,6 +196,8 @@ export default createComponent({
     let rowBackground = 'highlightRow';
 
     let updateStatePermissions = false;
+    var flatten = require('flat');
+    var unflatten = flatten.unflatten;
 
     onMounted(() => {
       pageStart.value = 0;
@@ -211,6 +213,16 @@ export default createComponent({
         context.emit('selectValues', updatedSelection);
       }
     });
+
+    const formattedData = computed(() => {
+      const flattenedData: any[] = [];
+      if (props.value) {
+        for (let rowVal of props.value) {
+          flattenedData.push(flatten(rowVal, { delimiter: '-' }));
+        }
+      }
+      return flattenedData;
+    })
 
     const displayColumns = computed({
       get: () => {
@@ -261,43 +273,28 @@ export default createComponent({
           values.push(get(row.doc, fieldName))
         }
       }
+      values = intersection(values);
       lookupsList.value = values.sort();
     }
 
-    function getIndex(data: any) {
-      const keyId = props.uniqueKey ? props.uniqueKey : '';
-      const findItem: any = {};
-      findItem[keyId] = get(data, keyId);
-      const index = findIndex(props.value, findItem);
-      return index;
-    }
-
     function formatValue(slotProps: any, type: string, displayField: string[]) {
-      const value = props.value ? props.value : [];
-      const index = getIndex(slotProps.data);
-
-      let val: any;
-
+      let formattedValue: any;
       if (displayField) {
-        let fieldIndex = 0;
+        const valArr = [];
         for (const field of displayField) {
-          if (fieldIndex === 0) {
-            val = get(value[index], field);
-          } else {
-            val = val + ' ' + get(value[index], field);
-          }
-          fieldIndex++;
+          valArr.push(get(slotProps.data, field));
         }
+        formattedValue = valArr.join(' ');
       } else {
-        val = get(value[index], slotProps.column.field);
+        formattedValue = get(slotProps.data, slotProps.column.field);
       }
 
       if (type === 'date') {
-        val = moment(val).format('MM/DD/YYYY HH:mm');
-      } else if (val && type === 'double' && val % 1 !== 0) {
-        val = val.toFixed(2);
+        formattedValue = moment(formattedValue).format('MM/DD/YYYY HH:mm');
+      } else if (formattedValue && type === 'double' && formattedValue % 1 !== 0) {
+        formattedValue = formattedValue.toFixed(2);
       }
-      return val;
+      return formattedValue;
     }
 
     function onCellEditInit(event: any) {
@@ -309,13 +306,8 @@ export default createComponent({
     }
 
     function onCellEdit(newValue: any, slotProps: any, type: string) {
-      const valueHolder: any = props.value ? props.value : {};
-      const index = getIndex(slotProps.data);
       let fields: string = slotProps.column.field;
-      let editingCellRow: any = valueHolder[index];
-      if (!editingCellRow) {
-        editingCellRow = { ...slotProps.data };
-      }
+      let editingCellRow: any = slotProps.data;
       if (type === 'boolean') {
         newValue = newValue;
         cellVal.value = newValue.toString();
@@ -324,22 +316,20 @@ export default createComponent({
       } else if (type === 'date') {
         newValue = moment(newValue).format();
       } else if (type === 'fetch') {
-        const fieldArr: string[] = fields.split('.');
+        const fieldArr: string[] = fields.split('-');
         fieldArr.splice(fieldArr.length - 1, 1);
-        fields = fieldArr.join('.');
+        fields = fieldArr.join('-');
 
         const updateCellValFieldsArr: string[] = slotProps.column.field.split(
-          '.'
+          '-'
         );
         updateCellValFieldsArr.splice(0, 1);
-        const updateCellValFields = updateCellValFieldsArr.join('.');
+        const updateCellValFields = updateCellValFieldsArr.join('-');
         cellVal.value = get(newValue, updateCellValFields);
       }
       set(editingCellRow, fields, newValue);
-      valueHolder[index] = editingCellRow;
-
+      editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
       context.emit('save', editingCellRow);
-      context.emit('update:value', valueHolder);
     }
 
     function containsMultiples(slotProps: any, popupValue: string) {
@@ -413,7 +403,8 @@ export default createComponent({
       popupUniqueKey,
       rowClass,
       openNewDebriefingTab,
-      getLookupName
+      getLookupName,
+      formattedData
     };
   },
 });

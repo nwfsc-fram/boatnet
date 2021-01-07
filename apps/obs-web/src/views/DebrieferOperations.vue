@@ -9,6 +9,7 @@
             :isFullSize="isFullSize"
             :initialSelection="initialSelection"
             @selectValues="selectValues"
+            @save="save"
         />
     </div>
 </template>
@@ -22,20 +23,29 @@ import {
     computed,
     watch,
 } from '@vue/composition-api';
+import { couchService } from '@boatnet/bn-couch';
+import { Client, ListOptions } from 'davenport';
+import { cloneDeep, findIndex } from 'lodash';
 
 export default createComponent({
     props: {
-        isFullSize: Boolean,
-        operations: Array,
+        isFullSize: Boolean
     },
     setup(props, context) {
         const store = context.root.$store;
         const state: any = store.state;
-        const initialSelection = state.debriefer.operations ? state.debriefer.operations : [];
+        const initialSelection = state.debriefer.operations
+            ? state.debriefer.operations
+            : [];
+        const masterDB: Client<any> = couchService.masterDB;
+        const operations: any = ref([]);
+
+        var flatten = require('flat');
+        var unflatten = flatten.unflatten;
 
         const wcgopColumns = [
             {
-                field: 'legacy.tripId',
+                field: 'legacy-tripId',
                 header: 'Trip Id',
                 type: 'number',
                 key: 'wcgopOpTripId',
@@ -58,7 +68,7 @@ export default createComponent({
                 width: '100',
             },
             {
-                field: 'observerTotalCatch.measurement.value',
+                field: 'observerTotalCatch-measurement-value',
                 header: 'OTC (lbs)',
                 type: 'double',
                 key: 'wcgopOpOTC',
@@ -66,7 +76,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'observerTotalCatch.weightMethod.description',
+                field: 'observerTotalCatch-weightMethod-description',
                 header: 'OTC WT Method',
                 type: 'toggle',
                 key: 'wcgopOpWM',
@@ -78,7 +88,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'gearPerformance.description',
+                field: 'gearPerformance-description',
                 header: 'Gear Perf',
                 type: 'toggle',
                 key: 'wcgopGearPerf',
@@ -107,7 +117,7 @@ export default createComponent({
             },
             // sea bird avoidance
             {
-                field: 'avgSoakTime.value',
+                field: 'avgSoakTime-value',
                 header: 'Average Soak Time',
                 type: 'number',
                 key: 'wcgopOpAvgSoakTime',
@@ -121,7 +131,7 @@ export default createComponent({
                 key: 'wcgopOpBeaufort',
                 listType: 'fetch',
                 lookupKey: 'beaufort',
-                lookupField: 'legacy.lookupVal',
+                lookupField: 'legacy-lookupVal',
                 width: '70',
                 isEditable: true,
             },
@@ -149,7 +159,7 @@ export default createComponent({
                 width: '100',
             },
             {
-                field: 'locations[0].locationDate',
+                field: 'locations-0-locationDate',
                 header: 'Start Date',
                 type: 'date',
                 key: 'wcgopOpStartDate',
@@ -157,7 +167,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'locations[1].locationDate',
+                field: 'locations-1-locationDate',
                 header: 'End Date',
                 type: 'date',
                 key: 'wcgopOpEndDate',
@@ -165,7 +175,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'locations[0].location.coordinates[0]',
+                field: 'locations-0-location-coordinates-0',
                 header: 'Start lat',
                 type: 'double',
                 key: 'wcgopOpStartLat',
@@ -173,7 +183,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'locations[1].location.coorindates[0]',
+                field: 'locations-1-location-coorindates-0',
                 header: 'End lat',
                 type: 'double',
                 key: 'wcgopOpEndLat',
@@ -181,7 +191,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'locations[0].location.coordinates[1]',
+                field: 'locations-0-location-coordinates-1',
                 header: 'Start long',
                 type: 'double',
                 key: 'wcgopOpStartLong',
@@ -189,7 +199,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'locations[1].location.coorindates[1]',
+                field: 'locations-1-location-coorindates-1',
                 header: 'End long',
                 type: 'double',
                 key: 'wcgopOpEndLong',
@@ -198,7 +208,7 @@ export default createComponent({
             },
             // depth
             {
-                field: 'gearType.description',
+                field: 'gearType-description',
                 header: 'Gear Type',
                 type: 'toggle',
                 key: 'wcgopOpGearType',
@@ -210,7 +220,7 @@ export default createComponent({
                 isEditable: true,
             },
             {
-                field: 'legacy.isBrdPresent',
+                field: 'legacy-isBrdPresent',
                 header: 'BRD',
                 type: 'toggle',
                 listType: 'boolean',
@@ -245,14 +255,61 @@ export default createComponent({
             },
         ];
 
+        getOperations();
+
+        watch(() => state.debriefer.trips, () => { getOperations() });
+
         function selectValues(data: any) {
-            store.dispatch('debriefer/updateOperations', data);
+            const unflattenData: any[] = [];
+            for (const val of data) {
+                unflattenData.push(unflatten(val, { delimiter: '-'}))
+            }
+            store.dispatch('debriefer/updateOperations', unflattenData);
+        }
+
+        async function save(data: any) {
+            const result = await masterDB.put(data._id, data, data._rev);
+            const index = findIndex(operations.value, { _id: data._id });
+            const updatedvalue: any[] = cloneDeep(operations.value);
+            updatedvalue[index] = data;
+            updatedvalue[index]['_rev'] = result.rev;
+            operations.value = updatedvalue;
+        }
+
+        async function getOperations() {
+            let ops: any[] = [];
+            let operationIds: any[] = [];
+            for (const trip of state.debriefer.trips) {
+                operationIds = operationIds.concat(trip.operationIDs);
+            }
+
+            if (operationIds.length > 0) {
+                try {
+                    const operationOptions: ListOptions = { keys: operationIds };
+                    const operationDocs = await masterDB.listWithDocs(operationOptions);
+                    ops = operationDocs.rows;
+                    ops.sort((a: any, b: any) => {
+                        if (a.legacy.tripId !== b.legacy.tripId) {
+                            return a.legacy.tripId - b.legacy.tripId;
+                        } else if (a.legacy.tripId === b.legacy.tripId) {
+                            return a.operationNum - b.operationNum;
+                        } else {
+                            return 0;
+                        }
+                    });
+                } catch (err) {
+                    console.log('cannot fetch operation docs ' + err);
+                }
+            }
+            operations.value = ops;
         }
 
         return {
             wcgopColumns,
             selectValues,
-            initialSelection
+            initialSelection,
+            save,
+            operations
         };
     },
 });

@@ -26,7 +26,7 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date } from 'quasar';
 import { convertToObject } from 'typescript';
 import { getSelected } from '../helpers/localStorage';
-import { findIndex, slice } from 'lodash';
+import { cloneDeep, findIndex, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
@@ -70,7 +70,7 @@ export default createComponent({
         width: '60'
       },
       {
-        field: 'specimen.biosampleMethod.description',
+        field: 'specimen-biosampleMethod-description',
         header: 'BM',
         type: 'toggle',
         listType: 'fetch',
@@ -81,7 +81,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'specimen.sex',
+        field: 'specimen-sex',
         header: 'Sex',
         type: 'toggle',
         listType: 'template',
@@ -91,7 +91,7 @@ export default createComponent({
         width: '60'
       },
       {
-        field: 'specimen.length.value',
+        field: 'specimen-length-value',
         header: 'Length',
         type: 'number',
         key: 'wcgopBioLength',
@@ -99,7 +99,7 @@ export default createComponent({
         isEditable: true
       },
       {
-        field: 'specimen.width.value',
+        field: 'specimen-width-value',
         header: 'Width',
         type: 'number',
         key: 'wcgopBioWidth',
@@ -107,7 +107,7 @@ export default createComponent({
         isEditable: true
       },
       {
-        field: 'specimen.viability.description',
+        field: 'specimen-viability-description',
         header: 'Viability',
         type: 'toggle',
         lookupKey: 'viability',
@@ -118,7 +118,7 @@ export default createComponent({
         width: '100'
       },
       {
-        field: 'specimen.maturity.description',
+        field: 'specimen-maturity-description',
         header: 'Maturity',
         type: 'toggle',
         listType: 'fetch',
@@ -129,7 +129,7 @@ export default createComponent({
         width: '100'
       },
       {
-        field: 'specimen.adiposePresent',
+        field: 'specimen-adiposePresent',
         header: 'Adi',
         type: 'toggle',
         listTyle: 'template',
@@ -139,7 +139,7 @@ export default createComponent({
         width: '60'
       },
       {
-        field: 'specimen.biostructures[0].structureType.description',
+        field: 'specimen-biostructures-0-structureType-description',
         header: 'Type 1',
         type: 'toggle',
         listType: 'fetch',
@@ -150,7 +150,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'specimen.biostructures[0].label',
+        field: 'specimen-biostructures-0-label',
         header: '# 1',
         type: 'number',
         key: 'wcgopBioBarcode1',
@@ -158,7 +158,7 @@ export default createComponent({
         isEditable: true
       },
       {
-        field: 'specimen.biostructures[1].structureType.description',
+        field: 'specimen-biostructures-1-structureType-description',
         header: 'Type 2',
         type: 'toggle',
         listType: 'fetch',
@@ -169,7 +169,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'specimen.biostructures[1].label',
+        field: 'specimen-biostructures-1-label',
         header: '# 2',
         type: 'number',
         key: 'wcgopBioBarcode2',
@@ -177,7 +177,7 @@ export default createComponent({
         isEditable: true
       },
       {
-        field: 'specimen.biostructures[2].structureType.description',
+        field: 'specimen-biostructures-2-structureType-description',
         header: 'Type 3',
         type: 'toggle',
         listType: 'fetch',
@@ -188,7 +188,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'specimen.biostructures[2].label',
+        field: 'specimen-biostructures-2-label',
         header: '# 3',
         type: 'number',
         key: 'wcgopBioBarcode3',
@@ -246,41 +246,27 @@ export default createComponent({
           }
         }
       }
-      WcgopBiospecimens.value = bioSpecimens;
+      WcgopBiospecimens.value = orderBy(bioSpecimens, ['operationNum']);
     }
+    
 
     async function save(data: any) {
-      const operationData: BaseOperation = await masterDB.get(
-        data.operationId,
-        data.operationRev
-      );
-      // drill down to specific specimen that was updated and set value
-      for (const [i, operation] of operationData.catches.entries()) {
-        if (operation.children) {
-          for (const [j, child] of operation.children.entries()) {
-            if (child.specimens) {
-              for (const [k, specimen] of child.specimens.entries()) {
-                if (specimen._id === data._id) {
-                  operationData.catches[i].children[j].specimens[k] =
-                    data.specimen;
-                  console.log('successfully updated ' + data._id);
-                }
-              }
-            }
-          }
-        }
-      }
-      masterDB
-        .put(data.operationId, operationData, data.operationRev)
-        .then((response: any) => {
-          // update rev for all records from the same haul #.
-          // This ensures future saves will be successful
-          for (const [i, bio] of WcgopBiospecimens.value.entries()) {
-            if (bio.operationId === data.operationId) {
-              WcgopBiospecimens.value[i].operationRev = response.rev;
-            }
-          }
-        });
+      const speciesId = data._id;
+      const currOperationDoc = await masterDB.get(data.operationId);
+
+      const specimenInfo = jp.paths(currOperationDoc, '$..specimens[?(@._id=="' + speciesId + '")]');
+      const path = jp.stringify(specimenInfo[0]);
+      jp.apply(currOperationDoc, path, function() { return data.specimen });
+
+      const result = await masterDB.put(currOperationDoc._id, currOperationDoc, currOperationDoc._rev);
+      const currIndex = findIndex(WcgopBiospecimens.value, { _id: speciesId });
+      const updatedvalue: any[] = cloneDeep(WcgopBiospecimens.value);
+      updatedvalue[currIndex] = data;
+      jp.apply(WcgopBiospecimens.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', function(value: any) { 
+        value['operationRev'] = result.rev;
+        return value;
+      });
+      WcgopBiospecimens.value = updatedvalue;
     }
 
     return {

@@ -41,7 +41,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations :isFullSize="isFullSize" :operations="operations"></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="isFullSize"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
@@ -87,7 +87,6 @@ export default createComponent({
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
-    const operations: any = ref([]);
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.operations, update);
@@ -117,7 +116,6 @@ export default createComponent({
         'operationNum'
       );
       filters.value = filters.value.concat(hauls);
-      getOperations();
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
@@ -157,42 +155,10 @@ export default createComponent({
       }
     }
 
-    // fetch operation docs for selected trips
-    async function getOperations() {
-      let ops: any[] = [];
-      let operationIds: any[] = [];
-      for (const trip of state.debriefer.trips) {
-        operationIds = operationIds.concat(trip.operationIDs);
-      }
-
-      if (operationIds.length > 0) {
-        try {
-          const operationOptions: ListOptions = {
-            keys: operationIds
-          };
-          const operationDocs = await masterDB.listWithDocs(operationOptions);
-          ops = operationDocs.rows;
-          ops.sort((a: any, b: any) => {
-            if (a.legacy.tripId !== b.legacy.tripId) {
-              return a.legacy.tripId - b.legacy.tripId;
-            } else if (a.legacy.tripId === b.legacy.tripId) {
-              return a.operationNum - b.operationNum;
-            } else {
-              return 0;
-            }
-          });
-        } catch (err) {
-          console.log('cannot fetch operation docs ' + err);
-        }
-      }
-      operations.value = ops;
-    }
-
     return {
       tab,
       updateTab,
       filters,
-      operations,
       remove
     };
   }
