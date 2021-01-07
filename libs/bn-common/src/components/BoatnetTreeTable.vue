@@ -8,7 +8,7 @@
       sortMode="single"
       :paginator="true"
       :rows="10"
-      style="height: 450px"
+      style="height: calc(100vh - 400px)"
       :rowsPerPageOptions="[10,25,50, 100]"
       paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -255,7 +255,7 @@ thead.p-treetable-thead {
 tbody.p-treetable-tbody {
   display: block;
   position: relative;
-  height: 250px;
+  height: calc(100vh - 600px);
   overflow: auto;
 }
 
