@@ -9,7 +9,6 @@
       :program="program"
       @save="save"
       @selected="select"
-      @tooltip="populate"
     ></boatnet-tree-table>
   </div>
 </template>

@@ -41,7 +41,7 @@ import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { date, colors } from 'quasar';
 import { convertToObject } from 'typescript';
-import { findIndex, get, remove, indexOf } from 'lodash';
+import { cloneDeep, findIndex, get, remove, indexOf } from 'lodash';
 import { getTripsByDates } from '../helpers/getFields';
 import moment from 'moment';
 
@@ -57,6 +57,9 @@ export default createComponent({
     const store = context.root.$store;
     const state: any = store.state;
     const debriefer: any = state.debriefer;
+
+    var flatten = require('flat');
+    var unflatten = flatten.unflatten;
 
     const columns: any = ref([]);
     const trips: any = ref([]);
@@ -108,7 +111,7 @@ export default createComponent({
 
     const wcgopColumns = [
       {
-        field: 'legacy.tripId',
+        field: 'legacy-tripId',
         header: 'Id',
         type: 'number',
         key: 'wcgopId',
@@ -116,7 +119,7 @@ export default createComponent({
         width: '70'
       },
       {
-        field: 'tripStatus.description',
+        field: 'tripStatus-description',
         header: 'Status',
         type: 'toggle',
         listType: 'fetch',
@@ -124,7 +127,7 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopStatus',
         isEditable: true,
-        width: '150'
+        width: '100'
       },
       {
         field: 'tripScore',
@@ -134,19 +137,19 @@ export default createComponent({
         list: ['Pass', 'Fail'],
         key: 'wcgopTripScore',
         isEditable: true,
-        width: '120'
+        width: '90'
       },
       {
-        field: 'observer.firstName',
-        displayField: ['observer.firstName', 'observer.lastName'],
+        field: 'observer-firstName',
+        displayField: ['observer-firstName', 'observer-lastName'],
         header: 'Observer',
         type: 'input',
         key: 'wcgopObsFirstName',
         isEditable: false,
-        width: '100'
+        width: '120'
       },
       {
-        field: 'vessel.vesselName',
+        field: 'vessel-vesselName',
         header: 'Vessel',
         type: 'input',
         key: 'wcgopVessel',
@@ -164,7 +167,7 @@ export default createComponent({
       },
       // state reg #
       {
-        field: 'program.name',
+        field: 'program-name',
         header: 'Program',
         type: 'toggle',
         listType: 'fetch',
@@ -175,7 +178,7 @@ export default createComponent({
         width: '150'
       },
       {
-        field: 'fishery.description',
+        field: 'fisherydescription',
         header: 'Fishery',
         type: 'toggle',
         listType: 'fetch',
@@ -188,10 +191,12 @@ export default createComponent({
       },
       // first receiver
       {
-        field: 'firstReceivers[0].dealerName',
+        field: 'firstReceivers-0-dealerName',
         header: 'First Receivers',
         type: 'toggle',
         listType: 'fetch',
+        search: true,
+        lookupKey: 'first-receiver',
         key: 'wcgopFR',
         uniqueKey: '_id',
         isEditable: false,
@@ -212,10 +217,10 @@ export default createComponent({
         ]
       },
       {
-        field: 'vessel.captains[0].firstName',
+        field: 'vessel-captains-0-firstName',
         displayField: [
-          'vessel.captains[0].firstName',
-          'vessel.captains[0].lastName'
+          'vessel-captains-0-firstName',
+          'vessel-captains-0-lastName'
         ],
         header: 'Skipper',
         type: 'toggle',
@@ -223,8 +228,8 @@ export default createComponent({
         lookupKey: 'fishery',
         lookupField: 'description',
         key: 'wcgopCaptains',
-        uniqueKey: '_id',
-        popupField: 'vessel.captains',
+        uniqueKey: '-id',
+        popupField: 'vessel-captains',
         isEditable: false,
         width: '120'
       },
@@ -245,7 +250,7 @@ export default createComponent({
         width: '150'
       },
       {
-        field: 'legacy.isNoFishingActivity',
+        field: 'legacy-isNoFishingActivity',
         header: 'Fishing Activity?',
         type: 'toggle',
         listType: 'boolean',
@@ -303,7 +308,7 @@ export default createComponent({
         width: '80'
       },
       {
-        field: 'departurePort.name',
+        field: 'departurePort-name',
         header: 'Departure Port',
         type: 'toggle',
         listType: 'fetch',
@@ -315,7 +320,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'returnPort.name',
+        field: 'returnPort-name',
         header: 'Return Port',
         type: 'toggle',
         listType: 'fetch',
@@ -327,7 +332,7 @@ export default createComponent({
         width: '200'
       },
       {
-        field: 'fishTickets[0].fishTicketNumber',
+        field: 'fishTickets-0-fishTicketNumber',
         header: 'FT #',
         type: 'popup',
         key: 'wcgopFT',
@@ -361,7 +366,7 @@ export default createComponent({
         ]
       },
       {
-        field: 'fishTickets[0].stateAgency',
+        field: 'fishTickets-0-stateAgency',
         header: 'State',
         type: 'toggle',
         key: 'wcgopState',
@@ -370,7 +375,7 @@ export default createComponent({
         width: '80'
       },
       {
-        field: 'fishTickets[0].fishTicketDate',
+        field: 'fishTickets-0-fishTicketDate',
         header: 'Date',
         type: 'date',
         key: 'wcgopDate',
@@ -489,15 +494,21 @@ export default createComponent({
       }
     }
 
-    function save(data: any) {
-      masterDB.put(data._id, data, data._rev).then((response: any) => {
-        const index = findIndex(trips.value, { _id: data._id });
-        trips.value[index]._rev = response.rev;
-      });
+    async function save(data: any) {
+      const result = await masterDB.put(data._id, data, data._rev);
+      const index = findIndex(trips.value, { _id: data._id });
+      const updatedvalue: any[] = cloneDeep(trips.value);
+      updatedvalue[index] = data;
+      updatedvalue[index]['_rev'] = result.rev;
+      trips.value = updatedvalue;
     }
 
     function selectValues(data: any) {
-      store.dispatch('debriefer/updateTrips', data);
+      const unflattenData: any[] = [];
+      for (const val of data) {
+        unflattenData.push(unflatten(val, { delimiter: '-'}));
+      }
+      store.dispatch('debriefer/updateTrips', unflattenData);
     }
 
     return {
