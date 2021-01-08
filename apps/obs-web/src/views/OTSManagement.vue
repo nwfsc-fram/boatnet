@@ -43,8 +43,7 @@
         >
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)' >
-                <q-td key='fishery' class="text-primary" style='width: 200px; white-space: normal !important;; font-weight: bold' :props='props' >{{ props.row.fishery }}</q-td>
-                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='fishery' class="text-primary" style='width: 200px; white-space: normal !important;; font-weight: bold' :props='props' >{{ props.row.fishery }} {{ props.row.fisherySector ? " - " + props.row.fisherySector : ""}}</q-td>
                 <q-td key='actualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='coverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='setRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
@@ -79,13 +78,11 @@
 
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
-                <q-td key='vesselFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
-                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='vesselFishery' style='width: 200px' :props='props'>{{ props.row.fishery }} {{ props.row.fisherySector ? " - " + props.row.fisherySector : ""}}</q-td>
                 <q-td key='vesselTargetVessel' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetVessel.vesselName }} ( {{ props.row.targetVessel.coastGuardNumber ? props.row.targetVessel.coastGuardNumber : props.row.targetVessel.stateRegulationNumber }} )</q-td>
                 <q-td key='vesselActualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='vesselCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>
                 <q-td key='vesselSetRate' style='width: 100px' :props='props'>{{ props.row.setRate }}%</q-td>
-                <!-- <q-td key='targetVesselCGNumber' style='width: 100px' :props='props'>{{ props.row.targetVesselCGNumber }}</q-td> -->
                 <q-td key='vesselEffectiveDate' style='width: 200px' :props='props'>{{ formatDate(props.row.effectiveDate) }}</q-td>
                 <q-td key='vesselExpirationDate' style='width: 200px' :props='props'>{{ formatDate(props.row.expirationDate) }}</q-td>
                 <q-td key='vesselStatus' :props='props'>{{ getStatus(props.row) }}</q-td>
@@ -105,8 +102,7 @@
         >
         <template v-slot:body='props'>
             <q-tr :props='props' @click.native='OtsTargetDetail(props.row)'>
-                <q-td key='portFishery' style='width: 200px' :props='props'>{{ props.row.fishery }}</q-td>
-                <!-- <q-td key='targetType' style='width: 100px' :props='props'>{{ props.row.targetType }}</q-td> -->
+                <q-td key='portFishery' style='width: 200px' :props='props'>{{ props.row.fishery }} {{ props.row.fisherySector ? " - " + props.row.fisherySector : ""}}</q-td>
                 <q-td key='portTargetPortGroup' class="text-primary" style='width: 200px; font-weight: bold' :props='props'>{{ props.row.targetPortGroup }}</q-td>
                 <q-td key='portActualObserved' style='width: 100px' :props='props'>{{ getActualObserved(props.row) }}%</q-td>
                 <q-td key='portCoverageGoal' style='width: 100px' :props='props'>{{ props.row.coverageGoal }}%</q-td>

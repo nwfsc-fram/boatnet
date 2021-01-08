@@ -1681,7 +1681,7 @@ export default createComponent({
       });
     };
 
-    let buyerOptions: any = ref([]);
+    const buyerOptions: any = ref([]);
     const getBuyerOptions = async () => {
       const masterDb = couchService.masterDB;
       const queryOptions = {
@@ -1693,7 +1693,7 @@ export default createComponent({
 
       buyerOptions.value = await masterDb.view('TripsApi', 'all_em_lookups', queryOptions);
       buyerOptions.value = buyerOptions.value.rows.map( (row: any) => {
-        return {description: row.value[0], lookupValue: row.value[1]}
+        return {description: row.value[0], lookupValue: row.value[1]};
       });
 
       buyerOptions.value.sort((a: any, b: any) => {
@@ -1709,11 +1709,16 @@ export default createComponent({
 
     const getBuyerDescription = (i: number) => {
       if (tripCatch.buyers[i]) {
-        return buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]).description;
+        const lookup = buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]);
+        if (lookup) {
+          return buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]).description;
+        } else {
+          return tripCatch.buyers[i];
+        }
       } else {
-        return ''
+        return '';
       }
-    }
+    };
 
     let ports: any = [];
     const getPorts = async () => {
