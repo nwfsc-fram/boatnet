@@ -29,6 +29,7 @@
         <q-toggle v-model="speciesDoc.isEmExpandable" label="isEmExpandable"></q-toggle>
         <q-toggle v-model="speciesDoc.isProtected" label="isProtected"></q-toggle>
         <q-toggle v-model="speciesDoc.isWcgopEmPriority" label="isWcgopEmPriority"></q-toggle>
+        <q-toggle v-model="speciesDoc.isTargetStrategy" label="isTargetStrategy"></q-toggle>
         <br><span style="margin-left: 35px">(toggle in middle = no value set)</span><br>
 
         <q-btn

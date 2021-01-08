@@ -24,6 +24,18 @@
             ></q-select>
 
             <q-select
+              v-if="fisherySectors.length > 0"
+              v-model="ots.activeOTSTarget.fisherySector"
+              dense
+              label="Fishery Sector"
+              stack-label
+              option-label="description"
+              option-value="description"
+              emit-value
+              :options="fisherySectors"
+            ></q-select>
+
+            <q-select
               v-model="ots.activeOTSTarget.targetType"
               dense
               label="Target Type"
@@ -39,7 +51,7 @@
           <q-item v-else class="text-h6 text-primary">
             <q-item-section>
             <strong>
-              {{ ots.activeOTSTarget.fishery }} :
+              {{ ots.activeOTSTarget.fishery }} {{ ots.activeOTSTarget.fisherySector ? " - " + ots.activeOTSTarget.fisherySector : " "}} -
               {{ ots.activeOTSTarget.targetType }} Target
               <span
                 v-if="ots.activeOTSTarget.targetType === 'Vessel' && ots.activeOTSTarget.targetVessel"
@@ -260,7 +272,12 @@ export default class OtsTargetDetail extends Vue {
   @Action('error', { namespace: 'alert' }) private errorAlert: any;
 
   private fisheries = [];
-  private targetTypes = [];
+  private fisherySectors = [];
+  private targetTypes = [
+    {description: 'Fishery Wide'},
+    {description: 'Vessel'},
+    {description: 'Port Group'}
+  ];
 
   private vessels: any[] = [];
   private portGroups = ['TO DO - Populate DB with Port Groups'];
@@ -268,8 +285,7 @@ export default class OtsTargetDetail extends Vue {
   private confirm = false;
   private pagination = {rowsPerPage: 10};
 
-  private columns =
-  [
+  private columns = [
     { name: 'coverageGoal', label: 'Coverage Goal', field: 'coverageGoal', required: true, align: 'left', sortable: true },
     { name: 'setRate', label: 'Set Rate', field: 'setRate', required: true, align: 'left', sortable: true },
     { name: 'effectiveDate', label: 'Effective Date', field: 'effectiveDate', required: true, align: 'left', sortable: true },
@@ -304,6 +320,14 @@ export default class OtsTargetDetail extends Vue {
     }
   }
 
+  @Watch('ots.activeOTSTarget.fishery')
+  private onFisheryChange(newVal: any, oldVal: any) {
+    const fishery: any = this.fisheries.find( (row: any) => row.description === this.ots.activeOTSTarget.fishery );
+    if (fishery && fishery.sectors) {
+      this.fisherySectors = fishery.sectors;
+    }
+  }
+
     private async getOptions() {
         try {
         const masterDB: Client<any> = couchService.masterDB;
@@ -331,20 +355,6 @@ export default class OtsTargetDetail extends Vue {
             return 0;
           }
         });
-
-        const otsTargetTypesQueryOptions = {
-          reduce: false,
-          include_docs: true,
-          key: 'ots-target-type'
-        };
-
-        const otsTargetTypes: any = await masterDB.view(
-          'obs_web',
-          'all_doc_types',
-          otsTargetTypesQueryOptions
-        );
-
-        this.targetTypes = otsTargetTypes.rows.map((row: any) => row.doc);
 
         } catch (err) {
             this.error(err);
@@ -622,6 +632,8 @@ export default class OtsTargetDetail extends Vue {
           );
           }
         }
+
+
 
     private created() {
       this.getOptions();

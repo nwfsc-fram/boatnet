@@ -25,6 +25,7 @@ import EMFootageManager from './views/EMFootageManager.vue';
 import EMFootageDetail from './views/EMFootageDetail.vue';
 import EMRateManagement from './views/EMRateManagement.vue';
 import EMReview from './views/EMReview.vue';
+import EMResults from './views/EMResults.vue';
 import EMTaskManagement from './views/EMTaskManagement.vue';
 import Help from './views/Help.vue';
 import Home from './views/Home.vue';
@@ -56,7 +57,7 @@ import Vessels from './views/Vessels.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 
-import FisherySelectionMockup from './views/FisherySelectionMockup.vue';
+import Trips2pt0 from './views/Trips2pt0.vue';
 import TripsApiInterface from './views/TripsApiInterface.vue';
 
 import { authService } from '@boatnet/bn-auth';
@@ -273,6 +274,12 @@ const router = new Router({
           }
         },
         {
+          path: '/em-results/:id', name: 'EM Results', component: EMResults,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
           path: '/view-image/:id', name: 'View Image', component: ViewImage,
           props: (route: any) => ({ ids: [String(route.params.id)] }),
           beforeEnter: (to, from, next) => {
@@ -313,7 +320,7 @@ const router = new Router({
           }
         },
         {
-          path: '/fsm', name: 'OTS Fishery Selection Mockup', component: FisherySelectionMockup,
+          path: '/trips2', name: 'Trips 2.0', component: Trips2pt0,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
