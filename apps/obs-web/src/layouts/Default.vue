@@ -67,13 +67,13 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/fsm' : ''" exact :disabled="!onlineStatus">
+        <q-item :to="onlineStatus ? '/trips2' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="edit_attributes" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Fishery Selection Mockup</q-item-label>
-            <q-item-label caption>example fishery selection</q-item-label>
+            <q-item-label>Trips 2.0</q-item-label>
+            <q-item-label caption>trip details redo</q-item-label>
           </q-item-section>
         </q-item>
 

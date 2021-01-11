@@ -644,9 +644,9 @@
                 title="WCGOP species code (3 or 4 digits)"
                 :option-label="opt => opt.commonName +  ' ('  + opt.speciesCode + ')'"
                 :option-value="opt => opt.speciesCode"
-                :options="speciesCodeSelectOptions"
+                :options="targetStrategySelectOptions"
                 use-input
-                @filter="speciesFilterFn"
+                @filter="targetStrategyFilterFn"
                 emit-value
                 :display-value="tripCatch.hauls[selectedHaul - 1].targetStrategy"
                 class="logbook-element"
@@ -1630,6 +1630,83 @@ export default createComponent({
       });
     };
 
+    const speciesCodeSelectOptions: any = ref([]);
+    const speciesFilterFn = (val: string, update: any, abort: any) => {
+      if (val === '') {
+        update(() => {
+          speciesCodeSelectOptions.value = speciesCodeOptions;
+        });
+        return;
+      }
+      update(() => {
+        speciesCodeSelectOptions.value = speciesCodeOptions.filter(
+          (option: any) => {
+            return (
+              option.commonName.toLowerCase().includes(val.toLowerCase()) ||
+              option.speciesCode.toLowerCase().includes(val.toLowerCase())
+            );
+          }
+        );
+      });
+    };
+
+    const targetStrategyOptions: any = [];
+    const getTargetStrategyOptions = async () => {
+      const masterDb = couchService.masterDB;
+
+      const queryOptions = {
+        reduce: false,
+        include_docs: false
+      };
+
+      const targetStrategies = await masterDb.view(
+        'obs_web',
+        'target_strategies',
+        queryOptions
+      );
+
+      for (const row of targetStrategies.rows) {
+        if (row.value[0]) {
+          const value = {
+            speciesCode: row.value[0],
+            commonName: row.key
+          };
+          if (targetStrategyOptions.map((species: any) => species.commonName).indexOf(row.key) === -1) {
+            targetStrategyOptions.push(value);
+          }
+        }
+      }
+      targetStrategyOptions.sort((a: any, b: any) => {
+        if (a.commonName > b.commonName) {
+          return 1;
+        } else if (a.commonName < b.commonName) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+    };
+
+    const targetStrategySelectOptions: any = ref([]);
+    const targetStrategyFilterFn = (val: string, update: any, abort: any) => {
+      if (val === '') {
+        update(() => {
+          targetStrategySelectOptions.value = targetStrategyOptions;
+        });
+        return;
+      }
+      update(() => {
+        targetStrategySelectOptions.value = targetStrategyOptions.filter(
+          (option: any) => {
+            return (
+              option.commonName.toLowerCase().includes(val.toLowerCase()) ||
+              option.speciesCode.toLowerCase().includes(val.toLowerCase())
+            );
+          }
+        );
+      });
+    };
+
     const skipperOptions: any = ref([]);
     const getSkipperOptions = async () => {
       const masterDb = couchService.masterDB;
@@ -1661,27 +1738,7 @@ export default createComponent({
       }
     };
 
-    const speciesCodeSelectOptions: any = ref([]);
-    const speciesFilterFn = (val: string, update: any, abort: any) => {
-      if (val === '') {
-        update(() => {
-          speciesCodeSelectOptions.value = speciesCodeOptions;
-        });
-        return;
-      }
-      update(() => {
-        speciesCodeSelectOptions.value = speciesCodeOptions.filter(
-          (option: any) => {
-            return (
-              option.commonName.toLowerCase().includes(val.toLowerCase()) ||
-              option.speciesCode.toLowerCase().includes(val.toLowerCase())
-            );
-          }
-        );
-      });
-    };
-
-    let buyerOptions: any = ref([]);
+    const buyerOptions: any = ref([]);
     const getBuyerOptions = async () => {
       const masterDb = couchService.masterDB;
       const queryOptions = {
@@ -1693,7 +1750,7 @@ export default createComponent({
 
       buyerOptions.value = await masterDb.view('TripsApi', 'all_em_lookups', queryOptions);
       buyerOptions.value = buyerOptions.value.rows.map( (row: any) => {
-        return {description: row.value[0], lookupValue: row.value[1]}
+        return {description: row.value[0], lookupValue: row.value[1]};
       });
 
       buyerOptions.value.sort((a: any, b: any) => {
@@ -1709,11 +1766,16 @@ export default createComponent({
 
     const getBuyerDescription = (i: number) => {
       if (tripCatch.buyers[i]) {
-        return buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]).description;
+        const lookup = buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]);
+        if (lookup) {
+          return buyerOptions.value.find( (row: any) => row.lookupValue === tripCatch.buyers[i]).description;
+        } else {
+          return tripCatch.buyers[i];
+        }
       } else {
-        return ''
+        return '';
       }
-    }
+    };
 
     let ports: any = [];
     const getPorts = async () => {
@@ -2270,14 +2332,15 @@ export default createComponent({
     );
 
     onMounted(() => {
-      getSpeciesCodeOptions();
+      getBuyerOptions();
       getFisheryOptions();
       getGearOptions();
       getNetOptions();
       getPortDecoderPorts();
-      getSkipperOptions();
       getProAndPriSpecies();
-      getBuyerOptions();
+      getSkipperOptions();
+      getSpeciesCodeOptions();
+      getTargetStrategyOptions();
       if (context.root.$route.params.id === 'new') {
         const dummyTrip: any = {
           tripNum: '00000',
@@ -2317,51 +2380,54 @@ export default createComponent({
     });
 
     return {
-      tripCatch,
       addCatch,
-      removeCatch,
-      catchColumns,
-      catchSelected,
-      selectedCatch,
-      catchPagination,
+      addFishTicket,
       addHaul,
-      selectHaul,
+      buyerOptions,
+      catchColumns,
+      catchNotEmpty,
+      catchPagination,
+      catchSelected,
+      coordinates,
+      departurePortFilterFn,
+      depDateTime,
+      fisheryOptions,
+      fishTicketDates,
+      formatDate,
+      formatDateTime,
+      gearOptions,
+      getBuyerDescription,
+      getClass,
+      getGearDescription,
+      getHaulClass,
+      getNetDescription,
+      haulColumns,
+      haulEndTime,
+      haulEndDateTime,
+      haulPagination,
+      haulSelected,
+      haulStartDateTime,
+      isMobile,
+      netOptions,
+      portOptions,
+      proAndPriSpecies,
+      removeCatch,
       removeHaul,
       removeHaulConfirm,
-      catchNotEmpty,
-      haulColumns,
-      haulSelected,
+      retDateTime,
+      returnPortFilterFn,
+      selectedCatch,
       selectedHaul,
-      haulPagination,
-      getClass,
-      getHaulClass,
-      fisheryOptions,
-      gearOptions,
-      netOptions,
+      selectHaul,
       skipperOptions,
-      formatDateTime,
-      formatDate,
-      haulEndTime,
       speciesCodeOptions,
       speciesCodeSelectOptions,
       speciesFilterFn,
-      portOptions,
-      departurePortFilterFn,
-      returnPortFilterFn,
       submitLogbook,
-      coordinates,
-      depDateTime,
-      retDateTime,
-      isMobile,
-      haulStartDateTime,
-      haulEndDateTime,
-      fishTicketDates,
-      addFishTicket,
-      proAndPriSpecies,
-      getGearDescription,
-      getNetDescription,
-      buyerOptions,
-      getBuyerDescription
+      targetStrategyFilterFn,
+      targetStrategyOptions,
+      targetStrategySelectOptions,
+      tripCatch
     };
   }
 });

@@ -124,6 +124,8 @@ export default createComponent({
                 case '+ audit':
                     router.push({path: '/em-api-portal/' + row.tripNum + '/audit'});
                     break;
+                case 'results':
+                    router.push({path: '/em-results/' + row.tripNum});
             }
         };
 
@@ -155,6 +157,18 @@ export default createComponent({
                 );
                 catchStatus = catchStatus.rows;
 
+                const resultsQueryOptions = {
+                    reduce: false,
+                    include_docs: false
+                };
+
+                let results: any = await masterDB.view(
+                    'TripsApi',
+                    'expansion_results',
+                    resultsQueryOptions
+                );
+                results = results.rows.map( (row: any) => row.key);
+
                 for (const trip of trips) {
                     const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.errors = {};
@@ -162,6 +176,9 @@ export default createComponent({
                     trip.stage = '';
                     trip.statusDate = '';
                     trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ footage', '+ audit'];
+                    if (results.includes(trip.tripNum)) {
+                        trip.actions.push('results');
+                    }
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (tripCatch.length > 0) {
 

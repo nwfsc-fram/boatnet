@@ -132,7 +132,8 @@ export default createComponent({
             {field: 'isActive', header: 'Active ?'},
             {field: 'isProtected', header: 'Protected ?'},
             {field: 'isWcgopEmPriority', header: 'EM Priority ?'},
-            {field: 'isEmExpandable', header: 'EM Expandable'}
+            {field: 'isEmExpandable', header: 'EM Expandable'},
+            {field: 'isTargetStrategy', header: 'Target Strategy?'}
         ];
 
         const toggleFields: string[] = [
@@ -144,7 +145,8 @@ export default createComponent({
                         'isActive',
                         'isProtected',
                         'isWcgopEmPriority',
-                        'isEmExpandable'
+                        'isEmExpandable',
+                        'isTargetStrategy'
                         ];
 
         const activeTasks: any = reactive([]);
@@ -161,7 +163,8 @@ export default createComponent({
                         isActive: null,
                         isProtected: null,
                         isWcgopEmPriority: null,
-                        isEmExpandable: null
+                        isEmExpandable: null,
+                        isTargetStrategy: null
                         });
         const columnOptions = [...columns];
         let cellVal: string = '';
@@ -216,7 +219,8 @@ export default createComponent({
                     isWcgopEmPriority: row.value[3] ? true : false,
                     isEm: row.value[4] ? true : false,
                     isActive: row.value[5] ? true : false,
-                    isEmExpandable: row.value[8] ? true : false
+                    isEmExpandable: row.value[8] ? true : false,
+                    isTargetStrategy: row.value[12] ? true : false
                 });
             }
             data.sort( (a: any, b: any) => {
