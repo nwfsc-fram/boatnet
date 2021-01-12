@@ -10,7 +10,7 @@
       :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
-      :scrollHeight="isFullSize ? '600px' : '250px'"
+      :scrollHeight="isFullSize ? '70vh' : '55vh'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
