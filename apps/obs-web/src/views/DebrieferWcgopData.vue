@@ -70,7 +70,7 @@ import moment from 'moment';
 import { AshopCruise } from '@boatnet/bn-models';
 import { newCruiseApiTrip } from '@boatnet/bn-common';
 import { pouchService } from '@boatnet/bn-pouch';
-import { get, set, findIndex } from 'lodash';
+import { get, set, findIndex, uniq, indexOf, filter } from 'lodash';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 
@@ -87,9 +87,10 @@ export default createComponent({
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
+     const jp = require('jsonpath');
 
     watch(() => state.debriefer.trips, update);
-    watch(() => state.debriefer.operations, update);
+    watch(() => state.debriefer.selectedOperations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
 
     updateTab(props.startingTab ? props.startingTab : '');
@@ -111,7 +112,7 @@ export default createComponent({
       );
       filters.value = filters.value.concat(trips);
       const hauls = updateFilter(
-        state.debriefer.operations,
+        state.debriefer.selectedOperations,
         'Haul',
         'operationNum'
       );
@@ -136,7 +137,7 @@ export default createComponent({
     function remove(item: any) {
       let index = -1;
       const trips = state.debriefer.trips;
-      const ops = state.debriefer.operations;
+      const ops = state.debriefer.selectedOperations;
 
       if (item.type === 'wcgop-trip') {
         index = findIndex(trips, item);
@@ -145,14 +146,34 @@ export default createComponent({
           updateTab('trips');
         }
         store.dispatch('debriefer/updateTrips', trips);
+        removeOperations();
       } else {
         index = findIndex(ops, item);
         ops.splice(index, 1);
         if (ops.length === 0) {
           updateTab('operations');
         }
-        store.dispatch('debriefer/updateOperations', ops);
+        store.dispatch('debriefer/updateSelectedOperations', ops);
       }
+    }
+
+    function removeOperations() {
+      const tripIds = uniq(jp.query(state.debriefer.trips, '$..tripId'));
+      const ops = filter(state.debriefer.operations, function(val: any) {
+        if (val && val.legacy && val.legacy.tripId) {
+          const index = indexOf(tripIds, val.legacy.tripId);
+          return index >= 0 ? true : false;
+        }
+      });
+      store.dispatch('debriefer/updateOperations', ops);
+
+      const selectedOps = filter(state.debriefer.selectedOperations, function(val: any) {
+        if (val && val.legacy && val.legacy.tripId) {
+          const index = indexOf(tripIds, val.legacy.tripId);
+          return index >= 0 ? true : false;
+        }
+      });
+      store.dispatch('debriefer/updateSelectedOperations', selectedOps);
     }
 
     return {

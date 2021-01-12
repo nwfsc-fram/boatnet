@@ -165,6 +165,7 @@ export default createComponent({
       store.dispatch('debriefer/setTripIds', []);
       store.dispatch('debriefer/updateTrips', []);
       store.dispatch('debriefer/updateOperations', []);
+      store.dispatch('debriefer/updateSelectedOperations', []);
       state.debriefer.trips.splice(0, state.debriefer.trips.length);
       state.debriefer.operations.splice(0, state.debriefer.operations.length);
     }

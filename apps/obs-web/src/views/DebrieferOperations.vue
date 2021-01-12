@@ -8,6 +8,7 @@
             :enableSelection="true"
             :isFullSize="isFullSize"
             :initialSelection="initialSelection"
+            :loading="loading"
             @selectValues="selectValues"
             @save="save"
         />
@@ -34,14 +35,17 @@ export default createComponent({
     setup(props, context) {
         const store = context.root.$store;
         const state: any = store.state;
-        const initialSelection = state.debriefer.operations
-            ? state.debriefer.operations
+        const initialSelection = state.debriefer.selectedOperations
+            ? state.debriefer.selectedOperations
             : [];
         const masterDB: Client<any> = couchService.masterDB;
         const operations: any = ref([]);
+        const loading: any = ref(false);
 
-        var flatten = require('flat');
-        var unflatten = flatten.unflatten;
+        const flatten = require('flat');
+        const unflatten = flatten.unflatten;
+
+        watch(() => state.debriefer.operations, getOperations);
 
         const wcgopColumns = [
             {
@@ -257,14 +261,12 @@ export default createComponent({
 
         getOperations();
 
-        watch(() => state.debriefer.trips, () => { getOperations() });
-
         function selectValues(data: any) {
             const unflattenData: any[] = [];
             for (const val of data) {
-                unflattenData.push(unflatten(val, { delimiter: '-'}))
+                unflattenData.push(unflatten(val, { delimiter: '-' }));
             }
-            store.dispatch('debriefer/updateOperations', unflattenData);
+            store.dispatch('debriefer/updateSelectedOperations', unflattenData);
         }
 
         async function save(data: any) {
@@ -275,33 +277,10 @@ export default createComponent({
             updatedvalue[index]['_rev'] = result.rev;
             operations.value = updatedvalue;
         }
-
         async function getOperations() {
-            let ops: any[] = [];
-            let operationIds: any[] = [];
-            for (const trip of state.debriefer.trips) {
-                operationIds = operationIds.concat(trip.operationIDs);
-            }
-
-            if (operationIds.length > 0) {
-                try {
-                    const operationOptions: ListOptions = { keys: operationIds };
-                    const operationDocs = await masterDB.listWithDocs(operationOptions);
-                    ops = operationDocs.rows;
-                    ops.sort((a: any, b: any) => {
-                        if (a.legacy.tripId !== b.legacy.tripId) {
-                            return a.legacy.tripId - b.legacy.tripId;
-                        } else if (a.legacy.tripId === b.legacy.tripId) {
-                            return a.operationNum - b.operationNum;
-                        } else {
-                            return 0;
-                        }
-                    });
-                } catch (err) {
-                    console.log('cannot fetch operation docs ' + err);
-                }
-            }
-            operations.value = ops;
+            loading.value = true;
+            operations.value = state.debriefer.operations;
+            loading.value = false;
         }
 
         return {
@@ -309,7 +288,8 @@ export default createComponent({
             selectValues,
             initialSelection,
             save,
-            operations
+            operations,
+            loading,
         };
     },
 });

@@ -19,6 +19,7 @@ export interface DebrieferState {
   tripIds: string[];
   displayColumns: any;
   trips: any[];
+  selectedOperations: any[];
   operations: any[];
   tripSearchFilters: any;
   specimens: any[];

@@ -158,7 +158,7 @@ export default createComponent({
     };
 
     watch(() => state.debriefer.trips, getCatches);
-    watch(() => state.debriefer.operations, getCatches);
+    watch(() => state.debriefer.selectedOperations, getCatches);
 
     function select(item: string[]) {
       store.dispatch('debriefer/updateSpecimens', item);
@@ -169,7 +169,7 @@ export default createComponent({
       const catches: any[] = [];
       let color = '#344B5F';
 
-      for (const operation of state.debriefer.operations) {
+      for (const operation of state.debriefer.selectedOperations) {
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
         for (const c of operation.catches) {

@@ -197,10 +197,10 @@ export default createComponent({
       }
     ];
 
-    watch(() => state.debriefer.operations, getBiospecimens);
+    watch(() => state.debriefer.selectedOperations, getBiospecimens);
 
     async function getBiospecimens() {
-      const operations = state.debriefer.operations;
+      const operations = state.debriefer.selectedOperations;
       const bioSpecimens: any[] = [];
       const id: number = 1;
       const specimens = jp.nodes(operations, '$..specimens');
