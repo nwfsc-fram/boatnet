@@ -274,7 +274,7 @@ export default createComponent({
             const index = findIndex(operations.value, { _id: data._id });
             const updatedvalue: any[] = cloneDeep(operations.value);
             updatedvalue[index] = data;
-            updatedvalue[index]['_rev'] = result.rev;
+            updatedvalue[index]._rev = result.rev;
             operations.value = updatedvalue;
         }
         async function getOperations() {

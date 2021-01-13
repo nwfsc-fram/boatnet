@@ -87,7 +87,7 @@ export default createComponent({
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
-     const jp = require('jsonpath');
+    const jp = require('jsonpath');
 
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.selectedOperations, update);
@@ -158,8 +158,9 @@ export default createComponent({
     }
 
     function removeOperations() {
+      // remove operations
       const tripIds = uniq(jp.query(state.debriefer.trips, '$..tripId'));
-      const ops = filter(state.debriefer.operations, function(val: any) {
+      const ops = filter(state.debriefer.operations, (val: any) => {
         if (val && val.legacy && val.legacy.tripId) {
           const index = indexOf(tripIds, val.legacy.tripId);
           return index >= 0 ? true : false;
@@ -167,7 +168,8 @@ export default createComponent({
       });
       store.dispatch('debriefer/updateOperations', ops);
 
-      const selectedOps = filter(state.debriefer.selectedOperations, function(val: any) {
+      // when trips are remove also remove associated selectd operations
+      const selectedOps = filter(state.debriefer.selectedOperations, (val: any) => {
         if (val && val.legacy && val.legacy.tripId) {
           const index = indexOf(tripIds, val.legacy.tripId);
           return index >= 0 ? true : false;

@@ -196,8 +196,8 @@ export default createComponent({
     let rowBackground = 'highlightRow';
 
     let updateStatePermissions = false;
-    var flatten = require('flat');
-    var unflatten = flatten.unflatten;
+    const flatten = require('flat');
+    const unflatten = flatten.unflatten;
 
     onMounted(() => {
       pageStart.value = 0;
@@ -217,12 +217,12 @@ export default createComponent({
     const formattedData = computed(() => {
       const flattenedData: any[] = [];
       if (props.value) {
-        for (let rowVal of props.value) {
+        for (const rowVal of props.value) {
           flattenedData.push(flatten(rowVal, { delimiter: '-' }));
         }
       }
       return flattenedData;
-    })
+    });
 
     const displayColumns = computed({
       get: () => {
@@ -263,18 +263,18 @@ export default createComponent({
     }
 
     async function getLookupName(lookupKey: string, fieldName: string, type: string) {
-      let values: any[] = [];
+      let lookupVals: any[] = [];
       lookupsList.value = [];
       if (type === 'boolean') {
-        values = [true, false];
+        lookupVals = [true, false];
       } else {
         const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
         for (const row of result.rows) {
-          values.push(get(row.doc, fieldName))
+          lookupVals.push(get(row.doc, fieldName));
         }
       }
-      values = intersection(values);
-      lookupsList.value = values.sort();
+      lookupVals = intersection(lookupVals);
+      lookupsList.value = lookupVals.sort();
     }
 
     function formatValue(slotProps: any, type: string, displayField: string[]) {

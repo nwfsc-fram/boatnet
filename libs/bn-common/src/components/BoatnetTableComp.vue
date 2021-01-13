@@ -55,6 +55,13 @@ export default class BoatnetTableComp extends Vue {
   @Getter('appMode', { namespace: 'appSettings' })
   private appMode!: AppSettings;
 
+  private dialogSettings = {
+    title: this.action ? (this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name) : '',
+    width: 600,
+    height: 600,
+    confirmationLabel: 'Yes'
+  };
+
   private created() {
     this.config = get(this.appConfig, this.configName);
     if (this.config.width) {
@@ -64,13 +71,6 @@ export default class BoatnetTableComp extends Vue {
       this.dialogSettings.height = this.config.height;
     }
   }
-
-  private dialogSettings = {
-    title: this.action ? (this.action === 'add' ? 'Add ' + this.config.name : 'Edit ' + this.config.name) : '',
-    width: 600,
-    height: 600,
-    confirmationLabel: 'Yes'
-  };
 
   private selectTicket(row: any) {
     this.selected = row ? [row] : [];

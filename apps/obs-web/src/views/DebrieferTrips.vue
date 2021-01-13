@@ -58,8 +58,8 @@ export default createComponent({
     const state: any = store.state;
     const debriefer: any = state.debriefer;
 
-    var flatten = require('flat');
-    var unflatten = flatten.unflatten;
+    const flatten = require('flat');
+    const unflatten = flatten.unflatten;
 
     const columns: any = ref([]);
     const trips: any = ref([]);
@@ -499,7 +499,7 @@ export default createComponent({
       const index = findIndex(trips.value, { _id: data._id });
       const updatedvalue: any[] = cloneDeep(trips.value);
       updatedvalue[index] = data;
-      updatedvalue[index]['_rev'] = result.rev;
+      updatedvalue[index]._rev = result.rev;
       trips.value = updatedvalue;
     }
 
@@ -518,11 +518,11 @@ export default createComponent({
       for (const trip of state.debriefer.trips) {
         operationIds = operationIds.concat(trip.operationIDs);
       }
-      
       if (operationIds.length > 0) {
-        try {const operationOptions: ListOptions = { keys: operationIds };
+        try {
+          const operationOptions: ListOptions = { keys: operationIds };
           const operationDocs = await masterDB.listWithDocs(operationOptions);
-         ops = operationDocs.rows;
+          ops = operationDocs.rows;
           ops.sort((a: any, b: any) => {
             if (a.legacy.tripId !== b.legacy.tripId) {
               return a.legacy.tripId - b.legacy.tripId;

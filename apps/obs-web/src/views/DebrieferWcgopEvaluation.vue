@@ -260,9 +260,9 @@ export default createComponent({
     function edit() {
       dialogEvalPeriod.value = evaluationPeriod.value;
       showEvaluationDialog.value = true;
-      const currEval: number = evaluations.value.indexOf(evaluationPeriod.value)
+      const currEval: number = evaluations.value.indexOf(evaluationPeriod.value);
       const previousEvalPeriod: any = evaluations.value[currEval + 1];
-      const nextEvalPeriod: any = evaluations.value[currEval-1];
+      const nextEvalPeriod: any = evaluations.value[currEval - 1];
       minDate.value = previousEvalPeriod ? previousEvalPeriod.endDate : null;
       maxDate.value = nextEvalPeriod ? nextEvalPeriod.startDate : null;
     }

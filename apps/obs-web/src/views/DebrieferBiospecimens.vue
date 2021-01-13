@@ -248,7 +248,6 @@ export default createComponent({
       }
       WcgopBiospecimens.value = orderBy(bioSpecimens, ['operationNum']);
     }
-    
 
     async function save(data: any) {
       const speciesId = data._id;
@@ -256,14 +255,14 @@ export default createComponent({
 
       const specimenInfo = jp.paths(currOperationDoc, '$..specimens[?(@._id=="' + speciesId + '")]');
       const path = jp.stringify(specimenInfo[0]);
-      jp.apply(currOperationDoc, path, function() { return data.specimen });
+      jp.apply(currOperationDoc, path, () => data.specimen);
 
       const result = await masterDB.put(currOperationDoc._id, currOperationDoc, currOperationDoc._rev);
       const currIndex = findIndex(WcgopBiospecimens.value, { _id: speciesId });
       const updatedvalue: any[] = cloneDeep(WcgopBiospecimens.value);
       updatedvalue[currIndex] = data;
-      jp.apply(WcgopBiospecimens.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', function(value: any) { 
-        value['operationRev'] = result.rev;
+      jp.apply(WcgopBiospecimens.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', (value: any) => {
+        value.operationRev = result.rev;
         return value;
       });
       WcgopBiospecimens.value = updatedvalue;
