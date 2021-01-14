@@ -131,7 +131,7 @@ import {
   computed,
   onMounted,
   watch,
-  onBeforeMount
+  onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { findIndex, indexOf, get, intersection, set, values } from 'lodash';
@@ -174,7 +174,6 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
-    const filters: any = ref({});
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -182,6 +181,7 @@ export default createComponent({
     const cellVal: any = ref('');
 
     const tableType = state.debriefer.program + '-' + props.type;
+    const filters: any = ref(state.debriefer.filters[tableType] ? state.debriefer.filters[tableType] : {});
     const selected: any = ref([]);
     const pageStart: any = ref(1);
     const stateDisplayCols = state.debriefer.displayColumns;
@@ -204,6 +204,19 @@ export default createComponent({
       selected.value = props.initialSelection;
       updateStatePermissions = true;
     });
+
+    onUnmounted(() => {
+      // Update filters stored in state. Currently stored in debriefer
+      // as an obj and the key is the tableType
+      // example: { wcgop-Trips: {}, wcgop-Operations: {} }
+      let localStorageInfo = localStorage.getItem(tableType);
+      localStorageInfo = localStorageInfo ? localStorageInfo : '';
+      const storageObj = JSON.parse(localStorageInfo);
+
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = storageObj.filters
+      store.dispatch('debriefer/updateFilters', currFilters);
+    })
 
     // clear selection when evaluation period selected
     watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
