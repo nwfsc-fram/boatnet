@@ -15,6 +15,8 @@
       editMode="cell"
       columnResizeMode="expand"
       @cell-edit-init="onCellEditInit"
+      @row-select="updateSelection"
+      @row-unselect="updateSelection"
       :reorderableColumns="true"
       :data-key="uniqueKey"
       :resizableColumns="true"
@@ -220,10 +222,9 @@ export default createComponent({
 
     // clear selection when evaluation period selected
     watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
-
-    watch(selected, (updatedSelection, prevSelection) => {
+    watch(() => props.initialSelection, () => {
       if (updateStatePermissions) {
-        context.emit('selectValues', updatedSelection);
+        selected.value = props.initialSelection
       }
     });
 
@@ -252,6 +253,10 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
+
+    function updateSelection(event: any, data: any, index: number) {
+      context.emit('selectValues', selected.value);
+    }
 
     async function getLookupInfo(
       list: any[],
@@ -417,7 +422,8 @@ export default createComponent({
       rowClass,
       openNewDebriefingTab,
       getLookupName,
-      formattedData
+      formattedData,
+      updateSelection
     };
   },
 });
