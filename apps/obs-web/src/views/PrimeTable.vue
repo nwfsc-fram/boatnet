@@ -214,9 +214,9 @@ export default createComponent({
       const storageObj = JSON.parse(localStorageInfo);
 
       const currFilters = state.debriefer.filters;
-      currFilters[tableType] = storageObj.filters
+      currFilters[tableType] = storageObj.filters;
       store.dispatch('debriefer/updateFilters', currFilters);
-    })
+    });
 
     // clear selection when evaluation period selected
     watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
