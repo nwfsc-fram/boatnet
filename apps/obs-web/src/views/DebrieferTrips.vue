@@ -9,7 +9,7 @@
       :enableSelection="true"
       :isFullSize="isFullSize"
       :loading="loading"
-      :initialSelection.sync="initialSelection"
+      :initialSelection="initialSelection"
       @save="save"
       @selectValues="selectValues"
     />
@@ -64,7 +64,7 @@ export default createComponent({
     const columns: any = ref([]);
     const trips: any = ref([]);
     const loading: any = ref(false);
-    const initialSelection: any = state.debriefer && state.debriefer.trips ? ref(state.debriefer.trips) : ref([]);
+    const initialSelection: any = state.debriefer && state.debriefer.trips ? state.debriefer.trips : [];
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -398,7 +398,6 @@ export default createComponent({
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
     watch(() => state.debriefer.tripIds, getTrips);
-    watch(() => state.debriefer.trips, () => initialSelection.value = state.debriefer.trips);
 
     async function getTrips() {
       const tripsHolder = [];

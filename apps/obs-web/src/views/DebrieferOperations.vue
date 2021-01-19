@@ -7,7 +7,7 @@
             uniqueKey="_id"
             :enableSelection="true"
             :isFullSize="isFullSize"
-            :initialSelection.sync="initialSelection"
+            :initialSelection="initialSelection"
             :loading="loading"
             @selectValues="selectValues"
             @save="save"
@@ -36,8 +36,8 @@ export default createComponent({
         const store = context.root.$store;
         const state: any = store.state;
         const initialSelection = state.debriefer.selectedOperations
-            ? ref(state.debriefer.selectedOperations)
-            : ref([]);
+            ? state.debriefer.selectedOperations
+            : [];
         const masterDB: Client<any> = couchService.masterDB;
         const operations: any = ref([]);
         const loading: any = ref(false);
@@ -46,7 +46,6 @@ export default createComponent({
         const unflatten = flatten.unflatten;
 
         watch(() => state.debriefer.operations, getOperations);
-        watch(() => state.debriefer.selectedOperations, () => initialSelection.value = state.debriefer.selectedOperations);
 
         const wcgopColumns = [
             {
