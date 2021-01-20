@@ -385,7 +385,7 @@ export default createComponent({
       {
         field: 'notes',
         header: 'Notes',
-        type: 'input',
+        type: 'textArea',
         key: 'wcgopNotes',
         isEditable: true,
         width: '300'

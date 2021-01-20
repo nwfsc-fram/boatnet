@@ -5,8 +5,6 @@
       class="p-datatable-striped p-datatable-sm"
       :value="formattedData"
       :filters="filters"
-      :paginator="true"
-      :rows="10"
       :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
@@ -18,11 +16,6 @@
       :reorderableColumns="true"
       :data-key="uniqueKey"
       :resizableColumns="true"
-      stateStorage="local"
-      :stateKey="tableType"
-      :rowsPerPageOptions="[10,25,50, 100]"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
       :loading="loading"
     >
       <template #empty>No data available</template>
@@ -80,6 +73,12 @@
             @input="onCellEdit($event, slotProps, col.type)"
             appendTo="body"
           />
+          <Textarea
+            v-else-if="col.type === 'textArea'"
+            v-model="cellVal"
+            cols="100"
+            rows="5"
+          />
           <InputText
             v-else
             type="text"
@@ -134,7 +133,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { findIndex, indexOf, get, intersection, set, values } from 'lodash';
+import { findIndex, filter, indexOf, get, intersection, set, values } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -147,6 +146,7 @@ import { Client } from 'davenport';
 import moment from 'moment';
 import PrimeTableDialog from './PrimeTableDialog.vue';
 import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
+import Textarea  from 'primevue/textarea';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -156,6 +156,7 @@ Vue.component('Calendar', Calendar);
 Vue.component('Column', Column);
 Vue.component('InputText', InputText);
 Vue.component('MultiSelect', MultiSelect);
+Vue.component('Textarea', Textarea );
 
 export default createComponent({
   props: {
