@@ -66,6 +66,7 @@ export default createComponent({
                 field: 'haulScore',
                 header: 'Haul Score',
                 type: 'toggle',
+                listType: 'template',
                 list: ['Pass', 'Fail'],
                 key: 'wcgopHaulScore',
                 isEditable: true,

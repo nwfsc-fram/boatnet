@@ -371,6 +371,7 @@ export default createComponent({
         type: 'toggle',
         key: 'wcgopState',
         isEditable: true,
+        listType: 'template',
         list: ['C', 'O', 'W'],
         width: '80'
       },

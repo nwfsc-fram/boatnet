@@ -17,6 +17,8 @@
       :data-key="uniqueKey"
       :resizableColumns="true"
       :loading="loading"
+      stateStorage="local"
+      :stateKey="tableType"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -55,17 +57,29 @@
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template v-if="col.isEditable" #editor="slotProps">
-          <Dropdown
-            v-if="col.type === 'toggle'"
+          <q-select 
+            v-if="col.type === 'toggle' && col.listType === 'fetch'"
             v-model="cellVal"
+            use-input
+            fill-input
+            hide-selected
             :options="lookupsList"
-            :placeholder="cellVal"
-            :filter="col.search ? true : false"
-            :optionLabel="col.listType === 'fetch' ? 'doc.' + col.lookupField : 'value'"
-            :optionValue="col.listType === 'fetch' ? 'doc' : 'value'"
-            @before-show="getLookupInfo(col.list, col.listType, col.lookupField, col.lookupKey)"
+            @focus="populateLookupsList(col)"
+            @filter="filterFn"
+            :style="'width:' + col.width"
             @input="onCellEdit($event, slotProps, col.listType)"
-            appendTo="body"
+          />
+          <q-select 
+            v-else-if="col.type === 'toggle' && col.listType === 'template'"
+            v-model="cellVal"
+            :options="col.list"
+            @input="onCellEdit($event, slotProps, col.listType)"
+          />
+          <q-select 
+            v-else-if="col.type === 'toggle' && col.listType === 'boolean'"
+            v-model="cellVal"
+            :options="[true, false]"
+            @input="onCellEdit($event, slotProps, col.listType)"
           />
           <Calendar
             v-else-if="col.type === 'date'"
@@ -99,6 +113,15 @@
           />
         </template>
         <template #filter v-if="!simple">
+          <q-select
+            v-if="col.type === 'toggle'"
+            v-model="filters[col.field]"
+            multiple
+            clearable
+            clear-icon="close"
+            @focus="hello"
+            :options="['Debriefed', 'Closed', 'Open']">
+          </q-select>
           <MultiSelect
             v-if="col.type === 'toggle'"
             :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
@@ -133,7 +156,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { findIndex, filter, indexOf, get, intersection, set, values } from 'lodash';
+import { cloneDeep, findIndex, get, intersection, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -178,6 +201,7 @@ export default createComponent({
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
+    let sortedList: any[] = [];
 
     const cellVal: any = ref('');
 
@@ -254,26 +278,38 @@ export default createComponent({
       },
     });
 
+    async function populateLookupsList(col: any) {
+      lookupsList.value = [];
+      await getLookupInfo(col.list, col.listType, col.lookupField, col.lookupKey);
+      if (col.listType === 'fetch') {
+        for (let i = 0; i < lookupsList.value.length; i++) {
+          lookupsList.value[i].label = get(lookupsList.value[i].doc, col.lookupField);
+          lookupsList.value[i].value = lookupsList.value[i].doc;
+        }
+      }
+      sortedList = cloneDeep(lookupsList.value);
+    }
+
+    function filterFn (val: any, update: any, abort: any) {
+      update(async () => {
+          const needle = val.toLowerCase();
+          lookupsList.value = sortedList.filter(
+            (v: any) => startsWith(v.label.toLowerCase(), needle)
+          );
+      })
+    }
+
     async function getLookupInfo(
       list: any[],
       listType: string,
       displayField: string,
       key: string
     ) {
-      if (listType === 'boolean') {
-        lookupsList.value = [{ value: true }, { value: false }];
-      } else if (!list) {
         const mode = state.debriefer.program;
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
           displayField,
         ]);
-      } else {
-        const lookupVals = [];
-        for (const listItem of list) {
-          lookupVals.push({ value: listItem });
-        }
-        lookupsList.value = lookupVals;
-      }
+      
     }
 
     async function getLookupName(lookupKey: string, fieldName: string, type: string) {
@@ -330,16 +366,10 @@ export default createComponent({
       } else if (type === 'date') {
         newValue = moment(newValue).format();
       } else if (type === 'fetch') {
-        const fieldArr: string[] = fields.split('-');
-        fieldArr.splice(fieldArr.length - 1, 1);
+        const fieldArr : string[] = fields.split('-');
+        fieldArr.pop();
         fields = fieldArr.join('-');
-
-        const updateCellValFieldsArr: string[] = slotProps.column.field.split(
-          '-'
-        );
-        updateCellValFieldsArr.splice(0, 1);
-        const updateCellValFields = updateCellValFieldsArr.join('-');
-        cellVal.value = get(newValue, updateCellValFields);
+        newValue = newValue.value;
       }
       set(editingCellRow, fields, newValue);
       editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
@@ -418,7 +448,9 @@ export default createComponent({
       rowClass,
       openNewDebriefingTab,
       getLookupName,
-      formattedData
+      formattedData,
+      filterFn,
+      populateLookupsList
     };
   },
 });
