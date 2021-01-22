@@ -113,15 +113,6 @@
           />
         </template>
         <template #filter v-if="!simple">
-          <q-select
-            v-if="col.type === 'toggle'"
-            v-model="filters[col.field]"
-            multiple
-            clearable
-            clear-icon="close"
-            @focus="hello"
-            :options="['Debriefed', 'Closed', 'Open']">
-          </q-select>
           <MultiSelect
             v-if="col.type === 'toggle'"
             :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
