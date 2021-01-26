@@ -42,9 +42,6 @@ export default createComponent({
         const operations: any = ref([]);
         const loading: any = ref(false);
 
-        const flatten = require('flat');
-        const unflatten = flatten.unflatten;
-
         watch(() => state.debriefer.operations, getOperations);
 
         const wcgopColumns = [
@@ -263,11 +260,7 @@ export default createComponent({
         getOperations();
 
         function selectValues(data: any) {
-            const unflattenData: any[] = [];
-            for (const val of data) {
-                unflattenData.push(unflatten(val, { delimiter: '-' }));
-            }
-            store.dispatch('debriefer/updateSelectedOperations', unflattenData);
+            store.dispatch('debriefer/updateSelectedOperations', data);
         }
 
         async function save(data: any) {

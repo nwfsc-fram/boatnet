@@ -66,9 +66,17 @@
             :options="lookupsList"
             @focus="populateLookupsList(col)"
             @filter="filterFn"
-            :style="'width:' + col.width"
+            :style="'width:' + col.width - 10 + 'px'"
             @input="onCellEdit($event, slotProps, col.listType)"
-          />
+          >
+            <template v-slot:no-option>
+              <q-item>
+                <q-item-section class="text-grey">
+                  No results
+              </q-item-section>
+            </q-item>
+          </template>
+          </q-select>
           <q-select 
             v-else-if="col.type === 'toggle' && col.listType === 'template'"
             v-model="cellVal"

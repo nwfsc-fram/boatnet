@@ -505,11 +505,7 @@ export default createComponent({
     }
 
     function selectValues(data: any) {
-      const unflattenData: any[] = [];
-      for (const val of data) {
-        unflattenData.push(unflatten(val, { delimiter: '-'}));
-      }
-      store.dispatch('debriefer/updateTrips', unflattenData);
+      store.dispatch('debriefer/updateTrips', data);
       getOperations();
     }
 
@@ -517,7 +513,8 @@ export default createComponent({
       let ops: any[] = [];
       let operationIds: any[] = [];
       for (const trip of state.debriefer.trips) {
-        operationIds = operationIds.concat(trip.operationIDs);
+        let unflattenedTrip = unflatten(trip, { delimiter: '-' });
+        operationIds = operationIds.concat(unflattenedTrip.operationIDs);
       }
       if (operationIds.length > 0) {
         try {

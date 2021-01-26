@@ -108,7 +108,7 @@ export default createComponent({
       const trips = updateFilter(
         state.debriefer.trips,
         'Trip',
-        'legacy.tripId'
+        'legacy-tripId'
       );
       filters.value = filters.value.concat(trips);
       const hauls = updateFilter(
@@ -125,7 +125,7 @@ export default createComponent({
         const id = get(val, idLabel);
         if (label === 'Haul') {
           val.label =
-            'Trip: ' + get(val, 'legacy.tripId') + ' ' + label + ': ' + id;
+            'Trip: ' + get(val, 'legacy-tripId') + ' ' + label + ': ' + id;
         } else {
           val.label = label + ': ' + id;
         }

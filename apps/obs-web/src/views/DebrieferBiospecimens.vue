@@ -38,7 +38,10 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const debriefer = state.debriefer;
     const WcgopBiospecimens: any = ref([]);
+
     const jp = require('jsonpath');
+    const flatten = require('flat');
+    const unflatten = flatten.unflatten;
 
     const columns = [
       {
@@ -201,9 +204,14 @@ export default createComponent({
 
     async function getBiospecimens() {
       const operations = state.debriefer.selectedOperations;
+      const unflattenedOperations: any[] = [];
+      for (const op of operations) {
+        unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
+      }
+      
       const bioSpecimens: any[] = [];
       const id: number = 1;
-      const specimens = jp.nodes(operations, '$..specimens');
+      const specimens = jp.nodes(unflattenedOperations, '$..specimens');
 
       for (const specimen of specimens) {
         const fullPath = jp.stringify(specimen.path);
@@ -211,20 +219,20 @@ export default createComponent({
         const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
         const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
 
-        const tripId = jp.value(operations, operationPath + '.legacy.tripId');
+        const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
         const operationNum = jp.value(
-          operations,
+          unflattenedOperations,
           operationPath + '.operationNum'
         );
-        const operationId = jp.value(operations, operationPath + '._id');
-        const operationRev = jp.value(operations, operationPath + '._rev');
+        const operationId = jp.value(unflattenedOperations, operationPath + '._id');
+        const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
         let disposition = jp.value(
-          operations,
+          unflattenedOperations,
           catchesPath + '.disposition.description'
         );
         disposition = disposition === 'Retained' ? 'R' : 'D';
         const species = jp.value(
-          operations,
+          unflattenedOperations,
           childrenPath + '.catchContent.commonNames[0]'
         );
 

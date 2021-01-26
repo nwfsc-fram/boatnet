@@ -40,6 +40,9 @@ export default createComponent({
 
     const lookupsList: any = ref([]);
 
+    const flatten = require('flat');
+    const unflatten = flatten.unflatten;
+
     const wcgopCatchTreeSettings = {
       rowKey: 'name',
       columns: [
@@ -170,12 +173,13 @@ export default createComponent({
       let color = '#344B5F';
 
       for (const operation of state.debriefer.selectedOperations) {
+        const unflattenedOperation = unflatten(operation, { delimiter: '-' })
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
-        for (const c of operation.catches) {
-          const tripId = operation.legacy.tripId;
-          const operationNum = operation.operationNum;
-          const operationId = operation._id;
+        for (const c of unflattenedOperation.catches) {
+          const tripId = unflattenedOperation.legacy.tripId;
+          const operationNum = unflattenedOperation.operationNum;
+          const operationId = unflattenedOperation._id;
           let disposition = c.disposition ? c.disposition.description : '';
           const wm = c.weightMethod ? c.weightMethod.description : '';
           let weight: any = c.weight ? c.weight.value : null;
