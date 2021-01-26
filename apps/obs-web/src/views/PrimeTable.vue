@@ -205,7 +205,7 @@ export default createComponent({
     const cellVal: any = ref('');
 
     const tableType = state.debriefer.program + '-' + props.type;
-    const filters: any = ref(state.debriefer.filters[tableType] ? state.debriefer.filters[tableType] : {});
+    const filters: any = ref({});
     const selected: any = ref([]);
     const pageStart: any = ref(1);
     const stateDisplayCols = state.debriefer.displayColumns;
@@ -227,6 +227,8 @@ export default createComponent({
       pageStart.value = 0;
       selected.value = props.initialSelection;
       updateStatePermissions = true;
+      const filter = state.debriefer.filters[tableType];
+      filters.value = filter ? filter : {}
     });
 
     onUnmounted(() => {
@@ -234,7 +236,10 @@ export default createComponent({
     });
 
     // clear selection when evaluation period selected
-    watch(() => state.debriefer.evaluationPeriod, () => { selected.value = []; });
+    watch(() => state.debriefer.evaluationPeriod, () => {
+      filters.value = {};
+      selected.value = [];
+    });
 
     watch(selected, (updatedSelection, prevSelection) => {
       if (updateStatePermissions) {
@@ -274,13 +279,13 @@ export default createComponent({
      * example: { wcgop-Trips: {}, wcgop-Operations: {} }
      */
     function saveFilters() {
-     /* let localStorageInfo = localStorage.getItem(tableType);
+      let localStorageInfo = localStorage.getItem(tableType);
       localStorageInfo = localStorageInfo ? localStorageInfo : '';
       const storageObj = JSON.parse(localStorageInfo);
 
       const currFilters = state.debriefer.filters;
       currFilters[tableType] = storageObj.filters;
-      store.dispatch('debriefer/updateFilters', currFilters);*/
+      store.dispatch('debriefer/updateFilters', currFilters);
     }
 
     async function populateLookupsList(col: any) {
