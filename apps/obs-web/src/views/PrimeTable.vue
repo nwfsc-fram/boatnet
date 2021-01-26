@@ -230,16 +230,7 @@ export default createComponent({
     });
 
     onUnmounted(() => {
-      // Update filters stored in state. Currently stored in debriefer
-      // as an obj and the key is the tableType
-      // example: { wcgop-Trips: {}, wcgop-Operations: {} }
-      let localStorageInfo = localStorage.getItem(tableType);
-      localStorageInfo = localStorageInfo ? localStorageInfo : '';
-      const storageObj = JSON.parse(localStorageInfo);
-
-      const currFilters = state.debriefer.filters;
-      currFilters[tableType] = storageObj.filters;
-      store.dispatch('debriefer/updateFilters', currFilters);
+      saveFilters();
     });
 
     // clear selection when evaluation period selected
@@ -276,6 +267,21 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
+
+    /**
+     * Update filters stored in state. Currently stored in debriefer'
+     * as an obj and the key is the tableType
+     * example: { wcgop-Trips: {}, wcgop-Operations: {} }
+     */
+    function saveFilters() {
+     /* let localStorageInfo = localStorage.getItem(tableType);
+      localStorageInfo = localStorageInfo ? localStorageInfo : '';
+      const storageObj = JSON.parse(localStorageInfo);
+
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = storageObj.filters;
+      store.dispatch('debriefer/updateFilters', currFilters);*/
+    }
 
     async function populateLookupsList(col: any) {
       lookupsList.value = [];
@@ -417,6 +423,8 @@ export default createComponent({
     }
 
     function openNewDebriefingTab() {
+      saveFilters();
+
       const type = props.type ? props.type.toLowerCase() : '';
       const route = '/observer-web/table/' + type;
       window.open(route, '_blank');

@@ -166,6 +166,7 @@ export default createComponent({
       store.dispatch('debriefer/updateTrips', []);
       store.dispatch('debriefer/updateOperations', []);
       store.dispatch('debriefer/updateSelectedOperations', []);
+      store.dispatch('debriefer/updateFilters', {});
       state.debriefer.trips.splice(0, state.debriefer.trips.length);
       state.debriefer.operations.splice(0, state.debriefer.operations.length);
     }
