@@ -158,8 +158,11 @@ export default createComponent({
     }
 
     function removeOperations() {
+      const tripIds: number[] = [];
+      for (const trip of state.debriefer.trips) {
+        tripIds.push(get(trip, 'legacy-tripId'))
+      }
       // remove operations
-      const tripIds = uniq(jp.query(state.debriefer.trips, '$..tripId'));
       const ops = filter(state.debriefer.operations, (val: any) => {
         if (val && val.legacy && val.legacy.tripId) {
           const index = indexOf(tripIds, val.legacy.tripId);
