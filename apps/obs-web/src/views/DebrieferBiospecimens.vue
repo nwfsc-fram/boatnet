@@ -59,6 +59,16 @@ export default createComponent({
         width: '80'
       },
       {
+        field: 'received',
+        header: 'Received',
+        type: 'toggle',
+        list: ['Y', 'N'],
+        listType: 'template',
+        key: 'wcgopBioReceived',
+        isEditable: true,
+        width: '80'
+      },
+      {
         field: 'operationNum',
         header: 'Haul #',
         type: 'number',

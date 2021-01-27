@@ -197,6 +197,7 @@ export default createComponent({
         listType: 'fetch',
         search: true,
         lookupKey: 'first-receiver',
+        lookupField: 'dealerName',
         key: 'wcgopFR',
         uniqueKey: '_id',
         isEditable: false,
