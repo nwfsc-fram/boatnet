@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Species Details'].includes($route.name)"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Species Details', 'EM Results'].includes($route.name)"
           flat
           dense
           round

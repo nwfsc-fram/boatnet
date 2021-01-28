@@ -116,6 +116,8 @@ export default createComponent({
         {field: 'wcgopSpeciesCode', header: 'Wcgop Code'},
         {field: 'disposition', header: 'Disposition'},
         {field: 'haulNum', header: 'Haul #'},
+        {field: 'comments', header: 'Comments'},
+        {field: 'calcWeightType', header: 'Calc Weight Type'},
         {field: 'speciesWeight', header: 'Weight'},
         {field: 'speciesCount', header: 'Count'},
         {field: 'startLatitude', header: 'Start Lat'},

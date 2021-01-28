@@ -296,7 +296,7 @@
             outlined
             label="Skipper"
             use-input
-            new-value-mode="add-unique"
+            new-value-mode="add"
             title="Name of the vessel captain"
             :rules="[val => !!val || 'Skipper Name is required']"
           ></q-select>
