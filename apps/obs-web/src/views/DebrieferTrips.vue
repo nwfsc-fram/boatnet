@@ -178,7 +178,7 @@ export default createComponent({
         width: '150'
       },
       {
-        field: 'fisherydescription',
+        field: 'fishery-description',
         header: 'Fishery',
         type: 'toggle',
         listType: 'fetch',
@@ -514,7 +514,7 @@ export default createComponent({
       let ops: any[] = [];
       let operationIds: any[] = [];
       for (const trip of state.debriefer.trips) {
-        let unflattenedTrip = unflatten(trip, { delimiter: '-' });
+        const unflattenedTrip = unflatten(trip, { delimiter: '-' });
         operationIds = operationIds.concat(unflattenedTrip.operationIDs);
       }
       if (operationIds.length > 0) {

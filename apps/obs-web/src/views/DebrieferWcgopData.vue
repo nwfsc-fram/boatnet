@@ -160,7 +160,7 @@ export default createComponent({
     function removeOperations() {
       const tripIds: number[] = [];
       for (const trip of state.debriefer.trips) {
-        tripIds.push(get(trip, 'legacy-tripId'))
+        tripIds.push(get(trip, 'legacy-tripId'));
       }
       // remove operations
       const ops = filter(state.debriefer.operations, (val: any) => {

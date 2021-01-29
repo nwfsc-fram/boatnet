@@ -173,7 +173,7 @@ export default createComponent({
       let color = '#344B5F';
 
       for (const operation of state.debriefer.selectedOperations) {
-        const unflattenedOperation = unflatten(operation, { delimiter: '-' })
+        const unflattenedOperation = unflatten(operation, { delimiter: '-' });
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
         for (const c of unflattenedOperation.catches) {
