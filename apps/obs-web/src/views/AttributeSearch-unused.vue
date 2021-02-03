@@ -15,7 +15,30 @@
       </div>
       <q-btn @click="addFilter" color="primary" size="md">Add Filter</q-btn>
       <q-btn @click="resetFilters" color="primary" size="md">Reset</q-btn>
-      <span v-if="result.length > 0" style="position: relative; top: 3px">( {{ result.length }} filtered results )</span>
+
+      <div>
+        <p v-if="result.length > 0">{{result.length}} filtered results</p>
+        <q-table
+          v-if="resultDocs.length > 0"
+          :data="resultDocs"
+          :columns="columns"
+          :pagination.sync="pagination"
+          :selected.sync="selected"
+          row-key="_id"
+          dense
+          hide-bottom
+        >
+          <template v-slot:body="props">
+            <q-tr :props="props">
+              <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+              <q-td key="vesselId" :props="props">{{ props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegualtionNumber }}</q-td>
+              <q-td key="departurePort" :props="props">{{ props.row.departurePort.name }}</q-td>
+              <q-td key="returnPort" :props="props">{{ props.row.returnPort.name }}</q-td>
+              <q-td key="observer" :props="props">{{ props.row.observer.firstName }} {{ props.row.observer.lastName }}</q-td>
+            </q-tr>
+          </template>
+        </q-table>
+      </div>
   </div>
 </template>
 
@@ -45,6 +68,22 @@ export default createComponent({
     const result: any = ref([]);
     const resultDocs: any = ref([]);
 
+    const columns  = [
+        {name: 'vesselName', label: 'Vessel Name', field: 'vessel.vesselName', required: false, align: 'left', sortable: true},
+        {name: 'vesselId', label: 'Vessel #', field: 'vessel.vesselId', required: false, align: 'left', sortable: true},
+        {name: 'departurePort', label: 'Departure Port', field: 'departurePort.name', required: false, align: 'left', sortable: true},
+        {name: 'returnPort', label: 'Return Port', field: 'returnPort.name', required: false, align: 'left', sortable: true},
+        {name: 'observer', label: 'Observer', field: 'observer', required: false, align: 'left', sortable: true},
+    ];
+
+    const pagination = {
+        sortBy: 'departureDate',
+        descending: false,
+        rowsPerPage: 0,
+        };
+
+    const selected: any = [];
+
     const addFilter = () => {
         searchOptions.value.push([]);
         evaluators.value.push('and');
@@ -53,11 +92,11 @@ export default createComponent({
     const evaluatorDescription =
       (i: any) => {
         if (evaluators.value[i - 1] === 'and') {
-          return '( value satisfies both criteria )';
+          return '( value satisfies both criteria )'
         } else {
-          return '( value satisfies either criteria )';
+          return '( value satisfies either criteria )'
         }
-      };
+      }
 
     const resetFilters = () => {
       result.value.length = 0;
@@ -65,27 +104,34 @@ export default createComponent({
       searchOptions.value.length = 0;
       searchOptions.value.push([]);
       evaluators.value.length = 0;
-    };
+    }
 
     const generateResult = () => {
-      let workingArray: any = [];
+      let workingArray: any = []
 
       for (const resultSet of searchOptions.value) {
         if (workingArray.length === 0) {
-          workingArray.push.apply(workingArray, resultSet);
+          workingArray.push.apply(workingArray, resultSet)
         } else {
-          if (evaluators.value[searchOptions.value.indexOf(resultSet) - 1] === 'and') {
+          if (evaluators.value[searchOptions.value.indexOf(resultSet) -1] === 'and') {
             workingArray = workingArray.filter( (val: any) => resultSet.includes(val));
           } else { // evaluator is 'or'
-            workingArray.push.apply(workingArray, resultSet);
-            workingArray = [...new Set(workingArray)];
+            workingArray.push.apply(workingArray, resultSet)
+            workingArray = [...new Set(workingArray)]
           }
         }
       }
       result.value.length = 0;
       result.value.push.apply(result.value, workingArray);
-      store.dispatch('debriefer/setTripIds', result.value);
-    };
+      getResults()
+    }
+
+    const getResults = async () => {
+      resultDocs.value.length = 0;
+      for (const id of result.value) {
+        resultDocs.value.push(await masterDB.get(id));
+      }
+    }
 
     const watcherOptions: WatchOptions = {
       immediate: true, deep: false
@@ -94,12 +140,12 @@ export default createComponent({
     watch(
         () => [searchOptions.value, evaluators.value],
         (newVal, oldVal) => {
-            generateResult();
+            generateResult()
         },
         watcherOptions
     );
 
-    return { searchOptions, evaluatorDescription, evaluators, addFilter, result, resultDocs, resetFilters };
+    return { searchOptions, evaluatorDescription, evaluators, addFilter, result, resultDocs, columns, pagination, resetFilters, selected };
   }
 });
 </script>

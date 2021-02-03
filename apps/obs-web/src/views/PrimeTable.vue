@@ -57,7 +57,7 @@
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template v-if="col.isEditable" #editor="slotProps">
-          <q-select 
+          <q-select
             v-if="col.type === 'toggle' && col.listType === 'fetch'"
             v-model="cellVal"
             use-input
@@ -77,13 +77,13 @@
             </q-item>
           </template>
           </q-select>
-          <q-select 
+          <q-select
             v-else-if="col.type === 'toggle' && col.listType === 'template'"
             v-model="cellVal"
             :options="col.list"
             @input="onCellEdit($event, slotProps, col.listType)"
           />
-          <q-select 
+          <q-select
             v-else-if="col.type === 'toggle' && col.listType === 'boolean'"
             v-model="cellVal"
             :options="[true, false]"
@@ -168,7 +168,7 @@ import { Client } from 'davenport';
 import moment from 'moment';
 import PrimeTableDialog from './PrimeTableDialog.vue';
 import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
-import Textarea  from 'primevue/textarea';
+import Textarea from 'primevue/textarea';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -228,7 +228,7 @@ export default createComponent({
       selected.value = props.initialSelection;
       updateStatePermissions = true;
       const filter = state.debriefer.filters[tableType];
-      filters.value = filter ? filter : {}
+      filters.value = filter ? filter : {};
     });
 
     onUnmounted(() => {
@@ -300,13 +300,13 @@ export default createComponent({
       sortedList = cloneDeep(lookupsList.value);
     }
 
-    function filterFn (val: any, update: any, abort: any) {
+    function filterFn(val: any, update: any, abort: any) {
       update(async () => {
           const needle = val.toLowerCase();
           lookupsList.value = sortedList.filter(
             (v: any) => startsWith(v.label.toLowerCase(), needle)
           );
-      })
+      });
     }
 
     async function getLookupInfo(
@@ -319,7 +319,7 @@ export default createComponent({
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
           displayField,
         ]);
-      
+
     }
 
     async function getLookupName(lookupKey: string, fieldName: string, type: string) {
@@ -376,7 +376,7 @@ export default createComponent({
       } else if (type === 'date') {
         newValue = moment(newValue).format();
       } else if (type === 'fetch') {
-        const fieldArr : string[] = fields.split('-');
+        const fieldArr: string[] = fields.split('-');
         fieldArr.pop();
         fields = fieldArr.join('-');
         newValue = newValue.value;

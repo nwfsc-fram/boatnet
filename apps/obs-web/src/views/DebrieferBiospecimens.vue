@@ -218,7 +218,7 @@ export default createComponent({
       for (const op of operations) {
         unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
       }
-      
+
       const bioSpecimens: any[] = [];
       const id: number = 1;
       const specimens = jp.nodes(unflattenedOperations, '$..specimens');
