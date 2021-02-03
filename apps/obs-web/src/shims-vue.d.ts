@@ -3,14 +3,13 @@ declare module '*.vue' {
   export default Vue;
 }
 // WS - Declare Quasar Module for typescript build
-declare module 'quasar';
+declare module 'coordinate-parser';
+declare module 'dmsformat';
+declare module 'jsonexport/dist';
 declare module 'pouchdb-utils';
+declare module 'quasar';
+declare module 'quasar-calendar';
 declare module 'vue-async-function';
 declare module 'vue-multiselect';
-
-declare module 'quasar-calendar';
-declare module 'coordinate-parser';
-
-declare module 'vue-timeselector';
 declare module 'vue2-timepicker';
-declare module 'jsonexport/dist';
+declare module 'vue-timeselector';

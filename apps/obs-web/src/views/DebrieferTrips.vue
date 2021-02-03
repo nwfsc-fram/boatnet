@@ -178,7 +178,7 @@ export default createComponent({
         width: '150'
       },
       {
-        field: 'fisherydescription',
+        field: 'fishery-description',
         header: 'Fishery',
         type: 'toggle',
         listType: 'fetch',

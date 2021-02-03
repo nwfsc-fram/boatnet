@@ -155,7 +155,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, get, intersection, set, startsWith } from 'lodash';
+import { cloneDeep, findIndex, filter, get, intersection, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -169,6 +169,7 @@ import moment from 'moment';
 import PrimeTableDialog from './PrimeTableDialog.vue';
 import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
 import Textarea from 'primevue/textarea';
+import { fromDMS, toDMS } from 'dmsformat';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -227,8 +228,8 @@ export default createComponent({
       pageStart.value = 0;
       selected.value = props.initialSelection;
       updateStatePermissions = true;
-      const filter = state.debriefer.filters[tableType];
-      filters.value = filter ? filter : {};
+      const initFilters = state.debriefer.filters[tableType];
+      filters.value = initFilters ? initFilters : {};
     });
 
     onUnmounted(() => {
@@ -319,7 +320,6 @@ export default createComponent({
         lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
           displayField,
         ]);
-
     }
 
     async function getLookupName(lookupKey: string, fieldName: string, type: string) {
@@ -351,6 +351,10 @@ export default createComponent({
 
       if (type === 'date') {
         formattedValue = moment(formattedValue).format('MM/DD/YYYY HH:mm');
+      } else if (type === 'coordinate') {
+        const lat = get(slotProps.data, displayField[0]);
+        const long = get(slotProps.data, displayField[1]);
+        formattedValue = toDMS([lat, long], 'DD mm X');
       } else if (formattedValue && type === 'double' && formattedValue % 1 !== 0) {
         formattedValue = formattedValue.toFixed(2);
       }
@@ -358,10 +362,17 @@ export default createComponent({
     }
 
     function onCellEditInit(event: any) {
+      let columnInfo: any = filter(props.columns, ['field', event.field]);
+      columnInfo = columnInfo[0];
+      const type = columnInfo.type;
       const value = get(event.data, event.field);
       cellVal.value = value ? value.toString() : '';
-      if (cellVal.value.indexOf(':') !== -1) {
+      if (type === 'date') {
         cellVal.value = new Date(cellVal.value);
+      } else if (type === 'coordinate') {
+        const lat = get(event.data, columnInfo.displayField[0]);
+        const long = get(event.data, columnInfo.displayField[1]);
+        cellVal.value = toDMS([lat, long], 'DD mm X');
       }
     }
 
@@ -375,6 +386,8 @@ export default createComponent({
         newValue = Number(newValue);
       } else if (type === 'date') {
         newValue = moment(newValue).format();
+      } else if (type === 'coordinate') {
+        newValue = fromDMS(newValue);
       } else if (type === 'fetch') {
         const fieldArr: string[] = fields.split('-');
         fieldArr.pop();
