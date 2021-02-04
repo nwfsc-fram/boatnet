@@ -14,17 +14,10 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, computed, watch } from '@vue/composition-api';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { getOptions } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
-import {
-  CouchDBInfo,
-  CouchDBCredentials,
-  couchService
-} from '@boatnet/bn-couch';
-import { Client, ListOptions } from 'davenport';
+import { createComponent, ref, watch } from '@vue/composition-api';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { BaseCatch, BaseOperation } from '@boatnet/bn-models/lib';
 
 export default createComponent({
   props: {
@@ -42,6 +35,7 @@ export default createComponent({
 
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
+    const jp = require('jsonpath');
 
     const wcgopCatchTreeSettings = {
       rowKey: 'name',
@@ -81,7 +75,7 @@ export default createComponent({
           align: 'left',
           header: 'WM',
           field: 'weightMethod',
-          width: '150',
+          width: '200',
           isEditable: true,
           type: 'toggle-search',
           expander: true,
@@ -93,22 +87,28 @@ export default createComponent({
           align: 'left',
           header: 'Name',
           field: 'name',
-          width: '150',
+          width: '200',
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'taxonomy-alias',
           lookupField: 'displayName'
         },
         {
-          name: 'discardReason',
+          name: 'count',
           align: 'left',
-          header: 'Discard Reason',
-          field: 'discardReason',
-          width: '150',
-          isEditable: true,
-          type: 'toggle-search',
-          lookupView: 'discard-reason',
-          lookupField: 'description'
+          header: 'Count',
+          field: 'count',
+          width: '100',
+          isEditable: true
+        },
+        {
+          name: 'weight',
+          align: 'left',
+          header: 'Weight (lbs)',
+          field: 'weight',
+          type: 'double',
+          width: '100',
+          isEditable: true
         },
         {
           name: 'basketCnt',
@@ -132,15 +132,6 @@ export default createComponent({
           isEditable: false
         },
         {
-          name: 'weight',
-          align: 'left',
-          header: 'Weight (lbs)',
-          field: 'weight',
-          type: 'double',
-          width: '100',
-          isEditable: true
-        },
-        {
           name: 'avgWt',
           align: 'left',
           header: 'Avg Wt (lbs)',
@@ -150,13 +141,16 @@ export default createComponent({
           isEditable: false
         },
         {
-          name: 'count',
+          name: 'discardReason',
           align: 'left',
-          header: 'Count',
-          field: 'count',
-          width: '100',
-          isEditable: true
-        }
+          header: 'Discard Reason',
+          field: 'discardReason',
+          width: '200',
+          isEditable: true,
+          type: 'toggle-search',
+          lookupView: 'discard-reason',
+          lookupField: 'description'
+        },
       ]
     };
 
@@ -202,47 +196,33 @@ export default createComponent({
 
           if (c.children) {
             for (const child of c.children) {
-              const discardReason = child.discardReason
-                ? child.discardReason.description
-                : '';
+              const discardReason =  jp.query(child, '$..discardReason.description')[0];
+
               const catchContents = child.catchContent;
               const catchName = catchContents
                 ? catchContents.commonNames[0]
                 : '';
-              const childWeight = child.weight ? child.weight.value : null;
-              const units = child.weight ? child.weight.units : '';
+              const childWeight = jp.query(child, 'weight.value')[0];
               const childCount = child.sampleCount;
-              let basketCnt;
-              let specimensCnt;
-              let specimenType = '';
-              let lengths: string = '';
-              const specimenIds: string[] = [];
+              let toolTipInfo: string = '';
 
-              if (child.specimens) {
-                specimensCnt = child.specimens.length;
-                for (const specimen of child.specimens) {
-                  specimenIds.push(specimen._id);
-                  if (specimen.length && specimen.length.value) {
-                    lengths = lengths + specimen.length.value + ',';
-                  }
-                  if (specimen.biostructures) {
-                    for (const biostructures of specimen.biostructures) {
-                      if (biostructures.structureType) {
-                        specimenType += biostructures.structureType
-                          ? biostructures.structureType.description
-                          : '';
-                      }
-                    }
-                  }
-                }
-              }
-              lengths = lengths.slice(0, -1);
-              let toolTipInfo =
-                specimenType !== '' ? 'types: ' + specimenType : '';
-              toolTipInfo += ' ';
-              toolTipInfo += lengths !== '' ? 'lengths: ' + lengths : '';
+              const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
+              const specimensCnt: number = child.specimens ? child.specimens.length : 0;
+
+              const lengths: string = jp.query(child, '$..specimens[*].length.value').join(', ');
+              toolTipInfo += lengths ? 'lengths: ' + lengths : '';
+
+              const specimenType: string = jp.query(child, '$..specimens[*].biostructures[*].structureType.description').join(', ');
+              toolTipInfo += specimenType ? ' specimen types: ' + specimenType : '';
+
+              const sex: string = jp.query(child, '$..specimens[*].sex').join(', ');
+              toolTipInfo += sex ? ' sex: ' + lengths : '';
+
+              const viability: string = jp.query(child, '$..specimens[*].viability.description').join(', ');
+              toolTipInfo += viability ? ' viability: ' + viability : '';
 
               const baskets: any[] = [];
+              let basketCnt;
               if (child.baskets) {
                 basketCnt = child.baskets.length;
                 let basketCount = 1;

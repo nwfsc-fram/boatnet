@@ -1,17 +1,11 @@
 <template>
-  <span>
     <pTreeTable
       :value.sync="nodes"
       :filters="filters"
       filterMode="strict"
       :expandedKeys="expandedKeys"
       sortMode="single"
-      :paginator="true"
-      :rows="10"
-      style="height: calc(100vh - 400px)"
-      :rowsPerPageOptions="[10,25,50, 100]"
-      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      style="height: calc(100vh - 420px)"
     >
       <template #header>
         <div style="text-align:left">
@@ -38,9 +32,11 @@
         :headerStyle="'width: ' + col.width + 'px'"
         :style="'width:' +  col.width + 'px'"
         filterMatchMode="contains"
+        headerClass="sticky top table-cell"
+        bodyClass="table-cell"
       >
         <template #filter>
-          <div :style="'min-width:' +  col.width + 'px; max-width: ' +  50 + 'px'">
+          <div>
             <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
           </div>
         </template>
@@ -105,7 +101,6 @@
         </template>
       </pColumn>
     </pTreeTable>
-  </span>
 </template>
 
 
@@ -247,16 +242,22 @@ tr {
 input.p-column-filter.p-inputtext.p-component {
   background-color: inherit !important;
 }
-thead.p-treetable-thead {
-  display: block;
+
+.sticky {
   overflow: hidden;
+  position: sticky !important;
+  top: 0px;
+  z-index: 1;
 }
 
-tbody.p-treetable-tbody {
-  display: block;
-  position: relative;
-  height: calc(100vh - 600px);
-  overflow: auto;
+.table-cell {
+  overflow: hidden;
+   padding: 2px!important;
+   margin: 0!important;
+}
+
+.p-treetable-header {
+  width: 100%;
 }
 
 .fakelink {
