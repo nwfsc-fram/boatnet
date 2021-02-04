@@ -83,7 +83,7 @@
             </div>
             <span v-else>
               <span
-                v-if="col.type === 'link'"
+                v-if="col.type === 'link' && displayData(slotProps, col.type, col.field) > 0"
                 class="tooltip fakelink"
                 v-on:click="select(slotProps, col.highlightIds)">
                 {{ displayData(slotProps, col.type, col.field) }}

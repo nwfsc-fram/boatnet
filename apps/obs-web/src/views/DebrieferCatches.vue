@@ -26,7 +26,6 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const debriefer: any = state.debriefer;
     const WcgopCatches: any = ref([]);
     const expandedKeys: any = ref([]);
     const program = state.debriefer.program;
@@ -209,17 +208,19 @@ export default createComponent({
               const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
               const specimensCnt: number = child.specimens ? child.specimens.length : 0;
 
-              const lengths: string = jp.query(child, '$..specimens[*].length.value').join(', ');
-              toolTipInfo += lengths ? 'lengths: ' + lengths : '';
+              const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
+              toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
 
-              const specimenType: string = jp.query(child, '$..specimens[*].biostructures[*].structureType.description').join(', ');
-              toolTipInfo += specimenType ? ' specimen types: ' + specimenType : '';
+              const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
+              toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
 
-              const sex: string = jp.query(child, '$..specimens[*].sex').join(', ');
-              toolTipInfo += sex ? ' sex: ' + lengths : '';
+              const sex: string[] = jp.query(child, '$..specimens[*].sex');
+              toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
 
-              const viability: string = jp.query(child, '$..specimens[*].viability.description').join(', ');
-              toolTipInfo += viability ? ' viability: ' + viability : '';
+              const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
+              toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
+
+              console.log('tool tip info ' + toolTipInfo)
 
               const baskets: any[] = [];
               let basketCnt;
@@ -244,7 +245,6 @@ export default createComponent({
                 key: key + '_' + childIndex,
                 data: {
                   specimensCnt,
-                  specimenType,
                   specimenIds,
                   basketCnt,
                   toolTipInfo,
