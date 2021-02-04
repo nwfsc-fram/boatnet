@@ -21,28 +21,13 @@
 import {
   createComponent,
   ref,
-  reactive,
-  computed,
   watch
 } from '@vue/composition-api';
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { DebrieferState } from '../_store/types/types';
-import {
-  WcgopTrip,
-  WcgopOperation,
-  WcgopCatch,
-  WcgopSpecimen,
-  Basket
-} from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date, colors } from 'quasar';
-import { convertToObject } from 'typescript';
+import { Vue } from 'vue-property-decorator';
+import { couchService } from '@boatnet/bn-couch';
+import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex, get, remove, indexOf } from 'lodash';
-import { getTripsByDates } from '../helpers/getFields';
+import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 import moment from 'moment';
 
 import PrimeTable from './PrimeTable.vue';
@@ -158,14 +143,21 @@ export default createComponent({
       },
       // permit
       {
-        field: 'coastGuardNumber',
+        field: 'vessel-coastGuardNumber',
         header: 'USCG#',
         type: 'input',
         key: 'wcgopCoastGuard',
-        isEditable: true,
+        isEditable: false,
         width: '80'
       },
-      // state reg #
+      {
+        field: 'vessel-stateRegulationNumber',
+        header: 'State Reg',
+        type: 'input',
+        key: 'wcgopStateReg',
+        isEditable: false,
+        width: '80'
+      },
       {
         field: 'program-name',
         header: 'Program',
@@ -189,7 +181,6 @@ export default createComponent({
         isEditable: true,
         width: '250'
       },
-      // first receiver
       {
         field: 'firstReceivers-0-dealerName',
         header: 'First Receivers',
@@ -397,6 +388,7 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
+    watch(() => state.debriefer.observers, getTripsByObserver);
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
     watch(() => state.debriefer.tripIds, getTrips);
@@ -417,15 +409,20 @@ export default createComponent({
       }
     }
 
+    async function getTripsByObserver() {
+      const observerId = state.debriefer.observers;
+      trips.value = await getTripsByObserverId(observerId);
+    }
+
     async function loadTripsByEvaluationPeriod() {
-      const observer = state.debriefer.observers;
+      const observerId = state.debriefer.observers;
       const evalPeriod = state.debriefer.evaluationPeriod;
 
-      if (observer && evalPeriod) {
+      if (observerId && evalPeriod) {
         trips.value = await getTripsByDates(
           new Date(evalPeriod.startDate),
           new Date(evalPeriod.endDate),
-          evalPeriod.observer
+          observerId
         );
       }
     }
