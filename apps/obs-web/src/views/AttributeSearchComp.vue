@@ -17,37 +17,19 @@
             dense
             outlined
             options-dense
-            :options="['equals', 'greater than', 'less than']"
+            :options="evaluatorOptions"
             v-model="evaluator"
         ></q-select>
-        <q-select
-            v-if="['departureDate', 'returnDate'].includes(selectedSearchType)"
-            class="col"
-            label="Date Selection"
-            outlined
-            dense
-            options-dense
-            use-input
-            :options="searchOptions"
-            v-model="selectedSearchOption"
-            @filter="selectionFilterFn"
-            clearable
-            :display-value="getOptionLabel(selectedSearchOption)"
-            :option-label="opt => getOptionLabel(opt)"
-            :option-value="opt => opt"
+        <pCalendar
+        v-if="['departureDate', 'returnDate'].includes(selectedSearchType)"
+        class="col"
+        v-model="selectedSearchOption"
+        :showButtonBar="true"
+        :monthNavigator="true"
+        :yearNavigator="true"
+        yearRange="2011:2035"
         >
-            <template v-slot:append>
-                <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                    <q-date v-model="dateFormatter">
-                    <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                    </div>
-                    </q-date>
-                </q-popup-proxy>
-                </q-icon>
-            </template>
-        </q-select>
+        </pCalendar>
         <q-select
             v-else
             class="col"
@@ -75,10 +57,13 @@ import { createComponent, ref, onMounted, watch } from '@vue/composition-api';
 import Vue, { WatchOptions } from 'vue';
 import moment from 'moment';
 
-import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import Multiselect from 'vue-multiselect';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
 
+import Calendar from 'primevue/calendar';
+Vue.component('pCalendar', Calendar);
+
+import Multiselect from 'vue-multiselect';
 Vue.component('multiselect', Multiselect);
 
 export default createComponent({
@@ -98,6 +83,7 @@ export default createComponent({
     const selectedSearchResults: any = ref([]);
     const evaluator: any = ref('equals');
     const loading: any = ref(false);
+    const evaluatorOptions = ref(['equals', 'greater than', 'less than']);
 
     const getSearchTypes = async () => {
       const results = await masterDB.view(
@@ -126,6 +112,13 @@ export default createComponent({
             }
         }))]
         );
+        if (parseInt(sourceSearchOptions.value[0], 10)) {
+            evaluatorOptions.value.length = 0;
+            evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals', 'greater than', 'less than']);
+        } else {
+            evaluatorOptions.value.length = 0;
+            evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals']);
+        }
         loading.value = false;
     };
 
@@ -186,7 +179,7 @@ export default createComponent({
                 getSearchOptions();
                 selectedSearchResults.value.length = 0;
                 selectedSearchOption.value = '';
-            }
+            };
         },
         watcherOptions
     );
@@ -223,12 +216,25 @@ export default createComponent({
         watcherOptions
     );
 
+    watch(
+        () => props.val as any,
+        (newVal, oldVal) => {
+            if (newVal.length === 0 && oldVal && oldVal.length !== 0) {
+                selectedSearchType.value = '';
+                selectedSearchOption.value = '';
+                selectedSearchResults.value.length = 0;
+            }
+        },
+        watcherOptions
+    );
+
+
     onMounted(() => {
       getSearchTypes();
     });
 
     return {
-        dateFormatter, evaluator, getOptionLabel, loading, searchTypes, selectedSearchType, searchOptions, selectedSearchOption, selectedSearchResults, selectionFilterFn
+        dateFormatter, evaluator, evaluatorOptions, getOptionLabel, loading, searchTypes, selectedSearchType, searchOptions, selectedSearchOption, selectedSearchResults, selectionFilterFn
     };
   }
 });
