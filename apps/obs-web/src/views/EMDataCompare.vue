@@ -15,7 +15,7 @@
       </div>
 
     <q-table
-      :data="comp.tripData"
+      :data="comp.displayTripData"
       :columns="columns"
       dense
       row-key="id"
@@ -82,10 +82,10 @@ export default createComponent({
           if (a.haul === 'Trip' || b.haul === 'Trip') {
             return 0;
           } else if ( a[sortBy] > b[sortBy] ) {
-            return descending ? 1 : -1;
+            return descending ? 1 : - 1;
 
           } else if ( a[sortBy] < b[sortBy] ) {
-            return descending ? -1 : 1;
+            return descending ? - 1 : 1;
           } else {
             return 0;
           }
@@ -127,12 +127,12 @@ export default createComponent({
     const selected: any = [];
     let tripTotals: any = {};
     let haulTotals: any = {};
-    const tripData: any = [];
+    const tripData: any = ref([]);
     const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
     const showRetained: any = ref(true);
 
     const getTripData = () => {
-      tripData.length = 0;
+      tripData.value.length = 0;
       tripTotals = {};
       haulTotals = {};
 
@@ -194,7 +194,7 @@ export default createComponent({
         }
 
       for (const key of Object.keys(tripTotals)) {
-        tripData.push(
+        tripData.value.push(
           {
             id: Math.random(),
             haul: 'Trip',
@@ -211,7 +211,7 @@ export default createComponent({
 
       for (const key of Object.keys(haulTotals)) {
         for (const subKey of Object.keys(haulTotals[key])) {
-          tripData.push(
+          tripData.value.push(
             {
               id: Math.random(),
               haul: key,
@@ -226,7 +226,7 @@ export default createComponent({
           );
         }
       }
-      tripData.sort( (a: any, b: any) => {
+      tripData.value.sort( (a: any, b: any) => {
         if (a.haul === 'Trip' && b.haul === 'Trip') {
           if (a.speciesCode > b.speciesCode ) {
             return 1;
@@ -299,8 +299,8 @@ export default createComponent({
       if (apiCatch === 'not found') {
         Vue.set(apiTrip, tripNum, 0);
         apiCatch = [];
-        tripData.length = 0;
-        tripData.pop();
+        tripData.value.length = 0;
+        tripData.value.pop();
         Notify.create({
           message: 'No catch found matching trip #',
           position: 'top-right',
@@ -331,11 +331,11 @@ export default createComponent({
     };
 
     const comp = reactive({
-      tripData: computed(() => {
+      displayTripData: computed(() => {
         if (store.state.user.showLogbookRetained) {
-          return tripData;
+          return tripData.value;
         } else {
-          return tripData.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit));
+          return tripData.value.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit));
         }
       })
     });
