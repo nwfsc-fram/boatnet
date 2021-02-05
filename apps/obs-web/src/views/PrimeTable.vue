@@ -57,7 +57,7 @@
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template v-if="col.isEditable" #editor="slotProps">
-          <q-select 
+          <q-select
             v-if="col.type === 'toggle' && col.listType === 'fetch'"
             v-model="cellVal"
             use-input
@@ -77,13 +77,13 @@
             </q-item>
           </template>
           </q-select>
-          <q-select 
+          <q-select
             v-else-if="col.type === 'toggle' && col.listType === 'template'"
             v-model="cellVal"
             :options="col.list"
             @input="onCellEdit($event, slotProps, col.listType)"
           />
-          <q-select 
+          <q-select
             v-else-if="col.type === 'toggle' && col.listType === 'boolean'"
             v-model="cellVal"
             :options="[true, false]"

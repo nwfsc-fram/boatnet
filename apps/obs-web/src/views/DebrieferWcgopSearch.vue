@@ -1,182 +1,127 @@
 <template>
-  <div>
-    <debriefer-select-comp
-      label="Observer"
-      style="display: inline-block"
-      :val.sync="observers"
-      lookupView="all_wcgop_observers"
-      lookupLabel="value"
-      lookupValue="id"
-      :multiple="true"
-      @select="select('wcgop_trips_by_observerId', 'observer._id', observers)"
-    />
-    <debriefer-select-comp
-      label="Status"
-      style="display: inline-block"
-      class="q-mx-xs"
-      :val.sync="status"
-      lookupView="all_doc_types"
-      lookupLabel="doc.description"
-      lookupValue="id"
-      :multiple="true"
-      :lookupQueryOptions="{ key: 'trip-status', include_docs: true }"
-      @select="select('wcgop_trips_by_statusId', 'tripStatus._id', status)"
-    />
-    <debriefer-select-comp
-      label="Vessel Name"
-      style="display: inline-block"
-      class="q-mx-xs"
-      :val.sync="vessel"
-      lookupView="all_vessel_names"
-      lookupLabel="value"
-      lookupValue="id"
-      :lookupQueryOptions="{}"
-      :multiple="true"
-      @select="select('wcgop_trips_by_vesselId', 'vessel._id', vessel)"
-    />
-    <debriefer-select-comp
-      label="Fishery"
-      style="display: inline-block"
-      class="q-mx-xs"
-      :val.sync="fishery"
-      lookupView="all_doc_types"
-      lookupLabel="doc.description"
-      lookupValue="id"
-      :lookupQueryOptions="{ key: 'fishery', include_docs: true }"
-      :multiple="true"
-      @select="select('wcgop_trips_by_fisheryId', 'fishery._id', fishery)"
-    />
-    <debriefer-select-comp
-      style="display: inline-block"
-      class="q-mx-xs"
-      label="Trip Id"
-      :val.sync="tripId"
-      lookupView="wcgop_trips_by_observerId"
-      lookupLabel="value"
-      lookupValue="id"
-      :multiple="true"
-      :lookupQueryOptions="{}"
-      @select="selectTripId"
-    />
-    <div style="display: inline-block" class="q-pa-md">
-      <div class="p-float-label q-px-xs">
-        <pCalendar
-          v-model="startDate"
-          @date-select="dateFilter"
-          @clear-click="dateFilter"
-          :showButtonBar="true"
-        />
-        <label for="endDate" style="color: #027be3">Start Date</label>
+  <div class="q-pa-xs q-gutter-xs">
+      <div v-for="(option, i) of searchOptions" :key="i">
+        <q-btn-toggle
+          v-if="i > 0"
+          v-model="evaluators[i - 1]"
+          toggle-color="black"
+          color="grey-4"
+          :options="[{label: 'and', value: 'and'}, {label: 'or', value: 'or'}]"
+          dense
+          flat
+        ></q-btn-toggle>
+        <span v-if="i > 0" class="evaluator-description">{{ evaluatorDescription(i) }}</span>
+        <attribute-search-comp :val.sync=searchOptions[i]></attribute-search-comp>
       </div>
-    </div>
-    <div style="display: inline-block" class="q-pa-md">
-      <div class="p-float-label q-px-xs">
-        <pCalendar
-          v-model="endDate"
-          @date-select="dateFilter"
-          @clear-click="dateFilter"
-          :showButtonBar="true"
-        />
-        <label for="endDate" style="color: #027be3">End Date</label>
-      </div>
-    </div>
+      <q-btn @click="addFilter" color="primary" size="md">Add Filter</q-btn>
+      <q-btn @click="resetFilters" color="primary" size="md">Reset</q-btn>
+      <span v-if="result.length > 0" style="position: relative; top: 3px">( {{ result.length }} filtered results )</span>
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent, ref } from '@vue/composition-api';
-import Vue from 'vue';
-import { useAsync } from 'vue-async-function';
+import { createComponent, ref, watch, computed } from '@vue/composition-api';
+import Vue, { WatchOptions } from 'vue';
 import moment from 'moment';
-import DebrieferSelectComp from './DebrieferSelectComp.vue';
+
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
 import Multiselect from 'vue-multiselect';
 
-Vue.component('DebrieferSelectComp', DebrieferSelectComp);
+import AttributeSearchComp from './AttributeSearchComp.vue';
+
+Vue.component('AttributeSearchComp', AttributeSearchComp);
+
 Vue.component('multiselect', Multiselect);
 
 export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
+    const masterDB: Client<any> = couchService.masterDB;
 
-    // store filters in an object where the:
-    // key: view name
-    // value: array of selected values
-    let filters: any = {};
-    const rows: any = [];
+    const searchOptions: any = ref([[]]);
+    const evaluators: any = ref([]);
+    const result: any = ref([]);
+    const resultDocs: any = ref([]);
 
-    const observers: any = ref([]);
-    const status: any = ref([]);
-    const startDate: any = ref();
-    const endDate: any = ref();
-    const vessel: any = ref([]);
-    const fishery: any = ref([]);
-    const tripId: any = ref([]);
-
-    const observerList: any = ref([]);
-    const vesselList: any = ref([]);
-    const statusList: any = ref([]);
-    const fisheryList: any = ref([]);
-
-    async function select(view: string, field: string, vals: any) {
-      tripId.value = [];
-      const ids: string[] = [];
-      for (const val of vals) {
-        ids.push(val.value);
-      }
-      await updateFilters(view, field, ids);
-    }
-
-    async function dateFilter() {
-      if (startDate.value && endDate.value) {
-        const dates = [
-          moment(startDate.value).format(),
-          moment(endDate.value).format()
-        ];
-        await updateFilters('wcgop_trips_by_date', 'returnDate', dates);
-      } else {
-        await updateFilters('wcgop_trips_by_date', 'returnDate', []);
-      }
-    }
-
-    function updateFilters(view: string, field: string, val: any) {
-      if (val.length > 0) {
-        filters[view] = { field, val };
-      } else if (filters[view] && val.length === 0) {
-        delete filters[view];
-      }
-      store.dispatch('debriefer/updateTripSearchFilters', {});
-      store.dispatch('debriefer/updateTripSearchFilters', filters);
-      store.dispatch('debriefer/setTripIds', []);
-    }
-
-    function selectTripId(id: string) {
-      store.dispatch('debriefer/setTripIds', id);
-      store.dispatch('debriefer/updateTripSearchFilters', {});
-      filters = {};
-      vessel.value = [];
-      fishery.value = [];
-      observers.value = [];
-    }
-
-    return {
-      select,
-      dateFilter,
-      startDate,
-      endDate,
-      vessel,
-      observers,
-      status,
-      fishery,
-      tripId,
-      selectTripId,
-      observerList,
-      vesselList,
-      fisheryList,
-      statusList
+    const addFilter = () => {
+        searchOptions.value.push([]);
+        evaluators.value.push('and');
     };
+
+    const evaluatorDescription =
+      (i: any) => {
+        if (evaluators.value[i - 1] === 'and') {
+          return '( value satisfies both criteria )';
+        } else {
+          return '( value satisfies either criteria )';
+        }
+      };
+
+    const resetFilters = () => {
+      result.value.length = 0;
+      resultDocs.value.length = 0;
+      searchOptions.value.length = 0;
+      searchOptions.value.push([]);
+      evaluators.value.length = 0;
+    };
+
+    const generateResult = () => {
+      let workingArray: any = [];
+
+      for (const resultSet of searchOptions.value) {
+        if (workingArray.length === 0) {
+          workingArray.push.apply(workingArray, resultSet);
+        } else {
+          if (evaluators.value[searchOptions.value.indexOf(resultSet) - 1] === 'and') {
+            workingArray = workingArray.filter( (val: any) => resultSet.includes(val));
+          } else { // evaluator is 'or'
+            workingArray.push.apply(workingArray, resultSet);
+            workingArray = [...new Set(workingArray)];
+          }
+        }
+      }
+      result.value.length = 0;
+      result.value.push.apply(result.value, workingArray);
+      store.dispatch('debriefer/setTripIds', result.value);
+    };
+
+    const watcherOptions: WatchOptions = {
+      immediate: true, deep: false
+    };
+
+    watch(
+        () => [searchOptions.value, evaluators.value],
+        (newVal, oldVal) => {
+            generateResult();
+        },
+        watcherOptions
+    );
+
+    return { searchOptions, evaluatorDescription, evaluators, addFilter, result, resultDocs, resetFilters };
   }
 });
 </script>
 
-<style src="../../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style scoped>
+  * >>> .q-btn--dense {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 1em !important;
+  }
+
+  * >>> .q-btn__wrapper {
+    margin: 0 !important;
+    padding: 0 0.25em !important;
+    min-height: 1em !important;
+  }
+
+  .evaluator-description {
+    font-style: italic;
+    font-size: 0.8em;
+    position: relative;
+    bottom: 2px
+  }
+
+</style>
