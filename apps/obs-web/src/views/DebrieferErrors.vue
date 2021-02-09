@@ -3,79 +3,137 @@
     <div style="text-align: right">
       <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
     </div>
-    <prime-table :value="data" :columns="errorColumns" type="Errors" />
+    <prime-table
+      :value="errorRows"
+      :columns="errorColumns"
+      type="Errors"
+      uniqueKey="uid"
+      :enableSelection="true"
+      :isFullSize="isFullSize"
+      :loading="loading"
+      @save="save"
+    >
+    </prime-table>
+
   </div>
 </template>
 
-
 <script lang="ts">
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import {
-  TripState,
-  PermitState,
-  UserState,
-  GeneralState,
-  DebrieferState
-} from '../_store/types/types';
-import {
-  WcgopTrip,
-  WcgopOperation,
-  WcgopCatch,
-  WcgopSpecimen,
-  Basket
-} from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
-import { convertToObject } from 'typescript';
+import { createComponent, ref, onMounted, watch, computed } from '@vue/composition-api';
+import moment from 'moment';
 
-@Component
-export default class DebrieferErrors extends Vue {
-  @Action('error', { namespace: 'alert' }) private error: any;
-  @State('debriefer') private debriefer!: DebrieferState;
-  @Prop({ default: true })
-  private showData!: boolean;
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
+import { NoSubstitutionTemplateLiteral } from 'typescript';
 
-  private WcgopTrips: WcgopTrip[] = [];
-  private WcgopOperations: WcgopOperation[] = [];
-  private WcgopCatches: WcgopCatch[] = [];
-  private WcgopCatchSpecies: WcgopCatch[] = [];
-  private WcgopCatchBaskets: Basket[] = [];
-  private WcgopCatchSpecimens: WcgopSpecimen[] = [];
-  private pagination = { rowsPerPage: 50 };
-  private tab = 'trips';
+export default createComponent({
+  props: {
+    showData: Boolean,
+    isFullSize: Boolean
+  },
+  setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
+    const masterDB: Client<any> = couchService.masterDB;
 
-  private errorColumns = [
-    { field: 'severity', header: 'Severity' },
-    { field: 'description', header: 'Description' },
-    { field: 'tripNum', header: 'Trip #' },
-    { field: 'dateCreated', header: 'Date Created' },
-    { field: 'observer', header: 'Observer' },
-    { field: 'status', header: 'Status' },
-    { field: 'dateFixed', header: 'Date Fixed' },
-    { field: 'note', header: 'Note' }
-  ];
+    const errorColumns = [
+      { field: 'severity', header: 'Severity', key: 'errorSeverity', width: '80' },
+      { field: 'description', header: 'Description', key: 'errorDescription', width: '80'},
+      { field: 'tripNum', header: 'Trip #', key: 'errorTripNum', width: '80' },
+      { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80' },
+      { field: 'observer', header: 'Observer', key: 'errorObserver', width: '80' },
+      { field: 'status', header: 'Status',type: 'toggle',
+                listType: 'template',
+                list: ['Unresolved', 'Resolved'],
+                key: 'errorStatus',
+                isEditable: true,
+                width: '80'
+              },
+      { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80' },
+      { field: 'note', header: 'Note', type: 'textArea', key: 'errorNote', isEditable: true, width: '80' }
+    ];
 
-  private data = [
-    {
-      severity: 'Warning',
-      description:
-        'Multiple dissections of the same type collected for sea whip, sea pen, or non-coral species.',
-      tripNum: 24266,
-      dateCreated: '1/1/19',
-      observer: 'Davis',
-      status: 'Unresolved',
-      dateFixed: '',
-      note: 'dissection count'
+    const loading: any = ref(false);
+    const errorRows: any = ref([]);
+    const errorDocs: any = ref([]);
+
+    const openNewDebriefingTab = () => {
+      const route = '/observer-web/debriefer/qa';
+      window.open(route, '_blank');
     }
-  ];
 
-  private openNewDebriefingTab() {
-    const route = '/observer-web/debriefer/qa';
-    window.open(route, '_blank');
+    const getErrors = async (tripId: number) => {
+      try {
+        const errorsQuery : any = await masterDB.view(
+          'obs_web',
+          'wcgop-trip-errors',
+          {reduce: false, include_docs: true, key: tripId} as any
+        )
+
+        const errors: any = []
+
+        if (errorsQuery.rows.length > 0) {
+          errorDocs.value.push.apply(errorDocs.value, errorsQuery.rows);
+          for (let error of errorsQuery.rows[0].doc.errors) {
+            error.tripNum = errorsQuery.rows[0].doc.tripNumber;
+            error.note = error.notes;
+            error.uid = errorsQuery.rows[0].doc._id + '_' + errorsQuery.rows[0].doc.errors.indexOf(error);
+            error._rev = errorsQuery.rows[0].doc._rev;
+            errors.push(error);
+          }
+          errorRows.value.push.apply(errorRows.value, errors);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+
+    const getTripErrors = () => {
+      loading.value = true;
+      errorDocs.value.length = 0;
+      errorRows.value = []
+      for (const trip of state.debriefer.trips) {
+        getErrors(trip['legacy-tripId'])
+      }
+      loading.value = false;
+    };
+
+    const save = async (data: any) => {
+      const id = data.uid.split("_")[0]
+      const rev = data._rev
+
+      let errorDoc: any = errorDocs.value.find( (row: any) => row.id = id);
+      let errorRow = errorDoc.doc.errors[data.uid.split('_')[1]];
+      errorRow.status =  data.status;
+      errorRow.notes = data.note;
+      errorRow.note = data.note;
+      if (data.status === 'Resolved') {
+        errorRow.dateFixed = moment().format();
+      } else if (data.status === 'Unresolved') {
+        errorRow.dateFixed = '';
+      }
+
+      errorDoc.doc._rev = rev;
+      const result = await masterDB.put(id, errorDoc.doc, rev);
+      errorDoc._rev = result.rev;
+      for (let row of errorRows.value) {
+        if (row.uid.split("_")[0] === id) {
+          row._rev = result.rev;
+        }
+      }
+    }
+
+    watch(() => state.debriefer.trips, getTripErrors);
+
+    onMounted( () => {
+      getErrors(1328180820);
+    });
+
+    return {
+      errorRows, errorColumns, openNewDebriefingTab, loading, save
+    }
   }
-}
+})
+
 </script>

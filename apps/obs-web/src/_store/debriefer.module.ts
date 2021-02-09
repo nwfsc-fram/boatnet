@@ -17,7 +17,8 @@ export const state: DebrieferState = {
   selectedOperations: [],
   operations: [],
   specimens: [],
-  filters: {}
+  filters: {},
+  errors: []
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {

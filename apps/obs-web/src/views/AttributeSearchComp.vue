@@ -28,6 +28,7 @@
         :monthNavigator="true"
         :yearNavigator="true"
         yearRange="2011:2035"
+        :showIcon="true"
         >
         </pCalendar>
         <q-select
@@ -97,27 +98,30 @@ export default createComponent({
     const getSearchOptions = async () => {
         loading.value = true;
         sourceSearchOptions.value.length = 0;
-        const searchOptionResults = await masterDB.view(
-            'obs_web',
-            'wcgop_trips_compound_fields',
-            {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
-        );
-        sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(searchOptionResults.rows.map( (row: any) => {
-            if (row.key[1] === null || row.key[1] === undefined) {
-                return 'null';
-            } else if (['departureDate', 'returnDate'].includes(selectedSearchType.value)) {
-                return moment(row.key[1]).minute(0).hour(0).second(0).format();
+        if (!['departureDate', 'returnDate'].includes(selectedSearchType.value)) {
+            const searchOptionResults = await masterDB.view(
+                'obs_web',
+                'wcgop_trips_compound_fields',
+                {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
+            );
+            sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(searchOptionResults.rows.map( (row: any) => {
+                if (row.key[1] === null || row.key[1] === undefined) {
+                    return 'null';
+                } else {
+                    return row.key[1];
+                }
+            }))]
+            );
+            if (parseInt(sourceSearchOptions.value[0], 10)) {
+                evaluatorOptions.value.length = 0;
+                evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals', 'greater than', 'less than']);
             } else {
-                return row.key[1];
+                evaluatorOptions.value.length = 0;
+                evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals']);
             }
-        }))]
-        );
-        if (parseInt(sourceSearchOptions.value[0], 10)) {
+        } else { // selectedSearchType is a date
             evaluatorOptions.value.length = 0;
             evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals', 'greater than', 'less than']);
-        } else {
-            evaluatorOptions.value.length = 0;
-            evaluatorOptions.value.push.apply(evaluatorOptions.value, ['equals']);
         }
         loading.value = false;
     };
@@ -170,8 +174,6 @@ export default createComponent({
       immediate: true, deep: false
     };
 
-    const dateFormatter = ref('');
-
     watch(
         () => selectedSearchType.value,
         (newVal, oldVal) => {
@@ -206,15 +208,6 @@ export default createComponent({
         watcherOptions
     );
 
-    watch(
-        () => dateFormatter.value,
-        (newVal, oldVal) => {
-            if (dateFormatter.value !== '') {
-                selectedSearchOption.value = moment(dateFormatter.value).format();
-            }
-        },
-        watcherOptions
-    );
 
     watch(
         () => props.val as any,
@@ -234,7 +227,7 @@ export default createComponent({
     });
 
     return {
-        dateFormatter, evaluator, evaluatorOptions, getOptionLabel, loading, searchTypes, selectedSearchType, searchOptions, selectedSearchOption, selectedSearchResults, selectionFilterFn
+        evaluator, evaluatorOptions, getOptionLabel, loading, searchTypes, selectedSearchType, searchOptions, selectedSearchOption, selectedSearchResults, selectionFilterFn
     };
   }
 });
