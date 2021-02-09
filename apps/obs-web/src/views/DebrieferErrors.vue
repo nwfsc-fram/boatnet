@@ -42,7 +42,7 @@ export default createComponent({
       { field: 'tripNum', header: 'Trip #', key: 'errorTripNum', width: '80' },
       { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80' },
       { field: 'observer', header: 'Observer', key: 'errorObserver', width: '80' },
-      { field: 'status', header: 'Status',type: 'toggle',
+      { field: 'status', header: 'Status', type: 'toggle',
                 listType: 'template',
                 list: ['Unresolved', 'Resolved'],
                 key: 'errorStatus',
@@ -60,21 +60,21 @@ export default createComponent({
     const openNewDebriefingTab = () => {
       const route = '/observer-web/debriefer/qa';
       window.open(route, '_blank');
-    }
+    };
 
     const getErrors = async (tripId: number) => {
       try {
-        const errorsQuery : any = await masterDB.view(
+        const errorsQuery: any = await masterDB.view(
           'obs_web',
           'wcgop-trip-errors',
           {reduce: false, include_docs: true, key: tripId} as any
-        )
+        );
 
-        const errors: any = []
+        const errors: any = [];
 
         if (errorsQuery.rows.length > 0) {
           errorDocs.value.push.apply(errorDocs.value, errorsQuery.rows);
-          for (let error of errorsQuery.rows[0].doc.errors) {
+          for (const error of errorsQuery.rows[0].doc.errors) {
             error.tripNum = errorsQuery.rows[0].doc.tripNumber;
             error.note = error.notes;
             error.uid = errorsQuery.rows[0].doc._id + '_' + errorsQuery.rows[0].doc.errors.indexOf(error);
@@ -86,25 +86,25 @@ export default createComponent({
       } catch (err) {
         console.error(err);
       }
-    }
+    };
 
 
     const getTripErrors = () => {
       loading.value = true;
       errorDocs.value.length = 0;
-      errorRows.value = []
+      errorRows.value = [];
       for (const trip of state.debriefer.trips) {
-        getErrors(trip['legacy-tripId'])
+        getErrors(trip['legacy-tripId']);
       }
       loading.value = false;
     };
 
     const save = async (data: any) => {
-      const id = data.uid.split("_")[0]
-      const rev = data._rev
+      const id = data.uid.split('_')[0];
+      const rev = data._rev;
 
-      let errorDoc: any = errorDocs.value.find( (row: any) => row.id = id);
-      let errorRow = errorDoc.doc.errors[data.uid.split('_')[1]];
+      const errorDoc: any = errorDocs.value.find( (row: any) => row.id = id);
+      const errorRow = errorDoc.doc.errors[data.uid.split('_')[1]];
       errorRow.status =  data.status;
       errorRow.notes = data.note;
       errorRow.note = data.note;
@@ -117,23 +117,19 @@ export default createComponent({
       errorDoc.doc._rev = rev;
       const result = await masterDB.put(id, errorDoc.doc, rev);
       errorDoc._rev = result.rev;
-      for (let row of errorRows.value) {
-        if (row.uid.split("_")[0] === id) {
+      for (const row of errorRows.value) {
+        if (row.uid.split('_')[0] === id) {
           row._rev = result.rev;
         }
       }
-    }
+    };
 
     watch(() => state.debriefer.trips, getTripErrors);
 
-    onMounted( () => {
-      getErrors(1328180820);
-    });
-
     return {
       errorRows, errorColumns, openNewDebriefingTab, loading, save
-    }
+    };
   }
-})
+});
 
 </script>

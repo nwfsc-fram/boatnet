@@ -181,7 +181,7 @@ export default createComponent({
                 getSearchOptions();
                 selectedSearchResults.value.length = 0;
                 selectedSearchOption.value = '';
-            };
+            }
         },
         watcherOptions
     );
