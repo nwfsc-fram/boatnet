@@ -100,13 +100,14 @@
             v-model="cellVal"
             cols="100"
             rows="5"
+            @change="onCellEdit($event.target.value, slotProps, col.type)"
           />
           <InputText
             v-else
             type="text"
             v-model="cellVal"
             class="p-column-filter"
-            @input="onCellEdit($event, slotProps, col.type)"
+            @change="onCellEdit($event.target.value, slotProps, col.type)"
           ></InputText>
         </template>
         <template #body="slotProps">

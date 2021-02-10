@@ -226,7 +226,7 @@ export default createComponent({
                 }
             } else if ((selections.length === 2 && selections[0].description === 'Federal Permit') || (selections.length === 2 && selections[1].description === 'LE ITQ EM')) {
                 return _.cloneDeep(selections[1].sectors);
-            } else if (selections[1].isEm && (selections.length === 2 || (selections.length === 3 && !['Maximized Retention', 'Optimized Retention'].includes(selections[2].description)))) {
+            } else if ( selections[1].isEm && ( selections.length === 2 || ( selections.length === 3 && !['Maximized Retention', 'Optimized Retention'].includes(selections[2].description) && (selections[2].description !== 'Mothership Catcher Vessel') ) ) ) {
                 return [{description: 'Maximized Retention'}, {description: 'Optimized Retention / Don\'t know'}];
             } else {
                 return [];

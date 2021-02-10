@@ -24,6 +24,7 @@ export interface DebrieferState {
   tripSearchFilters: any;
   specimens: any[];
   filters: any;
+  errors: any[];
 }
 
 export interface TripState {
