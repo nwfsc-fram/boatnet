@@ -43,6 +43,18 @@
             v-on:click="openNewDebriefingTab"
           />
         </div>
+        <div style="text-align:left">
+         <q-btn-toggle
+            v-if="type === 'Operations'"
+            v-model="displayMode"
+            toggle-color="primary"
+            :options="[
+              { label: 'Fixed Gear', value: 'fixed gear' },
+              { label: 'Trawl', value: 'trawl' }
+            ]"
+            @input="toggleHaulCols"
+          />
+          </div>
       </template>
 
       <Column v-if="enableSelection" selectionMode="multiple" headerStyle="width: 3em"></Column>
@@ -156,7 +168,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, filter, get, intersection, set, startsWith } from 'lodash';
+import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -217,6 +229,7 @@ export default createComponent({
     const showPopup: any = ref(false);
     const popupColumns: any = ref([]);
     const popupUniqueKey: any = ref('');
+    const displayMode: any = ref('trawl');
 
     let haulNumTracker = 0;
     let rowBackground = 'highlightRow';
@@ -450,6 +463,54 @@ export default createComponent({
       context.emit('update:showErrors', false);
     }
 
+    function toggleHaulCols(mode: string) {
+      if (mode === 'trawl') {
+        displayColumns.value = remove(currCols.value, (n: any) => {
+          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value'].includes(n.field)) {
+            return n;
+          }
+        });
+        displayColumns.value.push({
+          field: 'legacy-isBrdPresent',
+          header: 'BRD',
+          type: 'toggle',
+          listType: 'boolean',
+          key: 'wcgopOpIsBRDPresent',
+          width: '100',
+        });
+      } else if (mode === 'fixed gear') {
+        displayColumns.value = remove(currCols.value, (n: any) => {
+          if (!['legacy-isBrdPresent'].includes(n.field)) {
+            return n;
+          }
+        });
+        displayColumns.value.push({
+            field: 'totalGearSegments',
+            header: 'Total Gear',
+            type: 'number',
+            key: 'wcgopOpTotGear',
+            width: '100',
+            isEditable: true
+        });
+        displayColumns.value.push({
+          field: 'gearSegmentsLost',
+          header: 'Lost Gear',
+          type: 'number',
+          key: 'wcgopOpTotGearLost',
+          width: '100',
+          isEditable: true,
+        });
+        displayColumns.value.push({
+          field: 'avgSoakTime-value',
+          header: 'Average Soak Time',
+          type: 'number',
+          key: 'wcgopOpAvgSoakTime',
+          width: '100',
+          isEditable: true,
+        });
+      }
+    }
+
     return {
       containsMultiples,
       filters,
@@ -476,7 +537,9 @@ export default createComponent({
       getLookupName,
       formattedData,
       filterFn,
-      populateLookupsList
+      populateLookupsList,
+      displayMode,
+      toggleHaulCols
     };
   },
 });
