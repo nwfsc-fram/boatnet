@@ -136,10 +136,10 @@ export default createComponent({
         'obs_web',
         'all_doc_types',
         {include_docs: true, reduce: false, key: 'error-status'} as any
-      )
+      );
       const activeWcgopErrorStatuses = errorStatusQueryResults.rows.filter( (row: any) => row.doc.isActive && row.doc.isWcgop);
       errorStatuses.push.apply(errorStatuses, activeWcgopErrorStatuses.map( (row: any) => row.doc.description));
-    }
+    };
 
     onMounted( () => getErrorStatuses() );
 

@@ -220,8 +220,6 @@ export default createComponent({
               const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
               toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
 
-              console.log('tool tip info ' + toolTipInfo)
-
               const baskets: any[] = [];
               let basketCnt;
               if (child.baskets) {
