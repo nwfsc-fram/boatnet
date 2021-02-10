@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, onMounted, watch, computed } from '@vue/composition-api';
+import { createComponent, ref, onMounted, watch, computed, onBeforeMount } from '@vue/composition-api';
 import moment from 'moment';
 
 import { couchService } from '@boatnet/bn-couch';
@@ -35,6 +35,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
+    const errorStatuses: any = [];
 
     const errorColumns = [
       { field: 'severity', header: 'Severity', key: 'errorSeverity', width: '80' },
@@ -42,13 +43,19 @@ export default createComponent({
       { field: 'tripNum', header: 'Trip #', key: 'errorTripNum', width: '80' },
       { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80' },
       { field: 'observer', header: 'Observer', key: 'errorObserver', width: '80' },
-      { field: 'status', header: 'Status', type: 'toggle',
-                listType: 'template',
-                list: ['Unresolved', 'Resolved'],
-                key: 'errorStatus',
-                isEditable: true,
-                width: '80'
-              },
+      {
+        field: 'status',
+        header: 'Status',
+        type: 'toggle',
+        listType: 'template',
+        list: errorStatuses,
+        // listType: 'fetch',
+        // lookupKey: 'error-status',
+        // lookupField: 'description',
+        key: 'errorStatus',
+        isEditable: true,
+        width: '80'
+      },
       { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80' },
       { field: 'note', header: 'Note', type: 'textArea', key: 'errorNote', isEditable: true, width: '80' }
     ];
@@ -123,6 +130,18 @@ export default createComponent({
         }
       }
     };
+
+    const getErrorStatuses = async () => {
+      const errorStatusQueryResults = await masterDB.view(
+        'obs_web',
+        'all_doc_types',
+        {include_docs: true, reduce: false, key: 'error-status'} as any
+      )
+      const activeWcgopErrorStatuses = errorStatusQueryResults.rows.filter( (row: any) => row.doc.isActive && row.doc.isWcgop);
+      errorStatuses.push.apply(errorStatuses, activeWcgopErrorStatuses.map( (row: any) => row.doc.description));
+    }
+
+    onMounted( () => getErrorStatuses() );
 
     watch(() => state.debriefer.trips, getTripErrors);
 
