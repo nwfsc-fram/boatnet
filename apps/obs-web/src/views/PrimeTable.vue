@@ -49,8 +49,8 @@
             v-model="displayMode"
             toggle-color="primary"
             :options="[
-              { label: 'Fixed Gear', value: 'fixed gear' },
-              { label: 'Trawl', value: 'trawl' }
+              { label: 'Fixed Gear', value: fixedGearMode },
+              { label: 'Trawl', value: trawlMode }
             ]"
             @input="toggleHaulCols"
           />
@@ -229,7 +229,10 @@ export default createComponent({
     const showPopup: any = ref(false);
     const popupColumns: any = ref([]);
     const popupUniqueKey: any = ref('');
-    const displayMode: any = ref('trawl');
+
+    const trawlMode: string = 'trawl';
+    const fixedGearMode: string = 'fixed gear'
+    const displayMode: any = state.debriefer.displayColumns.operationMode ? state.debriefer.displayColumns.operationMode : trawlMode;
 
     let haulNumTracker = 0;
     let rowBackground = 'highlightRow';
@@ -278,6 +281,11 @@ export default createComponent({
           currCols.value = [...(props.columns ? props.columns : [])];
         } else {
           currCols.value = stateDisplayCols[tableType];
+        }
+        if (tableType === 'wcgop-Operation' && displayMode === trawlMode) {
+          currCols.value = setTrawlMode(currCols.value);
+        } else if (tableType === 'wcgop-Operation' && displayMode === fixedGearMode) {
+          currCols.value = setTrawlMode(currCols.value);
         }
         return currCols.value;
       },
@@ -464,51 +472,65 @@ export default createComponent({
     }
 
     function toggleHaulCols(mode: string) {
-      if (mode === 'trawl') {
-        displayColumns.value = remove(currCols.value, (n: any) => {
+      if (mode === trawlMode) {
+        displayColumns.value = setTrawlMode(currCols.value);
+        stateDisplayCols['operationMode'] = trawlMode;
+      } else if (mode === fixedGearMode) {
+        displayColumns.value = setFixedGearMode(currCols.value);
+        stateDisplayCols['operationMode'] = fixedGearMode;
+      }
+      stateDisplayCols[tableType] = displayColumns.value;
+      store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+    }
+
+    function setTrawlMode(cols: any) {
+      cols = remove(cols, (n: any) => {
           if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value'].includes(n.field)) {
             return n;
           }
         });
-        displayColumns.value.push({
-          field: 'legacy-isBrdPresent',
-          header: 'BRD',
-          type: 'toggle',
-          listType: 'boolean',
-          key: 'wcgopOpIsBRDPresent',
-          width: '100',
-        });
-      } else if (mode === 'fixed gear') {
-        displayColumns.value = remove(currCols.value, (n: any) => {
+      cols.push({
+        field: 'legacy-isBrdPresent',
+        header: 'BRD',
+        type: 'toggle',
+        listType: 'boolean',
+        key: 'wcgopOpIsBRDPresent',
+        width: '100',
+      });
+      return cols;
+    }
+
+    function setFixedGearMode(cols: any) {
+      cols = remove(cols, (n: any) => {
           if (!['legacy-isBrdPresent'].includes(n.field)) {
             return n;
           }
-        });
-        displayColumns.value.push({
-            field: 'totalGearSegments',
-            header: 'Total Gear',
-            type: 'number',
-            key: 'wcgopOpTotGear',
-            width: '100',
-            isEditable: true
-        });
-        displayColumns.value.push({
-          field: 'gearSegmentsLost',
-          header: 'Lost Gear',
+      });
+      cols.push({
+          field: 'totalGearSegments',
+          header: 'Total Gear',
           type: 'number',
-          key: 'wcgopOpTotGearLost',
+          key: 'wcgopOpTotGear',
           width: '100',
-          isEditable: true,
-        });
-        displayColumns.value.push({
-          field: 'avgSoakTime-value',
-          header: 'Average Soak Time',
-          type: 'number',
-          key: 'wcgopOpAvgSoakTime',
-          width: '100',
-          isEditable: true,
-        });
-      }
+          isEditable: true
+      });
+      cols.push({
+        field: 'gearSegmentsLost',
+        header: 'Lost Gear',
+        type: 'number',
+        key: 'wcgopOpTotGearLost',
+        width: '100',
+        isEditable: true,
+      });
+      cols.push({
+        field: 'avgSoakTime-value',
+        header: 'Average Soak Time',
+        type: 'number',
+        key: 'wcgopOpAvgSoakTime',
+        width: '100',
+        isEditable: true,
+      });
+      return cols;
     }
 
     return {
@@ -539,7 +561,9 @@ export default createComponent({
       filterFn,
       populateLookupsList,
       displayMode,
-      toggleHaulCols
+      toggleHaulCols,
+      fixedGearMode,
+      trawlMode
     };
   },
 });
