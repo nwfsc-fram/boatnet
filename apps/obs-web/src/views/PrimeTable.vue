@@ -285,7 +285,7 @@ export default createComponent({
         if (tableType === 'wcgop-Operation' && displayMode === trawlMode) {
           currCols.value = setTrawlMode(currCols.value);
         } else if (tableType === 'wcgop-Operation' && displayMode === fixedGearMode) {
-          currCols.value = setTrawlMode(currCols.value);
+          currCols.value = setFixedGearMode(currCols.value);
         }
         return currCols.value;
       },
