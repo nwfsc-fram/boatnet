@@ -22,7 +22,7 @@ export async function getTripsByObserverId(observerId: string) {
             'wcgop_trips_by_observerId',
             { key: observerId }
         );
-        const trips = jp.query(tripDocs.rows, '$..doc');
+        const trips = jp.query(tripDocs, '$.rows[*].doc');
         trips.sort((a: any, b: any) => {
             if (moment(a.departureDate).isBefore(b.departureDate)) {
                 return 1;
