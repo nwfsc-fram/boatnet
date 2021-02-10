@@ -53,9 +53,7 @@ import TabPanel from 'primevue/tabpanel';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
-import Button from 'primevue/button';
 
-Vue.component('Button', Button);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 Vue.component('TabPanel', TabPanel);
 Vue.component('TabView', TabView);
