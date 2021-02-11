@@ -15,7 +15,7 @@
       </div>
       <q-btn @click="addFilter" color="primary" size="md">Add Filter</q-btn>
       <q-btn @click="resetFilters" color="primary" size="md">Reset</q-btn>
-      <span v-if="result.length > 0" style="position: relative; top: 3px">( {{ result.length }} filtered results )</span>
+      <span style="position: relative; top: 3px">( {{ result.length ? result.length : 0 }} filtered results )</span>
   </div>
 </template>
 

@@ -14,7 +14,6 @@
       @save="save"
     >
     </prime-table>
-
   </div>
 </template>
 
@@ -41,17 +40,14 @@ export default createComponent({
       { field: 'severity', header: 'Severity', key: 'errorSeverity', width: '80' },
       { field: 'description', header: 'Description', key: 'errorDescription', width: '80'},
       { field: 'tripNum', header: 'Trip #', key: 'errorTripNum', width: '80' },
-      { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80' },
+      // { field: 'haulNum', header: 'Haul #', key: 'errorHaulNum', width: '80' },
+      // { field: 'catchNum', header: 'Catch #', key: 'errorCatchNum', width: '80' },
+      { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80', type: 'date' },
       { field: 'observer', header: 'Observer', key: 'errorObserver', width: '80' },
-      {
-        field: 'status',
-        header: 'Status',
+      { field: 'status', header: 'Status',
         type: 'toggle',
         listType: 'template',
         list: errorStatuses,
-        // listType: 'fetch',
-        // lookupKey: 'error-status',
-        // lookupField: 'description',
         key: 'errorStatus',
         isEditable: true,
         width: '80'
@@ -110,7 +106,7 @@ export default createComponent({
       const id = data.uid.split('_')[0];
       const rev = data._rev;
 
-      const errorDoc: any = errorDocs.value.find( (row: any) => row.id = id);
+      const errorDoc: any = errorDocs.value.find( (row: any) => row.id === id);
       const errorRow = errorDoc.doc.errors[data.uid.split('_')[1]];
       errorRow.status =  data.status;
       errorRow.notes = data.note;
@@ -136,10 +132,10 @@ export default createComponent({
         'obs_web',
         'all_doc_types',
         {include_docs: true, reduce: false, key: 'error-status'} as any
-      )
+      );
       const activeWcgopErrorStatuses = errorStatusQueryResults.rows.filter( (row: any) => row.doc.isActive && row.doc.isWcgop);
       errorStatuses.push.apply(errorStatuses, activeWcgopErrorStatuses.map( (row: any) => row.doc.description));
-    }
+    };
 
     onMounted( () => getErrorStatuses() );
 
