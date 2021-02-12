@@ -130,7 +130,7 @@ export default createComponent ({
     isEditable: Boolean,
     program: String,
     selectionMode: String,
-    initExpandedKeys: Array
+    initExpandedKeys: Object
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -140,7 +140,7 @@ export default createComponent ({
 
     const editingCol: any = ref('');
     const editingRow: any = ref('');
-    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref([]);
+    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref({});
     const filters: any = ref({});
 
     const lookupFieldName: any = ref('');

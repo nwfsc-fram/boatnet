@@ -29,7 +29,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const WcgopCatches: any = ref([]);
-    const expandedKeys: any = state.debriefer.expandedCatch ? state.debriefer.expandedCatch : [];
+    const expandedKeys: any = state.debriefer.expandedCatch ? state.debriefer.expandedCatch : {};
     const program = state.debriefer.program;
 
     const lookupsList: any = ref([]);

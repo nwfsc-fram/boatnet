@@ -16,7 +16,7 @@ export const state: DebrieferState = {
   trips: [],
   selectedOperations: [],
   operations: [],
-  expandedCatch: [],
+  expandedCatch: {},
   specimens: [],
   filters: {},
   errors: []
