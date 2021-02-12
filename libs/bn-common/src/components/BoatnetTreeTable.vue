@@ -3,9 +3,11 @@
       :value.sync="nodes"
       :filters="filters"
       filterMode="strict"
-      :expandedKeys="expandedKeys"
+      :expandedKeys.sync="expandedKeys"
       sortMode="single"
       style="height: calc(100vh - 420px)"
+      @node-expand="expand"
+      @node-collapse="collapse"
     >
       <template #header>
         <div style="text-align:left">
@@ -138,7 +140,7 @@ export default createComponent ({
 
     const editingCol: any = ref('');
     const editingRow: any = ref('');
-    const expandedKeys: any = props.initExpandedKeys ? props.initExpandedKeys : ref([]);
+    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref([]);
     const filters: any = ref({});
 
     const lookupFieldName: any = ref('');
@@ -149,7 +151,7 @@ export default createComponent ({
       editingRow.value = '';
       editingCol.value = '';
     }
-  
+
     function displayData(data: any, colType: string, colField: string) {
       let value: any = data.node.data[colField];
       if (value && colType === 'double' && value % 1 !== 0) {
@@ -172,7 +174,7 @@ export default createComponent ({
       );
       sortedList.value = cloneDeep(lookupsList.value);
     }
-  
+
     function filterFn(val: any, update: any, abort: any) {
       update(() => {
         const needle = val.toLowerCase();
@@ -222,7 +224,7 @@ export default createComponent ({
     function collapse() {
       context.emit('collapse', expandedKeys);
     }
-  
+
     return {
       columns,
       columnOptions,
@@ -243,7 +245,7 @@ export default createComponent ({
       getOptionsList,
       onCellEdit,
       select,
-    }
+    };
   }
 });
 </script>

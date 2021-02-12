@@ -474,10 +474,10 @@ export default createComponent({
     function toggleHaulCols(mode: string) {
       if (mode === trawlMode) {
         displayColumns.value = setTrawlMode(currCols.value);
-        stateDisplayCols['operationMode'] = trawlMode;
+        stateDisplayCols.operationMode = trawlMode;
       } else if (mode === fixedGearMode) {
         displayColumns.value = setFixedGearMode(currCols.value);
-        stateDisplayCols['operationMode'] = fixedGearMode;
+        stateDisplayCols.operationMode = fixedGearMode;
       }
       stateDisplayCols[tableType] = displayColumns.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
