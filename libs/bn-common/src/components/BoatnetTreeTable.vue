@@ -105,9 +105,8 @@
 
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import { BoatnetTripsSettings } from '@boatnet/bn-common';
-import { BaseTrip } from '@boatnet/bn-models';
+import { createComponent, ref } from '@vue/composition-api';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
 import { cloneDeep, get } from 'lodash';
 
@@ -121,118 +120,132 @@ Vue.component('Dropdown', Dropdown);
 Vue.component('InputText', InputText);
 Vue.component('pColumn', pColumn);
 
-@Component
-export default class BoatnetTreeTable extends Vue {
-  @Prop() public nodes!: any[];
-  @Prop() public settings!: any;
-  @Prop() public selectionKeys!: any;
-  @Prop() public isEditable!: any;
-  @Prop() public program!: string;
-  @Prop() public selectionMode!: string;
+export default createComponent ({
+  props: {
+    nodes: Array,
+    settings: Object,
+    selectionKeys: Object,
+    isEditable: Boolean,
+    program: String,
+    selectionMode: String,
+    initExpandedKeys: Array
+  },
+  setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
+    const columns: any[] = props.settings ? props.settings.columns : [];
+    const columnOptions: any[] = [...columns];
 
-  private expandedKeys: any = {};
+    const editingCol: any = ref('');
+    const editingRow: any = ref('');
+    const expandedKeys: any = props.initExpandedKeys ? props.initExpandedKeys : ref([]);
+    const filters: any = ref({});
 
-  private selected: any[] = [];
-  private filters: any = {};
+    const lookupFieldName: any = ref('');
+    const lookupsList: any = ref([]);
+    const sortedList: any = ref([]);
 
-  private selectedKey1: any = null;
-  private editingRow = '';
-  private editingCol: string = '';
-
-  private lookupsList: any[] = [];
-  private sortedList: any[] = [];
-  private lookupFieldName: string = '';
-
-  private columns: any[] = this.settings.columns;
-  private columnOptions: any[] = [...this.columns];
-
-  private created() {
-    const cols: any[] = this.columns;
-  }
-
-  private deSelect() {
-    this.editingRow = '';
-    this.editingCol = '';
-  }
-
-  private async edit(data: any, col: any) {
-    const nodeKey = data.node.key;
-    if (this.editingRow !== data.node.key) {
-      this.editingRow = nodeKey;
+    function deSelect() {
+      editingRow.value = '';
+      editingCol.value = '';
     }
-    this.editingCol = col.name;
+  
+    function displayData(data: any, colType: string, colField: string) {
+      let value: any = data.node.data[colField];
+      if (value && colType === 'double' && value % 1 !== 0) {
+        value = value.toFixed(2);
+      }
+      return value;
+    }
 
-    this.lookupFieldName = col.lookupField;
-    this.lookupsList = await this.getOptionsList(
-      col.lookupView,
-      [this.lookupFieldName],
-      data
-    );
-    this.sortedList = cloneDeep(this.lookupsList);
-    /* if (this.expandedKeys[nodeKey]) {
-        this.expandedKeys[nodeKey] = false;
-        this.$emit('update:expandedKeys', this.expandedKeys);
+    async function edit(data: any, col: any) {
+      const nodeKey = data.node.key;
+      if (editingRow.value !== data.node.key) {
+        editingRow.value = nodeKey;
+      }
+      editingCol.value = col.name;
+      lookupFieldName.value = col.lookupField;
+      lookupsList.value = await getOptionsList(
+        col.lookupView,
+        [lookupFieldName.value],
+        data
+      );
+      sortedList.value = cloneDeep(lookupsList.value);
+    }
+  
+    function filterFn(val: any, update: any, abort: any) {
+      update(() => {
+        const needle = val.toLowerCase();
+        lookupsList.value = sortedList.filter((v: any) => v.label.toLowerCase().indexOf(needle) > -1);
+      });
+    }
+
+    async function getOptionsList(view: string, field: string[], data: any) {
+      const lookupList: any[] = [];
+      let lookupField = lookupFieldName.value;
+      if (data.column.field === 'name') {
+        const catchContent = data.node.data.catchContent;
+        view = catchContent.type;
+        if (view === 'catch-grouping') {
+          lookupField = 'name';
+        } else if (view === 'taxonomy-alias') {
+          lookupField = 'commonNames[0]';
+        }
+      }
+      const results = await getCouchLookupInfo(props.program ? props.program : '', 'obs_web', view, [lookupField]);
+      for (let i = 0; i < results.length; i++) {
+        lookupList[i] = { label: get(results[i].doc, lookupField), value: results[i].doc };
+      }
+      return lookupList;
+    }
+
+    function onCellEdit(event: any, slotProps: any, col: any) {
+      let value: any;
+      if (col.type === 'toggle' || col.type === 'toggle-search') {
+        slotProps.node.data[slotProps.column.field] = event.label;
+        value = event.value;
       } else {
-        this.expandedKeys[nodeKey] = true;
-        this.$emit('update:expandedKeys', this.expandedKeys);
-      }*/
-  }
-
-  private select(data: any, field: any) {
-    const ids = data.node.data[field];
-    this.$emit('selected', ids);
-  }
-
-  private displayData(data: any, colType: string, colField: string) {
-    let value: any = data.node.data[colField];
-    if (value && colType === 'double' && value % 1 !== 0) {
-      value = value.toFixed(2);
-    }
-    return value;
-  }
-
-  private filterFn(val: any, update: any, abort: any) {
-    update(() => {
-      const needle = val.toLowerCase();
-      this.lookupsList = this.sortedList.filter((v) => v.label.toLowerCase().indexOf(needle) > -1);
-    });
-  }
-
-  private onCellEdit(event: any, slotProps: any, col: any) {
-    let value: any;
-    if (col.type === 'toggle' || col.type === 'toggle-search') {
-      slotProps.node.data[slotProps.column.field] = event.label;
-      value = event.value;
-    } else {
-      slotProps.node.data[slotProps.column.field] = event;
-      value = event;
-    }
- /*   this.$emit('save', {
-      key: slotProps.node.key,
-      column: slotProps.column.field,
-      value
-    });*/
-  }
-
-  private async getOptionsList(view: string, field: string[], data: any) {
-    const lookupList: any[] = [];
-    let lookupField = this.lookupFieldName;
-    if (data.column.field === 'name') {
-      const catchContent = data.node.data.catchContent;
-      view = catchContent.type;
-      if (view === 'catch-grouping') {
-        lookupField = 'name';
-      } else if (view === 'taxonomy-alias') {
-        lookupField = 'commonNames[0]';
+        slotProps.node.data[slotProps.column.field] = event;
+        value = event;
       }
     }
-    const results = await getCouchLookupInfo(this.program, 'obs_web', view, [lookupField]);
-    for (let i = 0; i < results.length; i++) {
-      lookupList[i] = { label: get(results[i].doc, lookupField), value: results[i].doc };
+
+    function select(data: any, field: any) {
+      const ids = data.node.data[field];
+      context.emit('selected', ids);
     }
-    return lookupList;
+
+    function expand() {
+      context.emit('expand', expandedKeys);
+    }
+
+    function collapse() {
+      context.emit('collapse', expandedKeys);
+    }
+  
+    return {
+      columns,
+      columnOptions,
+      editingCol,
+      editingRow,
+      expandedKeys,
+      filters,
+      lookupFieldName,
+      lookupsList,
+      sortedList,
+
+      collapse,
+      deSelect,
+      displayData,
+      edit,
+      expand,
+      filterFn,
+      getOptionsList,
+      onCellEdit,
+      select,
+    }
   }
-}
+});
 </script>
 
 <style>

@@ -231,7 +231,7 @@ export default createComponent({
     const popupUniqueKey: any = ref('');
 
     const trawlMode: string = 'trawl';
-    const fixedGearMode: string = 'fixed gear'
+    const fixedGearMode: string = 'fixed gear';
     const displayMode: any = state.debriefer.displayColumns.operationMode ? state.debriefer.displayColumns.operationMode : trawlMode;
 
     let haulNumTracker = 0;

@@ -3,12 +3,14 @@
     <boatnet-tree-table
       :nodes.sync="WcgopCatches"
       :settings="wcgopCatchTreeSettings"
-      :expanded-keys="expandedKeys"
+      :initExpandedKeys="expandedKeys"
       p-scrollable-body
       :isEditable="true"
       :program="program"
       @save="save"
       @selected="select"
+      @expand="addNode"
+      @collapse="removeNode"
     ></boatnet-tree-table>
   </div>
 </template>
@@ -27,7 +29,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const WcgopCatches: any = ref([]);
-    const expandedKeys: any = ref([]);
+    const expandedKeys: any = state.debriefer.expandedCatch ? state.debriefer.expandedCatch : [];
     const program = state.debriefer.program;
 
     const lookupsList: any = ref([]);
@@ -159,6 +161,14 @@ export default createComponent({
     function select(item: string[]) {
       store.dispatch('debriefer/updateSpecimens', item);
       context.emit('changeTab', 'biospecimens');
+    }
+
+    function addNode(currExpandedKeys: any) {
+      store.dispatch('debriefer/updateExpandedCatch', currExpandedKeys);
+    }
+
+    function removeNode(currExpandedKeys: any) {
+      store.dispatch('debriefer/updateExpandedCatch', currExpandedKeys);
     }
 
     async function getCatches() {
@@ -393,6 +403,8 @@ export default createComponent({
     }
 
     return {
+      addNode,
+      removeNode,
       WcgopCatches,
       wcgopCatchTreeSettings,
       expandedKeys,

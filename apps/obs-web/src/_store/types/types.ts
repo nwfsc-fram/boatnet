@@ -22,6 +22,7 @@ export interface DebrieferState {
   selectedOperations: any[];
   operations: any[];
   tripSearchFilters: any;
+  expandedCatch: string[];
   specimens: any[];
   filters: any;
   errors: any[];
