@@ -141,7 +141,14 @@ export default createComponent({
         isEditable: true,
         width: '120'
       },
-      // permit
+      {
+        field: 'certificate-0-certificateNumber',
+        header: 'Permit',
+        type: 'input',
+        key: 'wcgopPermit',
+        isEditable: true,
+        width: '120'
+      },
       {
         field: 'vessel-coastGuardNumber',
         header: 'USCG#',

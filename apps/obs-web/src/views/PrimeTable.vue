@@ -231,7 +231,7 @@ export default createComponent({
     const popupUniqueKey: any = ref('');
 
     const trawlMode: string = 'trawl';
-    const fixedGearMode: string = 'fixed gear'
+    const fixedGearMode: string = 'fixed gear';
     const displayMode: any = state.debriefer.displayColumns.operationMode ? state.debriefer.displayColumns.operationMode : trawlMode;
 
     let haulNumTracker = 0;
@@ -474,10 +474,10 @@ export default createComponent({
     function toggleHaulCols(mode: string) {
       if (mode === trawlMode) {
         displayColumns.value = setTrawlMode(currCols.value);
-        stateDisplayCols['operationMode'] = trawlMode;
+        stateDisplayCols.operationMode = trawlMode;
       } else if (mode === fixedGearMode) {
         displayColumns.value = setFixedGearMode(currCols.value);
-        stateDisplayCols['operationMode'] = fixedGearMode;
+        stateDisplayCols.operationMode = fixedGearMode;
       }
       stateDisplayCols[tableType] = displayColumns.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
