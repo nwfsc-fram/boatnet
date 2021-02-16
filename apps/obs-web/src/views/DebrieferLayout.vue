@@ -12,7 +12,7 @@
               @click="toggleShow('evaluation')"
             />
           </template>
-          <app-debriefer-wcgop-evaluation v-if="show"/>
+          <app-debriefer-wcgop-evaluation v-show="show"/>
         </TabPanel>
         <TabPanel>
           <template #header>
@@ -25,7 +25,7 @@
               @click="toggleShow('search')"
             />
             </template>
-          <app-debriefer-wcgop-search v-if="show"/>
+          <app-debriefer-wcgop-search v-show="show"/>
         </TabPanel>
     </TabView>
 

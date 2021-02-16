@@ -485,7 +485,7 @@ export default createComponent({
 
     function setTrawlMode(cols: any) {
       cols = remove(cols, (n: any) => {
-          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value'].includes(n.field)) {
+          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value', 'totalHooks', 'avgNumHooksPerSegment', 'hooksSampled'].includes(n.field)) {
             return n;
           }
         });
@@ -508,7 +508,7 @@ export default createComponent({
       });
       cols.push({
           field: 'totalGearSegments',
-          header: 'Total Gear',
+          header: 'Total Gear Segments',
           type: 'number',
           key: 'wcgopOpTotGear',
           width: '100',
@@ -527,6 +527,31 @@ export default createComponent({
         header: 'Average Soak Time',
         type: 'number',
         key: 'wcgopOpAvgSoakTime',
+        width: '100',
+        isEditable: true,
+      });
+      cols.push({
+        field: 'totalHooks',
+        header: 'Total Hooks',
+        type: 'number',
+        key: 'wcgopOpTotHooks',
+        width: '100',
+        isEditable: true,
+
+      });
+      cols.push({
+        field: 'avgNumHooksPerSegment',
+        header: 'Hook Count Per Segment',
+        type: 'number',
+        key: 'wcgopOpAvgNumHooksPerSeg',
+        width: '100',
+        isEditable: true,
+      });
+      cols.push({
+        field: 'hooksSampled',
+        header: 'Hooks Sampled',
+        type: 'number',
+        key: 'wcgopOpHooksSampled',
         width: '100',
         isEditable: true,
       });
