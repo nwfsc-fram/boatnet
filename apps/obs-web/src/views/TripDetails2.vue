@@ -1,6 +1,19 @@
 <template>
 
-    <div class="q-pa-md" style="max-width: 450px" >
+    <div class="q-pa-md" style="max-width: 450px" :disabled="trip.readOnly" >
+        <div style="font-weight: bold; margin: 15px 15px 0">
+            <div v-if="trip.activeTrip.tripNum"> Trip #: {{ trip.activeTrip.tripNum }}</div>
+            <div v-if="trip.activeTrip.fishery.description"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
+            <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
+                <q-icon name="warning"></q-icon>
+                Trip Selected
+            </div>
+            <div v-if="trip.activeTrip._id && !trip.activeTrip.isSelected" class="text-primary" style="font-size: 22px">
+                <q-icon name="not_interested"></q-icon>
+                Observer Not Required
+            </div>
+        </div>
+
         <transition name="selection-list-item">
             <div v-if="selections.length > 0">
                 <b>Chosen:</b>
@@ -13,6 +26,14 @@
                             <q-item-section avatar style="cursor: pointer">
                                 <!-- <q-avatar color="white" text-color="primary" size="sm" @click="removeSelection(index)"><b>x</b></q-avatar> -->
                                 <q-icon name="clear" @click="removeSelection(index)"></q-icon>
+                            </q-item-section>
+                        </q-item>
+                        <q-item :class="getSelectionClasses(index)" v-for="(property, index) in ['fishery', 'fisherySector', 'maximizedRetention', 'departureDate', 'returnDate', 'departurePort', 'returnPort']" :key="index" dense :style="getIndent(index)">
+                            <q-item-section v-if="trip.activeTrip[property] || trip.activeTrip[property] === false">
+                                <b>{{ titleFormat(property) }}: {{ trip.activeTrip[property].name ? trip.activeTrip[property].name : trip.activeTrip[property].description ? trip.activeTrip[property].description : ['departureDate', 'returnDate'].includes(property) ? formatDate(trip.activeTrip[property], property) : trip.activeTrip[property] }}</b>
+                            </q-item-section>
+                            <q-item-section avatar style="cursor: pointer">
+                                <q-icon name="clear" @click="removeProperty(property)"></q-icon>
                             </q-item-section>
                         </q-item>
                     </transition-group>
@@ -33,7 +54,7 @@
                                 <q-avatar color="white" text-color="primary" size="sm"><b>EM</b></q-avatar>
                             </q-item-section>
                         </q-item>
-                        <q-item class="choices-list-item" :key="'departuredate'" :class="getChoiceClasses(0)" v-if="choices.length === 0 && !activeTrip.departureDateTime && !transitioning">
+                        <q-item class="choices-list-item" :key="'departuredate'" :class="getChoiceClasses(0)" v-if="choices.length === 0 && !trip.activeTrip.departureDate && !transitioning">
                             <q-item-section>
                                 <b>Departure Date/Time:</b>
                             </q-item-section>
@@ -56,12 +77,12 @@
                                 <q-icon avatar name="done" @click="submitDepartureDate"></q-icon>
                             </q-item-section>
                         </q-item>
-                        <q-item class="choices-list-item" :key="'singleDay'" :class="getChoiceClasses(1)" clickable @click="singleDayTrip" manual-focus v-if="activeTrip.departureDateTime && !activeTrip.returnDate">
+                        <q-item class="choices-list-item" :key="'singleDay'" :class="getChoiceClasses(1)" clickable @click="singleDayTrip" manual-focus v-if="trip.activeTrip.departureDateTime && !trip.activeTrip.returnDate">
                             <q-item-section>
                                 <b>Single Day Trip</b>
                             </q-item-section>
                         </q-item>
-                        <q-item class="choices-list-item" :key="'returndate'" :class="getChoiceClasses(0)" v-if="activeTrip.departureDateTime && !activeTrip.returnDate">
+                        <q-item class="choices-list-item" :key="'returndate'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.departureDate && !trip.activeTrip.returnDate">
                             <q-item-section>
                                 <b>Return Date:</b>
                             </q-item-section>
@@ -84,41 +105,42 @@
                                 <q-icon avatar name="done" @click="submitReturnDate"></q-icon>
                             </q-item-section>
                         </q-item>
-                        <q-item class="choices-list-item" :key="'departureport'" :class="getChoiceClasses(0)" v-if="activeTrip.returnDate && !activeTrip.departurePort">
+                        <q-item class="choices-list-item" :key="'departureport'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.returnDate && !trip.activeTrip.departurePort">
                             <q-item-section>
                                 <b>Departure Port:</b>
                             </q-item-section>
                             <q-item-section>
                                 <q-select
-                                    v-model="activeTrip.departurePort"
+                                    v-model="trip.activeTrip.departurePort"
                                     dense
                                     title="Departure Port"
                                     style="width: 100%; border: 2px solid black; border-radius: 3px; padding: 0"
                                     :options="portOptions"
-                                    :option-label="opt => opt.description"
-                                    :option-value="opt => opt.lookupValue"
-                                    emit-value
-                                    :display-value="activeTrip.departurePort"
+                                    :option-label="opt => opt.name"
+                                    option-value="_id"
                                     bg-color= "white"
+                                    :readonly="trip.readOnly"
+                                    use-input
+                                    clearable
                                 ></q-select>
                             </q-item-section>
                         </q-item>
-                        <q-item class="choices-list-item" :key="'returnport'" :class="getChoiceClasses(0)" v-if="activeTrip.departurePort && !activeTrip.returnPort">
+                        <q-item class="choices-list-item" :key="'returnport'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.departurePort && !trip.activeTrip.returnPort">
                             <q-item-section>
                                 <b>Return Port:</b>
                             </q-item-section>
                             <q-item-section>
                                 <q-select
-                                    v-model="activeTrip.returnPort"
+                                    v-model="trip.activeTrip.returnPort"
                                     dense
                                     title="Return Port"
                                     style="width: 100%; border: 2px solid black; border-radius: 3px; padding: 0"
                                     :options="portOptions"
-                                    :option-label="opt => opt.description"
-                                    :option-value="opt => opt.lookupValue"
-                                    emit-value
-                                    :display-value="activeTrip.returnPort"
+                                    :option-label="opt => opt.name"
+                                    :option-value="_id"
                                     bg-color= "white"
+                                    use-input
+                                    clearable
                                 ></q-select>
                             </q-item-section>
                         </q-item>
@@ -157,9 +179,12 @@ import { authService } from '@boatnet/bn-auth/lib';
 
 export default createComponent({
   setup(props, context) {
-    const selections: any = reactive([]);
+    const store = context.root.$store;
+    const state = store.state;
+    const trip = state.trip;
     const activeTrip: any = ref({});
 
+    const selections: any = reactive([]);
     const isMobile = computed(
       () => {
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -252,15 +277,26 @@ export default createComponent({
     };
 
     const getIndent = (index: number) => {
-        // if (index < 4) {
-        //     return 'margin-left: ' + index * 25 + 'px; margin-right: ' + (3 - index) * 25 + 'px';
-        // } else {
-        //     return 'margin-left: ' + (index - 4) * 25 + 'px; margin-right: ' + (3 - (index - 4)) * 25 + 'px';
-        // }
         return 'margin: 3px';
     };
 
     const selectOption = (option: any) => {
+        console.log(option);
+        if (option.sectors) {
+            trip.activeTrip.fishery = option;
+        }
+        if (trip.activeTrip.fishery &&
+            trip.activeTrip.fishery.sectors &&
+            trip.activeTrip.fishery.sectors.find( (row: any) => option.description === row.description )
+           ) {
+            trip.activeTrip.fisherySector = option;
+        }
+        if (option.description === 'Maximized Retention') {
+            trip.activeTrip.maximizedRetention = true;
+        }
+        if (option.description === 'Optimized Retention / Don\'t know') {
+            trip.activeTrip.maximizedRetention = false;
+        }
         transitioning.value = true;
         computeHack.value += 1;
         setTimeout( () => {
@@ -316,27 +352,25 @@ export default createComponent({
 
     const depDateTime: any = ref('');
     const getDepDateTime = () => {
-      if (activeTrip.value.departureDateTime) {
-        depDateTime.value = new Date(moment(activeTrip.value.departureDateTime).format());
+      if (trip.activeTrip.departureDate) {
+        depDateTime.value = new Date(moment(trip.activeTrip.departureDate).format());
       }
     };
     const submitDepartureDate = () => {
         if (moment(depDateTime.value).format() !== 'Invalid date') {
-            activeTrip.value.departureDateTime = moment(depDateTime.value).format();
-            selectOption({description: 'Departure Date - ', lookupValue: activeTrip.value.departureDateTime});
+            trip.activeTrip.departureDate = moment(depDateTime.value).format();
         }
     };
 
     const retDate: any = ref('');
     const getRetDate = () => {
-      if (activeTrip.value.returnDate) {
-        retDate.value = new Date(moment(activeTrip.value.returnDate).format());
+      if (trip.activeTrip.returnDate) {
+        retDate.value = new Date(moment(trip.activeTrip.returnDate).format());
       }
     };
     const submitReturnDate = () => {
         if (moment(retDate.value).format() !== 'Invalid date') {
-            activeTrip.value.returnDate = moment(retDate.value).format();
-            selectOption({description: 'Return Date - ', lookupValue: activeTrip.value.returnDate});
+            trip.activeTrip.returnDate = moment(retDate.value).format();
         }
     };
 
@@ -347,12 +381,12 @@ export default createComponent({
           key: 'port',
           inclusive_end: true,
           descending: false,
-          include_docs: false
+          include_docs: true
         };
 
         const queryResults = await masterDb.view('TripsApi', 'all_em_lookups', queryOptions);
         portOptions.value.push.apply(portOptions.value, queryResults.rows.map( (row: any) => {
-            return {description: row.value[0], lookupValue: row.value[1]};
+            return row.doc;
         }));
 
         portOptions.value.sort(
@@ -390,10 +424,30 @@ export default createComponent({
         }
     };
 
+    const formatDate = (value: string, property: string) => {
+        if (property === 'departureDate') {
+            return moment(value).format('MM/DD/YYYY HH:mm');
+        } else if (property === 'returnDate') {
+            return moment(value).format('MM/DD/YYYY');
+        }
+    };
+
+    const titleFormat = (value: string) => {
+        const returnValue = value[0].toUpperCase() + value.slice(1, value.length);
+        return returnValue.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g)!.join(' ');
+    };
+
+    const removeProperty = (property: any) => {
+        console.log(property);
+        trip.activeTrip[property] = null;
+    };
+
 
     onMounted( () => {
         computeHack.value += 1;
         getPortOptions();
+        getRetDate();
+        getDepDateTime();
      }
     );
 
@@ -403,12 +457,14 @@ export default createComponent({
         choices,
         depDateTime,
         fisheries,
+        formatDate,
         formatValue,
         getChoiceClasses,
         getIndent,
         getSelectionClasses,
         isMobile,
         portOptions,
+        removeProperty,
         removeSelection,
         retDate,
         selections,
@@ -416,8 +472,10 @@ export default createComponent({
         singleDayTrip,
         submitDepartureDate,
         submitReturnDate,
+        titleFormat,
         topLevelChoices,
-        transitioning
+        transitioning,
+        trip
     };
   }
 });

@@ -10,7 +10,8 @@
             :options="searchTypes"
             v-model="selectedSearchType"
             clearable
-        ></q-select>
+        >
+        </q-select>
         <q-select
             class="col"
             label="Is"
@@ -87,24 +88,43 @@ export default createComponent({
     const evaluatorOptions = ref(['equals', 'greater than', 'less than']);
 
     const getSearchTypes = async () => {
-      const results = await masterDB.view(
-        'obs_web',
+      const tripResults = await masterDB.view(
+        'obs_web_new',
         'wcgop_trips_compound_fields',
         {reduce: true, include_docs: false, group_level: 1} as any
       );
-      searchTypes.value.push.apply(searchTypes.value, results.rows.map( (row: any) => row.key[0]));
+      searchTypes.value.push.apply(searchTypes.value, tripResults.rows.map( (row: any) => row.key[0]));
+      const operationResults = await masterDB.view(
+        'obs_web_new',
+        'wcgop_operations_compound_fields',
+        {reduce: true, include_docs: false, group_level: 1} as any
+      );
+      searchTypes.value.push.apply(searchTypes.value, operationResults.rows.map( (row: any) => row.key[0]));
     };
 
     const getSearchOptions = async () => {
         loading.value = true;
         sourceSearchOptions.value.length = 0;
         if (!['departureDate', 'returnDate'].includes(selectedSearchType.value)) {
-            const searchOptionResults = await masterDB.view(
-                'obs_web',
+            const tripSearchOptionResults = await masterDB.view(
+                'obs_web_new',
                 'wcgop_trips_compound_fields',
                 {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
             );
-            sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(searchOptionResults.rows.map( (row: any) => {
+            sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(tripSearchOptionResults.rows.map( (row: any) => {
+                if (row.key[1] === null || row.key[1] === undefined) {
+                    return 'null';
+                } else {
+                    return row.key[1];
+                }
+            }))]
+            );
+            const operationSearchOptionResults = await masterDB.view(
+                'obs_web_new',
+                'wcgop_operations_compound_fields',
+                {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
+            );
+            sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(operationSearchOptionResults.rows.map( (row: any) => {
                 if (row.key[1] === null || row.key[1] === undefined) {
                     return 'null';
                 } else {
@@ -144,8 +164,8 @@ export default createComponent({
         selectedSearchResults.value.length = 0;
         const searchOption = selectedSearchOption.value === 'null' ? null : selectedSearchOption.value;
 
-        const searchResults: any = await masterDB.view(
-            'obs_web',
+        const tripSearchResults: any = await masterDB.view(
+            'obs_web_new',
             'wcgop_trips_compound_fields',
             {
                 reduce: false,
@@ -157,7 +177,45 @@ export default createComponent({
                 ['departureDate', 'returnDate'].includes(selectedSearchType.value) ? moment(searchOption).hour(23).minute(59).second(59).format() : searchOption ]
             } as any
         );
-        selectedSearchResults.value.push.apply(selectedSearchResults.value, searchResults.rows.map( (row: any) => row.value ));
+        selectedSearchResults.value.push.apply(selectedSearchResults.value, tripSearchResults.rows.map( (row: any) => row.value ));
+        const operationSearchResults: any = await masterDB.view(
+            'obs_web_new',
+            'wcgop_operations_compound_fields',
+            {
+                reduce: false,
+                include_docs: false,
+                inclusive_end: true,
+                start_key: [selectedSearchType.value, evaluator.value === 'less than' ? null :
+                ['departureDate', 'returnDate'].includes(selectedSearchType.value) ? moment(searchOption).hour(0).minute(0).second(0).format() : searchOption ],
+                end_key: [selectedSearchType.value, evaluator.value === 'greater than' ? {} :
+                ['departureDate', 'returnDate'].includes(selectedSearchType.value) ? moment(searchOption).hour(23).minute(59).second(59).format() : searchOption ]
+            } as any
+        );
+        const tripIds = [
+                        ...new Set(
+                            operationSearchResults.rows.map(
+                                (row: any) => {
+                                    return row.value;
+                                }
+                            )
+                        )
+                      ];
+        const keys = tripIds.map( (row: any) => {
+            return ['tripId', row];
+        });
+
+        const tripsFromOperations: any = await masterDB.view(
+            'obs_web_new',
+            'wcgop_trips_compound_fields',
+            {
+                reduce: false,
+                include_docs: false,
+                inclusive_end: true,
+                keys
+            } as any
+        );
+
+        selectedSearchResults.value.push.apply(selectedSearchResults.value, tripsFromOperations.rows.map( (row: any) => row.value ));
         context.emit('update:val', selectedSearchResults.value);
         loading.value = false;
     };
