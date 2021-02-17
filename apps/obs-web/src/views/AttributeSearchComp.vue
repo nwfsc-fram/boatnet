@@ -89,13 +89,13 @@ export default createComponent({
 
     const getSearchTypes = async () => {
       const tripResults = await masterDB.view(
-        'obs_web_new',
+        'obs_web',
         'wcgop_trips_compound_fields',
         {reduce: true, include_docs: false, group_level: 1} as any
       );
       searchTypes.value.push.apply(searchTypes.value, tripResults.rows.map( (row: any) => row.key[0]));
       const operationResults = await masterDB.view(
-        'obs_web_new',
+        'obs_web',
         'wcgop_operations_compound_fields',
         {reduce: true, include_docs: false, group_level: 1} as any
       );
@@ -107,7 +107,7 @@ export default createComponent({
         sourceSearchOptions.value.length = 0;
         if (!['departureDate', 'returnDate'].includes(selectedSearchType.value)) {
             const tripSearchOptionResults = await masterDB.view(
-                'obs_web_new',
+                'obs_web',
                 'wcgop_trips_compound_fields',
                 {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
             );
@@ -120,7 +120,7 @@ export default createComponent({
             }))]
             );
             const operationSearchOptionResults = await masterDB.view(
-                'obs_web_new',
+                'obs_web',
                 'wcgop_operations_compound_fields',
                 {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
             );
@@ -165,7 +165,7 @@ export default createComponent({
         const searchOption = selectedSearchOption.value === 'null' ? null : selectedSearchOption.value;
 
         const tripSearchResults: any = await masterDB.view(
-            'obs_web_new',
+            'obs_web',
             'wcgop_trips_compound_fields',
             {
                 reduce: false,
@@ -179,7 +179,7 @@ export default createComponent({
         );
         selectedSearchResults.value.push.apply(selectedSearchResults.value, tripSearchResults.rows.map( (row: any) => row.value ));
         const operationSearchResults: any = await masterDB.view(
-            'obs_web_new',
+            'obs_web',
             'wcgop_operations_compound_fields',
             {
                 reduce: false,
@@ -205,7 +205,7 @@ export default createComponent({
         });
 
         const tripsFromOperations: any = await masterDB.view(
-            'obs_web_new',
+            'obs_web',
             'wcgop_trips_compound_fields',
             {
                 reduce: false,
