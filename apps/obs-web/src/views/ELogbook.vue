@@ -1568,7 +1568,12 @@ export default createComponent({
     const getNetDescription = computed (
       () => {
         if (tripCatch.hauls[selectedHaul.value - 1].netType) {
-          return netOptions.find( (item: any) => item.lookupValue === tripCatch.hauls[selectedHaul.value - 1].netType).description;
+          const netLookup = netOptions.find( (item: any) => item.lookupValue === tripCatch.hauls[selectedHaul.value - 1].netType);
+          if (netLookup) {
+            return netLookup.description;
+          } else {
+            return '';
+          }
         } else {
           return '';
         }
@@ -2459,7 +2464,7 @@ export default createComponent({
    font-size: 11px;
    position: relative;
    left: -140px;
-   top: 3px;
+   top: 0px;
    z-index: 999;
    white-space: nowrap;
 }
@@ -2472,7 +2477,7 @@ export default createComponent({
    font-size: 11px;
    position: relative;
    left: -342px;
-   top: 5px;
+   top: 0px;
    z-index: 999;
    white-space: nowrap;
 }
@@ -2497,7 +2502,6 @@ export default createComponent({
 }
 
 * >>> .p-inputtext {
-  vertical-align: baseline;
   font-weight: bold !important;
   width: 350px;
   border: 1px solid rgb(187, 186, 186) !important;

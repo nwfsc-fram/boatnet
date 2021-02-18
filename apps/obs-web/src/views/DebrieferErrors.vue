@@ -52,7 +52,7 @@ export default createComponent({
         isEditable: true,
         width: '80'
       },
-      { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80' },
+      { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80', type: 'date' },
       { field: 'note', header: 'Note', type: 'textArea', key: 'errorNote', isEditable: true, width: '80' }
     ];
 

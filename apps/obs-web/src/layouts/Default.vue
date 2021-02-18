@@ -23,7 +23,7 @@
 
         <q-toolbar-title>
           <span
-            v-if="(['Trips', 'Trip Detail', 'Log Missing Trip'].includes(this.$router.currentRoute.name)) && this.vessel.activeVessel"
+            v-if="(['Trips', 'Trip Detail', 'Trip Detail 2', 'Log Missing Trip'].includes(this.$router.currentRoute.name)) && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
           <!-- {{ currentTrip.trip_num }} -->
           {{ this.$router.currentRoute.name }}
@@ -194,6 +194,26 @@
           :header-inset-level="0"
           :content-inset-level=".5"
         >
+          <q-item to="/error-management" exact>
+            <q-item-section avatar>
+              <q-icon name="error_outline" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Error Management</q-item-label>
+              <q-item-label caption>manage error checks</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item to="/ots-management" exact>
+            <q-item-section avatar>
+              <q-icon name="check_circle" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>OTS Management</q-item-label>
+              <q-item-label caption>manage selection targets</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-item
             to="/vessels"
             exact
@@ -215,16 +235,6 @@
             <q-item-section>
               <q-item-label>User Management</q-item-label>
               <q-item-label caption>edit user conact info + roles</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item to="/ots-management" exact>
-            <q-item-section avatar>
-              <q-icon name="check_circle" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>OTS Management</q-item-label>
-              <q-item-label caption>manage selection targets</q-item-label>
             </q-item-section>
           </q-item>
 

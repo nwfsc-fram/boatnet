@@ -27,6 +27,7 @@ import EMRateManagement from './views/EMRateManagement.vue';
 import EMReview from './views/EMReview.vue';
 import EMResults from './views/EMResults.vue';
 import EMTaskManagement from './views/EMTaskManagement.vue';
+import ErrorManagement from './views/ErrorManagement.vue';
 import Help from './views/Help.vue';
 import Home from './views/Home.vue';
 import ManageUsers from './views/ManageUsers.vue';
@@ -49,16 +50,15 @@ import RackBiospecimens from './views/RackBiospecimens.vue';
 import SpeciesDetail from './views/SpeciesDetail.vue';
 import SpeciesViewer from './views/SpeciesViewer.vue';
 import TripDetails from './views/TripDetails.vue';
+import TripDetails2 from './views/TripDetails2.vue';
 import Trips from './views/Trips.vue';
+import TripsApiInterface from './views/TripsApiInterface.vue';
 import UserConfig from './views/UserConfig.vue';
 import UserDetails from './views/UserDetails.vue';
 import VesselDetails from './views/VesselDetails.vue';
 import Vessels from './views/Vessels.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
-
-import Trips2pt0 from './views/Trips2pt0.vue';
-import TripsApiInterface from './views/TripsApiInterface.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -87,6 +87,11 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }
           }
         },
+        { path: '/error-management', name: 'Error Management', component: ErrorManagement,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }
+          }
+        },
         { path: '/species-viewer', name: 'Species Viewer', component: SpeciesViewer,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager'])) { return next(); } else { return next('/login'); }
@@ -110,6 +115,7 @@ const router = new Router({
         },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
+        { path: '/trips2/:id', name: 'Trip Detail 2', component: TripDetails2 },
         { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         {
@@ -319,12 +325,6 @@ const router = new Router({
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
         },
-        {
-          path: '/trips2', name: 'Trips 2.0', component: Trips2pt0,
-          beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
-          }
-        },
         { path: '/help', name: 'Help', component: Help },
       ]
     }, // otherwise redirect to home
@@ -344,7 +344,7 @@ router.beforeEach((to, from, next) => {
     return next('/login');
   }
 
-  if (router.currentRoute.name === 'Trip Detail') {
+  if (['Trip Detail 2', 'Trip Detail'].includes(router.currentRoute.name as string)) {
     window.onpopstate = (event: any) => {
       return next(router.currentRoute.path.replace(router.currentRoute.params.id, ''));
     };
