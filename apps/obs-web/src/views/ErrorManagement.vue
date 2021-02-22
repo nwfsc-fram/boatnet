@@ -3,16 +3,16 @@
   <div v-bind:style="{ minWidth: columns.length * 100 + 'px' }">
       <DataTable
         v-if="!loading"
-        :value="data"
+        :value="errorTypes"
         :filters="filters"
-        :resizableColumns="true"
-        columnResizeMode="expand"
+        :autoLayout="true"
         :tableStyle="{'table-layout':'auto'}"
         :paginator="true"
-        :rows="20"
+        :rows="30"
         sortMode="multiple"
-        :selection.sync="selected"
+        :selection="[]"
         selectionMode="single"
+        editMode="cell"
         @row-select="onRowSelect"
         @row-unselect="onRowUnselect"
         @cell-edit-init="onCellEditInit"
@@ -21,7 +21,7 @@
         <template #header>
             <div style="text-align:left; float:left">
                 <MultiSelect
-                    v-model="columns"
+                    v-model="displayColumns"
                     :options="columnOptions"
                     optionLabel="header"
                     placeholder="Select Columns"
@@ -31,6 +31,8 @@
                         <div>Display Columns</div>
                     </template>
                 </MultiSelect>
+
+                <q-btn size="sm" dense color="primary" icon="add" style="margin-left: 10px; padding-right: 5px" @click="addRow">New Error Type</q-btn>
             </div>
 
             <div style="text-align: right">
@@ -47,7 +49,7 @@
         </template>
 
         <Column
-            v-for="col of columns"
+            v-for="col of displayColumns"
             :field="col.field"
             :header="col.header"
             :key="col.field"
@@ -68,9 +70,27 @@
                     ></q-btn-toggle>
                 <InputText type="text" v-else v-model="filters[col.field]" class="p-column-filter" placeholder="" debounce="2000"/>
             </template>
-            <template #body="slotProps">
+            <template v-if="col.isEditable" #editor="slotProps">
                 <div>
-                    {{ getVal(slotProps.data, col.field, col.header) }}
+                    <InputText
+                        type="text"
+                        v-model="cellVal"
+                        @change="onCellEdit($event.target.value, slotProps, col.type)"
+                    ></InputText>
+                </div>
+            </template>
+            <template #body="slotProps" v-else>
+                <div v-if="toggleFields.includes(col.field)" style="text-align: center">
+                    <q-checkbox v-model="slotProps.data[col.field]" dense
+                     @input="save(slotProps.data)"></q-checkbox>
+                </div>
+                <div v-else-if="col.field === 'checkType'">
+                    <q-select v-model="slotProps.data[col.field]" dense options-dense
+                    @input="save(slotProps.data)"
+                    :options="['Warning', 'Error']"></q-select>
+                </div>
+                <div v-else style="text-align: center">
+                {{ getVal(slotProps.data, col.field, col.header) }}
                 </div>
             </template>
 
@@ -79,6 +99,7 @@
     </DataTable>
 
     <q-spinner v-if="loading" color="primary" size="15em" class="fixed-center"></q-spinner>
+
     </div>
 </template>
 
@@ -113,72 +134,110 @@ import { get, set } from 'lodash';
 import _ from 'lodash';
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
+import { authService } from '@boatnet/bn-auth/lib';
 
 export default createComponent({
     setup(props, context) {
+        const masterDB: Client<any> = couchService.masterDB;
         const columns: any = [
-            {field: 'name', header: 'Name' },
-            {field: 'description', header: 'Description'},
-            {field: 'program', header: 'Program'},
-            {field: 'isActive', header: 'Active?'},
-            {field: 'onEntry', header: 'On Entry?'},
-            {field: 'tripCheck', header: 'Trip Check?'},
+            {field: 'name', header: 'Name', isEditable: true },
+            {field: 'description', header: 'Description', isEditable: true },
+            {field: 'checkType', header: 'Type' },
+            {field: 'isActive', header: 'Active' },
+            {field: 'isWcgop', header: 'WCGOP' },
+            {field: 'isAshop', header: 'ASHOP' },
+            {field: 'isEm', header: 'EM'},
+            {field: 'onEntry', header: 'On Entry' },
+            {field: 'tripCheck', header: 'Trip Check'},
             {field: 'createdBy', header: 'Created By'},
             {field: 'createdDate', header: 'Created Date'},
             {field: 'updatedBy', header: 'Updated By'},
             {field: 'updatedDate', header: 'Updated Date'},
         ];
 
+        const displayColumns: any = [...columns.slice(0, 8)];
+
         const toggleFields: string[] = [
                         'isActive',
+                        'isAshop',
+                        'isWcgop',
+                        'isEm',
                         'onEntry',
                         'tripCheck',
                         ];
 
-        const data: any[] = reactive([]);
+        const errorTypes: any = ref([]);
         const loading: any = ref(false);
 
         const filters: any = reactive({
                         isActive: null,
+                        isAshop: null,
+                        isWcgop: null,
+                        isEm: null,
                         onEntry: null,
                         tripCheck: null,
+                        checkType: null
                         });
         const columnOptions = [...columns];
-        let cellVal: string = '';
+        const cellVal: any = ref('');
         const selected: any = [];
 
-        const onCellEditInit = (event: any) => {
-            cellVal = get(event.data, event.field);
-        };
+        function onCellEditInit(event: any) {
+        cellVal.value = event.data[event.field] ? event.data[event.field].toString() : '';
+        }
+
+        function onCellEdit(newValue: any, slotProps: any, type: string) {
+        const fields: string = slotProps.column.field;
+        const editingCellRow: any = slotProps.data;
+
+        set(editingCellRow, fields, newValue);
+        save(editingCellRow);
+        }
 
         const onRowSelect = (event: any) => {
-            // context.root.$router.push({path: '/species-detail/' + event.data._id});
-            // context.emit('onRowSelect', event);
+            return;
         };
 
         const onRowUnselect = (event: any) => {
             context.emit('onRowUnselect', event);
         };
 
-
         const getVal = (rowData: any, field: any, header: any) => {
-            if (field === 'createdDate' || field === 'updatedDate') {
-                return moment(rowData).format('MM/DD/YYYY');
+            if ((field === 'createdDate' || field === 'updatedDate') && rowData[field]) {
+                return moment(rowData[field]).format('M/DD/YY h:mm');
             } else {
                 return rowData[field];
             }
         };
 
+        const addRow = () => {
+            errorTypes.value.unshift(
+                {
+                    createdDate: moment().format(),
+                    createdBy: authService.getCurrentUser()!.username,
+                    isActive: true,
+                    isWcgop: false,
+                    isAshop: false,
+                    isEm: false,
+                    onEntry: false,
+                    tripCheck: false,
+                    type: 'error-type',
+                    name: '',
+                    description: ''
+                }
+            );
+        };
+
         const getErrorTypes = async () => {
             loading.value = true;
             const masterDb: Client<any> = couchService.masterDB;
-            const errorTypes: any = await masterDb.view(
+            const errorTypesQuery: any = await masterDb.view(
                 'obs_web',
                 'all_doc_types',
                 {reduce: false, include_docs: true, key: 'error-type'} as any
             );
-            data.push.apply(data, errorTypes.rows.map( (row: any) => row.doc ));
-            data.sort( (a: any, b: any) => {
+            errorTypes.value.push.apply(errorTypes.value, errorTypesQuery.rows.map( (row: any) => row.doc ));
+            errorTypes.value.sort( (a: any, b: any) => {
                 if (a.name > b.name) {
                     return 1;
                 } else if (a.name < b.name) {
@@ -190,21 +249,37 @@ export default createComponent({
             loading.value = false;
         };
 
+        const save = async (rowData: any) => {
+            const user = authService.getCurrentUser()!.username;
+            rowData.updatedBy = user;
+            rowData.updatedDate = moment().format();
+            if (rowData._id) {
+                const response: any = await masterDB.put(rowData._id, rowData, rowData._rev);
+                const editedRow = errorTypes.value.find( (row: any) => row._id === response.id );
+                editedRow._rev = response.rev;
+            } else {
+                const response = await masterDB.post(rowData);
+                const editedRow = errorTypes.value.find ((row: any) => !row._id);
+                editedRow._id = response.id;
+                editedRow._rev = response.rev;
+            }
+        };
+
         onMounted( () => {
             getErrorTypes();
         });
 
         return {
-            data, filters, columns, columnOptions, cellVal, selected, onCellEditInit, onRowSelect, onRowUnselect, getVal, loading, toggleFields
+            addRow, displayColumns, errorTypes, filters, columns, columnOptions, cellVal, selected, onCellEdit, onCellEditInit, onRowSelect, onRowUnselect, getVal, loading, toggleFields, save
         };
 
-    }
+}
 
 });
 
 </script>
 
-<style>
+<style scoped>
     .p-inputtext {
         background-color: white !important;
         padding: 5px !important;
@@ -216,5 +291,4 @@ export default createComponent({
     .global-search {
         width: auto !important;
     }
-
 </style>
