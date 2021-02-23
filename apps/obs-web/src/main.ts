@@ -41,6 +41,7 @@ import DebrieferWcgopSearch from './views/DebrieferWcgopSearch.vue';
 import DebrieferWcgopEvaluation from './views/DebrieferWcgopEvaluation.vue';
 import CruiseDialog from './views/CruiseDialog.vue';
 import ViewImage from './views/ViewImage.vue';
+import VCalendar from 'v-calendar';
 // Vue.use(VueResource);
 
 import VueCompositionApi from '@vue/composition-api';
@@ -74,6 +75,7 @@ Vue.use(Quasar, {
 });
 
 Vue.use(VueCompositionApi);
+Vue.use(VCalendar);
 
 Vue.component('appUserDetails', UserDetails);
 Vue.component('appDebrieferErrors', DebrieferErrors);

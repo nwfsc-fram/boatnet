@@ -9,6 +9,7 @@ declare module 'jsonexport/dist';
 declare module 'pouchdb-utils';
 declare module 'quasar';
 declare module 'quasar-calendar';
+declare module 'v-calendar';
 declare module 'vue-async-function';
 declare module 'vue-multiselect';
 declare module 'vue2-timepicker';
