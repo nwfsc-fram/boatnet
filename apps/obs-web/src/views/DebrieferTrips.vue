@@ -418,11 +418,14 @@ export default createComponent({
     }
 
     async function getTripsByObserver() {
+      loading.value = true;
       const observerId = state.debriefer.observers;
       trips.value = await getTripsByObserverId(observerId);
+      loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
+      loading.value = true;
       const observerId = state.debriefer.observers;
       const evalPeriod = state.debriefer.evaluationPeriod;
 
@@ -433,6 +436,7 @@ export default createComponent({
           observerId
         );
       }
+      loading.value = false;
     }
 
     async function getTripsBySearchParams() {
