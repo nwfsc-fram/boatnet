@@ -136,7 +136,7 @@
         <template #filter v-if="!simple">
           <MultiSelect
             v-if="col.type === 'toggle'"
-            :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
+            :style="'width: 100%; background-color: transparent'"
             v-model="filters[col.field]"
             @before-show="getLookupName(col.lookupKey, col.lookupField, col.listType)"
             :options="col.list ? col.list : lookupsList"
@@ -161,13 +161,12 @@
 import {
   createComponent,
   ref,
-  reactive,
   computed,
   onMounted,
   watch,
   onUnmounted
 } from '@vue/composition-api';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Vue } from 'vue-property-decorator';
 import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
@@ -350,12 +349,12 @@ export default createComponent({
       lookupsList.value = [];
       if (type === 'boolean') {
         lookupVals = [true, false];
-      } else {
+      }/* else {
         const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
         for (const row of result.rows) {
           lookupVals.push(get(row.doc, fieldName));
         }
-      }
+      }*/
       lookupVals = intersection(lookupVals);
       lookupsList.value = lookupVals.sort();
     }
