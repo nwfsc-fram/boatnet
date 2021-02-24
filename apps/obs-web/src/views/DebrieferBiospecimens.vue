@@ -5,28 +5,20 @@
       :columns="columns"
       type="Specimens"
       uniqueKey="_id"
-      :enableSelection="false"
+      :initialSelection="initialSelection"
+      :enableSelection="true"
+      :showSelectionBoxes="false"
       :isFullSize="isFullSize"
       @save="save"
     />
   </div>
 </template>
 
-
 <script lang="ts">
-import { createComponent, ref, computed, watch } from '@vue/composition-api';
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { DebrieferState } from '../_store/types/types';
-import { BaseOperation } from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
-import { date } from 'quasar';
-import { convertToObject } from 'typescript';
-import { getSelected } from '../helpers/localStorage';
-import { cloneDeep, findIndex, orderBy, slice } from 'lodash';
+import { createComponent, ref, watch, onUnmounted } from '@vue/composition-api';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
+import { cloneDeep, filter, findIndex, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
@@ -42,6 +34,11 @@ export default createComponent({
     const jp = require('jsonpath');
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
+    const initialSelection: any = ref([]);
+
+    onUnmounted(() => {
+      store.dispatch('debriefer/updateSpecimens', []);
+    });
 
     const columns = [
       {
@@ -224,7 +221,6 @@ export default createComponent({
       const specimens = jp.nodes(unflattenedOperations, '$..specimens');
 
       for (const specimen of specimens) {
-        const fullPath = jp.stringify(specimen.path);
         const operationPath = jp.stringify(slice(specimen.path, 0, 2));
         const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
         const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
@@ -265,6 +261,11 @@ export default createComponent({
         }
       }
       WcgopBiospecimens.value = orderBy(bioSpecimens, ['operationNum']);
+      initialSelection.value = filter(WcgopBiospecimens.value, function(val: any) {
+        if (debriefer.specimens.includes(val._id)) {
+          return val;
+        }
+      });
     }
 
     async function save(data: any) {
@@ -288,6 +289,7 @@ export default createComponent({
 
     return {
       WcgopBiospecimens,
+      initialSelection,
       columns,
       save
     };

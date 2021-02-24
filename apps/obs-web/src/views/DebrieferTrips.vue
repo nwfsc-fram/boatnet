@@ -7,6 +7,7 @@
       :simple="false"
       uniqueKey="_id"
       :enableSelection="true"
+      :showSelectionBoxes="true"
       :isFullSize="isFullSize"
       :loading="loading"
       :initialSelection="initialSelection"

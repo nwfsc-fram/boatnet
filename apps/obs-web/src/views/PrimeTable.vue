@@ -57,7 +57,7 @@
           </div>
       </template>
 
-      <Column v-if="enableSelection" selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="showSelectionBoxes" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -202,6 +202,7 @@ export default createComponent({
     simple: Boolean,
     uniqueKey: String,
     enableSelection: Boolean,
+    showSelectionBoxes: Boolean,
     isFullSize: Boolean,
     loading: Boolean,
     initialSelection: Array
