@@ -1,5 +1,6 @@
 <template>
   <div>
+    <ContextMenu id="cMenu" style="position: fixed !important;" :model="menuModel" ref="cm" />
     <DataTable
       :rowClass="rowClass"
       class="p-datatable-striped p-datatable-sm"
@@ -19,6 +20,8 @@
       :loading="loading"
       stateStorage="local"
       :stateKey="tableType"
+      contextMenu
+      @row-contextmenu="onRowContextMenu"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -132,6 +135,7 @@
             label="..."
             @click="show(slotProps, col.popupColumns, col.uniqueKey, col.popupField)"
           />
+          <Button v-if="col.type === 'actions'" @click="addToDcs(slotProps.data)">dcs+</Button>
         </template>
         <template #filter v-if="!simple">
           <MultiSelect
@@ -154,6 +158,54 @@
       :columns="popupColumns"
       :uniqueKey="popupUniqueKey"
     />
+
+    <q-dialog v-model="dcsDetailsDialog" persistent position="bottom">
+      <q-card>
+        <q-card-section>
+          <b>DCS Row Details</b>
+              <div class="row items-start">
+                <q-input class="col dcs-dialog" v-model="dcsRow.tripNum" label="Trip #" outlined dense></q-input>
+                <q-input class="col dcs-dialog" v-model="dcsRow.haulNum" label="Haul #" outlined dense></q-input>
+                <q-select
+                   class="col dcs-dialog"
+                  v-model="dcsRow.level"
+                  :options="['Trip', 'Haul', 'Catch', 'SC', 'BS', 'Deck Form', 'BRD', 'HLFC', 'MMSBT', 'PST', 'SPID']"
+                  label="Level"
+                  outlined
+                  dense
+                  options-dense
+                ></q-select>
+              </div>
+              <div class="row items-start">
+                <q-select
+                  class="col dcs-dialog"
+                  v-model="dcsRow.dcsErrorType"
+                  :options="['Calcs', 'Data Form', 'Transcription', 'Biosampling', 'Database', 'Raw Data','Sampling Procedure', 'Sample Size', 'OPTECS', 'Repeating']"
+                  label="Error Type"
+                  outlined
+                  dense
+                  options-dense
+                ></q-select>
+                <q-select
+                  v-if="dcsRow.afiFlag"
+                  class="col dcs-dialog"
+                  v-model="dcsRow.afiFlag"
+                  :options="['Improvement', 'Requirement', 'Task']"
+                  label="AFI Flag (optional)"
+                  outlined
+                  dense
+                  options-dense
+                ></q-select>
+              </div>
+              <q-input class="col dcs-dialog" type="textarea" autogrow v-model="dcsRow.issue" label="Issue" outlined dense></q-input>
+            <br>
+          <div style="text-align: right">
+            <q-btn class="dcs-dialog" color="primary" size="md"  @click="submit">submit</q-btn>
+            <q-btn class="dcs-dialog" color="red" size="md" @click="dcsDetailsDialog = false">Cancel</q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -168,7 +220,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
+import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith, clone } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -183,6 +235,7 @@ import PrimeTableDialog from './PrimeTableDialog.vue';
 import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
 import Textarea from 'primevue/textarea';
 import { fromDMS, toDMS } from 'dmsformat';
+import { authService } from '@boatnet/bn-auth/lib';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -193,6 +246,10 @@ Vue.component('Column', Column);
 Vue.component('InputText', InputText);
 Vue.component('MultiSelect', MultiSelect);
 Vue.component('Textarea', Textarea );
+
+import ContextMenu from 'primevue/contextmenu';
+import { Notify } from 'quasar';
+Vue.component('ContextMenu', ContextMenu);
 
 export default createComponent({
   props: {
@@ -210,6 +267,7 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state = store.state;
+    const dcsDetailsDialog = ref(false);
 
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
@@ -558,6 +616,54 @@ export default createComponent({
       return cols;
     }
 
+    const selectedRow: any = ref(null);
+    const cm: any = ref(null);
+    const menuModel = [
+        {label: 'Add to DCS', icon: 'pi pi-fw pi-plus', command: () => addToDcs(false)},
+        {label: 'Add to DCS as AFI', icon: 'pi pi-exclamation-circle', command: () => addToDcs(true)}
+    ];
+
+    const dcsRow: any = ref({});
+
+    const buildRow = (isAfi: boolean) => {
+      const rowData: any = selectedRow.value;
+      return {
+        type: 'dcs-row',
+        observerId: state.debriefer.observer,
+        tripNum: rowData.tripId ? rowData.tripId : rowData.tripNum ? rowData.tripNum : rowData['legacy-tripId'] ? rowData['legacy-tripId'] :  'unknown',
+        haulNum: rowData.operationNum ? rowData.operationNum : rowData.haulNum ? rowData.haulNum : '',
+        collectionMethod: '',
+        createdDate: moment().format(),
+        createdBy: authService.getCurrentUser()!.username,
+        level: rowData.type === 'wcgop-trip' ? 'Trip' : rowData.type === 'wcgop-operation' ? 'Haul' : rowData.specimenType ? 'BS' : 'Other',
+        issue: rowData.description ? rowData.description : '',
+        dcsErrorType: rowData.severity ? rowData.severity : '',
+        afiFlag: isAfi ? 'Improvement' : '',
+        afiDate: isAfi ? moment().format() : '',
+        observerNotes: ''
+      } as any;
+    };
+
+    const addToDcs = (isAfi: boolean) => {
+        dcsRow.value = buildRow(isAfi);
+        dcsDetailsDialog.value = true;
+    };
+
+    const onRowContextMenu = (event: any) => {
+        selectedRow.value = event.data;
+        cm.value.show(event.originalEvent);
+    };
+
+    const submit = async () => {
+        const result = await masterDB.post(dcsRow.value);
+        if (result) {
+          Notify.create({
+            message: 'issue added to dcs.'
+          });
+        }
+        dcsDetailsDialog.value = false;
+    };
+
     return {
       containsMultiples,
       filters,
@@ -588,7 +694,8 @@ export default createComponent({
       displayMode,
       toggleHaulCols,
       fixedGearMode,
-      trawlMode
+      trawlMode,
+      selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, submit, dcsRow
     };
   },
 });
@@ -605,5 +712,18 @@ export default createComponent({
 
 .p-multiselect-trigger {
   background-color: transparent
+}
+
+.dcs-dialog {
+  margin: 5px !important;
+}
+
+#cMenu {
+   display: initial !important;
+}
+
+* >>> .p-contextmenu .p-component {
+  top: 0px !important;
+  left: 0px !important;
 }
 </style>

@@ -149,7 +149,7 @@ export default createComponent({
     }
 
     async function getTripsByDate() {
-      const observerId = state.debriefer.observers;
+      const observerId = state.debriefer.observer;
       trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
     }
 
@@ -187,7 +187,7 @@ export default createComponent({
     useAsync(getEvaluationPeriodLookups);
 
     function save() {
-      const observerId = state.debriefer.observers;
+      const observerId = state.debriefer.observer;
 
       const curr = props.evaluationPeriod ? props.evaluationPeriod : {};
       const evalPeriod = {
