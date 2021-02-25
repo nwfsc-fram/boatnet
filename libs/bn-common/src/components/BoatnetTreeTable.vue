@@ -12,7 +12,7 @@
       <template #header>
         <div style="text-align:left">
           <MultiSelect
-            v-model="columns"
+            v-model="displayColumns"
             :options="columnOptions"
             optionLabel="header"
             placeholder="Select Columns"
@@ -26,7 +26,7 @@
         </div>
       </template>
       <pColumn
-        v-for="col of columns"
+        v-for="col of displayColumns"
         :key="columns[col]"
         :field="col.field"
         :header="col.header"
@@ -107,36 +107,39 @@
 
 
 <script lang="ts">
-import { createComponent, ref } from '@vue/composition-api';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { createComponent, ref, computed } from '@vue/composition-api';
+import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
 import { cloneDeep, get } from 'lodash';
 
-import TreeTable from 'primevue/treetable';
-Vue.component('pTreeTable', TreeTable);
-
-import pColumn from 'primevue/column';
-import InputText from 'primevue/inputtext';
+import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import TreeTable from 'primevue/treetable';
+
+Vue.component('pColumn', Column);
 Vue.component('Dropdown', Dropdown);
 Vue.component('InputText', InputText);
-Vue.component('pColumn', pColumn);
+Vue.component('pTreeTable', TreeTable);
 
 export default createComponent ({
   props: {
     nodes: Array,
-    settings: Object,
-    selectionKeys: Object,
+    columns: Array,
     isEditable: Boolean,
     program: String,
+    type: String,
     selectionMode: String,
     initExpandedKeys: Object
   },
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const columns: any[] = props.settings ? props.settings.columns : [];
-    const columnOptions: any[] = [...columns];
+    const tableType = props.program + '-' + props.type;
+
+    const stateDisplayCols = state.debriefer.displayColumns;
+    const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
+    const currCols: any = ref([...(props.columns ? props.columns : [])]);
 
     const editingCol: any = ref('');
     const editingRow: any = ref('');
@@ -159,6 +162,24 @@ export default createComponent ({
       }
       return value;
     }
+
+    const displayColumns = computed({
+      get: () => {
+        console.log(stateDisplayCols)
+        console.log(tableType)
+        if (!stateDisplayCols[tableType]) {
+          currCols.value = [...(props.columns ? props.columns : [])];
+        } else {
+          currCols.value = stateDisplayCols[tableType];
+        }
+        return currCols.value;
+      },
+      set: (val) => {
+        currCols.value = val;
+        stateDisplayCols[tableType] = val;
+        store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+      },
+    });
 
     async function edit(data: any, col: any) {
       const nodeKey = data.node.key;
@@ -226,7 +247,7 @@ export default createComponent ({
     }
 
     return {
-      columns,
+      displayColumns,
       columnOptions,
       editingCol,
       editingRow,

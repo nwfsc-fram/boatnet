@@ -9,6 +9,7 @@
             :isFullSize="isFullSize"
             :initialSelection="initialSelection"
             :loading="loading"
+            :showSelectionBoxes="true"
             @selectValues="selectValues"
             @save="save"
         />
@@ -20,8 +21,6 @@
 import {
     createComponent,
     ref,
-    reactive,
-    computed,
     watch,
 } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';

@@ -7,6 +7,7 @@
       :simple="false"
       uniqueKey="_id"
       :enableSelection="true"
+      :showSelectionBoxes="true"
       :isFullSize="isFullSize"
       :loading="loading"
       :initialSelection="initialSelection"
@@ -419,6 +420,7 @@ export default createComponent({
     async function getTripsByObserver() {
       const observerId = state.debriefer.observer;
       trips.value = await getTripsByObserverId(observerId);
+      loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
@@ -432,6 +434,7 @@ export default createComponent({
           observerId
         );
       }
+      loading.value = false;
     }
 
     async function getTripsBySearchParams() {
