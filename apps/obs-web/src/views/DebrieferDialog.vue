@@ -14,15 +14,53 @@
           label="Type"
         />
         <div style="display: inline-block" class="q-pa-md">
-          <div class="p-float-label q-px-md">
-            <pCalendar v-model="startDate" id="startDate" @date-select="getTripsByDate" :minDate="formattedMinDate" :maxDate="formattedMaxDate"/><!--:minDate="formattedMinDate"-->
-            <label for="startDate" style="color: #027be3">Start Date</label>
+          <div class="w-full max-w-sm">
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8" @submit.prevent>
+              <label style="color: #027be3" for="startDate">
+                Start Date
+              </label>
+              <p class="color: red" v-if="startErrorMessage">
+                {{ startErrorMessage }}
+              </p>
+              <div class="flex w-full">
+                <v-date-picker v-model="startDate" class="flex-grow" @input="inputDate('start')">
+                  <template v-slot="{ inputValue, inputEvents }">
+                    <input
+                      id="startDate"
+                      class="bg-white text-gray-700 w-full py-2 px-3 appearance-none border rounded-l focus:outline-none"
+                      :value="inputValue"
+                      v-on="inputEvents"
+                    />
+                  </template>
+                </v-date-picker>
+              </div>
+              
+            </form>
           </div>
         </div>
+
         <div style="display: inline-block" class="q-pa-md">
-          <div class="p-float-label">
-            <pCalendar v-model="endDate" id="endDate" @date-select="getTripsByDate" :minDate="formattedMinDate" :maxDate="formattedMaxDate"/>
-            <label for="endDate" style="color: #027be3">End Date</label>
+          <div class="w-full max-w-sm">
+            <form class="bg-white shadow-md rounded px-8 pt-6 pb-8" @submit.prevent>
+              <label style="color: #027be3" for="endDate">
+                End Date
+              </label>
+              <p class="color: red" v-if="endErrorMessage">
+                {{ endErrorMessage }}
+              </p>
+              <div class="flex w-full">
+                <v-date-picker v-model="endDate" class="flex-grow" @input="inputDate('end')">
+                  <template v-slot="{ inputValue, inputEvents }">
+                    <input
+                      id="endDate"
+                      class="bg-white text-gray-700 w-full py-2 px-3 appearance-none border rounded-l focus:outline-none"
+                      :value="inputValue"
+                      v-on="inputEvents"
+                    />
+                  </template>
+                </v-date-picker>
+              </div>
+            </form>
           </div>
         </div>
 
@@ -45,28 +83,12 @@
 </template>
 
 <script lang="ts">
-import {
-  createComponent,
-  ref,
-  reactive,
-  computed,
-  onMounted,
-  watch
-} from '@vue/composition-api';
+import { createComponent, ref, watch } from '@vue/composition-api';
 import Vue, { WatchOptions } from 'vue';
-import TabView from 'primevue/tabview';
-import TabPanel from 'primevue/tabpanel';
 import { useAsync } from 'vue-async-function';
-import {
-  CouchDBInfo,
-  CouchDBCredentials,
-  couchService
-} from '@boatnet/bn-couch';
+import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import moment from 'moment';
-import { get } from 'lodash';
 import { getTripsByDates } from '../helpers/getFields';
 
 export default createComponent({
@@ -127,10 +149,12 @@ export default createComponent({
     watch(() => props.showDialog, init, watcherOptions);
 
     const startDate: any = ref(new Date());
-    const endDate = ref(new Date());
+    const endDate: any = ref(new Date());
     const formattedMinDate = ref(new Date());
     const formattedMaxDate = ref(new Date());
     const evalType = ref('');
+    const startErrorMessage = ref('');
+    const endErrorMessage = ref('');
 
     async function init() {
       const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
@@ -139,7 +163,7 @@ export default createComponent({
       if (evalPeriod.startDate) {
         startDate.value = evalPeriod.startDate ? new Date(evalPeriod.startDate) : new Date();
         endDate.value = evalPeriod.endDate ? new Date(evalPeriod.endDate) : new Date();
-        evalType.value = evalPeriod.value;
+        evalType.value = evalPeriod.type;
       } else {
         startDate.value = new Date();
         endDate.value = new Date();
@@ -227,6 +251,33 @@ export default createComponent({
       context.emit('update:showDialog', false);
     }
 
+    function isDateValid(currDate: any) {
+      const formattedCurrDate = moment(currDate).format('MM/DD/YYYY HH:mm:ss');
+      const isBefore = moment(formattedCurrDate).isBefore(props.minDate);
+      if (isBefore) {
+        return 'Must proceed prev eval period\n' + moment(props.minDate).format('MM/DD/YY');
+      } else {
+        return '';
+      }
+    }
+
+    function inputDate(type: string) {
+      if (type === 'start') {
+        startErrorMessage.value = isDateValid(startDate.value);
+        if (moment(startDate.value).isAfter(endDate.value)) {
+          startErrorMessage.value = 'Start date must preceded end date';
+        }
+      } else {
+        endErrorMessage.value = isDateValid(endDate.value);
+        if (moment(endDate.value).isBefore(startDate.value)) {
+          endErrorMessage.value = 'End Date must proceed start date';
+        }
+      }
+      if (startErrorMessage.value.length === 0 && endErrorMessage.value.length === 0) {
+        getTripsByDate();
+      }
+    }
+
     return {
       formattedMinDate,
       formattedMaxDate,
@@ -239,7 +290,10 @@ export default createComponent({
       save,
       defaultEvaluationPeriods,
       getTripsByDate,
-      closeDialog
+      closeDialog,
+      inputDate,
+      startErrorMessage,
+      endErrorMessage
     };
   }
 });

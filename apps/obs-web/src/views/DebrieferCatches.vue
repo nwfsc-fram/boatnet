@@ -2,11 +2,12 @@
   <div>
     <boatnet-tree-table
       :nodes.sync="WcgopCatches"
-      :settings="wcgopCatchTreeSettings"
+      :columns="wcgopColumns"
       :initExpandedKeys="expandedKeys"
       p-scrollable-body
       :isEditable="true"
       :program="program"
+      type="catch"
       @save="save"
       @selected="select"
       @expand="addNode"
@@ -38,9 +39,7 @@ export default createComponent({
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
 
-    const wcgopCatchTreeSettings = {
-      rowKey: 'name',
-      columns: [
+    const wcgopColumns = [
         {
           name: 'tripId',
           required: true,
@@ -151,9 +150,8 @@ export default createComponent({
           type: 'toggle-search',
           lookupView: 'discard-reason',
           lookupField: 'description'
-        },
-      ]
-    };
+        }
+    ];
 
     watch(() => state.debriefer.trips, getCatches);
     watch(() => state.debriefer.selectedOperations, getCatches);
@@ -406,7 +404,7 @@ export default createComponent({
       addNode,
       removeNode,
       WcgopCatches,
-      wcgopCatchTreeSettings,
+      wcgopColumns,
       expandedKeys,
       program,
       lookupsList,

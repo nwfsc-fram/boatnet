@@ -83,7 +83,7 @@
     >
       <div>
         Delete evaluation period:
-        <b>{{ }}</b>?
+        <b>{{ evaluationPeriod ? evaluationPeriod.label : '' }}</b>?
       </div>
     </boatnet-input-dialog>
   </div>
@@ -208,7 +208,8 @@ export default createComponent({
         id: evalPeriod._id,
         rev: evalPeriod._rev,
         label: evalPeriod.evalType + ' ' + startDate + '-' + endDate,
-        value: evalPeriod.evalType,
+        value: evalPeriod._id,
+        type: evalPeriod.evalType,
         tripIds: evalPeriod.tripIds,
         startDate: evalPeriod.startDate,
         endDate: evalPeriod.endDate,

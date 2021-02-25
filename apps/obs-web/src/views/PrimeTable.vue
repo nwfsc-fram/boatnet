@@ -57,7 +57,7 @@
           </div>
       </template>
 
-      <Column v-if="enableSelection" selectionMode="multiple" headerStyle="width: 3em"></Column>
+      <Column v-if="showSelectionBoxes" selectionMode="multiple" headerStyle="width: 3em"></Column>
 
       <Column
         v-for="col of displayColumns"
@@ -136,10 +136,9 @@
         <template #filter v-if="!simple">
           <MultiSelect
             v-if="col.type === 'toggle'"
-            :style="'width: ' + (col.width - 30) + 'px; background-color: transparent'"
+            :style="'width: 100%; background-color: transparent'"
             v-model="filters[col.field]"
-            @before-show="getLookupName(col.lookupKey, col.lookupField, col.listType)"
-            :options="col.list ? col.list : lookupsList"
+            :options="col.list ? col.list : filterOptions[col.header]"
             appendTo="body"
             :filter="true"
           />
@@ -167,7 +166,7 @@ import {
   watch,
   onUnmounted
 } from '@vue/composition-api';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Vue } from 'vue-property-decorator';
 import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
@@ -202,6 +201,7 @@ export default createComponent({
     simple: Boolean,
     uniqueKey: String,
     enableSelection: Boolean,
+    showSelectionBoxes: Boolean,
     isFullSize: Boolean,
     loading: Boolean,
     initialSelection: Array
@@ -240,8 +240,14 @@ export default createComponent({
     let updateStatePermissions = false;
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
+    let filterOptions: any = reactive({});
 
-    onMounted(() => {
+    onMounted(async () => {
+      for (const col of columnOptions.value) {
+        if (col.type === 'toggle' && (col.listType === 'fetch' || col.listType === 'boolean')) {
+          filterOptions[col.header] = await getLookupName(col);
+        }
+      }
       pageStart.value = 0;
       selected.value = props.initialSelection;
       updateStatePermissions = true;
@@ -344,19 +350,19 @@ export default createComponent({
         ]);
     }
 
-    async function getLookupName(lookupKey: string, fieldName: string, type: string) {
+    async function getLookupName(columnInfo: any) {
       let lookupVals: any[] = [];
       lookupsList.value = [];
-      if (type === 'boolean') {
+      if (columnInfo.listType === 'boolean') {
         lookupVals = [true, false];
       } else {
-        const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: lookupKey});
+        const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: columnInfo.lookupKey});
         for (const row of result.rows) {
-          lookupVals.push(get(row.doc, fieldName));
+          lookupVals.push(get(row.doc, columnInfo.lookupField));
         }
       }
       lookupVals = intersection(lookupVals);
-      lookupsList.value = lookupVals.sort();
+      return lookupVals.sort();
     }
 
     function formatValue(slotProps: any, type: string, displayField: string[]) {
@@ -588,7 +594,8 @@ export default createComponent({
       displayMode,
       toggleHaulCols,
       fixedGearMode,
-      trawlMode
+      trawlMode,
+      filterOptions
     };
   },
 });
