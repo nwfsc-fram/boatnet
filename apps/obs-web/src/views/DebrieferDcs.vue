@@ -192,11 +192,6 @@ export default createComponent({
       }
     };
 
-    const openNewDebriefingTab = () => {
-      const route = '/observer-web/debriefer/qa';
-      window.open(route, '_blank');
-    };
-
     const getDcsRows = async () => {
       let startDate = '';
       let endDate = '';
