@@ -165,8 +165,6 @@ export default createComponent ({
 
     const displayColumns = computed({
       get: () => {
-        console.log(stateDisplayCols)
-        console.log(tableType)
         if (!stateDisplayCols[tableType]) {
           currCols.value = [...(props.columns ? props.columns : [])];
         } else {

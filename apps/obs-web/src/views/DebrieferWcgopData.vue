@@ -94,7 +94,7 @@ export default createComponent({
       // load column configurations from couch into state
       const result: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
-    })
+    });
 
     function updateTab(tabName: string) {
       tab.value = tabName;

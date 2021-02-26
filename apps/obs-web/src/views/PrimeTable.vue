@@ -241,7 +241,7 @@ export default createComponent({
     let updateStatePermissions = false;
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
-    let filterOptions: any = reactive({});
+    const filterOptions: any = reactive({});
 
     onMounted(async () => {
       for (const col of columnOptions.value) {
@@ -262,7 +262,7 @@ export default createComponent({
           const index = findIndex(stateColConfig, ['field', col.field]);
           col.width = index >= 0 ? stateColConfig[index].width : col.width;
           return col;
-        })
+        });
       }
     });
 
@@ -340,30 +340,30 @@ export default createComponent({
       const displayedCols = cloneDeep(displayColumns.value);
 
       const colInfo = colOrder.map((value: any, index: number) => {
-        return { name: value, width: colWidths[index] }
+        return { name: value, width: colWidths[index] };
       }).filter((col: any) => {
         const validCol = filter(displayedCols, ['field', col.name]);
         return validCol.length > 0 ? validCol[0] : '';
       });
 
       // updating column widths and sorting based off values stored in localStorage
-      let cols = displayedCols.map((value: any) => {
-        const index: number = findIndex(colInfo, function(col: any) {
+      const cols = displayedCols.map((value: any) => {
+        const index: number = findIndex(colInfo, (col: any) => {
           return col.name === value.field;
-        })
+        });
         value.width = colInfo[index].width;
         return value;
-      }).sort(function(a: any, b: any){
-        const index1: number = findIndex(colInfo, function(col: any) {
+      }).sort((a: any, b: any) => {
+        const index1: number = findIndex(colInfo, (col: any) => {
           return col.name === a.field;
         });
-        const index2: number = findIndex(colInfo, function(col: any) {
+        const index2: number = findIndex(colInfo, (col: any) => {
           return col.name === b.field;
-        })
+        });
         return index1 - index2;
       });
 
-     stateDisplayCols[tableType] = cols;
+      stateDisplayCols[tableType] = cols;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
 
       // save columns to users column-config docs
@@ -371,13 +371,13 @@ export default createComponent({
       if (userColConfig.rows.length > 0) {
         userColConfig = userColConfig.rows[0].doc;
         userColConfig.columnConfig[tableType] = cols;
-       await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
+        await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
       } else {
         const newRecord: any = {
           columnConfig: {},
           type: 'column-config',
           personDocId: state.user.activeUserAlias.personDocId
-        }
+        };
         newRecord.columnConfig[tableType] = cols;
         await masterDB.post(newRecord);
       }
@@ -534,7 +534,7 @@ export default createComponent({
       }
     }
 
-    async function openNewDebriefingTab() {
+    function openNewDebriefingTab() {
       saveFilters();
 
       const type = props.type ? props.type.toLowerCase() : '';
