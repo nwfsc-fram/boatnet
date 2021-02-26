@@ -168,7 +168,7 @@
                 <q-select
                    class="col dcs-dialog"
                   v-model="dcsRow.level"
-                  :options="['Trip', 'Haul', 'Catch', 'SC', 'BS', 'Deck Form', 'BRD', 'HLFC', 'MMSBT', 'PST', 'SPID']"
+                  :options="Object.values(TripLevel)"
                   label="Level"
                   outlined
                   dense
@@ -179,7 +179,7 @@
                 <q-select
                   class="col dcs-dialog"
                   v-model="dcsRow.dcsErrorType"
-                  :options="['Calcs', 'Data Form', 'Transcription', 'Biosampling', 'Database', 'Raw Data','Sampling Procedure', 'Sample Size', 'OPTECS', 'Repeating']"
+                  :options="Object.values(DcsErrorType)"
                   label="Error Type"
                   outlined
                   dense
@@ -189,7 +189,7 @@
                   v-if="dcsRow.afiFlag"
                   class="col dcs-dialog"
                   v-model="dcsRow.afiFlag"
-                  :options="['Improvement', 'Requirement', 'Task']"
+                  :options="Object.values(AfiFlag)"
                   label="AFI Flag (optional)"
                   outlined
                   dense
@@ -236,6 +236,7 @@ import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInf
 import Textarea from 'primevue/textarea';
 import { fromDMS, toDMS } from 'dmsformat';
 import { authService } from '@boatnet/bn-auth/lib';
+import { DcsRow, TripLevel, CollectionMethod, DcsErrorType, AfiFlag } from '@boatnet/bn-models';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -707,7 +708,8 @@ export default createComponent({
       fixedGearMode,
       trawlMode,
       selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, submit, dcsRow, deleteRow,
-      filterOptions
+      filterOptions,
+      TripLevel, CollectionMethod, DcsErrorType, AfiFlag
     };
   },
 });

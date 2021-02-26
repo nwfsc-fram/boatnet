@@ -74,6 +74,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { NoSubstitutionTemplateLiteral } from 'typescript';
 import { authService } from '@boatnet/bn-auth/lib';
+import { DcsRow, TripLevel, CollectionMethod, DcsErrorType, AfiFlag } from '@boatnet/bn-models';
 
 export default createComponent({
   props: {
@@ -117,7 +118,7 @@ export default createComponent({
         isEditable: true,
         type: 'toggle',
         listType: 'template',
-        list: ['OPTECS', 'Deck Form', 'hybrid'],
+        list: Object.values(CollectionMethod),
       },
       {
         field: 'createdDate',
@@ -135,19 +136,7 @@ export default createComponent({
         isEditable: true,
         type: 'toggle',
         listType: 'template',
-        list: [
-          'Trip',
-          'Haul',
-          'Catch',
-          'SC',
-          'BS',
-          'Deck Form',
-          'BRD',
-          'HLFC',
-          'MMSBT',
-          'PST',
-          'SPID',
-        ],
+        list: Object.values(TripLevel),
       },
       {
         field: 'issue',
@@ -165,18 +154,7 @@ export default createComponent({
         isEditable: true,
         type: 'toggle',
         listType: 'template',
-        list: [
-          'Calcs',
-          'Data Form',
-          'Transcription',
-          'Biosampling',
-          'Database',
-          'Raw Data',
-          'Sampling Procedure',
-          'Sample Size',
-          'OPTECS',
-          'Repeating',
-        ],
+        list: Object.values(DcsErrorType),
       },
       {
         field: 'afiFlag',
@@ -186,7 +164,7 @@ export default createComponent({
         isEditable: true,
         type: 'toggle',
         listType: 'template',
-        list: ['Improvement', 'Requirement', 'Task'],
+        list: Object.values(AfiFlag),
       },
       {
         field: 'afiDate',
