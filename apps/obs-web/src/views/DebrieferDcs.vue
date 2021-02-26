@@ -291,7 +291,6 @@ export default createComponent({
       addDcsRow,
       dcsRows,
       dcsColumns,
-      openNewDebriefingTab,
       loading,
       save,
       observerName,
