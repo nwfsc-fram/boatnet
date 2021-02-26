@@ -162,6 +162,7 @@ import {
   ref,
   reactive,
   computed,
+  onBeforeMount,
   onMounted,
   watch,
   onUnmounted
@@ -253,10 +254,21 @@ export default createComponent({
       updateStatePermissions = true;
       const initFilters = state.debriefer.filters[tableType];
       filters.value = initFilters ? initFilters : {};
+
+      // making widths the same
+      const stateColConfig = stateDisplayCols[tableType];
+      if (stateColConfig) {
+        columnOptions.value.map((col: any ) => {
+          const index = findIndex(stateColConfig, ['field', col.field]);
+          col.width = index >= 0 ? stateColConfig[index].width : col.width;
+          return col;
+        })
+      }
     });
 
-    onUnmounted(() => {
+    onUnmounted(async () => {
       saveFilters();
+      await saveColumnConfiguration();
     });
 
     // clear selection when evaluation period selected
@@ -315,6 +327,60 @@ export default createComponent({
       const currFilters = state.debriefer.filters;
       currFilters[tableType] = storageObj.filters;
       store.dispatch('debriefer/updateFilters', currFilters);
+    }
+
+    async function saveColumnConfiguration() {
+      let localStorageInfo = localStorage.getItem(tableType);
+      localStorageInfo = localStorageInfo ? localStorageInfo : '';
+      const storageObj = JSON.parse(localStorageInfo);
+
+      // combine columnWith and columnOrders arrays from localStorage
+      const colOrder = storageObj.columnOrder;
+      const colWidths = storageObj.columnWidths.split(',');
+      const displayedCols = cloneDeep(displayColumns.value);
+
+      const colInfo = colOrder.map((value: any, index: number) => {
+        return { name: value, width: colWidths[index] }
+      }).filter((col: any) => {
+        const validCol = filter(displayedCols, ['field', col.name]);
+        return validCol.length > 0 ? validCol[0] : '';
+      });
+
+      // updating column widths and sorting based off values stored in localStorage
+      let cols = displayedCols.map((value: any) => {
+        const index: number = findIndex(colInfo, function(col: any) {
+          return col.name === value.field;
+        })
+        value.width = colInfo[index].width;
+        return value;
+      }).sort(function(a: any, b: any){
+        const index1: number = findIndex(colInfo, function(col: any) {
+          return col.name === a.field;
+        });
+        const index2: number = findIndex(colInfo, function(col: any) {
+          return col.name === b.field;
+        })
+        return index1 - index2;
+      });
+
+     stateDisplayCols[tableType] = cols;
+      store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+
+      // save columns to users column-config docs
+      let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      if (userColConfig.rows.length > 0) {
+        userColConfig = userColConfig.rows[0].doc;
+        userColConfig.columnConfig[tableType] = cols;
+       await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
+      } else {
+        const newRecord: any = {
+          columnConfig: {},
+          type: 'column-config',
+          personDocId: state.user.activeUserAlias.personDocId
+        }
+        newRecord.columnConfig[tableType] = cols;
+        await masterDB.post(newRecord);
+      }
     }
 
     async function populateLookupsList(col: any) {
@@ -468,7 +534,7 @@ export default createComponent({
       }
     }
 
-    function openNewDebriefingTab() {
+    async function openNewDebriefingTab() {
       saveFilters();
 
       const type = props.type ? props.type.toLowerCase() : '';
