@@ -31,8 +31,31 @@
       :isFullSize="true"
       :loading="loading"
       @save="save"
+      @deleteRow="deleteRow"
     >
     </prime-table>
+
+    <q-dialog v-model="deleteConfirmDialog">
+      <q-card>
+        <q-card-section v-if="rowToDelete">
+          <b>Are you sure you want to delete this dcs row?</b>
+          <br>
+          <q-card bordered>
+            <q-card-section style="font-weight: bold">
+              <div>Trip#:  {{ rowToDelete.tripNum }}</div>
+              <div>Haul #: {{ rowToDelete.haulNum }}</div>
+              <div>Issue: {{ rowToDelete.issue }}</div>
+              <div>AFI Flag? {{ rowToDelete.afiFlag ? 'YES' : 'NO' }}</div>
+            </q-card-section>
+          </q-card>
+          <div style="text-align: right">
+            <br>
+            <q-btn class="dcs-dialog" color="red" size="md"  @click="executeDelete">delete</q-btn>
+            <q-btn class="dcs-dialog" color="primary" size="md" @click="deleteConfirmDialog = false">Cancel</q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -63,6 +86,13 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
 
     const dcsColumns = [
+      {
+        field: 'actions',
+        header: '',
+        key: 'actions',
+        width: '60',
+        type: 'actions',
+      },
       {
         field: 'tripNum',
         header: 'Trip #',
@@ -269,6 +299,23 @@ export default createComponent({
       getDcsRows();
     };
 
+    const deleteConfirmDialog: any = ref(false);
+    const rowToDelete: any = ref(null);
+    const deleteRow = (row: any) => {
+      rowToDelete.value = row;
+      deleteConfirmDialog.value = true;
+    };
+    const executeDelete = async () => {
+      try {
+        await masterDB.delete(rowToDelete.value._id, rowToDelete.value._rev);
+        deleteConfirmDialog.value = false;
+      } catch (err) {
+        deleteConfirmDialog.value = false;
+        console.error(err);
+      }
+      getDcsRows();
+    };
+
     onMounted( () => {
       getYearOptions();
     });
@@ -297,8 +344,20 @@ export default createComponent({
       refresh,
       selectedYear,
       selectedMonth,
-      yearOptions
+      yearOptions,
+      deleteRow,
+      rowToDelete,
+      deleteConfirmDialog,
+      executeDelete
     };
   },
 });
 </script>
+
+<style scoped>
+
+  .dcs-dialog {
+    margin: 5px !important;
+  }
+
+</style>

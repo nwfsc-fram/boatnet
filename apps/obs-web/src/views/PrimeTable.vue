@@ -135,7 +135,7 @@
             label="..."
             @click="show(slotProps, col.popupColumns, col.uniqueKey, col.popupField)"
           />
-          <Button v-if="col.type === 'actions'" @click="addToDcs(slotProps.data)">dcs+</Button>
+          <Button v-if="col.type === 'actions'" class="p-button-rounded" icon="pi pi-trash" @click="deleteRow(slotProps.data)"></Button>
         </template>
         <template #filter v-if="!simple">
           <MultiSelect
@@ -205,6 +205,7 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
   </div>
 </template>
 
@@ -660,6 +661,10 @@ export default createComponent({
         cm.value.show(event.originalEvent);
     };
 
+    const deleteRow = (row: any) => {
+      context.emit('deleteRow', row);
+    };
+
     const submit = async () => {
         const result = await masterDB.post(dcsRow.value);
         if (result) {
@@ -701,7 +706,7 @@ export default createComponent({
       toggleHaulCols,
       fixedGearMode,
       trawlMode,
-      selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, submit, dcsRow,
+      selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, submit, dcsRow, deleteRow,
       filterOptions
     };
   },
