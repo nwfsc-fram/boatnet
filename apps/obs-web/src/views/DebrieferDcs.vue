@@ -12,14 +12,14 @@
       </div>
       <div class="col" style="text-align: right">
         <q-btn round icon="refresh" size="sm" color="primary" style="position: relative; top: 4px; margin-right: 10px" @click="refresh"></q-btn>
-        <q-btn
+        <!-- <q-btn
           size="md"
           color="primary"
           dense
           style="position: relative; top: 3px"
           @click="addDcsRow"
           >add dcs row</q-btn
-        >
+        > -->
       </div>
     </div>
     <prime-table

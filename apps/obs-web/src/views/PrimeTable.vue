@@ -627,32 +627,51 @@ export default createComponent({
     const selectedRow: any = ref(null);
     const cm: any = ref(null);
     const menuModel = [
-        {label: 'Add to DCS', icon: 'pi pi-fw pi-plus', command: () => addToDcs(false)},
-        {label: 'Add to DCS as AFI', icon: 'pi pi-exclamation-circle', command: () => addToDcs(true)}
+        {label: 'Add Row to DCS', icon: 'pi pi-fw pi-plus', command: () => addToDcs('blank')},
+        {label: 'Add context to DCS', icon: 'pi pi-fw pi-plus-circle', command: () => addToDcs(false)},
+        {label: 'Add context to DCS as AFI', icon: 'pi pi-exclamation-circle', command: () => addToDcs(true)}
     ];
 
     const dcsRow: any = ref({});
 
-    const buildRow = (isAfi: boolean) => {
+    const buildRow = (isAfi: boolean | string) => {
       const rowData: any = selectedRow.value;
-      return {
-        type: 'dcs-row',
-        observerId: state.debriefer.observer,
-        tripNum: rowData.tripId ? rowData.tripId : rowData.tripNum ? rowData.tripNum : rowData['legacy-tripId'] ? rowData['legacy-tripId'] :  'unknown',
-        haulNum: rowData.operationNum ? rowData.operationNum : rowData.haulNum ? rowData.haulNum : '',
-        collectionMethod: '',
-        createdDate: moment().format(),
-        createdBy: authService.getCurrentUser()!.username,
-        level: rowData.type === 'wcgop-trip' ? 'Trip' : rowData.type === 'wcgop-operation' ? 'Haul' : rowData.specimenType ? 'BS' : 'Other',
-        issue: rowData.description ? rowData.description : '',
-        dcsErrorType: rowData.severity ? rowData.severity : '',
-        afiFlag: isAfi ? 'Improvement' : '',
-        afiDate: isAfi ? moment().format() : '',
-        observerNotes: ''
-      } as any;
+      if (isAfi !== 'blank') {
+        return {
+          type: 'dcs-row',
+          observerId: state.debriefer.observer,
+          tripNum: rowData.tripId ? rowData.tripId : rowData.tripNum ? rowData.tripNum : rowData['legacy-tripId'] ? rowData['legacy-tripId'] :  '',
+          haulNum: rowData.operationNum ? rowData.operationNum : rowData.haulNum ? rowData.haulNum : '',
+          collectionMethod: '',
+          createdDate: moment().format(),
+          createdBy: authService.getCurrentUser()!.username,
+          level: rowData.type === 'wcgop-trip' ? 'Trip' : rowData.type === 'wcgop-operation' ? 'Haul' : rowData.specimenType ? 'BS' : 'Other',
+          issue: rowData.description ? rowData.description : '',
+          dcsErrorType: rowData.severity ? rowData.severity : '',
+          afiFlag: isAfi ? 'Improvement' : '',
+          afiDate: isAfi ? moment().format() : '',
+          observerNotes: ''
+        } as any;
+      } else {
+        return {
+          type: 'dcs-row',
+          observerId: state.debriefer.observer,
+          tripNum: '',
+          haulNum: '',
+          collectionMethod: '',
+          createdDate: moment().format(),
+          createdBy: authService.getCurrentUser()!.username,
+          level: '',
+          issue: '',
+          dcsErrorType: '',
+          afiFlag: '',
+          afiDate: '',
+          observerNotes: ''
+        }
+      }
     };
 
-    const addToDcs = (isAfi: boolean) => {
+    const addToDcs = (isAfi: boolean | string) => {
         dcsRow.value = buildRow(isAfi);
         dcsDetailsDialog.value = true;
     };
