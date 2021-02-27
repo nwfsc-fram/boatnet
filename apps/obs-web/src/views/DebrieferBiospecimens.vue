@@ -261,7 +261,7 @@ export default createComponent({
         }
       }
       WcgopBiospecimens.value = orderBy(bioSpecimens, ['operationNum']);
-      initialSelection.value = filter(WcgopBiospecimens.value, function(val: any) {
+      initialSelection.value = filter(WcgopBiospecimens.value, (val: any) => {
         if (debriefer.specimens.includes(val._id)) {
           return val;
         }

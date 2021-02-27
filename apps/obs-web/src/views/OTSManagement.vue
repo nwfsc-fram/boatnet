@@ -145,7 +145,7 @@ export default class OTSMangement extends Vue {
     private emEfpTrips: WcgopTrip[] = [];
     private emEfpRoster: EmEfp[] = [];
 
-    private otsTargets: OTSTarget[] = [];
+    private otsTargets: any[] = [];
 
     private pagination = {rowsPerPage: 0};
 
@@ -265,7 +265,7 @@ export default class OTSMangement extends Vue {
 
     }
 
-    private getActualObserved(otsTarget: OTSTarget) {
+    private getActualObserved(otsTarget: any) {
         if (otsTarget.targetType === 'Vessel') {
             return Math.floor(this.getCoveredPercent(otsTarget.targetVessel));
         }
@@ -389,7 +389,7 @@ export default class OTSMangement extends Vue {
     }
 
     private newOtsTarget() {
-        const newOtsTarget: OTSTarget = {
+        const newOtsTarget: any = {
             createdBy: authService.getCurrentUser()!.username,
             createdDate: moment().format(),
             type: OTSTargetTypeName,

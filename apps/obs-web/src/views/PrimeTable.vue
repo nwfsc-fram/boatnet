@@ -300,7 +300,7 @@ export default createComponent({
     let updateStatePermissions = false;
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
-    let filterOptions: any = reactive({});
+    const filterOptions: any = reactive({});
 
     onMounted(async () => {
       for (const col of columnOptions.value) {
@@ -667,7 +667,7 @@ export default createComponent({
           afiFlag: '',
           afiDate: '',
           observerNotes: ''
-        }
+        };
       }
     };
 
