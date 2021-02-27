@@ -39,9 +39,11 @@
       </TabPanel>
       <TabPanel header="Summary" :active="infoTab === 'summary'">Summary</TabPanel>
       <TabPanel header="Assessment" :active="infoTab === 'assessment'">Assessment</TabPanel>
+      <TabPanel header="DCS" :active="infoTab === 'dcs'">
+        <app-debriefer-dcs :showData="infoTab === 'dcs'" />
+      </TabPanel>
     </TabView>
 
-    
   </div>
 </template>
 

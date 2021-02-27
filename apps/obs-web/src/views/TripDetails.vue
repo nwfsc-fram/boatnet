@@ -342,7 +342,7 @@ export default class TripDetails extends Vue {
   private portOptions: string[] = [];
   private fisheryOptions: Fishery[] = [];
   private permits: Permit[] = [];
-  private otsTargets: OTSTarget[] = [];
+  private otsTargets: any[] = [];
   private ports: any[] = [];
   private userTrips!: any;
   private latestReturnDate = 0;

@@ -183,15 +183,15 @@ export default createComponent({
         const selected: any = [];
 
         function onCellEditInit(event: any) {
-        cellVal.value = event.data[event.field] ? event.data[event.field].toString() : '';
+            cellVal.value = event.data[event.field] ? event.data[event.field].toString() : '';
         }
 
         function onCellEdit(newValue: any, slotProps: any, type: string) {
-        const fields: string = slotProps.column.field;
-        const editingCellRow: any = slotProps.data;
+            const fields: string = slotProps.column.field;
+            const editingCellRow: any = slotProps.data;
 
-        set(editingCellRow, fields, newValue);
-        save(editingCellRow);
+            set(editingCellRow, fields, newValue);
+            save(editingCellRow);
         }
 
         const onRowSelect = (event: any) => {

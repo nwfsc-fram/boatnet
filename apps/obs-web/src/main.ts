@@ -28,6 +28,7 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
 import UserDetails from './views/UserDetails.vue';
+import DebrieferDcs from './views/DebrieferDcs.vue';
 import DebrieferErrors from './views/DebrieferErrors.vue';
 import DebrieferWcgopData from './views/DebrieferWcgopData.vue';
 import DebrieferAshopData from './views/DebrieferAshopData.vue';
@@ -78,6 +79,7 @@ Vue.use(VueCompositionApi);
 Vue.use(VCalendar);
 
 Vue.component('appUserDetails', UserDetails);
+Vue.component('appDebrieferDcs', DebrieferDcs);
 Vue.component('appDebrieferErrors', DebrieferErrors);
 Vue.component('appDebrieferDialog', DebrieferDialog);
 Vue.component('appDebrieferTrips', DebrieferTrips);

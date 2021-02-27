@@ -396,7 +396,7 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observers, getTripsByObserver);
+    watch(() => state.debriefer.observer, getTripsByObserver);
     watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
     watch(() => state.debriefer.tripIds, getTrips);
@@ -418,15 +418,13 @@ export default createComponent({
     }
 
     async function getTripsByObserver() {
-      loading.value = true;
-      const observerId = state.debriefer.observers;
+      const observerId = state.debriefer.observer;
       trips.value = await getTripsByObserverId(observerId);
       loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
-      loading.value = true;
-      const observerId = state.debriefer.observers;
+      const observerId = state.debriefer.observer;
       const evalPeriod = state.debriefer.evaluationPeriod;
 
       if (observerId && evalPeriod) {

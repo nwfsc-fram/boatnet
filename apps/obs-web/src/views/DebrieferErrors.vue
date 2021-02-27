@@ -1,15 +1,12 @@
 <template>
   <div>
-    <div style="text-align: right">
-      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
-    </div>
     <prime-table
       :value="errorRows"
       :columns="errorColumns"
       type="Errors"
       uniqueKey="uid"
       :enableSelection="true"
-      :isFullSize="isFullSize"
+      :isFullSize="true"
       :loading="loading"
       @save="save"
     >
@@ -23,7 +20,6 @@ import moment from 'moment';
 
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { NoSubstitutionTemplateLiteral } from 'typescript';
 
 export default createComponent({
   props: {
@@ -44,26 +40,21 @@ export default createComponent({
       // { field: 'catchNum', header: 'Catch #', key: 'errorCatchNum', width: '80' },
       { field: 'dateCreated', header: 'Date Created', key: 'dateErrorCreated', width: '80', type: 'date' },
       { field: 'observer', header: 'Observer', key: 'errorObserver', width: '80' },
-      { field: 'status', header: 'Status',
-        type: 'toggle',
-        listType: 'template',
-        list: errorStatuses,
-        key: 'errorStatus',
-        isEditable: true,
-        width: '80'
-      },
-      { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80', type: 'date' },
-      { field: 'note', header: 'Note', type: 'textArea', key: 'errorNote', isEditable: true, width: '80' }
+      // { field: 'status', header: 'Status',
+      //   type: 'toggle',
+      //   listType: 'template',
+      //   list: errorStatuses,
+      //   key: 'errorStatus',
+      //   isEditable: true,
+      //   width: '80'
+      // },
+      // { field: 'dateFixed', header: 'Date Fixed', key: 'dateErrorFixed', width: '80', type: 'date' },
+      // { field: 'note', header: 'Note', type: 'textArea', key: 'errorNote', isEditable: true, width: '80' }
     ];
 
     const loading: any = ref(false);
     const errorRows: any = ref([]);
     const errorDocs: any = ref([]);
-
-    const openNewDebriefingTab = () => {
-      const route = '/observer-web/debriefer/qa';
-      window.open(route, '_blank');
-    };
 
     const getErrors = async (tripId: number) => {
       try {
@@ -142,7 +133,7 @@ export default createComponent({
     watch(() => state.debriefer.trips, getTripErrors);
 
     return {
-      errorRows, errorColumns, openNewDebriefingTab, loading, save
+      errorRows, errorColumns, loading, save
     };
   }
 });
