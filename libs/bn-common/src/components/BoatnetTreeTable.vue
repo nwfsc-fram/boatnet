@@ -43,7 +43,6 @@
           </div>
         </template>
         <template #body="slotProps">
-          <div :style="'min-width:' +  col.width + 'px'">
             <div
               v-if="slotProps.node.key === editingRow &&
                            col.isEditable && col.name === editingCol &&
@@ -94,12 +93,11 @@
                   style="pointer-events: none"
                 >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
               </span>
-              <div
+              <span
                 v-else
                 v-on:click="edit(slotProps, col)"
-              >{{ displayData(slotProps, col.type, col.field) }}</div>
+              >{{ displayData(slotProps, col.type, col.field) }}</span>
             </span>
-          </div>
         </template>
       </pColumn>
     </pTreeTable>
