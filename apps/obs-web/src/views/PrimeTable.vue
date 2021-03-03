@@ -679,14 +679,6 @@ export default createComponent({
         width: '100',
         isEditable: true,
       });
-      cols.push({
-        field: 'hooksSampled',
-        header: 'Hooks Sampled',
-        type: 'number',
-        key: 'wcgopOpHooksSampled',
-        width: '100',
-        isEditable: true,
-      });
       return cols;
     }
 

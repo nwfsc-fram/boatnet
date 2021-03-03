@@ -61,6 +61,15 @@ export default createComponent({
           isEditable: false
         },
         {
+          name: 'catchNum',
+          required: true,
+          header: 'Catch #',
+          align: 'left',
+          field: 'catchNum',
+          width: '80',
+          isEditable: false
+        },
+        {
           name: 'disposition',
           required: true,
           header: 'D',
@@ -262,7 +271,8 @@ export default createComponent({
                   count: childCount,
                   disposition,
                   weightMethod: wm,
-                  operationNum
+                  operationNum,
+                  catchNum: c.catchNum
                 },
                 children: baskets
               });
@@ -285,14 +295,14 @@ export default createComponent({
               weight,
               count
             }
-          }
+          };
 
           if (children.length === 1) {
             const combined = merge(newCatchItem, children[0]);
             catches.push(combined);
           } else {
             newCatchItem.children = children;
-            catches.push(newCatchItem)
+            catches.push(newCatchItem);
           }
           catchIndex++;
         }
