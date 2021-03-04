@@ -252,6 +252,7 @@ export default createComponent({
                 listType: 'boolean',
                 key: 'wcgopOpIsBRDPresent',
                 width: '100',
+                isEditable: true
             },
             // HLFC
             {
@@ -260,6 +261,7 @@ export default createComponent({
                 type: 'input',
                 key: 'wcgopOptargetStrategy',
                 width: '100',
+                isEditable: true
             },
             {
                 field: 'isEfpUsed',

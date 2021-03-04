@@ -111,10 +111,17 @@
             appendTo="body"
           />
           <Textarea
+            v-else-if="col.type === 'coordinate'"
+            v-model="cellVal"
+            cols="100"
+            :rows="2"
+            @change="onCellEdit($event.target.value, slotProps, col.type)"
+          />
+          <Textarea
             v-else-if="col.type === 'textArea'"
             v-model="cellVal"
             cols="100"
-            rows="5"
+            :rows="5"
             @change="onCellEdit($event.target.value, slotProps, col.type)"
           />
           <InputText
@@ -127,7 +134,7 @@
         </template>
         <template #body="slotProps">
           <span
-            style="pointer-events: none"
+            style="pointer-events: none; white-space: pre-wrap;"
           >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
           <Button
             class="p-button-secondary"
@@ -215,7 +222,6 @@ import {
   ref,
   reactive,
   computed,
-  onBeforeMount,
   onMounted,
   watch,
   onUnmounted
@@ -508,7 +514,7 @@ export default createComponent({
       } else if (type === 'coordinate') {
         const lat = get(slotProps.data, displayField[0]);
         const long = get(slotProps.data, displayField[1]);
-        formattedValue = toDMS([lat, long], 'DD mm X');
+        formattedValue = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
       } else if (formattedValue && type === 'double' && formattedValue % 1 !== 0) {
         formattedValue = formattedValue.toFixed(2);
       }
@@ -526,7 +532,7 @@ export default createComponent({
       } else if (type === 'coordinate') {
         const lat = get(event.data, columnInfo.displayField[0]);
         const long = get(event.data, columnInfo.displayField[1]);
-        cellVal.value = toDMS([lat, long], 'DD mm X');
+        cellVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
       }
     }
 
