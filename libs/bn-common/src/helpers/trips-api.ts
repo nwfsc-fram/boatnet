@@ -223,3 +223,100 @@ export function emailCoordinators(trip: any, emailType: any) { // emailType - 'N
         );
     });
 }
+
+export function mongoRead(collection: string, query: any) {
+    return new Promise( (resolve, reject) => {
+        let queryString = '';
+        Object.keys(query).forEach( (key: string) => {
+            if (Object.keys(query).indexOf(key) === 0) {
+                queryString += '?'
+            }
+            if (key) {queryString += key + '=' + query[key]};
+            if (Object.keys(query).indexOf(key) > 0) {
+                queryString += "&";
+            }
+        })
+        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo/' + collection + queryString;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function mongoWrite(documents: object[]) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                },
+                body: documents
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function mongoUpdate(document: any) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        request.put(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                },
+                body: document
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function mongoDelete(document: any) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        request.delete(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                },
+                body: document
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
