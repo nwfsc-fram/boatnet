@@ -61,15 +61,10 @@
 <script lang="ts">
 import {
   createComponent,
-  reactive,
-  computed,
   ref,
-  watch
+  watch,
+  onMounted
 } from '@vue/composition-api';
-import moment from 'moment';
-import { AshopCruise } from '@boatnet/bn-models';
-import { newCruiseApiTrip } from '@boatnet/bn-common';
-import { pouchService } from '@boatnet/bn-pouch';
 import { get, set, findIndex, uniq, indexOf, filter } from 'lodash';
 import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
@@ -94,6 +89,12 @@ export default createComponent({
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
 
     updateTab(props.startingTab ? props.startingTab : '');
+
+    onMounted(async () => {
+      // load column configurations from couch into state
+      const result: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
+    });
 
     function updateTab(tabName: string) {
       tab.value = tabName;

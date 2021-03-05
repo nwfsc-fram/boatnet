@@ -15,7 +15,7 @@
     "@boatnet/bn-common": "file:..\\..\\libs\\bn-common",
     "@boatnet/bn-couch": "^0.1.6",
     "@boatnet/bn-expansions": "^0.2.8",
-    "@boatnet/bn-models": "^0.4.8",
+    "@boatnet/bn-models": "^0.4.9",
     "@boatnet/bn-pouch": "^0.2.14",
     "@boatnet/bn-util": "^0.1.1",
     "@quasar/extras": "^1.0.0",

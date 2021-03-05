@@ -396,10 +396,34 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observer, getTripsByObserver);
-    watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
-    watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
-    watch(() => state.debriefer.tripIds, getTrips);
+    watch(() => state.debriefer.observer, async () => {
+      await populateTrips('observer');
+    });
+    watch(() => state.debriefer.evaluationPeriod, async () => {
+      await populateTrips('evaluationPeriod');
+    });
+    watch(() => state.debriefer.tripSearchFilters, async () => {
+      await populateTrips('search');
+    });
+    watch(() => state.debriefer.tripIds, async () => {
+      await populateTrips('trips');
+    });
+
+    async function populateTrips(type: string) {
+      loading.value = true;
+      if (state.debriefer.trips.length > 0) {
+        trips.value = state.debriefer.trips;
+      } else if (type === 'observer') {
+        await getTripsByObserver();
+      } else if (type === 'evaluationPeriod') {
+        await loadTripsByEvaluationPeriod();
+      } else if (type === 'search') {
+        await getTripsBySearchParams();
+      } else if (type === 'trips') {
+        await getTrips();
+      }
+      loading.value = false;
+    }
 
     async function getTrips() {
       const tripsHolder = [];
@@ -420,7 +444,6 @@ export default createComponent({
     async function getTripsByObserver() {
       const observerId = state.debriefer.observer;
       trips.value = await getTripsByObserverId(observerId);
-      loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
@@ -434,11 +457,9 @@ export default createComponent({
           observerId
         );
       }
-      loading.value = false;
     }
 
     async function getTripsBySearchParams() {
-      loading.value = true;
       const filters = state.debriefer.tripSearchFilters;
       const views = Object.keys(filters);
 
@@ -490,7 +511,6 @@ export default createComponent({
         console.log(error);
         loading.value = false;
       }
-      loading.value = false;
     }
 
     function setColumns() {

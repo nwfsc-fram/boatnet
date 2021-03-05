@@ -21,6 +21,7 @@ import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
+import { merge } from 'lodash';
 
 export default createComponent({
   props: {
@@ -47,6 +48,7 @@ export default createComponent({
           align: 'left',
           field: 'tripId',
           width: '150',
+          expander: true,
           isEditable: false
         },
         {
@@ -55,6 +57,15 @@ export default createComponent({
           header: 'Haul #',
           align: 'left',
           field: 'operationNum',
+          width: '80',
+          isEditable: false
+        },
+        {
+          name: 'catchNum',
+          required: true,
+          header: 'Catch #',
+          align: 'left',
+          field: 'catchNum',
           width: '80',
           isEditable: false
         },
@@ -78,7 +89,6 @@ export default createComponent({
           width: '200',
           isEditable: true,
           type: 'toggle-search',
-          expander: true,
           lookupView: 'weight-method',
           lookupField: 'description'
         },
@@ -258,7 +268,11 @@ export default createComponent({
                   name: catchName,
                   catchContent: catchContents,
                   weight: childWeight,
-                  count: childCount
+                  count: childCount,
+                  disposition,
+                  weightMethod: wm,
+                  operationNum,
+                  catchNum: c.catchNum
                 },
                 children: baskets
               });
@@ -266,7 +280,7 @@ export default createComponent({
             }
           }
 
-          catches.push({
+          const newCatchItem: any = {
             key,
             style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
             data: {
@@ -280,9 +294,16 @@ export default createComponent({
               catchContent,
               weight,
               count
-            },
-            children
-          });
+            }
+          };
+
+          if (children.length === 1) {
+            const combined = merge(newCatchItem, children[0]);
+            catches.push(combined);
+          } else {
+            newCatchItem.children = children;
+            catches.push(newCatchItem);
+          }
           catchIndex++;
         }
       }
