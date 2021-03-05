@@ -215,7 +215,6 @@ import {
   ref,
   reactive,
   computed,
-  onBeforeMount,
   onMounted,
   watch,
   onUnmounted
