@@ -26,6 +26,7 @@ export interface DebrieferState {
   specimens: any[];
   filters: any;
   errors: any[];
+  newDcsRow: any;
 }
 
 export interface TripState {

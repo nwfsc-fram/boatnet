@@ -692,6 +692,7 @@ export default createComponent({
             message: 'issue added to dcs.'
           });
         }
+        store.dispatch('debriefer/setNewDcsRow', result);
         dcsDetailsDialog.value = false;
     };
 

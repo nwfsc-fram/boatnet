@@ -19,7 +19,8 @@ export const state: DebrieferState = {
   expandedCatch: {},
   specimens: [],
   filters: {},
-  errors: []
+  errors: [],
+  newDcsRow: ''
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -61,6 +62,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateFilters({ commit }: any, value: any) {
     commit('updateVal', {id: 'filters', val: value});
+  },
+  setNewDcsRow({ commit }: any, value: any) {
+    commit('updateVal', {id: 'newDcsRow', val: value});
   },
 };
 
