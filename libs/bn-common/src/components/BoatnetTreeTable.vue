@@ -39,7 +39,20 @@
       >
         <template #filter>
           <div>
-            <InputText type="text" v-model="filters[col.field]" class="p-column-filter" />
+            <MultiSelect
+              v-if="col.type === 'toggle-search'"
+              :style="'width: 100%; background-color: transparent'"
+              v-model="filters[col.field]"
+              :options="filterOptions[col.header]"
+              appendTo="body"
+              :filter="true"
+            />
+            <InputText
+              v-else
+              type="text"
+              v-model="filters[col.field]"
+              class="p-column-filter"
+            />
           </div>
         </template>
         <template #body="slotProps">
@@ -105,10 +118,10 @@
 
 
 <script lang="ts">
-import { createComponent, ref, computed } from '@vue/composition-api';
+import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
-import { cloneDeep, get } from 'lodash';
+import { cloneDeep, get, uniq } from 'lodash';
 
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
@@ -147,6 +160,17 @@ export default createComponent ({
     const lookupFieldName: any = ref('');
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
+    const filterOptions: any = reactive({});
+    var jp = require('jsonpath');
+
+    onMounted(() => {
+      for (const col of columnOptions.value) {
+        if (col.type === 'toggle-search') {
+          filterOptions[col.header] = jp.query(props.nodes, '$..' + col.field);
+          filterOptions[col.header] = uniq(filterOptions[col.header]);
+        }
+      }
+    });
 
     function deSelect() {
       editingRow.value = '';
@@ -249,6 +273,7 @@ export default createComponent ({
       editingRow,
       expandedKeys,
       filters,
+      filterOptions,
       lookupFieldName,
       lookupsList,
       sortedList,
