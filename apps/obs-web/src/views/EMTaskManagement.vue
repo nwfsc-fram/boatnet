@@ -64,6 +64,9 @@ import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
 export default createComponent({
     setup(props, context) {
+        const store = context.root.$store;
+        const state = store.state;
+
         const columns: any = [
             {name: 'tripNum', label: 'Trip #', field: 'tripNum', required: false, align: 'left', sortable: true},
             {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: false, align: 'left', sortable: true},
@@ -88,9 +91,9 @@ export default createComponent({
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
                 return attribute ? moment(attribute).format('MMM DD, YYYY HH:mm') : '';
-            } else if ( format === 'errors' ) {
+            } else if ( format === 'errors' && attribute) {
                 return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
-            } else if ( format === 'revision' ) {
+            } else if ( format === 'revision' && attribute ) {
                 return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
             } else {
                 return attribute ? attribute : '';
@@ -151,8 +154,8 @@ export default createComponent({
                     include_docs: false
                 };
                 let catchStatus: any = await masterDB.view(
-                    'trips_api_catch_status',
-                    'trips_api_catch_status',
+                    'TripsApi',
+                    'catch-status',
                     catchQueryOptions
                 );
                 catchStatus = catchStatus.rows;
@@ -209,10 +212,26 @@ export default createComponent({
                     }
                 }
 
-
-
                 for (const trip of trips) {
                     activeTasks.push(trip);
+                }
+
+                if (state.user.showOpenEmTrips) {
+                    let openResults: any = await masterDB.view(
+                        'obs_web',
+                        'open_ots_trips',
+                        {reduce: false, include_docs: true} as any
+                    )
+
+                    console.log(openResults.rows);
+
+                    for (let result of openResults.rows) {
+                        result = result.doc;
+                        result.actions = ['add logbook capture', 'close'];
+                        result.stage = 'open trip';
+                        result.status = 'trip has not been closed';
+                        activeTasks.unshift(result);
+                        };
                 }
                 transferring.value = false;
             } catch (err) {
@@ -221,8 +240,10 @@ export default createComponent({
         };
 
         onMounted( () => {
-            getTripsWithCaptures();
+            
         });
+
+        watch(() => state.user.showOpenEmTrips, getTripsWithCaptures);
 
         return {
             activeTasks, columns, selected, pagination, getVesselId, getAttribute, transferring, navigateTo

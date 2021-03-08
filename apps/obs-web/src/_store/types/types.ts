@@ -60,6 +60,7 @@ export interface UserState {
   closedTripsTable: boolean;
   showLogbookRetained: boolean;
   autoHideMenu: boolean;
+  showOpenEmTrips: boolean;
 }
 
 export interface VesselState {
