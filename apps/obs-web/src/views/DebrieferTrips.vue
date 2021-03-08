@@ -223,7 +223,7 @@ export default createComponent({
           'vessel-captains-0-lastName'
         ],
         header: 'Skipper',
-        type: 'toggle',
+        type: 'input',
         listType: 'fetch',
         lookupKey: 'fishery',
         lookupField: 'description',
@@ -231,7 +231,7 @@ export default createComponent({
         uniqueKey: '-id',
         popupField: 'vessel-captains',
         isEditable: false,
-        width: '120'
+        width: '160'
       },
       {
         field: 'departureDate',
