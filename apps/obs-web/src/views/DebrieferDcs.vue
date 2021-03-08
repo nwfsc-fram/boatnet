@@ -10,17 +10,6 @@
       <div class="col">
         <q-select v-model="selectedMonth" :options="['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']" outlined label="month" dense options-dense style="max-width: 300px"></q-select>
       </div>
-      <div class="col" style="text-align: right">
-        <q-btn round icon="refresh" size="sm" color="primary" style="position: relative; top: 4px; margin-right: 10px" @click="refresh"></q-btn>
-        <!-- <q-btn
-          size="md"
-          color="primary"
-          dense
-          style="position: relative; top: 3px"
-          @click="addDcsRow"
-          >add dcs row</q-btn
-        > -->
-      </div>
     </div>
     <prime-table
       :value="dcsRows"
@@ -32,6 +21,7 @@
       :loading="loading"
       @save="save"
       @deleteRow="deleteRow"
+      @refresh="refresh"
     >
     </prime-table>
 
@@ -298,6 +288,11 @@ export default createComponent({
       getYearOptions();
     });
 
+    watch(() => state.debriefer.newDcsRow, (newVal, oldVal) => {
+      if (oldVal && oldVal !== newVal) {
+        getDcsRows();
+      }
+    });
     watch(() => state.debriefer.observer, getDcsRows);
 
     watch(() => selectedYear.value, (newVal, oldVal) => {
