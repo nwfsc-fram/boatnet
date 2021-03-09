@@ -21,7 +21,7 @@ import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { merge } from 'lodash';
+import { merge, get } from 'lodash';
 
 export default createComponent({
   props: {
@@ -180,10 +180,12 @@ export default createComponent({
     }
 
     async function getCatches() {
-      const catches: any[] = [];
+      let catches: any[] = [];
       let color = '#344B5F';
-
-      for (const operation of state.debriefer.selectedOperations) {
+      if (state.debriefer.catches.length > 1) {
+       catches = state.debriefer.catches;
+      } else {
+        for (const operation of state.debriefer.selectedOperations) {
         const unflattenedOperation = unflatten(operation, { delimiter: '-' });
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
@@ -250,7 +252,12 @@ export default createComponent({
                       name: 'Basket ' + basketCount,
                       weight: basket.weight.value,
                       count: basket.count,
-                      avgWt: basket.weight.value / basket.count
+                      avgWt: basket.weight.value / basket.count,
+                      disposition,
+                      weightMethod: wm,
+                      operationNum,
+                      catchNum: c.catchNum,
+                      type: 'basket'
                     }
                   });
                   basketCount++;
@@ -272,7 +279,8 @@ export default createComponent({
                   disposition,
                   weightMethod: wm,
                   operationNum,
-                  catchNum: c.catchNum
+                  catchNum: c.catchNum,
+                  type: 'child'
                 },
                 children: baskets
               });
@@ -293,12 +301,15 @@ export default createComponent({
               name,
               catchContent,
               weight,
-              count
+              count,
+              type: 'topLevel'
             }
           };
-
+          // if there is only one basket do not show dropdown row
+          // instead, merge info with top level item
           if (children.length === 1) {
             const combined = merge(newCatchItem, children[0]);
+            combined.data.type = 'topLevel'
             catches.push(combined);
           } else {
             newCatchItem.children = children;
@@ -306,15 +317,24 @@ export default createComponent({
           }
           catchIndex++;
         }
+        }
       }
-      WcgopCatches.value = catches;
+        WcgopCatches.value = catches;
     }
     getCatches();
 
-    async function save(data: any) {
+    async function save(newRecord: any) {
       const masterDB: Client<any> = couchService.masterDB;
-      const ids = data.key.split('_');
-      const columnName = data.column;
+      const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'})
+
+      const columnInfo = newRecord.data.column;
+      const recordInfo = newRecord.data.node;
+      const recordData = recordInfo.data;
+
+      const ids = recordInfo.key.split('_');
+      const columnName = columnInfo.field;
+      const newValue = get(recordData, columnName);
+      const newId = get(newRecord.event.value, '_id');
 
       try {
         const operationRecord = await masterDB.get(ids[0]);
@@ -327,13 +347,13 @@ export default createComponent({
             columnName === 'disposition'
           ) {
             catches[ids[1]][columnName] = {
-              description: data.value.description,
-              _id: data.value._id
+              description: newValue,
+              _id: newId
             };
           } else if (columnName === 'name') {
-            catches[ids[1]].catchContent = data.value;
+            catches[ids[1]].catchContent = newRecord.event.value;
           } else if (columnName === 'weight') {
-            catches[ids[1]][columnName].value = data.value;
+            catches[ids[1]][columnName].value = newValue;
           }
         } else if (ids.length === 3) {
           if (
@@ -342,31 +362,31 @@ export default createComponent({
             columnName === 'disposition'
           ) {
             catches[ids[1]].children[ids[2]][columnName] = {
-              description: data.value.description,
-              _id: data.value._id
+              description: newValue,
+              _id: newId
             };
           } else if (columnName === 'name') {
-            catches[ids[1]].children[ids[2]].catchContent = data.value;
+            catches[ids[1]].children[ids[2]].catchContent = newRecord.event.value;
           } else if (columnName === 'weight') {
-            catches[ids[1]].children[ids[2]][columnName].value = data.value;
+            catches[ids[1]].children[ids[2]][columnName].value = newValue;
             const wm: number = getWeightMethodNum(
               catches[ids[1]].weightMethod.description
             );
             catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
-            catches[ids[1]].children[ids[2]].sampleCount = data.value;
+            catches[ids[1]].children[ids[2]].sampleCount = newValue;
           }
         } else if (ids.length === 4) {
           if (columnName === 'weight') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
-              data.value;
+              newValue;
             const wm: number = getWeightMethodNum(
               catches[ids[1]].weightMethod.description
             );
             catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
             catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
-              data.value;
+              newValue;
           }
         }
         operationRecord.catches = catches;
@@ -375,7 +395,6 @@ export default createComponent({
           operationRecord,
           operationRecord._rev
         );
-        await getCatches();
       } catch (err) {
         console.log(err);
       }

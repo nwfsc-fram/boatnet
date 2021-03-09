@@ -107,6 +107,12 @@
                 >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
               </span>
               <span
+                v-else-if="(slotProps.node.data.type === 'child' ||
+                            slotProps.node.data.type === 'basket' ) && 
+                            ['operationNum', 'catchNum', 'disposition', 'weightMethod'].includes(slotProps.column.field)"
+                style="color: white"
+              >{{ displayData(slotProps, col.type, col.field) }}</span>
+              <span
                 v-else
                 v-on:click="edit(slotProps, col)"
               >{{ displayData(slotProps, col.type, col.field) }}</span>
@@ -168,6 +174,7 @@ export default createComponent ({
         if (col.type === 'toggle-search') {
           filterOptions[col.header] = jp.query(props.nodes, '$..' + col.field);
           filterOptions[col.header] = uniq(filterOptions[col.header]);
+          filterOptions[col.header] = filterOptions[col.header].sort();
         }
       }
     });
@@ -219,7 +226,7 @@ export default createComponent ({
     function filterFn(val: any, update: any, abort: any) {
       update(() => {
         const needle = val.toLowerCase();
-        lookupsList.value = sortedList.filter((v: any) => v.label.toLowerCase().indexOf(needle) > -1);
+        lookupsList.value = sortedList.value.filter((v: any) => v.label.toLowerCase().indexOf(needle) > -1);
       });
     }
 
@@ -244,13 +251,27 @@ export default createComponent ({
 
     function onCellEdit(event: any, slotProps: any, col: any) {
       let value: any;
+      const currField = slotProps.column.field;
       if (col.type === 'toggle' || col.type === 'toggle-search') {
-        slotProps.node.data[slotProps.column.field] = event.label;
+        slotProps.node.data[currField] = event.label;
         value = event.value;
       } else {
-        slotProps.node.data[slotProps.column.field] = event;
+        slotProps.node.data[currField] = event;
         value = event;
       }
+      // when top level element is edited, edit children as well
+      if (['weightMethod', 'disposition'].includes(currField) && slotProps.node.children.length > 0) {
+        for (let i = 0; i < slotProps.node.children.length; i++) {
+          slotProps.node.children[i].data[currField] = event.label;
+        }
+      }
+      // if a new menu item is selected add it to the filters
+      if (filterOptions[col.header].length > 0 && !filterOptions[col.header].includes(event.label)) {
+        filterOptions[col.header].push(event.label);
+        filterOptions[col.header] = filterOptions[col.header].sort();
+      }
+      context.emit('save', { data: slotProps, event: event})
+      store.dispatch('debriefer/updateCatches', props.nodes);
     }
 
     function select(data: any, field: any) {
