@@ -17,6 +17,7 @@ export const state: DebrieferState = {
   selectedOperations: [],
   operations: [],
   expandedCatch: {},
+  catches: [],
   specimens: [],
   filters: {},
   errors: [],
@@ -50,6 +51,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateExpandedCatch({ commit }: any, value: any) {
     commit('updateVal', {id: 'expandedCatch', val: value});
+  },
+  updateCatches({ commit }: any, value: any) {
+    commit('updateVal', {id: 'catches', val: value});
   },
   updateSelectedOperations({ commit }: any, value: any) {
     commit('updateVal', {id: 'selectedOperations', val: value});
