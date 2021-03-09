@@ -23,9 +23,10 @@ import {
   QUploader, QFab, QFabAction
 } from 'quasar';
 
-import 'primevue/resources/themes/nova-light/theme.css';
+import 'primevue/resources/themes/nova/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
+import PrimeVue from 'primevue/config';
 
 import UserDetails from './views/UserDetails.vue';
 import DebrieferDcs from './views/DebrieferDcs.vue';
@@ -75,6 +76,7 @@ Vue.use(Quasar, {
   }
 });
 
+Vue.use(PrimeVue);
 Vue.use(VueCompositionApi);
 Vue.use(VCalendar);
 

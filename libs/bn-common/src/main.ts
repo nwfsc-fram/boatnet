@@ -31,7 +31,7 @@ import DefaultLayout from './layouts/Default.vue';
 
 import BoatnetDatetimePrime from './components/BoatnetDatetimePrime.vue';
 
-import 'primevue/resources/themes/nova-light/theme.css';
+import 'primevue/resources/themes/nova/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
