@@ -18,6 +18,9 @@ const actions: ActionTree<UserState, RootState> = {
   },
   setAutoHideMenu({ commit }: any, choice: boolean) {
     commit('setAutoHideMenu', choice);
+  },
+  setShowOpenEmTrips({ commit}: any, choice: boolean) {
+    commit('setShowOpenEmTrips', choice);
   }
 };
 
@@ -30,6 +33,9 @@ const mutations: MutationTree<UserState> = {
   },
   setAutoHideMenu(newState: any, choice: boolean) {
     newState.autoHideMenu = choice;
+  },
+  setShowOpenEmTrips(newState: any, choice: boolean) {
+    newState.showOpenEmTrips = choice;
   }
 };
 
@@ -42,6 +48,9 @@ const getters: GetterTree<UserState, RootState> = {
   },
   autoHideMenu(getstate: UserState) {
     return getstate.autoHideMenu;
+  },
+  showOpenEmTrips(getstate: UserState) {
+    return getstate.showOpenEmTrips;
   }
 };
 
@@ -54,7 +63,8 @@ export const state: UserState = {
   captainMode: false,
   closedTripsTable: false,
   showLogbookRetained: true,
-  autoHideMenu: true
+  autoHideMenu: true,
+  showOpenEmTrips: false
 };
 
 export const user: Module<UserState, RootState> = {

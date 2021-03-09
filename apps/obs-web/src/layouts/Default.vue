@@ -39,8 +39,11 @@
           icon="shopping_cart"
           class="justify-end"
         />
-
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em" />
+        <span v-if="this.$router.currentRoute.name === 'EM Task Management'">
+          <q-btn v-if="!showOpenEmTrips" color="primary" @click="toggleShowOpenTrips">Show Open Em Trips</q-btn>
+          <q-btn v-else style="background: white; color: #007EC6" @click="toggleShowOpenTrips">Hide Open Em Trips</q-btn>
+        </span>
       </q-toolbar>
     </q-header>
 
@@ -535,9 +538,11 @@ export default class DefaultLayout extends Vue {
   @Action('clear', { namespace: 'alert' }) private clear: any;
 
   @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
+  @Action('setShowOpenEmTrips', {namespace: 'user'}) private setShowOpenEmTrips: any;
 
   @Getter('getOnlineStatus', { namespace: 'general' }) private onlineStatus: any;
   @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
+  @Getter('showOpenEmTrips', {namespace: 'user'}) private showOpenEmTrips: any;
 
   private leftDrawerOpen: boolean = false;
   private userRoles: string[] = [];
@@ -563,6 +568,10 @@ export default class DefaultLayout extends Vue {
         this.errorAlert(err);
       });
     }
+  }
+
+  private toggleShowOpenTrips() {
+    this.setShowOpenEmTrips(!this.showOpenEmTrips);
   }
 
   private get getPercent() {
