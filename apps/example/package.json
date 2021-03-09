@@ -12,6 +12,8 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "crypto-js": "^3.1.9-1",
+    "primeicons": "^4.1.0",
+    "primevue": "2.4.0",
     "quasar": "1.8.5",
     "register-service-worker": "^1.5.2",
     "vue": "^2.6.6",

@@ -88,18 +88,14 @@ export default createComponent({
     const evaluatorOptions = ref(['equals', 'greater than', 'less than']);
 
     const getSearchTypes = async () => {
-      const tripResults = await masterDB.view(
-        'obs_web',
-        'wcgop_trips_compound_fields',
-        {reduce: true, include_docs: false, group_level: 1} as any
-      );
-      searchTypes.value.push.apply(searchTypes.value, tripResults.rows.map( (row: any) => row.key[0]));
-      const operationResults = await masterDB.view(
-        'obs_web',
-        'wcgop_operations_compound_fields',
-        {reduce: true, include_docs: false, group_level: 1} as any
-      );
-      searchTypes.value.push.apply(searchTypes.value, operationResults.rows.map( (row: any) => row.key[0]));
+      const types: any = [
+          'tripId', 'trip-status', 'observer', 'vesselName', 'vesselId', 'program', 'fishery', 'firstReceiver',
+          'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
+          'logbookNum', 'observerLogbookNum', 'departurePort', 'returnPort', 'fishTicket', 'state',
+          'gearType', 'gearPerformance', 'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize'
+      ];
+
+      searchTypes.value.push.apply(searchTypes.value, types);
     };
 
     const getSearchOptions = async () => {

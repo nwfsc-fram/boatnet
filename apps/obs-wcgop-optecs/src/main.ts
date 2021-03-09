@@ -74,7 +74,7 @@ import {
   QSlider
 } from 'quasar';
 
-import 'primevue/resources/themes/nova-light/theme.css';
+import 'primevue/resources/themes/nova/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
