@@ -15,17 +15,21 @@ export const state: VesselState = {
   filterText: ''
 };
 
-// const actions: ActionTree<VesselState, RootState> = {
+const actions: ActionTree<VesselState, RootState> = {
+  setActiveVessel({ commit}: any, choice: any) {
+    commit('setActiveVessel', choice);
+  }
+};
 
-// }
-
-// const mutations: MutationTree<VesselState> = {
-//   setActiveVessel(newState: any, newVessel: Vessel) {
-//     newState.vessel = newVessel;
-//   }
-// }
+const mutations: MutationTree<VesselState> = {
+  setActiveVessel(newState: any, val: any) {
+    newState.activeVessel = val;
+  }
+};
 
 export const vessel: Module<VesselState, RootState> = {
     namespaced: true,
     state,
+    actions,
+    mutations
   };

@@ -129,6 +129,15 @@ export default createComponent({
                     break;
                 case 'results':
                     router.push({path: '/em-results/' + row.tripNum});
+                    break;
+                case 'add logbook capture':
+                    store.dispatch('vessel/setActiveVessel', row.vessel);
+                    router.push({path: '/trips', query: {tripId: row._id, action: 'close'}});
+                    break;
+                case 'cancel trip':
+                    store.dispatch('vessel/setActiveVessel', row.vessel);
+                    router.push({path: '/trips', query: {tripId: row._id, action: 'cancel'}});
+                    break;
             }
         };
 
@@ -217,31 +226,26 @@ export default createComponent({
                 }
 
                 if (state.user.showOpenEmTrips) {
-                    let openResults: any = await masterDB.view(
+                    const openResults: any = await masterDB.view(
                         'obs_web',
                         'open_ots_trips',
                         {reduce: false, include_docs: true} as any
-                    )
-
-                    console.log(openResults.rows);
+                    );
 
                     for (let result of openResults.rows) {
                         result = result.doc;
-                        result.actions = ['add logbook capture', 'close'];
+                        result.actions = ['add logbook capture', 'cancel trip'];
                         result.stage = 'open trip';
                         result.status = 'trip has not been closed';
+                        result.statusDate = result.updatedDate ? result.updatedDate : result.createdDate;
                         activeTasks.unshift(result);
-                        };
+                        }
                 }
                 transferring.value = false;
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         };
-
-        onMounted( () => {
-            
-        });
 
         watch(() => state.user.showOpenEmTrips, getTripsWithCaptures);
 

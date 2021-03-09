@@ -268,7 +268,7 @@
     <q-dialog v-model="cancelAlert">
       <q-card>
         <q-card-section>
-          <p>Are you sure?  A trip can not be un-cancelled. (You may need to create it again)
+          <p>Are you sure you want to cancel {{ activeTrip && activeTrip.tripNum ? ' trip # ' +  activeTrip.tripNum  : ' trip'}}?  <br>A trip can not be un-cancelled. (You may need to create it again)
           <br><br>Note: Cancelled trip selection will be applied to the next trip in the same fishery.</p>
           <div style="float: right">
             <q-btn color="red" size="md" @click="cancelActiveTrip">yes, cancel trip</q-btn>
@@ -1170,11 +1170,24 @@ private async getAuthorizedVessels() {
       return '(' + telNum.substring(0, 3) + ') ' + telNum.substring(3, 6) + '-' + telNum.substring(6, 10);
   }
 
+  private queryActions() {
+    const query = this.$router.currentRoute.query;
+    if (query.tripId) {
+      const trip = this.userTrips.find( (row: any) => row._id === query.tripId);
+      if (query.action === 'close') {
+        this.closeConfirm(trip);
+      } else if (query.action === 'cancel') {
+        this.cancelTrip(trip);
+      }
+    }
+    console.log(query);
+  }
+
   private async created() {
     // this.setActiveVessel();
     this.getVesselNames();
     this.getAuthorizedVessels();
-    this.getVesselTrips();
+    this.getVesselTrips().then( this.queryActions );
     if ( authService.getCurrentUser() ) {
       this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
     }
