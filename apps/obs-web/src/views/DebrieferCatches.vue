@@ -163,7 +163,7 @@ export default createComponent({
         }
     ];
 
-    watch(() => state.debriefer.trips, getCatches);
+    watch(() => state.debriefer.selectedTrips, getCatches);
     watch(() => state.debriefer.selectedOperations, getCatches);
 
     function select(item: string[]) {

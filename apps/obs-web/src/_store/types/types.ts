@@ -18,6 +18,7 @@ export interface DebrieferState {
   evaluationPeriod: any;
   tripIds: string[];
   displayColumns: any;
+  selectedTrips: any[];
   trips: any[];
   selectedOperations: any[];
   operations: any[];

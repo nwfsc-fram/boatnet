@@ -50,7 +50,7 @@ export default createComponent({
     const columns: any = ref([]);
     const trips: any = ref([]);
     const loading: any = ref(false);
-    const initialSelection: any = state.debriefer && state.debriefer.trips ? state.debriefer.trips : [];
+    const initialSelection: any = state.debriefer && state.debriefer.selectedTrips ? state.debriefer.selectedTrips : [];
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -423,6 +423,7 @@ export default createComponent({
         await getTrips();
       }
       loading.value = false;
+      store.dispatch('debriefer/updateTrips', trips.value);
     }
 
     async function getTrips() {
@@ -533,14 +534,16 @@ export default createComponent({
     }
 
     function selectValues(data: any) {
-      store.dispatch('debriefer/updateTrips', data);
+      console.log('selected')
+      console.log(data)
+      store.dispatch('debriefer/updateSelectedTrips', data);
       getOperations();
     }
 
     async function getOperations() {
       let ops: any[] = [];
       let operationIds: any[] = [];
-      for (const trip of state.debriefer.trips) {
+      for (const trip of state.debriefer.selectedTrips) {
         const unflattenedTrip = unflatten(trip, { delimiter: '-' });
         operationIds = operationIds.concat(unflattenedTrip.operationIDs);
       }
