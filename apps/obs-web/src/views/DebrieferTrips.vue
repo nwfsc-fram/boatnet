@@ -396,35 +396,10 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observer, async () => {
-      await populateTrips('observer');
-    });
-    watch(() => state.debriefer.evaluationPeriod, async () => {
-      await populateTrips('evaluationPeriod');
-    });
-    watch(() => state.debriefer.tripSearchFilters, async () => {
-      await populateTrips('search');
-    });
-    watch(() => state.debriefer.tripIds, async () => {
-      await populateTrips('trips');
-    });
-
-    async function populateTrips(type: string) {
-      loading.value = true;
-      if (state.debriefer.trips.length > 0) {
-        trips.value = state.debriefer.trips;
-      } else if (type === 'observer') {
-        await getTripsByObserver();
-      } else if (type === 'evaluationPeriod') {
-        await loadTripsByEvaluationPeriod();
-      } else if (type === 'search') {
-        await getTripsBySearchParams();
-      } else if (type === 'trips') {
-        await getTrips();
-      }
-      loading.value = false;
-      store.dispatch('debriefer/updateTrips', trips.value);
-    }
+    watch(() => state.debriefer.observer, getTripsByObserver);
+    watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
+    watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
+    watch(() => state.debriefer.tripIds, getTrips);
 
     async function getTrips() {
       const tripsHolder = [];

@@ -283,7 +283,6 @@ export default createComponent({
             },
         ];
 
-        getOperations();
 
         function selectValues(data: any) {
             store.dispatch('debriefer/updateSelectedOperations', data);
@@ -296,7 +295,6 @@ export default createComponent({
             updatedvalue[index] = data;
             updatedvalue[index]._rev = result.rev;
             operations.value = updatedvalue;
-            store.dispatch('debriefer/updateOperations', operations.value);
         }
         async function getOperations() {
             loading.value = true;

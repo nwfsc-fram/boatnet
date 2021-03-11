@@ -133,9 +133,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span
-            style="pointer-events: none; white-space: pre-wrap;"
-          >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
+          <div
+            style="pointer-events: none; white-space: pre-wrap; height: 50px"
+          >{{ formatValue(slotProps, col.type, col.displayField) }}</div>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"

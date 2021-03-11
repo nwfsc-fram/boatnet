@@ -35,7 +35,7 @@
 
         <q-separator />
 
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab" animated :keep-alive="true">
           <q-tab-panel name="trips">
             <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
           </q-tab-panel>

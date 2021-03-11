@@ -180,12 +180,9 @@ export default createComponent({
     }
 
     async function getCatches() {
-      let catches: any[] = [];
+      const catches: any[] = [];
       let color = '#344B5F';
-      if (state.debriefer.catches.length > 1) {
-       catches = state.debriefer.catches;
-      } else {
-        for (const operation of state.debriefer.selectedOperations) {
+      for (const operation of state.debriefer.selectedOperations) {
         const unflattenedOperation = unflatten(operation, { delimiter: '-' });
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
@@ -318,7 +315,6 @@ export default createComponent({
           catchIndex++;
         }
         }
-      }
       WcgopCatches.value = catches;
     }
     getCatches();
