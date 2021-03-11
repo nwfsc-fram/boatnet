@@ -149,7 +149,7 @@
             v-if="col.type === 'toggle'"
             :style="'width: 100%; background-color: transparent'"
             v-model="filters[col.field]"
-            :options="col.list ? col.list : filterOptions[col.header]"
+            :options="filterOptions[col.header]"
             appendTo="body"
             :filter="true"
           />
@@ -227,7 +227,8 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
+import { cloneDeep, findIndex, filter, get,
+         intersection, remove, set, startsWith } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -308,13 +309,10 @@ export default createComponent({
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const filterOptions: any = reactive({});
+    const jp = require('jsonpath');
 
     onMounted(async () => {
-      for (const col of columnOptions.value) {
-        if (col.type === 'toggle' && (col.listType === 'fetch' || col.listType === 'boolean')) {
-          filterOptions[col.header] = await getLookupName(col);
-        }
-      }
+      populateColumnLookups();
       pageStart.value = 0;
       selected.value = props.initialSelection;
       updateStatePermissions = true;
@@ -350,6 +348,7 @@ export default createComponent({
     });
 
     const formattedData = computed(() => {
+      populateColumnLookups();
       const flattenedData: any[] = [];
       if (props.value) {
         for (const rowVal of props.value) {
@@ -482,19 +481,22 @@ export default createComponent({
         ]);
     }
 
-    async function getLookupName(columnInfo: any) {
-      let lookupVals: any[] = [];
-      lookupsList.value = [];
-      if (columnInfo.listType === 'boolean') {
-        lookupVals = [true, false];
-      } else {
-        const result = await masterDB.viewWithDocs('obs_web', 'all_doc_types', { key: columnInfo.lookupKey});
-        for (const row of result.rows) {
-          lookupVals.push(get(row.doc, columnInfo.lookupField));
+    function populateColumnLookups() {
+      const columns: any = props.columns ? props.columns : [];
+      for (const col of columns) {
+        if (col.type === 'toggle') {
+          if (col.listType === 'boolean') {
+            filterOptions[col.header] = [true, false];
+          } else if (col.listType === 'template') {
+            filterOptions[col.header] = col.list;
+          } else {
+            const columnName = col.field.replace(/-/g, '.');
+            filterOptions[col.header] = jp.query(props.value, '$..' + columnName);
+          }
+          filterOptions[col.header] = intersection(filterOptions[col.header]);
+          filterOptions[col.header] = filterOptions[col.header].sort();
         }
       }
-      lookupVals = intersection(lookupVals);
-      return lookupVals.sort();
     }
 
     function formatValue(slotProps: any, type: string, displayField: string[]) {
@@ -783,7 +785,6 @@ export default createComponent({
       popupUniqueKey,
       rowClass,
       openNewDebriefingTab,
-      getLookupName,
       formattedData,
       filterFn,
       populateLookupsList,

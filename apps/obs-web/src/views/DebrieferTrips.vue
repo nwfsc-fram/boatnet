@@ -534,8 +534,6 @@ export default createComponent({
     }
 
     function selectValues(data: any) {
-      console.log('selected')
-      console.log(data)
       store.dispatch('debriefer/updateSelectedTrips', data);
       getOperations();
     }

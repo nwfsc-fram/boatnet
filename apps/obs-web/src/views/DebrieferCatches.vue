@@ -309,7 +309,7 @@ export default createComponent({
           // instead, merge info with top level item
           if (children.length === 1) {
             const combined = merge(newCatchItem, children[0]);
-            combined.data.type = 'topLevel'
+            combined.data.type = 'topLevel';
             catches.push(combined);
           } else {
             newCatchItem.children = children;
@@ -319,13 +319,12 @@ export default createComponent({
         }
         }
       }
-        WcgopCatches.value = catches;
+      WcgopCatches.value = catches;
     }
     getCatches();
 
     async function save(newRecord: any) {
       const masterDB: Client<any> = couchService.masterDB;
-      const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'})
 
       const columnInfo = newRecord.data.column;
       const recordInfo = newRecord.data.node;

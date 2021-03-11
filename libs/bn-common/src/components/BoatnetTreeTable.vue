@@ -167,7 +167,7 @@ export default createComponent ({
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
     const filterOptions: any = reactive({});
-    var jp = require('jsonpath');
+    const jp = require('jsonpath');
 
     onMounted(() => {
       for (const col of columnOptions.value) {
@@ -270,7 +270,7 @@ export default createComponent ({
         filterOptions[col.header].push(event.label);
         filterOptions[col.header] = filterOptions[col.header].sort();
       }
-      context.emit('save', { data: slotProps, event: event})
+      context.emit('save', { data: slotProps, event});
       store.dispatch('debriefer/updateCatches', props.nodes);
     }
 
