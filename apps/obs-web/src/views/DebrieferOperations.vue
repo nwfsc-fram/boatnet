@@ -283,8 +283,6 @@ export default createComponent({
             },
         ];
 
-        getOperations();
-
         function selectValues(data: any) {
             store.dispatch('debriefer/updateSelectedOperations', data);
         }

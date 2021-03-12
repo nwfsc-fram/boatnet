@@ -190,7 +190,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith } from 'lodash';
+import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith, uniq } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -244,7 +244,6 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
-    const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
     let sortedList: any[] = [];
@@ -273,29 +272,14 @@ export default createComponent({
     let updateStatePermissions = false;
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
-    const filterOptions: any = reactive({});
+    const jp = require('jsonpath');
 
     onMounted(async () => {
-      for (const col of columnOptions.value) {
-        if (col.type === 'toggle' && (col.listType === 'fetch' || col.listType === 'boolean')) {
-          filterOptions[col.header] = await getLookupName(col);
-        }
-      }
       pageStart.value = 0;
       selected.value = props.initialSelection;
       updateStatePermissions = true;
       const initFilters = state.debriefer.filters[tableType];
       filters.value = initFilters ? initFilters : {};
-
-      // making widths the same
-      const stateColConfig = stateDisplayCols[tableType];
-      if (stateColConfig) {
-        columnOptions.value.map((col: any ) => {
-          const index = findIndex(stateColConfig, ['field', col.field]);
-          col.width = index >= 0 ? stateColConfig[index].width : col.width;
-          return col;
-        });
-      }
     });
 
     onUnmounted(async () => {
@@ -309,10 +293,28 @@ export default createComponent({
       selected.value = [];
     });
 
+    watch(() => state.debriefer.observer, () => {
+      filters.value = {};
+      selected.value = [];
+    });
+
     watch(selected, (updatedSelection, prevSelection) => {
       if (updateStatePermissions) {
         context.emit('selectValues', updatedSelection);
       }
+    });
+
+    const columnOptions = computed(() => {
+      const selectedCols: any[] = props.columns ? props.columns : []
+      const stateColConfig = stateDisplayCols[tableType];
+      if (stateColConfig) {
+        selectedCols.map((col: any ) => {
+          const index = findIndex(stateColConfig, ['field', col.field]);
+          col.width = index >= 0 ? stateColConfig[index].width : col.width;
+          return col;
+        });
+      }
+      return selectedCols;
     });
 
     const formattedData = computed(() => {
@@ -323,6 +325,25 @@ export default createComponent({
         }
       }
       return flattenedData;
+    });
+
+    const filterOptions = computed(() => {
+      const filterList: any = {};
+      for (const col of columnOptions.value) {
+        if (col.type === 'toggle') {
+          if (col.listType === 'template') {
+            filterList[col.header] = col.list;
+          } else if (col.listType === 'boolean') {
+            filterList[col.header] = [true, false];
+          } else if (col.listType === 'fetch') {
+            const searchField = col.field.replace(/-/g, '.');
+            filterList[col.header] = jp.query(props.value, '$..' + searchField);
+            filterList[col.header] = uniq(filterList[col.header]);
+            filterList[col.header] = filterList[col.header].sort();
+          }
+        }
+      }
+      return filterList;
     });
 
     const displayColumns = computed({

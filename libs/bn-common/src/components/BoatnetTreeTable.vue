@@ -4,7 +4,6 @@
       :value.sync="nodes"
       :filters="filters"
       filterMode="strict"
-      :expandedKeys.sync="expandedKeys"
       sortMode="single"
       style="height: calc(100vh - 420px)"
       @node-expand="expand"
@@ -118,6 +117,12 @@
                 >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
               </span>
               <span
+                v-else-if="(slotProps.node.data.type === 'child' ||
+                            slotProps.node.data.type === 'basket' ) && 
+                            ['operationNum', 'catchNum', 'disposition', 'weightMethod'].includes(slotProps.column.field)"
+                style="color: white"
+              >{{ displayData(slotProps, col.type, col.field) }}</span>
+              <span
                 v-else
                 v-on:click="edit(slotProps, col)"
               >{{ displayData(slotProps, col.type, col.field) }}</span>
@@ -162,7 +167,6 @@ export default createComponent ({
     program: String,
     type: String,
     selectionMode: String,
-    initExpandedKeys: Object
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -175,23 +179,12 @@ export default createComponent ({
 
     const editingCol: any = ref('');
     const editingRow: any = ref('');
-    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref({});
     const filters: any = ref({});
 
     const lookupFieldName: any = ref('');
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
-    const filterOptions: any = reactive({});
-    var jp = require('jsonpath');
-
-    onMounted(() => {
-      for (const col of columnOptions.value) {
-        if (col.type === 'toggle-search') {
-          filterOptions[col.header] = jp.query(props.nodes, '$..' + col.field);
-          filterOptions[col.header] = uniq(filterOptions[col.header]);
-        }
-      }
-    });
+    const jp = require('jsonpath');
 
     function deSelect() {
       editingRow.value = '';
@@ -205,6 +198,21 @@ export default createComponent ({
       }
       return value;
     }
+
+    const filterOptions = computed({
+      get: () => {
+        const filterList: any = {};
+        for (const col of columnOptions.value) {
+          if (col.type === 'toggle-search') {
+            filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
+            filterList[col.header] = uniq(filterList[col.header]);
+            filterList[col.header] = filterList[col.header].sort();
+          }
+        }
+        return filterList;
+      },
+      set: (val) => undefined
+    });
 
     const displayColumns = computed({
       get: () => {
@@ -240,7 +248,7 @@ export default createComponent ({
     function filterFn(val: any, update: any, abort: any) {
       update(() => {
         const needle = val.toLowerCase();
-        lookupsList.value = sortedList.filter((v: any) => v.label.toLowerCase().indexOf(needle) > -1);
+        lookupsList.value = sortedList.value.filter((v: any) => v.label.toLowerCase().indexOf(needle) > -1);
       });
     }
 
@@ -265,26 +273,26 @@ export default createComponent ({
 
     function onCellEdit(event: any, slotProps: any, col: any) {
       let value: any;
+      const currField = slotProps.column.field;
       if (col.type === 'toggle' || col.type === 'toggle-search') {
-        slotProps.node.data[slotProps.column.field] = event.label;
+        slotProps.node.data[currField] = event.label;
         value = event.value;
       } else {
-        slotProps.node.data[slotProps.column.field] = event;
+        slotProps.node.data[currField] = event;
         value = event;
       }
+      // when top level element is edited, edit children as well
+      if (['weightMethod', 'disposition'].includes(currField) && slotProps.node.children.length > 0) {
+        for (let i = 0; i < slotProps.node.children.length; i++) {
+          slotProps.node.children[i].data[currField] = event.label;
+        }
+      }
+      context.emit('save', { data: slotProps, event});
     }
 
     function select(data: any, field: any) {
       const ids = data.node.data[field];
       context.emit('selected', ids);
-    }
-
-    function expand() {
-      context.emit('expand', expandedKeys);
-    }
-
-    function collapse() {
-      context.emit('collapse', expandedKeys);
     }
 
     const selectedRow: any = ref(null);
@@ -305,18 +313,15 @@ export default createComponent ({
       columnOptions,
       editingCol,
       editingRow,
-      expandedKeys,
       filters,
       filterOptions,
       lookupFieldName,
       lookupsList,
       sortedList,
 
-      collapse,
       deSelect,
       displayData,
       edit,
-      expand,
       filterFn,
       getOptionsList,
       onCellEdit,

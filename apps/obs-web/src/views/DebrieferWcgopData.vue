@@ -35,7 +35,7 @@
 
         <q-separator />
 
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab" animated :keep-alive="true">
           <q-tab-panel name="trips">
             <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
           </q-tab-panel>
@@ -87,12 +87,15 @@ export default createComponent({
     watch(() => state.debriefer.trips, update);
     watch(() => state.debriefer.selectedOperations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
+    watch(() => state.debriefer.observer, setToTripTab);
 
     updateTab(props.startingTab ? props.startingTab : '');
 
     onMounted(async () => {
       // load column configurations from couch into state
       const result: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      console.log('loaded column config')
+      console.log(result)
       store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
     });
 

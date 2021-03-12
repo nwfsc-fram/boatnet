@@ -396,18 +396,10 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observer, async () => {
-      await populateTrips('observer');
-    });
-    watch(() => state.debriefer.evaluationPeriod, async () => {
-      await populateTrips('evaluationPeriod');
-    });
-    watch(() => state.debriefer.tripSearchFilters, async () => {
-      await populateTrips('search');
-    });
-    watch(() => state.debriefer.tripIds, async () => {
-      await populateTrips('trips');
-    });
+    watch(() => state.debriefer.observer, getTripsByObserver);
+    watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
+    watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
+    watch(() => state.debriefer.tripIds, getTrips);
 
     async function populateTrips(type: string) {
       loading.value = true;
@@ -426,6 +418,7 @@ export default createComponent({
     }
 
     async function getTrips() {
+      loading.value = true;
       const tripsHolder = [];
       try {
         const options: ListOptions = {
@@ -439,14 +432,18 @@ export default createComponent({
       } catch (err) {
         console.log('error');
       }
+      loading.value = false;
     }
 
     async function getTripsByObserver() {
+      loading.value = true;
       const observerId = state.debriefer.observer;
       trips.value = await getTripsByObserverId(observerId);
+      loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
+      loading.value = true;
       const observerId = state.debriefer.observer;
       const evalPeriod = state.debriefer.evaluationPeriod;
 
@@ -457,6 +454,7 @@ export default createComponent({
           observerId
         );
       }
+      loading.value = false;
     }
 
     async function getTripsBySearchParams() {
