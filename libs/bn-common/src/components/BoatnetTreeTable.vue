@@ -3,11 +3,8 @@
       :value.sync="nodes"
       :filters="filters"
       filterMode="strict"
-      :expandedKeys.sync="expandedKeys"
       sortMode="single"
       style="height: calc(100vh - 420px)"
-      @node-expand="expand"
-      @node-collapse="collapse"
     >
       <template #header>
         <div style="text-align:left">
@@ -147,7 +144,6 @@ export default createComponent ({
     program: String,
     type: String,
     selectionMode: String,
-    initExpandedKeys: Object
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -160,24 +156,12 @@ export default createComponent ({
 
     const editingCol: any = ref('');
     const editingRow: any = ref('');
-    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref({});
     const filters: any = ref({});
 
     const lookupFieldName: any = ref('');
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
-    const filterOptions: any = reactive({});
-    var jp = require('jsonpath');
-
-    onMounted(() => {
-      for (const col of columnOptions.value) {
-        if (col.type === 'toggle-search') {
-          filterOptions[col.header] = jp.query(props.nodes, '$..' + col.field);
-          filterOptions[col.header] = uniq(filterOptions[col.header]);
-          filterOptions[col.header] = filterOptions[col.header].sort();
-        }
-      }
-    });
+    const jp = require('jsonpath');
 
     function deSelect() {
       editingRow.value = '';
@@ -191,6 +175,21 @@ export default createComponent ({
       }
       return value;
     }
+
+    const filterOptions = computed({
+      get: () => {
+        const filterList: any = {};
+        for (const col of columnOptions.value) {
+          if (col.type === 'toggle-search') {
+            filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
+            filterList[col.header] = uniq(filterList[col.header]);
+            filterList[col.header] = filterList[col.header].sort();
+          }
+        }
+        return filterList;
+      },
+      set: (val) => undefined
+    });
 
     const displayColumns = computed({
       get: () => {
@@ -265,13 +264,7 @@ export default createComponent ({
           slotProps.node.children[i].data[currField] = event.label;
         }
       }
-      // if a new menu item is selected add it to the filters
-      if (filterOptions[col.header].length > 0 && !filterOptions[col.header].includes(event.label)) {
-        filterOptions[col.header].push(event.label);
-        filterOptions[col.header] = filterOptions[col.header].sort();
-      }
-      context.emit('save', { data: slotProps, event: event})
-      store.dispatch('debriefer/updateCatches', props.nodes);
+      context.emit('save', { data: slotProps, event});
     }
 
     function select(data: any, field: any) {
@@ -279,31 +272,20 @@ export default createComponent ({
       context.emit('selected', ids);
     }
 
-    function expand() {
-      context.emit('expand', expandedKeys);
-    }
-
-    function collapse() {
-      context.emit('collapse', expandedKeys);
-    }
-
     return {
       displayColumns,
       columnOptions,
       editingCol,
       editingRow,
-      expandedKeys,
       filters,
       filterOptions,
       lookupFieldName,
       lookupsList,
       sortedList,
 
-      collapse,
       deSelect,
       displayData,
       edit,
-      expand,
       filterFn,
       getOptionsList,
       onCellEdit,
