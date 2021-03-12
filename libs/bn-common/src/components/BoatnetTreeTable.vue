@@ -1,4 +1,5 @@
 <template>
+  <div>
     <pTreeTable
       :value.sync="nodes"
       :filters="filters"
@@ -8,21 +9,31 @@
       style="height: calc(100vh - 420px)"
       @node-expand="expand"
       @node-collapse="collapse"
+      selectionMode="single"
+
+      @node-select="onNodeSelect"
+      @node-unselect="onNodeUnselect"
     >
       <template #header>
-        <div style="text-align:left">
-          <MultiSelect
-            v-model="displayColumns"
-            :options="columnOptions"
-            optionLabel="header"
-            placeholder="Select Columns"
-            style="width: 20em"
-            appendTo="body"
-          >
-            <template #value>
-              <div>Display Columns</div>
-            </template>
-          </MultiSelect>
+        <div>
+          <span style="text-align:left">
+            <MultiSelect
+              v-model="displayColumns"
+              :options="columnOptions"
+              optionLabel="header"
+              placeholder="Select Columns"
+              style="width: 20em"
+              appendTo="body"
+            >
+              <template #value>
+                <div>Display Columns</div>
+              </template>
+            </MultiSelect>
+          </span>
+          <span style="position:relative; bottom: 2px">
+            &nbsp;
+            <q-btn v-if="selectedRow" @click="addToDcs('false')" color="primary">add to dcs</q-btn>
+          </span>
         </div>
       </template>
       <pColumn
@@ -114,6 +125,14 @@
         </template>
       </pColumn>
     </pTreeTable>
+
+    <debriefer-dcs-row-dialog-comp
+      :dcsDetailsDialog="dcsDetailsDialog"
+      :rowData.sync="selectedRow"
+      :isAfi.sync="afiChoice"
+      @close="dcsDetailsDialog = false"
+    ></debriefer-dcs-row-dialog-comp>
+    </div>
 </template>
 
 
@@ -127,11 +146,13 @@ import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import TreeTable from 'primevue/treetable';
+import ContextMenu from 'primevue/contextmenu';
 
 Vue.component('pColumn', Column);
 Vue.component('Dropdown', Dropdown);
 Vue.component('InputText', InputText);
 Vue.component('pTreeTable', TreeTable);
+Vue.component('ContextMenu', ContextMenu);
 
 export default createComponent ({
   props: {
@@ -266,6 +287,19 @@ export default createComponent ({
       context.emit('collapse', expandedKeys);
     }
 
+    const selectedRow: any = ref(null);
+
+    const dcsDetailsDialog = ref(false);
+    const afiChoice: any = ref('blank');
+
+    const addToDcs = (isAfi: string) => {
+        afiChoice.value = isAfi
+        dcsDetailsDialog.value = true;
+    };
+
+    const onNodeSelect = (node: any) => selectedRow.value = node.data;
+    const onNodeUnselect = (node: any) => selectedRow.value = null;
+
     return {
       displayColumns,
       columnOptions,
@@ -287,6 +321,8 @@ export default createComponent ({
       getOptionsList,
       onCellEdit,
       select,
+      selectedRow, dcsDetailsDialog,  afiChoice,
+      onNodeSelect, onNodeUnselect, addToDcs
     };
   }
 });
@@ -340,5 +376,26 @@ input.p-column-filter.p-inputtext.p-component {
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+.p-inputtext {
+  background-color: inherit !important;
+}
+
+::v-deep .highlightRow {
+  background-color: #e9ecef !important;
+}
+
+.p-multiselect-trigger {
+  background-color: transparent
+}
+
+#cMenu {
+   display: initial !important;
+}
+
+* >>> .p-contextmenu .p-component {
+  top: 0px !important;
+  left: 0px !important;
 }
 </style>

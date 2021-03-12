@@ -10,6 +10,10 @@
       <div class="col">
         <q-select v-model="selectedMonth" :options="['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']" outlined label="month" dense options-dense style="max-width: 300px"></q-select>
       </div>
+      <div class="col" style="text-align: right">
+        <q-btn v-if="!showHidden" color="primary" @click="toggleShowHidden">show hidden</q-btn>
+        <q-btn v-if="showHidden" @click="toggleShowHidden">hide hidden</q-btn>
+      </div>
     </div>
     <prime-table
       :value="dcsRows"
@@ -21,10 +25,10 @@
       :loading="loading"
       @save="save"
       @deleteRow="deleteRow"
+      @duplicateRow="duplicateRow"
       @refresh="refresh"
     >
     </prime-table>
-
     <q-dialog v-model="deleteConfirmDialog">
       <q-card>
         <q-card-section v-if="rowToDelete">
@@ -65,6 +69,8 @@ import { Client } from 'davenport';
 import { NoSubstitutionTemplateLiteral } from 'typescript';
 import { authService } from '@boatnet/bn-auth/lib';
 import { DcsRow, TripLevel, CollectionMethod, DcsErrorType, AfiFlag } from '@boatnet/bn-models';
+import { cloneDeep } from 'lodash';
+import { Notify } from 'quasar';
 
 export default createComponent({
   props: {
@@ -100,16 +106,16 @@ export default createComponent({
         isEditable: true,
         type: 'text',
       },
-      {
-        field: 'collectionMethod',
-        header: 'Collection Method',
-        key: 'collectionMethod',
-        width: '80',
-        isEditable: true,
-        type: 'toggle',
-        listType: 'template',
-        list: Object.values(CollectionMethod),
-      },
+      // {
+      //   field: 'collectionMethod',
+      //   header: 'Collection Method',
+      //   key: 'collectionMethod',
+      //   width: '80',
+      //   isEditable: true,
+      //   type: 'toggle',
+      //   listType: 'template',
+      //   list: Object.values(CollectionMethod),
+      // },
       {
         field: 'createdDate',
         header: 'Date Added',
@@ -161,8 +167,16 @@ export default createComponent({
         header: 'AFI Date',
         key: 'afiDate',
         width: '80',
-        isEditable: true,
         type: 'date'
+      },
+      {
+        field: 'isResolved',
+        header: 'Resolved ?',
+        key: 'isResolved',
+        width: '80',
+        type: 'toggle',
+        listType: 'boolean',
+        isEditable: true
       },
       {
         field: 'observerNotes',
@@ -179,6 +193,7 @@ export default createComponent({
     const observerName: any = ref('');
     const selectedYear: any = ref(moment().format('YYYY'));
     const selectedMonth: any = ref(moment().format('MMMM'));
+    const showHidden: any = ref(false);
 
     const yearOptions: any = ref([]);
 
@@ -209,10 +224,12 @@ export default createComponent({
         start_key: [state.debriefer.observer, startDate],
         end_key: [state.debriefer.observer, endDate]
       } as any);
-      dcsRows.value.push.apply(
-        dcsRows.value,
-        dcsRowsQuery.rows.map((row: any) => row.doc)
-      );
+      if (showHidden.value) {
+        dcsRows.value.push.apply( dcsRows.value, dcsRowsQuery.rows.map((row: any) => row.doc) );
+      } else {
+        dcsRows.value.push.apply( dcsRows.value, dcsRowsQuery.rows.map((row: any) => row.doc).filter( (row: any) => !row.isHidden) );
+      }
+
       loading.value = false;
       getObserverName();
     };
@@ -222,30 +239,15 @@ export default createComponent({
       observerName.value = observer.firstName + ' ' + observer.lastName;
     };
 
-    const addDcsRow = async () => {
-      const newRow = {
-        type: 'dcs-row',
-        observerId: state.debriefer.observer,
-        tripNum: '',
-        haulNum: '',
-        collectionMethod: '',
-        createdDate: moment().format(),
-        createdBy: authService.getCurrentUser()!.username,
-        level: '',
-        issue: '',
-        dcsErrorType: '',
-        afiFlag: '',
-        afiDate: moment().format(),
-        observerNotes: ''
-      };
-      dcsRows.value.unshift(newRow);
-    };
-
     const save = async (rowData: any) => {
         const user = authService.getCurrentUser()!.username;
         rowData.updatedBy = user;
         rowData.updatedDate = moment().format();
         if (rowData._id) {
+            const oldDoc: any = await masterDB.get(rowData._id);
+            if (oldDoc.afiFlag === '-' && rowData.afiFlag !== '-') {
+              rowData.afiDate = moment().format();
+            }
             const response: any = await masterDB.put(rowData._id, rowData, rowData._rev);
             const editedRow = dcsRows.value.find( (row: any) => row._id === response.id );
             for (const attrib of Object.keys(rowData)) {
@@ -284,6 +286,38 @@ export default createComponent({
       getDcsRows();
     };
 
+    const duplicateRow = async (rowData: any) => {
+      const user = authService.getCurrentUser()!.username;
+      rowData.updatedBy = user;
+      rowData.updatedDate = moment().format();
+      rowData.isHidden = true;
+      const response: any = await masterDB.put(rowData._id, rowData, rowData._rev);
+      const editedRow = dcsRows.value.find( (row: any) => row._id === response.id );
+      editedRow.isHidden = true;
+      editedRow._rev = response.rev;
+
+      const newRow = cloneDeep(rowData);
+      delete newRow._id;
+      delete newRow._rev;
+      delete newRow.isHidden;
+      newRow.afiFlag = '-';
+      newRow.afiDate = '-';
+      newRow.createdDate = moment().format();
+      newRow.createdBy = user;
+      Notify.create({
+            message: 'Row duplicated / Old row hidden'
+      });
+      const newRowResponse: any = await masterDB.post(newRow);
+      getDcsRows().then( () => {
+        const nrow = dcsRows.value.find( (row: any) => row._id === newRowResponse.id);
+      });
+    };
+
+    const toggleShowHidden = () => {
+      showHidden.value = !showHidden.value;
+      getDcsRows();
+    };
+
     onMounted( () => {
       getYearOptions();
     });
@@ -293,6 +327,7 @@ export default createComponent({
         getDcsRows();
       }
     });
+
     watch(() => state.debriefer.observer, getDcsRows);
 
     watch(() => selectedYear.value, (newVal, oldVal) => {
@@ -308,7 +343,7 @@ export default createComponent({
     });
 
     return {
-      addDcsRow,
+      // addDcsRow,
       dcsRows,
       dcsColumns,
       loading,
@@ -319,9 +354,12 @@ export default createComponent({
       selectedMonth,
       yearOptions,
       deleteRow,
+      duplicateRow,
       rowToDelete,
       deleteConfirmDialog,
-      executeDelete
+      executeDelete,
+      showHidden,
+      toggleShowHidden
     };
   },
 });

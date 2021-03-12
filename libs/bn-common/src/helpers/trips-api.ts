@@ -22,6 +22,9 @@ function getCruiseApiUrl() {
 function getEmailUrl() {
     return authService.getTripsApiUrl() + '/api/v1/email';
 }
+function getTripsApiMongoUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/mongo';
+}
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
     let formattedQuery = '';
@@ -236,7 +239,7 @@ export function mongoRead(collection: string, query: any) {
                 queryString += "&";
             }
         })
-        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo/' + collection + queryString;
+        const queryUrl = getTripsApiMongoUrl() + '/' + collection + queryString;
         request.get(
             {
                 url: queryUrl,
@@ -257,7 +260,7 @@ export function mongoRead(collection: string, query: any) {
 
 export function mongoWrite(documents: object[]) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        const queryUrl = getTripsApiMongoUrl();
         request.post(
             {
                 url: queryUrl,
@@ -279,7 +282,7 @@ export function mongoWrite(documents: object[]) {
 
 export function mongoUpdate(document: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        const queryUrl = getTripsApiMongoUrl();
         request.put(
             {
                 url: queryUrl,
@@ -301,7 +304,7 @@ export function mongoUpdate(document: any) {
 
 export function mongoDelete(document: any) {
     return new Promise( (resolve, reject) => {
-        const queryUrl = authService.getTripsApiUrl() + '/api/v1/mongo';
+        const queryUrl = getTripsApiMongoUrl();
         request.delete(
             {
                 url: queryUrl,
