@@ -142,7 +142,11 @@
             label="..."
             @click="show(slotProps, col.popupColumns, col.uniqueKey, col.popupField)"
           />
-          <Button v-if="col.type === 'actions'" class="p-button-rounded" icon="pi pi-trash" @click="deleteRow(slotProps.data)"></Button>
+          <span v-if="col.type === 'actions'">
+            <Button title="delete row" class="p-button-rounded" icon="pi pi-trash" @click="deleteRow(slotProps.data)"></Button>
+            &nbsp;
+            <Button title="duplicate row" class="p-button-rounded" icon="pi pi-copy" @click="duplicateRow(slotProps.data)"></Button>
+          </span>
         </template>
         <template #filter v-if="!simple">
           <MultiSelect
@@ -165,53 +169,12 @@
       :uniqueKey="popupUniqueKey"
     />
 
-    <q-dialog v-model="dcsDetailsDialog" persistent position="bottom">
-      <q-card>
-        <q-card-section>
-          <b>DCS Row Details</b>
-              <div class="row items-start">
-                <q-input class="col dcs-dialog" v-model="dcsRow.tripNum" label="Trip #" outlined dense></q-input>
-                <q-input class="col dcs-dialog" v-model="dcsRow.haulNum" label="Haul #" outlined dense></q-input>
-                <q-select
-                   class="col dcs-dialog"
-                  v-model="dcsRow.level"
-                  :options="Object.values(TripLevel)"
-                  label="Level"
-                  outlined
-                  dense
-                  options-dense
-                ></q-select>
-              </div>
-              <div class="row items-start">
-                <q-select
-                  class="col dcs-dialog"
-                  v-model="dcsRow.dcsErrorType"
-                  :options="Object.values(DcsErrorType)"
-                  label="Error Type"
-                  outlined
-                  dense
-                  options-dense
-                ></q-select>
-                <q-select
-                  v-if="dcsRow.afiFlag"
-                  class="col dcs-dialog"
-                  v-model="dcsRow.afiFlag"
-                  :options="Object.values(AfiFlag)"
-                  label="AFI Flag (optional)"
-                  outlined
-                  dense
-                  options-dense
-                ></q-select>
-              </div>
-              <q-input class="col dcs-dialog" type="textarea" autogrow v-model="dcsRow.issue" label="Issue" outlined dense></q-input>
-            <br>
-          <div style="text-align: right">
-            <q-btn class="dcs-dialog" color="primary" size="md"  @click="submit">submit</q-btn>
-            <q-btn class="dcs-dialog" color="red" size="md" @click="dcsDetailsDialog = false">Cancel</q-btn>
-          </div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <debriefer-dcs-row-dialog-comp
+      :dcsDetailsDialog="dcsDetailsDialog"
+      :rowData.sync="selectedRow"
+      :isAfi.sync="afiChoice"
+      @close="dcsDetailsDialog = false"
+    ></debriefer-dcs-row-dialog-comp>
 
   </div>
 </template>
@@ -257,9 +220,13 @@ Vue.component('Textarea', Textarea );
 
 import ContextMenu from 'primevue/contextmenu';
 import { Notify } from 'quasar';
+import DebrieferDcs from './DebrieferDcs.vue';
+
 Vue.component('ContextMenu', ContextMenu);
 
+
 export default createComponent({
+  components: { DebrieferDcs },
   props: {
     columns: Array,
     value: Array,
@@ -276,7 +243,6 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state = store.state;
-    const dcsDetailsDialog = ref(false);
 
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
@@ -529,9 +495,10 @@ export default createComponent({
       } else {
         formattedValue = get(slotProps.data, slotProps.column.field);
       }
-
       if (type === 'date') {
-        formattedValue = moment(formattedValue).format('MM/DD/YYYY HH:mm');
+        if (formattedValue !== '-') {
+          formattedValue = moment(formattedValue).format('MM/DD/YYYY HH:mm');
+        }
       } else if (type === 'coordinate') {
         const lat = get(slotProps.data, displayField[0]);
         const long = get(slotProps.data, displayField[1]);
@@ -549,7 +516,11 @@ export default createComponent({
       const value = get(event.data, event.field);
       cellVal.value = value ? value.toString() : '';
       if (type === 'date') {
-        cellVal.value = new Date(cellVal.value);
+        if (cellVal.value) {
+          cellVal.value = new Date(cellVal.value);
+        } else {
+          cellVal.value = new Date(moment().format());
+        }
       } else if (type === 'coordinate') {
         const lat = get(event.data, columnInfo.displayField[0]);
         const long = get(event.data, columnInfo.displayField[1]);
@@ -713,51 +684,15 @@ export default createComponent({
     const cm: any = ref(null);
     const menuModel = [
         {label: 'Add Row to DCS', icon: 'pi pi-fw pi-plus', command: () => addToDcs('blank')},
-        {label: 'Add context to DCS', icon: 'pi pi-fw pi-plus-circle', command: () => addToDcs(false)},
-        {label: 'Add context to DCS as AFI', icon: 'pi pi-exclamation-circle', command: () => addToDcs(true)}
+        {label: 'Add context to DCS', icon: 'pi pi-fw pi-plus-circle', command: () => addToDcs('false')},
+        {label: 'Add context to DCS as AFI', icon: 'pi pi-exclamation-circle', command: () => addToDcs('true')}
     ];
 
-    const dcsRow: any = ref({});
+    const dcsDetailsDialog = ref(false);
+    const afiChoice: any = ref('blank');
 
-    const buildRow = (isAfi: boolean | string) => {
-      const rowData: any = selectedRow.value;
-      if (isAfi !== 'blank') {
-        return {
-          type: 'dcs-row',
-          observerId: state.debriefer.observer,
-          tripNum: rowData.tripId ? rowData.tripId : rowData.tripNum ? rowData.tripNum : rowData['legacy-tripId'] ? rowData['legacy-tripId'] :  '',
-          haulNum: rowData.operationNum ? rowData.operationNum : rowData.haulNum ? rowData.haulNum : '',
-          collectionMethod: '',
-          createdDate: moment().format(),
-          createdBy: authService.getCurrentUser()!.username,
-          level: rowData.type === 'wcgop-trip' ? 'Trip' : rowData.type === 'wcgop-operation' ? 'Haul' : rowData.specimenType ? 'BS' : 'Other',
-          issue: rowData.description ? rowData.description : '',
-          dcsErrorType: rowData.severity ? rowData.severity : '',
-          afiFlag: isAfi ? 'Improvement' : '',
-          afiDate: isAfi ? moment().format() : '',
-          observerNotes: ''
-        } as any;
-      } else {
-        return {
-          type: 'dcs-row',
-          observerId: state.debriefer.observer,
-          tripNum: '',
-          haulNum: '',
-          collectionMethod: '',
-          createdDate: moment().format(),
-          createdBy: authService.getCurrentUser()!.username,
-          level: '',
-          issue: '',
-          dcsErrorType: '',
-          afiFlag: '',
-          afiDate: '',
-          observerNotes: ''
-        };
-      }
-    };
-
-    const addToDcs = (isAfi: boolean | string) => {
-        dcsRow.value = buildRow(isAfi);
+    const addToDcs = (isAfi: string) => {
+        afiChoice.value = isAfi;
         dcsDetailsDialog.value = true;
     };
 
@@ -770,15 +705,8 @@ export default createComponent({
       context.emit('deleteRow', row);
     };
 
-    const submit = async () => {
-        const result = await masterDB.post(dcsRow.value);
-        if (result) {
-          Notify.create({
-            message: 'issue added to dcs.'
-          });
-        }
-        store.dispatch('debriefer/setNewDcsRow', result);
-        dcsDetailsDialog.value = false;
+    const duplicateRow = (row: any) => {
+      context.emit('duplicateRow', row);
     };
 
     return {
@@ -812,7 +740,7 @@ export default createComponent({
       toggleHaulCols,
       fixedGearMode,
       trawlMode,
-      selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, submit, dcsRow, deleteRow,
+      selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, deleteRow, duplicateRow, afiChoice,
       filterOptions,
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag
     };
@@ -831,10 +759,6 @@ export default createComponent({
 
 .p-multiselect-trigger {
   background-color: transparent
-}
-
-.dcs-dialog {
-  margin: 5px !important;
 }
 
 #cMenu {

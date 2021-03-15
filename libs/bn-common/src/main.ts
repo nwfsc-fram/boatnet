@@ -24,6 +24,7 @@ import BoatnetTabPanel from './components/BoatnetTabPanel.vue';
 import BoatnetTreeTable from './components/BoatnetTreeTable.vue';
 import BoatnetPushButton from './components/BoatnetPushButton.vue';
 import BoatnetPickList from './components/BoatnetPickList.vue';
+import DebrieferDcsRowDialogComp from './components/DebrieferDcsRowDialogComp.vue';
 
 import BoatnetLogin from './views/BoatnetLogin.vue';
 
@@ -63,7 +64,8 @@ const Components: any = {
   BoatnetTabPanel,
   BoatnetTreeTable,
   DefaultLayout,
-  BoatnetDatetimePrime
+  BoatnetDatetimePrime,
+  DebrieferDcsRowDialogComp
 };
 
 Object.keys(Components).forEach((name) => {
