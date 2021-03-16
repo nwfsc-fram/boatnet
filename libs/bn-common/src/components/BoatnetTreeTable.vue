@@ -6,8 +6,6 @@
       filterMode="strict"
       sortMode="single"
       style="height: calc(100vh - 420px)"
-      @node-expand="expand"
-      @node-collapse="collapse"
       selectionMode="single"
 
       @node-select="onNodeSelect"
@@ -301,7 +299,7 @@ export default createComponent ({
     const afiChoice: any = ref('blank');
 
     const addToDcs = (isAfi: string) => {
-        afiChoice.value = isAfi
+        afiChoice.value = isAfi;
         dcsDetailsDialog.value = true;
     };
 

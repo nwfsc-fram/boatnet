@@ -2,7 +2,7 @@
   <div>
     <prime-table
       :value="WcgopBiospecimens"
-      :columns="columns"
+      :columns="displayColumns && displayColumns['wcgop-Specimens'] ? displayColumns['wcgop-Specimens'] : columns"
       type="Specimens"
       uniqueKey="_id"
       :initialSelection="initialSelection"
@@ -35,6 +35,7 @@ export default createComponent({
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const initialSelection: any = ref([]);
+    const displayColumns: any = state.debriefer.displayColumns;
 
     onUnmounted(() => {
       store.dispatch('debriefer/updateSpecimens', []);
@@ -291,7 +292,8 @@ export default createComponent({
       WcgopBiospecimens,
       initialSelection,
       columns,
-      save
+      save,
+      displayColumns
     };
   }
 });

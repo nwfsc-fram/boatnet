@@ -2,7 +2,7 @@
   <div>
     <prime-table
       :value="trips"
-      :columns="columns"
+      :columns="displayColumns && displayColumns['wcgop-Trips'] ? displayColumns['wcgop-Trips'] : columns"
       type="Trips"
       :simple="false"
       uniqueKey="_id"
@@ -42,7 +42,7 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state: any = store.state;
-    const debriefer: any = state.debriefer;
+    const displayColumns: any = state.debriefer.displayColumns;
 
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
@@ -401,22 +401,6 @@ export default createComponent({
     watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
     watch(() => state.debriefer.tripIds, getTrips);
 
-    async function populateTrips(type: string) {
-      loading.value = true;
-      if (state.debriefer.trips.length > 0) {
-        trips.value = state.debriefer.trips;
-      } else if (type === 'observer') {
-        await getTripsByObserver();
-      } else if (type === 'evaluationPeriod') {
-        await loadTripsByEvaluationPeriod();
-      } else if (type === 'search') {
-        await getTripsBySearchParams();
-      } else if (type === 'trips') {
-        await getTrips();
-      }
-      loading.value = false;
-    }
-
     async function getTrips() {
       loading.value = true;
       const tripsHolder = [];
@@ -569,7 +553,8 @@ export default createComponent({
       save,
       loading,
       selectValues,
-      initialSelection
+      initialSelection,
+      displayColumns
     };
   }
 });

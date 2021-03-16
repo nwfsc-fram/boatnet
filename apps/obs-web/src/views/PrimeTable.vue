@@ -22,6 +22,8 @@
       :stateKey="tableType"
       contextMenu
       @row-contextmenu="onRowContextMenu"
+      @column-resize-end="resizeColumn"
+      @column-reorder="reorderColumn"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -133,9 +135,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span
-            style="pointer-events: none; white-space: pre-wrap;"
-          >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
+          <div
+            style="pointer-events: none; white-space: pre-wrap; height: 48px"
+          >{{ formatValue(slotProps, col.type, col.displayField) }}</div>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -244,9 +246,12 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
+    const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
     let sortedList: any[] = [];
+
+    const testCols: any = ref([...(props.columns ? props.columns : [])]);
 
     const cellVal: any = ref('');
 
@@ -273,6 +278,7 @@ export default createComponent({
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
+    const arrayMove = require('array-move');
 
     onMounted(async () => {
       pageStart.value = 0;
@@ -302,19 +308,6 @@ export default createComponent({
       if (updateStatePermissions) {
         context.emit('selectValues', updatedSelection);
       }
-    });
-
-    const columnOptions = computed(() => {
-      const selectedCols: any[] = props.columns ? props.columns : []
-      const stateColConfig = stateDisplayCols[tableType];
-      if (stateColConfig) {
-        selectedCols.map((col: any ) => {
-          const index = findIndex(stateColConfig, ['field', col.field]);
-          col.width = index >= 0 ? stateColConfig[index].width : col.width;
-          return col;
-        });
-      }
-      return selectedCols;
     });
 
     const formattedData = computed(() => {
@@ -367,6 +360,16 @@ export default createComponent({
       },
     });
 
+    function reorderColumn(event: any) {
+      testCols.value = arrayMove(testCols.value, event.dragIndex - 1, event.dropIndex - 1);
+    }
+
+    function resizeColumn(event: any) {
+      const colIndex = event.element.cellIndex - 1;
+      const width = parseFloat(testCols.value[colIndex].width);
+      testCols.value[colIndex].width = (width + event.delta).toString();
+    }
+
     /**
      * Update filters stored in state. Currently stored in debriefer'
      * as an obj and the key is the tableType
@@ -383,47 +386,14 @@ export default createComponent({
     }
 
     async function saveColumnConfiguration() {
-      let localStorageInfo = localStorage.getItem(tableType);
-      localStorageInfo = localStorageInfo ? localStorageInfo : '';
-      const storageObj = JSON.parse(localStorageInfo);
-
-      // combine columnWith and columnOrders arrays from localStorage
-      const colOrder = storageObj.columnOrder;
-      const colWidths = storageObj.columnWidths.split(',');
-      const displayedCols = cloneDeep(displayColumns.value);
-
-      const colInfo = colOrder.map((value: any, index: number) => {
-        return { name: value, width: colWidths[index] };
-      }).filter((col: any) => {
-        const validCol = filter(displayedCols, ['field', col.name]);
-        return validCol.length > 0 ? validCol[0] : '';
-      });
-
-      // updating column widths and sorting based off values stored in localStorage
-      const cols = displayedCols.map((value: any) => {
-        const index: number = findIndex(colInfo, (col: any) => {
-          return col.name === value.field;
-        });
-        value.width = colInfo[index].width;
-        return value;
-      }).sort((a: any, b: any) => {
-        const index1: number = findIndex(colInfo, (col: any) => {
-          return col.name === a.field;
-        });
-        const index2: number = findIndex(colInfo, (col: any) => {
-          return col.name === b.field;
-        });
-        return index1 - index2;
-      });
-
-      stateDisplayCols[tableType] = cols;
+      stateDisplayCols[tableType] = testCols.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
 
       // save columns to users column-config docs
       let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       if (userColConfig.rows.length > 0) {
         userColConfig = userColConfig.rows[0].doc;
-        userColConfig.columnConfig[tableType] = cols;
+        userColConfig.columnConfig[tableType] = testCols.value;
         await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
       } else {
         const newRecord: any = {
@@ -431,7 +401,7 @@ export default createComponent({
           type: 'column-config',
           personDocId: state.user.activeUserAlias.personDocId
         };
-        newRecord.columnConfig[tableType] = cols;
+        newRecord.columnConfig[tableType] = testCols.value;
         await masterDB.post(newRecord);
       }
     }
@@ -742,7 +712,8 @@ export default createComponent({
       trawlMode,
       selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, deleteRow, duplicateRow, afiChoice,
       filterOptions,
-      TripLevel, CollectionMethod, DcsErrorType, AfiFlag
+      TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
+      reorderColumn, resizeColumn
     };
   },
 });

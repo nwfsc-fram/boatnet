@@ -2,7 +2,7 @@
     <div>
         <prime-table
             :value="operations"
-            :columns="wcgopColumns"
+            :columns="displayColumns && displayColumns['wcgop-Operations'] ? displayColumns['wcgop-Operations'] : wcgopColumns"
             type="Operations"
             uniqueKey="_id"
             :enableSelection="true"
@@ -40,6 +40,7 @@ export default createComponent({
         const masterDB: Client<any> = couchService.masterDB;
         const operations: any = ref([]);
         const loading: any = ref(false);
+        const displayColumns: any = state.debriefer.displayColumns;
 
         watch(() => state.debriefer.operations, getOperations);
 
@@ -306,6 +307,7 @@ export default createComponent({
             selectValues,
             initialSelection,
             save,
+            displayColumns,
             operations,
             loading,
         };
