@@ -288,9 +288,9 @@ export default createComponent({
       filters.value = initFilters ? initFilters : {};
       if (tableType === 'wcgop-Operations' && displayMode === trawlMode) {
         displayColumns.value = setTrawlMode(stateDisplayCols[tableType]);
-        } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
-          displayColumns.value = setFixedGearMode(stateDisplayCols[tableType]);
-        }
+      } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
+        displayColumns.value = setFixedGearMode(stateDisplayCols[tableType]);
+      }
     });
 
     onUnmounted(async () => {

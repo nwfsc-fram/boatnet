@@ -299,7 +299,7 @@ export default createComponent({
         return value;
       });
       WcgopBiospecimens.value = updatedvalue;
-      store.dispatch('debriefer/updateSpecimens', WcgopBiospecimens.value);
+      store.dispatch('debriefer/updateBiospecimens', WcgopBiospecimens.value);
     }
 
     return {

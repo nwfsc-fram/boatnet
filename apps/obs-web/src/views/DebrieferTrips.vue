@@ -2,7 +2,7 @@
   <div>
     <prime-table
       :value="trips"
-      :columns="displayColumns && displayColumns['wcgop-Trips'] ? displayColumns['wcgop-Trips'] : columns"
+      :columns="columns"
       type="Trips"
       :simple="false"
       uniqueKey="_id"

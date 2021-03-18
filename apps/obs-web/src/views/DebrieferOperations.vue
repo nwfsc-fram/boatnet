@@ -2,7 +2,7 @@
     <div>
         <prime-table
             :value="operations"
-            :columns="displayColumns && displayColumns['wcgop-Operations'] ? displayColumns['wcgop-Operations'] : wcgopColumns"
+            :columns="wcgopColumns"
             type="Operations"
             uniqueKey="_id"
             :enableSelection="true"
