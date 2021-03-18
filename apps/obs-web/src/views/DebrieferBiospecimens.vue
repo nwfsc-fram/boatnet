@@ -2,13 +2,8 @@
   <div>
     <prime-table
       :value="WcgopBiospecimens"
-<<<<<<< Updated upstream
-      :columns="displayColumns && displayColumns['wcgop-Specimens'] ? displayColumns['wcgop-Specimens'] : columns"
-      type="Specimens"
-=======
       :columns="columns"
       type="biospecimens"
->>>>>>> Stashed changes
       uniqueKey="_id"
       :initialSelection="initialSelection"
       :enableSelection="true"
