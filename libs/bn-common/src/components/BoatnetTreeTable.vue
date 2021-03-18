@@ -196,7 +196,6 @@ export default createComponent ({
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
     const jp = require('jsonpath');
-    const filterOptions: any = reactive({});
 
     function deSelect() {
       editingRow.value = '';
@@ -211,21 +210,23 @@ export default createComponent ({
       return value;
     }
 
-    onMounted(() => {
+    const filterOptions = computed(() => {
+      const filterList: any = {};
       for (const col of columnOptions.value) {
         if (col.type === 'toggle-search') {
-          filterOptions[col.header] = jp.query(props.nodes, '$..' + col.field);
-          filterOptions[col.header] = uniq(filterOptions[col.header]);
-          remove(filterOptions[col.header], (item: string) => {
+          filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
+          filterList[col.header] = uniq(filterList[col.header]);
+            remove(filterList[col.header], (item: string) => {
               if (item && item.includes('Basket')) {
                 return true;
               } else {
                 return false;
               }
             });
-          filterOptions[col.header] = filterOptions[col.header].sort();
+          filterList[col.header] = filterList[col.header].sort();
         }
       }
+      return filterList;
     });
 
     const displayColumns = computed({

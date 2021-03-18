@@ -563,15 +563,6 @@ export default createComponent({
           const operationOptions: ListOptions = { keys: operationIds };
           const operationDocs = await masterDB.listWithDocs(operationOptions);
           ops = operationDocs.rows;
-          ops.sort((a: any, b: any) => {
-            if (a.legacy.tripId !== b.legacy.tripId) {
-              return a.legacy.tripId - b.legacy.tripId;
-            } else if (a.legacy.tripId === b.legacy.tripId) {
-              return a.operationNum - b.operationNum;
-            } else {
-              return 0;
-            }
-          });
         } catch (err) {
           console.log('cannot fetch operation docs ' + err);
         }

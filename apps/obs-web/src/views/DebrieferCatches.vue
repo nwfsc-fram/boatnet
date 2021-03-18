@@ -334,6 +334,7 @@ export default createComponent({
     getCatches();
 
     async function save(newRecord: any) {
+      store.dispatch('debriefer/updateCatches', WcgopCatches.value);
       const masterDB: Client<any> = couchService.masterDB;
       const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'});
 
@@ -400,7 +401,6 @@ export default createComponent({
           }
         }
         operationRecord.catches = catches;
-        store.dispatch('debriefer/updateCatches', catches);
         await masterDB.put(
           operationRecord._id,
           operationRecord,

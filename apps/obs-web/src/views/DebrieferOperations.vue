@@ -25,7 +25,7 @@ import {
 } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
-import { cloneDeep, findIndex } from 'lodash';
+import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 export default createComponent({
     props: {
@@ -302,6 +302,7 @@ export default createComponent({
         async function getOperations() {
             loading.value = true;
             operations.value = state.debriefer.operations;
+            operations.value = orderBy(operations.value, ['legacy.tripId', 'operationNum'], ['asc', 'asc']);
             loading.value = false;
         }
 

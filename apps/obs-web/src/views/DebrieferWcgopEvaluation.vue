@@ -167,7 +167,7 @@ export default createComponent({
       store.dispatch('debriefer/updateOperations', []);
       store.dispatch('debriefer/updateSelectedOperations', []);
       store.dispatch('debriefer/updateFilters', {});
-      store.dispatch('debriefer/updateSpecimens', []);
+      store.dispatch('debriefer/updateBiospecimens', []);
       store.dispatch('debriefer/updateCatches', []);
       state.debriefer.selectedTrips.splice(0, state.debriefer.selectedTrips.length);
       state.debriefer.operations.splice(0, state.debriefer.operations.length);
