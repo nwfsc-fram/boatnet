@@ -2,8 +2,8 @@
   <div>
     <prime-table
       :value="WcgopBiospecimens"
-      :columns="displayColumns && displayColumns['wcgop-Specimens'] ? displayColumns['wcgop-Specimens'] : columns"
-      type="Specimens"
+      :columns="columns"
+      type="biospecimens"
       uniqueKey="_id"
       :initialSelection="initialSelection"
       :enableSelection="true"
@@ -38,23 +38,37 @@ export default createComponent({
     const displayColumns: any = state.debriefer.displayColumns;
 
     onUnmounted(() => {
-      store.dispatch('debriefer/updateSpecimens', []);
+      store.dispatch('debriefer/updateSelectedBiospecimens', []);
     });
 
     const columns = [
+      {
+        field: 'tripId',
+        header: 'Trip #',
+        type: 'number',
+        key: 'wcgopBioTripId',
+        width: '80'
+      },
+      {
+        field: 'operationNum',
+        header: 'Haul #',
+        type: 'number',
+        key: 'wcgopBioHaulNum',
+        width: '80'
+      },
+      {
+        field: 'catchNum',
+        header: 'Catch #',
+        type: 'number',
+        key: 'wcgopBioCatchNum',
+        width: '80'
+      },
       {
         field: 'species',
         header: 'Species',
         type: 'input',
         key: 'wcgopBioSpecies',
         width: '150'
-      },
-      {
-        field: 'tripId',
-        header: 'Trip Id',
-        type: 'number',
-        key: 'wcgopBioTripId',
-        width: '80'
       },
       {
         field: 'received',
@@ -64,13 +78,6 @@ export default createComponent({
         listType: 'template',
         key: 'wcgopBioReceived',
         isEditable: true,
-        width: '80'
-      },
-      {
-        field: 'operationNum',
-        header: 'Haul #',
-        type: 'number',
-        key: 'wcgopBioHaulNum',
         width: '80'
       },
       {
@@ -211,59 +218,65 @@ export default createComponent({
     watch(() => state.debriefer.selectedOperations, getBiospecimens);
 
     async function getBiospecimens() {
-      const operations = state.debriefer.selectedOperations;
-      const unflattenedOperations: any[] = [];
-      for (const op of operations) {
-        unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
-      }
+      let bioSpecimens: any[] = [];
+      if (state.debriefer.biospecimens.length > 1) {
+        bioSpecimens = state.debriefer.biospecimens;
+      } else {
+        const operations = state.debriefer.selectedOperations;
+        const unflattenedOperations: any[] = [];
+        for (const op of operations) {
+          unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
+        }
 
-      const bioSpecimens: any[] = [];
-      const id: number = 1;
-      const specimens = jp.nodes(unflattenedOperations, '$..specimens');
+        const id: number = 1;
+        const specimens = jp.nodes(unflattenedOperations, '$..specimens');
 
-      for (const specimen of specimens) {
-        const operationPath = jp.stringify(slice(specimen.path, 0, 2));
-        const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
-        const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
+        for (const specimen of specimens) {
+          const operationPath = jp.stringify(slice(specimen.path, 0, 2));
+          const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
+          const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
 
-        const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
-        const operationNum = jp.value(
-          unflattenedOperations,
-          operationPath + '.operationNum'
-        );
-        const operationId = jp.value(unflattenedOperations, operationPath + '._id');
-        const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
-        let disposition = jp.value(
-          unflattenedOperations,
-          catchesPath + '.disposition.description'
-        );
-        disposition = disposition === 'Retained' ? 'R' : 'D';
-        const species = jp.value(
-          unflattenedOperations,
-          childrenPath + '.catchContent.commonNames[0]'
-        );
+          const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
+          const operationNum = jp.value(
+            unflattenedOperations,
+            operationPath + '.operationNum'
+          );
+          const operationId = jp.value(unflattenedOperations, operationPath + '._id');
+          const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
+          const catchNum = jp.value(unflattenedOperations, catchesPath + '.catchNum');
+          let disposition = jp.value(
+            unflattenedOperations,
+            catchesPath + '.disposition.description'
+          );
+          disposition = disposition === 'Retained' ? 'R' : 'D';
+          const species = jp.value(
+            unflattenedOperations,
+            childrenPath + '.catchContent.commonNames[0]'
+          );
 
-        for (const indivSpecimen of specimen.value) {
-          if (indivSpecimen._id) {
-            const biospecimen = {
-              _id: indivSpecimen._id,
-              tripId,
-              operationNum,
-              operationId,
-              operationRev,
-              disposition,
-              species,
-              specimen: indivSpecimen
-            };
-            bioSpecimens.push(biospecimen);
-          } else {
-            console.log('id not found skipping record');
+          for (const indivSpecimen of specimen.value) {
+            if (indivSpecimen._id) {
+              const biospecimen = {
+                _id: indivSpecimen._id,
+                tripId,
+                operationNum,
+                catchNum,
+                operationId,
+                operationRev,
+                disposition,
+                species,
+                specimen: indivSpecimen
+              };
+              bioSpecimens.push(biospecimen);
+            } else {
+              console.log('id not found skipping record');
+            }
           }
         }
       }
-      WcgopBiospecimens.value = orderBy(bioSpecimens, ['operationNum']);
+      WcgopBiospecimens.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
       initialSelection.value = filter(WcgopBiospecimens.value, (val: any) => {
-        if (debriefer.specimens.includes(val._id)) {
+        if (debriefer.selectedBiospecimens.includes(val._id)) {
           return val;
         }
       });
@@ -286,6 +299,7 @@ export default createComponent({
         return value;
       });
       WcgopBiospecimens.value = updatedvalue;
+      store.dispatch('debriefer/updateBiospecimens', WcgopBiospecimens.value);
     }
 
     return {
