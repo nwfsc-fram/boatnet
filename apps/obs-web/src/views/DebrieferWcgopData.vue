@@ -35,7 +35,7 @@
 
         <q-separator />
 
-        <q-tab-panels v-model="tab" animated :keep-alive="true">
+        <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
             <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
           </q-tab-panel>
@@ -71,7 +71,6 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 
 export default createComponent({
   props: {
-    showErrors: Boolean,
     startingTab: String,
     isFullSize: Boolean
   },
@@ -84,7 +83,7 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const jp = require('jsonpath');
 
-    watch(() => state.debriefer.trips, update);
+    watch(() => state.debriefer.selectedTrips, update);
     watch(() => state.debriefer.selectedOperations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
     watch(() => state.debriefer.observer, setToTripTab);
@@ -110,7 +109,7 @@ export default createComponent({
     function update() {
       filters.value = [];
       const trips = updateFilter(
-        state.debriefer.trips,
+        state.debriefer.selectedTrips,
         'Trip',
         'legacy-tripId'
       );
@@ -140,7 +139,7 @@ export default createComponent({
 
     function remove(item: any) {
       let index = -1;
-      const trips = state.debriefer.trips;
+      const trips = state.debriefer.selectedTrips;
       const ops = state.debriefer.selectedOperations;
 
       if (item.type === 'wcgop-trip') {
@@ -149,7 +148,7 @@ export default createComponent({
         if (trips.length === 0) {
           updateTab('trips');
         }
-        store.dispatch('debriefer/updateTrips', trips);
+        store.dispatch('debriefer/updateSelectedTrips', trips);
         removeOperations();
       } else {
         index = findIndex(ops, item);
@@ -163,7 +162,7 @@ export default createComponent({
 
     function removeOperations() {
       const tripIds: number[] = [];
-      for (const trip of state.debriefer.trips) {
+      for (const trip of state.debriefer.selectedTrips) {
         tripIds.push(get(trip, 'legacy-tripId'));
       }
       // remove operations

@@ -44,6 +44,8 @@ export default createComponent({
 
         watch(() => state.debriefer.operations, getOperations);
 
+        getOperations();
+
         const wcgopColumns = [
             {
                 field: 'legacy-tripId',
@@ -58,6 +60,14 @@ export default createComponent({
                 type: 'number',
                 key: 'wcgopOpHaulNum',
                 width: '60',
+            },
+            {
+                field: 'targetStrategy',
+                header: 'Target Strategy',
+                type: 'input',
+                key: 'wcgopOptargetStrategy',
+                width: '100',
+                isEditable: true
             },
             {
                 field: 'haulScore',
@@ -99,55 +109,6 @@ export default createComponent({
                 search: true,
                 lookupKey: 'gear-performance',
                 lookupField: 'description',
-                isEditable: true,
-            },
-            {
-                field: 'totalHooks',
-                header: 'Total Hooks',
-                type: 'number',
-                key: 'wcgopOpTotHooks',
-                width: '100',
-                isEditable: true,
-            },
-            {
-                field: 'totalGearSegments',
-                header: 'Total Gear Segments',
-                type: 'number',
-                key: 'wcgopOpTotGear',
-                width: '100',
-                isEditable: true,
-            },
-            {
-                field: 'avgNumHooksPerSegment',
-                header: 'Hook Count Per Segment',
-                type: 'number',
-                key: 'wcgopOpAvgNumHooksPerSeg',
-                width: '100',
-                isEditable: true,
-            },
-            {
-                field: 'catches-0-legacy-hooksSampled',
-                header: 'Hooks Sampled',
-                type: 'number',
-                key: 'wcgopOpHooksSampled',
-                width: '100',
-                isEditable: true,
-            },
-            {
-                field: 'gearSegmentsLost',
-                header: 'Lost Gear',
-                type: 'number',
-                key: 'wcgopOpTotGearLost',
-                width: '100',
-                isEditable: true,
-            },
-            // sea bird avoidance
-            {
-                field: 'avgSoakTime-value',
-                header: 'Average Soak Time',
-                type: 'number',
-                key: 'wcgopOpAvgSoakTime',
-                width: '100',
                 isEditable: true,
             },
             {
@@ -246,24 +207,7 @@ export default createComponent({
                 width: '250',
                 isEditable: true,
             },
-            {
-                field: 'legacy-isBrdPresent',
-                header: 'BRD',
-                type: 'toggle',
-                listType: 'boolean',
-                key: 'wcgopOpIsBRDPresent',
-                width: '100',
-                isEditable: true
-            },
             // HLFC
-            {
-                field: 'targetStrategy',
-                header: 'Target Strategy',
-                type: 'input',
-                key: 'wcgopOptargetStrategy',
-                width: '100',
-                isEditable: true
-            },
             {
                 field: 'isEfpUsed',
                 header: 'EFP',
@@ -282,6 +226,64 @@ export default createComponent({
                 width: '200',
                 isEditable: true,
             },
+            {
+                field: 'legacy-isBrdPresent',
+                header: 'BRD',
+                type: 'toggle',
+                listType: 'boolean',
+                key: 'wcgopOpIsBRDPresent',
+                width: '100',
+                isEditable: true
+            },
+            {
+                field: 'totalHooks',
+                header: 'Total Hooks',
+                type: 'number',
+                key: 'wcgopOpTotHooks',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'totalGearSegments',
+                header: 'Total Gear Segments',
+                type: 'number',
+                key: 'wcgopOpTotGear',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'avgNumHooksPerSegment',
+                header: 'Hook Count Per Segment',
+                type: 'number',
+                key: 'wcgopOpAvgNumHooksPerSeg',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'catches-0-legacy-hooksSampled',
+                header: 'Hooks Sampled',
+                type: 'number',
+                key: 'wcgopOpHooksSampled',
+                width: '100',
+                isEditable: true,
+            },
+            {
+                field: 'gearSegmentsLost',
+                header: 'Lost Gear',
+                type: 'number',
+                key: 'wcgopOpTotGearLost',
+                width: '100',
+                isEditable: true,
+            },
+            // sea bird avoidance
+            {
+                field: 'avgSoakTime-value',
+                header: 'Average Soak Time',
+                type: 'number',
+                key: 'wcgopOpAvgSoakTime',
+                width: '100',
+                isEditable: true,
+            }
         ];
 
         function selectValues(data: any) {
@@ -295,6 +297,7 @@ export default createComponent({
             updatedvalue[index] = data;
             updatedvalue[index]._rev = result.rev;
             operations.value = updatedvalue;
+            store.dispatch('debriefer/updateOperations', operations.value);
         }
         async function getOperations() {
             loading.value = true;
