@@ -1,224 +1,61 @@
 <template>
-  <div>
-      <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-        {{alert.message}}
-        <template v-slot:action>
-          <q-btn flat label="Dismiss" @click="clearAlert"/>
-        </template>
-      </q-banner>
-
-  <div :disabled="trip.readOnly">
-
+    <div class="q-pa-md" style="max-width: 450px" :disabled="trip.readOnly" >
+        <div v-if="tripNotRequired && trip.newTrip && !trip.logTrip" class="trip-alert">
+            <b>NOTE: Trip creation is not required in this category/fishery.</b>
+        </div>
+         <div v-if="!trip.readOnly && !trip.newTrip" class="trip-alert">
+            <b>NOTE: Fishery/sector can not be edited.  To create trip in another fishery/sector, cancel current trip and create new one.</b>
+        </div>
         <div style="font-weight: bold; margin: 15px 15px 0">
-          <div v-if="trip.activeTrip.tripNum"> Trip #: {{ trip.activeTrip.tripNum }}</div>
-
-          <div v-if="trip.activeTrip.fishery.description"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
-
-          <div v-if="trip.activeTrip.isSelected" class="text-green" style="font-size: 22px">
-          <q-icon
-            name="warning"
-          ></q-icon>
-            Trip Selected
-          </div>
-
-          <div v-if="trip.activeTrip._id && !trip.activeTrip.isSelected" class="text-primary" style="font-size: 22px">
-          <q-icon
-            name="not_interested"
-          ></q-icon>
-            Observer Not Required
-          </div>
-
+            <div v-if="trip.activeTrip.tripNum !== 1"> Trip #: {{ trip.activeTrip.tripNum }}</div>
+            <div v-if="trip.activeTrip.fishery && trip.activeTrip.tripNum !== 1"> Fishery: {{ trip.activeTrip.fishery.description }}</div>
+            <div v-if="trip.activeTrip.isSelected && trip.activeTrip.tripNum !== 1" class="text-green" style="font-size: 22px">
+                <q-icon name="warning"></q-icon>
+                Trip Selected
+            </div>
+            <div v-if="trip.activeTrip._id && !trip.activeTrip.isSelected" class="text-primary" style="font-size: 22px">
+                <q-icon name="not_interested"></q-icon>
+                Observer Not Required
+            </div>
         </div>
 
-        <div>
 
-          <div class="trips-el-height">
-            <q-toggle
-              v-model="trip.activeTrip.isSingleDayTrip"
-              color="primary"
-              label="Single Day Trip"
-              :disable="trip.readOnly"
-              @input="updateDates"
-              style="font-weight: bold"
-            ></q-toggle>
-          </div>
+        <transition name="selection-list-item">
+            <div v-if="selections.length > 0">
+                <b>Trip Details:</b>
+                <q-list dense>
+                    <transition-group name="selections-list">
+                            <q-item :class="getSelectionClasses(index)" v-for="(selection, index) in selections" :key="index + 1" dense :style="getIndent(index)">
+                             <q-item-section>
+                               <b>{{ selection.description }} {{ selection.lookupValue ? formatValue(selection) : ''}}</b>
+                             </q-item-section>
+                             <q-item-section avatar style="cursor: pointer" v-if="!trip.readOnly && trip.newTrip" >
+                                 <q-icon name="clear" @click="removeSelection(index)"></q-icon>
+                             </q-item-section>
+                             <q-item-section avatar v-else-if="!trip.readOnly && !trip.newTrip" disabled>
+                                 <q-icon name="remove"></q-icon>
+                             </q-item-section>
+                         </q-item>
+                    </transition-group>
+                </q-list>
 
-          <div class="row items-start">
-            <div class="trips-el-height">
-              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Departure Date</span>
-                <pCalendar
-                  :disabled="trip.readOnly"
-                  v-if="!trip.activeTrip.isSingleDayTrip"
-                  v-model="tripDates[0]"
-                  :minDate="minDate"
-                  :maxDate="maxDate"
-                  :disabledDates="invalidDates"
-                  :inline="false"
-                  :touchUI="isMobile"
-                  placeholder="enter date"
-                  selectionMode="single"
-                  :selectOtherMonths="true"
-                  onfocus="blur();"
-                  style="width: 150px"
-                  @input="resetDepartureTime"
-                  >
-                </pCalendar>
+                <q-list dense>
+                    <transition-group name="selections-list">
+                        <span v-for="(property, index) in ['departureDate', 'returnDate', 'departurePort', 'returnPort']" :key="index + 1">
+                            <q-item v-if="trip.activeTrip[property] || trip.activeTrip[property] === false" :class="getSelectionClasses(index)"  dense :style="getIndent(index)">
+                                <q-item-section >
+                                    <b>{{ titleFormat(property) }}: {{ trip.activeTrip[property].name ? trip.activeTrip[property].name : trip.activeTrip[property].description ? trip.activeTrip[property].description : ['departureDate', 'returnDate'].includes(property) ? formatDate(trip.activeTrip[property], property) : trip.activeTrip[property] }}</b>
+                                </q-item-section>
+                                <q-item-section avatar style="cursor: pointer" v-if="!trip.readOnly">
+                                    <q-icon name="clear" @click="removeProperty(property)"></q-icon>
+                                </q-item-section>
+                            </q-item>
+
+                        </span>
+                    </transition-group>
+                </q-list>
             </div>
-
-            <div class="trips-el-height">
-              <span v-if="trip.activeTrip.isSingleDayTrip" class="date-label">Trip Date</span>
-              <pCalendar
-                :disabled="trip.readOnly"
-                v-if="trip.activeTrip.isSingleDayTrip"
-                v-model="tripDate"
-                :minDate="minDate"
-                :maxDate="maxDate"
-                :disabledDates="invalidDates"
-                :inline="false"
-                :touchUI="isMobile"
-                placeholder="enter date"
-                selectionMode="single"
-                :selectOtherMonths="true"
-                onfocus="blur();"
-                style="width: 150px"
-                @input="resetDepartureTime"
-                >
-              </pCalendar>
-            </div>
-
-            <div class="trips-el-height" style="margin: 0 15px ; font-weight: bold">Departure Time (24H)
-              <timepicker
-                :disabled="trip.readOnly"
-                manual-input
-                hide-clear-button
-                close-on-complete
-                v-model="departureTime"
-                lazy
-                :hour-range="getValidHours"
-                hide-disabled-hours
-                @input="updateDepartureDate">
-              </timepicker>
-            </div>
-
-            <div class="trips-el-height">
-              <span v-if="!trip.activeTrip.isSingleDayTrip" class="date-label">Return Date</span>
-              <pCalendar
-                :disabled="trip.readOnly"
-                v-if="!trip.activeTrip.isSingleDayTrip"
-                v-model="tripDates[1]"
-                :minDate="minDate"
-                :maxDate="maxDate"
-                :disabledDates="invalidDates"
-                :inline="false"
-                :touchUI="isMobile"
-                placeholder="enter date"
-                selectionMode="single"
-                :selectOtherMonths="true"
-                onfocus="blur();"
-                style="width: 150px"
-                >
-              </pCalendar>
-            </div>
-          </div>
-
-        </div>
-
-      <div class="q-pa-md">
-
-        <q-select
-          label="Start Port"
-          v-model="trip.activeTrip.departurePort"
-          :options="ports"
-          @filter="startPortsFilterFn"
-          :option-label="opt => opt.name"
-          option-value="_id"
-          dense
-          fill-input
-          stack-label
-          :readonly="trip.readOnly"
-          use-input
-          hide-selected
-          clearable
-        ></q-select>
-
-        <q-select
-          v-model="trip.activeTrip.returnPort"
-          dense
-          label="End Port"
-          @filter="endPortsFilterFn"
-          fill-input
-          stack-label
-          :option-label="opt => opt.name"
-          option-value="_id"
-          :options="ports"
-          :readonly="trip.readOnly"
-          use-input
-          hide-selected
-          clearable
-        ></q-select>
-
-        <q-select
-          v-model="trip.activeTrip.fishery"
-          dense
-          label="Fishery"
-          fill-input
-          stack-label
-          :rules="[val => !!val || 'Field is required']"
-          :option-label="opt => opt.description"
-          option-value="_id"
-          :options="fisheryOptions"
-          :readonly="trip.readOnly || !this.trip.newTrip"
-          style="padding-bottom: 5px"
-        ></q-select>
-
-        <p style="margin: 0">
-          <strong :disabled="trip.readOnly">Permits</strong>
-        </p>
-
-        <q-select
-          v-model="trip.activeTrip.permits"
-          dense
-          bg-color="white"
-          color="primary"
-          multiple
-          use-chips
-          stack-label
-          :option-label="opt => opt.permitNumber"
-          option-value="permitNumber"
-          :options="getVesselPermits"
-          :readonly="trip.readOnly"
-        >
-          <template v-slot:selected-item="scope">
-            <q-chip
-              removable
-              dense
-              @remove="scope.removeAtIndex(scope.index)"
-              :tabindex="scope.tabindex"
-              color="primary"
-              text-color="white"
-            >
-              <q-avatar color="primary" text-color="white" icon="local_offer"/>
-              <span v-if="scope.opt.label">{{ scope.opt.label }}</span>
-              <span v-else>{{ scope.opt.permitNumber }}</span>
-            </q-chip>
-          </template>
-        </q-select>
-
-        <div v-if="trip.activeTrip.fishery.description === 'Electronic Monitoring EFP'">
-          <strong :disabled="trip.readOnly">Will this trip be maximized retention?</strong>
-          <q-btn-toggle
-          v-model="trip.activeTrip.maximizedRetention"
-          toggle-color="primary"
-          :disable="trip.readOnly"
-          :options="[
-              {label: 'Yes', value: true},
-              {label: 'No', value: false},
-              {label: 'Don\'t know', value: null}
-            ]"
-          >
-          </q-btn-toggle>
-        </div>
-
+        </transition>
         <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
           <strong :disable="trip.readOnly">Coverage Waived? (Staff Only)</strong><br>
           <q-btn-toggle
@@ -230,73 +67,235 @@
             {label: 'No', value: false}
           ]"></q-btn-toggle>
         </div>
-
-    <q-dialog v-model="missingRequired">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">
-              You must specify a fishery.
-            </div>
-            <q-btn style="float: right" color="primary" @click="missingRequired = false" label="ok"/>
-            <br><br>
-          </q-card-section>
-        </q-card>
-    </q-dialog>
-
-    <q-dialog v-model="daysWarn">
-      <q-card>
-        <q-card-section>
-        <div class="text-h6">
-          Trip start time is less than 48 hours from now! If selected for observer coverage an observer will be provided ASAP but trip may be delayed up to 48 hours.
+        <div v-if="trip.logTrip && trip.activeTrip.fishery && trip.activeTrip.returnPort">
+          <strong :disable="trip.readOnly">Trip Observed?</strong><br>
+          <q-btn-toggle
+          v-model="trip.activeTrip.isSelected"
+          toggle-color="primary"
+          :disable="trip.readOnly"
+          :options="[
+            {label: 'Yes', value: true},
+            {label: 'No', value: false}
+          ]"></q-btn-toggle>
         </div>
-        </q-card-section>
-        <q-card-section class="float-right">
-          <q-btn color="primary" @click="daysWarn = false" label="OK"/>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-  </div>
-      </div>
+        <hr>
+        <transition name="choices-list-item">
+            <div v-if="choices">
+            <b v-if="choices.length > 0">Choose option that best describes trip:</b>
+                <q-list>
+                    <transition-group name="choices-list">
+                        <q-item class="choices-list-item" v-for="(option, index) in choices" :key="option.description" :class="getChoiceClasses(index)" clickable @click="selectOption(option)" manual-focus>
+                            <q-item-section>
+                                <b>{{ option.description }}</b>
+                            </q-item-section>
+                            <q-item-section avatar v-if="option.isEm">
+                                <q-avatar color="white" text-color="primary" size="sm"><b>EM</b></q-avatar>
+                            </q-item-section>
+                        </q-item>
+                    </transition-group>
+                </q-list>
+            </div>
+        </transition>
+        <transition name="choices-list-item">
+            <div v-if="!choices || choices.length === 0">
+                <q-list>
+                    <transition-group name="choices-list">
+                        <q-item class="choices-list-item" :key="'departuredate'" :class="getChoiceClasses(0)" v-if="!trip.activeTrip.departureDate && !transitioning">
+                            <q-item-section>
+                                <b>Departure Date/Time:<span v-if="!trip.logTrip"> (estimated)</span></b>
+                            </q-item-section>
+                            <q-item-section>
+                                <pCalendar
+                                    id="departdate"
+                                    v-model="depDateTime"
+                                    :touchUI="isMobile"
+                                    :inline="false"
+                                    :minDate="minDate"
+                                    :maxDate="maxDate"
+                                    :disabledDates="invalidDates"
+                                    selectionMode="single"
+                                    :selectOtherMonths="true"
+                                    title="Departure Date"
+                                    :showTime="true"
+                                    onfocus="blur()"
+                                    :rules="[val => !!val || 'Departure Date/Time is required']"
+                                    >
+                                </pCalendar>
+                            </q-item-section>
+                            <q-item-section avatar v-if="depDateTime !== ''" style="cursor: pointer">
+                                <q-icon avatar name="done" @click="submitDepartureDate"></q-icon>
+                            </q-item-section>
+                        </q-item>
+                        <q-item class="choices-list-item" :key="'singleDay'" :class="getChoiceClasses(1)" clickable @click="singleDayTrip" manual-focus v-if="trip.activeTrip.departureDate && !trip.activeTrip.returnDate">
+                            <q-item-section>
+                                <b>Single Day Trip</b>
+                            </q-item-section>
+                        </q-item>
+                        <q-item class="choices-list-item" :key="'returndate'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.departureDate && !trip.activeTrip.returnDate">
+                            <q-item-section>
+                                <b>Return Date:<span v-if="!trip.logTrip"> (estimated)</span></b>
+                            </q-item-section>
+                            <q-item-section>
+                                <pCalendar
+                                    id="returndate"
+                                    v-model="retDate"
+                                    :touchUI="isMobile"
+                                    :inline="false"
+                                    :minDate="minDate"
+                                    :maxDate="maxDate"
+                                    :disabledDates="invalidDates"
+                                    selectionMode="single"
+                                    :selectOtherMonths="true"
+                                    title="Return Date"
+                                    :showTime="false"
+                                    onfocus="blur()"
+                                    :rules="[val => !!val || 'Return date is required']"
+                                    >
+                                </pCalendar>
+                            </q-item-section>
+                            <q-item-section avatar v-if="retDate !== ''" style="cursor: pointer">
+                                <q-icon avatar name="done" @click="submitReturnDate"></q-icon>
+                            </q-item-section>
+                        </q-item>
+                        <q-item class="choices-list-item" :key="'departureport'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.returnDate && !trip.activeTrip.departurePort">
+                            <q-item-section>
+                                <b>Departure Port:</b>
+                            </q-item-section>
+                            <q-item-section>
+                                <q-select
+                                    v-model="trip.activeTrip.departurePort"
+                                    dense
+                                    title="Departure Port"
+                                    style="width: 100%; border: 2px solid black; border-radius: 3px; padding: 0"
+                                    :options="portOptions"
+                                    :option-label="opt => opt.name"
+                                    option-value="_id"
+                                    bg-color= "white"
+                                    :readonly="trip.readOnly"
+                                    use-input
+                                    clearable
+                                ></q-select>
+                            </q-item-section>
+                        </q-item>
+                        <q-item class="choices-list-item" :key="'returnport'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.departurePort && !trip.activeTrip.returnPort">
+                            <q-item-section>
+                                <b>Return Port:</b>
+                            </q-item-section>
+                            <q-item-section>
+                                <q-select
+                                    v-model="trip.activeTrip.returnPort"
+                                    dense
+                                    title="Return Port"
+                                    style="width: 100%; border: 2px solid black; border-radius: 3px; padding: 0"
+                                    :options="portOptions"
+                                    :option-label="opt => opt.name"
+                                    option-value="_id"
+                                    bg-color= "white"
+                                    use-input
+                                    clearable
+                                ></q-select>
+                            </q-item-section>
+                        </q-item>
+                    </transition-group>
+                </q-list>
+            </div>
+        </transition>
 
-          <div v-if="trip.activeTrip.tripStatus.description === 'closed'" style="text-align: center">
+        <div v-if="trip.activeTrip.tripStatus.description === 'closed' || (trip.activeTrip.fishery && trip.activeTrip.returnDate && trip.activeTrip.returnPort && trip.logTrip && (trip.activeTrip.isSelected || trip.activeTrip.isSelected === false))" style="text-align: center">
             <file-uploader
-              label="Logbook Capture"
-              :trip="trip.activeTrip"
-              submitAction="Add Image(s)"
+                label="Logbook Capture"
+                :trip="trip.activeTrip"
+                submitAction="Add Image(s)"
             />
-          </div>
+        </div>
 
-      <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
-        <q-btn label="Cancel" @click="goToTrips"/>
-        &nbsp;
-        <q-btn label="Create Trip" color="primary" @click="createTrip" :disable="disableCreate"/>
-        <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
-        <br>&nbsp;
-      </div>
-      <div v-if="!trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
-        <q-btn label="Cancel Edit" @click="goToTrips"></q-btn>
-        &nbsp;
-        <q-btn label="Update Trip" color="primary" @click="updateTrip"></q-btn>
-        <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
-        <br>&nbsp;
-      </div>
-  </div>
+        <hr v-if="!(trip.activeTrip.fishery && trip.activeTrip.returnDate && trip.activeTrip.returnPort)">
+        <div v-if="trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
+            <q-btn label="Cancel" @click="goToTrips"/>
+            &nbsp;
+            <q-btn v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode && trip.activeTrip.fishery && trip.activeTrip.returnPort && trip.logTrip" color="red" label="submit without image" @click="submitTripOnly" :disabled="disableCreate"></q-btn>
+            &nbsp;
+            <q-btn v-if="trip.activeTrip.fishery && trip.activeTrip.returnDate && trip.activeTrip.returnPort && !trip.logTrip" label="Create Trip" color="primary" @click="createTrip" :disable="disableCreate"/>
+            <q-btn v-if="trip.logTrip && trip.activeTrip._attachments" label="Log Trip" color="primary" @click="createTrip" :disable="disableCreate"/>
+            <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+            <br>&nbsp;
+        </div>
+            <div v-if="!trip.newTrip" align="right" class="text-primary" style="padding-right: 10px">
+            <q-btn label="Cancel Edit" @click="goToTrips"></q-btn>
+            &nbsp;
+            <q-btn v-if="trip.activeTrip.fishery && trip.activeTrip.returnDate && trip.activeTrip.returnPort" label="Update Trip" color="primary" @click="updateTrip"></q-btn>
+            <q-spinner-radio v-if="transferring" color="primary" size="3em"/>
+            <br>&nbsp;
+        </div>
+
+        <q-dialog v-model="missingRequired">
+            <q-card>
+            <q-card-section>
+                <div class="text-h6">
+                You must specify a fishery.
+                </div>
+                <q-btn style="float: right" color="primary" @click="missingRequired = false" label="ok"/>
+                <br><br>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="daysWarn">
+        <q-card>
+            <q-card-section>
+                <div class="text-h6">
+                    Trip start time is less than 48 hours from now! If selected for observer coverage an observer will be provided ASAP but trip may be delayed up to 48 hours.
+                </div>
+            </q-card-section>
+            <q-card-section class="float-right">
+                <q-btn color="primary" @click="daysWarn = false" label="OK"/>
+            </q-card-section>
+        </q-card>
+        </q-dialog>
+
+        <q-dialog v-model="sameDatesWarning">
+            <q-card>
+            <q-card-section>
+                <div class="text-h6">
+                A trip with the same start and end date has already been submitted - are you sure you want to submit another trip with the same dates?
+                </div>
+                <div style="float: right;" >
+                    <q-btn color="primary" @click="submitAnyway" label="submit"/>
+                    &nbsp;
+                    <q-btn color="red" @click="sameDatesWarning = false" label="cancel"/>
+                </div>
+                <br><br>
+            </q-card-section>
+            </q-card>
+        </q-dialog>
+
+    </div>
 </template>
 
 <script lang="ts">
-import { mapState } from 'vuex';
-import router from 'vue-router';
-import { State, Action, Getter } from 'vuex-class';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import {
-  AlertState, GeneralState, PermitState,
-  TripState, UserState, VesselState
-} from '../_store/types/types';
+  createComponent,
+  ref,
+  reactive,
+  computed,
+  watch,
+  onMounted
+} from '@vue/composition-api';
 
+import { Vue, Watch } from 'vue-property-decorator';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { AuthState, authService, auth } from '@boatnet/bn-auth';
 
+import { WatchOptions } from 'vue';
+
+import { Notify } from 'quasar';
+import moment from 'moment';
+
+import _ from 'lodash';
+
+import { getTripsApiTrip, getCatchApiCatch, getTripsApiTrips } from '@boatnet/bn-common';
+import { newTripsApiTrip, updateTripsApiTrip, emailCoordinators } from '@boatnet/bn-common';
+import { authService } from '@boatnet/bn-auth/lib';
 import {
   Fishery, LocationEvent, OTSTarget, Permit, Port,
   PortTypeName, TripSelection, Vessel, VesselTypeName,
@@ -304,767 +303,457 @@ import {
   WcgopTrip, WcgopTripTypeName
 } from '@boatnet/bn-models';
 
-import { newTripsApiTrip, updateTripsApiTrip, emailCoordinators } from '@boatnet/bn-common';
+export default createComponent({
+  setup(props, context) {
+    const store = context.root.$store;
+    const state = store.state;
+    const router = context.root.$router;
+    const trip = state.trip;
+    const vessel = state.vessel;
+    const user = state.user;
+    // const activeTrip: any = ref({});
 
-// import { username, password } from '../config/secrets'
+    const masterDb: Client<any> = couchService.masterDB;
 
-import FileUploader from '../components/FileUploader.vue';
-Vue.component('file-uploader', FileUploader);
-
-import Calendar from 'primevue/calendar';
-Vue.component('pCalendar', Calendar);
-
-import Timeselector from 'vue-timeselector';
-Vue.component('timeselector', Timeselector);
-
-import VueTimepicker from 'vue2-timepicker';
-Vue.component('timepicker', VueTimepicker);
-
-import { date, Notify } from 'quasar';
-import request from 'request';
-import moment from 'moment';
-import _ from 'lodash';
-
-@Component
-export default class TripDetails extends Vue {
-  @State('trip') private trip!: TripState;
-  @State('permit') private permit!: PermitState;
-  @State('user') private user!: UserState;
-  @State('general') private general!: GeneralState;
-  @State('vessel') private vessel!: VesselState;
-
-  @State('alert') private alert!: AlertState;
-  @Action('clear', { namespace: 'alert' }) private clearAlert: any;
-  @Action('error', { namespace: 'alert' }) private errorAlert: any;
-
-  private prompt = false;
-
-  private portOptions: string[] = [];
-  private fisheryOptions: Fishery[] = [];
-  private permits: Permit[] = [];
-  private otsTargets: any[] = [];
-  private ports: any[] = [];
-  private userTrips!: any;
-  private latestReturnDate = 0;
-  private missingRequired = false;
-
-  private existingTripStart: string = '0';
-  private existingTripEnd: string = '0';
-  private startYearMonth: string = moment().format('YYYY/MM');
-  private endYearMonth: string = moment().format('YYYY/MM');
-  private tripDates: any = [];
-  private tripDate: any = null;
-  private invalidDates: any[] = [];
-  private minDate: any = null;
-  private maxDate: any = null;
-  private daysWarn: boolean = false;
-  private emRoster: any = {};
-  private maximizedRetention: any = null;
-  private tripsApiTrips: any = [];
-  private tripsApiNum: number = 0;
-  private file: any = null;
-  private fileUrl: any = null;
-  private transferring: boolean = false;
-  private newImage: boolean = false;
-  private departureTime: any = null;
-  private disableCreate: boolean = false;
-  private userRoles: string[] = [];
-  private savedMaxRetention: any = null;
-  private departureTimeEntered: boolean = false;
-  private oldTrip: any = null;
-
-  constructor() {
-    super();
-  }
-
-  private isAuthorized(authorizedRoles: string[]) {
-    for (const role of authorizedRoles) {
-      if (this.userRoles.includes(role)) {
-        return true;
+    const transferring: any = ref(false);
+    const selections: any = reactive([]);
+    const isMobile = computed(
+      () => {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          return true;
+        } else {
+          return false;
+        }
       }
+    );
+
+    let fisheries: Fishery = [];
+
+    let userRoles: string[] = [];
+
+    const isAuthorized = (authorizedRoles: string[]) => {
+    for (const role of authorizedRoles) {
+        if (userRoles.includes(role)) {
+            return true;
+        }
     }
     return false;
-  }
-
-  private getDate(myDate: string) {
-    return moment(myDate).format();
-  }
-
-  private async getFisheryOptions() {
-    const masterDb = couchService.masterDB;
-    const queryOptions = {
-      reduce: false,
-      include_docs: true,
-      key: 'fishery'
     };
 
-    const fisheries = await masterDb.view(
-      'obs_web',
-      'all_doc_types',
-      queryOptions,
-    );
+    const minDate: any = ref(null);
+    const maxDate: any = ref(null);
+    const invalidDates: any = ref([]);
+    const existingTripStart: any = ref('0');
+    const existingTripEnd: any = ref('0');
+    let tripsApiNum: any = null;
+    const savedMaxRetention: any = null;
+    let otsTargets: any[] = [];
+    const missingRequired: any = ref(false);
+    const daysWarn: any = ref(false);
+    let disableCreate: boolean = false;
+    const tripNotRequired: any = ref(false);
+    const confirmedSameDaysSubmission: any = ref(false);
+    const sameDatesWarning: any = ref(false);
 
-    this.fisheryOptions = fisheries.rows.map((row: any) => row.doc);
-    this.fisheryOptions = this.fisheryOptions.filter((option: any) => option.description === 'Electronic Monitoring EFP'); // only EM EFP
-
-    // this.fisheryOptions.sort( (a: any, b: any) => {
-    //   if (a.description > b.description) {
-    //     return 1;
-    //   } else if (a.description < b.description) {
-    //     return -1;
-    //   } else {
-    //     return 0;
-    //   }
-    // });
-
-    this.trip.activeTrip!.fishery = this.fisheryOptions[0];  // set to EM EFP
-  }
-
-  private permitsFilterFn(val: string, update: any, abort: any) {
-
-    if (val === '') {
-      update(() => {
-        this.permit.permits = this.permit.permits;
-      });
-      return;
-    }
-    update(() => {
-      const searchString = val.toLowerCase();
-      this.permit.permits = this.permit.permits.filter((permit) =>
-        permit.permitNumber
-          ? permit.permitNumber
-              .toLowerCase()
-              .indexOf(searchString.toLowerCase()) > -1
-          : false
-      );
-    });
-  }
-
-  private startPortsFilterFn(val: string, update: any, abort: any) {
-    update(async () => {
-      try {
-        const masterDb = couchService.masterDB;
-        const queryOptions = {
-          // limit: 5,
-          start_key: val.toLowerCase(),
-          end_key: val.toLowerCase() + '\u9999',
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-
-        const ports = await masterDb.view(
-          'obs_web',
-          'all_port_names',
-          queryOptions,
-        );
-        this.ports = ports.rows.map((row: any) => row.doc);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  }
-
-  private endPortsFilterFn(val: string, update: any, abort: any) {
-    update(async () => {
-      try {
-        const masterDb = couchService.masterDB;
-        const queryOptions = {
-          // limit: 5,
-          start_key: val.toLowerCase(),
-          end_key: val.toLowerCase() + '\u9999',
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
-        };
-
-        const ports = await masterDb.view(
-          'obs_web',
-          'all_port_names',
-          queryOptions
-        );
-        this.ports = ports.rows.map((row: any) => row.doc);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  }
-
-  private getStatus(otsTarget: OTSTarget) {
-    if (
-      moment(otsTarget.effectiveDate) <= moment() &&
-      moment() <= moment(otsTarget.expirationDate) &&
-      otsTarget.status !== 'Inactive'
-    ) {
-      return 'Active';
-    } else {
-      return 'Inactive';
-    }
-  }
-
-  private async getEmRoster() {
-    const masterDb = couchService.masterDB;
-    const queryOptions = {
-      key: 'emefp',
-      inclusive_end: true,
-      reduce: false,
-      include_docs: true
-    };
-
-    const EMEfpRoster = await masterDb.view(
-      'obs_web',
-      'all_doc_types',
-      queryOptions
-    );
-
-    for (const row of EMEfpRoster.rows) {
-      this.emRoster[row.doc.vesselCGNumber] = row.doc.lePermit;
-    }
-
-  }
-
-  private get getVesselPermits() {
-    const vesselId = this.vessel.activeVessel!.coastGuardNumber ?
-                      this.vessel.activeVessel!.coastGuardNumber : this.vessel.activeVessel!.stateRegulationNumber ?
-                      this.vessel.activeVessel!.stateRegulationNumber : '';
-    const vesselPermits = this.permit.vesselPermits[vesselId];
-    return vesselPermits;
-  }
-
-  private async handleSavedSelections() {
-      const savedSelections: any = {
-        type: 'saved-selections',
-        createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
-        createdDate: moment().format()
-      };
-      const vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
-      const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : 'fish';
-
-      const masterDb: Client<any> = couchService.masterDB;
-      const queryOptions = {
-        include_docs: true,
-        key: vesselId
-      };
-
-      let vesselSelections: any = await masterDb.view<any>(
-              'obs_web',
-              'saved_selections',
-              queryOptions
-            );
-
-      if (vesselSelections.rows.length > 0) {
-        vesselSelections = vesselSelections.rows[0].doc;
-      } else {
-        vesselSelections = savedSelections;
-      }
-
-      vesselSelections.vesselId = vesselId;
-      vesselSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
-      vesselSelections.updatedDate = moment().format();
-
-      if (!vesselSelections[fisheryName]) {
-        vesselSelections[fisheryName] = [];
-      }
-
-      if (!this.trip.activeTrip!.maximizedRetention) {
-        // first check whether there is a stored selection for the vessel and fishery
-        // apply selection to new trip
-        let tripSelection: any = null;
-        if (vesselSelections[fisheryName] && vesselSelections[fisheryName].length > 0) {
-          if (vesselSelections[fisheryName].length > 1) {
-            vesselSelections[fisheryName].sort( (a: any, b: any) => {
-              if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
-                return 1;
-              } else if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
-                return -1;
-              } else {
-                return 0;
-              }
-            });
-
-            tripSelection = vesselSelections[fisheryName].shift();
-            // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
-
-            // const sel1 = vesselSelections[fisheryName][0].selectionDate;
-            // const sel2 = vesselSelections[fisheryName][1].selectionDate;
-            // if (moment(sel1).isBefore(sel2, 'second')) {
-            //   tripSelection = vesselSelections[fisheryName].shift();
-            // } else {
-            //   tripSelection = vesselSelections[fisheryName].pop();
-            // }
-          } else {
-            tripSelection = vesselSelections[fisheryName].pop();
-            // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
-          }
-          // no longer need to save here as a selection is added later
-          // if (vesselSelections._id) {
-          //   await masterDb.put(
-          //     vesselSelections._id,
-          //     vesselSelections,
-          //     vesselSelections._rev
-          //   );
-          // } else {
-          //   await masterDb.post(vesselSelections);
-          // }
-
-          this.trip.activeTrip!.isSelected = tripSelection.isSelected;
-          this.trip.activeTrip!.notes = tripSelection.notes;
-          this.trip.activeTrip!.selectionDate = tripSelection.selectionDate;
-
-        } else {
-          const activeOTSTarget: any = this.getActiveOtsTarget();
-
-          const randomNum = Math.floor(Math.random() * 100);
-
-          if (activeOTSTarget && activeOTSTarget.setRate && this.trip.activeTrip) {
-            if (randomNum < activeOTSTarget.setRate) {
-              this.trip.activeTrip.isSelected = true;
-              this.trip.activeTrip.notes =
-                'Trip selected using Target Type: ' +
-                activeOTSTarget.targetType +
-                ', with set rate of ' +
-                activeOTSTarget.setRate +
-                ' (randomly generated number: ' +
-                randomNum +
-                ' was less than set rate: ' +
-                activeOTSTarget.setRate +
-                ')';
-            } else {
-              this.trip.activeTrip.isSelected = false;
-              this.trip.activeTrip.notes =
-                'Trip NOT selected using Target Type: ' +
-                activeOTSTarget.targetType +
-                ', with set rate of ' +
-                activeOTSTarget.setRate +
-                ' (randomly generated number: ' +
-                randomNum +
-                ' was NOT less than set rate: ' +
-                activeOTSTarget.setRate +
-                ')';
-            }
-          }
-
-        }
-
-      } else {
-        this.trip.activeTrip!.isSelected = false;
-        this.trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
-      }
-
-      if (!vesselSelections[fisheryName]) {
-        vesselSelections[fisheryName] = [];
-      }
-
-      if (!vesselSelections[fisheryName] || vesselSelections[fisheryName].length < 1) {
-
-        const activeOTSTarget: any = await this.getActiveOtsTarget();
-        const randomNum = Math.floor(Math.random() * 100);
-
-        const newSelection: any = {
-          selectionDate: moment().format(),
-          isSelected: false
-          };
-
-        if (activeOTSTarget) {
-          if (randomNum < activeOTSTarget.setRate) {
-            newSelection.isSelected = true;
-            newSelection.notes = 'Trip selected using Target Type: ' +
-                activeOTSTarget.targetType +
-                ', with set rate of ' +
-                activeOTSTarget.setRate +
-                ' (randomly generated number: ' +
-                randomNum +
-                ' was less than set rate: ' +
-                activeOTSTarget.setRate +
-                ')';
-          } else {
-            newSelection.isSelected = false;
-            newSelection.notes = 'Trip NOT selected using Target Type: ' +
-                activeOTSTarget.targetType +
-                ', with set rate of ' +
-                activeOTSTarget.setRate +
-                ' (randomly generated number: ' +
-                randomNum +
-                ' was NOT less than set rate: ' +
-                activeOTSTarget.setRate +
-                ')';
-          }
-        }
-        vesselSelections[fisheryName].push(newSelection);
-      }
-
-      if (vesselSelections._id) {
-        await masterDb.put(
-          vesselSelections._id,
-          vesselSelections,
-          vesselSelections._rev
-        );
-      } else {
-        await masterDb.post(vesselSelections);
-      }
-
-  }
-
-  private async createTrip() {
-
-    // REQIRES A START AND END DATE
-    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
-      Notify.create({
-        message: '<b>A trip must have a start and end date</b>',
-            position: 'center',
-            color: 'primary',
-            timeout: 2000,
-            icon: 'warning',
-            html: true,
-            multiLine: true
-        });
-      return;
-    }
-
-    // REQUIRES A DEPARTURE TIME
-    if (!this.departureTimeEntered) {
-      Notify.create({
-        message: '<b>A trip must have a departure time.</b>',
-        position: 'center',
-        color: 'primary',
-        timeout: 2000,
-        icon: 'warning',
-        html: true,
-        multiLine: true
-      });
-      return;
-    }
-
-    if (!this.trip.activeTrip!.departurePort || !this.trip.activeTrip!.returnPort) {
-      Notify.create({
-        message: '<b>A trip must have a departure and return port.</b>',
-        position: 'center',
-        color: 'primary',
-        timeout: 2000,
-        icon: 'warning',
-        html: true,
-        multiLine: true
-      });
-      return;
-    }
-
-    // REQUIRES A FISHERY!
-    if (this.trip.activeTrip!.fishery!.description !== '') {
-      this.disableCreate = true;
-
-      this.handleSavedSelections().then( async () => {
-        const newApiTrip = {
-          vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
-          vesselName: this.trip.activeTrip!.vessel!.vesselName,
-          departurePort: this.trip.activeTrip!.departurePort!.code ? this.trip.activeTrip!.departurePort!.code : this.trip.activeTrip!.departurePort!.name,
-          departureDate: this.trip.activeTrip!.departureDate,
-          returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.departurePort!.name,
-          returnDate: this.trip.activeTrip!.returnDate,
-          permits: this.trip.activeTrip!.permits ? this.trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
-          fishery: this.trip.activeTrip!.fishery!.description,
-          createdBy: this.trip.activeTrip!.createdBy,
-          createdDate: this.trip.activeTrip!.createdDate
-        };
-
-        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
+    const getMinDate = async () => {
+        const vesselId = vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber;
+        const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions: any = {
+                include_docs: true,
+                reduce: false,
+                key: vesselId
+            };
 
         try {
-          await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
-          this.trip.activeTrip!.tripNum = this.tripsApiNum;
-        } catch (err) {
-          // Notify.create({
-          //   message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
-          //   position: 'top',
-          //   color: 'red',
-          //   timeout: 7000,
-          //   multiLine: true
-          // });
-          // return;
-          console.log(err);
-        }
+        const vesselTrips = await masterDB.view<any>(
+                'obs_web',
+                'ots_trips_by_vesselId',
+                queryOptions
+                );
+        const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
 
-        const masterDB: Client<any> = couchService.masterDB;
-        await masterDB.post(this.trip.activeTrip).then( () => {
-          Notify.create({
-            message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-              position: 'top',
-              color: 'primary',
-              timeout: 7000,
-              html: true,
-              multiLine: true
-          });
-          if (this.trip.activeTrip!.isSelected) {
-            emailCoordinators(this.trip.activeTrip, 'NEW');
-          }
-          this.$router.push({ path: '/trips/' });
-        });
-      });
-
-
-    } else {
-      this.missingRequired = true;
-    }
-  }
-
-  private getActiveOtsTarget() {
-    let activeOTSTarget;
-    const fisheryName: string = this.trip.activeTrip!.fishery!.description!;
-    for (const otsTarget of this.otsTargets) {
-      if (this.trip.activeTrip && this.trip.activeTrip.fishery) {
-        if (
-          this.getStatus(otsTarget) === 'Active' &&
-          otsTarget.targetType === 'Fishery Wide' &&
-          otsTarget.fishery === fisheryName
-        ) {
-          activeOTSTarget = otsTarget;
-        }
-      }
-    }
-    for (const otsTarget of this.otsTargets) {
-      if (
-        this.getStatus(otsTarget) === 'Active' &&
-        otsTarget.targetVessel &&
-        this.trip.activeTrip &&
-        this.trip.activeTrip.vessel &&
-        this.trip.activeTrip.fishery
-      ) {
-        const otsVesselId = otsTarget.targetVessel.coastGuardNumber
-          ? otsTarget.targetVessel.coastGuardNumber
-          : otsTarget.targetVessel.stateRegulationNumber;
-        const tripVesselId = this.trip.activeTrip.vessel.coastGuardNumber
-          ? this.trip.activeTrip.vessel.coastGuardNumber
-          : this.trip.activeTrip.vessel.stateRegulationNumber;
-        if (
-          otsTarget.targetType === 'Vessel' &&
-          otsTarget.fishery === this.trip.activeTrip.fishery.description &&
-          otsVesselId === tripVesselId
-        ) {
-          activeOTSTarget = otsTarget;
-        }
-      }
-    }
-    return activeOTSTarget;
-  }
-
-  private goToTrips() {
-    this.$router.push({ path: '/trips/' });
-  }
-
-  get departureDate(): Date | undefined {
-    if (this.trip.activeTrip) {
-      return new Date(moment(this.trip.activeTrip.departureDate).format());
-    }
-  }
-
-  set departureDate(value) {
-    if (this.trip.activeTrip) {
-      this.trip.activeTrip.departureDate = moment(this.tripDates[0]).format();
-    }
-  }
-
-  // get departureTime(): Date | undefined {
-  //   if (this.trip.activeTrip) {
-  //     return new Date(moment(this.trip.activeTrip.departureDate).format());
-  //   }
-  // }
-
-  // set departureTime(value) {
-  //   if (this.trip.activeTrip) {
-  //     this.trip.activeTrip.departureDate = moment(value).format();
-  //   }
-  // }
-
-  private setDepartureTime() {
-    if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
-      this.departureTime = {
-        HH: moment(this.trip.activeTrip.departureDate).format('HH'),
-        mm: moment(this.trip.activeTrip.departureDate).format('mm')
-      };
-    }
-  }
-
-  private updateDepartureDate() {
-    if (this.departureTime) {
-      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-      this.departureTimeEntered = true;
-
-      if (moment(this.trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48  && (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode)) {
-        this.daysWarn = true;
-      }
-    }
-  }
-
-  get returnDate(): Date | undefined {
-    if (this.trip.activeTrip) {
-      return new Date(moment(this.trip.activeTrip.returnDate).format());
-    }
-  }
-
-  set returnDate(value) {
-    if (this.trip.activeTrip) {
-      this.trip.activeTrip.returnDate = moment(this.tripDates[1]).format();
-    }
-  }
-
-  private async getMaxDate() {
-    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-    const masterDB: Client<any> = couchService.masterDB;
-    const queryOptions: any = {
-            include_docs: true,
-            reduce: false,
-            key: vesselId
-          };
-
-    try {
-      const vesselTrips = await masterDB.view<any>(
-              'obs_web',
-              'ots_trips_by_vesselId',
-              queryOptions
-            );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
-
-
-      if (this.trip.index === 0 && !this.trip.newTrip) {
-        for (const row of openTrips) {
-          if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
-            if (row.doc.tripStatus.description === 'open') {
-              this.maxDate = new Date(moment(row.doc.departureDate).format());
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-}
-
-private async getMinDate() {
-    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-    const masterDB: Client<any> = couchService.masterDB;
-    const queryOptions: any = {
-            include_docs: true,
-            reduce: false,
-            key: vesselId
-          };
-
-    try {
-      const vesselTrips = await masterDB.view<any>(
-              'obs_web',
-              'ots_trips_by_vesselId',
-              queryOptions
-            );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
-
-      if (this.trip.index === 1) {
-        for (const row of openTrips) {
-          if ( row.doc.type === 'ots-trip' &&
-                (row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber) === vesselId &&
-                row.doc._id !== this.trip.activeTrip!._id
-              ) {
-                  this.minDate = new Date(moment(row.doc.returnDate).format());
-                  if (moment(this.minDate).isSameOrBefore(moment()) ) {
-                    this.minDate = new Date();
-                  }
+        if (trip.activeTrip.departureDate) {
+            minDate.value = new Date(moment(trip.activeTrip.departureDate).format());
+        } else if (trip.logTrip) {
+            minDate.value = new Date(moment(new Date()).subtract(1, 'years').format());
+        } else if (trip.index === 1) {
+            for (const row of openTrips) {
+            if ( row.doc.type === 'ots-trip' &&
+                    (row.doc.vessel.coastGuardNumber ? row.doc.vessel.coastGuardNumber : row.doc.vessel.stateRegulationNumber) === vesselId &&
+                    row.doc._id !== trip.activeTrip!._id
+                ) {
+                    minDate.value = new Date(moment(row.doc.returnDate).format());
+                    if (moment(minDate.value).isSameOrBefore(moment()) ) {
+                        minDate.value = new Date();
+                    }
                 }
-        }
-      } else if (this.trip.newTrip) {
-        this.minDate = new Date();
-      } else {
-        this.minDate = new Date();
-      }
-    } catch (err) {
-      console.log(err);
-    }
-}
-
-  private async getBookedDates() {
-    if (!this.isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || this.user.captainMode) {
-      this.trip.readOnly = true;
-    } else {
-      this.trip.readOnly = false;
-    }
-    const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-    const masterDB: Client<any> = couchService.masterDB;
-    const queryOptions: any = {
-            include_docs: true,
-            reduce: false,
-            key: vesselId
-          };
-    let i = 0;
-
-    try {
-      const vesselTrips = await masterDB.view<any>(
-              'obs_web',
-              'ots_trips_by_vesselId',
-              queryOptions
-            );
-      const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
-      for (const row of openTrips) {
-        if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === this.trip.activeTrip!.vessel!.vesselName && row.doc._id !== this.trip.activeTrip!._id) {
-          if (row.doc.tripStatus.description === 'open') {
-            {
-              this.existingTripStart = row.doc.departureDate;
-              this.existingTripEnd = row.doc.returnDate;
-              const days = moment(moment(row.doc.returnDate).format('YYYY-MM-DD')).diff(moment(row.doc.departureDate).format('YYYY-MM-DD'), 'days');
-              for (i = 1; i < days; i++) {
-                  const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
-                  invalidDay.add(i, 'days');
-                  this.invalidDates.push(new Date(invalidDay.format()));
-              }
             }
-          }
-          if (row.doc.tripStatus.description === 'closed' && row.doc.closingReason === 'Taken') {
-            const closedTripStart = row.doc.captainAffirmedDepartureDate;
-            const closedTripEnd = row.doc.captainAffirmedReturnDate;
-            const days = moment(row.doc.captainAffirmedReturnDate).diff(row.doc.captainAffirmedDepartureDate, 'days');
-            for (i = 0; i <= days; i++) {
-              const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.captainAffirmedDepartureDate)));
-              invalidDay.add(i, 'days');
-              this.invalidDates.push(new Date(invalidDay.format()));
+        } else if (trip.newTrip) {
+            minDate.value = new Date();
+        } else {
+            minDate.value = new Date();
+        }
+        } catch (err) {
+        console.log(err);
+        }
+    };
+
+    const getMaxDate = async () => {
+        const vesselId = vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber;
+        const masterDB: Client<any> = couchService.masterDB;
+        const queryOptions: any = {
+                include_docs: true,
+                reduce: false,
+                key: vesselId
+            };
+        if (trip.logTrip) {
+            maxDate.value = new Date();
+        } else {
+            try {
+            const vesselTrips = await masterDB.view<any>(
+                    'obs_web',
+                    'ots_trips_by_vesselId',
+                    queryOptions
+                    );
+            const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
+            if (trip.index === 0 && !trip.newTrip) {
+                for (const row of openTrips) {
+                if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === trip.activeTrip!.vessel!.vesselName && row.doc._id !== trip.activeTrip!._id) {
+                    if (row.doc.tripStatus.description === 'open') {
+                    maxDate.value = new Date(moment(row.doc.departureDate).format());
+                    }
+                }
+                }
             }
-          }
+            } catch (err) {
+            console.log(err);
+            }
+        }
+    };
+
+    const getBookedDates = async () => {
+        if (!trip.logTrip) {
+            if (!isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || user.captainMode) {
+            trip.readOnly = true;
+            } else {
+            trip.readOnly = false;
+            }
+            const vesselId = vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber;
+            const masterDB: Client<any> = couchService.masterDB;
+            const queryOptions: any = {
+                    include_docs: true,
+                    reduce: false,
+                    key: vesselId
+                };
+            let i = 0;
+
+            try {
+            const vesselTrips = await masterDB.view<any>(
+                    'obs_web',
+                    'ots_trips_by_vesselId',
+                    queryOptions
+                    );
+            const openTrips: any = vesselTrips.rows.filter( (row: any) => row.doc.tripStatus.description === 'open');
+            for (const row of openTrips) {
+                if ( row.doc.type === 'ots-trip' && row.doc.vessel.vesselName === trip.activeTrip!.vessel!.vesselName && row.doc._id !== trip.activeTrip!._id) {
+                if (row.doc.tripStatus.description === 'open') {
+                    {
+                    existingTripStart.value = row.doc.departureDate;
+                    existingTripEnd.value = row.doc.returnDate;
+                    const days = moment(moment(row.doc.returnDate).format('YYYY-MM-DD')).diff(moment(row.doc.departureDate).format('YYYY-MM-DD'), 'days');
+                    for (i = 1; i < days; i++) {
+                        const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.departureDate)));
+                        invalidDay.add(i, 'days');
+                        invalidDates.value.push(new Date(invalidDay.format()));
+                    }
+                    }
+                }
+                if (row.doc.tripStatus.description === 'closed' && row.doc.closingReason === 'Taken') {
+                    const closedTripStart = row.doc.captainAffirmedDepartureDate;
+                    const closedTripEnd = row.doc.captainAffirmedReturnDate;
+                    const days = moment(row.doc.captainAffirmedReturnDate).diff(row.doc.captainAffirmedDepartureDate, 'days');
+                    for (i = 0; i <= days; i++) {
+                    const invalidDay: any = moment(JSON.parse(JSON.stringify(row.doc.captainAffirmedDepartureDate)));
+                    invalidDay.add(i, 'days');
+                    invalidDates.value.push(new Date(invalidDay.format()));
+                    }
+                }
+                }
+            }
+
+            } catch (err) {
+            console.log(err);
+            trip.readOnly = false;
+            }
+            if (trip.activeTrip!.tripStatus!.description === 'open') {
+            trip.readOnly = false;
+            }
+        }
+    };
+
+    const getFisheries = async () => {
+        const fisheriesQuery: any = await masterDb.view('obs_web', 'all_doc_types', {key: 'fishery', include_docs: true, reduce: false} as any);
+        fisheries = fisheriesQuery.rows.map( (row: any) => row.doc).filter( (row: any) => row.isActive);
+    };
+
+    const topLevelChoices = [
+        {description: 'Federal Permit'},
+        {description: 'State Permit'},
+        {description: 'Open Access'},
+        {description: 'Pacific Halibut Directed 2A'},
+        {description: 'EFP'}
+    ];
+
+    const computeHack = ref(0); // forces computed property to update
+    const transitioning = ref(false);
+
+    const activeCollection = ref('');
+
+    const choices = computed (
+      () => {
+        if (computeHack.value) {
+            if (transitioning.value) {
+                return [];
+            }
+            if (selections.length === 0) {
+            activeCollection.value = 'topLevelChoices';
+            return topLevelChoices;
+            } else if (selections.length === 1) {
+                if ( selections[0].description === 'Federal Permit') {
+                    activeCollection.value = 'fisheries';
+                    return fisheries.filter( (fishery: any) => fishery.isFederal );
+                } else if (selections[0].description === 'State Permit') {
+                    return fisheries.filter( (fishery: any) => fishery.isState );
+                } else if (selections[0].description === 'Open Access' ) {
+                    return fisheries.filter( (fishery: any) => fishery.isOpenAccess );
+                } else if (selections[0].description === 'EFP') {
+                    return fisheries.filter( (fishery: any) => fishery.isEfp );
+                }
+            } else if ((selections.length === 2 && selections[0].description === 'Federal Permit') || (selections.length === 2 && selections[1].description === 'LE ITQ EM')) {
+                return _.cloneDeep(selections[1].sectors);
+            } else if ( selections[1].isEm && ( selections.length === 2 || ( selections.length === 3 && !['Maximized Retention', 'Optimized Retention'].includes(selections[2].description) && (selections[2].description !== 'Mothership Catcher Vessel') ) ) ) {
+                return [{description: 'Maximized Retention'}, {description: 'Optimized Retention / Don\'t know'}];
+            } else {
+                return [];
+            }
         }
       }
+    );
 
-    } catch (err) {
-      console.log(err);
-      this.trip.readOnly = false;
-    }
-    if (this.trip.activeTrip!.tripStatus!.description === 'open') {
-      this.trip.readOnly = false;
-    }
-  }
+    const getSelectionClasses = (index: number) => {
+        if (index % 2 === 0) {
+            return 'selections-list-item bg-primary text-white rounded';
+        } else {
+            return 'selections-list-item bg-blue-2 rounded';
+        }
+    };
 
-  private startDateOptionsFn(val: string) {
-    if (this.trip.newTrip) {
-      return moment(val) >= moment() &&
-      (moment(val) < moment(this.existingTripStart) || moment(val) > moment(this.existingTripEnd));
-    } else {
-      return true;
-    }
-  }
+    const getChoiceClasses = (index: number) => {
+        if (index % 2 === 0) {
+            return 'choices-list-item bg-primary text-white rounded';
+        } else {
+            return 'choices-list-item bg-blue-2 rounded';
+        }
+    };
 
-  private returnDateOptionsFn(val: string) {
-    if (this.trip.activeTrip && this.trip.activeTrip.departureDate) {
-      if (moment(this.trip.activeTrip.departureDate) < moment(this.existingTripEnd)) {
-        return moment(val) >= moment(this.trip.activeTrip.departureDate) &&
-        moment(val) < moment(this.existingTripStart);
-      } else {
-        return moment(val) >= moment(this.trip.activeTrip.departureDate) &&
-        moment(val) > moment(this.existingTripEnd);
+    const getIndent = (index: number) => {
+        return 'margin: 3px';
+    };
+
+    const checkTripRequired = () => {
+        if (selections.find( (row: any) => {
+            return ['State Permit', 'Open Access', 'Maximized Retention',
+                    'Mothership Catcher Vessel', 'OR Cook Midwater H&L EFP',
+                    'CA Real Good Fish Monterey Bay EFP',
+                    'Trawl Gear Modification EFP',
+                    'Trawl Gear Modification EFP (EM)',
+                    'CA Emley-Platt SFCFA EFP',
+                    'Pacific Halibut Directed 2A',
+                    'Limited Entry Sablefish Fixed Gear',
+                    'Limited Entry Sablefish Fixed Gear EM',
+                    'Limited Entry ITQ',
+                    'Limited Entry ITQ EM'
+                    ].includes(row.description);
+        })) {
+            tripNotRequired.value = true;
+        } else {
+            tripNotRequired.value = false;
+        }
+    };
+
+    const selectOption = (option: any) => {
+        if (option.type === 'fishery') {
+            trip.activeTrip.fishery = option;
+        }
+        if (trip.activeTrip.fishery &&
+            trip.activeTrip.fishery.sectors &&
+            trip.activeTrip.fishery.sectors.find( (row: any) => option.description === row.description )
+           ) {
+            trip.activeTrip.fisherySector = option;
+        }
+        if (option.description === 'Maximized Retention') {
+            trip.activeTrip.maximizedRetention = true;
+        }
+        if (option.description === 'Optimized Retention / Don\'t know') {
+            trip.activeTrip.maximizedRetention = false;
+        }
+        transitioning.value = true;
+        computeHack.value += 1;
+        setTimeout( () => {
+            selections.push(option);
+            transitioning.value = false;
+            computeHack.value += 1;
+            checkTripRequired();
+        }, 300);
+    };
+
+    const removeSelection = (index: number) => {
+        transitioning.value = true;
+        computeHack.value += 1;
+        setTimeout( () => {
+            selections.splice(index, selections.length - index);
+            transitioning.value = false;
+            computeHack.value += 1;
+            trip.activeTrip.departureDate = null;
+            trip.activeTrip.returnDate = null;
+            trip.activeTrip.departurePort = null;
+            trip.activeTrip.returnPort = null;
+            if (selections.findIndex( (row: any) => row.description === 'Departure Date - ') !== -1) {
+                selections.splice(selections.findIndex( (row: any) => row.description === 'Departure Date - '), selections.length );
+            }
+            depDateTime.value = '';
+            retDate.value = '';
+            checkTripRequired();
+        }, 300);
+    };
+
+    const depDateTime: any = ref('');
+    const getDepDateTime = () => {
+      if (trip.activeTrip.departureDate) {
+        depDateTime.value = new Date(moment(trip.activeTrip.departureDate).format());
       }
-    } else {
-      return moment(val) >= moment() &&
-      (moment(val) < moment(this.existingTripStart) || moment(val) > moment(this.existingTripEnd));
-    }
-  }
+    };
+    const submitDepartureDate = () => {
+        if (moment(depDateTime.value).format() !== 'Invalid date') {
+            trip.activeTrip.departureDate = moment(depDateTime.value).format();
+            if (trip.activeTrip.returnDate && moment(trip.activeTrip.returnDate).isBefore(trip.activeTrip.departureDate)) {
+                trip.activeTrip.returnDate = null;
+            }
+            checkDepartureDate();
+            getMinDate();
+            getMaxDate();
+        }
+    };
+    const checkDepartureDate = () => {
+        if (!trip.logTrip) {
+            if (moment(trip.activeTrip!.departureDate).diff(moment(), 'hours') < 48  && (!isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) || user.captainMode)) {
+                daysWarn.value = true;
+            }
+        }
+    };
 
-  private async updateTrip() {
+    const retDate: any = ref('');
+    const getRetDate = () => {
+      if (trip.activeTrip.returnDate) {
+        retDate.value = new Date(moment(trip.activeTrip.returnDate).format());
+      }
+    };
+    const submitReturnDate = () => {
+        if (moment(retDate.value).format() !== 'Invalid date') {
+            trip.activeTrip.returnDate = moment(retDate.value).format();
+            getMinDate();
+            getMaxDate();
+        }
+    };
 
-    // REQIRES A START AND END DATE
-    if (!this.trip.activeTrip!.departureDate || !this.trip.activeTrip!.returnDate) {
-      Notify.create({
-        message: '<b>A trip must have a start and end date</b>',
+    const portOptions: any = ref([]);
+    const getPortOptions = async () => {
+        const queryOptions = {
+          key: 'port',
+          inclusive_end: true,
+          descending: false,
+          include_docs: true
+        };
+
+        const queryResults = await masterDb.view('TripsApi', 'all_em_lookups', queryOptions);
+        portOptions.value.push.apply(portOptions.value, queryResults.rows.map( (row: any) => {
+            return row.doc;
+        }));
+
+        portOptions.value.sort(
+            (a: any, b: any) => {
+                if (a.description > b.description) {
+                    return 0;
+                } else if (a.description < b.description) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        );
+    };
+
+    const singleDayTrip = () => {
+        if (trip.activeTrip.departureDate) {
+            trip.activeTrip.returnDate = _.cloneDeep(trip.activeTrip.departureDate);
+            getRetDate();
+            // selectOption({description: 'Single Day Trip ', lookupValue: ''});
+        }
+    };
+
+    const formatValue = (selection: any) => {
+        if (selection.description === 'Departure Date - ') {
+            return moment(selection.lookupValue).format('MM/DD/YYYY, HH:mm');
+        } else if (selection.description === 'Return Date - ') {
+            return moment(selection.lookupValue).format('MM/DD/YYYY');
+        } else {
+            if (selection.description !== selection.lookupValue) {
+                return selection.lookupValue;
+            } else {
+                return '';
+            }
+        }
+    };
+
+    const formatDate = (value: string, property: string) => {
+        if (property === 'departureDate') {
+            return moment(value).format('MM/DD/YYYY HH:mm');
+        } else if (property === 'returnDate') {
+            return moment(value).format('MM/DD/YYYY');
+        }
+    };
+
+    const titleFormat = (value: string) => {
+        const returnValue = value[0].toUpperCase() + value.slice(1, value.length);
+        return returnValue.match(/[A-Z]+(?![a-z])|[A-Z]?[a-z]+|\d+/g)!.join(' ');
+    };
+
+    const removeProperty = (property: any) => {
+        trip.activeTrip[property] = null;
+        computeHack.value += 1;
+        getMinDate();
+        getMaxDate();
+    };
+
+    const createTrip = async () => {
+
+        // REQIRES A START AND END DATE
+        if (!trip.activeTrip!.departureDate || !trip.activeTrip!.returnDate) {
+        Notify.create({
+            message: '<b>A trip must have a start and end date</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+        return;
+        }
+
+        if (!trip.activeTrip!.departurePort || !trip.activeTrip!.returnPort) {
+        Notify.create({
+            message: '<b>A trip must have a departure and return port.</b>',
             position: 'center',
             color: 'primary',
             timeout: 2000,
@@ -1072,128 +761,207 @@ private async getMinDate() {
             html: true,
             multiLine: true
         });
-      return;
-    }
-
-    // REQUIRES A DEPARTURE TIME
-    if (!this.departureTimeEntered) {
-      Notify.create({
-        message: '<b>A trip must have a departure time.</b>',
-        position: 'center',
-        color: 'primary',
-        timeout: 2000,
-        icon: 'warning',
-        html: true,
-        multiLine: true
-      });
-      return;
-    }
-
-    this.transferring = true;
-    this.trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
-    this.trip.activeTrip!.updatedDate = moment().format();
-
-    if (this.trip.activeTrip!.tripNum === 0 || this.trip.activeTrip!.tripNum === 1) {
-      try {
-        const newApiTrip = {
-          vesselId: this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber,
-          vesselName: this.trip.activeTrip!.vessel!.vesselName,
-          departurePort: this.trip.activeTrip!.departurePort!.code ? this.trip.activeTrip!.departurePort!.code : this.trip.activeTrip!.departurePort!.name,
-          departureDate: this.trip.activeTrip!.departureDate,
-          returnPort: this.trip.activeTrip!.returnPort!.code ? this.trip.activeTrip!.returnPort!.code : this.trip.activeTrip!.departurePort!.name,
-          returnDate: this.trip.activeTrip!.returnDate,
-          permits: this.trip.activeTrip!.permits ? this.trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
-          fishery: this.trip.activeTrip!.fishery!.description,
-          createdBy: this.trip.activeTrip!.createdBy,
-          createdDate: this.trip.activeTrip!.createdDate
-        };
-
-        this.trip.activeTrip!.vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
-
-        await newTripsApiTrip(newApiTrip).then( (res: any) => this.tripsApiNum = res.tripNum);
-        this.trip.activeTrip!.tripNum = this.tripsApiNum;
-
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      try {
-        await updateTripsApiTrip(this.trip.activeTrip);
-        console.log('tripsApi trip updated');
-      } catch (err) {
-          console.log(err);
-      }
-    }
-
-    const masterDB: Client<any> = couchService.masterDB;
-    if (this.trip.activeTrip!.isSelected && this.trip.activeTrip!.maximizedRetention) {
-
-      this.saveSelection().then(
-        async () => {
-          this.trip.activeTrip!.isSelected = false;
-          this.trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
-          await masterDB.put(
-            this.trip.activeTrip!._id as string,
-            this.trip.activeTrip,
-            this.trip.activeTrip!._rev as string).then( () => this.$router.push({ path: '/trips' }));
+        return;
         }
-      );
 
-    } else if (this.savedMaxRetention === true && !this.trip.activeTrip!.maximizedRetention) {
-      this.handleSavedSelections().then(async () => {
-        await masterDB.put(
-          this.trip.activeTrip!._id as string,
-          this.trip.activeTrip,
-          this.trip.activeTrip!._rev as string
-          ).then( async () => {
-            this.transferring = false;
+        // REQUIRES A FISHERY!
+        if (trip.activeTrip!.fishery!.description !== '') {
+        disableCreate = true;
+
+        handleSavedSelections().then( async () => {
+            const newApiTrip = {
+            vesselId: trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber,
+            vesselName: trip.activeTrip!.vessel!.vesselName,
+            departurePort: trip.activeTrip!.departurePort!.code,
+            departureDate: trip.activeTrip!.departureDate,
+            returnPort: trip.activeTrip!.returnPort!.code,
+            returnDate: trip.activeTrip!.returnDate,
+            permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
+            fishery: trip.activeTrip!.fishery!.description,
+            createdBy: trip.activeTrip!.createdBy,
+            createdDate: trip.activeTrip!.createdDate
+            };
+
+            trip.activeTrip!.vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+
+            try {
+            await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
+            trip.activeTrip!.tripNum = tripsApiNum;
+            } catch (err) {
+            // Notify.create({
+            //   message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
+            //   position: 'top',
+            //   color: 'red',
+            //   timeout: 7000,
+            //   multiLine: true
+            // });
+            // return;
+            console.log(err);
+            }
+
+            if (trip.logTrip) {
+                trip.activeTrip.tripStatus = {description: 'closed'};
+                trip.activeTrip.captainAffirmedDepartureDate = trip.activeTrip.departureDate;
+                trip.activeTrip.captainAffirmedReturnDate = trip.activeTrip.returnDate;
+                trip.activeTrip.closingReason = 'taken';
+            }
+
+            const masterDB: Client<any> = couchService.masterDB;
+            await masterDB.post(trip.activeTrip).then( () => {
             Notify.create({
-              message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-              position: 'top',
-              color: 'primary',
-              timeout: 7000,
-              html: true,
-              multiLine: true
+                message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+                position: 'top',
+                color: 'primary',
+                timeout: 7000,
+                html: true,
+                multiLine: true
             });
-            this.$router.push({ path: '/trips' });
-          });
-      });
-    } else {
-      await masterDB.put(
-        this.trip.activeTrip!._id as string,
-        this.trip.activeTrip,
-        this.trip.activeTrip!._rev as string
-        ).then( async () => {
-            this.transferring = false;
-            if (this.trip.activeTrip!.tripStatus!.description === 'open') {
-              Notify.create({
+            if (trip.activeTrip!.isSelected) {
+                emailCoordinators(trip.activeTrip, 'NEW');
+            }
+            router.push({ path: '/trips/' });
+            });
+        });
+
+
+        } else {
+        missingRequired.value = true;
+        }
+    };
+
+
+    const updateTrip = async () => {
+
+        // REQIRES A START AND END DATE
+        if (!trip.activeTrip!.departureDate || !trip.activeTrip!.returnDate) {
+        Notify.create({
+            message: '<b>A trip must have a start and end date</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+        return;
+        }
+
+        transferring.value = true;
+        trip.activeTrip!.updatedBy = authService.getCurrentUser()!.username;
+        trip.activeTrip!.updatedDate = moment().format();
+
+        if (trip.activeTrip!.tripNum === 0 || trip.activeTrip!.tripNum === 1) {
+        try {
+            const newApiTrip = {
+            vesselId: trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber,
+            vesselName: trip.activeTrip!.vessel!.vesselName,
+            departurePort: trip.activeTrip!.departurePort!.code,
+            departureDate: trip.activeTrip!.departureDate,
+            returnPort: trip.activeTrip!.returnPort!.code,
+            returnDate: trip.activeTrip!.returnDate,
+            permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
+            fishery: trip.activeTrip!.fishery!.description,
+            createdBy: trip.activeTrip!.createdBy,
+            createdDate: trip.activeTrip!.createdDate
+            };
+
+            trip.activeTrip!.vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+
+            await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
+            trip.activeTrip!.tripNum = tripsApiNum;
+
+        } catch (err) {
+            console.log(err);
+        }
+        } else {
+            const updateApiTrip = {
+            tripNum: trip.activeTrip.tripNum,
+            vesselId: trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber,
+            vesselName: trip.activeTrip!.vessel!.vesselName,
+            departurePort: trip.activeTrip!.departurePort!.code,
+            departureDate: trip.activeTrip!.departureDate,
+            returnPort: trip.activeTrip!.returnPort!.code,
+            returnDate: trip.activeTrip!.returnDate,
+            permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
+            fishery: trip.activeTrip!.fishery!.description,
+            createdBy: trip.activeTrip!.createdBy,
+            createdDate: trip.activeTrip!.createdDate
+            };
+            try {
+                await updateTripsApiTrip(updateApiTrip);
+                console.log('tripsApi trip updated');
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        if (trip.activeTrip!.isSelected && trip.activeTrip!.maximizedRetention) {
+
+        saveSelection().then(
+            async () => {
+            trip.activeTrip!.isSelected = false;
+            trip.activeTrip!.notes = 'Maximized Retention chosen - selection removed';
+            await masterDb.put(
+                trip.activeTrip!._id as string,
+                trip.activeTrip,
+                trip.activeTrip!._rev as string).then( () => router.push({ path: '/trips' }));
+            }
+        );
+
+        } else if (savedMaxRetention === true && !trip.activeTrip!.maximizedRetention) {
+        handleSavedSelections().then(async () => {
+            await masterDb.put(
+            trip.activeTrip!._id as string,
+            trip.activeTrip,
+            trip.activeTrip!._rev as string
+            ).then( async () => {
+                transferring.value = false;
+                Notify.create({
                 message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
                 position: 'top',
                 color: 'primary',
                 timeout: 7000,
                 html: true,
                 multiLine: true
-              });
-            } else {
-              Notify.create({
-                message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip has been updated!<br></div>',
-                position: 'top',
-                color: 'primary',
-                timeout: 7000,
-                html: true,
-                multiLine: true
-              });
-            }
-            if (this.trip.activeTrip!.isSelected) {
-              emailCoordinators(this.trip.activeTrip, 'UPDATE');
-            }
-            this.$router.push({ path: '/trips' });
+                });
+                router.push({ path: '/trips' });
             });
-    }
+        });
+        } else {
+        await masterDb.put(
+            trip.activeTrip!._id as string,
+            trip.activeTrip,
+            trip.activeTrip!._rev as string
+            ).then( async () => {
+                transferring.value = false;
+                if (trip.activeTrip!.tripStatus!.description === 'open') {
+                Notify.create({
+                    message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been updated!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+                    position: 'top',
+                    color: 'primary',
+                    timeout: 7000,
+                    html: true,
+                    multiLine: true
+                });
+                } else {
+                Notify.create({
+                    message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip has been updated!<br></div>',
+                    position: 'top',
+                    color: 'primary',
+                    timeout: 7000,
+                    html: true,
+                    multiLine: true
+                });
+                }
+                if (trip.activeTrip!.isSelected) {
+                emailCoordinators(trip.activeTrip, 'UPDATE');
+                }
+                router.push({ path: '/trips' });
+                });
+        }
+    };
 
-  }
-
-    private async saveSelection() {
+    const saveSelection = async () => {
       const savedSelections: any = {
         type: 'saved-selections',
         createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
@@ -1201,10 +969,9 @@ private async getMinDate() {
         };
 
       // check to see if savedSelections exists, fetch it if it does.
-      const vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
-      const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : '';
+      const vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+      const fisheryName: any = trip.activeTrip!.fishery!.description ? trip.activeTrip!.fishery!.description : '';
 
-      const masterDb: Client<any> = couchService.masterDB;
       const queryOptions = {
         include_docs: true,
         key: vesselId
@@ -1231,9 +998,9 @@ private async getMinDate() {
       }
 
       vesselSelections[fisheryName].push({
-            isSelected: this.trip.activeTrip!.isSelected,
-            notes: this.trip.activeTrip!.notes ? this.trip.activeTrip!.notes : 'fish',
-            selectionDate: this.trip.activeTrip!.selectionDate ? this.trip.activeTrip!.selectionDate : this.trip.activeTrip!.createdDate
+            isSelected: trip.activeTrip!.isSelected,
+            notes: trip.activeTrip!.notes ? trip.activeTrip!.notes : 'fish',
+            selectionDate: trip.activeTrip!.selectionDate ? trip.activeTrip!.selectionDate : trip.activeTrip!.createdDate
       });
 
 
@@ -1246,341 +1013,485 @@ private async getMinDate() {
       } else {
         await masterDb.post(vesselSelections);
       }
+  };
 
-  }
+    const handleSavedSelections = async () => {
+        const savedSelections: any = {
+        type: 'saved-selections',
+        createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
+        createdDate: moment().format()
+        };
+        const vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+        const fisheryName: any = trip.activeTrip!.fishery!.description ? trip.activeTrip!.fishery!.description : 'fish';
 
-  private goBack() {
-    if (this.newImage) {
-      const fileName = this.file.name + ' - ' + authService.getCurrentUser()!.username + ' - ' + moment().format();
-      let result: any;
-      const reader = new FileReader();
-      reader.readAsDataURL(this.file);
-      reader.onload = async () => {
-        result = reader.result;
-        this.trip.activeTrip!._attachments = {
-                  [fileName] : {
-                      content_type: this.file.type,
-                      data: result.split(',')[1]
-                  }
-              };
-        this.trip.activeTrip!.changeLog!.unshift(
-          {
-            updatedBy: authService.getCurrentUser()!.username,
-            updateDate: moment().format(),
-            property: '_attachments',
-            newVal: 'added/updated logbook capture',
-            app: 'Observer Web'
-          }
-        );
-        const masterDB: Client<any> = couchService.masterDB;
-        this.transferring = true;
-        return await masterDB.put(
-          this.trip.activeTrip!._id as string,
-          this.trip.activeTrip!,
-          this.trip.activeTrip!._rev as string
-        ).then( () => {
-          this.transferring = false;
-          this.$router.push({ path: '/trips' });
-        });
-    };
-    } else {
-      this.trip.readOnly = false;
-      this.$router.push({ path: '/trips' });
-    }
-  }
-
-  private async getOtsTargets() {
-    const masterDb = couchService.masterDB;
-    const queryOptions = {
-      include_docs: true,
-      reduce: false,
-      key: 'ots-target'
-    };
-    try {
-      const otsTargets = await masterDb.view(
-        'obs_web',
-        'all_doc_types',
-        queryOptions
-      );
-
-      this.otsTargets = otsTargets.rows.map((row: any) => row.doc);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  private async getPorts() {
-        const masterDb = couchService.masterDB;
         const queryOptions = {
-          start_key: '',
-          inclusive_end: true,
-          descending: false,
-          include_docs: true
+            include_docs: true,
+            key: vesselId
         };
 
-        const ports = await masterDb.view(
-          'obs_web',
-          'all_port_names',
-          queryOptions
-        );
-        this.ports = ports.rows.map((row: any) => row.doc);
-  }
-
-  private updateDates() {
-    if (this.trip.activeTrip!.isSingleDayTrip) {
-      if (this.trip.activeTrip!.returnDate) {
-        this.tripDate = new Date(this.trip.activeTrip!.returnDate);
-      }
-    } else {
-      if (this.trip.activeTrip!.departureDate) {
-        this.tripDates[0] = new Date(this.trip.activeTrip!.departureDate);
-      }
-      if (this.trip.activeTrip!.returnDate) {
-        this.tripDates[1] = new Date(this.trip.activeTrip!.returnDate);
-      }
-    }
-  }
-
-  private get isMobile() {
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private get getValidHours() {
-    if (this.existingTripEnd &&
-        moment(this.existingTripEnd).isSame(this.trip.activeTrip!.departureDate, 'day') &&
-        moment(this.existingTripStart).isSame(this.trip.activeTrip!.departureDate, 'day')) {
-      return [[parseInt(moment(this.existingTripStart).format('HH'), 10) + 1, 23]];
-    } else {
-      return [[0, 23]];
-    }
-  }
-
-  private resetDepartureTime() {
-    this.departureTime = {
-        mm: '00',
-        HH: '00'
-      };
-    this.departureTimeEntered = false;
-  }
-
-  private async created() {
-    this.getEmRoster().then( () => {
-      let emPermit = null;
-      const permitNum = this.emRoster[this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber];
-      for (const permit of this.permit.permits) {
-        if (permit.permitNumber === permitNum) {
-          emPermit = permit;
-        }
-      }
-      if (emPermit) {
-        Vue.set(this.trip.activeTrip!, 'permits', [emPermit]);
-      }
-
-    });
-    if ( authService.getCurrentUser() ) {
-      this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
-    }
-    this.getMaxDate();
-    this.getMinDate();
-    this.getOtsTargets();
-    // this.getLatestDepartureDate();
-    this.getBookedDates();
-    this.getPorts();
-    this.getFisheryOptions();
-    this.setDepartureTime();
-    this.updateDates();
-    if (this.trip.activeTrip!.departureDate) {
-      this.departureTimeEntered = true;
-    }
-    this.savedMaxRetention = this.trip.activeTrip!.maximizedRetention;
-  }
-
-  @Watch('trip.activeTrip.isSingleDayTrip')
-  private handler11(newVal: boolean, oldVal: boolean) {
-      this.departureTimeEntered = false;
-      this.departureTime = {
-        mm: '00',
-        HH: '00'
-      };
-  }
-
-  @Watch('tripDates')
-  private handler2(newVal: string, oldVal: string) {
-
-    if (this.tripDates[0]) {
-      this.trip.activeTrip!.departureDate = moment(newVal[0]).format();
-
-      // if start date is after current end date
-      if (this.trip.activeTrip!.returnDate && moment(this.tripDates[0]).isAfter(moment(this.trip.activeTrip!.returnDate))) {
-        this.trip.activeTrip!.returnDate = undefined;
-        this.tripDates[1] = undefined;
-      }
-    }
-
-    if (this.tripDates[1]) {
-      // if end date is before current start date
-      if (this.trip.activeTrip!.departureDate && moment(this.tripDates[1]).isBefore(moment(this.trip.activeTrip!.departureDate))) {
-        this.trip.activeTrip!.departureDate = moment(this.tripDates[1]).format();
-        this.tripDates[0] = this.tripDates[1];
-        this.resetDepartureTime();
-      }
-
-      this.trip.activeTrip!.returnDate = moment(this.tripDates[1]).format();
-    }
-
-    if (this.departureTime) {
-      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-    }
-
-  }
-
-  @Watch('tripDate')
-  private handler9(newVal: any, oldVal: any) {
-    if (oldVal) {
-      this.departureTimeEntered = false;
-      this.departureTime = {
-        mm: '00',
-        HH: '00'
-      };
-    }
-    this.trip.activeTrip!.departureDate = moment(newVal).format();
-    this.trip.activeTrip!.returnDate = moment(newVal).format();
-
-    if (this.departureTime) {
-      this.trip.activeTrip!.departureDate = moment(this.trip.activeTrip!.departureDate).minute(this.departureTime.mm).hour(this.departureTime.HH).second(0).format();
-    }
-
-  }
-
-  @Watch('trip.activeTrip.departurePort', {deep: true})
-  private handler3(newVal: any, oldVal: any) {
-    if (this.trip.activeTrip) {
-      this.trip.activeTrip.returnPort = this.trip.activeTrip!.departurePort;
-    }
-  }
-
-  @Watch('trip.activeTrip', {deep: true})
-  private handler77(newVal: any, oldVal: any) {
-    if ( !this.trip.newTrip ) { // only logging changes to existing trips
-      if ( !this.trip.activeTrip!.changeLog ) { this.trip.activeTrip!.changeLog = []; }
-      try {
-        let oldValString: string = '';
-        let newValString: string = '';
-        for (const attrib of Object.keys(newVal)) {
-          if ( !_.isEqual(newVal[attrib], this.oldTrip[attrib] ) && attrib !== 'changeLog') { // import _ from 'lodash'
-            if ( typeof newVal[attrib] === 'object' ) {
-              oldValString = JSON.stringify(_.pick(this.oldTrip[attrib], ['name', 'state']));  // remove all but desired properties - returns a new object.
-              newValString = JSON.stringify(_.pick(newVal[attrib], ['name', 'state', 'non-existent-property'])); // property will not be in new object if not found in old object.
-            } else {
-              oldValString = this.oldTrip[attrib];
-              newValString = newVal[attrib];
-            }
-            this.trip.activeTrip!.changeLog.unshift(
-              {
-                updatedBy: authService.getCurrentUser()!.username,
-                updateDate: moment().format(),
-                property: attrib,
-                oldVal: oldValString,
-                newVal: newValString,
-                app: 'Observer Web'
-              }
+        let vesselSelections: any = await masterDb.view<any>(
+                'obs_web',
+                'saved_selections',
+                queryOptions
             );
-          }
-        }
-      } catch (err) {
-        console.log(err);
-      }
-      this.oldTrip = JSON.parse(JSON.stringify(newVal));  // try catch will log error on page load, then store a copy of activeTrip in this.oldTrip
-    }
-  }
 
-}
+        if (vesselSelections.rows.length > 0) {
+        vesselSelections = vesselSelections.rows[0].doc;
+        } else {
+        vesselSelections = savedSelections;
+        }
+
+        vesselSelections.vesselId = vesselId;
+        vesselSelections.updatedBy = authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined;
+        vesselSelections.updatedDate = moment().format();
+
+        if (!vesselSelections[fisheryName]) {
+        vesselSelections[fisheryName] = [];
+        }
+
+        if (!trip.activeTrip!.maximizedRetention) {
+            // first check whether there is a stored selection for the vessel and fishery
+            // apply selection to new trip
+            let tripSelection: any = null;
+            if (vesselSelections[fisheryName] && vesselSelections[fisheryName].length > 0) {
+                if (vesselSelections[fisheryName].length > 1) {
+                    vesselSelections[fisheryName].sort( (a: any, b: any) => {
+                        if (moment(a.selectionDate).isAfter(b.selectionDate, 'second')) {
+                            return 1;
+                        } else if (moment(a.selectionDate).isBefore(b.selectionDate, 'second')) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
+
+                    tripSelection = vesselSelections[fisheryName].shift();
+                    // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
+
+                    // const sel1 = vesselSelections[fisheryName][0].selectionDate;
+                    // const sel2 = vesselSelections[fisheryName][1].selectionDate;
+                    // if (moment(sel1).isBefore(sel2, 'second')) {
+                    //   tripSelection = vesselSelections[fisheryName].shift();
+                    // } else {
+                    //   tripSelection = vesselSelections[fisheryName].pop();
+                    // }
+                } else {
+                    tripSelection = vesselSelections[fisheryName].pop();
+                    // vesselSelections[fisheryName].splice(vesselSelections[fisheryName].indexOf(tripSelection), 1);
+                }
+                // no longer need to save here as a selection is added later
+                // if (vesselSelections._id) {
+                //   await masterDb.put(
+                //     vesselSelections._id,
+                //     vesselSelections,
+                //     vesselSelections._rev
+                //   );
+                // } else {
+                //   await masterDb.post(vesselSelections);
+                // }
+
+                trip.activeTrip!.isSelected = tripSelection.isSelected;
+                trip.activeTrip!.notes = tripSelection.notes;
+                trip.activeTrip!.selectionDate = tripSelection.selectionDate;
+            } else {
+                const activeOTSTarget: any = getActiveOtsTarget();
+
+                const randomNum = Math.floor(Math.random() * 100);
+
+                if (activeOTSTarget && activeOTSTarget.setRate && trip.activeTrip) {
+                    if (randomNum < activeOTSTarget.setRate) {
+                        trip.activeTrip.isSelected = true;
+                        trip.activeTrip.notes =
+                        'Trip selected using Target Type: ' +
+                        activeOTSTarget.targetType +
+                        ', with set rate of ' +
+                        activeOTSTarget.setRate +
+                        ' (randomly generated number: ' +
+                        randomNum +
+                        ' was less than set rate: ' +
+                        activeOTSTarget.setRate +
+                        ')';
+                    } else {
+                        trip.activeTrip.isSelected = false;
+                        trip.activeTrip.notes =
+                        'Trip NOT selected using Target Type: ' +
+                        activeOTSTarget.targetType +
+                        ', with set rate of ' +
+                        activeOTSTarget.setRate +
+                        ' (randomly generated number: ' +
+                        randomNum +
+                        ' was NOT less than set rate: ' +
+                        activeOTSTarget.setRate +
+                        ')';
+                    }
+                }
+            }
+        } else {
+            trip.activeTrip!.isSelected = false;
+            trip.activeTrip!.notes = 'Maximized Retention Trip - Not Selected';
+        }
+
+        if (!vesselSelections[fisheryName]) {
+            vesselSelections[fisheryName] = [];
+        }
+
+        if (!vesselSelections[fisheryName] || vesselSelections[fisheryName].length < 1) {
+
+        const activeOTSTarget: any = await getActiveOtsTarget();
+        const randomNum = Math.floor(Math.random() * 100);
+
+        const newSelection: any = {
+            selectionDate: moment().format(),
+            isSelected: false
+            };
+
+        if (activeOTSTarget) {
+            if (randomNum < activeOTSTarget.setRate) {
+            newSelection.isSelected = true;
+            newSelection.notes = 'Trip selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+            } else {
+            newSelection.isSelected = false;
+            newSelection.notes = 'Trip NOT selected using Target Type: ' +
+                activeOTSTarget.targetType +
+                ', with set rate of ' +
+                activeOTSTarget.setRate +
+                ' (randomly generated number: ' +
+                randomNum +
+                ' was NOT less than set rate: ' +
+                activeOTSTarget.setRate +
+                ')';
+            }
+        }
+        vesselSelections[fisheryName].push(newSelection);
+        }
+
+        if (vesselSelections._id) {
+        await masterDb.put(
+            vesselSelections._id,
+            vesselSelections,
+            vesselSelections._rev
+        );
+        } else {
+        await masterDb.post(vesselSelections);
+        }
+    };
+
+    const getActiveOtsTarget = () => {
+        let activeOTSTarget;
+        const fisheryName: string = trip.activeTrip!.fishery!.description!;
+        for (const otsTarget of otsTargets) {
+            if (trip.activeTrip && trip.activeTrip.fishery) {
+                if (
+                    getStatus(otsTarget) === 'Active' &&
+                    otsTarget.targetType === 'Fishery Wide' &&
+                    otsTarget.fishery === fisheryName
+                ) {
+                    activeOTSTarget = otsTarget;
+                }
+            }
+        }
+        for (const otsTarget of otsTargets) {
+            if (
+            getStatus(otsTarget) === 'Active' &&
+            otsTarget.targetVessel &&
+            trip.activeTrip &&
+            trip.activeTrip.vessel &&
+            trip.activeTrip.fishery
+            ) {
+            const otsVesselId = otsTarget.targetVessel.coastGuardNumber
+                ? otsTarget.targetVessel.coastGuardNumber
+                : otsTarget.targetVessel.stateRegulationNumber;
+            const tripVesselId = trip.activeTrip.vessel.coastGuardNumber
+                ? trip.activeTrip.vessel.coastGuardNumber
+                : trip.activeTrip.vessel.stateRegulationNumber;
+            if (
+                otsTarget.targetType === 'Vessel' &&
+                otsTarget.fishery === trip.activeTrip.fishery.description &&
+                otsVesselId === tripVesselId
+            ) {
+                activeOTSTarget = otsTarget;
+            }
+            }
+        }
+        return activeOTSTarget;
+    };
+
+    const getOtsTargets = async () => {
+        const queryOptions = {
+            include_docs: true,
+            reduce: false,
+            key: 'ots-target'
+        };
+        try {
+            const otsTargetsQuery = await masterDb.view(
+            'obs_web',
+            'all_doc_types',
+            queryOptions
+            );
+
+            otsTargets = otsTargetsQuery.rows.map((row: any) => row.doc);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const getStatus = (otsTarget: OTSTarget) => {
+        if (
+            moment(otsTarget.effectiveDate) <= moment() &&
+            moment() <= moment(otsTarget.expirationDate) &&
+            otsTarget.status !== 'Inactive'
+        ) {
+            return 'Active';
+        } else {
+            return 'Inactive';
+        }
+    };
+
+    const submitAnyway = () => {
+        confirmedSameDaysSubmission.value = true;
+        submitTripOnly();
+    };
+
+    const submitTripOnly = async () => {
+
+        // REQIRES A START AND END DATE
+        if (!trip.activeTrip!.departureDate || !trip.activeTrip!.returnDate) {
+            Notify.create({
+                message: '<b>A trip must have a start and end date</b>',
+                    position: 'center',
+                    color: 'primary',
+                    timeout: 2000,
+                    icon: 'warning',
+                    html: true,
+                    multiLine: true
+                });
+            return;
+        }
+
+
+        if (typeof trip.activeTrip!.isSelected === 'undefined' ) {
+            Notify.create({
+                message: '<b>Was Trip Observed? is required.</b>',
+                position: 'center',
+                color: 'primary',
+                timeout: 2000,
+                icon: 'warning',
+                html: true,
+                multiLine: true
+            });
+            return;
+        }
+
+        disableCreate = true;
+        trip.activeTrip!.vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+
+        if (!confirmedSameDaysSubmission.value) {
+            const vesselTrips: any = await getTripsApiTrips('vesselId', trip.activeTrip!.vesselId);
+
+            const sameDatesTrips = vesselTrips.filter(
+                (existingTrip: any) => {
+                    return moment(existingTrip.departureDate).isSame(trip.activeTrip!.departureDate, 'day') && moment(existingTrip.returnDate).isSame(trip.activeTrip!.returnDate, 'day');
+                });
+            if (sameDatesTrips.length > 0) {
+                sameDatesWarning.value = true;
+                return;
+            }
+        }
+
+        sameDatesWarning.value = false;
+        confirmedSameDaysSubmission.value = false;
+
+        const newApiTrip = {
+            vesselId: trip.activeTrip!.vesselId,
+            vesselName: trip.activeTrip!.vessel!.vesselName,
+            departurePort: trip.activeTrip!.departurePort!.code ? trip.activeTrip!.departurePort!.code : trip.activeTrip!.departurePort!.name,
+            departureDate: trip.activeTrip!.departureDate,
+            returnPort: trip.activeTrip!.returnPort!.code ? trip.activeTrip!.returnPort!.code : trip.activeTrip!.returnPort!.name,
+            returnDate: trip.activeTrip!.returnDate,
+            permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber) : [],
+            fishery: trip.activeTrip!.fishery!.description,
+            createdBy: trip.activeTrip!.createdBy,
+            createdDate: trip.activeTrip!.createdDate
+        };
+
+
+        await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
+        trip.activeTrip!.tripNum = tripsApiNum;
+
+        trip.activeTrip!.changeLog!.unshift(
+            {
+                updatedBy: authService.getCurrentUser()!.username,
+                updateDate: moment().format('MM/DD/YYYY HH:mm A'),
+                property: '_attachments',
+                newVal: 'submitted trip wihtout image capture',
+                app: 'Observer Web'
+            }
+        );
+        emailCoordinators(trip.activeTrip, 'MISSED TRIP');
+        const masterDB: Client<any> = couchService.masterDB;
+        transferring.value = true;
+        return await masterDB.post(
+            trip.activeTrip
+            ).then( () => {
+                transferring.value = false;
+                Notify.create({
+                    message: 'Missed Trip Submitted',
+                        position: 'center',
+                        color: 'green',
+                        timeout: 2000,
+                        icon: 'emoji_emotions',
+                        html: true,
+                        multiLine: true
+                    });
+                router.push({ path: '/trips' });
+            });
+    };
+
+    const goToTrips = () => {
+        router.push({ path: '/trips/' });
+    };
+
+    const parseActiveTrip = () => {
+        if (trip.activeTrip.fishery) {
+            selections.push(
+                {description: 'Federal Permit'}
+            );
+            selections.push(
+                {description: trip.activeTrip.fishery.description}
+            );
+        }
+        if (trip.activeTrip.fisherySector) {
+            selections.push(
+                {description: trip.activeTrip.fisherySector.description}
+            );
+            if (trip.activeTrip.maximizedRetention ) {
+                selections.push(
+                    {description: 'Maximized Retention'}
+                );
+            }
+            if (trip.activeTrip.maximizedRetention === false) {
+                selections.push(
+                    {description: 'Optimized Retention / Don\'t know'}
+                );
+            }
+        }
+    };
+
+
+    onMounted( () => {
+        computeHack.value += 1;
+        getPortOptions();
+        getRetDate();
+        getDepDateTime();
+        getMinDate();
+        getMaxDate();
+        getBookedDates();
+        parseActiveTrip();
+        getFisheries();
+        getOtsTargets();
+        if ( authService.getCurrentUser() ) {
+            userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+        }
+     }
+    );
+
+    return {
+        activeCollection,
+        choices,
+        createTrip,
+        daysWarn,
+        depDateTime,
+        disableCreate,
+        fisheries,
+        formatDate,
+        formatValue,
+        getChoiceClasses,
+        getIndent,
+        getSelectionClasses,
+        goToTrips,
+        isAuthorized,
+        isMobile,
+        invalidDates,
+        maxDate,
+        minDate,
+        missingRequired,
+        portOptions,
+        removeProperty,
+        removeSelection,
+        retDate,
+        sameDatesWarning,
+        selections,
+        selectOption,
+        singleDayTrip,
+        submitAnyway,
+        submitDepartureDate,
+        submitReturnDate,
+        submitTripOnly,
+        titleFormat,
+        topLevelChoices,
+        transferring,
+        transitioning,
+        trip,
+        tripNotRequired,
+        updateTrip,
+        user
+    };
+  }
+});
 </script>
 
 <style scoped>
+    .trip-alert {
+        background-color: #007EC6;
+        color: white;
+        border-radius: 5px;
+        padding: 5px;
+        text-align: center;
+    }
 
-.trips-el-height {
-  height: 40px;
-}
+    .selections-list-item {
+        transition: all .3s;
+    }
+    .selections-list-enter,
+    .selections-list-leave-to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
 
-* >>> .p-datepicker {
-  padding: 0 !important
-}
+    .choices-list-item {
+        transition: all .3s;
+    }
+    .choices-list-enter {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    .choices-list-leave-to {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
 
-p {
-  margin-bottom: 5px;
-}
+    .rounded {
+        border-radius: 5px;
+        margin: 3px;
+    }
 
-* >>> .q-field {
-  padding-bottom: 5px;
-}
+    * >>> .p-inputtext {
+        border: 2px solid black !important;
+        cursor: pointer;
+        font-weight: bold;
+        padding: 6px 0;
+        line-height: 2.4em;
+    }
 
-* >>> .p-inputtext {
-  font-weight: bold !important;
-  border: none !important;
-  border-bottom: 1px solid rgba(0,0,0,0.24) !important;
-  padding-top: 0 !important;
-  border-radius: 0 !important;
-  padding-left: 0 !important;
-  margin: 0 !important;
-  width: 100%;
-}
-
-label.cameraButton {
-  display: inline-block;
-  margin: 1em;
-  padding: 0.5em;
-  border-radius: 4px;
-  text-transform: uppercase;
-  font-weight: bold;
-}
-
-label.cameraButton input[accept*="camera"] {
-  display: none;
-}
-
-* >>> .timeselector__box__item--is-selected {
-  background-color: #007EC6 !important;
-}
-
-* >>> .vtimeselector__input {
-  border: none !important;
-}
-
-* >>> .vtimeselector__input:focus {
-  outline: none !important;
-}
-
-* >>> .vtimeselector__clear {
-  display: none;
-}
-
-* >>> .active {
-  height: inherit !important;
-  background-color: #007EC6 !important;
-}
-
-* >>> .vue__time-picker input.display-time {
-  border: none;
-  border-bottom: 1px solid lightgrey;
-  width: 150px;
-}
-
-* >>> .vue__time-picker input.disabled {
-  color: #1f1f1f !important;
-  background-color: white !important;
-}
-
-@media screen and (max-width: 290px){
-  * >>> .vue__time-picker {
-    width: 50px !important;
-  }
-}
-
+    * >>> .q-select__dropdown-icon {
+        color: black !important;
+    }
 </style>
-
-

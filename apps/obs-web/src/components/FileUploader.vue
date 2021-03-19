@@ -168,7 +168,7 @@
                 sameDatesWarning.value = false;
                 confirmedSameDaysSubmission.value = false;
 
-                if ( props.trip!.tripNum === 0) {
+                if ( props.trip!.tripNum === 0 || props.trip!.tripNum === 1) {
                     const newApiTrip = {
                         vesselId: props.trip!.vesselId,
                         vesselName: props.trip!.vessel!.vesselName,

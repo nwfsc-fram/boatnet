@@ -115,7 +115,6 @@ const router = new Router({
         },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-        { path: '/trips2/:id', name: 'Trip Detail 2', component: TripDetails2 },
         { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         {

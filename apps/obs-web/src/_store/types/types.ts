@@ -36,6 +36,7 @@ export interface TripState {
   activeTrip: WcgopTrip | null;
   trips: WcgopTrip[];
   newTrip?: boolean;
+  logTrip?: boolean;
   readOnly?: boolean;
   index?: any;
 }
