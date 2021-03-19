@@ -87,7 +87,7 @@ export default createComponent({
       loading.value = true;
       errorDocs.value.length = 0;
       errorRows.value = [];
-      for (const trip of state.debriefer.trips) {
+      for (const trip of state.debriefer.selectedTrips) {
         getErrors(trip['legacy-tripId']);
       }
       loading.value = false;
@@ -130,7 +130,7 @@ export default createComponent({
 
     onMounted( () => getErrorStatuses() );
 
-    watch(() => state.debriefer.trips, getTripErrors);
+    watch(() => state.debriefer.selectedTrips, getTripErrors);
 
     return {
       errorRows, errorColumns, loading, save

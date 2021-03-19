@@ -4,14 +4,14 @@
       :value.sync="nodes"
       :filters="filters"
       filterMode="strict"
-      sortMode="single"
+      sortMode="multiple"
       style="height: calc(100vh - 420px)"
-      @node-expand="expand"
-      @node-collapse="collapse"
       selectionMode="single"
-
+      :expandedKeys.sync="expandedKeys"
       @node-select="onNodeSelect"
       @node-unselect="onNodeUnselect"
+      @node-expand="expand"
+      @node-collapse="collapse"
     >
       <template #header>
         <div>
@@ -28,6 +28,13 @@
                 <div>Display Columns</div>
               </template>
             </MultiSelect>
+            <q-icon
+            v-if="!isFullSize"
+            style="float: right"
+            name="open_in_new"
+            size="md"
+            v-on:click="openNewDebriefingTab"
+          />
           </span>
           <span style="position:relative; bottom: 2px">
             &nbsp;
@@ -41,6 +48,7 @@
         :field="col.field"
         :header="col.header"
         :expander="col.expander"
+        :sortable="true"
         :headerStyle="'width: ' + col.width + 'px'"
         :style="'width:' +  col.width + 'px'"
         filterMatchMode="contains"
@@ -145,7 +153,7 @@
 import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
-import { cloneDeep, get, uniq } from 'lodash';
+import { cloneDeep, get, remove, uniq } from 'lodash';
 
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
@@ -167,11 +175,14 @@ export default createComponent ({
     program: String,
     type: String,
     selectionMode: String,
+    initExpandedKeys: Object,
+    isFullSize: Boolean
   },
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
     const tableType = props.program + '-' + props.type;
+    const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref({});
 
     const stateDisplayCols = state.debriefer.displayColumns;
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
@@ -199,19 +210,23 @@ export default createComponent ({
       return value;
     }
 
-    const filterOptions = computed({
-      get: () => {
-        const filterList: any = {};
-        for (const col of columnOptions.value) {
-          if (col.type === 'toggle-search') {
-            filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
-            filterList[col.header] = uniq(filterList[col.header]);
-            filterList[col.header] = filterList[col.header].sort();
-          }
+    const filterOptions = computed(() => {
+      const filterList: any = {};
+      for (const col of columnOptions.value) {
+        if (col.type === 'toggle-search') {
+          filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
+          filterList[col.header] = uniq(filterList[col.header]);
+            remove(filterList[col.header], (item: string) => {
+              if (item && item.includes('Basket')) {
+                return true;
+              } else {
+                return false;
+              }
+            });
+          filterList[col.header] = filterList[col.header].sort();
         }
-        return filterList;
-      },
-      set: (val) => undefined
+      }
+      return filterList;
     });
 
     const displayColumns = computed({
@@ -243,6 +258,7 @@ export default createComponent ({
         data
       );
       sortedList.value = cloneDeep(lookupsList.value);
+      store.dispatch('debriefer/updateCatches', props.nodes);
     }
 
     function filterFn(val: any, update: any, abort: any) {
@@ -301,30 +317,48 @@ export default createComponent ({
     const afiChoice: any = ref('blank');
 
     const addToDcs = (isAfi: string) => {
-        afiChoice.value = isAfi
+        afiChoice.value = isAfi;
         dcsDetailsDialog.value = true;
     };
 
     const onNodeSelect = (node: any) => selectedRow.value = node.data;
     const onNodeUnselect = (node: any) => selectedRow.value = null;
 
+    function expand() {
+      context.emit('expand', expandedKeys);
+    }
+
+    function collapse() {
+      context.emit('collapse', expandedKeys);
+    }
+
+    function openNewDebriefingTab() {
+      const type = props.type ? props.type.toLowerCase() : '';
+      const route = '/observer-web/table/' + type;
+      window.open(route, '_blank');
+    }
+
     return {
       displayColumns,
       columnOptions,
       editingCol,
       editingRow,
+      expandedKeys,
       filters,
       filterOptions,
       lookupFieldName,
       lookupsList,
       sortedList,
 
+      collapse,
       deSelect,
       displayData,
       edit,
+      expand,
       filterFn,
       getOptionsList,
       onCellEdit,
+      openNewDebriefingTab,
       select,
       selectedRow, dcsDetailsDialog,  afiChoice,
       onNodeSelect, onNodeUnselect, addToDcs

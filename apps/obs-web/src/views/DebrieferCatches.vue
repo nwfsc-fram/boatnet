@@ -7,8 +7,12 @@
       :isEditable="true"
       :program="program"
       type="catch"
+      :isFullSize="isFullSize"
       @save="save"
       @selected="select"
+      :initExpandedKeys="expandedKeys"
+      @expand="addNode"
+      @collapse="removeNode"
     ></boatnet-tree-table>
   </div>
 </template>
@@ -18,7 +22,7 @@ import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { merge, get } from 'lodash';
+import { merge, get, orderBy } from 'lodash';
 
 export default createComponent({
   props: {
@@ -35,6 +39,7 @@ export default createComponent({
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
+    const expandedKeys: any = state.debriefer.expandedCatch ? state.debriefer.expandedCatch : {};
 
     const wcgopColumns = [
         {
@@ -159,155 +164,177 @@ export default createComponent({
         }
     ];
 
-    watch(() => state.debriefer.trips, getCatches);
+    watch(() => state.debriefer.selectedTrips, getCatches);
     watch(() => state.debriefer.selectedOperations, getCatches);
 
     function select(item: string[]) {
-      store.dispatch('debriefer/updateSpecimens', item);
+      store.dispatch('debriefer/updateSelectedBiospecimens', item);
       context.emit('changeTab', 'biospecimens');
     }
 
+    function addNode(currExpandedKeys: any) {
+      store.dispatch('debriefer/updateExpandedCatch', currExpandedKeys);
+    }
+    function removeNode(currExpandedKeys: any) {
+      store.dispatch('debriefer/updateExpandedCatch', currExpandedKeys);
+    }
+
     async function getCatches() {
-      const catches: any[] = [];
+      let catches: any[] = [];
       let color = '#344B5F';
-      for (const operation of state.debriefer.selectedOperations) {
-        const unflattenedOperation = unflatten(operation, { delimiter: '-' });
-        let catchIndex = 0;
-        color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
-        for (const c of unflattenedOperation.catches) {
-          const tripId = unflattenedOperation.legacy.tripId;
-          const operationNum = unflattenedOperation.operationNum;
-          const operationId = unflattenedOperation._id;
-          let disposition = c.disposition ? c.disposition.description : '';
-          const wm = c.weightMethod ? c.weightMethod.description : '';
-          let weight: any = c.weight ? c.weight.value : null;
-          const sampleWeight: any = c.sampleWeight
-            ? c.sampleWeight.value
-            : null;
-          weight = weight ? weight : sampleWeight;
-          const count = c.count;
-          const catchContent = c.catchContent;
-          const name = catchContent ? catchContent.name : '';
-          const children: any[] = [];
-          let childIndex = 0;
-          const key = operationId + '_' + catchIndex;
+      if (state.debriefer.catches.length > 1) {
+       catches = state.debriefer.catches;
+      } else {
+        for (const operation of state.debriefer.selectedOperations) {
+          const unflattenedOperation = unflatten(operation, { delimiter: '-' });
+          let catchIndex = 0;
+          color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
+          for (const c of unflattenedOperation.catches) {
+            const tripId = unflattenedOperation.legacy.tripId;
+            const operationNum = unflattenedOperation.operationNum;
+            const operationId = unflattenedOperation._id;
+            let disposition = c.disposition ? c.disposition.description : '';
+            const wm = c.weightMethod ? c.weightMethod.description : '';
+            let weight: any = c.weight ? c.weight.value : null;
+            const sampleWeight: any = c.sampleWeight
+              ? c.sampleWeight.value
+              : null;
+            weight = weight ? weight : sampleWeight;
+            const count = c.count;
+            const catchContent = c.catchContent;
+            const name = catchContent ? catchContent.name : '';
+            const children: any[] = [];
+            let childIndex = 0;
+            const key = operationId + '_' + catchIndex;
 
-          if (disposition === 'Retained') {
-            disposition = 'R';
-          } else if (disposition === 'Discarded') {
-            disposition = 'D';
-          }
+            if (disposition === 'Retained') {
+              disposition = 'R';
+            } else if (disposition === 'Discarded') {
+              disposition = 'D';
+            }
 
-          if (c.children) {
-            for (const child of c.children) {
-              const discardReason =  jp.query(child, '$..discardReason.description')[0];
+            if (c.children) {
+              for (const child of c.children) {
+                const discardReason =  jp.query(child, '$..discardReason.description')[0];
 
-              const catchContents = child.catchContent;
-              const catchName = catchContents
-                ? catchContents.commonNames[0]
-                : '';
-              const childWeight = jp.query(child, 'weight.value')[0];
-              const childCount = child.sampleCount;
-              let toolTipInfo: string = '';
+                const catchContents = child.catchContent;
+                const catchName = catchContents
+                  ? catchContents.commonNames[0]
+                  : '';
+                const childWeight = jp.query(child, 'weight.value')[0];
+                const childCount = child.sampleCount;
+                let toolTipInfo: string = '';
 
-              const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
-              const specimensCnt: number = child.specimens ? child.specimens.length : 0;
+                const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
+                const specimensCnt: number = child.specimens ? child.specimens.length : 0;
 
-              const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
-              toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
+                const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
+                toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
 
-              const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
-              toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
+                const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
+                toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
 
-              const sex: string[] = jp.query(child, '$..specimens[*].sex');
-              toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
+                const sex: string[] = jp.query(child, '$..specimens[*].sex');
+                toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
 
-              const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
-              toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
+                const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
+                toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
 
-              const baskets: any[] = [];
-              let basketCnt;
-              if (child.baskets) {
-                basketCnt = child.baskets.length;
-                let basketCount = 1;
-                for (const basket of child.baskets) {
-                  baskets.push({
-                    key: key + '_' + childIndex + '_' + basketCount,
-                    data: {
-                      name: 'Basket ' + basketCount,
-                      weight: basket.weight.value,
-                      count: basket.count,
-                      avgWt: basket.weight.value / basket.count,
-                      disposition,
-                      weightMethod: wm,
-                      operationNum,
-                      catchNum: c.catchNum,
-                      type: 'basket'
-                    }
-                  });
-                  basketCount++;
+                const baskets: any[] = [];
+                let basketCnt;
+                if (child.baskets) {
+                  basketCnt = child.baskets.length;
+                  let basketCount = 1;
+                  for (const basket of child.baskets) {
+                    baskets.push({
+                      key: key + '_' + childIndex + '_' + basketCount,
+                      data: {
+                        name: 'Basket ' + basketCount,
+                        weight: basket.weight.value,
+                        count: basket.count,
+                        avgWt: basket.weight.value / basket.count,
+                        disposition,
+                        weightMethod: wm,
+                        operationNum,
+                        catchNum: c.catchNum,
+                        type: 'basket'
+                      }
+                    });
+                    basketCount++;
+                  }
                 }
+                const newChild: any = {
+                  key: key + '_' + childIndex,
+                  data: {
+                    specimensCnt,
+                    specimenIds,
+                    basketCnt,
+                    toolTipInfo,
+                    discardReason,
+                    name: catchName,
+                    catchContent: catchContents,
+                    weight: childWeight,
+                    count: childCount,
+                    disposition,
+                    weightMethod: wm,
+                    operationNum,
+                    catchNum: c.catchNum,
+                    type: 'child'
+                  }
+                };
+                // if there is only one basket do not show dropdown row
+                // instead, merge info with top level item
+                if (baskets.length === 1) {
+                  const combined = merge(newChild, baskets[0]);
+                  combined.data.type = 'child';
+                  combined.data.name = catchName;
+                  children.push(combined);
+                } else {
+                  newChild.children = baskets;
+                  children.push(newChild);
+                }
+                childIndex++;
               }
-
-              children.push({
-                key: key + '_' + childIndex,
-                data: {
-                  specimensCnt,
-                  specimenIds,
-                  basketCnt,
-                  toolTipInfo,
-                  discardReason,
-                  name: catchName,
-                  catchContent: catchContents,
-                  weight: childWeight,
-                  count: childCount,
-                  disposition,
-                  weightMethod: wm,
-                  operationNum,
-                  catchNum: c.catchNum,
-                  type: 'child'
-                },
-                children: baskets
-              });
-              childIndex++;
             }
-          }
 
-          const newCatchItem: any = {
-            key,
-            style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
-            data: {
-              tripId,
-              operationNum,
-              operationId,
-              catchNum: c.catchNum,
-              disposition,
-              weightMethod: wm,
-              name,
-              catchContent,
-              weight,
-              count,
-              type: 'topLevel'
+            const newCatchItem: any = {
+              key,
+              style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
+              data: {
+                tripId,
+                operationNum,
+                operationId,
+                catchNum: c.catchNum,
+                disposition,
+                weightMethod: wm,
+                name,
+                catchContent,
+                weight,
+                count,
+                type: 'topLevel'
+              }
+            };
+            // if there is only one basket do not show dropdown row
+            // instead, merge info with top level item
+            if (children.length === 1) {
+              const combined = merge(newCatchItem, children[0]);
+              combined.data.type = 'topLevel';
+              catches.push(combined);
+            } else {
+              newCatchItem.children = children;
+              catches.push(newCatchItem);
             }
-          };
-          // if there is only one basket do not show dropdown row
-          // instead, merge info with top level item
-          if (children.length === 1) {
-            const combined = merge(newCatchItem, children[0]);
-            combined.data.type = 'topLevel';
-            catches.push(combined);
-          } else {
-            newCatchItem.children = children;
-            catches.push(newCatchItem);
+            catchIndex++;
           }
-          catchIndex++;
         }
       }
+      catches = orderBy(catches, ['data.tripId', 'data.operationNum', 'data.catchNum'], ['asc', 'asc', 'asc']);
       WcgopCatches.value = catches;
     }
     getCatches();
 
     async function save(newRecord: any) {
+      store.dispatch('debriefer/updateCatches', WcgopCatches.value);
       const masterDB: Client<any> = couchService.masterDB;
       const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'});
 
@@ -425,10 +452,13 @@ export default createComponent({
     }
 
     return {
+      addNode,
+      removeNode,
       WcgopCatches,
       wcgopColumns,
       program,
       lookupsList,
+      expandedKeys,
       save,
       select
     };

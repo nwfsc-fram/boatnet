@@ -13,13 +13,17 @@ export const state: DebrieferState = {
   tripSearchFilters: {},
   tripIds: [],
   displayColumns: {},
+  selectedTrips: [],
   trips: [],
   selectedOperations: [],
   operations: [],
-  specimens: [],
+  biospecimens: [],
+  selectedBiospecimens: [],
   filters: {},
   errors: [],
-  newDcsRow: ''
+  newDcsRow: '',
+  expandedCatch: {},
+  catches: []
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -41,6 +45,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   updateTripSearchFilters({ commit }: any, value: any) {
     commit('updateVal', {id: 'tripSearchFilters', val: value});
   },
+  updateSelectedTrips({ commit }: any, value: any) {
+    commit('updateVal', {id: 'selectedTrips', val: value});
+  },
   updateTrips({ commit }: any, value: any) {
     commit('updateVal', {id: 'trips', val: value});
   },
@@ -50,8 +57,11 @@ const actions: ActionTree<DebrieferState, RootState> = {
   updateSelectedOperations({ commit }: any, value: any) {
     commit('updateVal', {id: 'selectedOperations', val: value});
   },
-  updateSpecimens({ commit }: any, value: any) {
-    commit('updateVal', {id: 'specimens', val: value});
+  updateBiospecimens({ commit }: any, value: any) {
+    commit('updateVal', {id: 'biospecimens', val: value});
+  },
+  updateSelectedBiospecimens({ commit }: any, value: any) {
+    commit('updateVal', {id: 'selectedBiospecimens', val: value});
   },
   updateDisplayColumns({ commit }: any, value: any) {
     commit('updateDisplayColumns', value);
@@ -61,6 +71,12 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   setNewDcsRow({ commit }: any, value: any) {
     commit('updateVal', {id: 'newDcsRow', val: value});
+  },
+  updateExpandedCatch({ commit }: any, value: any) {
+    commit('updateVal', {id: 'expandedCatch', val: value});
+  },
+  updateCatches({ commit }: any, value: any) {
+    commit('updateVal', {id: 'catches', val: value});
   },
 };
 

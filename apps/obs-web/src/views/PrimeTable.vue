@@ -9,7 +9,7 @@
       :selectionMode="enableSelection ? null : 'multiple'"
       :first="pageStart"
       :selection.sync="selected"
-      :scrollHeight="isFullSize ? '70vh' : '55vh'"
+      :scrollHeight="isFullSize ? '70vh' : '50vh'"
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
@@ -22,6 +22,8 @@
       :stateKey="tableType"
       contextMenu
       @row-contextmenu="onRowContextMenu"
+      @column-resize-end="resizeColumn"
+      @column-reorder="reorderColumn"
     >
       <template #empty>No data available</template>
       <template v-if="!simple" #header>
@@ -133,9 +135,9 @@
           ></InputText>
         </template>
         <template #body="slotProps">
-          <span
-            style="pointer-events: none; white-space: pre-wrap;"
-          >{{ formatValue(slotProps, col.type, col.displayField) }}</span>
+          <div
+            style="pointer-events: none; white-space: pre-wrap; height: 48px"
+          >{{ formatValue(slotProps, col.type, col.displayField) }}</div>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -244,9 +246,12 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
 
+    const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
     const lookupsList: any = ref([]);
     let sortedList: any[] = [];
+
+    const testCols: any = ref([...(props.columns ? props.columns : [])]);
 
     const cellVal: any = ref('');
 
@@ -273,6 +278,7 @@ export default createComponent({
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
+    const arrayMove = require('array-move');
 
     onMounted(async () => {
       pageStart.value = 0;
@@ -280,6 +286,11 @@ export default createComponent({
       updateStatePermissions = true;
       const initFilters = state.debriefer.filters[tableType];
       filters.value = initFilters ? initFilters : {};
+      if (tableType === 'wcgop-Operations' && displayMode === trawlMode) {
+        displayColumns.value = setTrawlMode(stateDisplayCols[tableType]);
+      } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
+        displayColumns.value = setFixedGearMode(stateDisplayCols[tableType]);
+      }
     });
 
     onUnmounted(async () => {
@@ -302,19 +313,6 @@ export default createComponent({
       if (updateStatePermissions) {
         context.emit('selectValues', updatedSelection);
       }
-    });
-
-    const columnOptions = computed(() => {
-      const selectedCols: any[] = props.columns ? props.columns : []
-      const stateColConfig = stateDisplayCols[tableType];
-      if (stateColConfig) {
-        selectedCols.map((col: any ) => {
-          const index = findIndex(stateColConfig, ['field', col.field]);
-          col.width = index >= 0 ? stateColConfig[index].width : col.width;
-          return col;
-        });
-      }
-      return selectedCols;
     });
 
     const formattedData = computed(() => {
@@ -353,11 +351,6 @@ export default createComponent({
         } else {
           currCols.value = stateDisplayCols[tableType];
         }
-        if (tableType === 'wcgop-Operation' && displayMode === trawlMode) {
-          currCols.value = setTrawlMode(currCols.value);
-        } else if (tableType === 'wcgop-Operation' && displayMode === fixedGearMode) {
-          currCols.value = setFixedGearMode(currCols.value);
-        }
         return currCols.value;
       },
       set: (val) => {
@@ -366,6 +359,16 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
+
+    function reorderColumn(event: any) {
+      displayColumns.value = arrayMove(displayColumns.value, event.dragIndex - 1, event.dropIndex - 1);
+    }
+
+    function resizeColumn(event: any) {
+      const colIndex = event.element.cellIndex - 1;
+      const width = parseFloat(displayColumns.value[colIndex].width);
+      displayColumns.value[colIndex].width = (width + event.delta).toString();
+    }
 
     /**
      * Update filters stored in state. Currently stored in debriefer'
@@ -383,47 +386,14 @@ export default createComponent({
     }
 
     async function saveColumnConfiguration() {
-      let localStorageInfo = localStorage.getItem(tableType);
-      localStorageInfo = localStorageInfo ? localStorageInfo : '';
-      const storageObj = JSON.parse(localStorageInfo);
-
-      // combine columnWith and columnOrders arrays from localStorage
-      const colOrder = storageObj.columnOrder;
-      const colWidths = storageObj.columnWidths.split(',');
-      const displayedCols = cloneDeep(displayColumns.value);
-
-      const colInfo = colOrder.map((value: any, index: number) => {
-        return { name: value, width: colWidths[index] };
-      }).filter((col: any) => {
-        const validCol = filter(displayedCols, ['field', col.name]);
-        return validCol.length > 0 ? validCol[0] : '';
-      });
-
-      // updating column widths and sorting based off values stored in localStorage
-      const cols = displayedCols.map((value: any) => {
-        const index: number = findIndex(colInfo, (col: any) => {
-          return col.name === value.field;
-        });
-        value.width = colInfo[index].width;
-        return value;
-      }).sort((a: any, b: any) => {
-        const index1: number = findIndex(colInfo, (col: any) => {
-          return col.name === a.field;
-        });
-        const index2: number = findIndex(colInfo, (col: any) => {
-          return col.name === b.field;
-        });
-        return index1 - index2;
-      });
-
-      stateDisplayCols[tableType] = cols;
+      stateDisplayCols[tableType] = displayColumns.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
 
       // save columns to users column-config docs
       let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       if (userColConfig.rows.length > 0) {
         userColConfig = userColConfig.rows[0].doc;
-        userColConfig.columnConfig[tableType] = cols;
+        userColConfig.columnConfig[tableType] = displayColumns.value;
         await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
       } else {
         const newRecord: any = {
@@ -431,7 +401,7 @@ export default createComponent({
           type: 'column-config',
           personDocId: state.user.activeUserAlias.personDocId
         };
-        newRecord.columnConfig[tableType] = cols;
+        newRecord.columnConfig[tableType] = displayColumns.value;
         await masterDB.post(newRecord);
       }
     }
@@ -598,27 +568,27 @@ export default createComponent({
       const type = props.type ? props.type.toLowerCase() : '';
       const route = '/observer-web/table/' + type;
       window.open(route, '_blank');
-      context.emit('update:showErrors', false);
     }
 
     function toggleHaulCols(mode: string) {
       if (mode === trawlMode) {
         displayColumns.value = setTrawlMode(currCols.value);
-        stateDisplayCols.operationMode = trawlMode;
       } else if (mode === fixedGearMode) {
         displayColumns.value = setFixedGearMode(currCols.value);
-        stateDisplayCols.operationMode = fixedGearMode;
       }
+      stateDisplayCols.operationMode = mode;
       stateDisplayCols[tableType] = displayColumns.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
     }
 
     function setTrawlMode(cols: any) {
       cols = remove(cols, (n: any) => {
-          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value', 'totalHooks', 'avgNumHooksPerSegment', 'hooksSampled'].includes(n.field)) {
+          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value',
+                'totalHooks', 'avgNumHooksPerSegment', 'catches-0-legacy-hooksSampled',
+                'legacy-isBrdPresent'].includes(n.field)) {
             return n;
           }
-        });
+      });
       cols.push({
         field: 'legacy-isBrdPresent',
         header: 'BRD',
@@ -626,13 +596,16 @@ export default createComponent({
         listType: 'boolean',
         key: 'wcgopOpIsBRDPresent',
         width: '100',
+        isEditable: true
       });
       return cols;
     }
 
     function setFixedGearMode(cols: any) {
       cols = remove(cols, (n: any) => {
-          if (!['legacy-isBrdPresent'].includes(n.field)) {
+          if (!['totalGearSegments', 'gearSegmentsLost', 'avgSoakTime-value',
+                'totalHooks', 'avgNumHooksPerSegment', 'catches-0-legacy-hooksSampled',
+                'legacy-isBrdPresent'].includes(n.field)) {
             return n;
           }
       });
@@ -674,6 +647,14 @@ export default createComponent({
         header: 'Hook Count Per Segment',
         type: 'number',
         key: 'wcgopOpAvgNumHooksPerSeg',
+        width: '100',
+        isEditable: true,
+      });
+      cols.push({
+        field: 'catches-0-legacy-hooksSampled',
+        header: 'Hooks Sampled',
+        type: 'number',
+        key: 'wcgopOpHooksSampled',
         width: '100',
         isEditable: true,
       });
@@ -742,7 +723,8 @@ export default createComponent({
       trawlMode,
       selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, deleteRow, duplicateRow, afiChoice,
       filterOptions,
-      TripLevel, CollectionMethod, DcsErrorType, AfiFlag
+      TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
+      reorderColumn, resizeColumn
     };
   },
 });

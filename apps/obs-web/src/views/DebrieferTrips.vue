@@ -22,7 +22,9 @@
 import {
   createComponent,
   ref,
-  watch
+  watch,
+  onMounted,
+  onBeforeMount
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
@@ -42,7 +44,7 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const store = context.root.$store;
     const state: any = store.state;
-    const debriefer: any = state.debriefer;
+    const displayColumns: any = state.debriefer.displayColumns;
 
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
@@ -50,7 +52,7 @@ export default createComponent({
     const columns: any = ref([]);
     const trips: any = ref([]);
     const loading: any = ref(false);
-    const initialSelection: any = state.debriefer && state.debriefer.trips ? state.debriefer.trips : [];
+    const initialSelection: any = state.debriefer && state.debriefer.selectedTrips ? state.debriefer.selectedTrips : [];
 
     const ashopColumns = [
       { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
@@ -393,32 +395,50 @@ export default createComponent({
       }
     ];
 
+    let mounted = true;
+
+    onBeforeMount(() => {
+      mounted = false;
+    });
+
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observer, getTripsByObserver);
-    watch(() => state.debriefer.evaluationPeriod, loadTripsByEvaluationPeriod);
-    watch(() => state.debriefer.tripSearchFilters, getTripsBySearchParams);
-    watch(() => state.debriefer.tripIds, getTrips);
+    watch(() => state.debriefer.observer, async () => {
+      await populateTrips('observer');
+    });
+    watch(() => state.debriefer.evaluationPeriod, async () => {
+      await populateTrips('evaluationPeriod');
+    });
+    watch(() => state.debriefer.tripSearchFilters, async () => {
+      await populateTrips('search');
+    });
+    watch(() => state.debriefer.tripIds, async () => {
+      await populateTrips('trips');
+    });
 
     async function populateTrips(type: string) {
       loading.value = true;
-      if (state.debriefer.trips.length > 0) {
-        trips.value = state.debriefer.trips;
-      } else if (type === 'observer') {
-        await getTripsByObserver();
-      } else if (type === 'evaluationPeriod') {
-        await loadTripsByEvaluationPeriod();
-      } else if (type === 'search') {
-        await getTripsBySearchParams();
-      } else if (type === 'trips') {
-        await getTrips();
+      if (mounted) {
+        if (state.debriefer.trips.length > 0) {
+          trips.value = state.debriefer.trips;
+        }
+      } else {
+        if (type === 'observer') {
+          await getTripsByObserver();
+        } else if (type === 'evaluationPeriod') {
+          await loadTripsByEvaluationPeriod();
+        } else if (type === 'search') {
+          await getTripsBySearchParams();
+        } else if (type === 'trips') {
+          await getTrips();
+        }
       }
+      store.dispatch('debriefer/updateTrips', trips.value);
       loading.value = false;
     }
 
     async function getTrips() {
-      loading.value = true;
       const tripsHolder = [];
       try {
         const options: ListOptions = {
@@ -432,18 +452,14 @@ export default createComponent({
       } catch (err) {
         console.log('error');
       }
-      loading.value = false;
     }
 
     async function getTripsByObserver() {
-      loading.value = true;
       const observerId = state.debriefer.observer;
       trips.value = await getTripsByObserverId(observerId);
-      loading.value = false;
     }
 
     async function loadTripsByEvaluationPeriod() {
-      loading.value = true;
       const observerId = state.debriefer.observer;
       const evalPeriod = state.debriefer.evaluationPeriod;
 
@@ -454,7 +470,6 @@ export default createComponent({
           observerId
         );
       }
-      loading.value = false;
     }
 
     async function getTripsBySearchParams() {
@@ -528,17 +543,18 @@ export default createComponent({
       updatedvalue[index] = data;
       updatedvalue[index]._rev = result.rev;
       trips.value = updatedvalue;
+      store.dispatch('debriefer/updateTrips', trips.value);
     }
 
     function selectValues(data: any) {
-      store.dispatch('debriefer/updateTrips', data);
+      store.dispatch('debriefer/updateSelectedTrips', data);
       getOperations();
     }
 
     async function getOperations() {
       let ops: any[] = [];
       let operationIds: any[] = [];
-      for (const trip of state.debriefer.trips) {
+      for (const trip of state.debriefer.selectedTrips) {
         const unflattenedTrip = unflatten(trip, { delimiter: '-' });
         operationIds = operationIds.concat(unflattenedTrip.operationIDs);
       }
@@ -547,15 +563,6 @@ export default createComponent({
           const operationOptions: ListOptions = { keys: operationIds };
           const operationDocs = await masterDB.listWithDocs(operationOptions);
           ops = operationDocs.rows;
-          ops.sort((a: any, b: any) => {
-            if (a.legacy.tripId !== b.legacy.tripId) {
-              return a.legacy.tripId - b.legacy.tripId;
-            } else if (a.legacy.tripId === b.legacy.tripId) {
-              return a.operationNum - b.operationNum;
-            } else {
-              return 0;
-            }
-          });
         } catch (err) {
           console.log('cannot fetch operation docs ' + err);
         }
@@ -569,7 +576,8 @@ export default createComponent({
       save,
       loading,
       selectValues,
-      initialSelection
+      initialSelection,
+      displayColumns
     };
   }
 });
