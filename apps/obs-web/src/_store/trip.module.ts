@@ -13,20 +13,32 @@ export const state: TripState = {
   activeTrip: null,
   trips: [],
   newTrip: false,
+  logTrip: false,
   index: null
 };
 
-// const getters: GetterTree<TripState, RootState> = {
-//   openTrips(trip) {
-//     return trips.filter(
-//       (trip) => {
-//         return trip.vessel.vesselName === state.activeVessel && trip.tripStatus === true;
-//       }
-//     )
-//   }
-// }
+const actions: ActionTree<TripState, RootState> = {
+  setLogTrip({ commit}: any, choice: any) {
+    commit('setLogTrip', choice);
+  }
+};
+
+const mutations: MutationTree<TripState> = {
+  setLogTrip(newState: any, val: any) {
+    newState.logTrip = val;
+  }
+};
+
+const getters: GetterTree<TripState, RootState> = {
+  logTrip(getState: TripState) {
+    return getState.logTrip;
+  }
+};
 
 export const trip: Module<TripState, RootState> = {
     namespaced: true,
     state,
+    actions,
+    mutations,
+    getters
   };

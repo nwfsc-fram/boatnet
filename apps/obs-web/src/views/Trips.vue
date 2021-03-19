@@ -27,9 +27,9 @@
           </span>
         </div>
 
-        <q-btn class="bg-primary text-white q-ma-xs" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip">New Trip</q-btn>
+        <q-btn class="bg-primary text-white q-ma-xs" v-if="openTrips.length < 2 && !loading" color="primary" @click="newTrip(false)">New Trip</q-btn>
         <q-btn v-else color="blue-grey-2" class="q-ma-xs" @click="maxTripsAlert = true">New Trip</q-btn>
-        <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" :to="'/log-trip'" label="log trip"></q-btn>
+        <q-btn class="bg-secondary text-white q-ma-md" color="grey-7" @click="newTrip(true)" label="log trip"></q-btn>
         <br>
 
         <q-btn
@@ -125,10 +125,9 @@
     </div>
 
     <div v-if="nextSelections.length > 0" class="centered-page-item">Next Trip Selections</div>
-          <div class="display: flex">
+          <div class="display: flex" v-for="selection in nextSelections" :key="nextSelections.indexOf(selection)">
             <q-card
-              v-for="selection in nextSelections"
-              :key="nextSelections.indexOf(selection)"
+              v-if="selection.fishery === 'Electronic Monitoring EFP'"
               :class="computedSelectionClass(selection)"
             >
             <q-card-section>
@@ -281,7 +280,7 @@
     </q-dialog>
 
     <q-dialog v-model="closeAlert">
-      <div style="text-align: center; background-color: white; height: 100%; width: 100%">
+      <div style="text-align: center; background-color: white;">
         <div style="padding: 3% 3% 9% 3%">
           <div style="float: left">
             <q-icon color="secondary" name="close" size="md" @click="clearValues" ></q-icon>
@@ -344,8 +343,8 @@
               onfocus="blur();"
               style="width: 100%; height: 330px">
             </pCalendar>
-
           <div style="padding: 3% 3% 9% 3%">
+            <br><br>
             <div style="float: right">
               <q-btn v-if="activeTrip" color="red" size="md" @click="closeActiveTrip" title="confirm departure and return dates to close trip" >close trip</q-btn>
               &nbsp;
@@ -414,6 +413,8 @@ export default class Trips extends Vue {
   @Action('clear', { namespace: 'alert' }) private clearAlert: any;
   @Action('setClosedTripsTable', {namespace: 'user'}) private setClosedTripsTable: any;
   @Getter('closedTripsTable', {namespace: 'user'}) private closedTripsTable: any;
+
+  @Action('setLogTrip', {namespace: 'trip'}) private setLogTrip: any;
 
   private userTrips: any = [];
   private vessels: any[] = [];
@@ -888,7 +889,7 @@ export default class Trips extends Vue {
         this.$router.push({path: '/trips/' + trip.tripNum});
       }
 
-    private newTrip() {
+    private newTrip(logTrip?: any) {
       let newTripNum = 1;
       if (this.openTrips.length > 0) {
         this.trip.index = 1;
@@ -906,7 +907,7 @@ export default class Trips extends Vue {
         newTripNum = 1;
       }
 
-      const newTrip: WcgopTrip = {
+      const newTrip: any = {
                             createdBy: authService.getCurrentUser()!.username ? authService.getCurrentUser()!.username : undefined,
                             createdDate: moment().format(),
                             type: 'ots-trip',
@@ -914,14 +915,15 @@ export default class Trips extends Vue {
                             vessel: this.vessel.activeVessel!,
                             // permits: [],
                             // messages: [],
-                            departureDate: '',
-                            departurePort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
-                            returnDate: '',
-                            returnPort: this.vessel.activeVessel.homePort ? this.vessel.activeVessel.homePort : '',
-                            isSelected: false,
+                            departureDate: null,
+                            departurePort: null,
+                            returnDate: null,
+                            returnPort: null,
+                            isSelected: null,
                             isWaived: false,
+                            fishery: null,
+                            fisherySector: null,
                             isSingleDayTrip: false,
-                            fishery: {description: ''},
                             tripStatus: {
                               description: 'open'
                             },
@@ -940,6 +942,9 @@ export default class Trips extends Vue {
 
       this.trip.newTrip = true;
       this.trip.readOnly = false;
+      if (logTrip) {
+        this.setLogTrip(true);
+      }
       this.$router.push({path: '/trips/' + newTripNum});
       }
 
@@ -1184,6 +1189,7 @@ private async getAuthorizedVessels() {
   }
 
   private async created() {
+    this.setLogTrip(false);
     // this.setActiveVessel();
     this.getVesselNames();
     this.getAuthorizedVessels();
@@ -1245,6 +1251,10 @@ private async getAuthorizedVessels() {
 </style>
 
 <style scoped>
+
+* >>> .p-datepicker, .p-component, .p-datepicker-inline {
+  padding: 0 !important;
+}
 
 label.cameraButton {
   display: inline-block;

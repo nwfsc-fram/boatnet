@@ -31,11 +31,12 @@ export default createComponent({
     const transferring: any = ref(false);
     const screenshots: any = ref([]);
 
-    const watcherOptions: WatchOptions = {
-      immediate: true,
-    };
+    watch(() => props.ids, (newVal, oldVal) => {
+      if (oldVal && oldVal !== newVal) {
+        init();
+      }
+    });
 
-    watch(() => props.ids, init, watcherOptions);
     init();
 
     async function init() {

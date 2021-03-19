@@ -143,6 +143,7 @@ export default createComponent({
 
         const transferring: any = ref(false);
         const getTripsWithCaptures = async () => {
+            activeTasks.length = 0;
             transferring.value = true;
             try {
                 const masterDB: Client<any> = couchService.masterDB;

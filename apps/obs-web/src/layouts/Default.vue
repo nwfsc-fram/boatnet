@@ -70,16 +70,6 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/trips2' : ''" exact :disabled="!onlineStatus">
-          <q-item-section avatar>
-            <q-icon name="edit_attributes" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Trips 2.0</q-item-label>
-            <q-item-label caption>trip details redo</q-item-label>
-          </q-item-section>
-        </q-item>
-
         <q-item :to="onlineStatus ? '/declarations' : ''" exact :disabled="!onlineStatus">
           <q-item-section avatar>
             <q-icon name="how_to_vote" />
@@ -157,37 +147,6 @@
           </q-item>
         </q-expansion-item>
 
-        <q-item
-          to="/all-trips"
-          exact
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
-          @click="autoHide"
-        >
-          <q-item-section avatar>
-            <q-icon name="table_chart" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>All Trips</q-item-label>
-            <q-item-label caption>view all ots trips</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          :to="onlineStatus ? '/missed-trips' : ''"
-          exact
-          :disabled="!onlineStatus"
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
-          @click="autoHide"
-        >
-          <q-item-section avatar>
-            <q-icon name="error_outline" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Missed Trips</q-item-label>
-            <q-item-label caption>trips added after they occurred</q-item-label>
-          </q-item-section>
-        </q-item>
-
         <q-expansion-item
           v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
           label="Boatnet Management"
@@ -214,6 +173,37 @@
             <q-item-section>
               <q-item-label>OTS Management</q-item-label>
               <q-item-label caption>manage selection targets</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            to="/all-trips"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
+            @click="autoHide"
+          >
+            <q-item-section avatar>
+              <q-icon name="table_chart" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>All Trips</q-item-label>
+              <q-item-label caption>view all ots trips</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            :to="onlineStatus ? '/missed-trips' : ''"
+            exact
+            :disabled="!onlineStatus"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            @click="autoHide"
+          >
+            <q-item-section avatar>
+              <q-icon name="error_outline" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Missed Trips</q-item-label>
+              <q-item-label caption>trips added after they occurred</q-item-label>
             </q-item-section>
           </q-item>
 
