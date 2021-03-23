@@ -172,6 +172,7 @@
                                     option-value="_id"
                                     bg-color= "white"
                                     :readonly="trip.readOnly"
+                                    @filter="portsFilterFn"
                                     use-input
                                     clearable
                                 ></q-select>
@@ -191,6 +192,8 @@
                                     :option-label="opt => opt.name"
                                     option-value="_id"
                                     bg-color= "white"
+                                    :readonly="trip.readOnly"
+                                    @filter="portsFilterFn"
                                     use-input
                                     clearable
                                 ></q-select>
@@ -529,7 +532,7 @@ export default createComponent({
                 } else if (selections[0].description === 'EFP') {
                     return fisheries.filter( (fishery: any) => fishery.isEfp );
                 }
-            } else if ((selections.length === 2 && selections[0].description === 'Federal Permit') || (selections.length === 2 && selections[1].description === 'LE ITQ EM')) {
+            } else if ((selections.length === 2 && selections[0].description === 'Federal Permit') || (selections.length === 2 && (selections[1].description === 'LE ITQ EM' || selections[1].description === 'Electronic Monitoring EFP'))) {
                 return _.cloneDeep(selections[1].sectors);
             } else if ( selections[1].isEm && ( selections.length === 2 || ( selections.length === 3 && !['Maximized Retention', 'Optimized Retention'].includes(selections[2].description) && (selections[2].description !== 'Mothership Catcher Vessel') ) ) ) {
                 return [{description: 'Maximized Retention'}, {description: 'Optimized Retention / Don\'t know'}];
@@ -691,6 +694,30 @@ export default createComponent({
                 }
             }
         );
+    };
+
+    const portsFilterFn = async (val: string, update: any, abort: any) => {
+        update(async () => {
+        try {
+            const queryOptions = {
+            // limit: 5,
+            start_key: val.toLowerCase(),
+            end_key: val.toLowerCase() + '\u9999',
+            inclusive_end: true,
+            descending: false,
+            include_docs: true
+            };
+
+            const ports = await masterDb.view(
+            'obs_web',
+            'all_port_names',
+            queryOptions,
+            );
+            portOptions.value = ports.rows.map((row: any) => row.doc);
+        } catch (err) {
+            console.log(err);
+        }
+        });
     };
 
     const singleDayTrip = () => {
@@ -1423,6 +1450,7 @@ export default createComponent({
         maxDate,
         minDate,
         missingRequired,
+        portsFilterFn,
         portOptions,
         removeProperty,
         removeSelection,
