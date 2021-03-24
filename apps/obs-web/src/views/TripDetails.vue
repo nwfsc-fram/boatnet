@@ -1,10 +1,28 @@
 <template>
     <div class="q-pa-md" style="max-width: 450px" :disabled="trip.readOnly" >
         <div v-if="tripNotRequired && trip.newTrip && !trip.logTrip" class="trip-alert">
-            <b>NOTE: Trip creation is not required in this category/fishery.</b>
+            <q-list>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-avatar color="white" text-color="secondary" icon="priority_high" />
+                    </q-item-section>
+                    <q-item-section>
+                        <b>Trip creation is not required in this category/fishery.</b>
+                    </q-item-section>
+                </q-item>
+            </q-list>
         </div>
          <div v-if="!trip.readOnly && !trip.newTrip" class="trip-alert">
-            <b>NOTE: Fishery/sector can not be edited.  To create trip in another fishery/sector, cancel current trip and create new one.</b>
+            <q-list>
+                <q-item>
+                    <q-item-section avatar>
+                        <q-avatar color="white" text-color="secondary" icon="priority_high" />
+                    </q-item-section>
+                    <q-item-section>
+                        <b>Fishery/sector can not be edited.  To create trip in another fishery/sector, cancel current trip and create new one.</b>
+                    </q-item-section>
+                </q-item>
+            </q-list>
         </div>
         <div style="font-weight: bold; margin: 15px 15px 0">
             <div v-if="trip.activeTrip.tripNum !== 1"> Trip #: {{ trip.activeTrip.tripNum }}</div>
@@ -793,66 +811,68 @@ export default createComponent({
 
         // REQUIRES A FISHERY!
         if (trip.activeTrip!.fishery!.description !== '') {
-        disableCreate = true;
+            disableCreate = true;
 
-        handleSavedSelections().then( async () => {
-            const newApiTrip = {
-            vesselId: trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber,
-            vesselName: trip.activeTrip!.vessel!.vesselName,
-            departurePort: trip.activeTrip!.departurePort!.code,
-            departureDate: trip.activeTrip!.departureDate,
-            returnPort: trip.activeTrip!.returnPort!.code,
-            returnDate: trip.activeTrip!.returnDate,
-            permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
-            fishery: trip.activeTrip!.fishery!.description,
-            createdBy: trip.activeTrip!.createdBy,
-            createdDate: trip.activeTrip!.createdDate
-            };
+            handleSavedSelections().then( async () => {
+                const newApiTrip = {
+                    vesselId: trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber,
+                    vesselName: trip.activeTrip!.vessel!.vesselName,
+                    departurePort: trip.activeTrip!.departurePort!.code,
+                    departureDate: trip.activeTrip!.departureDate,
+                    returnPort: trip.activeTrip!.returnPort!.code,
+                    returnDate: trip.activeTrip!.returnDate,
+                    permits: trip.activeTrip!.permits ? trip.activeTrip!.permits.map((permit: any) => permit.permitNumber ) : [],
+                    fishery: trip.activeTrip!.fishery!.description,
+                    createdBy: trip.activeTrip!.createdBy,
+                    createdDate: trip.activeTrip!.createdDate
+                };
 
-            trip.activeTrip!.vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
+                trip.activeTrip!.vesselId = trip.activeTrip!.vessel!.coastGuardNumber ? trip.activeTrip!.vessel!.coastGuardNumber : trip.activeTrip!.vessel!.stateRegulationNumber;
 
-            try {
-            await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
-            trip.activeTrip!.tripNum = tripsApiNum;
-            } catch (err) {
-            // Notify.create({
-            //   message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
-            //   position: 'top',
-            //   color: 'red',
-            //   timeout: 7000,
-            //   multiLine: true
-            // });
-            // return;
-            console.log(err);
-            }
+                try {
+                    await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
+                    trip.activeTrip!.tripNum = tripsApiNum;
+                } catch (err) {
+                    // Notify.create({
+                    //   message: 'Could not get a tripID - Trip ID is required to create a trip.  TripsAPI responded with ' + err,
+                    //   position: 'top',
+                    //   color: 'red',
+                    //   timeout: 7000,
+                    //   multiLine: true
+                    // });
+                    // return;
+                    console.log(err);
+                }
 
-            if (trip.logTrip) {
-                trip.activeTrip.tripStatus = {description: 'closed'};
-                trip.activeTrip.captainAffirmedDepartureDate = trip.activeTrip.departureDate;
-                trip.activeTrip.captainAffirmedReturnDate = trip.activeTrip.returnDate;
-                trip.activeTrip.closingReason = 'taken';
-            }
+                if (trip.logTrip) {
+                    trip.activeTrip.tripStatus = {description: 'closed'};
+                    trip.activeTrip.captainAffirmedDepartureDate = trip.activeTrip.departureDate;
+                    trip.activeTrip.captainAffirmedReturnDate = trip.activeTrip.returnDate;
+                    if (trip.activeTrip.maximizedRetention || (trip.activeTrip.fisherySector && ['Mothership Catcher Vessel', 'Shoreside Hake'].includes(trip.activeTrip.fisherySector.description))) {
+                        trip.activeTrip.closingReason = 'taken';
+                    } else {
+                        trip.activeTrip.closingReason = 'missed trip';
+                    }
+                }
 
-            const masterDB: Client<any> = couchService.masterDB;
-            await masterDB.post(trip.activeTrip).then( () => {
-            Notify.create({
-                message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
-                position: 'top',
-                color: 'primary',
-                timeout: 7000,
-                html: true,
-                multiLine: true
+                const masterDB: Client<any> = couchService.masterDB;
+                await masterDB.post(trip.activeTrip).then( () => {
+                Notify.create({
+                    message: '<div class="text-h4" style="height: 100%: text-align: center; text-transform: uppercase"><br>Your trip notification has been submitted!<br></div><div class=text-h6"><br>If an Observer is required, the Observer Program will be in touch before the trip.<br>&nbsp;<br>&nbsp;</div>',
+                    position: 'top',
+                    color: 'primary',
+                    timeout: 7000,
+                    html: true,
+                    multiLine: true
+                });
+                if (trip.activeTrip!.isSelected) {
+                    emailCoordinators(trip.activeTrip, 'NEW');
+                }
+                router.push({ path: '/trips/' });
+                });
             });
-            if (trip.activeTrip!.isSelected) {
-                emailCoordinators(trip.activeTrip, 'NEW');
-            }
-            router.push({ path: '/trips/' });
-            });
-        });
-
-
         } else {
-        missingRequired.value = true;
+            missingRequired.value = true;
         }
     };
 
@@ -1353,6 +1373,17 @@ export default createComponent({
         await newTripsApiTrip(newApiTrip).then( (res: any) => tripsApiNum = res.tripNum);
         trip.activeTrip!.tripNum = tripsApiNum;
 
+        if (trip.logTrip) {
+            trip.activeTrip.tripStatus = {description: 'closed'};
+            trip.activeTrip.captainAffirmedDepartureDate = trip.activeTrip.departureDate;
+            trip.activeTrip.captainAffirmedReturnDate = trip.activeTrip.returnDate;
+            if (trip.activeTrip.maximizedRetention || (trip.activeTrip.fisherySector && ['Mothership Catcher Vessel', 'Shoreside Hake'].includes(trip.activeTrip.fisherySector.description))) {
+                trip.activeTrip.closingReason = 'taken';
+            } else {
+                trip.activeTrip.closingReason = 'missed trip';
+            }
+        }
+
         trip.activeTrip!.changeLog!.unshift(
             {
                 updatedBy: authService.getCurrentUser()!.username,
@@ -1478,11 +1509,10 @@ export default createComponent({
 
 <style scoped>
     .trip-alert {
-        background-color: #007EC6;
+        background-color: #003D72;
         color: white;
         border-radius: 5px;
         padding: 5px;
-        text-align: center;
     }
 
     .selections-list-item {
