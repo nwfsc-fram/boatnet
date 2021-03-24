@@ -582,13 +582,13 @@ export default class Catch extends Vue {
   private setCurrentCatch: any;
 
   @Getter('currentCatch', { namespace: 'tripsState' })
-  private currentCatch!: WcgopCatch;
+  private currentCatch!: any;
 
   @Getter('currentHaul', { namespace: 'tripsState' })
-  private currentHaul!: WcgopOperation;
+  private currentHaul!: any;
 
   @Getter('currentTrip', { namespace: 'tripsState' })
-  private currentTrip!: WcgopTrip;
+  private currentTrip!: any;
 
   @Action('save', { namespace: 'tripsState' })
   private save: any;
