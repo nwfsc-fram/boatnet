@@ -12,13 +12,11 @@
         @select="selectObserver"
       />
       <q-toggle class="q-px-md" style="display: inline-block" label="Show All" v-model="showAll" />
-      <multiselect
+      <q-select
         style="display: inline-block; width: 40%"
         v-model="evaluationPeriod"
-        placeholder="Evaluation Period"
         :options="evaluations"
-        label="label"
-        trackBy="value"
+        label="Evaluation Period"
         @input="getTripsByDate"
       />
       <div style="display: inline-block">
@@ -119,6 +117,7 @@ import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
 import { findIndex } from 'lodash';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
+import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('Accordion', Accordion);
@@ -189,6 +188,12 @@ export default createComponent({
       } else {
         store.dispatch('debriefer/updateEvaluationPeriod', {});
       }
+      const trips = await getTripsByDates(
+        new Date(evalPeriod.startDate),
+        new Date(evalPeriod.endDate),
+        observer.value[0]
+      );
+      store.dispatch('debriefer/updateTrips', trips);
     }
 
     async function selectObserver(id: string) {
@@ -196,11 +201,13 @@ export default createComponent({
       store.dispatch('debriefer/updateObserver', id);
       evaluationPeriod.value = undefined;
       await getEvaluationPeriods(id);
+      const trips = await getTripsByObserverId(id);
+      store.dispatch('debriefer/updateTrips', trips);
     }
 
     async function closeEvalDialog(evalPeriod: any) {
       evaluationPeriod.value = formatEvaluationPeriod(evalPeriod);
-      await getEvaluationPeriods(observer.value[0].value);
+      await getEvaluationPeriods(observer.value[0]);
     }
 
     function formatEvaluationPeriod(evalPeriod: any) {
@@ -249,7 +256,7 @@ export default createComponent({
       }
     }
 
-    useAsync(getEvaluationPeriods(observer.value.value));
+    useAsync(getEvaluationPeriods(observer.value));
 
     function add() {
       dialogEvalPeriod.value = {};
