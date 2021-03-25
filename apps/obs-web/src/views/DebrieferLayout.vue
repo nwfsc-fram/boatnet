@@ -5,6 +5,7 @@
           align="left"
           dense
           class="q-ma-sm bg-primary text-white shadow-2"
+          narrow-indicator
         >
           <q-tab name="evaluation" label="Evaluation" />
           <q-tab name="search" label="Search" />
@@ -18,7 +19,7 @@
 
         <q-separator />
 
-    <q-tab-panels v-model="topTab" animated>
+    <q-tab-panels v-model="topTab" animated :keep-alive="true">
       <q-tab-panel name="evaluation" v-show="show">
         <app-debriefer-wcgop-evaluation class="z-index5 1"/>
       </q-tab-panel>
@@ -43,7 +44,7 @@
 
         <q-separator />
 
-    <q-tab-panels v-model="bottomTab" animated >
+    <q-tab-panels v-model="bottomTab" animated>
       <q-tab-panel name="summary">
         <app-debriefer-summary />
       </q-tab-panel>
@@ -64,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, computed } from '@vue/composition-api';
+import { createComponent, ref, computed, onMounted } from '@vue/composition-api';
 import Vue from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -89,6 +90,10 @@ export default createComponent({
     const activeParamsTab: any = ref('evaluation');
 
     clearFilters();
+
+    onMounted(() => {
+      store.dispatch('debriefer/updateTrips', []);
+    });
 
     const program = computed({
       get: () => {

@@ -43,7 +43,7 @@
             <Column field="catchRecords" header="Catch Records">
                 <template #body="slotProps">
                     <div v-on:click="open(slotProps)" class="fakelink">
-                        {{ formatValue(slotProps) }}
+                        {{ slotProps.data.catchRecords }}
                     </div>
                 </template>
             </Column>
@@ -81,38 +81,48 @@
             <Column field="spidDate" header="SPID Date"></Column>
         </DataTable>
 
-        <Dialog
-            header="Header"
-            :visible.sync="showDialog"
-            :style="{ width: '75vw' }"
+        <q-dialog
+            v-model="showDialog"
             position="right"
-            :modal="true"
-            :closeOnEscape="true"
-            :maximizable="true"
-        >
-             <template #empty>No data available</template>
-            <DataTable
-                :value="popoutData"
-                rowGroupMode="rowspan"
-                groupRowsBy="type"
-                sortMode="single"
-                sortField="brand"
-                class="p-datatable-sm"
-                :sortOrder="1"
-            >
-                <template #empty>No data</template>
-                <Column field="trip" header="Trip"></Column>
-                <Column field="haul" header="Haul"></Column>
-                <Column field="catch" header="Catch"></Column>
-                <Column field="wm" header="WM"></Column>
-                <Column field="target" header="Target"></Column>
-                <Column field="otcEst" header="OTC Est."></Column>
-                <Column field="catchKP" header="Catch KP"></Column>
-                <Column field="otcKP" header="OTC KP"></Column>
-                <Column field="fit" header="Fit"></Column>
-                <Column field="cal" header="Cal"></Column>
-            </DataTable>
-        </Dialog>
+            :maximized="maximizedToggle">
+            <q-card>
+                <q-bar>
+                    <q-space/>
+                    <q-btn dense flat icon="minimize" @click="maximizedToggle = false" :disable="!maximizedToggle">
+                        <q-tooltip v-if="maximizedToggle" content-class="bg-white text-primary">Minimize</q-tooltip>
+                    </q-btn>
+                    <q-btn dense flat icon="crop_square" @click="maximizedToggle = true" :disable="maximizedToggle">
+                        <q-tooltip v-if="!maximizedToggle" content-class="bg-white text-primary">Maximize</q-tooltip>
+                    </q-btn>
+                    <q-btn dense flat icon="close" v-close-popup>
+                        <q-tooltip content-class="bg-white text-primary">Close</q-tooltip>
+                    </q-btn>
+                </q-bar>
+                <q-card-section class="row items-center">
+                    <DataTable
+                        :value="popoutData"
+                        rowGroupMode="rowspan"
+                        groupRowsBy="type"
+                        sortMode="single"
+                        sortField="brand"
+                        class="p-datatable-sm"
+                        :sortOrder="1"
+                    >
+                        <template #empty>No data</template>
+                        <Column field="trip" header="Trip"></Column>
+                        <Column field="haul" header="Haul"></Column>
+                        <Column field="catch" header="Catch"></Column>
+                        <Column field="wm" header="WM"></Column>
+                        <Column field="target" header="Target"></Column>
+                        <Column field="otcEst" header="OTC Est."></Column>
+                        <Column field="catchKP" header="Catch KP"></Column>
+                        <Column field="otcKP" header="OTC KP"></Column>
+                        <Column field="fit" header="Fit"></Column>
+                        <Column field="cal" header="Cal"></Column>
+                    </DataTable>
+                </q-card-section>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -120,7 +130,7 @@
 <script lang="ts">
 import { createComponent, ref, watch } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { flattenDeep, get, groupBy, sumBy, cloneDeep, orderBy } from 'lodash';
+import { flattenDeep, get, groupBy, maxBy, minBy, sumBy, cloneDeep, orderBy } from 'lodash';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import DataTable from 'primevue/datatable';
@@ -151,6 +161,7 @@ export default createComponent({
         const isVesselLoading: any = ref(false);
         const isLoading: any = ref(false);
         const showDialog: any = ref(false);
+        const maximizedToggle: any = ref(false);
 
         const jp = require('jsonpath');
         const prioritySpecies = ['Cowcod', 'Yelloweye', 'Eulachon', 'Chinook', 'Coho', 'Dungeness Crab', 'Green Sturegeon'];
@@ -189,6 +200,22 @@ export default createComponent({
             speciesSummary.value = [];
         }
 
+        function getMaxOrMin(type: string, obj: any, field: string) {
+            let maxOrMin: any;
+            if (type === 'max') {
+                maxOrMin = maxBy(obj, (val: any) => {
+                    const curr = get(val, field);
+                    return parseFloat(curr);
+                });
+            } else if (type === 'min') {
+                maxOrMin = minBy(obj, (val: any) => {
+                    const curr = get(val, field);
+                    return parseFloat(curr);
+                });
+            }
+            return get(maxOrMin, field);
+        }
+
         async function populateSummary(info: any) {
             isLoading.value = true;
             wmSummary.value = [];
@@ -219,20 +246,23 @@ export default createComponent({
             for (const wm of Object.keys(weightMethodGroups)) {
                 const dispositionGroups = groupBy(weightMethodGroups[wm], 'disposition.description');
                 for (const disposition of Object.keys(dispositionGroups)) {
-                    const totCatchWeight: number = sumBy(dispositionGroups[disposition], (val: any) => {
-                        const currWeight = get(val, 'weight.value');
-                        return parseFloat(currWeight);
-                    });
-                    const sampleWeight: number = sumBy(dispositionGroups[disposition], (val: any) => {
-                        const currWeight = get(val, 'sampleWeight.value');
-                        return parseFloat(currWeight);
-                    });
-                    const weight = totCatchWeight ? totCatchWeight.toFixed(2) : sampleWeight.toFixed(2);
+
+                    const minCatchWeight: number = getMaxOrMin('min', dispositionGroups[disposition], 'weight.value');
+                    const minSampleWeight: number = getMaxOrMin('min', dispositionGroups[disposition], 'sampleWeight.value');
+                    const minWeight = minCatchWeight ? minCatchWeight.toFixed(2) : minSampleWeight.toFixed(2);
+
+                    const maxCatchWeight: number = getMaxOrMin('max', dispositionGroups[disposition], 'weight.value');
+                    const maxSampleWeight: number = getMaxOrMin('max', dispositionGroups[disposition], 'sampleWeight.value');
+                    const maxWeight = maxCatchWeight ? maxCatchWeight.toFixed(2) : maxSampleWeight.toFixed(2);
+
+                    const children = flattenDeep(jp.query(dispositionGroups[disposition], '$[*].children'));
+
                     wmSummary.value.push({
                         type: disposition,
                         wm,
-                        cwMax: weight,
-                        catchRecords: 1,
+                        cwMin: minWeight,
+                        cwMax: maxWeight,
+                        catchRecords: children.length ? children.length : dispositionGroups[disposition].length,
                         data: dispositionGroups[disposition]
                     });
                 }
@@ -285,10 +315,6 @@ export default createComponent({
             isLoading.value = false;
         }
 
-        function formatValue(data: any) {
-            return get(data, 'data.catchRecords');
-        }
-
         function open(selectedInfo: any) {
             showDialog.value = true;
             popoutData.value = [];
@@ -325,11 +351,11 @@ export default createComponent({
             speciesSummary,
             selection,
 
-            formatValue,
             populateSummary,
             clear,
             isVesselLoading,
             isLoading,
+            maximizedToggle,
 
             showDialog,
             open,

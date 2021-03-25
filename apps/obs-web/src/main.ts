@@ -13,7 +13,7 @@ import '@quasar/extras/mdi-v3/mdi-v3.css';
 import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar, QTooltip,
-  QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection, QItemLabel,
+  QToolbarTitle, QBar, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection, QItemLabel,
   QCard, QCardSection, QCardActions, QSelect, QInput, QDate, QTime,
   QPopupProxy, QSlideItem, QSlideTransition, QDialog, QSlider, QChip, QAvatar, QBanner, QTable,
   QPopupEdit, QCheckbox, QTh, QTr, QTd, QToggle, ClosePopup, QSplitter, QTabPanels,
@@ -59,7 +59,7 @@ Vue.use(Quasar, {
   config: {},
   components: {
     QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar, QTooltip,
-    QToolbarTitle, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection,
+    QToolbarTitle, QBar, QBtn, QBtnToggle, QIcon, QList, QItem, QItemSection,
     QItemLabel, QCard, QCardSection, QCardActions, QSelect,
     QInput, QDate, QTime, QPopupProxy, QSlideItem, QSlideTransition, QDialog, QSlider,
     QChip, QAvatar, QBanner, QTable, QPopupEdit, QCheckbox, QTh, QTr, QTd,
