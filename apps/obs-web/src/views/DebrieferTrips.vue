@@ -421,7 +421,6 @@ export default createComponent({
           await getTrips();
         }
       }
-      store.dispatch('debriefer/updateTrips', trips.value);
       loading.value = false;
     }
 
