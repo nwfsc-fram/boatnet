@@ -50,7 +50,7 @@ export default createComponent({
         const needle = val.toLowerCase();
         filteredOptions.value = filter(options.value, (option: any) => {
           const currLabel = option.label.toLowerCase();
-          return currLabel.includes(val.toLowerCase());
+          return currLabel.includes(needle);
         });
       });
     }

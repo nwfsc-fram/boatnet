@@ -5,6 +5,7 @@
             :selection.sync="selection"
             dataKey="vessel"
             :loading="isVesselLoading"
+            class="p-datatable-sm"
             @row-select="populateSummary"
             @row-unselect="clear"
         >
@@ -29,6 +30,7 @@
             groupRowsBy="type"
             sortMode="single"
             sortField="brand"
+            class="p-datatable-sm"
             :sortOrder="1"
             :loading="isLoading"
         >
@@ -60,6 +62,7 @@
             groupRowsBy="type"
             sortMode="single"
             sortField="brand"
+            class="p-datatable-sm"
             :sortOrder="1"
             :loading="isLoading"
         >
@@ -94,6 +97,7 @@
                 groupRowsBy="type"
                 sortMode="single"
                 sortField="brand"
+                class="p-datatable-sm"
                 :sortOrder="1"
             >
                 <template #empty>No data</template>
@@ -266,7 +270,10 @@ export default createComponent({
                     return parseFloat(currWeight);
                 });
                 const weight: string = totCatchWeight ? totCatchWeight.toFixed(2) : '';
-                const count = sumBy(speciesGroups[species], 'count');
+                const count: number = sumBy(speciesGroups[species], (val: any) => {
+                    const currcount = get(val, 'count');
+                    return parseFloat(currcount);
+                });
                 speciesSummary.value.push({
                     type,
                     species,
