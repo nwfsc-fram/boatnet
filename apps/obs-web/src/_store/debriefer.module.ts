@@ -10,7 +10,6 @@ export const state: DebrieferState = {
   cruiseIds: '',
   observer: '',
   evaluationPeriod: {},
-  tripSearchFilters: {},
   tripIds: [],
   displayColumns: {},
   selectedTrips: [],
@@ -41,9 +40,6 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateEvaluationPeriod({ commit }: any, value: any) {
     commit('updateVal', {id: 'evaluationPeriod', val: value});
-  },
-  updateTripSearchFilters({ commit }: any, value: any) {
-    commit('updateVal', {id: 'tripSearchFilters', val: value});
   },
   updateSelectedTrips({ commit }: any, value: any) {
     commit('updateVal', {id: 'selectedTrips', val: value});
