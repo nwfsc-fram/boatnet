@@ -12,6 +12,7 @@
             <template #header>
                 <div>Vessels</div>
             </template>
+            <template #empty>No Data</template>
             <Column selectionMode="single" headerStyle="width: 3em"></Column>
             <Column field="vessel" header="Vessel"></Column>
             <Column field="tripCnt" header="Trips"></Column>
@@ -84,7 +85,9 @@
         <q-dialog
             v-model="showDialog"
             position="right"
-            :maximized="maximizedToggle">
+            :maximized="maximizedToggle"
+            full-width
+        >
             <q-card>
                 <q-bar>
                     <q-space/>
