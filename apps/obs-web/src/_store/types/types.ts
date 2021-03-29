@@ -22,7 +22,6 @@ export interface DebrieferState {
   selectedTrips: any[];
   selectedOperations: any[];
   operations: any[];
-  tripSearchFilters: any;
   biospecimens: any[];
   selectedBiospecimens: any[];
   filters: any;

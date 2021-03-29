@@ -216,13 +216,13 @@ export default createComponent ({
         if (col.type === 'toggle-search') {
           filterList[col.header] = jp.query(props.nodes, '$..' + col.field);
           filterList[col.header] = uniq(filterList[col.header]);
-            remove(filterList[col.header], (item: string) => {
-              if (item && item.includes('Basket')) {
-                return true;
-              } else {
-                return false;
-              }
-            });
+          remove(filterList[col.header], (item: string) => {
+            if (item && item.includes('Basket')) {
+              return true;
+            } else {
+              return false;
+            }
+          });
           filterList[col.header] = filterList[col.header].sort();
         }
       }

@@ -1,30 +1,24 @@
 <template>
-  <multiselect
-    style="width: 400px"
+  <q-select
     v-model="valueHolder"
-    :placeholder="label"
-    :options="options"
-    :multiple="multiple ? true : false"
-    label="label"
-    trackBy="value"
+    :options="filteredOptions"
+    :label="label"
+    use-input
     @input="select"
-    :limit="2"
-    :limit-text="limitText"
+    @filter="filterFn"
   />
 </template>
 <script lang="ts">
 import {
   createComponent,
   ref,
-  reactive,
-  computed,
   watch
 } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { useAsync } from 'vue-async-function';
 import Vue, { WatchOptions } from 'vue';
-import { get } from 'lodash';
+import { filter, get, startsWith } from 'lodash';
 import Multiselect from 'vue-multiselect';
 
 Vue.component('multiselect', Multiselect);
@@ -42,27 +36,23 @@ export default createComponent({
 
   setup(props, context) {
     const options: any = ref([]);
+    const valueHolder: any = ref('');
+    const filteredOptions: any = ref([]);
 
     const watcherOptions: WatchOptions = {
       immediate: true
     };
 
-    const valueHolder = computed({
-      get: () => {
-        return props.val;
-      },
-      set: (value: any) => {
-        if (!props.multiple) {
-          value = value ? [value] : [];
-        }
-        context.emit('update:val', value);
-      }
-    });
-
     watch(() => props.lookupQueryOptions, populateLookups, watcherOptions);
 
-    function limitText(count: number) {
-      return 'and ' + count + ' more';
+    function filterFn(val: any, update: any) {
+      update(() => {
+        const needle = val.toLowerCase();
+        filteredOptions.value = filter(options.value, (option: any) => {
+          const currLabel = option.label.toLowerCase();
+          return currLabel.includes(needle);
+        });
+      });
     }
 
     function select(values: any) {
@@ -75,6 +65,7 @@ export default createComponent({
       } else {
         values = values ? values.value : values;
         context.emit('select', values);
+        context.emit('update:val', [values]);
       }
     }
 
@@ -122,9 +113,10 @@ export default createComponent({
 
     return {
       select,
-      limitText,
+      filteredOptions,
       options,
-      valueHolder
+      valueHolder,
+      filterFn
     };
   }
 });

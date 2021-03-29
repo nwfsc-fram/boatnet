@@ -23,15 +23,12 @@ import {
   createComponent,
   ref,
   watch,
-  onMounted,
   onBeforeMount
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
-import { cloneDeep, findIndex, get, remove, indexOf } from 'lodash';
-import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
-import moment from 'moment';
+import { cloneDeep, findIndex } from 'lodash';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
@@ -404,17 +401,11 @@ export default createComponent({
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.observer, async () => {
-      await populateTrips('observer');
-    });
-    watch(() => state.debriefer.evaluationPeriod, async () => {
-      await populateTrips('evaluationPeriod');
-    });
-    watch(() => state.debriefer.tripSearchFilters, async () => {
-      await populateTrips('search');
+    watch(() => state.debriefer.trips, () => {
+      populateTrips('trips');
     });
     watch(() => state.debriefer.tripIds, async () => {
-      await populateTrips('trips');
+      populateTrips('tripIds');
     });
 
     async function populateTrips(type: string) {
@@ -424,17 +415,12 @@ export default createComponent({
           trips.value = state.debriefer.trips;
         }
       } else {
-        if (type === 'observer') {
-          await getTripsByObserver();
-        } else if (type === 'evaluationPeriod') {
-          await loadTripsByEvaluationPeriod();
-        } else if (type === 'search') {
-          await getTripsBySearchParams();
-        } else if (type === 'trips') {
+        if (type === 'trips') {
+          trips.value = state.debriefer.trips;
+        } else if (type === 'tripIds') {
           await getTrips();
         }
       }
-      store.dispatch('debriefer/updateTrips', trips.value);
       loading.value = false;
     }
 
@@ -451,78 +437,6 @@ export default createComponent({
         trips.value = tripsHolder;
       } catch (err) {
         console.log('error');
-      }
-    }
-
-    async function getTripsByObserver() {
-      const observerId = state.debriefer.observer;
-      trips.value = await getTripsByObserverId(observerId);
-    }
-
-    async function loadTripsByEvaluationPeriod() {
-      const observerId = state.debriefer.observer;
-      const evalPeriod = state.debriefer.evaluationPeriod;
-
-      if (observerId && evalPeriod) {
-        trips.value = await getTripsByDates(
-          new Date(evalPeriod.startDate),
-          new Date(evalPeriod.endDate),
-          observerId
-        );
-      }
-    }
-
-    async function getTripsBySearchParams() {
-      const filters = state.debriefer.tripSearchFilters;
-      const views = Object.keys(filters);
-
-      if (views.length === 0) {
-        trips.value = [];
-        loading.value = false;
-        return;
-      }
-
-      const queryView = views[0]; // use the first key in the object to query couch, then filter based off the remaining keys
-      let keyVals = {};
-      if (queryView === 'wcgop_trips_by_date') {
-        keyVals = {
-          start_key: filters[queryView].val[0],
-          end_key: filters[queryView].val[1]
-        };
-      } else {
-        keyVals = { keys: filters[queryView].val };
-      }
-
-      try {
-        const results = await masterDB
-          .viewWithDocs('obs_web', queryView, keyVals)
-          .then((response: any) => {
-            trips.value = response.rows
-              .filter((row: any) => {
-                let keep: boolean = true;
-                if (views.length > 1) {
-                  for (let i = 1; i < views.length; i++) {
-                    if (views[i] === 'wcgop_trips_by_date') {
-                      if (moment(row.doc.returnDate).isBefore(filters[views[i]].val[0]) ||
-                        moment(row.doc.returnDate).isAfter(filters[views[i]].val[1])
-                      ) {
-                        keep = false;
-                      }
-                    } else {
-                      const rowVal = get(row.doc, filters[views[i]].field);
-                      if (indexOf(filters[views[i]].val, rowVal) === -1) {
-                        keep = false;
-                      }
-                    }
-                  }
-                }
-                return keep;
-              })
-              .map((row: any) => row.doc);
-          });
-      } catch (error) {
-        console.log(error);
-        loading.value = false;
       }
     }
 

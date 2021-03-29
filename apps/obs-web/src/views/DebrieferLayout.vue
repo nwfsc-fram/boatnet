@@ -1,56 +1,72 @@
 <template>
   <div>
-    <TabView class="q-ma-sm">
-        <TabPanel>
-          <template #header>
-            <q-btn
-              padding="none"
-              flat
-              dense
-              label="Evaluation"
-              :icon-right="activeParamsTab === 'evaluation' ? (show ? 'arrow_drop_down' : 'arrow_drop_up') : ''"
-              @click="toggleShow('evaluation')"
-            />
-          </template>
-          <app-debriefer-wcgop-evaluation v-show="show"/>
-        </TabPanel>
-        <TabPanel>
-          <template #header>
-            <q-btn
-              flat
-              padding="none"
-              dense
-              label="Search"
-              :icon-right="activeParamsTab === 'search' ? (show ? 'arrow_drop_down' : 'arrow_drop_up') : ''"
-              @click="toggleShow('search')"
-            />
-            </template>
-          <app-debriefer-wcgop-search v-show="show"/>
-        </TabPanel>
-    </TabView>
+    <q-tabs
+          v-model="topTab"
+          align="left"
+          dense
+          class="q-ma-sm bg-primary text-white shadow-2"
+          narrow-indicator
+        >
+          <q-tab name="evaluation" label="Evaluation" />
+          <q-tab name="search" label="Search" />
+          <q-space/>
+          <q-btn
+            flat
+            :icon="show ? 'expand_less' : 'expand_more'"
+            @click="show = show ? false : true"
+          />
+        </q-tabs>
 
-    <TabView class="q-ma-sm">
-      <TabPanel header="Data" :active="infoTab === 'data'">
+        <q-separator />
+
+    <q-tab-panels v-model="topTab" animated :keep-alive="true">
+      <q-tab-panel name="evaluation" v-show="show">
+        <app-debriefer-wcgop-evaluation class="z-index5 1"/>
+      </q-tab-panel>
+      <q-tab-panel name="search">   
+        <app-debriefer-wcgop-search v-show="show"/>
+      </q-tab-panel>
+    </q-tab-panels>
+
+    <q-tabs
+          v-model="bottomTab"
+          align="left"
+          dense
+          class="q-ma-sm bg-primary text-white shadow-2"
+          narrow-indicator
+        >
+          <q-tab name="summary" label="Summary" />
+          <q-tab name="data" label="Data" />
+          <q-tab name="errors" label="Errors" />
+          <q-tab name="assessement" label="Assessement" />
+          <q-tab name="dcs" label="DCS" />
+        </q-tabs>
+
+        <q-separator />
+
+    <q-tab-panels v-model="bottomTab" animated>
+      <q-tab-panel name="summary">
+        <app-debriefer-summary />
+      </q-tab-panel>
+      <q-tab-panel name="data">
         <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :isFullSize="false"/>
         <app-debriefer-ashop-data v-else />
-      </TabPanel>
-      <TabPanel header="Errors" :active="infoTab === 'qa'">
-        <app-debriefer-errors :showData="infoTab === 'qa' ? false : true" />
-      </TabPanel>
-      <TabPanel header="Summary" :active="infoTab === 'summary'">Summary</TabPanel>
-      <TabPanel header="Assessment" :active="infoTab === 'assessment'">
+      </q-tab-panel>
+      <q-tab-panel name="errors">
+         <app-debriefer-errors :showData="bottomTab === 'qa' ? false : true" />
+      </q-tab-panel>
+      <q-tab-panel name="assessement">
         <app-debriefer-assessment :showData="infoTab === 'assessment'"></app-debriefer-assessment>
-      </TabPanel>
-      <TabPanel header="DCS" :active="infoTab === 'dcs'">
-        <app-debriefer-dcs :showData="infoTab === 'dcs'" />
-      </TabPanel>
-    </TabView>
-
+      </q-tab-panel>
+      <q-tab-panel name="dcs">
+        <app-debriefer-dcs :showData="bottomTab === 'dcs'" />
+      </q-tab-panel>
+    </q-tab-panels>
   </div>
 </template>
 
 <script lang="ts">
-import { createComponent, ref, computed } from '@vue/composition-api';
+import { createComponent, ref, computed, onMounted } from '@vue/composition-api';
 import Vue from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -68,20 +84,17 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const infoTab = ref('data');
+    const topTab = ref('evaluation');
+    const bottomTab = ref('summary');
 
     const show: any = ref(true);
     const activeParamsTab: any = ref('evaluation');
 
-    function toggleShow(label: string) {
-      const prevActiveTab = activeParamsTab.value;
-      show.value = show.value ? false : true;
-      if (prevActiveTab !== label) {
-        show.value = true;
-      }
-      activeParamsTab.value = label;
-    }
     clearFilters();
+
+    onMounted(() => {
+      store.dispatch('debriefer/updateTrips', []);
+    });
 
     const program = computed({
       get: () => {
@@ -98,15 +111,14 @@ export default createComponent({
     });
 
     function clearFilters() {
-      store.dispatch('debriefer/updateTripSearchFilters', {});
       store.dispatch('debriefer/updateEvaluationPeriod', {});
     }
 
     return {
       program,
-      infoTab,
+      topTab,
+      bottomTab,
       clearFilters,
-      toggleShow,
       show,
       activeParamsTab
     };

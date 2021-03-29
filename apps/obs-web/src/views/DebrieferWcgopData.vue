@@ -25,7 +25,6 @@
           active-color="primary"
           indicator-color="primary"
           align="justify"
-          narrow-indicator
         >
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
