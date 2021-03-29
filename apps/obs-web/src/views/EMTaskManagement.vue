@@ -203,7 +203,16 @@ export default createComponent({
                                 trip.statusDate = dataSource.value[1];
                                 switch (dataSource.value[0]) {
                                     case 'logbook':
-                                        trip.status = 'not selected for review';
+                                        const selectionQuery: any = await masterDB.view(
+                                            'TripsApi',
+                                            'em-haul-review-selection-by-tripNum',
+                                            {include_docs: true, reduce: false, key: trip.tripNum} as any
+                                        );
+                                        if (selectionQuery.rows && selectionQuery.rows.length > 0) {
+                                            trip.status = 'haulNum(s) ' + selectionQuery.rows[0].doc.selectedHauls + ' selected for review';
+                                        } else {
+                                            trip.status = 'not selected for review';
+                                        }
                                         break;
                                     case 'thirdParty':
                                         trip.status = 'third party review submitted';

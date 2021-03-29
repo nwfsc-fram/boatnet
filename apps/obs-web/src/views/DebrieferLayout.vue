@@ -38,7 +38,9 @@
         <app-debriefer-errors :showData="infoTab === 'qa' ? false : true" />
       </TabPanel>
       <TabPanel header="Summary" :active="infoTab === 'summary'">Summary</TabPanel>
-      <TabPanel header="Assessment" :active="infoTab === 'assessment'">Assessment</TabPanel>
+      <TabPanel header="Assessment" :active="infoTab === 'assessment'">
+        <app-debriefer-assessment :showData="infoTab === 'assessment'"></app-debriefer-assessment>
+      </TabPanel>
       <TabPanel header="DCS" :active="infoTab === 'dcs'">
         <app-debriefer-dcs :showData="infoTab === 'dcs'" />
       </TabPanel>

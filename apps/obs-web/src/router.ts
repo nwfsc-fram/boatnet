@@ -50,7 +50,6 @@ import RackBiospecimens from './views/RackBiospecimens.vue';
 import SpeciesDetail from './views/SpeciesDetail.vue';
 import SpeciesViewer from './views/SpeciesViewer.vue';
 import TripDetails from './views/TripDetails.vue';
-import TripDetails2 from './views/TripDetails2.vue';
 import Trips from './views/Trips.vue';
 import TripsApiInterface from './views/TripsApiInterface.vue';
 import UserConfig from './views/UserConfig.vue';
