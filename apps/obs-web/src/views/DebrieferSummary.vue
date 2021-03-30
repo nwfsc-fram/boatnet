@@ -471,8 +471,6 @@ export default createComponent({
             currOpps.value = ops.rows;
 
             const otcWMs = groupBy(currOpps.value, 'observerTotalCatch.weightMethod.description');
-            console.log('otc wm')
-            console.log(otcWMs)
             for (const otcWM of Object.keys(otcWMs)) {
                 const currOTC = otcWMs[otcWM];
                 const weightFieldName = 'observerTotalCatch.measurement.value';
