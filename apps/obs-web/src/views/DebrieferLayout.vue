@@ -56,7 +56,7 @@
          <app-debriefer-errors :showData="bottomTab === 'qa' ? false : true" />
       </q-tab-panel>
       <q-tab-panel name="assessement">
-        <app-debriefer-assessment :showData="infoTab === 'assessment'"></app-debriefer-assessment>
+        <app-debriefer-assessment ></app-debriefer-assessment>
       </q-tab-panel>
       <q-tab-panel name="dcs">
         <app-debriefer-dcs :showData="bottomTab === 'dcs'" />

@@ -1,23 +1,39 @@
 <template>
     <div>
-        <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;">Fishing Effort:</p>
-        <div style="margin-left: 20px">
-            # vessels: {{ uniqueVessels }}<br>
-            # Trips: {{ debriefer.trips.length }}<br>
-            # Hauls: {{ totalHauls }}
-        </div>
-        <div v-for="section of sections" :key="sections.indexOf(section)">
-            <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px; margin-top: 1em;">{{section}}</p>
-            <div v-for="question of questions" :key="questions.indexOf(question)">
-                <div v-if="question.section === section" class="row" style="margin-left: 20px">
-                    <span class="col5" style="position: relative; top: 10px; width: 400px">{{ question.question }}&nbsp; &nbsp;</span>
-                    <div class="col6">
-                        <q-input
-                            v-model="assessment[section + ' || ' +  question.question]"
-                            autogrow
-                            dense
-                            style="width: 400px"
-                        >
+        <q-card class="assessment-section">
+            <q-card-section>
+                <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;">Fishing Effort:</p>
+                <div>
+                    # vessels: {{ uniqueVessels }}<br>
+                    # Trips: {{ debriefer.trips.length }}<br>
+                    # Hauls: {{ totalHauls }}
+                </div>
+            </q-card-section>
+        </q-card>
+        <q-card v-for="section of sections" :key="sections.indexOf(section)" class="assessment-section">
+            <q-card-section>
+                <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;">{{section}}</p>
+                <div v-for="question of questions" :key="questions.indexOf(question)">
+                    <div v-if="question.section === section" class="row">
+                        <span class="col5" style="position: relative; top: 10px; width: 400px;">{{ question.question }}&nbsp; &nbsp;</span>
+                        <div class="col">
+                            <q-input
+                                v-model="assessment[section + ' || ' +  question.question]"
+                                autogrow
+                                dense
+                            >
+                            <q-menu anchor="top left" style="cursor: pointer">
+                                <q-list dense >
+                                    <q-item
+                                        v-for="answer of getAnswerSet(question.answerSet)"
+                                        :key="getAnswerSet(question.answerSet).indexOf(answer)"
+                                        clickable
+                                        @click="setQuestionResponse(section + ' || ' +  question.question, answer)"
+                                        v-close-popup>
+                                        <q-item-section>{{ answer }}</q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-menu>
                             <template v-slot:append>
                                 <q-btn
                                     v-if="assessment[section + ' || ' +  question.question]"
@@ -25,27 +41,15 @@
                                     size="xs"
                                     flat
                                     round
-                                    @click="assessment[section + ' || ' +  question.question] = null"
+                                    @click="setQuestionResponse(section + ' || ' +  question.question, null)"
                                 ></q-btn>
                             </template>
-                        </q-input>
-                    </div>
-                    <div class="col1">
-                        <q-select
-                            v-if="getAnswerSet(question.answerSet).length > 0"
-                            v-model="assessment[section + ' || ' +  question.question]"
-                            :options="getAnswerSet(question.answerSet)"
-                            borderless
-                            dense
-                            hide-selected
-                            options-cover
-                            style="width: 10px"
-                        >
-                        </q-select>
+                            </q-input>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </q-card-section>
+        </q-card>
     </div>
 </template>
 
@@ -54,7 +58,9 @@ import {
   createComponent,
   ref,
   onMounted,
-  watch
+  watch,
+  reactive,
+  set
 } from '@vue/composition-api';
 
 import { couchService } from '@boatnet/bn-couch';
@@ -63,7 +69,7 @@ import {  orderBy, uniq } from 'lodash';
 
 export default createComponent({
   props: {
-    showData: Boolean,
+    infoTab: Boolean,
     isFullSize: Boolean,
   },
   setup(props, context) {
@@ -77,6 +83,7 @@ export default createComponent({
 
     const questions: any = ref([]);
     const answerSets: any = ref([]);
+
     const sections: any = [
         'OTC Sampling Procedures',
         'Catch Categories',
@@ -141,6 +148,10 @@ export default createComponent({
         getTotalHauls();
     };
 
+    const setQuestionResponse = (question: any, answer: any) => {
+        set(assessment.value, question, answer);
+    };
+
     onMounted( async () => {
         getQuestions();
         getAnswerSets();
@@ -157,7 +168,8 @@ export default createComponent({
         questions,
         sections,
         totalHauls,
-        uniqueVessels
+        uniqueVessels,
+        setQuestionResponse
     };
     }
 });
@@ -165,6 +177,10 @@ export default createComponent({
 
 <style scoped>
 
+    .assessment-section {
+    width: 100%;
+    margin: 5px 0 5px 0
+    }
 
 </style>
 
