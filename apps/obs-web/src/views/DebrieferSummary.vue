@@ -155,6 +155,7 @@ import { cloneDeep, concat, flattenDeep, get, groupBy,
         max, maxBy, min, minBy, orderBy, remove, round, sumBy, uniq } from 'lodash';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
+import moment from 'moment';
 import DataTable from 'primevue/datatable';
 import Button from 'primevue/button';
 import Column from 'primevue/column';
@@ -444,6 +445,7 @@ export default createComponent({
         }
 
         async function getVesselInfo() {
+            const vesselSummaryInfo = [];
             isVesselLoading.value = true;
             vesselSummary.value = [];
             wmSummary.value = [];
@@ -469,7 +471,7 @@ export default createComponent({
                 const endDept = jp.query(operations, '$[*].locations[1].depth.value');
                 const depths = concat(startDepth, endDept);
 
-                vesselSummary.value.push({
+                vesselSummaryInfo.push({
                     vessel,
                     tripCnt: currVesselInfo.length,
                     fishery: get(currVesselInfo[0], 'fishery.description'),
@@ -481,6 +483,7 @@ export default createComponent({
                     trips: currVesselInfo
                 });
             }
+            vesselSummary.value = vesselSummaryInfo;
             isVesselLoading.value = false;
         }
 
@@ -722,6 +725,12 @@ export default createComponent({
                 totalCW = formatWeight(totalCW);
                 const otcWt = formatWeight(get(op, 'observerTotalCatch.measurement.value'));
                 const subCW = otcWt && totalCW ? formatWeight(otcWt - totalCW) : undefined;
+
+                const start = moment(get(op, 'locations[0].locationDate'));
+                const end = moment(get(op, 'locations[1].locationDate'));
+                const duration = moment.duration(end.diff(start));
+                const towTime = moment.utc(duration.asMilliseconds()).format('HH:mm:ss');
+
                 otcInfo.push({
                     tripNum: get(op, 'legacy.tripId'),
                     haulNum: get(op, 'operationNum'),
@@ -730,7 +739,7 @@ export default createComponent({
                     otcWt,
                     totalCW,
                     subCW,
-                    // tow time
+                    towTime,
                     fit: get(op, 'fit'),
                     calWt: get(op, 'calWeight')
                 });

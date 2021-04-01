@@ -17,6 +17,10 @@
         v-model="evaluationPeriod"
         :options="evaluations"
         label="Evaluation Period"
+        use-input
+        hide-selected
+        fill-input
+        @filter="filterFn"
         @input="getTripsByDate"
       />
       <div style="display: inline-block">
@@ -114,7 +118,7 @@ import { Client, CouchDoc, ListOptions, FindOptions } from 'davenport';
 
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
-import { findIndex } from 'lodash';
+import { filter, findIndex } from 'lodash';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
@@ -140,7 +144,7 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
 
-    const observer: any = ref([]);
+    const observer: any = ref('');
     const showAll: any = ref(false);
 
     const evaluations: any = ref([]);
@@ -190,7 +194,7 @@ export default createComponent({
       const trips = await getTripsByDates(
         new Date(evalPeriod.startDate),
         new Date(evalPeriod.endDate),
-        observer.value[0]
+        observer.value
       );
       store.dispatch('debriefer/updateTrips', trips);
     }
@@ -287,6 +291,16 @@ export default createComponent({
       clearFilters();
     }
 
+    function filterFn(val: any, update: any) {
+      update(() => {
+        const needle = val.toLowerCase();
+        evaluations.value = filter(evaluations.value, (option: any) => {
+          const currLabel = option.label.toLowerCase();
+          return currLabel.includes(needle);
+        });
+      });
+    }
+
     return {
       observer,
       observerQueryOptions,
@@ -304,7 +318,8 @@ export default createComponent({
       getTripsByDate,
       showEvaluationDialog,
       showDeleteDialog,
-      deleteDialogSettings
+      deleteDialogSettings,
+      filterFn
     };
   }
 });
