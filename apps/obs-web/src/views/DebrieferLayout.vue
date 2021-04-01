@@ -41,14 +41,14 @@
 
     <q-tab-panels v-model="bottomTab" animated :keep-alive="true">
       <q-tab-panel name="data">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'" startingTab="trips" :isFullSize="false"/>
+        <app-debriefer-wcgop-data v-if="program === 'wcgop'" :startingTab="startingDataTab" :isFullSize="false"/>
         <app-debriefer-ashop-data v-else />
       </q-tab-panel>
       <q-tab-panel name="errors">
          <app-debriefer-errors :showData="bottomTab === 'qa' ? false : true" />
       </q-tab-panel>
       <q-tab-panel name="summary">
-        <app-debriefer-summary />
+        <app-debriefer-summary @changeTab="updateTab"/>
       </q-tab-panel>
       <q-tab-panel name="assessement">
       </q-tab-panel>
@@ -80,6 +80,8 @@ export default createComponent({
     const state = store.state;
     const topTab = ref('evaluation');
     const bottomTab = ref('summary');
+    const startingDataTab = ref('trips');
+    let updateSpecificTab: boolean = false;
 
     const show: any = ref(true);
     const activeParamsTab: any = ref('evaluation');
@@ -108,11 +110,19 @@ export default createComponent({
       store.dispatch('debriefer/updateEvaluationPeriod', {});
     }
 
+    function updateTab(tabInfo: any) {
+      updateSpecificTab = true;
+      bottomTab.value = tabInfo.topLevelTab;
+      startingDataTab.value = tabInfo.dataTab;
+    }
+
     return {
       program,
+      startingDataTab,
       topTab,
       bottomTab,
       clearFilters,
+      updateTab,
       show,
       activeParamsTab
     };
