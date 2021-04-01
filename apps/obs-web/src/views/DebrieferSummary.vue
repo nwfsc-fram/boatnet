@@ -12,7 +12,7 @@
         <Divider/>
         <DataTable
             :value="vesselSummary"
-            :selection.sync="selection"
+            :selection.sync="selectedVessel"
             dataKey="vessel"
             :loading="isVesselLoading"
             class="p-datatable-sm"
@@ -94,7 +94,13 @@
             <Column field="basketWt" header="Basket Total"></Column>
             <Column field="count" header="Count"></Column>
             <Column field="avgWt" header="Avg Wt"></Column>
-            <Column field="bsRecords" header="BS Records"></Column>
+            <Column field="bsRecords" header="BS Records">
+                <template #body="slotProps">
+                    <div v-on:click="goToBios(slotProps.data)" class="fakelink">
+                        {{ slotProps.data.bsRecords }}
+                    </div>
+                </template>
+            </Column>
             <Column field="spidDate" header="SPID Date"></Column>
         </DataTable>
 
@@ -145,8 +151,8 @@
 <script lang="ts">
 import { createComponent, ref, watch } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, filter, flattenDeep, get, groupBy, 
-        maxBy, minBy, orderBy, round, sumBy } from 'lodash';
+import { cloneDeep, concat, flattenDeep, get, groupBy,
+        max, maxBy, min, minBy, orderBy, remove, round, sumBy, uniq } from 'lodash';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import DataTable from 'primevue/datatable';
@@ -175,7 +181,7 @@ export default createComponent({
         const speciesSummary: any = ref([]);
         const popoutData: any = ref([]);
 
-        const selection: any = ref([]);
+        const selectedVessel: any = ref([]);
         const tripsList: any = ref(state.debriefer.trips);
         const selectedTrips: any = ref([]);
         const isVesselLoading: any = ref(false);
@@ -184,6 +190,9 @@ export default createComponent({
         const maximizedToggle: any = ref(false);
 
         const jp = require('jsonpath');
+        const flatten = require('flat');
+        const unflatten = flatten.unflatten;
+
         const prioritySpecies = ['Cowcod', 'Yelloweye', 'Eulachon', 'Chinook', 'Coho', 'Dungeness Crab', 'Green Sturegeon'];
 
         const popoutCols: any = ref([]);
@@ -228,7 +237,7 @@ export default createComponent({
                 field: 'calWt',
                 header: 'Cal WT'
             }
-        ]
+        ];
 
         const retainedWMCols = [
             {
@@ -279,7 +288,7 @@ export default createComponent({
                 field: 'cab', // catch additional baskets
                 header: 'CAB'
             }
-        ]
+        ];
 
         const discardedWMCols = [
             {
@@ -338,7 +347,7 @@ export default createComponent({
                 field: 'ssTotal',
                 header: 'SS Total'
             }
-        ]
+        ];
 
         const speciesCompCols = [
             {
@@ -397,7 +406,7 @@ export default createComponent({
                 field: 'specimenCnt',
                 header: 'Specimen Cnt'
             },
-        ]
+        ];
 
         watch(() => state.debriefer.trips, async () => {
             tripsList.value = state.debriefer.trips;
@@ -435,25 +444,41 @@ export default createComponent({
         }
 
         async function getVesselInfo() {
+            isVesselLoading.value = true;
             vesselSummary.value = [];
             wmSummary.value = [];
             speciesSummary.value = [];
             popoutData.value = [];
             const vesselGroups = groupBy(selectedTrips.value, 'vessel.vesselName');
-            isVesselLoading.value = true;
 
             for (const vessel of Object.keys(vesselGroups)) {
                 const currVesselInfo = vesselGroups[vessel];
+
                 let operationIds = jp.query(currVesselInfo , '$[*].operationIDs');
                 operationIds = flattenDeep(operationIds);
-                const ops = await masterDB.get(operationIds[0]);
+                const operationResults = await masterDB.listWithDocs({ keys: operationIds});
+                const operations = operationResults.rows;
+
+                let gearType = jp.query(operations, '$[*].gearType.description');
+                gearType = uniq(gearType).join(',');
+
+                let targetStrategy = jp.query(operations, '$[*].targetStrategy');
+                targetStrategy = uniq(targetStrategy).join(',');
+
+                const startDepth = jp.query(operations, '$[*].locations[0].depth.value');
+                const endDept = jp.query(operations, '$[*].locations[1].depth.value');
+                const depths = concat(startDepth, endDept);
+
                 vesselSummary.value.push({
                     vessel,
                     tripCnt: currVesselInfo.length,
                     fishery: get(currVesselInfo[0], 'fishery.description'),
                     haulCnt: operationIds.length,
-                    gearType: get(ops, 'gearType.description'),
-                    operations: operationIds
+                    targetStrategy,
+                    gearType,
+                    depth: [min(depths), max(depths)].join(', '),
+                    operations,
+                    trips: currVesselInfo
                 });
             }
             isVesselLoading.value = false;
@@ -465,10 +490,7 @@ export default createComponent({
             speciesSummary.value = [];
             const catches: any[] = [];
 
-            const ops = await masterDB.listWithDocs({
-                keys: info.data.operations
-            });
-            currOpps.value = ops.rows;
+            currOpps.value = info.data.operations;
 
             const otcWMs = groupBy(currOpps.value, 'observerTotalCatch.weightMethod.description');
             for (const otcWM of Object.keys(otcWMs)) {
@@ -493,7 +515,7 @@ export default createComponent({
                     for (const currCatch of operation.catches) {
                         if (currCatch) {
                             const catchVal = currCatch;
-                            catchVal.operationInfo = operation;
+                            catchVal.biolist = operation.biolist;
                             catchVal.tripNum = operation.legacy.tripId;
                             catchVal.haulNum = operation.operationNum;
                           //  catchVal.otcWM = get(operation, 'observerTotalCatch.weightMethod.description')
@@ -539,7 +561,7 @@ export default createComponent({
                 if (catchVal.children && catchVal.children.length > 0) {
                     for (const child of catchVal.children) {
                         const species = cloneDeep(child);
-                        species.operationInfo = catchVal.operationInfo;
+                        species.biolist = catchVal.biolist;
                         species.catchLevelInfo = catchVal;
                         species.species = get(child, 'catchContent.commonNames[0]');
                         species.weight = parseFloat(get(child, 'weight.value', 0));
@@ -558,24 +580,20 @@ export default createComponent({
             }
 
             // populating species table
-            
             const speciesGroups = groupBy(speciesCatches, 'species');
             for (const species of Object.keys(speciesGroups)) {
                 const speciesGroup: any = speciesGroups[species];
                 const type: string = prioritySpecies.includes(species) ? 'Priority' : 'Other';
                 const weight: number | undefined = formatWeight(sumBy(speciesGroup, 'weight'));
                 let basketWt: number | undefined = sumBy(speciesGroup, (group: any) => {
-                    let totalBasketWt: number = 0;
-                    if (group.baskets) {
-                        for (const basket of group.baskets) {
-                            totalBasketWt += basket.weight;
-                        }
-                    }
-                    return totalBasketWt;
+                    return group.baskets ? sumBy(group.baskets, 'weight') : 0;
                 });
                 basketWt = formatWeight(basketWt);
                 const count: number = sumBy(speciesGroup, 'count');
                 const avgWt: number | undefined = weight ? formatWeight(weight / count) : undefined;
+                const bsRecords: number = sumBy(speciesGroup, (group: any) => {
+                    return group.specimens ? group.specimens.length : undefined;
+                });
                 speciesSummary.value.push({
                     type,
                     species,
@@ -584,13 +602,33 @@ export default createComponent({
                     basketWt,
                     count,
                     avgWt,
-                    data: speciesGroup
-                    // bs records
+                    data: speciesGroup,
+                    bsRecords,
                     // spid date
                 });
             }
             speciesSummary.value = orderBy(speciesSummary.value, ['type', 'species'], ['desc', 'asc']);
             isLoading.value = false;
+        }
+
+        function goToBios(data: any) {
+            const flattenedTrips: any[] = [];
+            const flattenedOps: any[] = [];
+
+            for (const trip of selectedVessel.value.trips) {
+                flattenedTrips.push(flatten(trip, {delimiter: '-'}));
+            }
+            store.dispatch('debriefer/updateSelectedTrips', flattenedTrips);
+
+            for (const op of selectedVessel.value.operations) {
+                flattenedOps.push(flatten(op, { delimiter: '-'}));
+            }
+            store.dispatch('debriefer/updateSelectedOperations', flattenedOps);
+
+            const filters = state.debriefer.filters;
+            filters['wcgop-biospecimens'] = { species: data.species };
+            store.dispatch('debriefer/updateFilters', filters);
+            context.emit('changeTab', { topLevelTab: 'data', dataTab: 'biospecimens'});
         }
 
         function open(selectedInfo: any) {
@@ -619,6 +657,8 @@ export default createComponent({
             const summaryInfo: any[] = [];
             for (const val of data) {
                 const catchInfo = val.catchLevelInfo;
+                const sampleWeight = val.baskets ? sumBy(val.baskets, 'weight') : undefined;
+                const count = val.baskets ? sumBy(val.baskets, 'count') : undefined;
                 summaryInfo.push({
                     tripNum: catchInfo.tripNum,
                     haulNum: catchInfo.haulNum,
@@ -627,22 +667,22 @@ export default createComponent({
                     wm: get(catchInfo, 'weightMethod.description'),
                     name: val.species,
                     weight: formatWeight(val.weight),
-                    sampleWeight: val.baskets ? sumBy(val.baskets, 'weight') : undefined,
-                    //fish#
-                    count: val.baskets ? sumBy(val.baskets, 'count') : undefined,
-                    //avg wt
+                    sampleWeight,
+                    // fish#
+                    count,
+                    avgWt: sampleWeight && count ? formatWeight(sampleWeight / count) : undefined,
                     baskets: val.baskets ? val.baskets.length : undefined,
                     discard: val.discardReason ? get(val, 'discardReason.description') : undefined,
-                    biolist: get(val, 'operationInfo.biolist'),
+                    biolist: catchInfo.biolist,
                     specimenCnt: val.specimens ? val.specimens.length : undefined
-                })
+                });
             }
             return summaryInfo;
         }
 
         function populateSamplingSummary(data: any) {
             const summaryInfo: any[] = [];
-            for(const catchVal of data) {
+            for (const catchVal of data) {
                 let weight = typeof catchVal.weight === 'object' ? get(catchVal, 'weight.value') : catchVal.weight;
                 weight = formatWeight(weight);
                 summaryInfo.push({
@@ -654,14 +694,14 @@ export default createComponent({
                     name: get(catchVal, 'catchContent.name'),
                     weight,
                     // count
-                    //discard reason - currently this is at subsample level, in new
+                    // discard reason - currently this is at subsample level, in new
                     // catch format should be at catch level
                     sampleWt: formatWeight(get(catchVal, 'sampleWeight.value')),
                     sampleCnt: get(catchVal, 'sampleCount'),
-                    //ratio - don't see this in the model yet
-                    //cab
-                    //ss total
-                })
+                    // ratio - don't see this in the model yet
+                    // cab
+                    // ss total
+                });
             }
             return summaryInfo;
         }
@@ -693,7 +733,7 @@ export default createComponent({
                     // tow time
                     fit: get(op, 'fit'),
                     calWt: get(op, 'calWeight')
-                })
+                });
             }
             return otcInfo;
         }
@@ -702,7 +742,7 @@ export default createComponent({
             vesselSummary,
             wmSummary,
             speciesSummary,
-            selection,
+            selectedVessel,
             selectedTrips,
             tripsList,
             updateSelectedTrips,
@@ -715,6 +755,7 @@ export default createComponent({
 
             showDialog,
             open,
+            goToBios,
             popoutData,
             popoutCols
         };
