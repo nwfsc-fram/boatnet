@@ -20,7 +20,7 @@ import {
   QTabPanel, QScrollArea, QSpinner, QSpinnerBars, QSpinnerHourglass, QSpinnerRadio,
   QSpace, QTabs, QTab, QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff,
   Notify, QLinearProgress, QCircularProgress, QExpansionItem, QField, QForm, QBadge,
-  QUploader, QFab, QFabAction
+  QUploader, QFab, QFabAction, QMenu
 } from 'quasar';
 
 import 'primevue/resources/themes/nova/theme.css';
@@ -29,6 +29,7 @@ import 'primeicons/primeicons.css';
 import PrimeVue from 'primevue/config';
 
 import UserDetails from './views/UserDetails.vue';
+import DebrieferAssessment from './views/DebrieferAssessment.vue';
 import DebrieferDcs from './views/DebrieferDcs.vue';
 import DebrieferErrors from './views/DebrieferErrors.vue';
 import DebrieferWcgopData from './views/DebrieferWcgopData.vue';
@@ -67,7 +68,7 @@ Vue.use(Quasar, {
     QSpinnerBars, QSpinnerHourglass, QSpinnerRadio, QSpace, QTabs, QTab,
     QRouteTab, QSeparator, QInnerLoading, QSpinnerPuff, QLinearProgress,
     QCircularProgress, QExpansionItem, QField, QForm,  QBadge, QUploader,
-    QFab, QFabAction
+    QFab, QFabAction, QMenu
   },
   directives: {
     ClosePopup
@@ -82,6 +83,7 @@ Vue.use(VueCompositionApi);
 Vue.use(VCalendar);
 
 Vue.component('appUserDetails', UserDetails);
+Vue.component('appDebrieferAssessment', DebrieferAssessment);
 Vue.component('appDebrieferDcs', DebrieferDcs);
 Vue.component('appDebrieferErrors', DebrieferErrors);
 Vue.component('appDebrieferDialog', DebrieferDialog);

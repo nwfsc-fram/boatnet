@@ -51,6 +51,7 @@
         <app-debriefer-summary @changeTab="updateTab"/>
       </q-tab-panel>
       <q-tab-panel name="assessement">
+        <app-debriefer-assessment ></app-debriefer-assessment>
       </q-tab-panel>
       <q-tab-panel name="dcs">
         <app-debriefer-dcs :showData="bottomTab === 'dcs'" />
