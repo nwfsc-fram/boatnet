@@ -1,52 +1,57 @@
 <template>
-    <div v-if="assessment">
-        <q-card class="assessment-section">
-            <q-card-section>
-                <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">Fishing Effort:</p>
-                <div>
-                    Vessels: <b>{{ uniqueVessels }}</b>&nbsp;
-                    Trips: <b>{{ debriefer.trips.length }}</b>&nbsp;
-                    Hauls: <b>{{ totalHauls }}</b>
-                </div>
-            </q-card-section>
-        </q-card>
-        <q-card v-for="section of sections" :key="sections.indexOf(section)" class="assessment-section">
-            <q-card-section>
-                <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">{{section}}</p>
-                <div v-for="(assessmentResponse, i) of assessment.assessmentResponses" :key="i">
-                    <div v-if="assessmentResponse.question.section === section" class="row">
-                        <span class="col5" style="position: relative; top: 10px; width: 400px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
-                        <div class="col">
-                            <q-input
-                                v-model="assessmentResponse.response"
-                                autogrow dense
-                            >
-                                <q-menu anchor="top left" style="cursor: pointer">
-                                    <q-list dense >
-                                        <q-item
-                                            v-for="answer of getAnswerSet(assessmentResponse.question.answerSet)"
-                                            :key="getAnswerSet(assessmentResponse.question.answerSet).indexOf(answer)"
-                                            clickable
-                                            @click="setQuestionResponse(i, answer)"
-                                            v-close-popup
-                                            style="max-width: 500px">
-                                            <q-item-section>{{ answer }}</q-item-section>
-                                        </q-item>
-                                    </q-list>
-                                </q-menu>
-                                <template v-slot:append>
-                                    <q-btn
-                                        v-if="assessment.assessmentResponses[i].response"
-                                        icon="clear" size="xs" flat round
-                                        @click="setQuestionResponse(i, null)"
-                                    ></q-btn>
-                                </template>
-                            </q-input>
+    <div>
+        <div v-if="assessment">
+            <q-card class="assessment-section">
+                <q-card-section>
+                    <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">Fishing Effort:</p>
+                    <div>
+                        Vessels: <b>{{ uniqueVessels }}</b>&nbsp;
+                        Trips: <b>{{ debriefer.trips.length }}</b>&nbsp;
+                        Hauls: <b>{{ totalHauls }}</b>
+                    </div>
+                </q-card-section>
+            </q-card>
+            <q-card v-for="section of sections" :key="sections.indexOf(section)" class="assessment-section">
+                <q-card-section>
+                    <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">{{section}}</p>
+                    <div v-for="(assessmentResponse, i) of assessment.assessmentResponses" :key="i">
+                        <div v-if="assessmentResponse.question.section === section" class="row">
+                            <span class="col5" style="position: relative; top: 10px; width: 400px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
+                            <div class="col">
+                                <q-input
+                                    v-model="assessmentResponse.response"
+                                    autogrow dense
+                                >
+                                    <q-menu anchor="top left" style="cursor: pointer">
+                                        <q-list dense >
+                                            <q-item
+                                                v-for="answer of getAnswerSet(assessmentResponse.question.answerSet)"
+                                                :key="getAnswerSet(assessmentResponse.question.answerSet).indexOf(answer)"
+                                                clickable
+                                                @click="setQuestionResponse(i, answer)"
+                                                v-close-popup
+                                                style="max-width: 500px">
+                                                <q-item-section>{{ answer }}</q-item-section>
+                                            </q-item>
+                                        </q-list>
+                                    </q-menu>
+                                    <template v-slot:append>
+                                        <q-btn
+                                            v-if="assessment.assessmentResponses[i].response"
+                                            icon="clear" size="xs" flat round
+                                            @click="setQuestionResponse(i, null)"
+                                        ></q-btn>
+                                    </template>
+                                </q-input>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </q-card-section>
-        </q-card>
+                </q-card-section>
+            </q-card>
+        </div>
+        <div v-else>
+            Please select an observer and evaluation period.
+        </div>
     </div>
 </template>
 
