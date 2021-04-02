@@ -4,6 +4,8 @@
     :options="filteredOptions"
     :label="label"
     use-input
+    hide-selected
+    fill-input
     @input="select"
     @filter="filterFn"
   />
@@ -26,7 +28,7 @@ Vue.component('multiselect', Multiselect);
 export default createComponent({
   props: {
     label: String,
-    val: Array,
+    val: String,
     lookupView: String,
     lookupLabel: String,
     lookupValue: String,
@@ -65,7 +67,7 @@ export default createComponent({
       } else {
         values = values ? values.value : values;
         context.emit('select', values);
-        context.emit('update:val', [values]);
+        context.emit('update:val', values);
       }
     }
 

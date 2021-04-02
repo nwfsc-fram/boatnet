@@ -76,11 +76,10 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab: any = ref('');
+    const tab: any = ref(props.startingTab);
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
-    const jp = require('jsonpath');
 
     watch(() => state.debriefer.selectedTrips, update);
     watch(() => state.debriefer.selectedOperations, update);
