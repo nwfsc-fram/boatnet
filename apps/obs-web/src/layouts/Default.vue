@@ -60,7 +60,10 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/trips' : ''" exact :disabled="!onlineStatus">
+        <q-item
+          :to="onlineStatus ? '/trips' : ''" exact
+          :disabled="!onlineStatus"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'captain']) && !getObserverMode">
           <q-item-section avatar>
             <q-icon name="directions" />
           </q-item-section>
@@ -70,7 +73,9 @@
           </q-item-section>
         </q-item>
 
-        <q-item :to="onlineStatus ? '/declarations' : ''" exact :disabled="!onlineStatus">
+        <q-item :to="onlineStatus ? '/declarations' : ''" exact
+        :disabled="!onlineStatus"
+        v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'captain']) && !getObserverMode">
           <q-item-section avatar>
             <q-icon name="how_to_vote" />
           </q-item-section>
@@ -81,7 +86,7 @@
         </q-item>
 
         <q-item
-          v-if="isAuthorized(['enforcement'])"
+          v-if="isAuthorized(['enforcement', 'developement_staff'])"
           :to="onlineStatus ? '/ole-efp-management' : ''"
           exact
           :disabled="!onlineStatus"
@@ -95,6 +100,20 @@
           </q-item-section>
         </q-item>
 
+          <q-item
+            to="/debriefer"
+            exact
+            v-if="isAuthorized(['observer']) || getObserverMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="notes"/>
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Debriefing</q-item-label>
+              <q-item-label caption>View debriefing data</q-item-label>
+            </q-item-section>
+          </q-item>
+
         <q-expansion-item
           label="Debriefer Tools"
           icon="beenhere"
@@ -102,12 +121,12 @@
           @click="emExpanded = false; lbExpanded = false; bmExpanded = false"
           :header-inset-level="0"
           :content-inset-level=".5"
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
         >
           <q-item
             to="/debriefer"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           >
             <q-item-section avatar>
               <q-icon name="create" />
@@ -121,7 +140,7 @@
           <q-item
             to="/rack"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           >
             <q-item-section avatar>
               <q-icon name="scanner" />
@@ -135,7 +154,7 @@
            <q-item
             to="/assign"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           >
             <q-item-section avatar>
               <q-icon name="assignment" />
@@ -148,7 +167,7 @@
         </q-expansion-item>
 
         <q-expansion-item
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           label="Boatnet Management"
           icon="settings"
           v-model="bmExpanded"
@@ -179,7 +198,7 @@
           <q-item
             to="/all-trips"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'observer']) && !getCaptainMode && !getObserverMode"
             @click="autoHide"
           >
             <q-item-section avatar>
@@ -195,7 +214,7 @@
             :to="onlineStatus ? '/missed-trips' : ''"
             exact
             :disabled="!onlineStatus"
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             @click="autoHide"
           >
             <q-item-section avatar>
@@ -210,7 +229,7 @@
           <q-item
             to="/vessels"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !getCaptainMode && !getObserverMode"
           >
             <q-item-section avatar>
               <q-icon name="fa fa-ship" />
@@ -264,7 +283,7 @@
         </q-expansion-item>
 
         <q-expansion-item
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           label="Electronic Monitoring"
           icon="videocam"
           v-model="emExpanded"
@@ -273,7 +292,7 @@
           :content-inset-level=".5"
         >
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-task-management"
             exact
             @click="autoHide"
@@ -288,7 +307,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-api-portal"
             exact
             @click="autoHide"
@@ -303,7 +322,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-data-compare"
             exact
             @click="autoHide"
@@ -318,7 +337,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-errors"
             exact
             @click="autoHide"
@@ -333,7 +352,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-rate-management"
             exact
           >
@@ -347,7 +366,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-footage-manager"
             exact
           >
@@ -361,7 +380,7 @@
           </q-item>
 
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !user.captainMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
             to="/em-efp-management"
             exact
           >
@@ -533,9 +552,12 @@ export default class DefaultLayout extends Vue {
   @Getter('getOnlineStatus', { namespace: 'general' }) private onlineStatus: any;
   @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
   @Getter('showOpenEmTrips', {namespace: 'user'}) private showOpenEmTrips: any;
+  @Getter('getObserverMode', {namespace: 'user'}) private getObserverMode: any;
+  @Getter('getCaptainMode', {namespace: 'user'}) private getCaptainMode: any;
+  @Getter('getUserRoles', {namespace: 'user'}) private getUserRoles: any;
+  @Action('setUserRoles', {namespace: 'user'}) private setUserRoles: any;
 
   private leftDrawerOpen: boolean = false;
-  private userRoles: string[] = [];
   private syncIsComplete: boolean = false;
   private isIndexing: boolean = false;
   private toIndex: number = 0;
@@ -597,9 +619,9 @@ export default class DefaultLayout extends Vue {
   private created() {
     this.leftDrawerOpen = Platform.is.desktop;
     if (authService.getCurrentUser()) {
-      this.userRoles = JSON.parse(
+      this.setUserRoles( JSON.parse(
         JSON.stringify(authService.getCurrentUser()!.roles)
-      );
+      ));
     } else {
       this.$router.push({ path: '/login' });
     }
@@ -611,12 +633,23 @@ export default class DefaultLayout extends Vue {
   }
 
   private isAuthorized(authorizedRoles: string[]) {
+
     for (const role of authorizedRoles) {
-      if (this.userRoles.includes(role)) {
+      if (this.getUserRoles.includes(role)) {
         return true;
       }
     }
     return false;
+  }
+
+  private isRestricted(restrictedRoles: string[]) {
+    for (const role of restrictedRoles) {
+      if (this.getUserRoles.includes(role)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 }
 </script>

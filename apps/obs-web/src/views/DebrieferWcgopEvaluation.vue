@@ -2,6 +2,7 @@
   <div>
     <div>
       <debriefer-select-comp
+        v-if="!observerMode"
         label="Observer"
         style="display: inline-block; width: 30%"
         :val.sync="observer"
@@ -11,7 +12,7 @@
         :lookupQueryOptions="observerQueryOptions"
         @select="selectObserver"
       />
-      <q-toggle class="q-px-md" style="display: inline-block" label="Show All" v-model="showAll" />
+      <q-toggle v-if="!observerMode" class="q-px-md" style="display: inline-block" label="Show All" v-model="showAll" />
       <q-select
         style="display: inline-block; width: 40%"
         v-model="evaluationPeriod"
@@ -23,51 +24,53 @@
         @filter="filterFn"
         @input="getTripsByDate"
       />
-      <div style="display: inline-block">
-        <q-btn
-          round
-          class="q-mx-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="add"
-          :disable="observer.length === 0"
-          @click="add"
-        />
-        <q-tooltip v-if="observer.length === 0">
-          An observer must be selected to create an eval period
-        </q-tooltip>
-      </div>
-      <div style="display: inline-block">
-        <q-btn
-          round
-          class="q-mx-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="edit"
-          :disable="evaluationPeriod === undefined"
-          @click="edit"
-        />
-        <q-tooltip v-if="evaluationPeriod === undefined">
-          No evaluation period selected to edit
-        </q-tooltip>
-      </div>
-      <div style="display: inline-block">
-        <q-btn
-          round
-          class="q-ma-xs"
-          style="display: inline-block"
-          color="white"
-          text-color="black"
-          icon="delete"
-          :disable="evaluationPeriod === undefined"
-          @click="showDeleteDialog = true"
-        />
-        <q-tooltip v-if="evaluationPeriod === undefined">
-          No evaluation period selected to delete
-        </q-tooltip>
-      </div>
+      <span v-if="!observerMode">
+        <div style="display: inline-block">
+          <q-btn
+            round
+            class="q-mx-xs"
+            style="display: inline-block"
+            color="white"
+            text-color="black"
+            icon="add"
+            :disable="observer.length === 0"
+            @click="add"
+          />
+          <q-tooltip v-if="observer.length === 0">
+            An observer must be selected to create an eval period
+          </q-tooltip>
+        </div>
+        <div style="display: inline-block">
+          <q-btn
+            round
+            class="q-mx-xs"
+            style="display: inline-block"
+            color="white"
+            text-color="black"
+            icon="edit"
+            :disable="evaluationPeriod === undefined"
+            @click="edit"
+          />
+          <q-tooltip v-if="evaluationPeriod === undefined">
+            No evaluation period selected to edit
+          </q-tooltip>
+        </div>
+        <div style="display: inline-block">
+          <q-btn
+            round
+            class="q-ma-xs"
+            style="display: inline-block"
+            color="white"
+            text-color="black"
+            icon="delete"
+            :disable="evaluationPeriod === undefined"
+            @click="showDeleteDialog = true"
+          />
+          <q-tooltip v-if="evaluationPeriod === undefined">
+            No evaluation period selected to delete
+          </q-tooltip>
+        </div>
+      </span>
     </div>
 
     <app-debriefer-dialog
@@ -96,7 +99,8 @@ import {
   createComponent,
   ref,
   reactive,
-  computed
+  computed,
+  onMounted
 } from '@vue/composition-api';
 import Vue from 'vue';
 import Accordion from 'primevue/accordion';
@@ -157,6 +161,8 @@ export default createComponent({
     const showDeleteDialog: any = ref(false);
     const dialogEvalPeriod = ref({});
 
+    const observerMode = !state.user.userRoles.includes('debriefer') || state.user.observerMode;
+
     const deleteDialogSettings = {
       title: 'Confirm Delete',
       width: 600,
@@ -207,6 +213,7 @@ export default createComponent({
       await getEvaluationPeriods(id);
       const trips = await getTripsByObserverId(id);
       store.dispatch('debriefer/updateTrips', trips);
+      console.log(state.debriefer.trips)
     }
 
     async function closeEvalDialog(evalPeriod: any) {
@@ -302,25 +309,40 @@ export default createComponent({
       });
     }
 
+    onMounted( () => {
+      if (observerMode) {
+        console.log('observer mode')
+        observer.value = "852949f4bbd4095bd4a70a8ad1379300";
+        selectObserver("852949f4bbd4095bd4a70a8ad1379300").then( () => {
+          console.log(state.debriefer.observer)
+        })
+      } else {
+        console.log('not observer mode')
+      }
+
+    })
+
     return {
+      add,
+      closeEvalDialog,
+      deleteDialogSettings,
+      deleteEvalPeriod,
+      dialogEvalPeriod,
+      edit,
+      evaluationPeriod,
+      evaluations,
+      filterFn,
+      getTripsByDate,
+      maxDate,
+      minDate,
       observer,
+      observerMode,
       observerQueryOptions,
       selectObserver,
       showAll,
-      evaluations,
-      evaluationPeriod,
-      minDate,
-      maxDate,
-      add,
-      edit,
-      deleteEvalPeriod,
-      dialogEvalPeriod,
-      closeEvalDialog,
-      getTripsByDate,
-      showEvaluationDialog,
       showDeleteDialog,
-      deleteDialogSettings,
-      filterFn
+      showEvaluationDialog,
+      state
     };
   }
 });

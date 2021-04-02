@@ -60,10 +60,12 @@ export interface UserState {
   newUser: boolean;
   unLinkedApexUsers: any[];
   captainMode: boolean;
+  observerMode: boolean;
   closedTripsTable: boolean;
   showLogbookRetained: boolean;
   autoHideMenu: boolean;
   showOpenEmTrips: boolean;
+  userRoles: string[];
 }
 
 export interface VesselState {

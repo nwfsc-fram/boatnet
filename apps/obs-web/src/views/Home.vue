@@ -86,15 +86,18 @@
 
       <div v-if="activeUser && !isSyncing" style="display: block; text-align: center">
         <br>
-        <q-btn label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
+        <q-btn v-if="isAuthorized(['captain', 'staff', 'debriefer', 'coordinator', 'enforcement']) && !getObserverMode" label="Declarations" to="/declarations" color="primary" exact style="margin: 5px"></q-btn>
 
         <q-btn v-if="isAuthorized(['enforcement'])" label="EFP Management" to="/ole-efp-management" color="primary" exact style="margin: 5px"></q-btn>
 
-        <q-btn v-if="isAuthorized(['captain', 'staff', 'debriefer'])" label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
+        <q-btn v-if="isAuthorized(['observer']) && !getCaptainMode" label="Debriefing" to="/debriefer" color="primary" exact style="margin: 5px"></q-btn>
+
+        <q-btn v-if="isAuthorized(['captain', 'staff', 'debriefer', 'coordinator']) && !getObserverMode" label="Trips" to="/trips" color="primary" exact style="margin: 5px"></q-btn>
 
         <q-btn label="My Details" to="/user-config" color="primary" exact style="margin: 5px"></q-btn>
       <br>
-      <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="user.captainMode" label="Captain Mode" @input="enableCaptainMode" style="margin-top: 30px;"/>
+      <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="captainMode" label="Captain Mode" style="margin-top: 30px;"/>
+      <q-toggle v-if="isAuthorized(['debriefer', 'development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="observerMode" label="Observer Mode" style="margin-top: 30px;"/>
       </div>
 
       <div v-else-if="!activeUser && !isSyncing" style="display: block; text-align: center">
@@ -105,7 +108,7 @@
       </div>
       <br>
       <span v-if="activeUser && !isSyncing">
-        <div style="display: block; text-align: center" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
+        <div style="display: block; text-align: center" v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !getCaptainMode && !getObserverMode">
           <q-btn label="All Trips" to="/all-trips" color="primary" exact style="margin: 5px"></q-btn>
           <q-btn label="Missed Trips" to="/missed-trips" color="primary" exact style="margin: 5px"></q-btn>
           <q-btn label="Vessel Managment" to="/vessels" color="primary" exact style="margin: 5px"></q-btn>
@@ -157,8 +160,13 @@ export default class Home extends Vue {
   @State('general') private general!: GeneralState;
   @Getter('getOnlineStatus', { namespace: 'general'}) private onlineStatus: any;
   @Action('setOnlineStatus', { namespace: 'general'}) private setOnlineStatus: any;
+  @Action('setCaptainMode', { namespace: 'user'}) private setCaptainMode: any;
+  @Getter('getCaptainMode', { namespace: 'user'}) private getCaptainMode: any;
+  @Action('setObserverMode', { namespace: 'user'}) private setObserverMode: any;
+  @Getter('getObserverMode', { namespace: 'user'}) private getObserverMode: any;
+  @Action('setUserRoles', { namespace: 'user'}) private setUserRoles: any;
+  @Getter('getUserRoles', { namespace: 'user'}) private getUserRoles: any;
 
-  private userRoles: string[] = [];
   private mytrips: any[] = [];
   private trip: any = {};
   private createdTrip: any = {};
@@ -171,13 +179,9 @@ export default class Home extends Vue {
     super();
   }
 
-    private enableCaptainMode(input: boolean) {
-      this.user.captainMode = input;
-    }
-
     private isAuthorized(authorizedRoles: string[]) {
       for (const role of authorizedRoles) {
-        if (this.userRoles.includes(role)) {
+        if (this.getUserRoles.includes(role)) {
           return true;
         }
       }
@@ -446,13 +450,29 @@ export default class Home extends Vue {
     }
   }
 
+  private get observerMode() {
+    return this.getObserverMode;
+  }
+
+  private set observerMode(choice) {
+    this.setObserverMode(choice);
+  }
+
+  private get captainMode() {
+    return this.getCaptainMode;
+  }
+
+  private set captainMode(choice) {
+    this.setCaptainMode(choice);
+  }
+
   private async created() {
       this.getPermits();
       this.getUserFromCouchDB().then(
         () => this.getUserAliasfromCouchDB()
       );
       if ( authService.getCurrentUser() ) {
-        this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+        this.setUserRoles(JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)));
       }
       this.buildDesignDoc();
       this.determineNetworStatus();

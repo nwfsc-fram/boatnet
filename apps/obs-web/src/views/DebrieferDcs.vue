@@ -11,8 +11,8 @@
         <q-select v-model="selectedMonth" :options="['All', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']" outlined label="month" dense options-dense style="max-width: 300px"></q-select>
       </div>
       <div class="col" style="text-align: right">
-        <q-btn v-if="!showHidden" color="primary" @click="toggleShowHidden">show hidden</q-btn>
-        <q-btn v-if="showHidden" @click="toggleShowHidden">hide hidden</q-btn>
+        <q-btn v-if="!showHidden && !observerMode" color="primary" @click="toggleShowHidden">show hidden</q-btn>
+        <q-btn v-if="showHidden && !observerMode" @click="toggleShowHidden">hide hidden</q-btn>
       </div>
     </div>
     <prime-table
@@ -81,21 +81,15 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
+    const observerMode = !state.user.userRoles.includes('debriefer') || state.user.observerMode;
 
     const dcsColumns = [
-      {
-        field: 'actions',
-        header: '',
-        key: 'actions',
-        width: '60',
-        type: 'actions',
-      },
       {
         field: 'tripNum',
         header: 'Trip #',
         key: 'tripNum',
         width: '60',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'text',
       },
       {
@@ -103,7 +97,7 @@ export default createComponent({
         header: 'Haul #',
         key: 'haulNum',
         width: '60',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'text',
       },
       // {
@@ -121,7 +115,7 @@ export default createComponent({
         header: 'Date Added',
         key: 'createdDate',
         width: '80',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'date'
       },
       {
@@ -129,7 +123,7 @@ export default createComponent({
         header: 'Level',
         key: 'level',
         width: '60',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'toggle',
         listType: 'template',
         list: Object.values(TripLevel),
@@ -139,7 +133,7 @@ export default createComponent({
         header: 'Issue',
         key: 'issue',
         width: '150',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'textArea',
       },
       {
@@ -147,7 +141,7 @@ export default createComponent({
         header: 'Error Type',
         key: 'dcsErrorType',
         width: '80',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'toggle',
         listType: 'template',
         list: Object.values(DcsErrorType),
@@ -157,7 +151,7 @@ export default createComponent({
         header: 'AFI Flag',
         key: 'afiFlag',
         width: '80',
-        isEditable: true,
+        isEditable: observerMode ? false : true,
         type: 'toggle',
         listType: 'template',
         list: Object.values(AfiFlag),
@@ -176,7 +170,7 @@ export default createComponent({
         width: '80',
         type: 'toggle',
         listType: 'boolean',
-        isEditable: true
+        isEditable: observerMode ? false : true
       },
       {
         field: 'observerNotes',
@@ -187,6 +181,18 @@ export default createComponent({
         type: 'textArea'
       },
     ];
+
+    if (!observerMode) {
+      dcsColumns.unshift(
+        {
+          field: 'actions',
+          header: '',
+          key: 'actions',
+          width: '60',
+          type: 'actions'
+        }
+      )
+    }
 
     const loading: any = ref(false);
     const dcsRows: any = ref([]);
@@ -346,20 +352,21 @@ export default createComponent({
       // addDcsRow,
       dcsRows,
       dcsColumns,
-      loading,
-      save,
-      observerName,
-      refresh,
-      selectedYear,
-      selectedMonth,
-      yearOptions,
+      deleteConfirmDialog,
       deleteRow,
       duplicateRow,
-      rowToDelete,
-      deleteConfirmDialog,
       executeDelete,
+      loading,
+      observerMode,
+      observerName,
+      refresh,
+      rowToDelete,
+      save,
+      selectedMonth,
+      selectedYear,
       showHidden,
-      toggleShowHidden
+      toggleShowHidden,
+      yearOptions
     };
   },
 });
