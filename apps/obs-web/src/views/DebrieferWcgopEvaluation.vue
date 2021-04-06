@@ -213,7 +213,6 @@ export default createComponent({
       await getEvaluationPeriods(id);
       const trips = await getTripsByObserverId(id);
       store.dispatch('debriefer/updateTrips', trips);
-      console.log(state.debriefer.trips)
     }
 
     async function closeEvalDialog(evalPeriod: any) {
@@ -311,16 +310,16 @@ export default createComponent({
 
     onMounted( () => {
       if (observerMode) {
-        console.log('observer mode')
-        observer.value = "852949f4bbd4095bd4a70a8ad1379300";
-        selectObserver("852949f4bbd4095bd4a70a8ad1379300").then( () => {
-          console.log(state.debriefer.observer)
-        })
+        console.log('observer mode');
+        observer.value = '852949f4bbd4095bd4a70a8ad1379300';
+        selectObserver('852949f4bbd4095bd4a70a8ad1379300').then( () => {
+          console.log(state.debriefer.observer);
+        });
       } else {
-        console.log('not observer mode')
+        console.log('not observer mode');
       }
 
-    })
+    });
 
     return {
       add,

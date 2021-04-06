@@ -191,7 +191,7 @@ export default createComponent({
           width: '60',
           type: 'actions'
         }
-      )
+      );
     }
 
     const loading: any = ref(false);
