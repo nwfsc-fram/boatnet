@@ -21,8 +21,9 @@
                                 <q-input
                                     v-model="assessmentResponse.response"
                                     autogrow dense
+                                    :readonly="observerMode"
                                 >
-                                    <q-menu anchor="top left" style="cursor: pointer">
+                                    <q-menu v-if="!observerMode" anchor="top left" style="cursor: pointer">
                                         <q-list dense >
                                             <q-item
                                                 v-for="answer of getAnswerSet(assessmentResponse.question.answerSet)"
@@ -37,7 +38,7 @@
                                     </q-menu>
                                     <template v-slot:append>
                                         <q-btn
-                                            v-if="assessment.assessmentResponses[i].response"
+                                            v-if="assessment.assessmentResponses[i].response && !observerMode"
                                             icon="clear" size="xs" flat round
                                             @click="setQuestionResponse(i, null)"
                                         ></q-btn>
@@ -50,7 +51,12 @@
             </q-card>
         </div>
         <div v-else>
-            Please select an observer and evaluation period.
+            <span v-if="observerMode">
+                Please select and evaluation period.
+            </span>
+            <span v-else>
+                Please select an observer and evaluation period.
+            </span>
         </div>
     </div>
 </template>
@@ -86,6 +92,8 @@ export default createComponent({
 
     const questions: any = ref([]);
     const answerSets: any = ref([]);
+
+    const observerMode = !state.user.userRoles.includes('debriefer') || state.user.observerMode;
 
     const sections: any = [
         'OTC Sampling Procedures',
@@ -154,7 +162,7 @@ export default createComponent({
     const getOrCreateAssesment = async () => {
         if (debriefer.evaluationPeriod && debriefer.evaluationPeriod.id) {
             const assessmentQuery: any = await masterDB.view(
-                'obs_web-new',
+                'obs_web',
                 'observer-assessments',
                 {include_docs: true, key: debriefer.evaluationPeriod.id} as any
             );
@@ -235,11 +243,12 @@ export default createComponent({
         assessment,
         debriefer,
         getAnswerSet,
+        observerMode,
         questions,
         sections,
+        setQuestionResponse,
         totalHauls,
-        uniqueVessels,
-        setQuestionResponse
+        uniqueVessels
     };
     }
 });
