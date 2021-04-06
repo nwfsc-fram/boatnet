@@ -478,7 +478,7 @@ export default createComponent({
                     haulCnt: operationIds.length,
                     targetStrategy,
                     gearType,
-                    depth: [min(depths), max(depths)].join(', '),
+                    depth: [min(depths), max(depths)].join('-'),
                     operations,
                     trips: currVesselInfo
                 });
@@ -521,6 +521,7 @@ export default createComponent({
                             catchVal.biolist = operation.biolist;
                             catchVal.tripNum = operation.legacy.tripId;
                             catchVal.haulNum = operation.operationNum;
+                            catchVal.operation = operation;
                           //  catchVal.otcWM = get(operation, 'observerTotalCatch.weightMethod.description')
                             catches.push(catchVal);
                         }
@@ -528,7 +529,7 @@ export default createComponent({
                 }
             }
 
-            // populating weight methods table
+            // populating sampling summary
             const weightMethodGroups = groupBy(catches, 'weightMethod.description');
             for (const wm of Object.keys(weightMethodGroups)) {
                 const dispositionGroups = groupBy(weightMethodGroups[wm], 'disposition.description');
@@ -545,6 +546,9 @@ export default createComponent({
                     let maxWeight: number | undefined = maxCatchWeight ? maxCatchWeight : maxSampleWeight;
                     maxWeight = formatWeight(maxWeight);
 
+                    const totWt = sumBy(currItem, 'sampleWeight.value');
+                    const ssAvg = formatWeight(totWt / currItem.length);
+
                     wmSummary.value.push({
                         type: disposition,
                         sortOrder: disposition === 'Retained' ? 2 : 3,
@@ -552,7 +556,8 @@ export default createComponent({
                         cwMin: minWeight,
                         cwMax: maxWeight,
                         catchRecords: currItem.length,
-                        data: currItem
+                        data: currItem,
+                        ssAvg
                     });
                 }
             }
@@ -582,7 +587,7 @@ export default createComponent({
                 }
             }
 
-            // populating species table
+            // populating species composition summary
             const speciesGroups = groupBy(speciesCatches, 'species');
             for (const species of Object.keys(speciesGroups)) {
                 const speciesGroup: any = speciesGroups[species];
@@ -686,8 +691,10 @@ export default createComponent({
         function populateSamplingSummary(data: any) {
             const summaryInfo: any[] = [];
             for (const catchVal of data) {
-                let weight = typeof catchVal.weight === 'object' ? get(catchVal, 'weight.value') : catchVal.weight;
-                weight = formatWeight(weight);
+                const rawWeight = typeof catchVal.weight === 'object' ? get(catchVal, 'weight.value') : catchVal.weight;
+                const weight = formatWeight(rawWeight);
+                const rawSSTotal = sumBy(catchVal.operation.catches, 'sampleWeight.value');
+                const ssTotal = formatWeight(rawSSTotal);
                 summaryInfo.push({
                     tripNum: get(catchVal, 'tripNum'),
                     haulNum: get(catchVal, 'haulNum'),
@@ -703,7 +710,7 @@ export default createComponent({
                     sampleCnt: get(catchVal, 'sampleCount'),
                     // ratio - don't see this in the model yet
                     // cab
-                    // ss total
+                    ssTotal
                 });
             }
             return summaryInfo;

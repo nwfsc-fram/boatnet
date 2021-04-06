@@ -80,7 +80,7 @@ export default createComponent({
     const store = context.root.$store;
     const state = store.state;
     const topTab = ref('evaluation');
-    const bottomTab = ref('summary');
+    const bottomTab = ref('data');
     const startingDataTab = ref('trips');
     let updateSpecificTab: boolean = false;
 
