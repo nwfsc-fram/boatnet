@@ -189,6 +189,7 @@ import {
   computed,
   onMounted,
   watch,
+  onActivated,
   onUnmounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
@@ -279,6 +280,10 @@ export default createComponent({
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
     const arrayMove = require('array-move');
+
+    onActivated(() => {
+      filters.value = state.debriefer.filters[tableType];
+    })
 
     onMounted(async () => {
       pageStart.value = 0;

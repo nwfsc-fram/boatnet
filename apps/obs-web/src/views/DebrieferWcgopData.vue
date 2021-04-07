@@ -62,11 +62,12 @@ import {
   createComponent,
   ref,
   watch,
-  onMounted
+  onMounted,
+  onActivated
 } from '@vue/composition-api';
-import { get, set, findIndex, uniq, indexOf, filter } from 'lodash';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
+import { get, set, findIndex, indexOf, filter } from 'lodash';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
 
 export default createComponent({
   props: {
@@ -87,6 +88,10 @@ export default createComponent({
     watch(() => state.debriefer.observer, setToTripTab);
 
     updateTab(props.startingTab ? props.startingTab : '');
+
+    onActivated(() => {
+      tab.value = props.startingTab;
+    })
 
     onMounted(async () => {
       // load column configurations from couch into state

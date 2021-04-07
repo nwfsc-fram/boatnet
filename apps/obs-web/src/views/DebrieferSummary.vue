@@ -521,7 +521,7 @@ export default createComponent({
                             catchVal.biolist = operation.biolist;
                             catchVal.tripNum = operation.legacy.tripId;
                             catchVal.haulNum = operation.operationNum;
-                            catchVal.operation = operation;
+                         //   catchVal.operation = operation;
                           //  catchVal.otcWM = get(operation, 'observerTotalCatch.weightMethod.description')
                             catches.push(catchVal);
                         }
