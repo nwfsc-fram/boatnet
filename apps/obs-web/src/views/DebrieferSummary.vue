@@ -693,8 +693,8 @@ export default createComponent({
             for (const catchVal of data) {
                 const rawWeight = typeof catchVal.weight === 'object' ? get(catchVal, 'weight.value') : catchVal.weight;
                 const weight = formatWeight(rawWeight);
-                const rawSSTotal = sumBy(catchVal.operation.catches, 'sampleWeight.value');
-                const ssTotal = formatWeight(rawSSTotal);
+              //  const rawSSTotal = sumBy(catchVal.operation.catches, 'sampleWeight.value');
+              //  const ssTotal = formatWeight(rawSSTotal);
                 summaryInfo.push({
                     tripNum: get(catchVal, 'tripNum'),
                     haulNum: get(catchVal, 'haulNum'),
@@ -710,7 +710,7 @@ export default createComponent({
                     sampleCnt: get(catchVal, 'sampleCount'),
                     // ratio - don't see this in the model yet
                     // cab
-                    ssTotal
+              //      ssTotal
                 });
             }
             return summaryInfo;
