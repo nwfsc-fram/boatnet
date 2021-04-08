@@ -1,15 +1,5 @@
 <template>
     <div>
-        <span>Selected Trips: </span>
-        <MultiSelect
-            v-model="selectedTrips"
-            :options="tripsList"
-            optionLabel="legacy.tripId"
-            placeholder="Select Trips"
-            style="width: 200px"
-            @change="updateSelectedTrips"
-        />
-        <Divider/>
         <DataTable
             :value="vesselSummary"
             :selection.sync="selectedVessel"
@@ -149,9 +139,9 @@
 
 
 <script lang="ts">
-import { createComponent, ref, watch } from '@vue/composition-api';
+import { createComponent, ref, watch, onUnmounted, onMounted } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, concat, flattenDeep, get, groupBy,
+import { cloneDeep, concat, filter, flattenDeep, get, groupBy,
         max, maxBy, min, minBy, orderBy, remove, round, sumBy, uniq } from 'lodash';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
@@ -182,9 +172,7 @@ export default createComponent({
         const speciesSummary: any = ref([]);
         const popoutData: any = ref([]);
 
-        const selectedVessel: any = ref([]);
-        const tripsList: any = ref(state.debriefer.trips);
-        const selectedTrips: any = ref([]);
+        const selectedVessel: any = ref({});
         const isVesselLoading: any = ref(false);
         const isLoading: any = ref(false);
         const showDialog: any = ref(false);
@@ -193,10 +181,11 @@ export default createComponent({
         const jp = require('jsonpath');
         const flatten = require('flat');
         const unflatten = flatten.unflatten;
+        const ssTot: any = {};
 
         const prioritySpecies = ['Cowcod', 'Yelloweye', 'Eulachon', 'Chinook', 'Coho', 'Dungeness Crab', 'Green Sturegeon'];
-
         const popoutCols: any = ref([]);
+
         const otcCols = [
             {
                 field: 'tripNum',
@@ -409,15 +398,21 @@ export default createComponent({
             },
         ];
 
-        watch(() => state.debriefer.trips, async () => {
-            tripsList.value = state.debriefer.trips;
-            selectedTrips.value = tripsList.value;
-            await getVesselInfo();
-        });
+        onUnmounted(() => {
+            store.dispatch('debriefer/updateSummarySelection', selectedVessel.value);
+        })
 
-        function updateSelectedTrips(data: any) {
+        onMounted(async() => {
+            selectedVessel.value = [];
+            selectedVessel.value = state.debriefer.summarySelection;
+            if (selectedVessel.value.vessel) {
+                populateSummary({ data: selectedVessel.value });
+            }
+        })
+
+        watch(() => state.debriefer.selectedTrips, async () => {
             getVesselInfo();
-        }
+        });
 
         function clear() {
             wmSummary.value = [];
@@ -444,22 +439,25 @@ export default createComponent({
             return val ? round(val, 2) : undefined;
         }
 
-        async function getVesselInfo() {
+        function getVesselInfo() {
             const vesselSummaryInfo = [];
             isVesselLoading.value = true;
             vesselSummary.value = [];
             wmSummary.value = [];
             speciesSummary.value = [];
             popoutData.value = [];
-            const vesselGroups = groupBy(selectedTrips.value, 'vessel.vesselName');
+            const selectedTrips = [];
+            for (const trip of state.debriefer.selectedTrips) {
+                selectedTrips.push(unflatten(trip, { delimiter: '-'}));
+            }
+            const vesselGroups = groupBy(selectedTrips, 'vessel.vesselName');
 
             for (const vessel of Object.keys(vesselGroups)) {
                 const currVesselInfo = vesselGroups[vessel];
 
                 let operationIds = jp.query(currVesselInfo , '$[*].operationIDs');
                 operationIds = flattenDeep(operationIds);
-                const operationResults = await masterDB.listWithDocs({ keys: operationIds});
-                const operations = operationResults.rows;
+                const operations = state.debriefer.operations;
 
                 let gearType = jp.query(operations, '$[*].gearType.description');
                 gearType = uniq(gearType).join(',');
@@ -759,10 +757,6 @@ export default createComponent({
             wmSummary,
             speciesSummary,
             selectedVessel,
-            selectedTrips,
-            tripsList,
-            updateSelectedTrips,
-
             populateSummary,
             clear,
             isVesselLoading,

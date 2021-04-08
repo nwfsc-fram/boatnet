@@ -22,7 +22,8 @@ export const state: DebrieferState = {
   errors: [],
   newDcsRow: '',
   expandedCatch: {},
-  catches: []
+  catches: [],
+  summarySelection: {}
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -73,6 +74,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateCatches({ commit }: any, value: any) {
     commit('updateVal', {id: 'catches', val: value});
+  },
+  updateSummarySelection({ commit }: any, value: any) {
+    commit('updateVal', {id: 'summarySelection', val: value});
   },
 };
 

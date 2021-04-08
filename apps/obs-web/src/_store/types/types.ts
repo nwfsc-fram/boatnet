@@ -29,6 +29,7 @@ export interface DebrieferState {
   newDcsRow: any;
   expandedCatch: {};
   catches: any[];
+  summarySelection: any;
 }
 
 export interface TripState {

@@ -95,7 +95,7 @@ export default createComponent({
                 width: '150',
                 listType: 'fetch',
                 search: true,
-                lookupKey: 'weight-method',
+                lookupKey: 'otc-weight-method',
                 lookupField: 'description',
                 isEditable: true,
             },
