@@ -193,36 +193,24 @@ export default createComponent({
             const tripId = unflattenedOperation.legacy.tripId;
             const operationNum = unflattenedOperation.operationNum;
             const operationId = unflattenedOperation._id;
-            let disposition = c.disposition ? c.disposition.description : '';
-            const wm = c.weightMethod ? c.weightMethod.description : '';
-            let weight: any = c.weight ? c.weight.value : null;
-            const sampleWeight: any = c.sampleWeight
-              ? c.sampleWeight.value
-              : null;
-            weight = weight ? weight : sampleWeight;
-            const count = c.count;
-            const catchContent = c.catchContent;
-            const name = catchContent ? catchContent.name : '';
+            const disposition = get(c, 'disposition.description') === 'Retained' ? 'R' : 'D';
+            const wm = get(c, 'weightMethod.description');
+            const name = get(c, 'legacy.catchCategoryName');
+            const weight: any = get(c, 'weight.value');
             const children: any[] = [];
             let childIndex = 0;
             const key = operationId + '_' + catchIndex;
 
-            if (disposition === 'Retained') {
-              disposition = 'R';
-            } else if (disposition === 'Discarded') {
-              disposition = 'D';
-            }
-
-            if (c.children) {
-              for (const child of c.children) {
+            if (c.catchContent.catchItems) {
+              for (const child of c.catchContent.catchItems) {
                 const discardReason =  jp.query(child, '$..discardReason.description')[0];
 
                 const catchContents = child.catchContent;
                 const catchName = catchContents
                   ? catchContents.commonNames[0]
                   : '';
-                const childWeight = jp.query(child, 'weight.value')[0];
-                const childCount = child.sampleCount;
+                const childWeight = get(child, 'weight.value');
+                const childCount = get(child, 'sampleCount');
                 let toolTipInfo: string = '';
 
                 const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
@@ -308,9 +296,9 @@ export default createComponent({
                 disposition,
                 weightMethod: wm,
                 name,
-                catchContent,
+               // catchContent,
                 weight,
-                count,
+             //   count,
                 type: 'topLevel'
               }
             };

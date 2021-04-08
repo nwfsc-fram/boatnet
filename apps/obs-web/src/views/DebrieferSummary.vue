@@ -519,8 +519,13 @@ export default createComponent({
                             catchVal.biolist = operation.biolist;
                             catchVal.tripNum = operation.legacy.tripId;
                             catchVal.haulNum = operation.operationNum;
-                         //   catchVal.operation = operation;
-                          //  catchVal.otcWM = get(operation, 'observerTotalCatch.weightMethod.description')
+                            catchVal.operationId = operation._id;
+
+                            let catchItems = jp.query(catchVal, '$.catchContent.catchItems');
+                            catchItems = flattenDeep(catchItems);
+                            let sampleWt = sumBy(catchItems, 'weight.value');
+                            sampleWt = sampleWt ? sampleWt : 0;
+                            ssTot[operation._id] = ssTot[operation._id] ? ssTot[operation._id] + sampleWt : sampleWt;
                             catches.push(catchVal);
                         }
                     }
@@ -532,7 +537,7 @@ export default createComponent({
             for (const wm of Object.keys(weightMethodGroups)) {
                 const dispositionGroups = groupBy(weightMethodGroups[wm], 'disposition.description');
                 for (const disposition of Object.keys(dispositionGroups)) {
-                    const currItem = dispositionGroups[disposition];
+                    const currItem: any = dispositionGroups[disposition];
 
                     const minCatchWeight: number = getMaxOrMin('min', currItem, 'weight.value');
                     const minSampleWeight: number = getMaxOrMin('min', currItem, 'sampleWeight.value');
@@ -544,8 +549,10 @@ export default createComponent({
                     let maxWeight: number | undefined = maxCatchWeight ? maxCatchWeight : maxSampleWeight;
                     maxWeight = formatWeight(maxWeight);
 
-                    const totWt = sumBy(currItem, 'sampleWeight.value');
-                    const ssAvg = formatWeight(totWt / currItem.length);
+                    let catchItems = jp.query(currItem, '$[*].catchContent.catchItems');
+                    catchItems = flattenDeep(catchItems);
+                    const sampleWt = sumBy(catchItems, 'weight.value');
+                    const ssAvg = formatWeight(sampleWt / currItem.length);
 
                     wmSummary.value.push({
                         type: disposition,
@@ -564,8 +571,8 @@ export default createComponent({
             // breaking into subcatch level
             const speciesCatches: any[] = [];
             for (const catchVal of catches) {
-                if (catchVal.children && catchVal.children.length > 0) {
-                    for (const child of catchVal.children) {
+                if (catchVal.catchContent && catchVal.catchContent.catchItems && catchVal.catchContent.catchItems.length > 0) {
+                    for (const child of catchVal.catchContent.catchItems) {
                         const species = cloneDeep(child);
                         species.biolist = catchVal.biolist;
                         species.catchLevelInfo = catchVal;
@@ -592,7 +599,7 @@ export default createComponent({
                 const type: string = prioritySpecies.includes(species) ? 'Priority' : 'Other';
                 const weight: number | undefined = formatWeight(sumBy(speciesGroup, 'weight'));
                 let basketWt: number | undefined = sumBy(speciesGroup, (group: any) => {
-                    return group.baskets ? sumBy(group.baskets, 'weight') : 0;
+                    return group.baskets ? sumBy(group.baskets, 'weight.value') : 0;
                 });
                 basketWt = formatWeight(basketWt);
                 const count: number = sumBy(speciesGroup, 'count');
@@ -663,7 +670,7 @@ export default createComponent({
             const summaryInfo: any[] = [];
             for (const val of data) {
                 const catchInfo = val.catchLevelInfo;
-                const sampleWeight = val.baskets ? sumBy(val.baskets, 'weight') : undefined;
+                const sampleWeight = val.baskets ? formatWeight(sumBy(val.baskets, 'weight.value')) : undefined;
                 const count = val.baskets ? sumBy(val.baskets, 'count') : undefined;
                 summaryInfo.push({
                     tripNum: catchInfo.tripNum,
@@ -688,27 +695,36 @@ export default createComponent({
 
         function populateSamplingSummary(data: any) {
             const summaryInfo: any[] = [];
+            console.log('populate')
+            console.log(data)
             for (const catchVal of data) {
                 const rawWeight = typeof catchVal.weight === 'object' ? get(catchVal, 'weight.value') : catchVal.weight;
                 const weight = formatWeight(rawWeight);
-              //  const rawSSTotal = sumBy(catchVal.operation.catches, 'sampleWeight.value');
-              //  const ssTotal = formatWeight(rawSSTotal);
+                let sampleWt, sampleCnt, discardReason;
+                sampleWt = sampleCnt = discardReason = undefined;
+                if (catchVal.catchContent && catchVal.catchContent.catchItems) {
+                    sampleWt = sumBy(catchVal.catchContent.catchItems, 'weight.value');
+                    sampleWt = formatWeight(sampleWt);
+                    sampleCnt = sumBy(catchVal.catchContent.catchItems, 'sampleCount');
+                    discardReason = get(catchVal, 'catchContent.catchItems[0].discardReason.description');
+                }
+                const ssTotal = ssTot[catchVal.operationId];
+                const formattedSSTotal = ssTotal ? formatWeight(ssTotal) : undefined;
                 summaryInfo.push({
                     tripNum: get(catchVal, 'tripNum'),
                     haulNum: get(catchVal, 'haulNum'),
                     catchNum: get(catchVal, 'catchNum'),
                     disposition: get(catchVal, 'disposition.description'),
                     wm: get(catchVal, 'weightMethod.description'),
-                    name: get(catchVal, 'catchContent.name'),
+                    name: get(catchVal, 'legacy.catchCategoryName'),
                     weight,
                     // count
-                    // discard reason - currently this is at subsample level, in new
-                    // catch format should be at catch level
-                    sampleWt: formatWeight(get(catchVal, 'sampleWeight.value')),
-                    sampleCnt: get(catchVal, 'sampleCount'),
+                    discard: discardReason,
+                    sampleWt,
+                    sampleCnt,
                     // ratio - don't see this in the model yet
                     // cab
-              //      ssTotal
+                    ssTotal: formattedSSTotal
                 });
             }
             return summaryInfo;
@@ -757,6 +773,7 @@ export default createComponent({
             wmSummary,
             speciesSummary,
             selectedVessel,
+
             populateSummary,
             clear,
             isVesselLoading,

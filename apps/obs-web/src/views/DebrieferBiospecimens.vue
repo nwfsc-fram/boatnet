@@ -18,7 +18,7 @@
 import { createComponent, ref, watch, onUnmounted } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { cloneDeep, filter, findIndex, orderBy, slice } from 'lodash';
+import { cloneDeep, filter, findIndex, get, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
@@ -234,7 +234,7 @@ export default createComponent({
         for (const specimen of specimens) {
           const operationPath = jp.stringify(slice(specimen.path, 0, 2));
           const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
-          const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
+          const childrenPath = jp.stringify(slice(specimen.path, 0, 7));
 
           const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
           const operationNum = jp.value(
@@ -244,11 +244,8 @@ export default createComponent({
           const operationId = jp.value(unflattenedOperations, operationPath + '._id');
           const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
           const catchNum = jp.value(unflattenedOperations, catchesPath + '.catchNum');
-          let disposition = jp.value(
-            unflattenedOperations,
-            catchesPath + '.disposition.description'
-          );
-          disposition = disposition === 'Retained' ? 'R' : 'D';
+          const disposition = get(unflattenedOperations, 'disposition.description') === 'Retained' ? 'R' : 'D';
+
           const species = jp.value(
             unflattenedOperations,
             childrenPath + '.catchContent.commonNames[0]'
