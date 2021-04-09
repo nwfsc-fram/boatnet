@@ -57,16 +57,17 @@ export interface EmefpState {
 export interface UserState {
   activeUser?: Person;
   activeUserAlias?: any;
-  users: Person[];
-  newUser: boolean;
-  unLinkedApexUsers: any[];
-  captainMode: boolean;
-  observerMode: boolean;
-  closedTripsTable: boolean;
-  showLogbookRetained: boolean;
   autoHideMenu: boolean;
+  captainMode: boolean;
+  closedTripsTable: boolean;
+  newUser: boolean;
+  observerMode: boolean;
+  showLogbookRetained: boolean;
   showOpenEmTrips: boolean;
+  showUnReviewed: boolean;
+  unLinkedApexUsers: any[];
   userRoles: string[];
+  users: Person[];
 }
 
 export interface VesselState {

@@ -2,8 +2,11 @@
   <div class="q-pa-md q-gutter-md">
       <div class="text-h6" style="max-width: 70%">
         <span v-if="apiTrip.tripNum">Trip {{ apiTrip.tripNum }} - {{ apiTrip.vesselName }} ({{ apiTrip.vesselId }}) - </span> Data Comparison
-        <q-btn v-if="state.user.showLogbookRetained" color="secondary" size="sm" @click="toggleRetained">Hide Retained</q-btn>
+        <q-btn v-if="state.user.showLogbookRetained" size="sm" @click="toggleRetained">Hide Retained</q-btn>
         <q-btn v-else color="primary" size="sm" @click="toggleRetained">Show Retained</q-btn>
+        &nbsp;
+        <q-btn v-if="state.user.showUnReviewed" size="sm" @click="toggleUnReviewed(false)">Hide UnReviewed</q-btn>
+        <q-btn v-else color="primary" size="sm" @click="toggleUnReviewed(true)">Show UnReviewed</q-btn>
       </div>
 
       <div style="position: absolute; top: 30px; right: 15px">
@@ -41,6 +44,7 @@
         </q-tr>
       </template>
     </q-table>
+  {{ tripData }}
   </div>
 </template>
 
@@ -127,6 +131,8 @@ export default createComponent({
     const selected: any = [];
     let tripTotals: any = {};
     let haulTotals: any = {};
+    let reviewedTotals: any = {};
+    const reviewedHauls: any = [];
     const tripData: any = ref([]);
     const tripNum: any = ref(context.root.$route.query.tripnum ? context.root.$route.query.tripnum : 0);
     const showRetained: any = ref(true);
@@ -135,6 +141,15 @@ export default createComponent({
       tripData.value.length = 0;
       tripTotals = {};
       haulTotals = {};
+      reviewedTotals = {};
+
+      if (apiCatch.thirdPartyReviewCatch) {
+        for (const catchItem of apiCatch.thirdPartyReviewCatch) {
+          if (!reviewedHauls.includes(catchItem.haulNum)) {
+            reviewedHauls.push(catchItem.haulNum);
+          }
+        }
+      }
 
       for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCatch']) {
         if (apiCatch[catchType].length > 0) {
@@ -151,47 +166,64 @@ export default createComponent({
                 break;
           }
           for (const species of apiCatch[catchType]) {
-                const codeLookup = speciesCodes.find( ( codes: any) => {
-                    return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode;
-                  });
-                if (codeLookup) {
-                  species.speciesCode = codeLookup.commonName;
+            const codeLookup = speciesCodes.find( ( codes: any) => {
+                return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode;
+              });
+            if (codeLookup) {
+              species.speciesCode = codeLookup.commonName;
 
-                } else {
-                  species.speciesCode = 'fish error 321';
-                }
-                if (!tripTotals[species.speciesCode]) {
-                  tripTotals[species.speciesCode] = {};
-                }
-                if (!tripTotals[species.speciesCode][source]) { tripTotals[species.speciesCode][source] = {}; }
-                if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
-                if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
-                if (species.disposition === 'Discarded') {
-                  tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
-                }
-                if (species.disposition === 'D') {
-                  tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
-                }
-                if (source === 'logbook' && (species.disposition === 'Retained')) {
-                  tripTotals[species.speciesCode][source].retained += parseFloat(species.speciesWeight) ? parseFloat(species.speciesWeight) : 0;
-                }
-                if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
-                if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
-                if (!haulTotals[species.haulNum][species.speciesCode][source]) { haulTotals[species.haulNum][species.speciesCode][source] = {}; }
-                if (!haulTotals[species.haulNum][species.speciesCode][source].discard) {haulTotals[species.haulNum][species.speciesCode][source].discard = ''; }
-                if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
-                }
-                if (species.disposition === 'Discarded') {
-                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
-                } else if (species.disposition === 'Retained') {
-                  haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.speciesWeight);
-                }
-                if (species.disposition === 'D') {
-                  haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
-                }
-          }
+            } else {
+              species.speciesCode = 'fish error 321';
+            }
+            if (!tripTotals[species.speciesCode]) {
+              tripTotals[species.speciesCode] = {};
+            }
+            if (!tripTotals[species.speciesCode][source]) { tripTotals[species.speciesCode][source] = {}; }
+            if (!tripTotals[species.speciesCode][source].discard) { tripTotals[species.speciesCode][source].discard = 0; }
+            if (!tripTotals[species.speciesCode][source].retained) {tripTotals[species.speciesCode][source].retained = 0; }
+            if (species.disposition === 'Discarded') {
+              tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
+            }
+            if (species.disposition === 'D') {
+              tripTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
+            }
+            if (source === 'logbook' && (species.disposition === 'Retained')) {
+              tripTotals[species.speciesCode][source].retained += parseFloat(species.speciesWeight) ? parseFloat(species.speciesWeight) : 0;
+            }
+
+            if (!haulTotals[species.haulNum]) { haulTotals[species.haulNum] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode]) { haulTotals[species.haulNum][species.speciesCode] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode][source]) { haulTotals[species.haulNum][species.speciesCode][source] = {}; }
+            if (!haulTotals[species.haulNum][species.speciesCode][source].discard) {haulTotals[species.haulNum][species.speciesCode][source].discard = ''; }
+            if (source === 'logbook') { haulTotals[species.haulNum][species.speciesCode][source].retained = species.retained ? species.retained : '';
+            }
+
+            if (reviewedHauls.includes(species.haulNum)) {
+              if (!reviewedTotals[species.speciesCode]) {
+                reviewedTotals[species.speciesCode] = {};
+              }
+              if (!reviewedTotals[species.speciesCode][source]) { reviewedTotals[species.speciesCode][source] = {}; }
+              if (!reviewedTotals[species.speciesCode][source].discard) { reviewedTotals[species.speciesCode][source].discard = 0; }
+              if (!reviewedTotals[species.speciesCode][source].retained) {reviewedTotals[species.speciesCode][source].retained = 0; }
+              if (species.disposition === 'Discarded') {
+                reviewedTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
+              }
+              if (species.disposition === 'D') {
+                reviewedTotals[species.speciesCode][source].discard += parseFloat(species.speciesWeight);
+              }
+            }
+
+            if (species.disposition === 'Discarded') {
+              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
+            } else if (species.disposition === 'Retained') {
+              haulTotals[species.haulNum][species.speciesCode][source].retained = parseFloat(species.speciesWeight);
+            }
+            if (species.disposition === 'D') {
+              haulTotals[species.haulNum][species.speciesCode][source].discard = parseFloat(species.speciesWeight);
+            }
           }
         }
+      }
 
       for (const key of Object.keys(tripTotals)) {
         tripData.value.push(
@@ -209,6 +241,21 @@ export default createComponent({
         );
       }
 
+      for (const key of Object.keys(reviewedTotals)) {
+        tripData.value.push(
+          {
+            id: Math.random(),
+            haul: 'Reviewed',
+            speciesCode: key,
+            logbookDiscard: reviewedTotals[key].logbook ? reviewedTotals[key].logbook.discard : '',
+            logbookRetained: reviewedTotals[key].logbook ? reviewedTotals[key].logbook.retained : '',
+            thirdPartyReview: reviewedTotals[key].thirdParty ? reviewedTotals[key].thirdParty.discard : '',
+            diffReviewLogbook: reviewedTotals[key].thirdParty && reviewedTotals[key].logbook ? getPercentDifference( reviewedTotals[key].thirdParty.discard, reviewedTotals[key].logbook.discard) : '',
+            audit: reviewedTotals[key].nwfscAudit ? reviewedTotals[key].nwfscAudit.discard : '',
+            diffAuditReview: reviewedTotals[key].nwfscAudit && reviewedTotals[key].thirdParty ? getPercentDifference( reviewedTotals[key].nwfscAudit.discard, reviewedTotals[key].thirdParty.discard) : ''
+          }
+        );
+      }
       for (const key of Object.keys(haulTotals)) {
         for (const subKey of Object.keys(haulTotals[key])) {
           tripData.value.push(
@@ -330,12 +377,18 @@ export default createComponent({
       }
     };
 
+    const toggleUnReviewed = (choice: boolean) => {
+      store.dispatch('user/setShowUnReviewed', choice);
+    };
+
     const comp = reactive({
       displayTripData: computed(() => {
-        if (store.state.user.showLogbookRetained) {
-          return tripData.value;
+        if (state.user.showUnReviewed) {
+          return tripData.value.filter( (row: any) => row.haul !== 'Reviewed');
         } else {
-          return tripData.value.filter( (row: any) => !['', 0].includes(row.logbookDiscard) || !['', 0].includes(row.thirdPartyReview) || !['', 0].includes(row.audit));
+          return tripData.value.filter( (row: any) => {
+            return row.haul === 'Reviewed' || reviewedHauls.includes(parseInt(row.haul, 10));
+          });
         }
       })
     });
@@ -403,9 +456,12 @@ export default createComponent({
       showRetained,
       visibleColumns,
       toggleRetained,
+      toggleUnReviewed,
       state,
       comp,
-      sorter
+      sorter,
+      reviewedHauls,
+      reviewedTotals
     };
   }
 });

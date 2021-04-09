@@ -30,6 +30,9 @@ const actions: ActionTree<UserState, RootState> = {
   },
   setUserRoles({ commit }: any, roles: string[]) {
     commit('setUserRoles', roles);
+  },
+  setShowUnReviewed({ commit}: any, choice: boolean) {
+    commit('setShowUnReviewed', choice);
   }
 };
 
@@ -54,6 +57,9 @@ const mutations: MutationTree<UserState> = {
   },
   setUserRoles(newState: any, roles: string[]) {
     newState.userRoles = roles;
+  },
+  setShowUnReviewed(newState: any, choice: boolean) {
+    newState.showUnReviewed = choice;
   }
 };
 
@@ -82,18 +88,19 @@ const getters: GetterTree<UserState, RootState> = {
 };
 
 export const state: UserState = {
-  users: [],
-  newUser: false,
   activeUser: undefined,
   activeUserAlias: undefined,
-  unLinkedApexUsers: [],
-  captainMode: false,
-  observerMode: false,
-  closedTripsTable: false,
-  showLogbookRetained: true,
   autoHideMenu: true,
+  captainMode: false,
+  closedTripsTable: false,
+  newUser: false,
+  observerMode: false,
+  showLogbookRetained: true,
   showOpenEmTrips: false,
-  userRoles: []
+  showUnReviewed: false,
+  unLinkedApexUsers: [],
+  userRoles: [],
+  users: []
 };
 
 export const user: Module<UserState, RootState> = {
