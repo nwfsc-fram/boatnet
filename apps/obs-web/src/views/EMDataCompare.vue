@@ -44,7 +44,6 @@
         </q-tr>
       </template>
     </q-table>
-  {{ tripData }}
   </div>
 </template>
 
