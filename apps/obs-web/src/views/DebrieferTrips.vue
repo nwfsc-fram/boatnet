@@ -23,12 +23,14 @@ import {
   createComponent,
   ref,
   watch,
-  onBeforeMount
+  onBeforeMount,
+  onMounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex } from 'lodash';
+import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
@@ -396,13 +398,20 @@ export default createComponent({
 
     onBeforeMount(() => {
       mounted = false;
+      if (state.debriefer.trips.length > 0) {
+          trips.value = state.debriefer.trips;
+        }
+
     });
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.trips, () => {
-      populateTrips('trips');
+    watch(() => state.debriefer.observer, async () => {
+      populateTrips('observer');
+    });
+    watch(() => state.debriefer.evaluationPeriod, () => {
+      populateTrips('evalPeriod');
     });
     watch(() => state.debriefer.tripIds, async () => {
       populateTrips('tripIds');
@@ -410,31 +419,30 @@ export default createComponent({
 
     async function populateTrips(type: string) {
       loading.value = true;
-      if (mounted) {
-        if (state.debriefer.trips.length > 0) {
-          trips.value = state.debriefer.trips;
-        }
-      } else {
-        if (type === 'trips') {
-          trips.value = state.debriefer.trips;
+      if (!mounted) {
+        if (type === 'observer') {
+          trips.value = await getTripsByObserverId(state.debriefer.observer);
+        } else if (type === 'evalPeriod') {
+          const evalPeriod = state.debriefer.evaluationPeriod;
+          const observer = state.debriefer.observer;
+          trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
+                                              new Date(evalPeriod.endDate),
+                                              observer);        
         } else if (type === 'tripIds') {
           await getTrips();
         }
+        store.dispatch('debriefer/updateTrips', trips.value);
       }
       loading.value = false;
     }
 
     async function getTrips() {
-      const tripsHolder = [];
       try {
         const options: ListOptions = {
           keys: state.debriefer.tripIds
         };
         const result = await masterDB.listWithDocs(options);
-        for (const row of result.rows) {
-          tripsHolder.push(row);
-        }
-        trips.value = tripsHolder;
+        trips.value = result.rows;
       } catch (err) {
         console.log('error');
       }

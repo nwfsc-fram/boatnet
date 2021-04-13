@@ -393,22 +393,22 @@ export default createComponent({
     async function saveColumnConfiguration() {
       stateDisplayCols[tableType] = displayColumns.value;
       store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+      let updatedRecord: any = {};
 
       // save columns to users column-config docs
       let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       if (userColConfig.rows.length > 0) {
-        userColConfig = userColConfig.rows[0].doc;
-        userColConfig.columnConfig[tableType] = displayColumns.value;
-        await masterDB.put(userColConfig._id, userColConfig, userColConfig._rev);
+        updatedRecord = userColConfig.rows[0].doc;
+        updatedRecord.columnConfig[tableType] = displayColumns.value;
       } else {
-        const newRecord: any = {
+        updatedRecord = {
           columnConfig: {},
           type: 'column-config',
           personDocId: state.user.activeUserAlias.personDocId
         };
-        newRecord.columnConfig[tableType] = displayColumns.value;
-        await masterDB.post(newRecord);
+        updatedRecord.columnConfig[tableType] = displayColumns.value;
       }
+      await masterDB.bulk([updatedRecord], true);
     }
 
     async function populateLookupsList(col: any) {

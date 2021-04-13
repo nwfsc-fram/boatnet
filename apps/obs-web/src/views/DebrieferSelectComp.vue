@@ -8,7 +8,17 @@
     fill-input
     @input="select"
     @filter="filterFn"
-  />
+  >
+      <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                <div>
+                  {{ emptyMessage }}
+                </div>
+              </q-item-section>
+            </q-item>
+          </template>
+  </q-select>
 </template>
 <script lang="ts">
 import {
@@ -33,13 +43,14 @@ export default createComponent({
     lookupLabel: String,
     lookupValue: String,
     lookupQueryOptions: Object,
-    multiple: Boolean
+    multiple: Boolean,
+    emptyMessage: String
   },
 
   setup(props, context) {
     const options: any = ref([]);
     const valueHolder: any = ref('');
-    const filteredOptions: any = ref([]);
+    const filteredOptions: any = ref(null);
 
     const watcherOptions: WatchOptions = {
       immediate: true
@@ -47,7 +58,10 @@ export default createComponent({
 
     watch(() => props.lookupQueryOptions, populateLookups, watcherOptions);
 
-    function filterFn(val: any, update: any) {
+    async function filterFn(val: any, update: any) {
+      if (options.value === null) {
+        await populateLookups();
+      }
       update(() => {
         const needle = val.toLowerCase();
         filteredOptions.value = filter(options.value, (option: any) => {
@@ -111,7 +125,6 @@ export default createComponent({
         : {};
       return await getLookups(view, llabel, llvalue, lQueryOptions);
     }
-    useAsync(populateLookups);
 
     return {
       select,
