@@ -100,16 +100,6 @@ export default createComponent({
         isEditable: observerMode ? false : true,
         type: 'text',
       },
-      // {
-      //   field: 'collectionMethod',
-      //   header: 'Collection Method',
-      //   key: 'collectionMethod',
-      //   width: '80',
-      //   isEditable: true,
-      //   type: 'toggle',
-      //   listType: 'template',
-      //   list: Object.values(CollectionMethod),
-      // },
       {
         field: 'createdDate',
         header: 'Date Added',
