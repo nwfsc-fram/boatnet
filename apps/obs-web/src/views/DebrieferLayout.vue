@@ -39,16 +39,21 @@
           <q-tab name="dcs" label="DCS" />
         </q-tabs>
 
-    <q-tab-panels v-model="bottomTab" animated :keep-alive="true">
+    <q-tab-panels v-model="bottomTab" animated>
       <q-tab-panel name="data">
-        <app-debriefer-wcgop-data v-if="program === 'wcgop'" :startingTab="startingDataTab" :isFullSize="false"/>
+        <app-debriefer-wcgop-data 
+          v-if="program === 'wcgop'"
+          :startingTab="startingDataTab"
+          :isFullSize="false"
+          @updateDataTab="setDataTab"
+        />
         <app-debriefer-ashop-data v-else />
       </q-tab-panel>
       <q-tab-panel name="errors">
          <app-debriefer-errors :showData="bottomTab === 'qa' ? false : true" />
       </q-tab-panel>
       <q-tab-panel name="summary">
-        <app-debriefer-summary @changeTab="updateTab"/>
+        <app-debriefer-summary @changeTab="redirectTabs"/>
       </q-tab-panel>
       <q-tab-panel name="assessement">
         <app-debriefer-assessment ></app-debriefer-assessment>
@@ -61,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { createComponent, ref, computed, onMounted } from '@vue/composition-api';
+import { createComponent, ref, computed, onMounted, watch } from '@vue/composition-api';
 import Vue from 'vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
@@ -82,10 +87,19 @@ export default createComponent({
     const topTab = ref('evaluation');
     const bottomTab = ref('data');
     const startingDataTab = ref('trips');
-    let updateSpecificTab: boolean = false;
 
     const show: any = ref(true);
     const activeParamsTab: any = ref('evaluation');
+
+   watch(() => state.debriefer.observer, () => {
+     setDataTab('trips');
+     setBottomTab('data');
+    });
+    
+    watch(() => state.debriefer.evaluationPeriod, () => {
+      setDataTab('trips');
+      setBottomTab('data');
+    });
 
     clearFilters();
 
@@ -111,10 +125,17 @@ export default createComponent({
       store.dispatch('debriefer/updateEvaluationPeriod', {});
     }
 
-    function updateTab(tabInfo: any) {
-      updateSpecificTab = true;
-      bottomTab.value = tabInfo.topLevelTab;
-      startingDataTab.value = tabInfo.dataTab;
+    function redirectTabs(tabInfo: any) {
+      setBottomTab(tabInfo.topLevelTab);
+      setDataTab(tabInfo.dataTab);
+    }
+
+    function setBottomTab(tabName: string) {
+      bottomTab.value = tabName;
+    }
+    
+    function setDataTab(tabName: string) {
+      startingDataTab.value = tabName;
     }
 
     return {
@@ -123,9 +144,11 @@ export default createComponent({
       topTab,
       bottomTab,
       clearFilters,
-      updateTab,
       show,
-      activeParamsTab
+      activeParamsTab,
+      redirectTabs,
+      setBottomTab,
+      setDataTab
     };
   }
 });

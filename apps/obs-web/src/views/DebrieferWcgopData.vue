@@ -25,6 +25,7 @@
           active-color="primary"
           indicator-color="primary"
           align="justify"
+          @input="updateDataTab"
         >
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
@@ -62,11 +63,11 @@ import {
   createComponent,
   ref,
   watch,
-  onMounted
+  onMounted,
 } from '@vue/composition-api';
-import { get, set, findIndex, uniq, indexOf, filter } from 'lodash';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
+import { get, set, findIndex, indexOf, filter } from 'lodash';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
 
 export default createComponent({
   props: {
@@ -95,6 +96,10 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
       }
     });
+
+    function updateDataTab(tabName: string) {
+      context.emit('updateDataTab', tabName);
+    }
 
     function updateTab(tabName: string) {
       tab.value = tabName;
@@ -136,6 +141,7 @@ export default createComponent({
     }
 
     function remove(item: any) {
+      store.dispatch('debriefer/updateSummarySelection', {});
       let index = -1;
       const trips = state.debriefer.selectedTrips;
       const ops = state.debriefer.selectedOperations;
@@ -183,6 +189,7 @@ export default createComponent({
     }
 
     return {
+      updateDataTab,
       tab,
       updateTab,
       filters,
