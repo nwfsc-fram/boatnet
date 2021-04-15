@@ -4,6 +4,7 @@
       <q-card>
         <q-card-section>
           <b>DCS Row Details</b>
+          <b style="float: right">Trip Return Date: {{ formatDate(dcsRow.tripReturnDate) }}</b>
               <div class="row items-start">
                 <q-input class="col dcs-dialog" v-model="dcsRow.tripNum" label="Trip #" outlined dense></q-input>
                 <q-input class="col dcs-dialog" v-model="dcsRow.haulNum" label="Haul #" outlined dense></q-input>
@@ -80,8 +81,23 @@ export default createComponent({
     const masterDB: Client<any> = couchService.masterDB;
     const dcsRow: any = ref({});
 
-    const buildRow = (isAfi: boolean | string) => {
+    const buildRow = async (isAfi: boolean | string) => {
       const rowData: any = props.rowData;
+      let trip: any = null;
+
+      if (!rowData.returnDate) {
+        if (rowData.type === 'child') {
+
+        }
+        const tripIdKey = ["tripId", rowData['legacy-tripId'] ? rowData['legacy-tripId'] : rowData['tripId']];
+        const tripQuery: any = await masterDB.view(
+            'obs_web',
+            'wcgop_trips_compound_fields',
+            {include_docs: true, reduce: false, key: tripIdKey} as any
+        )
+        trip = tripQuery.rows[0] ? tripQuery.rows[0].doc : null;
+      }
+
       if (rowData) {
         if (props.isAfi !== 'blank') {
             return {
@@ -103,7 +119,8 @@ export default createComponent({
                 afiDate: isAfi === 'true' ? moment().format() : '-',
                 observerNotes: '',
                 isResolved: false,
-                isHidden: false
+                isHidden: false,
+                tripReturnDate: rowData.returnDate ? rowData.returnDate : trip ? trip.returnDate : rowData.tripReturnDate ? rowData.tripReturnDate :  moment().format()
             } as any;
         } else {
             return {
@@ -120,15 +137,16 @@ export default createComponent({
                 afiFlag: '-',
                 afiDate: '-',
                 observerNotes: '',
-                isHidden: false
+                isHidden: false,
+                tripReturnDate: rowData.returnDate ? rowData.returnDate : trip ? trip.returnDate : rowData.tripReturnDate ? rowData.tripReturnDate :  moment().format()
             };
         }
       }
     };
 
 
-    const addToDcs = (isAfi: any) => {
-        dcsRow.value = buildRow(isAfi);
+    const addToDcs = async (isAfi: any) => {
+        dcsRow.value = await buildRow(isAfi);
     };
 
 
@@ -148,7 +166,11 @@ export default createComponent({
 
     const dismiss = () => {
         context.emit('close');
-    }
+    };
+
+    const formatDate = (date: string) => {
+      return moment(date).format('MM/DD/YYYY');
+    };
 
     onMounted(() => {
     });
@@ -161,7 +183,7 @@ export default createComponent({
     });
 
     return {
-        submit, dcsRow, TripLevel, DcsErrorType, AfiFlag, dismiss
+        submit, dcsRow, TripLevel, DcsErrorType, AfiFlag, dismiss, formatDate
     };
   }
 });

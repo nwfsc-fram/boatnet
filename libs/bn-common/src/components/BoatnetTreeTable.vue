@@ -155,6 +155,9 @@ import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
 import { cloneDeep, get, remove, uniq } from 'lodash';
 
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
+
 import Column from 'primevue/column';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
@@ -196,6 +199,8 @@ export default createComponent ({
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
     const jp = require('jsonpath');
+
+    const masterDB: Client<any> = couchService.masterDB;
 
     function deSelect() {
       editingRow.value = '';
@@ -321,7 +326,12 @@ export default createComponent ({
         dcsDetailsDialog.value = true;
     };
 
-    const onNodeSelect = (node: any) => selectedRow.value = node.data;
+    const onNodeSelect = async (node: any) => {
+      const operationDoc = await masterDB.get(node.key.split('_')[0]);
+      let nodeCopy = cloneDeep(node.data);
+      nodeCopy.tripId = operationDoc.legacy.tripId;
+      selectedRow.value = nodeCopy;
+    }
     const onNodeUnselect = (node: any) => selectedRow.value = null;
 
     function expand() {
