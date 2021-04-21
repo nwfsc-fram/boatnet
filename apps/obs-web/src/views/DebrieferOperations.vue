@@ -10,6 +10,7 @@
             :initialSelection="initialSelection"
             :loading="loading"
             :showSelectionBoxes="true"
+            :lookupsMap="lookupsMap"
             @selectValues="selectValues"
             @save="save"
         />
@@ -29,7 +30,8 @@ import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 export default createComponent({
     props: {
-        isFullSize: Boolean
+        isFullSize: Boolean,
+        lookupsMap: Array
     },
     setup(props, context) {
         const store = context.root.$store;
@@ -89,6 +91,7 @@ export default createComponent({
             },
             {
                 field: 'observerTotalCatch-weightMethod-description',
+                code: 'observerTotalCatch-weightMethod-lookupVal',
                 header: 'OTC WT Method',
                 type: 'toggle',
                 key: 'wcgopOpWM',

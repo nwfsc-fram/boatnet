@@ -11,6 +11,7 @@
       :isFullSize="isFullSize"
       :loading="loading"
       :initialSelection="initialSelection"
+      :lookupsMap="lookupsMap"
       @save="save"
       @selectValues="selectValues"
     />
@@ -37,7 +38,8 @@ Vue.component('PrimeTable', PrimeTable);
 
 export default createComponent({
   props: {
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -114,7 +116,8 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopStatus',
         isEditable: true,
-        width: '100'
+        width: '100',
+        codeWidth: '70'
       },
       {
         field: 'tripScore',
@@ -165,7 +168,7 @@ export default createComponent({
         type: 'input',
         key: 'wcgopStateReg',
         isEditable: false,
-        width: '80'
+        width: '100'
       },
       {
         field: 'program-name',
@@ -176,7 +179,8 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopProgramName',
         isEditable: true,
-        width: '150'
+        width: '150',
+        codeWidth: '80'
       },
       {
         field: 'fishery-description',
@@ -188,34 +192,16 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopFishery',
         isEditable: true,
-        width: '250'
+        width: '250',
+        codeWidth: '80'
       },
       {
         field: 'firstReceivers-0-dealerName',
         header: 'First Receivers',
-        type: 'toggle',
-        listType: 'fetch',
-        search: true,
-        lookupKey: 'first-receiver',
-        lookupField: 'dealerName',
+        type: 'input',
         key: 'wcgopFR',
-        uniqueKey: '_id',
         isEditable: false,
-        width: '120',
-        popupColumns: [
-          {
-            field: 'dealerName',
-            header: 'Dealer Name',
-            type: 'input',
-            key: 'dealerName'
-          },
-          {
-            field: 'dealerNumber',
-            header: 'Dealer Number',
-            type: 'input',
-            key: 'dealerNumber'
-          }
-        ]
+        width: '120'
       },
       {
         field: 'vessel-captains-0-firstName',
@@ -310,7 +296,7 @@ export default createComponent({
       },
       {
         field: 'departurePort-name',
-        header: 'Departure Port',
+        header: 'Dept Port',
         type: 'toggle',
         listType: 'fetch',
         search: true,
@@ -318,11 +304,12 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopDeparturePort',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '90'
       },
       {
         field: 'returnPort-name',
-        header: 'Return Port',
+        header: 'Ret Port',
         type: 'toggle',
         listType: 'fetch',
         search: true,
@@ -330,7 +317,8 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopReturnPort',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '80'
       },
       {
         field: 'fishTickets-0-fishTicketNumber',

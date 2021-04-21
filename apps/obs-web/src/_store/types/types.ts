@@ -13,6 +13,7 @@ export interface AlertState {
 
 export interface DebrieferState {
   program: string;
+  displayCodes: boolean;
   cruiseIds: string;
   observer: string;
   evaluationPeriod: any;

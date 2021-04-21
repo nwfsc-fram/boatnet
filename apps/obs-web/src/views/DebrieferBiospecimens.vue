@@ -9,6 +9,7 @@
       :enableSelection="true"
       :showSelectionBoxes="false"
       :isFullSize="isFullSize"
+      :lookupsMap="lookupsMap"
       @save="save"
     />
   </div>
@@ -22,7 +23,8 @@ import { cloneDeep, filter, findIndex, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const store = context.root.$store;

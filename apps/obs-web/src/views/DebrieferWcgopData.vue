@@ -37,11 +37,11 @@
 
         <q-tab-panels v-model="tab" animated>
           <q-tab-panel name="trips">
-            <app-debriefer-trips :isFullSize="isFullSize"></app-debriefer-trips>
+            <app-debriefer-trips :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-trips>
           </q-tab-panel>
 
           <q-tab-panel name="operations">
-            <app-debriefer-operations :isFullSize="isFullSize"></app-debriefer-operations>
+            <app-debriefer-operations :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-operations>
           </q-tab-panel>
 
           <q-tab-panel name="catch">
@@ -49,7 +49,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="biospecimens">
-            <app-debriefer-biospecimens :isFullSize="isFullSize"></app-debriefer-biospecimens>
+            <app-debriefer-biospecimens :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-biospecimens>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -81,6 +81,7 @@ export default createComponent({
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
+    const lookupsMap: any = ref([]);
 
     watch(() => state.debriefer.selectedTrips, update);
     watch(() => state.debriefer.selectedOperations, update);
@@ -95,6 +96,8 @@ export default createComponent({
       if (result.rows.length > 0) {
         store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
       }
+      lookupsMap.value = await masterDB.view('obs_web', 'wcgop-lookup-codes');
+      lookupsMap.value = lookupsMap.value.rows;
     });
 
     function updateDataTab(tabName: string) {
@@ -193,7 +196,8 @@ export default createComponent({
       tab,
       updateTab,
       filters,
-      remove
+      remove,
+      lookupsMap
     };
   }
 });

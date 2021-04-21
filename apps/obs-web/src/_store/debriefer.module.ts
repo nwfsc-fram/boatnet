@@ -7,6 +7,7 @@ Vue.use(Vuex);
 
 export const state: DebrieferState = {
   program: '',
+  displayCodes: false,
   cruiseIds: '',
   observer: '',
   evaluationPeriod: {},
@@ -35,6 +36,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateProgram({ commit }: any, value: string) {
     commit('updateVal', {id: 'program', val: value});
+  },
+  updateDisplayCodes({ commit }: any, value: string) {
+    commit('updateVal', {id: 'displayCodes', val: value});
   },
   updateObserver({ commit }: any, value: string) {
     commit('updateVal', {id: 'observer', val: value});
@@ -98,6 +102,9 @@ const mutations: MutationTree<DebrieferState> = {
 const getters: GetterTree<DebrieferState, RootState> = {
   tripIds(getState: DebrieferState) {
     return getState.tripIds;
+  },
+  displayCodes(getState: DebrieferState) {
+    return getState.displayCodes;
   }
 };
 
