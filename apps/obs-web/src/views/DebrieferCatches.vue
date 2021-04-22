@@ -8,6 +8,7 @@
       :program="program"
       type="catch"
       :isFullSize="isFullSize"
+      :lookupsMap="lookupsMap"
       @save="save"
       @selected="select"
       :initExpandedKeys="expandedKeys"
@@ -26,7 +27,8 @@ import { merge, get, orderBy } from 'lodash';
 
 export default createComponent({
   props: {
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -88,6 +90,7 @@ export default createComponent({
           header: 'WM',
           field: 'weightMethod',
           width: '200',
+          codeWidth: '70',
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'weight-method',
@@ -99,6 +102,7 @@ export default createComponent({
           header: 'Name',
           field: 'name',
           width: '200',
+          codeWidth: '100',
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'taxonomy-alias',
@@ -110,6 +114,7 @@ export default createComponent({
           header: 'Count',
           field: 'count',
           width: '100',
+          type: 'number',
           isEditable: true
         },
         {
@@ -157,6 +162,7 @@ export default createComponent({
           header: 'Discard Reason',
           field: 'discardReason',
           width: '200',
+          codeWidth: '100',
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'discard-reason',

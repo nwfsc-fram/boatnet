@@ -10,6 +10,7 @@
             :initialSelection="initialSelection"
             :loading="loading"
             :showSelectionBoxes="true"
+            :lookupsMap="lookupsMap"
             @selectValues="selectValues"
             @save="save"
         />
@@ -29,7 +30,8 @@ import { cloneDeep, findIndex, orderBy } from 'lodash';
 
 export default createComponent({
     props: {
-        isFullSize: Boolean
+        isFullSize: Boolean,
+        lookupsMap: Array
     },
     setup(props, context) {
         const store = context.root.$store;
@@ -89,10 +91,12 @@ export default createComponent({
             },
             {
                 field: 'observerTotalCatch-weightMethod-description',
-                header: 'OTC WT Method',
+                code: 'observerTotalCatch-weightMethod-lookupVal',
+                header: 'Otc Wt M',
                 type: 'toggle',
                 key: 'wcgopOpWM',
                 width: '150',
+                codeWidth: '100',
                 listType: 'fetch',
                 search: true,
                 lookupKey: 'otc-weight-method',
@@ -104,7 +108,7 @@ export default createComponent({
                 header: 'Gear Perf',
                 type: 'toggle',
                 key: 'wcgopGearPerf',
-                width: '150',
+                width: '100',
                 listType: 'fetch',
                 search: true,
                 lookupKey: 'gear-performance',
@@ -119,7 +123,7 @@ export default createComponent({
                 listType: 'fetch',
                 lookupKey: 'beaufort',
                 lookupField: 'legacy.lookupVal',
-                width: '70',
+                width: '80',
                 isEditable: true,
             },
             {
@@ -204,7 +208,7 @@ export default createComponent({
                 search: true,
                 lookupKey: 'gear-type',
                 lookupField: 'description',
-                width: '250',
+                width: '100',
                 isEditable: true,
             },
             // HLFC

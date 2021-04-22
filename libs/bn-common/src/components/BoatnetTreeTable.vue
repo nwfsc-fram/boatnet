@@ -49,7 +49,9 @@
         :header="col.header"
         :expander="col.expander"
         :sortable="true"
-        :headerStyle="'width: ' + col.width + 'px'"
+        :headerStyle="state.debriefer.displayCodes && col.codeWidth ? 
+          'width: ' + col.codeWidth + 'px' :
+          'width: ' + col.width + 'px'"
         :style="'width:' +  col.width + 'px'"
         filterMatchMode="contains"
         headerClass="sticky top table-cell"
@@ -74,67 +76,65 @@
           </div>
         </template>
         <template #body="slotProps">
-            <div
-              v-if="slotProps.node.key === editingRow &&
-                           col.isEditable && col.name === editingCol &&
-                           slotProps.node.data[slotProps.column.field]"
-            >
-              <q-select
-                v-if="col.type === 'toggle'"
-                :style="'width: ' + col.width + 'px'"
-                v-model="slotProps.node.data[slotProps.column.field]"
-                :options="lookupsList"
-                option-label="label"
-                option-value="label"
-                @input="onCellEdit($event, slotProps, col)"
-                @blur="deSelect"
-              />
-              <q-select
-                v-else-if="col.type === 'toggle-search'"
-                :style="'width: ' + col.width + 'px'"
-                use-input
-                hide-selected
-                fill-input
-                autofocus
-                v-model="slotProps.node.data[slotProps.column.field]"
-                :options="lookupsList"
-                option-label="label"
-                option-value="label"
-                @filter="filterFn"
-                @input="onCellEdit($event, slotProps, col)"
-                @blur="deSelect"
-              />
-              <q-input
-                v-else
-                autofocus
-                debounce="500"
-                v-model="slotProps.node.data[slotProps.column.field]"
-                @input="onCellEdit($event, slotProps, col)"
-                @blur="deSelect"
-              />
-            </div>
-            <span v-else>
               <span
-                v-if="col.type === 'link' && displayData(slotProps, col.type, col.field) > 0"
+                v-if="col.type === 'link' && displayData(slotProps, col) > 0"
                 class="tooltip fakelink"
                 v-on:click="select(slotProps, col.highlightIds)">
-                {{ displayData(slotProps, col.type, col.field) }}
+                {{ displayData(slotProps, col) }}
                 <span
                   class="tooltiptext"
                   style="pointer-events: none"
-                >{{ displayData(slotProps, 'string', col.tooltipLabel) }}</span>
+                >{{ displayData(slotProps, col) }}</span>
               </span>
               <span
                 v-else-if="(slotProps.node.data.type === 'child' ||
                             slotProps.node.data.type === 'basket' ) && 
                             ['operationNum', 'catchNum', 'disposition', 'weightMethod'].includes(slotProps.column.field)"
                 style="color: white"
-              >{{ displayData(slotProps, col.type, col.field) }}</span>
+              >{{ displayData(slotProps, col) }}</span>
               <span
                 v-else
-                v-on:click="edit(slotProps, col)"
-              >{{ displayData(slotProps, col.type, col.field) }}</span>
-            </span>
+              >{{ displayData(slotProps, col) }}</span>
+              <q-popup-edit
+                v-if="col.isEditable"
+                v-model="tempVal"
+                :title="col.header"
+                buttons
+                @save="onCellEdit($event, slotProps, col)"
+                @before-show="init(slotProps, col)"
+              >
+                <q-select
+                  v-if="col.type === 'toggle-search'"
+                  v-model="tempVal"
+                  use-input
+                  fill-input
+                  hide-selected
+                  :options="lookupsList"
+                  @filter="filterFn"
+                  :style="'width:' + col.width - 10 + 'px'"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        No results
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+                <q-input
+                    v-else-if="col.type === 'number' || col.type === 'double'"
+                    type="number"
+                    v-model="tempVal"
+                    dense
+                    autofocus
+                />
+                <q-input
+                    v-else
+                    v-model="tempVal"
+                    dense
+                    autofocus
+                />
+              </q-popup-edit>
         </template>
       </pColumn>
     </pTreeTable>
@@ -153,7 +153,7 @@
 import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
-import { cloneDeep, get, remove, uniq } from 'lodash';
+import { cloneDeep, find, get, remove, uniq } from 'lodash';
 
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
@@ -179,7 +179,8 @@ export default createComponent ({
     type: String,
     selectionMode: String,
     initExpandedKeys: Object,
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -200,6 +201,8 @@ export default createComponent ({
     const sortedList: any = ref([]);
     const jp = require('jsonpath');
 
+    const tempVal: any = ref('');
+
     const masterDB: Client<any> = couchService.masterDB;
 
     function deSelect() {
@@ -207,10 +210,20 @@ export default createComponent ({
       editingCol.value = '';
     }
 
-    function displayData(data: any, colType: string, colField: string) {
+    function converToCode(key: any, val: any) {
+      const code: any = find(props.lookupsMap, { key: key + ':' + val});
+      return code ? code.value : undefined;
+    }
+
+    function displayData(data: any, col: any) {
+      const colType = col.type;
+      const colField = col.field;
       let value: any = data.node.data[colField];
+      if (state.debriefer.displayCodes && col.lookupView && value) {
+        value = converToCode(col.lookupView, value);
+      }
       if (value && colType === 'double' && value % 1 !== 0) {
-        value = value.toFixed(2);
+        value = parseFloat(value).toFixed(2);
       }
       return value;
     }
@@ -228,6 +241,11 @@ export default createComponent ({
               return false;
             }
           });
+          if (state.debriefer.displayCodes && col.lookupView) {
+            for (let i = 0; i < filterList[col.header].length; i++) {
+              filterList[col.header][i] = converToCode(col.lookupView, filterList[col.header][i]);
+            }
+          }
           filterList[col.header] = filterList[col.header].sort();
         }
       }
@@ -250,7 +268,11 @@ export default createComponent ({
       },
     });
 
-    async function edit(data: any, col: any) {
+    async function init(data: any, col: any) {
+      tempVal.value = data.node.data[col.field];
+      if (state.debriefer.displayCodes && col.lookupView && tempVal.value) {
+        tempVal.value = converToCode(col.lookupView, tempVal.value);
+      }
       const nodeKey = data.node.key;
       if (editingRow.value !== data.node.key) {
         editingRow.value = nodeKey;
@@ -273,34 +295,36 @@ export default createComponent ({
       });
     }
 
-    async function getOptionsList(view: string, field: string[], data: any) {
+    async function getOptionsList(key: string, field: string[], data: any) {
       const lookupList: any[] = [];
       let lookupField = lookupFieldName.value;
       if (data.column.field === 'name') {
         const catchContent = data.node.data.catchContent;
-        view = catchContent.type;
-        if (view === 'catch-grouping') {
+        key = catchContent.type;
+        if (key === 'catch-grouping') {
           lookupField = 'name';
-        } else if (view === 'taxonomy-alias') {
+        } else if (key === 'taxonomy-alias') {
           lookupField = 'commonNames[0]';
         }
       }
-      const results = await getCouchLookupInfo(props.program ? props.program : '', 'obs_web', view, [lookupField]);
+      const results = await getCouchLookupInfo(props.program ? props.program : '', 'obs_web', key, [lookupField]);
       for (let i = 0; i < results.length; i++) {
-        lookupList[i] = { label: get(results[i].doc, lookupField), value: results[i].doc };
+        let label = get(results[i].doc, lookupField);
+        if (state.debriefer.displayCodes && label) {
+            label = converToCode(key, label);
+            label = label ? label : '';
+          }
+        lookupList[i] = { label, value: results[i].doc };
       }
       return lookupList;
     }
 
     function onCellEdit(event: any, slotProps: any, col: any) {
-      let value: any;
       const currField = slotProps.column.field;
       if (col.type === 'toggle' || col.type === 'toggle-search') {
         slotProps.node.data[currField] = event.label;
-        value = event.value;
       } else {
         slotProps.node.data[currField] = event;
-        value = event;
       }
       // when top level element is edited, edit children as well
       if (['weightMethod', 'disposition'].includes(currField) && slotProps.node.children.length > 0) {
@@ -328,10 +352,10 @@ export default createComponent ({
 
     const onNodeSelect = async (node: any) => {
       const operationDoc = await masterDB.get(node.key.split('_')[0]);
-      let nodeCopy = cloneDeep(node.data);
+      const nodeCopy = cloneDeep(node.data);
       nodeCopy.tripId = operationDoc.legacy.tripId;
       selectedRow.value = nodeCopy;
-    }
+    };
     const onNodeUnselect = (node: any) => selectedRow.value = null;
 
     function expand() {
@@ -359,11 +383,12 @@ export default createComponent ({
       lookupFieldName,
       lookupsList,
       sortedList,
+      state,
 
       collapse,
       deSelect,
       displayData,
-      edit,
+      init,
       expand,
       filterFn,
       getOptionsList,
@@ -371,7 +396,8 @@ export default createComponent ({
       openNewDebriefingTab,
       select,
       selectedRow, dcsDetailsDialog,  afiChoice,
-      onNodeSelect, onNodeUnselect, addToDcs
+      onNodeSelect, onNodeUnselect, addToDcs,
+      tempVal
     };
   }
 });

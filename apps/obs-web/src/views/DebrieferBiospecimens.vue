@@ -9,6 +9,7 @@
       :enableSelection="true"
       :showSelectionBoxes="false"
       :isFullSize="isFullSize"
+      :lookupsMap="lookupsMap"
       @save="save"
     />
   </div>
@@ -22,7 +23,8 @@ import { cloneDeep, filter, findIndex, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -96,7 +98,8 @@ export default createComponent({
         lookupKey: 'biospecimen-sample-method',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '70'
       },
       {
         field: 'specimen-sex',
@@ -113,7 +116,7 @@ export default createComponent({
         header: 'Length',
         type: 'number',
         key: 'wcgopBioLength',
-        width: '60',
+        width: '80',
         isEditable: true
       },
       {
@@ -121,7 +124,7 @@ export default createComponent({
         header: 'Width',
         type: 'number',
         key: 'wcgopBioWidth',
-        width: '60',
+        width: '80',
         isEditable: true
       },
       {
@@ -165,7 +168,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-0-label',
@@ -184,7 +188,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-1-label',
@@ -203,7 +208,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-2-label',

@@ -70,74 +70,80 @@
         :header="col.header"
         :key="col.key"
         :sortable="true"
-        :headerStyle="'width: ' + col.width + 'px'"
+        :headerStyle="state.debriefer.displayCodes && col.codeWidth ? 
+          'width: ' + col.codeWidth + 'px' :
+          'width: ' + col.width + 'px'"
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
-        <template v-if="col.isEditable" #editor="slotProps">
-          <q-select
-            v-if="col.type === 'toggle' && col.listType === 'fetch'"
-            v-model="cellVal"
-            use-input
-            fill-input
-            hide-selected
-            :options="lookupsList"
-            @focus="populateLookupsList(col)"
-            @filter="filterFn"
-            :style="'width:' + col.width - 10 + 'px'"
-            @input="onCellEdit($event, slotProps, col.listType)"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey">
-                  No results
-              </q-item-section>
-            </q-item>
-          </template>
-          </q-select>
-          <q-select
-            v-else-if="col.type === 'toggle' && col.listType === 'template'"
-            v-model="cellVal"
-            :options="col.list"
-            @input="onCellEdit($event, slotProps, col.listType)"
-          />
-          <q-select
-            v-else-if="col.type === 'toggle' && col.listType === 'boolean'"
-            v-model="cellVal"
-            :options="[true, false]"
-            @input="onCellEdit($event, slotProps, col.listType)"
-          />
-          <Calendar
-            v-else-if="col.type === 'date'"
-            v-model="cellVal"
-            @input="onCellEdit($event, slotProps, col.type)"
-            appendTo="body"
-          />
-          <Textarea
-            v-else-if="col.type === 'coordinate'"
-            v-model="cellVal"
-            cols="100"
-            :rows="2"
-            @change="onCellEdit($event.target.value, slotProps, col.type)"
-          />
-          <Textarea
-            v-else-if="col.type === 'textArea'"
-            v-model="cellVal"
-            cols="100"
-            :rows="5"
-            @change="onCellEdit($event.target.value, slotProps, col.type)"
-          />
-          <InputText
-            v-else
-            type="text"
-            v-model="cellVal"
-            class="p-column-filter"
-            @change="onCellEdit($event.target.value, slotProps, col.type)"
-          ></InputText>
-        </template>
         <template #body="slotProps">
-          <div
-            style="pointer-events: none; white-space: pre-wrap; height: 48px"
-          >{{ formatValue(slotProps, col.type, col.displayField) }}</div>
+          <div>{{ formatValue(slotProps, col) }}</div>
+          <q-popup-edit
+            v-if="col.isEditable"
+            v-model="tempVal"
+            :title="col.header"
+            buttons
+            @save="onCellEdit(tempVal, slotProps, col)"
+            @before-show="init(slotProps, col)"
+          >
+            <q-input
+              v-if="col.type === 'input'"
+              v-model="tempVal"
+              dense
+              autofocus
+            />
+            <q-input
+              v-if="col.type === 'number'"
+              type="number"
+              v-model="tempVal"
+              dense
+              autofocus
+            />
+            <Calendar
+              v-else-if="col.type === 'date'"
+              v-model="tempVal"
+              appendTo="body"
+            />
+            <q-select
+              v-if="col.type === 'toggle' && col.listType === 'fetch'"
+              v-model="tempVal"
+              use-input
+              fill-input
+              hide-selected
+              :options="lookupsList"
+              @filter="filterFn"
+              :style="'width:' + col.width - 10 + 'px'"
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    No results
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+            <q-select
+              v-else-if="col.type === 'toggle' && col.listType === 'template'"
+              v-model="tempVal"
+              :options="col.list"
+            />
+            <q-select
+              v-else-if="col.type === 'toggle' && col.listType === 'boolean'"
+              v-model="tempVal"
+              :options="[true, false]"
+            />
+            <Textarea
+              v-else-if="col.type === 'textArea'"
+              v-model="tempVal"
+              cols="100"
+              :rows="5"
+            />
+            <Textarea
+              v-else-if="col.type === 'coordinate'"
+              v-model="tempVal"
+              cols="100"
+              :rows="2"
+            />
+          </q-popup-edit>
           <Button
             class="p-button-secondary"
             v-if="col.type === 'popup' && containsMultiples(slotProps, col.popupField)"
@@ -193,7 +199,8 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, findIndex, filter, get, intersection, remove, set, startsWith, uniq } from 'lodash';
+import { cloneDeep, find, findIndex, filter, get, intersection,
+         remove, set, startsWith, uniq } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -240,7 +247,8 @@ export default createComponent({
     showSelectionBoxes: Boolean,
     isFullSize: Boolean,
     loading: Boolean,
-    initialSelection: Array
+    initialSelection: Array,
+    lookupsMap: Array
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -281,9 +289,11 @@ export default createComponent({
     const jp = require('jsonpath');
     const arrayMove = require('array-move');
 
+    const tempVal: any = ref('');
+
     onActivated(() => {
       filters.value = state.debriefer.filters[tableType];
-    })
+    });
 
     onMounted(async () => {
       pageStart.value = 0;
@@ -342,6 +352,11 @@ export default createComponent({
             const searchField = col.field.replace(/-/g, '.');
             filterList[col.header] = jp.query(props.value, '$..' + searchField);
             filterList[col.header] = uniq(filterList[col.header]);
+            if (state.debriefer.displayCodes && col.lookupKey) {
+              for (let i = 0; i < filterList[col.header].length; i++) {
+                filterList[col.header][i] = converToCode(col.lookupKey, filterList[col.header][i]);
+              }
+            }
             filterList[col.header] = filterList[col.header].sort();
           }
         }
@@ -396,7 +411,7 @@ export default createComponent({
       let updatedRecord: any = {};
 
       // save columns to users column-config docs
-      let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       if (userColConfig.rows.length > 0) {
         updatedRecord = userColConfig.rows[0].doc;
         updatedRecord.columnConfig[tableType] = displayColumns.value;
@@ -417,6 +432,9 @@ export default createComponent({
       if (col.listType === 'fetch') {
         for (let i = 0; i < lookupsList.value.length; i++) {
           lookupsList.value[i].label = get(lookupsList.value[i].doc, col.lookupField);
+          if (state.debriefer.displayCodes && col.lookupKey && lookupsList.value[i].label) {
+            lookupsList.value[i].label = converToCode(col.lookupKey, lookupsList.value[i].label);
+          }
           lookupsList.value[i].value = lookupsList.value[i].doc;
         }
       }
@@ -459,7 +477,14 @@ export default createComponent({
       return lookupVals.sort();
     }
 
-    function formatValue(slotProps: any, type: string, displayField: string[]) {
+    function converToCode(key: any, val: any) {
+      const code: any = find(props.lookupsMap, { key: key + ':' + val});
+      return code ? code.value : undefined;
+    }
+
+    function formatValue(slotProps: any, col: any) {
+      const type = col.type;
+      const displayField = col.displayField;
       let formattedValue: any;
       if (displayField) {
         const valArr = [];
@@ -469,6 +494,9 @@ export default createComponent({
         formattedValue = valArr.join(' ');
       } else {
         formattedValue = get(slotProps.data, slotProps.column.field);
+        if (state.debriefer.displayCodes && col.lookupKey && formattedValue) {
+          formattedValue = converToCode(col.lookupKey, formattedValue);
+        }
       }
       if (type === 'date') {
         if (formattedValue !== '-') {
@@ -503,26 +531,41 @@ export default createComponent({
       }
     }
 
-    function onCellEdit(newValue: any, slotProps: any, type: string) {
+    async function init(data: any, colInfo: any) {
+      const field = data.column.field;
+      tempVal.value = get(data.data, field);
+      if (state.debriefer.displayCodes && colInfo.lookupKey && tempVal.value) {
+        tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
+      }
+      if (colInfo.type === 'toggle' && colInfo.listType === 'fetch') {
+        await populateLookupsList(colInfo);
+      }
+    }
+
+    function onCellEdit(newValue: any, slotProps: any, col: any) {
       let fields: string = slotProps.column.field;
       let editingCellRow: any = slotProps.data;
-      if (type === 'boolean') {
-        newValue = newValue;
-        cellVal.value = newValue.toString();
-      } else if (type === 'number') {
-        newValue = Number(newValue);
-      } else if (type === 'date') {
-        newValue = moment(newValue).format();
-      } else if (type === 'coordinate') {
-        newValue = fromDMS(newValue);
-      } else if (type === 'fetch') {
+      if (col.listType === 'fetch') {
         const fieldArr: string[] = fields.split('-');
         fieldArr.pop();
         fields = fieldArr.join('-');
-        newValue = newValue.value;
+        newValue = newValue.doc;
+        editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
+        set(editingCellRow, fields, newValue);
+      } else {
+        if (col.type === 'boolean') {
+          newValue = newValue;
+          cellVal.value = newValue.toString();
+        } else if (col.type === 'number') {
+          newValue = Number(newValue);
+        } else if (col.type === 'date') {
+          newValue = moment(newValue).format();
+        } else if (col.type === 'coordinate') {
+          newValue = fromDMS(newValue);
+        }
+        set(editingCellRow, fields, newValue);
+        editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
       }
-      set(editingCellRow, fields, newValue);
-      editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
       context.emit('save', editingCellRow);
     }
 
@@ -729,7 +772,8 @@ export default createComponent({
       selectedRow, cm, menuModel, onRowContextMenu, dcsDetailsDialog, deleteRow, duplicateRow, afiChoice,
       filterOptions,
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
-      reorderColumn, resizeColumn
+      reorderColumn, resizeColumn,
+      init, tempVal
     };
   },
 });
