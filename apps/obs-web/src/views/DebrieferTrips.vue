@@ -415,7 +415,7 @@ export default createComponent({
           const observer = state.debriefer.observer;
           trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
                                               new Date(evalPeriod.endDate),
-                                              observer);        
+                                              observer);
         } else if (type === 'tripIds') {
           await getTrips();
         }

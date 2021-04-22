@@ -328,10 +328,10 @@ export default createComponent ({
 
     const onNodeSelect = async (node: any) => {
       const operationDoc = await masterDB.get(node.key.split('_')[0]);
-      let nodeCopy = cloneDeep(node.data);
+      const nodeCopy = cloneDeep(node.data);
       nodeCopy.tripId = operationDoc.legacy.tripId;
       selectedRow.value = nodeCopy;
-    }
+    };
     const onNodeUnselect = (node: any) => selectedRow.value = null;
 
     function expand() {

@@ -232,13 +232,13 @@ export function mongoRead(collection: string, query: any) {
         let queryString = '';
         Object.keys(query).forEach( (key: string) => {
             if (Object.keys(query).indexOf(key) === 0) {
-                queryString += '?'
+                queryString += '?';
             }
-            if (key) {queryString += key + '=' + query[key]};
+            if (key) {queryString += key + '=' + query[key]; }
             if (Object.keys(query).indexOf(key) > 0) {
-                queryString += "&";
+                queryString += '&';
             }
-        })
+        });
         const queryUrl = getTripsApiMongoUrl() + '/' + collection + queryString;
         request.get(
             {

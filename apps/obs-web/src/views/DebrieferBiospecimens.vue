@@ -98,7 +98,8 @@ export default createComponent({
         lookupKey: 'biospecimen-sample-method',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '70'
       },
       {
         field: 'specimen-sex',
@@ -115,7 +116,7 @@ export default createComponent({
         header: 'Length',
         type: 'number',
         key: 'wcgopBioLength',
-        width: '60',
+        width: '80',
         isEditable: true
       },
       {
@@ -123,7 +124,7 @@ export default createComponent({
         header: 'Width',
         type: 'number',
         key: 'wcgopBioWidth',
-        width: '60',
+        width: '80',
         isEditable: true
       },
       {
@@ -167,7 +168,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-0-label',
@@ -186,7 +188,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-1-label',
@@ -205,7 +208,8 @@ export default createComponent({
         lookupKey: 'biostructure-type',
         lookupField: 'description',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '100'
       },
       {
         field: 'specimen-biostructures-2-label',

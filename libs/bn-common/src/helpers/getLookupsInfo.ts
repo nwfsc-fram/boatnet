@@ -89,7 +89,7 @@ async function getDocByType(appMode: string, type: string, displayFields: any) {
     views: {
       by_type: {
         // @ts-ignore
-        map: function (doc) { emit(doc.type); }.toString()
+        map: function(doc) { emit(doc.type); }.toString()
       }
     }
   };

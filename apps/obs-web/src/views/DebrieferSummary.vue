@@ -400,15 +400,15 @@ export default createComponent({
 
         onUnmounted(() => {
             store.dispatch('debriefer/updateSummarySelection', selectedVessel.value);
-        })
+        });
 
-        onMounted(async() => {
+        onMounted(async () => {
             selectedVessel.value = [];
             selectedVessel.value = state.debriefer.summarySelection;
             if (selectedVessel.value.vessel) {
                 populateSummary({ data: selectedVessel.value });
             }
-        })
+        });
 
         watch(() => state.debriefer.selectedTrips, async () => {
             getVesselInfo();

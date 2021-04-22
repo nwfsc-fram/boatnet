@@ -199,7 +199,7 @@ import {
   onUnmounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { cloneDeep, find, findIndex, filter, get, intersection, 
+import { cloneDeep, find, findIndex, filter, get, intersection,
          remove, set, startsWith, uniq } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
@@ -290,11 +290,10 @@ export default createComponent({
     const arrayMove = require('array-move');
 
     const tempVal: any = ref('');
-    
 
     onActivated(() => {
       filters.value = state.debriefer.filters[tableType];
-    })
+    });
 
     onMounted(async () => {
       pageStart.value = 0;
@@ -412,7 +411,7 @@ export default createComponent({
       let updatedRecord: any = {};
 
       // save columns to users column-config docs
-      let userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
       if (userColConfig.rows.length > 0) {
         updatedRecord = userColConfig.rows[0].doc;
         updatedRecord.columnConfig[tableType] = displayColumns.value;
@@ -485,7 +484,7 @@ export default createComponent({
 
     function formatValue(slotProps: any, col: any) {
       const type = col.type;
-      const displayField = col.displayField
+      const displayField = col.displayField;
       let formattedValue: any;
       if (displayField) {
         const valArr = [];
