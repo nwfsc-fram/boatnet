@@ -45,7 +45,7 @@
           </q-tab-panel>
 
           <q-tab-panel name="catch">
-            <app-debriefer-catches :isFullSize="isFullSize" @changeTab="updateTab"></app-debriefer-catches>
+            <app-debriefer-catches :isFullSize="isFullSize" @changeTab="updateTab" :lookupsMap="lookupsMap"></app-debriefer-catches>
           </q-tab-panel>
 
           <q-tab-panel name="biospecimens">

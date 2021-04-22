@@ -535,7 +535,7 @@ export default createComponent({
       const field = data.column.field;
       tempVal.value = get(data.data, field);
       if (state.debriefer.displayCodes && colInfo.lookupKey && tempVal.value) {
-          tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
+        tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
       }
       if (colInfo.type === 'toggle' && colInfo.listType === 'fetch') {
         await populateLookupsList(colInfo);
