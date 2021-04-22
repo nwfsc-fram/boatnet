@@ -219,6 +219,9 @@ export default createComponent ({
       const colType = col.type;
       const colField = col.field;
       let value: any = data.node.data[colField];
+      if (state.debriefer.displayCodes && col.lookupView && value) {
+        value = converToCode(col.lookupView, value);
+      }
       if (value && colType === 'double' && value % 1 !== 0) {
         value = parseFloat(value).toFixed(2);
       }
