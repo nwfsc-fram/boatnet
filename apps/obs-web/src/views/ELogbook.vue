@@ -926,7 +926,6 @@
                     <q-td key="speciesCount" :props="props">{{ props.row.speciesCount }}</q-td>
                     <q-td key="calcWeightType" :props="props">{{ props.row.calcWeightType }}</q-td>
                     <q-td key="speciesLength" :props="props">{{ props.row.speciesLength }}</q-td>
-                    <q-td key="timeOnDeck" :props="props">{{ props.row.timeOnDeck }}</q-td>
                     <q-td key="comments" :props="props">{{ props.row.comments }}</q-td>
                   </q-tr>
                 </template>
@@ -1030,16 +1029,6 @@
                     title="Length (in cm) of individual fish"
                     :rules="[val => (/^((?![a-zA-Z]).)*$/.test(val) || !val) || 'length must be a number']"
                     hint="Note: Do not supply length if count is greater than 1"
-                  ></q-input>
-                  <q-input
-                    class="logbook-element"
-                    v-model="tripCatch.hauls[selectedHaul - 1].catch[selectedCatch - 1].timeOnDeck"
-                    dense
-                    autogrow
-                    outlined
-                    label="Time On Deck"
-                    title="Time on deck (in min) specific to each Pacific Halibut"
-                    mask="###"
                   ></q-input>
                   <q-input
                     class="logbook-element"
@@ -1406,14 +1395,6 @@ export default createComponent({
         name: 'speciesLength',
         label: 'length',
         field: 'speciesLength',
-        required: false,
-        align: 'left',
-        sortable: true
-      },
-      {
-        name: 'timeOnDeck',
-        label: 'Time On Deck',
-        field: 'timeOnDeck',
         required: false,
         align: 'left',
         sortable: true
