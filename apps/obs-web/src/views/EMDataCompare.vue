@@ -142,38 +142,48 @@ export default createComponent({
       haulTotals = {};
       reviewedTotals = {};
 
-      if (apiCatch.thirdPartyReviewCatch) {
-        for (const catchItem of apiCatch.thirdPartyReviewCatch) {
+      if (apiCatch.ifqThirdPartyReviewCatchHaulLevel) {
+        for (const catchItem of apiCatch.ifqThirdPartyReviewCatchHaulLevel) {
           if (!reviewedHauls.includes(catchItem.haulNum)) {
             reviewedHauls.push(catchItem.haulNum);
           }
         }
       }
 
-      for (const catchType of ['logbookCatch', 'thirdPartyReviewCatch', 'nwfscAuditCatch']) {
+      // if (apiCatch.thirdPartyReviewCatch) {
+      //   for (const catchItem of apiCatch.thirdPartyReviewCatch) {
+      //     if (!reviewedHauls.includes(catchItem.haulNum)) {
+      //       reviewedHauls.push(catchItem.haulNum);
+      //     }
+      //   }
+      // }
+
+      for (const catchType of ['ifqLogbookCatchHaulLevel', 'ifqThirdPartyReviewCatchHaulLevel', 'ifqNwfscAuditHaulLevel']) {
         if (apiCatch[catchType].length > 0) {
           let source = '';
           switch (catchType) {
-            case 'logbookCatch':
+            case 'ifqLogbookCatchHaulLevel':
                 source = 'logbook';
                 break;
-            case 'thirdPartyReviewCatch':
+            case 'ifqThirdPartyReviewCatchHaulLevel':
                 source = 'thirdParty';
                 break;
-            case 'nwfscAuditCatch':
+            case 'ifqNwfscAuditHaulLevel':
                 source = 'nwfscAudit';
                 break;
           }
           for (const species of apiCatch[catchType]) {
-            const codeLookup = speciesCodes.find( ( codes: any) => {
-                return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode;
-              });
-            if (codeLookup) {
-              species.speciesCode = codeLookup.commonName;
+            // const codeLookup = speciesCodes.find( ( codes: any) => {
+            //     return species.pacfinSpeciesCode === codes.pacfinSpeciesCode || species.wcgopSpeciesCode === codes.wcgopSpeciesCode;
+            //   });
+            // if (codeLookup) {
+            //   species.speciesCode = codeLookup.commonName;
 
-            } else {
-              species.speciesCode = 'fish error 321';
-            }
+            // } else {
+            //   species.speciesCode = 'fish error 321';
+            // }
+            species.speciesCode = species.ifqGrouping;
+
             if (!tripTotals[species.speciesCode]) {
               tripTotals[species.speciesCode] = {};
             }
@@ -325,7 +335,7 @@ export default createComponent({
         apiTrip.vesselId = '';
       }
 
-      apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
+      // apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
 
       const masterDb = couchService.masterDB;
       const queryOptions = {
@@ -334,13 +344,21 @@ export default createComponent({
         key: apiTrip.tripNum
       };
 
-      const expansionResultsQuery = await masterDb.view(
-        'TripsApi',
-        'expansion_results',
-        queryOptions
-      );
+      // const expansionResultsQuery = await masterDb.view(
+      //   'TripsApi',
+      //   'expansion_results',
+      //   queryOptions
+      // );
 
-      apiCatch = expansionResultsQuery.rows[0].doc;
+      const minimalExpansionResultsQuery = await masterDb.view(
+        'TripsApi',
+        'minimal_expansion_results',
+        queryOptions
+      )
+
+
+
+      apiCatch = minimalExpansionResultsQuery.rows[0].doc;
 
       if (apiCatch === 'not found') {
         Vue.set(apiTrip, tripNum, 0);
