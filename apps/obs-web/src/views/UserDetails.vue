@@ -309,6 +309,28 @@
                             <q-toggle v-model="user.activeUser.isActive" label="Active"/>
                             <q-toggle v-model="user.activeUser.isAshop" label="Ashop"/>
                             <q-toggle v-model="user.activeUser.isWcgop" label="Wcgop"/>
+
+                            <q-select
+                                label="Provider Associations"
+                                v-model="user.activeUser.providerAssociations"
+                                :options="providerOptions"
+                                outlined stack-label
+                                multiple
+                                class="q-pa-sm wide-field"
+                            >
+                                <template v-slot:selected-item="scope">
+                                    <q-chip
+                                        @remove="scope.removeAtIndex(scope.index)"
+                                        :tabindex="scope.tabindex"
+                                        removable
+                                        dense
+                                        color="primary"
+                                        text-color="white"
+                                    >
+                                    {{ scope.opt }}
+                                    </q-chip>
+                                </template>
+                            </q-select>
                         </div>
                 </div>
 
@@ -416,10 +438,12 @@ export default class UserDetails extends Vue {
     private userRoles: string[] = [];
 
     private notificationOptions: any[] = [
-    {label: 'email', value: 'email', icon: 'mail'},
-    {label: 'sms/text', value: 'sms/text', icon: 'sms'},
-    {label: 'app', value: 'app', icon: 'smartphone'}
+        {label: 'email', value: 'email', icon: 'mail'},
+        {label: 'sms/text', value: 'sms/text', icon: 'sms'},
+        {label: 'app', value: 'app', icon: 'smartphone'}
     ];
+
+    private providerOptions: any[] = []
 
     private roles: any[] = [];
     private editContact: any = {};
@@ -650,7 +674,7 @@ export default class UserDetails extends Vue {
 
     private async getPhoneTypes() {
         try {
-            const masterDb = couchService.masterDB;
+            const masterDB = couchService.masterDB;
             const queryOptions = {
                 key: 'phone-number-type',
                 reduce: false,
@@ -659,7 +683,7 @@ export default class UserDetails extends Vue {
                 include_docs: true
             };
 
-            const phoneTypes = await masterDb.view(
+            const phoneTypes = await masterDB.view(
                 'obs_web',
                 'all_doc_types',
                 queryOptions,
@@ -706,6 +730,18 @@ export default class UserDetails extends Vue {
             this.userRoles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
             this.storedRoles = response.data.roles.map( (role: any) => role);
         });
+    }
+
+    private async getProviderOptions() {
+        const masterDB: Client<any> = couchService.masterDB;
+        const providerOptionsQuery = await masterDB.view(
+            'obs_web',
+            'all_doc_types',
+            { include_docs: true, key: 'third-party-reviewer' } as any
+        )
+        this.providerOptions = providerOptionsQuery.rows.map( (row: any) => {
+            return row.doc.description
+        } )
     }
 
     private async updateUserRoles() {
@@ -759,13 +795,13 @@ export default class UserDetails extends Vue {
 
     private async updatePersonAlias() {
         let activePersonAlias: any = {};
-        const masterDb: Client<any> = couchService.masterDB;
+        const masterDB: Client<any> = couchService.masterDB;
         const queryOptions = {
           include_docs: true,
           key: this.user.activeUser!.apexUserAdminUserName
         };
 
-        const couchAlias: any = await masterDb.view<any>(
+        const couchAlias: any = await masterDB.view<any>(
           'obs_web',
           'all_person_alias',
           queryOptions
@@ -775,7 +811,7 @@ export default class UserDetails extends Vue {
             activePersonAlias.firstName = this.user.activeUser!.firstName;
             activePersonAlias.lastName = this.user.activeUser!.lastName;
         }).then( async () => {
-            await masterDb.put(
+            await masterDB.put(
                 activePersonAlias._id,
                 activePersonAlias,
                 activePersonAlias._rev
@@ -891,6 +927,7 @@ export default class UserDetails extends Vue {
         // }
         this.debrieferCodes = this.displayCodes ? this.displayCodes : false;
         this.getPhoneTypes();
+        this.getProviderOptions();
     }
 
     private navigateBack() {
