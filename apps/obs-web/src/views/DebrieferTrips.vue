@@ -11,6 +11,7 @@
       :isFullSize="isFullSize"
       :loading="loading"
       :initialSelection="initialSelection"
+      :lookupsMap="lookupsMap"
       @save="save"
       @selectValues="selectValues"
     />
@@ -23,19 +24,22 @@ import {
   createComponent,
   ref,
   watch,
-  onBeforeMount
+  onBeforeMount,
+  onMounted
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex } from 'lodash';
+import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
 
 export default createComponent({
   props: {
-    isFullSize: Boolean
+    isFullSize: Boolean,
+    lookupsMap: Array
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -112,7 +116,8 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopStatus',
         isEditable: true,
-        width: '100'
+        width: '100',
+        codeWidth: '70'
       },
       {
         field: 'tripScore',
@@ -163,7 +168,7 @@ export default createComponent({
         type: 'input',
         key: 'wcgopStateReg',
         isEditable: false,
-        width: '80'
+        width: '100'
       },
       {
         field: 'program-name',
@@ -174,7 +179,8 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopProgramName',
         isEditable: true,
-        width: '150'
+        width: '150',
+        codeWidth: '80'
       },
       {
         field: 'fishery-description',
@@ -186,34 +192,16 @@ export default createComponent({
         lookupField: 'description',
         key: 'wcgopFishery',
         isEditable: true,
-        width: '250'
+        width: '250',
+        codeWidth: '80'
       },
       {
         field: 'firstReceivers-0-dealerName',
         header: 'First Receivers',
-        type: 'toggle',
-        listType: 'fetch',
-        search: true,
-        lookupKey: 'first-receiver',
-        lookupField: 'dealerName',
+        type: 'input',
         key: 'wcgopFR',
-        uniqueKey: '_id',
         isEditable: false,
-        width: '120',
-        popupColumns: [
-          {
-            field: 'dealerName',
-            header: 'Dealer Name',
-            type: 'input',
-            key: 'dealerName'
-          },
-          {
-            field: 'dealerNumber',
-            header: 'Dealer Number',
-            type: 'input',
-            key: 'dealerNumber'
-          }
-        ]
+        width: '120'
       },
       {
         field: 'vessel-captains-0-firstName',
@@ -308,7 +296,7 @@ export default createComponent({
       },
       {
         field: 'departurePort-name',
-        header: 'Departure Port',
+        header: 'Dept Port',
         type: 'toggle',
         listType: 'fetch',
         search: true,
@@ -316,11 +304,12 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopDeparturePort',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '90'
       },
       {
         field: 'returnPort-name',
-        header: 'Return Port',
+        header: 'Ret Port',
         type: 'toggle',
         listType: 'fetch',
         search: true,
@@ -328,7 +317,8 @@ export default createComponent({
         lookupField: 'name',
         key: 'wcgopReturnPort',
         isEditable: true,
-        width: '200'
+        width: '200',
+        codeWidth: '80'
       },
       {
         field: 'fishTickets-0-fishTicketNumber',
@@ -396,13 +386,20 @@ export default createComponent({
 
     onBeforeMount(() => {
       mounted = false;
+      if (state.debriefer.trips.length > 0) {
+          trips.value = state.debriefer.trips;
+        }
+
     });
 
     setColumns();
     watch(() => state.debriefer.program, setColumns);
 
-    watch(() => state.debriefer.trips, () => {
-      populateTrips('trips');
+    watch(() => state.debriefer.observer, async () => {
+      populateTrips('observer');
+    });
+    watch(() => state.debriefer.evaluationPeriod, () => {
+      populateTrips('evalPeriod');
     });
     watch(() => state.debriefer.tripIds, async () => {
       populateTrips('tripIds');
@@ -410,31 +407,30 @@ export default createComponent({
 
     async function populateTrips(type: string) {
       loading.value = true;
-      if (mounted) {
-        if (state.debriefer.trips.length > 0) {
-          trips.value = state.debriefer.trips;
-        }
-      } else {
-        if (type === 'trips') {
-          trips.value = state.debriefer.trips;
+      if (!mounted) {
+        if (type === 'observer') {
+          trips.value = await getTripsByObserverId(state.debriefer.observer);
+        } else if (type === 'evalPeriod') {
+          const evalPeriod = state.debriefer.evaluationPeriod;
+          const observer = state.debriefer.observer;
+          trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
+                                              new Date(evalPeriod.endDate),
+                                              observer);
         } else if (type === 'tripIds') {
           await getTrips();
         }
+        store.dispatch('debriefer/updateTrips', trips.value);
       }
       loading.value = false;
     }
 
     async function getTrips() {
-      const tripsHolder = [];
       try {
         const options: ListOptions = {
           keys: state.debriefer.tripIds
         };
         const result = await masterDB.listWithDocs(options);
-        for (const row of result.rows) {
-          tripsHolder.push(row);
-        }
-        trips.value = tripsHolder;
+        trips.value = result.rows;
       } catch (err) {
         console.log('error');
       }

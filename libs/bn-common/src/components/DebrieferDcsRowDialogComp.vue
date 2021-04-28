@@ -86,15 +86,12 @@ export default createComponent({
       let trip: any = null;
 
       if (!rowData.returnDate) {
-        if (rowData.type === 'child') {
-
-        }
-        const tripIdKey = ["tripId", rowData['legacy-tripId'] ? rowData['legacy-tripId'] : rowData['tripId']];
+        const tripIdKey = ['tripId', rowData['legacy-tripId'] ? rowData['legacy-tripId'] : rowData['tripId']];
         const tripQuery: any = await masterDB.view(
             'obs_web',
             'wcgop_trips_compound_fields',
             {include_docs: true, reduce: false, key: tripIdKey} as any
-        )
+        );
         trip = tripQuery.rows[0] ? tripQuery.rows[0].doc : null;
       }
 
@@ -171,10 +168,6 @@ export default createComponent({
     const formatDate = (date: string) => {
       return moment(date).format('MM/DD/YYYY');
     };
-
-    onMounted(() => {
-    });
-
 
     watch(() => [props.rowData, props.isAfi], (newVal, oldVal) => {
         if (props.rowData) {

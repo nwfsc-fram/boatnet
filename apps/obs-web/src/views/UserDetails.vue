@@ -334,6 +334,15 @@
                         </div>
                 </div>
 
+                <div class="q-pa-sm">
+                    <div class="text-h6">Debriefer Settings</div>
+                    <q-toggle
+                        v-model="debrieferCodes"
+                        label="Display codes"
+                        left-label
+                        @input="updateCodeStatus"
+                    />
+                </div>
             </div>
 
             <q-dialog v-model="deleteConfirm">
@@ -401,7 +410,7 @@ import axios from 'axios';
 
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { AlertState } from '../_store/types/types';
+import { AlertState, DebrieferState } from '../_store/types/types';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { Notify } from 'quasar';
 
@@ -416,6 +425,10 @@ export default class UserDetails extends Vue {
 
     @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
     @Action('setAutoHideMenu', { namespace: 'user'}) private setAutoHideMenu: any;
+
+    @State('debriefer') private debriefer!: DebrieferState;
+    @Getter('displayCodes', { namespace: 'debriefer'} ) private displayCodes: any;
+    @Action('updateDisplayCodes', { namespace: 'debriefer'}) private setDisplayCodes: any;
 
     private contacts: Person[] = [];
 
@@ -449,6 +462,8 @@ export default class UserDetails extends Vue {
     private activePhoneNumber: any;
     private phoneNumberTypes: any[] = [];
 
+    private debrieferCodes?: boolean = false;
+
     constructor() {
         super();
     }
@@ -469,6 +484,10 @@ export default class UserDetails extends Vue {
     private unlinkApexUserName() {
         this.user.activeUser!.apexUserAdminUserName = '';
         this.confirmUnlink = false;
+    }
+
+    private updateCodeStatus(status: any) {
+        this.setDisplayCodes(status);
     }
 
     private setEditContact(emergencyContact: any) {
@@ -906,6 +925,7 @@ export default class UserDetails extends Vue {
         // if (this.$route.name === 'User Config') {
         //     this.getUser();
         // }
+        this.debrieferCodes = this.displayCodes ? this.displayCodes : false;
         this.getPhoneTypes();
         this.getProviderOptions();
     }

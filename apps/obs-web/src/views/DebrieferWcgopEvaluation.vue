@@ -9,6 +9,7 @@
         lookupView="all_wcgop_observers"
         lookupLabel="value"
         lookupValue="id"
+        :emptyMessage="showAll ? 'Observer not found' : 'Observer not found select show all to search entire list'"
         :lookupQueryOptions="observerQueryOptions"
         @select="selectObserver"
       />
@@ -23,7 +24,15 @@
         fill-input
         @filter="filterFn"
         @input="getTripsByDate"
-      />
+      >
+        <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey">
+                No Evaluation Periods
+              </q-item-section>
+            </q-item>
+          </template>
+      </q-select>
       <span v-if="!observerMode">
         <div style="display: inline-block">
           <q-btn
@@ -151,7 +160,7 @@ export default createComponent({
     const observer: any = ref('');
     const showAll: any = ref(false);
 
-    const evaluations: any = ref([]);
+    const evaluations: any = ref(null);
     const evaluationPeriod: any = ref();
 
     const minDate: any = ref('');
@@ -198,22 +207,13 @@ export default createComponent({
       } else {
         store.dispatch('debriefer/updateEvaluationPeriod', {});
       }
-      const trips = await getTripsByDates(
-        new Date(evalPeriod.startDate),
-        new Date(evalPeriod.endDate),
-        observer.value
-      );
-      store.dispatch('debriefer/updateTrips', trips);
     }
 
     async function selectObserver(id: string) {
-      store.dispatch('debriefer/updateEvaluationPeriod', {});
       clearFilters();
       store.dispatch('debriefer/updateObserver', id);
       evaluationPeriod.value = undefined;
-      await getEvaluationPeriods(id);
-      const trips = await getTripsByObserverId(id);
-      store.dispatch('debriefer/updateTrips', trips);
+      evaluations.value = null;
     }
 
     async function closeEvalDialog(evalPeriod: any) {
@@ -267,7 +267,6 @@ export default createComponent({
       }
     }
 
-    useAsync(getEvaluationPeriods(observer.value));
 
     function add() {
       dialogEvalPeriod.value = {};
@@ -299,7 +298,10 @@ export default createComponent({
       clearFilters();
     }
 
-    function filterFn(val: any, update: any) {
+    async function filterFn(val: any, update: any) {
+      if (evaluations.value === null) {
+        await getEvaluationPeriods(observer.value);
+      }
       update(() => {
         const needle = val.toLowerCase();
         evaluations.value = filter(evaluations.value, (option: any) => {
