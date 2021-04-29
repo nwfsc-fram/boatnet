@@ -222,6 +222,8 @@
             </div>
         </transition>
 
+        {{ trip.activeTrip.fishery }}
+
         <div v-if="trip.activeTrip.tripStatus.description === 'closed' || (trip.activeTrip.fishery && trip.activeTrip.returnDate && trip.activeTrip.returnPort && trip.logTrip && (trip.activeTrip.isSelected || trip.activeTrip.isSelected === false))" style="text-align: center">
             <file-uploader
                 label="Logbook Capture"
@@ -753,7 +755,7 @@ export default createComponent({
             return moment(selection.lookupValue).format('MM/DD/YYYY');
         } else {
             if (selection.description !== selection.lookupValue) {
-                return selection.lookupValue;
+                return selection.description;
             } else {
                 return '';
             }
