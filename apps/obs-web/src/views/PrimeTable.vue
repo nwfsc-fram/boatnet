@@ -411,18 +411,9 @@ export default createComponent({
       let updatedRecord: any = {};
 
       // save columns to users column-config docs
-      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
-      if (userColConfig.rows.length > 0) {
-        updatedRecord = userColConfig.rows[0].doc;
-        updatedRecord.columnConfig[tableType] = displayColumns.value;
-      } else {
-        updatedRecord = {
-          columnConfig: {},
-          type: 'column-config',
-          personDocId: state.user.activeUserAlias.personDocId
-        };
-        updatedRecord.columnConfig[tableType] = displayColumns.value;
-      }
+      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: state.user.activeUserAlias.personDocId });
+      updatedRecord = userColConfig.rows[0].doc;
+      updatedRecord.columnConfig[tableType] = displayColumns.value;
       await masterDB.bulk([updatedRecord], true);
     }
 

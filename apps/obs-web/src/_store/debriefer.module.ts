@@ -105,6 +105,9 @@ const getters: GetterTree<DebrieferState, RootState> = {
   },
   displayCodes(getState: DebrieferState) {
     return getState.displayCodes;
+  },
+  program(getState: DebrieferState) {
+    return getState.program;
   }
 };
 
