@@ -442,8 +442,9 @@ export default class UserDetails extends Vue {
 
     @State('debriefer') private debriefer!: DebrieferState;
     @Getter('displayCodes', { namespace: 'debriefer'} ) private displayCodesState: any;
-    @Getter('program', { namespace: 'debriefer'} ) private programState: any;
     @Action('updateDisplayCodes', { namespace: 'debriefer'}) private setDisplayCodes: any;
+    @Getter('program', { namespace: 'debriefer'} ) private programState: any;
+    @Action('updateProgram', { namespace: 'debriefer'}) private setProgram: any;
 
     private contacts: Person[] = [];
 
@@ -503,7 +504,7 @@ export default class UserDetails extends Vue {
     }
 
     private async updateDebrieferConfig(field: string, status: any) {
-        this.setDisplayCodes(status);
+        
         const userColConfig: any = await couchService.masterDB.viewWithDocs(
             'obs_web',
             'debriefer-config',
@@ -515,10 +516,12 @@ export default class UserDetails extends Vue {
     }
 
     private async updateDisplayCodes(status: any) {
+        this.setDisplayCodes(status);
         await this.updateDebrieferConfig('displayCodes', status);
     }
 
     private async updateProgram(status: string) {
+        this.setProgram(status);
         await this.updateDebrieferConfig('program', status)
     }
 
