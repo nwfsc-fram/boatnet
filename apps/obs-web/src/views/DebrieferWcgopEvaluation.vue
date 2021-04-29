@@ -210,8 +210,8 @@ export default createComponent({
     }
 
     async function selectObserver(id: string) {
-      clearFilters();
       store.dispatch('debriefer/updateObserver', id);
+      clearFilters();
       evaluationPeriod.value = undefined;
       evaluations.value = null;
     }

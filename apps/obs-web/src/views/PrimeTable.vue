@@ -411,18 +411,9 @@ export default createComponent({
       let updatedRecord: any = {};
 
       // save columns to users column-config docs
-      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
-      if (userColConfig.rows.length > 0) {
-        updatedRecord = userColConfig.rows[0].doc;
-        updatedRecord.columnConfig[tableType] = displayColumns.value;
-      } else {
-        updatedRecord = {
-          columnConfig: {},
-          type: 'column-config',
-          personDocId: state.user.activeUserAlias.personDocId
-        };
-        updatedRecord.columnConfig[tableType] = displayColumns.value;
-      }
+      const userColConfig: any = await masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: state.user.activeUserAlias.personDocId });
+      updatedRecord = userColConfig.rows[0].doc;
+      updatedRecord.columnConfig[tableType] = displayColumns.value;
       await masterDB.bulk([updatedRecord], true);
     }
 
@@ -536,8 +527,7 @@ export default createComponent({
       tempVal.value = get(data.data, field);
       if (state.debriefer.displayCodes && colInfo.lookupKey && tempVal.value) {
         tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
-      }
-      else if (colInfo.type === 'coordinate') {
+      } else if (colInfo.type === 'coordinate') {
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
         tempVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });

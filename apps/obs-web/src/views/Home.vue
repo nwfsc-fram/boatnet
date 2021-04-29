@@ -476,6 +476,19 @@ export default class Home extends Vue {
       }
       this.buildDesignDoc();
       this.determineNetworStatus();
+
+      // create debriefer-config doc if it doesn't exist already
+      const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
+      const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
+      if (userColConfig.rows.length === 0) {
+        const updatedRecord = {
+          columnConfig: {},
+          type: 'debriefer-config',
+          personDocId: id,
+          displayCodes: false
+        };
+        await couchService.masterDB.bulk([updatedRecord], true);
+      }
   }
 
 }
