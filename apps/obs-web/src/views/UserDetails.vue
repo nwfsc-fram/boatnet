@@ -459,7 +459,7 @@ export default class UserDetails extends Vue {
         {label: 'app', value: 'app', icon: 'smartphone'}
     ];
 
-    private providerOptions: any[] = []
+    private providerOptions: any[] = [];
 
     private roles: any[] = [];
     private editContact: any = {};
@@ -504,7 +504,6 @@ export default class UserDetails extends Vue {
     }
 
     private async updateDebrieferConfig(field: string, status: any) {
-        
         const userColConfig: any = await couchService.masterDB.viewWithDocs(
             'obs_web',
             'debriefer-config',
@@ -522,7 +521,7 @@ export default class UserDetails extends Vue {
 
     private async updateProgram(status: string) {
         this.setProgram(status);
-        await this.updateDebrieferConfig('program', status)
+        await this.updateDebrieferConfig('program', status);
     }
 
     private setEditContact(emergencyContact: any) {
@@ -773,10 +772,10 @@ export default class UserDetails extends Vue {
             'obs_web',
             'all_doc_types',
             { include_docs: true, key: 'third-party-reviewer' } as any
-        )
+        );
         this.providerOptions = providerOptionsQuery.rows.map( (row: any) => {
-            return row.doc.description
-        } )
+            return row.doc.description;
+        });
     }
 
     private async updateUserRoles() {
