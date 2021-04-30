@@ -12,6 +12,37 @@
           <q-space/>
           <q-btn
             flat
+            icon="settings"
+          >
+            <q-menu>
+              <q-list style="width: 225px">
+                <q-item clickable v-close-popup>
+                  <q-toggle
+                    left-label
+                    v-model="displayCodes"
+                    label="Display codes:"
+                    @input="updateDisplayCodes"
+                  />
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <span>Program:</span>
+                  <q-btn-toggle
+                    class="q-ml-md"
+                    v-model="program"
+                    toggle-color="primary"
+                    dense
+                    :options="[
+                      {label: 'A-SHOP', value: 'ashop'},
+                      {label: 'WCGOP', value: 'wcgop'},
+                    ]"
+                    @input="updateProgram"
+                  />
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <q-btn
+            flat
             :icon="show ? 'expand_less' : 'expand_more'"
             @click="show = show ? false : true"
           />
@@ -73,6 +104,7 @@ import TabPanel from 'primevue/tabpanel';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
+import { couchService } from '@boatnet/bn-couch';
 
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 Vue.component('TabPanel', TabPanel);
@@ -91,6 +123,9 @@ export default createComponent({
     const show: any = ref(true);
     const activeParamsTab: any = ref('evaluation');
 
+    const program: any = ref('');
+    const displayCodes: any = ref(false);
+
     watch(() => state.debriefer.observer, () => {
       setDataTab('trips');
       setBottomTab('data');
@@ -103,22 +138,20 @@ export default createComponent({
 
     clearFilters();
 
-    onMounted(() => {
+    onMounted(async () => {
       store.dispatch('debriefer/updateTrips', []);
-    });
+      const displayCodesState = state.debriefer.displayCodes;
+      const programState = state.debriefer.program;
 
-    const program = computed({
-      get: () => {
-        let mode: string = state.debriefer.program;
-        if (!mode) {
-          mode = 'wcgop';
-          store.dispatch('debriefer/updateProgram', mode);
-        }
-        return mode;
-      },
-      set: (val) => {
-        store.dispatch('debriefer/updateProgram', val);
-      }
+      const userColConfig: any = await couchService.masterDB.viewWithDocs(
+            'obs_web',
+            'debriefer-config',
+            { key: state.user.activeUserAlias.personDocId }
+        );
+      const currDoc = userColConfig.rows[0].doc;
+
+      displayCodes.value = displayCodesState ? displayCodesState : currDoc.displayCodes;
+      program.value = programState ? programState : currDoc.program;
     });
 
     function clearFilters() {
@@ -138,8 +171,30 @@ export default createComponent({
       startingDataTab.value = tabName;
     }
 
+    async function updateDebrieferConfig(field: string, status: any) {
+      const userColConfig: any = await couchService.masterDB.viewWithDocs(
+        'obs_web',
+        'debriefer-config',
+        { key: state.user.activeUserAlias.personDocId }
+      );
+      const doc: any = userColConfig.rows[0].doc;
+      doc[field] = status;
+      await couchService.masterDB.bulk([doc], true);
+    }
+
+    async function updateDisplayCodes(status: any) {
+      store.dispatch('debriefer/updateDisplayCodes', status);
+      await updateDebrieferConfig('displayCodes', status);
+    }
+
+    async function updateProgram(status: string) {
+      store.dispatch('debriefer/updateProgram', status);
+      await updateDebrieferConfig('program', status);
+    }
+
     return {
       program,
+      displayCodes,
       startingDataTab,
       topTab,
       bottomTab,
@@ -148,7 +203,10 @@ export default createComponent({
       activeParamsTab,
       redirectTabs,
       setBottomTab,
-      setDataTab
+      setDataTab,
+
+      updateDisplayCodes,
+      updateProgram
     };
   }
 });

@@ -13,7 +13,6 @@
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
-      @cell-edit-init="onCellEditInit"
       :reorderableColumns="true"
       :data-key="uniqueKey"
       :resizableColumns="true"
@@ -76,7 +75,7 @@
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template #body="slotProps">
-          <div>{{ formatValue(slotProps, col) }}</div>
+          <div :style="col.field !== 'notes' ? 'white-space:pre-wrap;' : ''">{{ formatValue(slotProps, col) }}</div>
           <q-popup-edit
             v-if="col.isEditable"
             v-model="tempVal"
@@ -98,11 +97,21 @@
               dense
               autofocus
             />
-            <Calendar
+            <q-input
               v-else-if="col.type === 'date'"
-              v-model="tempVal"
-              appendTo="body"
-            />
+              v-model="tempVal">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-date v-model="tempVal" mask="MM/DD/YYYY HH:mm">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Set" color="primary" flat></q-btn>
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+            </q-input>
             <q-select
               v-if="col.type === 'toggle' && col.listType === 'fetch'"
               v-model="tempVal"
@@ -531,6 +540,8 @@ export default createComponent({
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
         tempVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+      } else if (colInfo.type === 'date') {
+        tempVal.value = moment(tempVal.value).format('MM/DD/YYYY HH:mm');
       }
       if (colInfo.type === 'toggle' && colInfo.listType === 'fetch') {
         await populateLookupsList(colInfo);
