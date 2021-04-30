@@ -255,6 +255,7 @@ export default class Home extends Vue {
               couchAlias.lastName = this.user.activeUser!.lastName;
               couchAlias.personDocId = this.user.activeUser!._id;
               couchAlias.roles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
+              couchAlias.providerAssociations = this.user.activeUser.providerAssociations ? this.user.activeUser.providerAssociations : [];
 
               await masterDb.put(
                 couchAlias._id,
@@ -286,7 +287,8 @@ export default class Home extends Vue {
               roles: JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)),
               isActive: true,
               isWcgop: this.user.activeUser!.isWcgop ? this.user.activeUser!.isWcgop : true,
-              isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true
+              isAshop: this.user.activeUser!.isAshop ? this.user.activeUser!.isAshop : true,
+              providerAssociations: this.user.activeUser.providerAssociations ? this.user.activeUser.providerAssociations : []
           };
           couchService.masterDB.post(newAlias).then(
               setTimeout( () => {

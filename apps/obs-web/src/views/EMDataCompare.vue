@@ -337,26 +337,24 @@ export default createComponent({
 
       // apiCatch = await getCatchApiCatch(parseInt(tripNum.value, 10));
 
-      const masterDb = couchService.masterDB;
+      const masterDB = couchService.masterDB;
       const queryOptions = {
         reduce: false,
         include_docs: true,
         key: apiTrip.tripNum
       };
 
-      // const expansionResultsQuery = await masterDb.view(
+      // const expansionResultsQuery = await masterDB.view(
       //   'TripsApi',
       //   'expansion_results',
       //   queryOptions
       // );
 
-      const minimalExpansionResultsQuery = await masterDb.view(
+      const minimalExpansionResultsQuery = await masterDB.view(
         'TripsApi',
         'minimal_expansion_results',
         queryOptions
-      )
-
-
+      );
 
       apiCatch = minimalExpansionResultsQuery.rows[0].doc;
 
@@ -414,13 +412,13 @@ export default createComponent({
     const wcgopSpeciesCodes: any = [];
     const pacfinSpeciesCodes: any = [];
     const getSpeciesCodes = async () => {
-      const masterDb = couchService.masterDB;
+      const masterDB = couchService.masterDB;
       const queryOptions = {
         reduce: false,
         include_docs: false
       };
 
-      const speciesCodesQuery = await masterDb.view(
+      const speciesCodesQuery = await masterDB.view(
         'obs_web',
         'em-species-codes',
         queryOptions

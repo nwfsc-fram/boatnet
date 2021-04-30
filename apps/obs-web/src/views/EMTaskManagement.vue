@@ -22,6 +22,7 @@
                 <q-td key="tripNum" :props="props">{{ getAttribute(props.row.tripNum) }}</q-td>
                 <q-td key="vesselName" :props="props">{{ getAttribute(props.row.vessel.vesselName) }}</q-td>
                 <q-td key="vesselId" :props="props" >{{ getVesselId(props.row) }}</q-td>
+                <q-td key="thirdPartyReviewer" :props="props" >{{ getReviewer(props.row) }}</q-td>
                 <q-td key="returnDate" :props="props" >{{ getAttribute(props.row.returnDate, 'date') }}</q-td>
                 <q-td key="stage" :props="props" >{{ getAttribute(props.row.stage) }}</q-td>
                 <q-td key="revision" :props="props" >{{ getAttribute(props.row.revision, 'revision') }}</q-td>
@@ -71,6 +72,7 @@ export default createComponent({
             {name: 'tripNum', label: 'Trip #', field: 'tripNum', required: false, align: 'left', sortable: true},
             {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: false, align: 'left', sortable: true},
             {name: 'vesselId', label: 'Vessel Id', field: 'vesselId', required: false, align: 'left', sortable: true},
+            {name: 'thirdPartyReviewer', label: 'Reviewer', field: 'thirdPartyReviewer', required: false, align: 'left', sortable: true},
             {name: 'returnDate', label: 'End Date', field: 'returnDate', required: false, align: 'left', sortable: true},
             {name: 'stage', label: 'Stage', field: 'stage', required: false, align: 'left', sortable: true},
             {name: 'revision', label: 'Revisions l.b./rv.', field: 'revision', required: false, align: 'center', sortable: true},
@@ -87,6 +89,10 @@ export default createComponent({
         const getVesselId = (row: any) => {
             return row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber;
         };
+
+        const getReviewer = (row: any) => {
+            return row.vessel.thirdPartyReviewer ? row.vessel.thirdPartyReviewer.description : '';
+        }
 
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
@@ -232,7 +238,21 @@ export default createComponent({
                 }
 
                 for (const trip of trips) {
-                    activeTasks.push(trip);
+                    if (
+                        (
+                            state.user.userRoles.includes('provider')
+                            && trip.vessel.thirdPartyReviewer
+                            && state.user.activeUser.providerAssociations
+                            && state.user.activeUser.providerAssociations.includes(trip.vessel.thirdPartyReviewer.description)
+                        )
+                        ||
+                        (
+                            state.user.userRoles.includes('staff')
+                            || state.user.userRoles.includes('data_steward')
+                        )
+                    ) {
+                        activeTasks.push(trip);
+                    }
                 }
 
                 if (state.user.showOpenEmTrips) {
@@ -260,7 +280,7 @@ export default createComponent({
         watch(() => state.user.showOpenEmTrips, getTripsWithCaptures);
 
         return {
-            activeTasks, columns, selected, pagination, getVesselId, getAttribute, transferring, navigateTo
+            activeTasks, columns, selected, pagination, getReviewer, getVesselId, getAttribute, transferring, navigateTo
         };
 
     }

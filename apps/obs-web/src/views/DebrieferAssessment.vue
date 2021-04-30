@@ -8,7 +8,6 @@
                         Vessels: <b>{{ uniqueVessels }}</b>&nbsp;
                         Trips: <b>{{ debriefer.trips.length }}</b>&nbsp;
                         Hauls: <b>{{ totalHauls }}</b>
-                        {{ samplingProcedures }} | {{ catchCategories }}
                     </div>
                 </q-card-section>
             </q-card>
@@ -110,29 +109,29 @@ export default createComponent({
             'wcgop',
             'all-operations',
             {include_docs: true, keys: operationIDs} as any
-        )
+        );
         const operationDocs = operations.rows.map( (row: any) => row.doc );
         samplingProcedures.value = jp.query(operationDocs, '$..observerTotalCatch.weightMethod.description');
         samplingProcedures.value = uniq(samplingProcedures.value.map( (row: any) => row.toLowerCase().trim() ));
         if (samplingProcedures.value.find( (row: any) => row === 'extrapolation (ll)' )) {
             samplingProcedures.value.push('extrapolation');
-        };
+        }
 
         catchCategories.value = jp.query(operationDocs, '$..catches[*].weightMethod.description');
         catchCategories.value = uniq(catchCategories.value.map( (row: any) => row.toLowerCase().trim() ));
         if (catchCategories.value.find( (row: any) => row === 'length/weight' )) {
             catchCategories.value.push('phlb l/w conversion');
-        };
+        }
         if (catchCategories.value.find( (row: any) => row === 'extrapolation (ll)' )) {
             catchCategories.value.push('extrapolation');
-        };
+        }
         if (catchCategories.value.find( (row: any) => row === 'phlb length weight extrapolation' )) {
             catchCategories.value.push('phlb l/w extrapolation');
-        };
+        }
         if (catchCategories.value.find( (row: any) => row === 'actual weight  - whole haul' )) {
             catchCategories.value.push('actual weight - whole haul');
         }
-    }
+    };
 
     const observerMode = !state.user.userRoles.includes('debriefer') || state.user.observerMode;
 
@@ -212,7 +211,7 @@ export default createComponent({
             if (assessments[0]) {
                 getQuestions().then( () => {
                     assessment.value = assessments[0];
-                })
+                });
             } else {
                 const newAssessment: any = {
                     type: 'observer-assessment',
@@ -236,7 +235,7 @@ export default createComponent({
                     ).then( async (response) => {
                         assessment.value = await masterDB.get(response.id);
                     });
-                })
+                });
             }
         } else {
             assessment.value = null;
