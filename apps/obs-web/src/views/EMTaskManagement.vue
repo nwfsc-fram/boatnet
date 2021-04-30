@@ -237,13 +237,13 @@ export default createComponent({
                     }
                 }
 
-                for (const trip of trips) {
+                const displayTrip = (currentTrip: any) => {
                     if (
                         (
                             state.user.userRoles.includes('provider')
-                            && trip.vessel.thirdPartyReviewer
+                            && currentTrip.vessel.thirdPartyReviewer
                             && state.user.activeUser.providerAssociations
-                            && state.user.activeUser.providerAssociations.includes(trip.vessel.thirdPartyReviewer.description)
+                            && state.user.activeUser.providerAssociations.includes(currentTrip.vessel.thirdPartyReviewer.description)
                         )
                         ||
                         (
@@ -251,6 +251,14 @@ export default createComponent({
                             || state.user.userRoles.includes('data_steward')
                         )
                     ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                for (const trip of trips) {
+                    if ( displayTrip(trip)) {
                         activeTasks.push(trip);
                     }
                 }
@@ -268,7 +276,9 @@ export default createComponent({
                         result.stage = 'open trip';
                         result.status = 'trip has not been closed';
                         result.statusDate = result.updatedDate ? result.updatedDate : result.createdDate;
-                        activeTasks.unshift(result);
+                        if (displayTrip(result)) {
+                            activeTasks.unshift(result);
+                        }
                         }
                 }
                 transferring.value = false;
