@@ -171,7 +171,7 @@ export default createComponent({
                 header: 'Start location',
                 type: 'coordinate',
                 key: 'wcgopOpStartLoc',
-                width: '275',
+                width: '150',
                 isEditable: true,
             },
             {
@@ -188,7 +188,7 @@ export default createComponent({
                 header: 'End location',
                 type: 'coordinate',
                 key: 'wcgopOpEndLoc',
-                width: '275',
+                width: '150',
                 isEditable: true,
             },
             {

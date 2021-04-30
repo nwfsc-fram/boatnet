@@ -409,7 +409,7 @@ export default createComponent({
       loading.value = true;
       if (!mounted) {
         if (type === 'observer') {
-          trips.value = await getTripsByObserverId(state.debriefer.observer);
+          trips.value = [];
         } else if (type === 'evalPeriod') {
           const evalPeriod = state.debriefer.evaluationPeriod;
           const observer = state.debriefer.observer;

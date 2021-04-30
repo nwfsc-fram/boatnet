@@ -218,7 +218,7 @@ export default createComponent({
 
     async function closeEvalDialog(evalPeriod: any) {
       evaluationPeriod.value = formatEvaluationPeriod(evalPeriod);
-      await getEvaluationPeriods(observer.value[0]);
+      await getEvaluationPeriods(observer.value);
     }
 
     function formatEvaluationPeriod(evalPeriod: any) {
