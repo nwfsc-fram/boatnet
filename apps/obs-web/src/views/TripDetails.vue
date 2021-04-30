@@ -753,7 +753,7 @@ export default createComponent({
             return moment(selection.lookupValue).format('MM/DD/YYYY');
         } else {
             if (selection.description !== selection.lookupValue) {
-                return selection.description;
+                return '';
             } else {
                 return '';
             }
