@@ -41,8 +41,14 @@
         />
         <q-spinner-radio v-if="isSyncing" color="green-2" size="2em" />
         <span v-if="this.$router.currentRoute.name === 'EM Task Management'">
-          <q-btn v-if="!showOpenEmTrips" color="primary" @click="toggleShowOpenTrips">Show Open Em Trips</q-btn>
-          <q-btn v-else style="background: white; color: #007EC6" @click="toggleShowOpenTrips">Hide Open Em Trips</q-btn>
+          <span v-if="showOpenEmTrips">
+            <span class="display-message">Displaying Open and Closed Trips</span>
+            <q-btn style="background: white; color: #007EC6" @click="toggleShowOpenTrips">Hide Open Em Trips</q-btn>
+          </span>
+          <span v-else>
+            <span class="display-message">Displaying Closed Trips Only</span>
+            <q-btn color="primary" @click="toggleShowOpenTrips">Show Open Em Trips</q-btn>
+          </span>
         </span>
       </q-toolbar>
     </q-header>
@@ -661,5 +667,10 @@ export default class DefaultLayout extends Vue {
 
 .q-field__native {
   font-weight: bold !important;
+}
+
+.display-message {
+  font-size: 9pt;
+  margin-right: 1em;
 }
 </style>
