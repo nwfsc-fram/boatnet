@@ -92,7 +92,7 @@ export default createComponent({
 
     onMounted(async () => {
       // load column configurations from couch into state
-      const result: any = await masterDB.viewWithDocs('obs_web', 'column-config', { key: state.user.activeUserAlias.personDocId });
+      const result: any = await masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: state.user.activeUserAlias.personDocId });
       if (result.rows.length > 0) {
         store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
       }

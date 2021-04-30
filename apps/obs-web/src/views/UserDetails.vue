@@ -336,12 +336,26 @@
 
                 <div class="q-pa-sm">
                     <div class="text-h6">Debriefer Settings</div>
-                    <q-toggle
-                        v-model="debrieferCodes"
-                        label="Display codes"
-                        left-label
-                        @input="updateCodeStatus"
-                    />
+                    <div>
+                        <q-toggle
+                            v-model="debrieferCodes"
+                            label="Display codes"
+                            left-label
+                            @input="updateDisplayCodes"
+                        />
+                    </div>
+                    <div>
+                        <span>Program: </span>
+                        <q-btn-toggle
+                            v-model="program"
+                            toggle-color="primary"
+                            :options="[
+                                {label: 'WCGOP', value: 'wcgop'},
+                                {label: 'ASHOP', value: 'ashop'},
+                            ]"
+                            @input="updateProgram"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -427,8 +441,10 @@ export default class UserDetails extends Vue {
     @Action('setAutoHideMenu', { namespace: 'user'}) private setAutoHideMenu: any;
 
     @State('debriefer') private debriefer!: DebrieferState;
-    @Getter('displayCodes', { namespace: 'debriefer'} ) private displayCodes: any;
+    @Getter('displayCodes', { namespace: 'debriefer'} ) private displayCodesState: any;
     @Action('updateDisplayCodes', { namespace: 'debriefer'}) private setDisplayCodes: any;
+    @Getter('program', { namespace: 'debriefer'} ) private programState: any;
+    @Action('updateProgram', { namespace: 'debriefer'}) private setProgram: any;
 
     private contacts: Person[] = [];
 
@@ -463,6 +479,7 @@ export default class UserDetails extends Vue {
     private phoneNumberTypes: any[] = [];
 
     private debrieferCodes?: boolean = false;
+    private program?: string = '';
 
     constructor() {
         super();
@@ -486,8 +503,25 @@ export default class UserDetails extends Vue {
         this.confirmUnlink = false;
     }
 
-    private updateCodeStatus(status: any) {
+    private async updateDebrieferConfig(field: string, status: any) {
+        const userColConfig: any = await couchService.masterDB.viewWithDocs(
+            'obs_web',
+            'debriefer-config',
+            { key: this.user.activeUserAlias.personDocId }
+        );
+        const doc: any = userColConfig.rows[0].doc;
+        doc[field] = status;
+        await couchService.masterDB.bulk([doc], true);
+    }
+
+    private async updateDisplayCodes(status: any) {
         this.setDisplayCodes(status);
+        await this.updateDebrieferConfig('displayCodes', status);
+    }
+
+    private async updateProgram(status: string) {
+        this.setProgram(status);
+        await this.updateDebrieferConfig('program', status);
     }
 
     private setEditContact(emergencyContact: any) {
@@ -741,7 +775,7 @@ export default class UserDetails extends Vue {
         );
         this.providerOptions = providerOptionsQuery.rows.map( (row: any) => {
             return row.doc.description;
-        } );
+        });
     }
 
     private async updateUserRoles() {
@@ -921,11 +955,21 @@ export default class UserDetails extends Vue {
         }
     }
 
-    private mounted() {
+    private async mounted() {
         // if (this.$route.name === 'User Config') {
         //     this.getUser();
         // }
-        this.debrieferCodes = this.displayCodes ? this.displayCodes : false;
+
+        // init debriefer config settings
+        const userColConfig: any = await couchService.masterDB.viewWithDocs(
+            'obs_web',
+            'debriefer-config',
+            { key: this.user.activeUserAlias.personDocId }
+        );
+        const currDoc = userColConfig.rows[0].doc;
+        this.debrieferCodes = this.displayCodesState ? this.displayCodesState : currDoc.displayCodes;
+        this.program = this.programState ? this.programState : currDoc.program;
+
         this.getPhoneTypes();
         this.getProviderOptions();
     }
