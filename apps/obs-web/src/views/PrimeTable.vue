@@ -536,8 +536,7 @@ export default createComponent({
       tempVal.value = get(data.data, field);
       if (state.debriefer.displayCodes && colInfo.lookupKey && tempVal.value) {
         tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
-      }
-      else if (colInfo.type === 'coordinate') {
+      } else if (colInfo.type === 'coordinate') {
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
         tempVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });

@@ -443,7 +443,7 @@ export default class UserDetails extends Vue {
         {label: 'app', value: 'app', icon: 'smartphone'}
     ];
 
-    private providerOptions: any[] = []
+    private providerOptions: any[] = [];
 
     private roles: any[] = [];
     private editContact: any = {};
@@ -738,10 +738,10 @@ export default class UserDetails extends Vue {
             'obs_web',
             'all_doc_types',
             { include_docs: true, key: 'third-party-reviewer' } as any
-        )
+        );
         this.providerOptions = providerOptionsQuery.rows.map( (row: any) => {
-            return row.doc.description
-        } )
+            return row.doc.description;
+        } );
     }
 
     private async updateUserRoles() {
