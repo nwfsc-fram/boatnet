@@ -39,13 +39,23 @@
               <div>Display Columns</div>
             </template>
           </MultiSelect>
-          <q-icon
-            v-if="!isFullSize"
-            style="float: right"
-            name="open_in_new"
-            size="md"
-            v-on:click="openNewDebriefingTab"
-          />
+          <div style="float: right">
+            <q-btn
+              flat
+              icon="mdi-filter-off-outline"
+              @click="clearFilters"
+            >
+              <q-tooltip>Clear Filters</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="!isFullSize"
+              flat
+              icon="open_in_new"
+              @click="openNewDebriefingTab"
+            >
+              <q-tooltip>Expand</q-tooltip>
+            </q-btn>
+          </div>
         </div>
         <div style="text-align:left">
          <q-btn-toggle
@@ -171,6 +181,8 @@
             :style="'width: 100%; background-color: transparent'"
             v-model="filters[col.field]"
             :options="col.list ? col.list : filterOptions[col.header]"
+            :optionLabel="state.debriefer.displayCodes && col.listType === 'fetch' ? 'label' : null"
+            :optionValue="state.debriefer.displayCodes && col.listType === 'fetch' ? 'value' : null"
             appendTo="body"
             :filter="true"
           />
@@ -363,7 +375,7 @@ export default createComponent({
             filterList[col.header] = uniq(filterList[col.header]);
             if (state.debriefer.displayCodes && col.lookupKey) {
               for (let i = 0; i < filterList[col.header].length; i++) {
-                filterList[col.header][i] = converToCode(col.lookupKey, filterList[col.header][i]);
+                filterList[col.header][i] = {label: converToCode(col.lookupKey, filterList[col.header][i]), value: filterList[col.header][i]};
               }
             }
             filterList[col.header] = filterList[col.header].sort();
@@ -388,6 +400,13 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
+
+    function clearFilters() {
+      filters.value = {};
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = filters.value;
+      store.dispatch('debriefer/updateFilters', currFilters);
+    }
 
     function reorderColumn(event: any) {
       displayColumns.value = arrayMove(displayColumns.value, event.dragIndex - 1, event.dropIndex - 1);
@@ -779,7 +798,7 @@ export default createComponent({
       filterOptions,
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
       reorderColumn, resizeColumn,
-      init, tempVal
+      init, tempVal, clearFilters
     };
   },
 });

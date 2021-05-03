@@ -14,6 +14,7 @@
             flat
             icon="settings"
           >
+            <q-tooltip>Settings</q-tooltip>
             <q-menu>
               <q-list style="width: 225px">
                 <q-item clickable v-close-popup>
@@ -45,7 +46,9 @@
             flat
             :icon="show ? 'expand_less' : 'expand_more'"
             @click="show = show ? false : true"
-          />
+          >
+            <q-tooltip>Expand / hide</q-tooltip>
+          </q-btn>
       </q-tabs>
       <q-tab-panels v-model="topTab" animated :keep-alive="true">
       <q-tab-panel name="evaluation" v-show="show">

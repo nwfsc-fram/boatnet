@@ -47,7 +47,7 @@ export default createComponent({
         {
           name: 'tripId',
           required: true,
-          header: 'Trip #',
+          header: 'Trip',
           align: 'left',
           field: 'tripId',
           width: '150',
@@ -57,7 +57,7 @@ export default createComponent({
         {
           name: 'operationNum',
           required: true,
-          header: 'Haul #',
+          header: 'Haul',
           align: 'left',
           field: 'operationNum',
           width: '80',
@@ -66,7 +66,7 @@ export default createComponent({
         {
           name: 'catchNum',
           required: true,
-          header: 'Catch #',
+          header: 'Catch',
           align: 'left',
           field: 'catchNum',
           width: '80',

@@ -28,13 +28,23 @@
                 <div>Display Columns</div>
               </template>
             </MultiSelect>
-            <q-icon
-            v-if="!isFullSize"
-            style="float: right"
-            name="open_in_new"
-            size="md"
-            v-on:click="openNewDebriefingTab"
-          />
+            <div style="float: right">
+              <q-btn
+                flat
+                icon="mdi-filter-off-outline"
+                @click="clearFilters"
+              >
+                <q-tooltip>Clear Filters</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-if="!isFullSize"
+                flat
+                icon="open_in_new"
+                @click="openNewDebriefingTab"
+              >
+                <q-tooltip>Expand</q-tooltip>
+              </q-btn>
+            </div>
           </span>
           <span style="position:relative; bottom: 2px">
             &nbsp;
@@ -205,6 +215,25 @@ export default createComponent ({
 
     const masterDB: Client<any> = couchService.masterDB;
 
+    let dbProgram: string = '';
+
+    onMounted(async ()=> {
+      const userColConfig: any = await couchService.masterDB.viewWithDocs(
+            'obs_web',
+            'debriefer-config',
+            { key: state.user.activeUserAlias.personDocId }
+        );
+      const currDoc = userColConfig.rows[0].doc;
+      dbProgram = currDoc.program;
+    })
+
+    function clearFilters() {
+      filters.value = {};
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = filters.value;
+      store.dispatch('debriefer/updateFilters', currFilters);
+    }
+
     function deSelect() {
       editingRow.value = '';
       editingCol.value = '';
@@ -307,7 +336,8 @@ export default createComponent ({
           lookupField = 'commonNames[0]';
         }
       }
-      const results = await getCouchLookupInfo(props.program ? props.program : '', 'obs_web', key, [lookupField]);
+      const programState = state.debriefer.program;
+      const results = await getCouchLookupInfo(programState ? programState : dbProgram, 'obs_web', key, [lookupField]);
       for (let i = 0; i < results.length; i++) {
         let label = get(results[i].doc, lookupField);
         if (state.debriefer.displayCodes && label) {
@@ -385,6 +415,7 @@ export default createComponent ({
       sortedList,
       state,
 
+      clearFilters,
       collapse,
       deSelect,
       displayData,
