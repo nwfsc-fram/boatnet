@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div style="text-align: right">
-      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
-    </div>
     <div class="q-gutter-y-md">
       <q-card v-if="showData">
         <q-tabs

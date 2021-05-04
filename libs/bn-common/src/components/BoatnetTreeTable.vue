@@ -163,7 +163,7 @@
 import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
-import { cloneDeep, find, get, remove, uniq } from 'lodash';
+import { cloneDeep, find, get, orderBy, remove, uniq } from 'lodash';
 
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
@@ -288,6 +288,7 @@ export default createComponent ({
         } else {
           currCols.value = stateDisplayCols[tableType];
         }
+        currCols.value = orderBy(currCols.value, ['order']);
         return currCols.value;
       },
       set: (val) => {

@@ -323,9 +323,9 @@ export default createComponent({
       const initFilters = state.debriefer.filters[tableType];
       filters.value = initFilters ? initFilters : {};
       if (tableType === 'wcgop-Operations' && displayMode === trawlMode) {
-        displayColumns.value = setTrawlMode(stateDisplayCols[tableType]);
+        displayColumns.value = setTrawlMode(displayColumns.value);
       } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
-        displayColumns.value = setFixedGearMode(stateDisplayCols[tableType]);
+        displayColumns.value = setFixedGearMode(displayColumns.value);
       }
     });
 
