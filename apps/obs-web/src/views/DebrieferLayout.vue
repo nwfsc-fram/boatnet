@@ -4,8 +4,7 @@
           v-model="topTab"
           align="left"
           dense
-          class="q-ma-sm bg-primary text-white shadow-2"
-          narrow-indicator
+          class="q-mt-sm bg-primary text-white shadow-2"
         >
           <q-tab name="evaluation" label="Evaluation" />
           <q-tab name="search" label="Search" />
@@ -63,14 +62,14 @@
           v-model="bottomTab"
           align="left"
           dense
-          class="q-ma-sm bg-primary text-white shadow-2"
+          class="bg-primary text-white shadow-2"
           narrow-indicator
         >
           <q-tab name="data" label="Data" />
           <q-tab name="errors" label="Errors" />
           <q-tab name="summary" label="Summary" />
-          <q-tab name="assessement" label="Assessement" />
-          <q-tab name="dcs" label="DCS" />
+          <q-tab v-if="topTab === 'evaluation'" name="assessement" label="Assessement" />
+          <q-tab v-if="topTab === 'evaluation'" name="dcs" label="DCS" />
         </q-tabs>
 
     <q-tab-panels v-model="bottomTab" animated>

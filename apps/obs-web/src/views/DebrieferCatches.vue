@@ -179,7 +179,17 @@ export default createComponent({
           lookupView: 'discard-reason',
           lookupField: 'description',
           order: 12
-        }
+        },
+        {
+          name: 'raio',
+          align: 'left',
+          header: 'Ratio',
+          field: 'ratio',
+          type: 'double',
+          width: '100',
+          isEditable: true,
+          order: 13
+        },
     ];
 
     watch(() => state.debriefer.selectedTrips, getCatches);
@@ -354,7 +364,6 @@ export default createComponent({
     async function save(newRecord: any) {
       store.dispatch('debriefer/updateCatches', WcgopCatches.value);
       const masterDB: Client<any> = couchService.masterDB;
-      const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'});
 
       const columnInfo = newRecord.data.column;
       const recordInfo = newRecord.data.node;

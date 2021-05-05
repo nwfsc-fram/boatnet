@@ -63,7 +63,7 @@
           'width: ' + col.codeWidth + 'px' :
           'width: ' + col.width + 'px'"
         :style="'width:' +  col.width + 'px'"
-        filterMatchMode="contains"
+        :filterMatchMode="col.type === 'toggle-search' ? 'in' : 'startsWith'"
         headerClass="sticky top table-cell"
         bodyClass="table-cell"
       >
