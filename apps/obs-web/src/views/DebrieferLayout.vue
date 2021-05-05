@@ -49,7 +49,7 @@
             <q-tooltip>Expand / hide</q-tooltip>
           </q-btn>
       </q-tabs>
-      <q-tab-panels v-model="topTab" animated :keep-alive="true">
+      <q-tab-panels v-model="topTab" animated>
       <q-tab-panel name="evaluation" v-show="show">
         <app-debriefer-wcgop-evaluation class="z-index5 1"/>
       </q-tab-panel>
