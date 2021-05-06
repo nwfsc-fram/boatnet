@@ -12,7 +12,7 @@
             <template #header>
                 <div>Vessels</div>
             </template>
-            <template #empty>No Data</template>
+            <template #empty>No trips selected on the data page</template>
             <Column selectionMode="single" headerStyle="width: 3em"></Column>
             <Column field="vessel" header="Vessel"></Column>
             <Column field="tripCnt" header="Trips"></Column>
@@ -454,10 +454,15 @@ export default createComponent({
 
             for (const vessel of Object.keys(vesselGroups)) {
                 const currVesselInfo = vesselGroups[vessel];
+                const tripIds = jp.query(currVesselInfo, '$[*].legacy.tripId');
 
                 let operationIds = jp.query(currVesselInfo , '$[*].operationIDs');
                 operationIds = flattenDeep(operationIds);
-                const operations = state.debriefer.operations;
+                const operations = filter(state.debriefer.operations, (operation: any) => {
+                    if (tripIds.includes(operation.legacy.tripId)) {
+                        return operation;
+                    }
+                });
 
                 let gearType = jp.query(operations, '$[*].gearType.description');
                 gearType = uniq(gearType).join(',');

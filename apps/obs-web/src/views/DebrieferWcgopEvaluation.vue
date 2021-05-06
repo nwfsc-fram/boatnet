@@ -181,6 +181,7 @@ export default createComponent({
 
     function clearFilters() {
       store.dispatch('debriefer/updateSelectedTrips', []);
+      store.dispatch('debriefer/setTripIds', []);
       store.dispatch('debriefer/updateOperations', []);
       store.dispatch('debriefer/updateSelectedOperations', []);
       store.dispatch('debriefer/updateFilters', {});
