@@ -486,8 +486,6 @@ export default createComponent({
     }
 
     function selectValues(data: any) {
-      console.log('selected valuesss')
-      console.log(data)
       store.dispatch('debriefer/updateSelectedTrips', data);
       getOperations();
     }
@@ -503,7 +501,6 @@ export default createComponent({
         try {
           const operationOptions: ListOptions = { keys: operationIds };
           const operationDocs = await masterDB.listWithDocs(operationOptions);
-          console.log('row count ' + operationDocs.rows.length)
           ops = operationDocs.rows;
         } catch (err) {
           console.log('cannot fetch operation docs ' + err);

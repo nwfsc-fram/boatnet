@@ -95,15 +95,15 @@ export default createComponent({
       const result = await masterDB.viewWithDocs(
         'obs_web',
         'ashop-cruise',
-        { 
+        {
           limit: 50,
           start_key: '2020-06-03T19:32:00.000Z',
           end_key: '2021-05-06T19:32:00.000Z',
-        }  
+        }
       );
-      cruises.value = jp.query(result.rows, '$[*].doc')
+      cruises.value = jp.query(result.rows, '$[*].doc');
       cruises.value = orderBy(cruises.value, ['statusDate'], ['desc']);
-    })
+    });
 
     async function selectValues(data: any) {
       if (data) {
@@ -118,8 +118,6 @@ export default createComponent({
     }
 
     async function save(data: any) {
-      console.log('save')
-      console.log(data)
       const result = await masterDB.put(data._id, data, data._rev);
       const index = findIndex(cruises.value, { _id: data._id });
       const updatedvalue: any[] = cloneDeep(cruises.value);

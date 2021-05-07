@@ -15,7 +15,7 @@ export interface DebrieferState {
   program: string;
   displayCodes: boolean;
   cruises: [];
-  selectedCruises: [],
+  selectedCruises: [];
   observer: string;
   evaluationPeriod: any;
   tripIds: string[];

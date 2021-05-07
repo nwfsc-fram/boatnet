@@ -215,7 +215,7 @@ export default createComponent ({
 
     const masterDB: Client<any> = couchService.masterDB;
 
-    let dbProgram: string = state.debriefer.program;
+    const dbProgram: string = state.debriefer.program;
 
     function clearFilters() {
       filters.value = {};
