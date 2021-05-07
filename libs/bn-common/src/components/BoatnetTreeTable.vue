@@ -215,17 +215,7 @@ export default createComponent ({
 
     const masterDB: Client<any> = couchService.masterDB;
 
-    let dbProgram: string = '';
-
-    onMounted(async ()=> {
-      const userColConfig: any = await couchService.masterDB.viewWithDocs(
-            'obs_web',
-            'debriefer-config',
-            { key: state.user.activeUserAlias.personDocId }
-        );
-      const currDoc = userColConfig.rows[0].doc;
-      dbProgram = currDoc.program;
-    })
+    let dbProgram: string = state.debriefer.program;
 
     function clearFilters() {
       filters.value = {};
