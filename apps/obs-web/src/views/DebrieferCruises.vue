@@ -24,6 +24,7 @@ import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex, orderBy } from 'lodash';
+import moment from 'moment';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
@@ -79,8 +80,9 @@ export default createComponent({
         listType: 'fetch',
         lookupKey: 'status',
         lookupField: 'description',
-        key: 'ashopStatus',
-        isEditable: true
+        isEditable: true,
+        key: 'ashopStatuses',
+        
       },
       {
         field: 'statusDate',
@@ -92,13 +94,14 @@ export default createComponent({
     ];
 
     onMounted(async () => {
+      const present: string = moment().format();
       const result = await masterDB.viewWithDocs(
         'obs_web',
         'ashop-cruise',
         {
           limit: 50,
-          start_key: '2020-06-03T19:32:00.000Z',
-          end_key: '2021-05-06T19:32:00.000Z',
+          start_key: '2020-01-01T00:00:00.000Z',
+          end_key: present,
         }
       );
       cruises.value = jp.query(result.rows, '$[*].doc');
