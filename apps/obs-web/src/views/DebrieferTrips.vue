@@ -56,28 +56,42 @@ export default createComponent({
     const initialSelection: any = state.debriefer && state.debriefer.selectedTrips ? state.debriefer.selectedTrips : [];
 
     const ashopColumns = [
-      { field: 'legacy-cruiseNum', header: 'Cruise', type: 'number', key: 'ashopCruiseNum1' },
-      { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
+      {
+        field: 'legacy-cruiseNum',
+        header: 'Cruise',
+        type: 'number',
+        key: 'ashopCruiseNum1',
+        width: '100'
+      },
+      {
+        field: 'tripNum',
+        header: 'Trip',
+        type: 'number',
+        key: 'ashopTripNum',
+        width: '80'
+      },
       {
         field: 'crewSize',
         header: 'Crew Size',
         type: 'number',
-        key: 'ashopCrewSize'
+        key: 'ashopCrewSize',
+        width: '120'
       },
       {
         field: 'departurePort-name',
-        header: 'Departure Port',
+        header: 'Dept Port',
         type: 'toggle',
         listType: 'fetch',
         lookupKey: 'port',
         lookupField: 'name',
         isEditable: true,
-        key: 'ashopDeparturePort'
+        key: 'ashopDeparturePort',
+        width: '160'
       },
       {
           field: 'departureLocation-coordinates',
           displayField: ['departureLocation-coordinates-0', 'departureLocation-coordinates-1'],
-          header: 'Departure Loc',
+          header: 'Dept Loc',
           type: 'coordinate',
           key: 'ashopDeptLoc',
           width: '150',
@@ -86,10 +100,11 @@ export default createComponent({
       // fish in hold at start?
       {
         field: 'departureDate',
-        header: 'Departure Date',
+        header: 'Dept Date',
         type: 'date',
         isEditable: true,
-        key: 'ashopDepartureDate'
+        key: 'ashopDepartureDate',
+        width: '150'
       },
       {
         field: 'returnPort-name',
@@ -99,32 +114,42 @@ export default createComponent({
         lookupKey: 'port',
         lookupField: 'name',
         isEditable: true,
-        key: 'ashopReturnPort'
+        key: 'ashopReturnPort',
+        width: '150'
       },
       {
-          field: 'returnLocation-coordinates',
-          displayField: ['returnLocation-coordinates-0', 'returnLocation-coordinates-1'],
-          header: 'Return Loc',
-          type: 'coordinate',
-          key: 'ashopRetLoc',
-          width: '150',
-          isEditable: true,
+        field: 'returnLocation-coordinates',
+        displayField: ['returnLocation-coordinates-0', 'returnLocation-coordinates-1'],
+        header: 'Return Loc',
+        type: 'coordinate',
+        key: 'ashopRetLoc',
+        width: '150',
+        isEditable: true
       },
       {
         field: 'returnDate',
         header: 'Return Date',
         type: 'date',
         isEditable: true,
-        key: 'ashopReturnDate'
+        key: 'ashopReturnDate',
+        width: '150'
       },
       {
         field: 'didFishingOccur',
-        header: 'Did Fishing Occur?',
+        header: 'Fishing Occur?',
         type: 'boolean',
-        key: 'ashopFishingOccur'
+        key: 'ashopFishingOccur',
+        width: '150'
       },
       // bait used
-      { field: 'notes', header: 'Comments', type: 'input', key: 'ashopNotes', isEditable: true }
+      {
+        field: 'notes',
+        header: 'Comments',
+        type: 'input',
+        key: 'ashopNotes',
+        isEditable: true,
+        width: '150'
+      }
     ];
 
     const wcgopColumns = [

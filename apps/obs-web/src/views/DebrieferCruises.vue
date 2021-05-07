@@ -50,12 +50,19 @@ export default createComponent({
     const initialSelection: any = state.debriefer && state.debriefer.selectedCruises ? state.debriefer.selectedCruises : [];
 
     const columns = [
-      { field: 'cruiseNum', header: 'Cruise', type: 'number', key: 'ashopCruiseNum' },
+      {
+        field: 'cruiseNum',
+        header: 'Cruise',
+        type: 'number',
+        key: 'ashopCruiseNum',
+        width: '100'
+      },
       {
         field: 'permit',
         header: 'Permit',
         type: 'number',
-        key: 'ashopPermit'
+        key: 'ashopPermit',
+        width: '100'
       },
       {
         field: 'vessel-vesselName',
@@ -71,7 +78,8 @@ export default createComponent({
         field: 'editor',
         header: 'Editor',
         type: 'input',
-        key: 'ashopEditor'
+        key: 'ashopEditor',
+        isEditable: true
       },
       {
         field: 'status-description',
