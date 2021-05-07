@@ -167,6 +167,9 @@ export default class Home extends Vue {
   @Action('setUserRoles', { namespace: 'user'}) private setUserRoles: any;
   @Getter('getUserRoles', { namespace: 'user'}) private getUserRoles: any;
 
+  @Action('updateProgram', { namespace: 'debriefer'}) private setProgram: any;
+  @Action('updateDisplayColumns', { namespace: 'debriefer'}) private setDisplayCols: any;
+
   private mytrips: any[] = [];
   private trip: any = {};
   private createdTrip: any = {};
@@ -471,26 +474,31 @@ export default class Home extends Vue {
   private async created() {
       this.getPermits();
       this.getUserFromCouchDB().then(
-        () => this.getUserAliasfromCouchDB()
+        async () => {
+          this.getUserAliasfromCouchDB();
+          // create debriefer-config doc if it doesn't exist already
+          const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
+          const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
+          if (userColConfig.rows.length === 0) {
+            const updatedRecord = {
+              columnConfig: {},
+              type: 'debriefer-config',
+              personDocId: id,
+              displayCodes: false
+            };
+            await couchService.masterDB.bulk([updatedRecord], true);
+          } else {
+            const currDoc = userColConfig.rows[0].doc;
+            this.setProgram(currDoc.program);
+            this.setDisplayCols(currDoc.columnConfig);
+          }
+        }
       );
       if ( authService.getCurrentUser() ) {
         this.setUserRoles(JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)));
       }
       this.buildDesignDoc();
       this.determineNetworStatus();
-
-      // create debriefer-config doc if it doesn't exist already
-      const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
-      const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
-      if (userColConfig.rows.length === 0) {
-        const updatedRecord = {
-          columnConfig: {},
-          type: 'debriefer-config',
-          personDocId: id,
-          displayCodes: false
-        };
-        await couchService.masterDB.bulk([updatedRecord], true);
-      }
   }
 
 }

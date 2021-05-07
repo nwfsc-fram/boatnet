@@ -92,7 +92,7 @@ export default createComponent({
 
         const getReviewer = (row: any) => {
             return row.vessel.thirdPartyReviewer ? row.vessel.thirdPartyReviewer.description : '';
-        }
+        };
 
         const getAttribute = (attribute: any, format: any) => {
             if (format === 'date') {
@@ -255,7 +255,7 @@ export default createComponent({
                     } else {
                         return false;
                     }
-                }
+                };
 
                 for (const trip of trips) {
                     if ( displayTrip(trip)) {

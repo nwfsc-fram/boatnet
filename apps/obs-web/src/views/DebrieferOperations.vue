@@ -209,7 +209,7 @@ export default createComponent({
                 search: true,
                 lookupKey: 'gear-type',
                 lookupField: 'description',
-                width: '100',
+                width: '200',
                 isEditable: true,
             },
             // HLFC

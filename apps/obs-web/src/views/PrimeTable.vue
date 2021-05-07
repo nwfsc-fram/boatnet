@@ -55,6 +55,38 @@
             >
               <q-tooltip>Expand</q-tooltip>
             </q-btn>
+            <q-btn
+            flat
+            icon="settings"
+          >
+            <q-tooltip>Settings</q-tooltip>
+            <q-menu>
+              <q-list style="width: 225px">
+                <q-item clickable v-close-popup>
+                  <q-toggle
+                    left-label
+                    v-model="displayCodes"
+                    label="Display codes:"
+                    @input="updateDisplayCodes"
+                  />
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <span>Program:</span>
+                  <q-btn-toggle
+                    class="q-ml-md"
+                    v-model="program"
+                    toggle-color="primary"
+                    dense
+                    :options="[
+                      {label: 'A-SHOP', value: 'ashop'},
+                      {label: 'WCGOP', value: 'wcgop'},
+                    ]"
+                    @input="updateProgram"
+                  />
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
           </div>
         </div>
         <div style="text-align:left">
@@ -312,6 +344,9 @@ export default createComponent({
 
     const tempVal: any = ref('');
 
+    const program: any = ref('');
+    const displayCodes: any = ref(false);
+
     onActivated(() => {
       filters.value = state.debriefer.filters[tableType];
     });
@@ -327,6 +362,7 @@ export default createComponent({
       } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
         displayColumns.value = setFixedGearMode(displayColumns.value);
       }
+      program.value = state.debriefer.program;
     });
 
     onUnmounted(async () => {
@@ -513,7 +549,7 @@ export default createComponent({
         formattedValue = valArr.join(' ');
       } else {
         formattedValue = get(slotProps.data, slotProps.column.field);
-        if (state.debriefer.displayCodes && col.lookupKey && formattedValue) {
+        if (displayCodes.value && col.lookupKey && formattedValue) {
           formattedValue = converToCode(col.lookupKey, formattedValue);
         }
       }
@@ -763,6 +799,27 @@ export default createComponent({
       context.emit('duplicateRow', row);
     };
 
+    async function updateDebrieferConfig(field: string, status: any) {
+      const userColConfig: any = await couchService.masterDB.viewWithDocs(
+        'obs_web',
+        'debriefer-config',
+        { key: state.user.activeUserAlias.personDocId }
+      );
+      const doc: any = userColConfig.rows[0].doc;
+      doc[field] = status;
+      await couchService.masterDB.bulk([doc], true);
+    }
+
+    async function updateDisplayCodes(status: any) {
+      store.dispatch('debriefer/updateDisplayCodes', status);
+      await updateDebrieferConfig('displayCodes', status);
+    }
+
+    async function updateProgram(status: string) {
+      store.dispatch('debriefer/updateProgram', status);
+      await updateDebrieferConfig('program', status);
+    }
+
     return {
       containsMultiples,
       filters,
@@ -798,7 +855,10 @@ export default createComponent({
       filterOptions,
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
       reorderColumn, resizeColumn,
-      init, tempVal, clearFilters
+      init, tempVal, clearFilters,
+
+      updateDisplayCodes, displayCodes,
+      updateProgram, program
     };
   },
 });
