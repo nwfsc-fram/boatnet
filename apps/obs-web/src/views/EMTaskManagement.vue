@@ -91,7 +91,7 @@ export default createComponent({
         };
 
         const getReviewer = (row: any) => {
-            return row.vessel.thirdPartyReviewer ? row.vessel.thirdPartyReviewer.description : '';
+            return row.vessel.thirdPartyReviewer ? row.vessel.thirdPartyReviewer.description.slice(0, 4) : '';
         }
 
         const getAttribute = (attribute: any, format: any) => {

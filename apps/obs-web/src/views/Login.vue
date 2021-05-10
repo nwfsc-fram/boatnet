@@ -18,7 +18,7 @@
               <div class="q-ma-md" style="text-align: center">
                 <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="height: 80px">
                 &nbsp;
-                <div class="text-h6 text-primary" style="font-size: 24px; display: inline; line-height: 80px; vertical-align: top">OBSERVER WEB</div>
+                <div class="text-h6 text-primary" style="font-size: 24px; display: inline; line-height: 80px; vertical-align: top">BOATNET</div>
                 <br><br>
               </div>
 
