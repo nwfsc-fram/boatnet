@@ -56,46 +56,100 @@ export default createComponent({
     const initialSelection: any = state.debriefer && state.debriefer.selectedTrips ? state.debriefer.selectedTrips : [];
 
     const ashopColumns = [
-      { field: 'tripNum', header: 'Trip', type: 'number', key: 'ashopTripNum' },
+      {
+        field: 'legacy-cruiseNum',
+        header: 'Cruise',
+        type: 'number',
+        key: 'ashopCruiseNum1',
+        width: '100'
+      },
+      {
+        field: 'tripNum',
+        header: 'Trip',
+        type: 'number',
+        key: 'ashopTripNum',
+        width: '80'
+      },
       {
         field: 'crewSize',
         header: 'Crew Size',
         type: 'number',
-        key: 'ashopCrewSize'
+        key: 'ashopCrewSize',
+        width: '120'
       },
       {
-        field: 'departurePort.name',
-        header: 'Departure Port',
-        type: 'input',
-        key: 'ashopDeparturePort'
+        field: 'departurePort-name',
+        header: 'Dept Port',
+        type: 'toggle',
+        listType: 'fetch',
+        lookupKey: 'port',
+        lookupField: 'name',
+        isEditable: true,
+        key: 'ashopDeparturePort',
+        width: '160'
+      },
+      {
+          field: 'departureLocation-coordinates',
+          displayField: ['departureLocation-coordinates-0', 'departureLocation-coordinates-1'],
+          header: 'Dept Loc',
+          type: 'coordinate',
+          key: 'ashopDeptLoc',
+          width: '150',
+          isEditable: true,
       },
       // fish in hold at start?
       {
         field: 'departureDate',
-        header: 'Departure Date',
+        header: 'Dept Date',
         type: 'date',
-        key: 'ashopDepartureDate'
+        isEditable: true,
+        key: 'ashopDepartureDate',
+        width: '150'
       },
       {
-        field: 'returnPort.name',
+        field: 'returnPort-name',
         header: 'Return Port',
-        type: 'input',
-        key: 'ashopReturnPort'
+        type: 'toggle',
+        listType: 'fetch',
+        lookupKey: 'port',
+        lookupField: 'name',
+        isEditable: true,
+        key: 'ashopReturnPort',
+        width: '150'
+      },
+      {
+        field: 'returnLocation-coordinates',
+        displayField: ['returnLocation-coordinates-0', 'returnLocation-coordinates-1'],
+        header: 'Return Loc',
+        type: 'coordinate',
+        key: 'ashopRetLoc',
+        width: '150',
+        isEditable: true
       },
       {
         field: 'returnDate',
         header: 'Return Date',
         type: 'date',
-        key: 'ashopReturnDate'
+        isEditable: true,
+        key: 'ashopReturnDate',
+        width: '150'
       },
       {
         field: 'didFishingOccur',
-        header: 'Did Fishing Occur?',
+        header: 'Fishing Occur?',
         type: 'boolean',
-        key: 'ashopFishingOccur'
+        key: 'ashopFishingOccur',
+        width: '150'
       },
       // bait used
-      { field: 'notes', header: 'Comments', type: 'input', key: 'ashopNotes' }
+      {
+        field: 'notes',
+        header: 'Comments',
+        type: 'input',
+        key: 'ashopNotes',
+        isEditable: true,
+        width: '150'
+      }
     ];
 
     const wcgopColumns = [
@@ -409,7 +463,7 @@ export default createComponent({
       loading.value = true;
       if (!mounted) {
         if (type === 'observer') {
-          trips.value = await getTripsByObserverId(state.debriefer.observer);
+          trips.value = [];
         } else if (type === 'evalPeriod') {
           const evalPeriod = state.debriefer.evaluationPeriod;
           const observer = state.debriefer.observer;

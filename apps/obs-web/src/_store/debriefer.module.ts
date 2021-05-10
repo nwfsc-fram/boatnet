@@ -8,7 +8,8 @@ Vue.use(Vuex);
 export const state: DebrieferState = {
   program: '',
   displayCodes: false,
-  cruiseIds: '',
+  selectedCruises: [],
+  cruises: [],
   observer: '',
   evaluationPeriod: {},
   tripIds: [],
@@ -31,8 +32,11 @@ const actions: ActionTree<DebrieferState, RootState> = {
   setTripIds({ commit }: any, tripId: string) {
     commit('setTripIds', tripId);
   },
-  setCruiseIds({ commit }: any, cruiseId: string) {
-    commit('setCruiseIds', cruiseId);
+  updateSelectedCruises({ commit }: any, value: any) {
+    commit('updateVal', {id: 'selectedCruises', val: value});
+  },
+  updateCruises({ commit }: any, value: any) {
+    commit('updateVal', {id: 'cruises', val: value});
   },
   updateProgram({ commit }: any, value: string) {
     commit('updateVal', {id: 'program', val: value});

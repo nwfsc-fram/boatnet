@@ -47,30 +47,33 @@ export default createComponent({
         {
           name: 'tripId',
           required: true,
-          header: 'Trip #',
+          header: 'Trip',
           align: 'left',
           field: 'tripId',
           width: '150',
           expander: true,
-          isEditable: false
+          isEditable: false,
+          order: 1
         },
         {
           name: 'operationNum',
           required: true,
-          header: 'Haul #',
+          header: 'Haul',
           align: 'left',
           field: 'operationNum',
           width: '80',
-          isEditable: false
+          isEditable: false,
+          order: 2
         },
         {
           name: 'catchNum',
           required: true,
-          header: 'Catch #',
+          header: 'Catch',
           align: 'left',
           field: 'catchNum',
           width: '80',
-          isEditable: false
+          isEditable: false,
+          order: 3
         },
         {
           name: 'disposition',
@@ -82,7 +85,8 @@ export default createComponent({
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'catch-disposition',
-          lookupField: 'legacy.lookupVal'
+          lookupField: 'legacy.lookupVal',
+          order: 4
         },
         {
           name: 'weightMethod',
@@ -94,7 +98,8 @@ export default createComponent({
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'weight-method',
-          lookupField: 'description'
+          lookupField: 'description',
+          order: 5
         },
         {
           name: 'name',
@@ -106,7 +111,8 @@ export default createComponent({
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'taxonomy-alias',
-          lookupField: 'displayName'
+          lookupField: 'displayName',
+          order: 6
         },
         {
           name: 'count',
@@ -115,7 +121,8 @@ export default createComponent({
           field: 'count',
           width: '100',
           type: 'number',
-          isEditable: true
+          isEditable: true,
+          order: 7
         },
         {
           name: 'weight',
@@ -124,7 +131,8 @@ export default createComponent({
           field: 'weight',
           type: 'double',
           width: '100',
-          isEditable: true
+          isEditable: true,
+          order: 8
         },
         {
           name: 'basketCnt',
@@ -133,7 +141,8 @@ export default createComponent({
           field: 'basketCnt',
           type: 'double',
           width: '70',
-          isEditable: false
+          isEditable: false,
+          order: 9
         },
         {
           name: 'specimensCnt',
@@ -145,7 +154,8 @@ export default createComponent({
           highlightIds: 'specimenIds',
           tooltipLabel: 'toolTipInfo',
           width: '70',
-          isEditable: false
+          isEditable: false,
+          order: 10
         },
         {
           name: 'avgWt',
@@ -154,7 +164,8 @@ export default createComponent({
           field: 'avgWt',
           type: 'double',
           width: '100',
-          isEditable: false
+          isEditable: false,
+          order: 11
         },
         {
           name: 'discardReason',
@@ -166,8 +177,19 @@ export default createComponent({
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'discard-reason',
-          lookupField: 'description'
-        }
+          lookupField: 'description',
+          order: 12
+        },
+        {
+          name: 'raio',
+          align: 'left',
+          header: 'Ratio',
+          field: 'ratio',
+          type: 'double',
+          width: '100',
+          isEditable: true,
+          order: 13
+        },
     ];
 
     watch(() => state.debriefer.selectedTrips, getCatches);
@@ -342,7 +364,6 @@ export default createComponent({
     async function save(newRecord: any) {
       store.dispatch('debriefer/updateCatches', WcgopCatches.value);
       const masterDB: Client<any> = couchService.masterDB;
-      const u = unflatten(state.debriefer.selectedOperations[0], {delimiter: '-'});
 
       const columnInfo = newRecord.data.column;
       const recordInfo = newRecord.data.node;

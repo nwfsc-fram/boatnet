@@ -9,7 +9,7 @@ import 'quasar/dist/quasar.min.css'; // WS- Added this after commenting out .sty
 import './styles/quasar.styl';
 import '@quasar/extras/roboto-font/roboto-font.css';
 import '@quasar/extras/material-icons/material-icons.css';
-import '@quasar/extras/mdi-v3/mdi-v3.css';
+import '@quasar/extras/mdi-v5/mdi-v5.css';
 import '@quasar/extras/fontawesome-v5/fontawesome-v5.css';
 import {
   Quasar, QLayout, QHeader, QDrawer, QPageContainer, QPage, QToolbar, QTooltip,
@@ -34,6 +34,7 @@ import DebrieferDcs from './views/DebrieferDcs.vue';
 import DebrieferErrors from './views/DebrieferErrors.vue';
 import DebrieferWcgopData from './views/DebrieferWcgopData.vue';
 import DebrieferAshopData from './views/DebrieferAshopData.vue';
+import DebrieferCruises from './views/DebrieferCruises.vue';
 import DebrieferTrips from './views/DebrieferTrips.vue';
 import DebrieferOperations from './views/DebrieferOperations.vue';
 import DebrieferCatches from './views/DebrieferCatches.vue';
@@ -88,6 +89,7 @@ Vue.component('appDebrieferDcs', DebrieferDcs);
 Vue.component('appDebrieferErrors', DebrieferErrors);
 Vue.component('appDebrieferDialog', DebrieferDialog);
 Vue.component('appDebrieferSummary', DebrieferSummary);
+Vue.component('appDebrieferCruises', DebrieferCruises);
 Vue.component('appDebrieferTrips', DebrieferTrips);
 Vue.component('appDebrieferOperations', DebrieferOperations);
 Vue.component('appDebrieferCatches', DebrieferCatches);
