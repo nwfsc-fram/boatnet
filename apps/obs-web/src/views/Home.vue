@@ -365,6 +365,9 @@ export default class Home extends Vue {
       axios.get(this.url + '/api/v1/user-providers', config)
       .then((response) => {
           if (response.data.length && this.user.activeUser) {
+            if (!this.user.activeUser.providerAssociations) {
+              this.user.activeUser.providerAssociations = [];
+            }
             this.user.activeUser.providerAssociations.push.apply(this.user.activeUser.providerAssociations, response.data );
             this.user.activeUser.providerAssociations = [...new Set(this.user.activeUser.providerAssociations)];
           }
