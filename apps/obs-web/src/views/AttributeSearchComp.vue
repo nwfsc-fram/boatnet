@@ -93,7 +93,7 @@ export default createComponent({
           'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
           'logbookNum', 'observerLogbookNum', 'departurePort', 'returnPort', 'fishTicket', 'state',
           'commonName', 'speciesCode', 'disposition', 'weightMethod', 'gearType', 'gearPerformance',
-          'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize'
+          'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize', 'year'
       ];
 
       searchTypes.value.push.apply(searchTypes.value, types);

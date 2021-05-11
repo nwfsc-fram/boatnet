@@ -140,6 +140,7 @@ import { EmEfp, Permit } from '@boatnet/bn-models';
 import moment from 'moment';
 
 import { Notify } from 'quasar';
+import axios from 'axios';
 
 @Component
 export default class Home extends Vue {
@@ -173,6 +174,7 @@ export default class Home extends Vue {
   private updatedTrip: any = {};
   private activeUser: boolean = false;
   private offlineTrips: any = null;
+  private url: string = '';
   // private online: boolean = this.onlineStatus;
 
   constructor() {
@@ -349,6 +351,27 @@ export default class Home extends Vue {
 
   }
 
+  private async getUserProviderGroups() {
+      const config = {
+          headers: {
+              authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+              },
+          params: {
+              username: authService.getCurrentUser()!.username,
+              // username: 'neil.riley'
+              }
+          };
+
+      axios.get(this.url + '/api/v1/user-providers', config)
+      .then((response) => {
+          if (response.data.length && this.user.activeUser) {
+            this.user.activeUser.providerAssociations.push.apply(this.user.activeUser.providerAssociations, response.data );
+            this.user.activeUser.providerAssociations = [...new Set(this.user.activeUser.providerAssociations)];
+          }
+
+      });
+  }
+
   private async buildDesignDoc() {
     try {
         await pouchService.db.query('my_index/by_type', {
@@ -469,6 +492,12 @@ export default class Home extends Vue {
   }
 
   private async created() {
+      if (authService.apiUrl) {
+          this.url = authService.apiUrl;
+      } else {
+          this.url = '';
+      }
+
       this.getPermits();
       this.getUserFromCouchDB().then(
         () => this.getUserAliasfromCouchDB()
@@ -491,6 +520,7 @@ export default class Home extends Vue {
         };
         await couchService.masterDB.bulk([updatedRecord], true);
       }
+      this.getUserProviderGroups();
   }
 
 }
