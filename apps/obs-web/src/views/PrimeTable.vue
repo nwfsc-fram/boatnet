@@ -13,7 +13,6 @@
       :scrollable="true"
       editMode="cell"
       columnResizeMode="expand"
-      @cell-edit-init="onCellEditInit"
       :reorderableColumns="true"
       :data-key="uniqueKey"
       :resizableColumns="true"
@@ -40,13 +39,55 @@
               <div>Display Columns</div>
             </template>
           </MultiSelect>
-          <q-icon
-            v-if="!isFullSize"
-            style="float: right"
-            name="open_in_new"
-            size="md"
-            v-on:click="openNewDebriefingTab"
-          />
+          <div style="float: right">
+            <q-btn
+              flat
+              icon="mdi-filter-off-outline"
+              @click="clearFilters"
+            >
+              <q-tooltip>Clear Filters</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="!isFullSize"
+              flat
+              icon="open_in_new"
+              @click="openNewDebriefingTab"
+            >
+              <q-tooltip>Expand</q-tooltip>
+            </q-btn>
+            <q-btn
+            flat
+            icon="settings"
+          >
+            <q-tooltip>Settings</q-tooltip>
+            <q-menu>
+              <q-list style="width: 225px">
+                <q-item clickable v-close-popup>
+                  <q-toggle
+                    left-label
+                    v-model="displayCodes"
+                    label="Display codes:"
+                    @input="updateDisplayCodes"
+                  />
+                </q-item>
+                <q-item clickable v-close-popup>
+                  <span>Program:</span>
+                  <q-btn-toggle
+                    class="q-ml-md"
+                    v-model="program"
+                    toggle-color="primary"
+                    dense
+                    :options="[
+                      {label: 'A-SHOP', value: 'ashop'},
+                      {label: 'WCGOP', value: 'wcgop'},
+                    ]"
+                    @input="updateProgram"
+                  />
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          </div>
         </div>
         <div style="text-align:left">
          <q-btn-toggle
@@ -76,7 +117,7 @@
         :filterMatchMode="col.type === 'toggle' ? 'in' : 'startsWith'"
       >
         <template #body="slotProps">
-          <div>{{ formatValue(slotProps, col) }}</div>
+          <div :style="col.field !== 'notes' ? 'white-space:pre-wrap;' : ''">{{ formatValue(slotProps, col) }}</div>
           <q-popup-edit
             v-if="col.isEditable"
             v-model="tempVal"
@@ -98,11 +139,21 @@
               dense
               autofocus
             />
-            <Calendar
+            <q-input
               v-else-if="col.type === 'date'"
-              v-model="tempVal"
-              appendTo="body"
-            />
+              v-model="tempVal">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-date v-model="tempVal" mask="MM/DD/YYYY HH:mm">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Set" color="primary" flat></q-btn>
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+            </q-input>
             <q-select
               v-if="col.type === 'toggle' && col.listType === 'fetch'"
               v-model="tempVal"
@@ -162,6 +213,8 @@
             :style="'width: 100%; background-color: transparent'"
             v-model="filters[col.field]"
             :options="col.list ? col.list : filterOptions[col.header]"
+            :optionLabel="state.debriefer.displayCodes && col.listType === 'fetch' ? 'label' : null"
+            :optionValue="state.debriefer.displayCodes && col.listType === 'fetch' ? 'value' : null"
             appendTo="body"
             :filter="true"
           />
@@ -291,6 +344,9 @@ export default createComponent({
 
     const tempVal: any = ref('');
 
+    const program: any = ref('');
+    const displayCodes: any = ref(false);
+
     onActivated(() => {
       filters.value = state.debriefer.filters[tableType];
     });
@@ -302,10 +358,11 @@ export default createComponent({
       const initFilters = state.debriefer.filters[tableType];
       filters.value = initFilters ? initFilters : {};
       if (tableType === 'wcgop-Operations' && displayMode === trawlMode) {
-        displayColumns.value = setTrawlMode(stateDisplayCols[tableType]);
+        displayColumns.value = setTrawlMode(displayColumns.value);
       } else if (tableType === 'wcgop-Operations' && displayMode === fixedGearMode) {
-        displayColumns.value = setFixedGearMode(stateDisplayCols[tableType]);
+        displayColumns.value = setFixedGearMode(displayColumns.value);
       }
+      program.value = state.debriefer.program;
     });
 
     onUnmounted(async () => {
@@ -354,7 +411,7 @@ export default createComponent({
             filterList[col.header] = uniq(filterList[col.header]);
             if (state.debriefer.displayCodes && col.lookupKey) {
               for (let i = 0; i < filterList[col.header].length; i++) {
-                filterList[col.header][i] = converToCode(col.lookupKey, filterList[col.header][i]);
+                filterList[col.header][i] = {label: converToCode(col.lookupKey, filterList[col.header][i]), value: filterList[col.header][i]};
               }
             }
             filterList[col.header] = filterList[col.header].sort();
@@ -379,6 +436,13 @@ export default createComponent({
         store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
+
+    function clearFilters() {
+      filters.value = {};
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = filters.value;
+      store.dispatch('debriefer/updateFilters', currFilters);
+    }
 
     function reorderColumn(event: any) {
       displayColumns.value = arrayMove(displayColumns.value, event.dragIndex - 1, event.dropIndex - 1);
@@ -485,7 +549,7 @@ export default createComponent({
         formattedValue = valArr.join(' ');
       } else {
         formattedValue = get(slotProps.data, slotProps.column.field);
-        if (state.debriefer.displayCodes && col.lookupKey && formattedValue) {
+        if (displayCodes.value && col.lookupKey && formattedValue) {
           formattedValue = converToCode(col.lookupKey, formattedValue);
         }
       }
@@ -531,6 +595,8 @@ export default createComponent({
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
         tempVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+      } else if (colInfo.type === 'date') {
+        tempVal.value = moment(tempVal.value).format('MM/DD/YYYY HH:mm');
       }
       if (colInfo.type === 'toggle' && colInfo.listType === 'fetch') {
         await populateLookupsList(colInfo);
@@ -733,6 +799,27 @@ export default createComponent({
       context.emit('duplicateRow', row);
     };
 
+    async function updateDebrieferConfig(field: string, status: any) {
+      const userColConfig: any = await couchService.masterDB.viewWithDocs(
+        'obs_web',
+        'debriefer-config',
+        { key: state.user.activeUserAlias.personDocId }
+      );
+      const doc: any = userColConfig.rows[0].doc;
+      doc[field] = status;
+      await couchService.masterDB.bulk([doc], true);
+    }
+
+    async function updateDisplayCodes(status: any) {
+      store.dispatch('debriefer/updateDisplayCodes', status);
+      await updateDebrieferConfig('displayCodes', status);
+    }
+
+    async function updateProgram(status: string) {
+      store.dispatch('debriefer/updateProgram', status);
+      await updateDebrieferConfig('program', status);
+    }
+
     return {
       containsMultiples,
       filters,
@@ -768,7 +855,10 @@ export default createComponent({
       filterOptions,
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
       reorderColumn, resizeColumn,
-      init, tempVal
+      init, tempVal, clearFilters,
+
+      updateDisplayCodes, displayCodes,
+      updateProgram, program
     };
   },
 });

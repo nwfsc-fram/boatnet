@@ -46,21 +46,21 @@ export default createComponent({
     const columns = [
       {
         field: 'tripId',
-        header: 'Trip #',
+        header: 'Trip',
         type: 'number',
         key: 'wcgopBioTripId',
         width: '80'
       },
       {
         field: 'operationNum',
-        header: 'Haul #',
+        header: 'Haul',
         type: 'number',
         key: 'wcgopBioHaulNum',
         width: '80'
       },
       {
         field: 'catchNum',
-        header: 'Catch #',
+        header: 'Catch',
         type: 'number',
         key: 'wcgopBioCatchNum',
         width: '80'

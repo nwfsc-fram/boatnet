@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div style="text-align: right">
-      <q-icon name="open_in_new" size="md" v-on:click="openNewDebriefingTab" />
-    </div>
     <div class="q-gutter-y-md">
       <q-card v-if="showData">
         <q-tabs
@@ -14,6 +11,7 @@
           align="justify"
           narrow-indicator
         >
+          <q-tab name="cruises" label="Cruises" />
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
@@ -22,6 +20,9 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="cruises">
+            <app-debriefer-cruises/>
+          </q-tab-panel>
           <q-tab-panel name="trips">
             <app-debriefer-trips></app-debriefer-trips>
           </q-tab-panel>
@@ -55,7 +56,7 @@ export default class DebrieferData extends Vue {
   @Prop({ default: true })
   private showData!: boolean;
 
-  private tab = 'trips';
+  private tab = 'cruises';
 
   private showBoth() {
     this.showErrors = true;

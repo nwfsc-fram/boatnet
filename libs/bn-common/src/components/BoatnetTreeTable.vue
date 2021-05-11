@@ -28,13 +28,23 @@
                 <div>Display Columns</div>
               </template>
             </MultiSelect>
-            <q-icon
-            v-if="!isFullSize"
-            style="float: right"
-            name="open_in_new"
-            size="md"
-            v-on:click="openNewDebriefingTab"
-          />
+            <div style="float: right">
+              <q-btn
+                flat
+                icon="mdi-filter-off-outline"
+                @click="clearFilters"
+              >
+                <q-tooltip>Clear Filters</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-if="!isFullSize"
+                flat
+                icon="open_in_new"
+                @click="openNewDebriefingTab"
+              >
+                <q-tooltip>Expand</q-tooltip>
+              </q-btn>
+            </div>
           </span>
           <span style="position:relative; bottom: 2px">
             &nbsp;
@@ -53,7 +63,7 @@
           'width: ' + col.codeWidth + 'px' :
           'width: ' + col.width + 'px'"
         :style="'width:' +  col.width + 'px'"
-        filterMatchMode="contains"
+        :filterMatchMode="col.type === 'toggle-search' ? 'in' : 'startsWith'"
         headerClass="sticky top table-cell"
         bodyClass="table-cell"
       >
@@ -153,7 +163,7 @@
 import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
-import { cloneDeep, find, get, remove, uniq } from 'lodash';
+import { cloneDeep, find, get, orderBy, remove, uniq } from 'lodash';
 
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
@@ -204,6 +214,15 @@ export default createComponent ({
     const tempVal: any = ref('');
 
     const masterDB: Client<any> = couchService.masterDB;
+
+    const dbProgram: string = state.debriefer.program;
+
+    function clearFilters() {
+      filters.value = {};
+      const currFilters = state.debriefer.filters;
+      currFilters[tableType] = filters.value;
+      store.dispatch('debriefer/updateFilters', currFilters);
+    }
 
     function deSelect() {
       editingRow.value = '';
@@ -259,6 +278,7 @@ export default createComponent ({
         } else {
           currCols.value = stateDisplayCols[tableType];
         }
+        currCols.value = orderBy(currCols.value, ['order']);
         return currCols.value;
       },
       set: (val) => {
@@ -307,7 +327,8 @@ export default createComponent ({
           lookupField = 'commonNames[0]';
         }
       }
-      const results = await getCouchLookupInfo(props.program ? props.program : '', 'obs_web', key, [lookupField]);
+      const programState = state.debriefer.program;
+      const results = await getCouchLookupInfo(programState ? programState : dbProgram, 'obs_web', key, [lookupField]);
       for (let i = 0; i < results.length; i++) {
         let label = get(results[i].doc, lookupField);
         if (state.debriefer.displayCodes && label) {
@@ -385,6 +406,7 @@ export default createComponent ({
       sortedList,
       state,
 
+      clearFilters,
       collapse,
       deSelect,
       displayData,

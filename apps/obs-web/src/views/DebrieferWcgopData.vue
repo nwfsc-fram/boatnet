@@ -27,6 +27,7 @@
           align="justify"
           @input="updateDataTab"
         >
+          <q-tab v-if="program === 'ashop'" name="cruises" label="Cruises" />
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
           <q-tab name="catch" label="Catch" />
@@ -36,6 +37,9 @@
         <q-separator />
 
         <q-tab-panels v-model="tab" animated>
+          <q-tab-panel v-if="program === 'ashop'" name="cruises">
+            <app-debriefer-cruises/>
+          </q-tab-panel>
           <q-tab-panel name="trips">
             <app-debriefer-trips :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-trips>
           </q-tab-panel>
@@ -77,28 +81,34 @@ export default createComponent({
   setup(props, context) {
     const store = context.root.$store;
     const state = store.state;
-    const tab: any = ref(props.startingTab);
+    const debriefer = state.debriefer;
+    const tab: any = ref('');
+    const program: any = ref(state.debriefer.program);
 
     const filters: any = ref([]);
     const masterDB: Client<any> = couchService.masterDB;
     const lookupsMap: any = ref([]);
 
+    watch(() => state.debriefer.selectedCruises, update);
     watch(() => state.debriefer.selectedTrips, update);
     watch(() => state.debriefer.selectedOperations, update);
     watch(() => state.debriefer.evaluationPeriod, setToTripTab);
     watch(() => state.debriefer.observer, setToTripTab);
+    watch(() => state.debriefer.program, updateProgram);
 
     updateTab(props.startingTab ? props.startingTab : '');
 
     onMounted(async () => {
-      // load column configurations from couch into state
-      const result: any = await masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: state.user.activeUserAlias.personDocId });
-      if (result.rows.length > 0) {
-        store.dispatch('debriefer/updateDisplayColumns', result.rows[0].doc.columnConfig);
-      }
+      tab.value = program.value === 'ashop' ? 'cruises' : 'trips';
       lookupsMap.value = await masterDB.view('obs_web', 'wcgop-lookup-codes');
       lookupsMap.value = lookupsMap.value.rows;
     });
+
+    function updateProgram() {
+      const currProgram: string = state.debriefer.program;
+      tab.value = currProgram === 'ashop' ? 'cruises' : 'trips';
+      program.value = currProgram;
+    }
 
     function updateDataTab(tabName: string) {
       context.emit('updateDataTab', tabName);
@@ -114,10 +124,17 @@ export default createComponent({
 
     function update() {
       filters.value = [];
+      const cruises = updateFilter(
+        state.debriefer.selectedCruises,
+        'Cruise',
+        'cruiseNum'
+      );
+      filters.value = filters.value.concat(cruises);
+      const tripLabel = state.debriefer.program === 'ashop' ? 'tripNum' : 'legacy-tripId';
       const trips = updateFilter(
         state.debriefer.selectedTrips,
         'Trip',
-        'legacy-tripId'
+        tripLabel
       );
       filters.value = filters.value.concat(trips);
       const hauls = updateFilter(
@@ -146,10 +163,11 @@ export default createComponent({
     function remove(item: any) {
       store.dispatch('debriefer/updateSummarySelection', {});
       let index = -1;
+      const cruises = state.debriefer.selectedCruises;
       const trips = state.debriefer.selectedTrips;
       const ops = state.debriefer.selectedOperations;
 
-      if (item.type === 'wcgop-trip') {
+      if (item.type.includes('trip')) {
         index = findIndex(trips, item);
         trips.splice(index, 1);
         if (trips.length === 0) {
@@ -157,6 +175,13 @@ export default createComponent({
         }
         store.dispatch('debriefer/updateSelectedTrips', trips);
         removeOperations();
+      } else if (item.type === 'ashop-cruise') {
+        index = findIndex(cruises, item);
+        cruises.splice(index, 1);
+        if (cruises.length === 0) {
+          updateTab('cruises');
+        }
+        store.dispatch('debriefer/updateSelectedCruises', cruises);
       } else {
         index = findIndex(ops, item);
         ops.splice(index, 1);
@@ -192,6 +217,8 @@ export default createComponent({
     }
 
     return {
+      debriefer,
+      program,
       updateDataTab,
       tab,
       updateTab,
