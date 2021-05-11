@@ -7,7 +7,9 @@
                     <div>
                         Vessels: <b>{{ uniqueVessels }}</b>&nbsp;
                         Trips: <b>{{ debriefer.trips.length }}</b>&nbsp;
-                        Hauls: <b>{{ totalHauls }}</b>
+                        Hauls: <b>{{ totalHauls }}</b>&nbsp;
+                        Programs:<b> {{ getArrayValues(observedPrograms) }} </b>&nbsp;
+                        Fisheries:<b> {{ getArrayValues(observevedFisheries) }} </b>
                     </div>
                 </q-card-section>
             </q-card>
@@ -19,7 +21,7 @@
                             <div v-if="section === 'OTC Sampling Procedures' && samplingProcedures.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase()) ||
                                        section === 'Catch Categories' && (isNaN(assessmentResponse.question.question.charAt(0)) || catchCategories.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase())) ||
                                        !['OTC Sampling Procedures', 'Catch Categories'].includes(section)" class="row">
-                                <span class="col5" style="position: relative; top: 10px; width: 400px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
+                                <span class="col5" style="position: relative; top: 10px; max-width: 800px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
                                 <div class="col">
                                     <q-input
                                         v-model="assessmentResponse.response"
@@ -76,7 +78,7 @@ import {
 
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { orderBy, uniq, flatten } from 'lodash';
+import { orderBy, uniq, flatten, sortBy } from 'lodash';
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
 
@@ -92,6 +94,8 @@ export default createComponent({
 
     const debriefer = state.debriefer;
     const uniqueVessels: any = ref(0);
+    const observedPrograms: any = ref([]);
+    const observevedFisheries: any = ref([]);
     const totalHauls: any = ref(0);
 
     const questions: any = ref([]);
@@ -192,11 +196,29 @@ export default createComponent({
         totalHauls.value = allOperations;
     };
 
+    const getArrayValues = (strArray: string[]) => {
+        let returnVal = '';
+        for (const str of sortBy(strArray)) {
+            if (returnVal !== '') {
+                returnVal += ', ';
+            }
+            returnVal += str;
+        }
+        return returnVal;
+    };
+
     const getUniqueVessels = () => {
         const vessels = debriefer.trips.map( (trip: any) => {
             return trip.vessel.coastGuardNumber ? trip.vessel.coastGuardNumber : trip.vessel.stateRegulationNumber;
         });
         uniqueVessels.value = uniq(vessels).length;
+        observedPrograms.value = uniq(debriefer.trips.map( (trip: any) => {
+            return trip.program.description;
+        }));
+        observevedFisheries.value = uniq(debriefer.trips.map( (trip: any) => {
+            return trip.fishery.description;
+        }));
+
         getTotalHauls();
     };
 
@@ -294,6 +316,9 @@ export default createComponent({
         catchCategories,
         debriefer,
         getAnswerSet,
+        getArrayValues,
+        observevedFisheries,
+        observedPrograms,
         observerMode,
         questions,
         samplingProcedures,
