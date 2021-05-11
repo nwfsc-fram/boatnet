@@ -13,48 +13,59 @@
                     </div>
                 </q-card-section>
             </q-card>
-            <q-card v-for="section of sections" :key="sections.indexOf(section)" class="assessment-section">
-                <q-card-section>
-                    <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">{{section}}</p>
-                    <div v-for="(assessmentResponse, i) of assessment.assessmentResponses" :key="i">
-                        <div v-if="assessmentResponse.question.section === section" >
-                            <div v-if="section === 'OTC Sampling Procedures' && samplingProcedures.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase()) ||
-                                       section === 'Catch Categories' && (isNaN(assessmentResponse.question.question.charAt(0)) || catchCategories.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase())) ||
-                                       !['OTC Sampling Procedures', 'Catch Categories'].includes(section)" class="row">
-                                <span class="col5" style="position: relative; top: 10px; max-width: 800px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
-                                <div class="col">
-                                    <q-input
-                                        v-model="assessmentResponse.response"
-                                        autogrow dense
-                                        :readonly="observerMode"
-                                    >
-                                        <q-menu v-if="!observerMode" anchor="top left" style="cursor: pointer">
-                                            <q-list dense >
-                                                <q-item
-                                                    v-for="answer of getAnswerSet(assessmentResponse.question.answerSet)"
-                                                    :key="getAnswerSet(assessmentResponse.question.answerSet).indexOf(answer)"
-                                                    clickable
-                                                    @click="setQuestionResponse(i, answer)"
-                                                    v-close-popup
-                                                    style="max-width: 500px">
-                                                    <q-item-section>{{ answer }}</q-item-section>
-                                                </q-item>
-                                            </q-list>
-                                        </q-menu>
-                                        <template v-slot:append>
-                                            <q-btn
-                                                v-if="assessment.assessmentResponses[i].response && !observerMode"
-                                                icon="clear" size="xs" flat round
-                                                @click="setQuestionResponse(i, null)"
-                                            ></q-btn>
-                                        </template>
-                                    </q-input>
+            <span v-for="section of sections" :key="sections.indexOf(section)">
+                <q-card
+                    class="assessment-section"
+                    v-if="
+                        (section !== 'Requirements for Return (Exit/Year-end only)')
+                    || (section === 'Requirements for Return (Exit/Year-end only)' && ['Exit Debrief', 'Year-end Debrief'].includes(debriefer.evaluationPeriod.type))"
+                >
+                    <q-card-section>
+                        <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">{{section}}
+                            <span style="float: right" v-if="!['Requirements for Return (Exit/Year-end only)', 'Summary'].includes(section)">
+                                <q-btn size="sm" color="primary" @click="setAllOk(section)">Set All OK</q-btn>
+                            </span>
+                        </p>
+                        <div v-for="(assessmentResponse, i) of assessment.assessmentResponses" :key="i">
+                            <div v-if="assessmentResponse.question.section === section" >
+                                <div v-if="section === 'OTC Sampling Procedures' && samplingProcedures.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase()) ||
+                                        section === 'Weight Methods' && (isNaN(assessmentResponse.question.question.charAt(0)) || weightMethods.includes(assessmentResponse.question.question.slice(assessmentResponse.question.question.indexOf('-') + 2 ).toLowerCase())) ||
+                                        !['OTC Sampling Procedures', 'Weight Methods'].includes(section)" class="row">
+                                    <span class="col5" style="position: relative; top: 10px; max-width: 800px;">{{ assessmentResponse.question.question }}&nbsp; &nbsp;</span>
+                                    <div class="col">
+                                        <q-input
+                                            v-model="assessmentResponse.response"
+                                            autogrow dense
+                                            :readonly="observerMode"
+                                        >
+                                            <q-menu v-if="!observerMode" anchor="top left" style="cursor: pointer">
+                                                <q-list dense >
+                                                    <q-item
+                                                        v-for="answer of getAnswerSet(assessmentResponse.question.answerSet)"
+                                                        :key="getAnswerSet(assessmentResponse.question.answerSet).indexOf(answer)"
+                                                        clickable
+                                                        @click="setQuestionResponse(i, answer)"
+                                                        v-close-popup
+                                                        style="max-width: 500px">
+                                                        <q-item-section>{{ answer }}</q-item-section>
+                                                    </q-item>
+                                                </q-list>
+                                            </q-menu>
+                                            <template v-slot:append>
+                                                <q-btn
+                                                    v-if="assessment.assessmentResponses[i].response && !observerMode"
+                                                    icon="clear" size="xs" flat round
+                                                    @click="setQuestionResponse(i, null)"
+                                                ></q-btn>
+                                            </template>
+                                        </q-input>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </q-card-section>
-            </q-card>
+                    </q-card-section>
+                </q-card>
+            </span>
         </div>
         <div v-else>
             <span v-if="observerMode">
@@ -102,7 +113,7 @@ export default createComponent({
     const answerSets: any = ref([]);
 
     const samplingProcedures: any = ref([]);
-    const catchCategories: any = ref([]);
+    const weightMethods: any = ref([]);
 
     const jp = require('jsonpath');
 
@@ -121,19 +132,19 @@ export default createComponent({
             samplingProcedures.value.push('extrapolation');
         }
 
-        catchCategories.value = jp.query(operationDocs, '$..catches[*].weightMethod.description');
-        catchCategories.value = uniq(catchCategories.value.map( (row: any) => row.toLowerCase().trim() ));
-        if (catchCategories.value.find( (row: any) => row === 'length/weight' )) {
-            catchCategories.value.push('phlb l/w conversion');
+        weightMethods.value = jp.query(operationDocs, '$..catches[*].weightMethod.description');
+        weightMethods.value = uniq(weightMethods.value.map( (row: any) => row.toLowerCase().trim() ));
+        if (weightMethods.value.find( (row: any) => row === 'length/weight' )) {
+            weightMethods.value.push('phlb l/w conversion');
         }
-        if (catchCategories.value.find( (row: any) => row === 'extrapolation (ll)' )) {
-            catchCategories.value.push('extrapolation');
+        if (weightMethods.value.find( (row: any) => row === 'extrapolation (ll)' )) {
+            weightMethods.value.push('extrapolation');
         }
-        if (catchCategories.value.find( (row: any) => row === 'phlb length weight extrapolation' )) {
-            catchCategories.value.push('phlb l/w extrapolation');
+        if (weightMethods.value.find( (row: any) => row === 'phlb length weight extrapolation' )) {
+            weightMethods.value.push('phlb l/w extrapolation');
         }
-        if (catchCategories.value.find( (row: any) => row === 'actual weight  - whole haul' )) {
-            catchCategories.value.push('actual weight - whole haul');
+        if (weightMethods.value.find( (row: any) => row === 'actual weight  - whole haul' )) {
+            weightMethods.value.push('actual weight - whole haul');
         }
     };
 
@@ -141,7 +152,7 @@ export default createComponent({
 
     const sections: any = [
         'OTC Sampling Procedures',
-        'Catch Categories',
+        'Weight Methods',
         'Biological Sampling',
         'Sample Size',
         'OPTECS / Database Entry',
@@ -153,6 +164,7 @@ export default createComponent({
         'Requirements for Return (Exit/Year-end only)',
         'Summary'
     ];
+
     const assessment: any = ref(null);
 
     const getAnswerSet = (setName: string) => {
@@ -282,6 +294,14 @@ export default createComponent({
         );
     };
 
+    const setAllOk = (section: any) => {
+        for (let response of assessment.value.assessmentResponses ) {
+            if (response.question.section === section && ['expectations met', 'improvement range'].includes(response.question.answerSet)) {
+                set(response, 'response', getAnswerSet(response.question.answerSet)[0]);
+            }
+        }
+    }
+
     const setQuestionResponse = (index: number, answer: any) => {
         set(assessment.value.assessmentResponses[index], 'response', answer);
     };
@@ -313,7 +333,7 @@ export default createComponent({
     return {
         answerSets,
         assessment,
-        catchCategories,
+        weightMethods,
         debriefer,
         getAnswerSet,
         getArrayValues,
@@ -323,6 +343,7 @@ export default createComponent({
         questions,
         samplingProcedures,
         sections,
+        setAllOk,
         setQuestionResponse,
         totalHauls,
         uniqueVessels
