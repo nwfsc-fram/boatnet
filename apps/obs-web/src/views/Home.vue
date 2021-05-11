@@ -544,7 +544,7 @@ export default class Home extends Vue {
         };
         await couchService.masterDB.bulk([updatedRecord], true);
       }
-      this.getUserProviderGroups();
+      // this.getUserProviderGroups();
   }
 
 }
