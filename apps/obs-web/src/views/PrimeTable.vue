@@ -41,24 +41,10 @@
           </MultiSelect>
           <div style="float: right">
             <q-btn
+              v-if="isAuthorized(['development_staff'])"
               flat
-              icon="mdi-filter-off-outline"
-              @click="clearFilters"
+              icon="settings"
             >
-              <q-tooltip>Clear Filters</q-tooltip>
-            </q-btn>
-            <q-btn
-              v-if="!isFullSize"
-              flat
-              icon="open_in_new"
-              @click="openNewDebriefingTab"
-            >
-              <q-tooltip>Expand</q-tooltip>
-            </q-btn>
-            <q-btn
-            flat
-            icon="settings"
-          >
             <q-tooltip>Settings</q-tooltip>
             <q-menu>
               <q-list style="width: 225px">
@@ -87,6 +73,28 @@
               </q-list>
             </q-menu>
           </q-btn>
+          <q-toggle
+            v-else
+            left-label
+            v-model="displayCodes"
+            label="Display codes:"
+            @input="updateDisplayCodes"
+          />
+            <q-btn
+              flat
+              icon="mdi-filter-off-outline"
+              @click="clearFilters"
+            >
+              <q-tooltip>Clear Filters</q-tooltip>
+            </q-btn>
+            <q-btn
+              v-if="!isFullSize"
+              flat
+              icon="open_in_new"
+              @click="openNewDebriefingTab"
+            >
+              <q-tooltip>Expand</q-tooltip>
+            </q-btn>
           </div>
         </div>
         <div style="text-align:left">
@@ -820,6 +828,15 @@ export default createComponent({
       await updateDebrieferConfig('program', status);
     }
 
+    function isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (state.user.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     return {
       containsMultiples,
       filters,
@@ -858,7 +875,8 @@ export default createComponent({
       init, tempVal, clearFilters,
 
       updateDisplayCodes, displayCodes,
-      updateProgram, program
+      updateProgram, program,
+      isAuthorized
     };
   },
 });
