@@ -97,17 +97,6 @@ export default createComponent({
 
     const show: any = ref(true);
     const activeParamsTab: any = ref('evaluation');
-
-    watch(() => state.debriefer.observer, () => {
-      setDataTab('trips');
-      setBottomTab('data');
-    });
-
-    watch(() => state.debriefer.evaluationPeriod, () => {
-      setDataTab('trips');
-      setBottomTab('data');
-    });
-
     clearFilters();
 
     onMounted(async () => {
