@@ -90,7 +90,6 @@ export default createComponent({
         lookupField: 'description',
         isEditable: true,
         key: 'ashopStatuses',
-        
       },
       {
         field: 'statusDate',

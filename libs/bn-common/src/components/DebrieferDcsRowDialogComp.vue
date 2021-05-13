@@ -138,6 +138,24 @@ export default createComponent({
                 tripReturnDate: rowData.returnDate ? rowData.returnDate : trip ? trip.returnDate : rowData.tripReturnDate ? rowData.tripReturnDate :  moment().format()
             };
         }
+      } else {
+          return {
+            type: 'dcs-row',
+            observerId: state.debriefer.observer,
+            tripNum: '',
+            haulNum: '',
+            collectionMethod: '',
+            createdDate: moment().format(),
+            createdBy: authService.getCurrentUser()!.username,
+            level: '',
+            issue: '',
+            dcsErrorType: '',
+            afiFlag: '-',
+            afiDate: '-',
+            observerNotes: '',
+            isHidden: false,
+            tripReturnDate: rowData.returnDate ? rowData.returnDate : trip ? trip.returnDate : rowData.tripReturnDate ? rowData.tripReturnDate :  moment().format()
+        };
       }
     };
 
@@ -150,6 +168,11 @@ export default createComponent({
     const submit = async () => {
         if (dcsRow.value.afiFlag !== '-') {
           dcsRow.value.afiDate = moment().format();
+        }
+        dcsRow.value.type = 'dcs-row';
+        dcsRow.value.observerId = state.debriefer.observer;
+        if (!dcsRow.value.tripReturnDate) {
+          dcsRow.value.tripReturnDate = moment().format();
         }
         const result = await masterDB.post(dcsRow.value);
         if (result) {

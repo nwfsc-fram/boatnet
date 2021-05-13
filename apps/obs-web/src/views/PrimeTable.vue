@@ -24,7 +24,10 @@
       @column-resize-end="resizeColumn"
       @column-reorder="reorderColumn"
     >
-      <template #empty>No data available</template>
+      <template #empty>
+        No data available
+        <q-btn v-if="type === 'DCS'" size="sm" color="primary" @click="addToDcs('blank')">add row</q-btn>
+      </template>
       <template v-if="!simple" #header>
         <div style="text-align:left">
           <MultiSelect
@@ -856,7 +859,7 @@ export default createComponent({
       TripLevel, CollectionMethod, DcsErrorType, AfiFlag,
       reorderColumn, resizeColumn,
       init, tempVal, clearFilters,
-
+      addToDcs,
       updateDisplayCodes, displayCodes,
       updateProgram, program
     };

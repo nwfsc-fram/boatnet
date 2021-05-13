@@ -170,6 +170,19 @@
               <q-item-label caption>Assign Observers to debriefers</q-item-label>
             </q-item-section>
           </q-item>
+           <q-item
+            to="/editAssessment"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="assignment" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Edit Debriefer Assessment</q-item-label>
+              <q-item-label caption>Edit Assessment questions and answer sets</q-item-label>
+            </q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item

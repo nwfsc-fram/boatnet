@@ -14,3 +14,7 @@ declare module 'vue-async-function';
 declare module 'vue-multiselect';
 declare module 'vue2-timepicker';
 declare module 'vue-timeselector';
+// https://stackoverflow.com/questions/50576746/import-pdfmake-js-file-to-my-ts-file
+declare module 'pdfmake/build/pdfmake.js';
+declare module 'pdfmake/build/vfs_fonts.js';
+declare module 'pdfmake';

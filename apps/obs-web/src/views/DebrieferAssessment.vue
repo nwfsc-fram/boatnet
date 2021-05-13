@@ -36,7 +36,7 @@
                                         <q-input
                                             v-model="assessmentResponse.response"
                                             autogrow dense
-                                            :readonly="observerMode"
+                                            :readonly="observerMode || assessment.status === 'Receipt Acknowledged'"
                                         >
                                             <q-menu v-if="!observerMode" anchor="top left" style="cursor: pointer">
                                                 <q-list dense >
@@ -66,10 +66,20 @@
                     </q-card-section>
                 </q-card>
             </span>
+            <div style="float: right; margin: 5px">
+                <b>Assessment Status: {{ assessment.status ? assessment.status : 'none' }} &nbsp;</b>
+                <span v-if="!observerMode">
+                    <q-btn v-if="['Finalized', 'Receipt Acknowledged'].includes(assessment.status)" color="red" @click="unlockAssessment">unlock assessment</q-btn>
+                    <q-btn v-else @click="finalize" color="primary">Finalize Assessment</q-btn>
+                </span>
+                <span v-else>
+                    <q-btn v-if="assessment.status === 'Finalized'" @click="acknowledgeReceipt" color="primary">Acknowledge Receipt</q-btn>
+                </span>
+            </div>
         </div>
         <div v-else>
             <span v-if="observerMode">
-                Please select and evaluation period.
+                Please select an evaluation period.
             </span>
             <span v-else>
                 Please select an observer and evaluation period.
@@ -92,6 +102,8 @@ import { Client } from 'davenport';
 import { orderBy, uniq, flatten, sortBy } from 'lodash';
 import moment from 'moment';
 import { authService } from '@boatnet/bn-auth';
+import pdfMake from 'pdfmake';
+
 
 export default createComponent({
   props: {
@@ -180,7 +192,7 @@ export default createComponent({
             {include_docs: true, reduce: false} as any
         );
         const queryDocs = questionsQuery.rows.map( (row: any) => row.doc);
-        questions.value.push.apply(questions.value, queryDocs.filter( (row: any) => row.isActive && row.isWcgop));
+        questions.value.push.apply(questions.value, queryDocs.filter( (row: any) => debriefer.program === 'wcgop' ? row.isWcgop : row.isAshop));
         questions.value = orderBy(questions.value, ['section', 'order'], ['asc', 'asc']);
     };
 
@@ -282,6 +294,8 @@ export default createComponent({
         assessment.value.vesselCount = uniqueVessels.value;
         assessment.value.tripCount = debriefer.trips.length;
         assessment.value.haulCount = totalHauls.value;
+        assessment.value.fisheries = observevedFisheries.value;
+        assessment.value.programs = observedPrograms.value;
 
         await masterDB.put(
             assessment.value._id,
@@ -295,15 +309,32 @@ export default createComponent({
     };
 
     const setAllOk = (section: any) => {
-        for (let response of assessment.value.assessmentResponses ) {
+        for (const response of assessment.value.assessmentResponses ) {
             if (response.question.section === section && ['expectations met', 'improvement range'].includes(response.question.answerSet)) {
                 set(response, 'response', getAnswerSet(response.question.answerSet)[0]);
             }
         }
-    }
+    };
 
     const setQuestionResponse = (index: number, answer: any) => {
         set(assessment.value.assessmentResponses[index], 'response', answer);
+    };
+
+    const finalize = () => {
+        set(assessment.value, 'status', 'Finalized');
+        save();
+        // notify observer;
+    };
+
+    const acknowledgeReceipt = () => {
+        set(assessment.value, 'status', 'Receipt Acknowledged');
+        save();
+        // send observer pdf;
+    };
+
+    const unlockAssessment = () => {
+        set(assessment.value, 'status', null);
+        save();
     };
 
     onMounted( async () => {
@@ -331,10 +362,11 @@ export default createComponent({
     }, {deep: true});
 
     return {
+        acknowledgeReceipt,
         answerSets,
         assessment,
-        weightMethods,
         debriefer,
+        finalize,
         getAnswerSet,
         getArrayValues,
         observevedFisheries,
@@ -346,7 +378,9 @@ export default createComponent({
         setAllOk,
         setQuestionResponse,
         totalHauls,
-        uniqueVessels
+        uniqueVessels,
+        unlockAssessment,
+        weightMethods
     };
     }
 });

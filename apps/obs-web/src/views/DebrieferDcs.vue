@@ -29,6 +29,9 @@
       @refresh="refresh"
     >
     </prime-table>
+    <span style="float: right; margin: 5px">
+      <q-btn v-if="!observerMode" color="primary" @click="notifyObserver">notify observer</q-btn>
+    </span>
     <q-dialog v-model="deleteConfirmDialog">
       <q-card>
         <q-card-section v-if="rowToDelete">
@@ -314,6 +317,12 @@ export default createComponent({
       getDcsRows();
     };
 
+    const notifyObserver = () => {
+      Notify.create(
+        {message: 'TO DO'}
+      );
+    };
+
     onMounted( () => {
       getYearOptions();
     });
@@ -347,6 +356,7 @@ export default createComponent({
       duplicateRow,
       executeDelete,
       loading,
+      notifyObserver,
       observerMode,
       observerName,
       refresh,

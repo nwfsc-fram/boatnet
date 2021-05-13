@@ -90,10 +90,10 @@ export default createComponent({
     const getSearchTypes = async () => {
       const types: any = [
           'tripId', 'trip-status', 'observer', 'vesselName', 'vesselId', 'program', 'fishery', 'firstReceiver',
-          'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
+          'year', 'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
           'logbookNum', 'observerLogbookNum', 'departurePort', 'returnPort', 'fishTicket', 'state',
           'commonName', 'speciesCode', 'disposition', 'weightMethod', 'gearType', 'gearPerformance',
-          'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize', 'year'
+          'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize',
       ];
 
       searchTypes.value.push.apply(searchTypes.value, types);
