@@ -209,48 +209,33 @@ export default createComponent({
 
     async function getCatches() {
       let catches: any[] = [];
-      let color = '#344B5F';
       if (state.debriefer.catches.length > 1) {
        catches = state.debriefer.catches;
       } else {
         for (const operation of state.debriefer.selectedOperations) {
           const unflattenedOperation = unflatten(operation, { delimiter: '-' });
           let catchIndex = 0;
-          color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
           for (const c of unflattenedOperation.catches) {
-            const tripId = unflattenedOperation.legacy.tripId;
-            const operationNum = unflattenedOperation.operationNum;
-            const operationId = unflattenedOperation._id;
-            let disposition = c.disposition ? c.disposition.description : '';
-            const wm = c.weightMethod ? c.weightMethod.description : '';
-            let weight: any = c.weight ? c.weight.value : null;
-            const sampleWeight: any = c.sampleWeight
-              ? c.sampleWeight.value
-              : null;
-            weight = weight ? weight : sampleWeight;
-            const count = c.count;
-            const catchContent = c.catchContent;
-            const name = catchContent ? catchContent.name : '';
+            const tripId = get(unflattenedOperation, 'legacy.tripId');
+            const operationNum = get(unflattenedOperation, 'operationNum');
+            const operationId = get(unflattenedOperation, '_id');
+            const disposition = get(c, 'disposition.description') === 'Retained' ? 'R' : 'D';
+            const wm = get(c, 'weightMethod.description');
+            const measuredWeight: any = get(c, 'measuredWeight.value');
+            const count = get(c, 'count');
+            const catchContent = get(c, 'catchContent');
             const children: any[] = [];
             let childIndex = 0;
             const key = operationId + '_' + catchIndex;
 
-            if (disposition === 'Retained') {
-              disposition = 'R';
-            } else if (disposition === 'Discarded') {
-              disposition = 'D';
-            }
-
-            if (c.children) {
-              for (const child of c.children) {
+            if (c.catchItems) {
+              for (const child of c.catchItems) {
                 const discardReason =  jp.query(child, '$..discardReason.description')[0];
 
                 const catchContents = child.catchContent;
-                const catchName = catchContents
-                  ? catchContents.commonNames[0]
-                  : '';
-                const childWeight = jp.query(child, 'weight.value')[0];
-                const childCount = child.sampleCount;
+                const catchName = get(catchContents, 'commonNames[0]');
+                const childWeight = get(child, 'measuredWeight.value');
+                const childCount = get(child, 'sampleCount');
                 let toolTipInfo: string = '';
 
                 const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
@@ -327,7 +312,6 @@ export default createComponent({
 
             const newCatchItem: any = {
               key,
-              style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
               data: {
                 tripId,
                 operationNum,
@@ -335,9 +319,8 @@ export default createComponent({
                 catchNum: c.catchNum,
                 disposition,
                 weightMethod: wm,
-                name,
                 catchContent,
-                weight,
+                measuredWeight,
                 count,
                 type: 'topLevel'
               }
@@ -399,31 +382,31 @@ export default createComponent({
             columnName === 'discardReason' ||
             columnName === 'disposition'
           ) {
-            catches[ids[1]].children[ids[2]][columnName] = {
+            catches[ids[1]].catchItems[ids[2]][columnName] = {
               description: newValue,
               _id: newId
             };
           } else if (columnName === 'name') {
-            catches[ids[1]].children[ids[2]].catchContent = newRecord.event.value;
+            catches[ids[1]].catchItems[ids[2]].catchContent = newRecord.event.value;
           } else if (columnName === 'weight') {
-            catches[ids[1]].children[ids[2]][columnName].value = newValue;
+            catches[ids[1]].catchItems[ids[2]][columnName].value = newValue;
             const wm: number = getWeightMethodNum(
               catches[ids[1]].weightMethod.description
             );
             catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
-            catches[ids[1]].children[ids[2]].sampleCount = newValue;
+            catches[ids[1]].catchItems[ids[2]].sampleCount = newValue;
           }
         } else if (ids.length === 4) {
           if (columnName === 'weight') {
-            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName].value =
+            catches[ids[1]].catchItems[ids[2]].baskets[ids[3]][columnName].value =
               newValue;
             const wm: number = getWeightMethodNum(
               catches[ids[1]].weightMethod.description
             );
             catches[ids[1]] = updateCatchWeight(wm, catches[ids[1]]);
           } else if (columnName === 'count') {
-            catches[ids[1]].children[ids[2]].baskets[ids[3]][columnName] =
+            catches[ids[1]].catchItems[ids[2]].baskets[ids[3]][columnName] =
               newValue;
           }
         }
