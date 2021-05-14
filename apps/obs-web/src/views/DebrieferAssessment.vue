@@ -23,7 +23,8 @@
                     <q-card-section>
                         <p style="font-weight: bold; font-size: 20px; letter-spacing: .5px;" class="text-primary">{{section}}
                             <span style="float: right" v-if="!['Requirements for Return (Exit/Year-end only)', 'Summary'].includes(section)">
-                                <q-btn size="sm" color="primary" @click="setAllOk(section)">Set All OK</q-btn>
+                                <q-btn size="sm" color="primary" icon="check" round @click="setAllOk(section)"></q-btn>&nbsp;
+                                <q-btn size="sm" color="primary" icon="clear" round @click="setAllNull(section)"></q-btn>
                             </span>
                         </p>
                         <div v-for="(assessmentResponse, i) of assessment.assessmentResponses" :key="i">
@@ -85,6 +86,7 @@
                 Please select an observer and evaluation period.
             </span>
         </div>
+        <q-btn color="primary" @click="exportPdf" style="margin-top: 5px">export pdf</q-btn>
     </div>
 </template>
 
@@ -162,20 +164,15 @@ export default createComponent({
 
     const observerMode = !state.user.userRoles.includes('debriefer') || state.user.observerMode;
 
-    const sections: any = [
-        'OTC Sampling Procedures',
-        'Weight Methods',
-        'Biological Sampling',
-        'Sample Size',
-        'OPTECS / Database Entry',
-        'Data Forms',
-        'Calculations',
-        'Observer Logbook',
-        'Species ID',
-        'Communication/Attitude/Reliability',
-        'Requirements for Return (Exit/Year-end only)',
-        'Summary'
-    ];
+    const sections: any = ref([]);
+    const getSections = async () => {
+          const result: any = await masterDB.view(
+            'obs_web',
+            'assessment-sections',
+            {include_docs: true, key: debriefer.program} as any
+          );
+          sections.value = result.rows[0].doc.sections;
+    };
 
     const assessment: any = ref(null);
 
@@ -316,6 +313,14 @@ export default createComponent({
         }
     };
 
+    const setAllNull = (section: any) => {
+        for (const response of assessment.value.assessmentResponses ) {
+            if (response.question.section === section && ['expectations met', 'improvement range'].includes(response.question.answerSet)) {
+                set(response, 'response', null);
+            }
+        }
+    }
+
     const setQuestionResponse = (index: number, answer: any) => {
         set(assessment.value.assessmentResponses[index], 'response', answer);
     };
@@ -337,12 +342,26 @@ export default createComponent({
         save();
     };
 
+    const exportPdf = () => {
+        let contents = [];
+        for (const section of sections.value) {
+            contents.push(section);
+            for (const response of assessment.value.assessmentResponses) {
+                if (response.question.section === section) {
+                    contents.push(response.question.question + ': ' + response.response)
+                }
+            };
+        };
+        console.log(contents);
+    };
+
     onMounted( async () => {
         if (!debriefer.observer) {
             store.dispatch('debriefer/updateEvaluationPeriod', {});
         }
         getUniqueVessels();
         getAnswerSets();
+        getSections();
     });
 
     watch(() => state.debriefer.trips, () => {
@@ -366,6 +385,7 @@ export default createComponent({
         answerSets,
         assessment,
         debriefer,
+        exportPdf,
         finalize,
         getAnswerSet,
         getArrayValues,
@@ -376,6 +396,7 @@ export default createComponent({
         samplingProcedures,
         sections,
         setAllOk,
+        setAllNull,
         setQuestionResponse,
         totalHauls,
         uniqueVessels,
