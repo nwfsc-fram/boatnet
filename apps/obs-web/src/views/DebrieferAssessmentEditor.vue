@@ -13,7 +13,7 @@
             <q-tr :props="props">
               <q-td key="sections" :props="props">
                 {{ getArrayString(props.row.sections) }}
-                <q-popup-edit v-model="props.row.sections" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.sections" buttons @save="save(props.row)">
                   <div v-for="section of props.row.sections" :key="props.row.sections.indexOf(section)">
                     <q-input v-model="props.row.sections[props.row.sections.indexOf(section)]" dense>
                       <template v-slot:append>
@@ -26,13 +26,13 @@
               </q-td>
               <q-td key="isWcgop" :props="props">
                 {{ props.row.isWcgop }}
-                <q-popup-edit v-model="props.row.isWcgop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isWcgop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isWcgop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="isAshop" :props="props">
                 {{ props.row.isAshop }}
-                <q-popup-edit v-model="props.row.isAshop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isAshop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isAshop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
@@ -53,44 +53,44 @@
           <div style="width: 100%; font-size: 1.5em; margin-top: 5px">
             <b style="color: #007EC6">QUESTIONS</b>
             <span style="color: #007EC6; font-size: .6em; vertical-align: middle; margin-left: 10px; font-style: italic">default sort order: program/section/order</span>
-            <q-btn style="float: right" flat color="primary" @click="addQuestion">new question</q-btn>
+            <q-btn style="float: right" color="primary" @click="addQuestion">new question</q-btn>
           </div>
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="section" :props="props">
                 {{ props.row.section }}
-                <q-popup-edit v-model="props.row.section" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.section" buttons @save="save(props.row)">
                     <q-select v-model="props.row.section" :options="sections" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="question" :props="props">
                 {{ getQuestionString(props.row.question) }}
-                <q-popup-edit v-model="props.row.question" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.question" buttons @save="save(props.row)">
                     <q-input v-model="props.row.question" dense></q-input>
                 </q-popup-edit>
               </q-td>
               <q-td key="answerSet" :props="props">
                 {{ props.row.answerSet }}
-                <q-popup-edit v-model="props.row.answerSet" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.answerSet" buttons @save="save(props.row)">
                     <q-select v-model="props.row.answerSet" :options="getProgramAnswerSetNames" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="order" :props="props">
                 {{ props.row.order }}
-                <q-popup-edit v-model="props.row.order" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.order" buttons @save="save(props.row)">
                     <q-input v-model="props.row.order" dense></q-input>
                 </q-popup-edit>
               </q-td>
               <q-td key="isWcgop" :props="props">
                 {{ props.row.isWcgop }}
-                <q-popup-edit v-model="props.row.isWcgop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isWcgop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isWcgop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="isAshop" :props="props">
                 {{ props.row.isAshop }}
-                <q-popup-edit v-model="props.row.isAshop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isAshop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isAshop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
@@ -110,20 +110,20 @@
           <template v-slot:top :props="props">
             <div style="width: 100%; font-size: 1.5em; margin-top: 5px">
               <b style="color: #007EC6">ANSWER SETS</b>
-              <q-btn style="float: right" flat color="primary" @click="addAnswerSet">new answer set</q-btn>
+              <q-btn style="float: right" color="primary" @click="addAnswerSet">new answer set</q-btn>
             </div>
             </template>
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="name" :props="props">
                 {{ props.row.name }}
-                <q-popup-edit v-model="props.row.name" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.name" buttons @save="save(props.row)">
                     <q-input v-model="props.row.name" dense></q-input>
                 </q-popup-edit>
               </q-td>
               <q-td key="options" :props="props">
                 {{ getArrayString(props.row.options) }}
-                <q-popup-edit v-model="props.row.options" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.options" buttons @save="save(props.row)">
                   <div v-for="option of props.row.options" :key="props.row.options.indexOf(option)">
                     <q-input v-model="props.row.options[props.row.options.indexOf(option)]" dense>
                       <template v-slot:append>
@@ -140,13 +140,13 @@
               </q-td>
               <q-td key="isWcgop" :props="props">
                 {{ props.row.isWcgop }}
-                <q-popup-edit v-model="props.row.isWcgop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isWcgop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isWcgop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="isAshop" :props="props">
                 {{ props.row.isAshop }}
-                <q-popup-edit v-model="props.row.isAshop" buttons persistent @save="save(props.row)">
+                <q-popup-edit v-model="props.row.isAshop" buttons @save="save(props.row)">
                     <q-select v-model="props.row.isAshop" :options="[true, false]" dense></q-select>
                 </q-popup-edit>
               </q-td>
