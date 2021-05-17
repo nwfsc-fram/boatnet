@@ -13,6 +13,7 @@ import DeclarationCart from './views/DeclarationCart.vue';
 import DeclarationReceipt from './views/DeclarationReceipt.vue';
 import Declarations from './views/Declarations.vue';
 import Debriefer from './views/Debriefer.vue';
+import DebrieferAssessmentEditor from './views/DebrieferAssessmentEditor.vue';
 import DebrieferTableExpanded from './views/DebrieferTableExpanded.vue';
 import ELogbook from './views/ELogbook.vue';
 import EMApiPortal from './views/EMApiPortal.vue';
@@ -116,6 +117,7 @@ const router = new Router({
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
         { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
+        { path: '/editAssessment', name: 'Debriefer Assessment Editor', component: DebrieferAssessmentEditor },
         {
           path: '/debriefer', name: 'Debriefer', component: DebrieferLayout,
         },

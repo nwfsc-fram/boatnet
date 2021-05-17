@@ -2,7 +2,7 @@
   <div>
     <div v-if="state.debriefer.program === 'wcgop'">
       <q-tabs
-        
+
         v-model="topTab"
         align="left"
         dense
@@ -23,7 +23,7 @@
         <q-tab-panel name="evaluation" v-show="show">
           <app-debriefer-wcgop-evaluation class="z-index5 1"/>
         </q-tab-panel>
-        <q-tab-panel name="search">   
+        <q-tab-panel name="search">
           <app-debriefer-wcgop-search v-show="show"/>
         </q-tab-panel>
       </q-tab-panels>
@@ -40,7 +40,7 @@
             <q-tab name="data" label="Data" />
             <q-tab name="errors" label="Errors" />
             <q-tab name="summary" label="Summary" />
-            <q-tab v-if="topTab === 'evaluation'" name="assessement" label="Assessement" />
+            <q-tab v-if="topTab === 'evaluation'" name="assessment" label="Assessment" />
             <q-tab v-if="topTab === 'evaluation'" name="dcs" label="DCS" />
           </q-tabs>
 
@@ -60,7 +60,7 @@
         <q-tab-panel name="summary">
           <app-debriefer-summary @changeTab="redirectTabs"/>
         </q-tab-panel>
-        <q-tab-panel name="assessement">
+        <q-tab-panel name="assessment">
           <app-debriefer-assessment ></app-debriefer-assessment>
         </q-tab-panel>
         <q-tab-panel name="dcs">
