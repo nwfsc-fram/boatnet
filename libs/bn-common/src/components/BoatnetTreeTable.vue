@@ -30,6 +30,46 @@
             </MultiSelect>
             <div style="float: right">
               <q-btn
+                v-if="isAuthorized(['development_staff'])"
+                flat
+                icon="settings"
+              >
+              <q-tooltip>Settings</q-tooltip>
+              <q-menu>
+                <q-list style="width: 225px">
+                  <q-item clickable v-close-popup>
+                    <q-toggle
+                      left-label
+                      v-model="displayCodes"
+                      label="Display codes:"
+                      @input="updateDisplayCodes"
+                    />
+                  </q-item>
+                  <q-item clickable v-close-popup>
+                    <span>Program:</span>
+                    <q-btn-toggle
+                      class="q-ml-md"
+                      v-model="program"
+                      toggle-color="primary"
+                      dense
+                      :options="[
+                        {label: 'A-SHOP', value: 'ashop'},
+                        {label: 'WCGOP', value: 'wcgop'},
+                      ]"
+                      @input="updateProgram"
+                    />
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+            <q-toggle
+              v-else
+              left-label
+              v-model="displayCodes"
+              label="Display codes:"
+              @input="updateDisplayCodes"
+            />
+              <q-btn
                 flat
                 icon="mdi-filter-off-outline"
                 @click="clearFilters"
@@ -75,6 +115,8 @@
               v-model="filters[col.field]"
               :options="filterOptions[col.header]"
               appendTo="body"
+              :optionLabel="state.debriefer.displayCodes ? 'label' : ''"
+              :optionValue="state.debriefer.displayCodes ? 'value' : ''"
               :filter="true"
             />
             <InputText
@@ -198,7 +240,6 @@ export default createComponent ({
     const tableType = props.program + '-' + props.type;
     const expandedKeys: any = props.initExpandedKeys ? ref(props.initExpandedKeys) : ref({});
 
-    const stateDisplayCols = state.debriefer.displayColumns;
     const columnOptions: any = ref([...(props.columns ? props.columns : [])]);
     const currCols: any = ref([...(props.columns ? props.columns : [])]);
 
@@ -215,7 +256,8 @@ export default createComponent ({
 
     const masterDB: Client<any> = couchService.masterDB;
 
-    const dbProgram: string = state.debriefer.program;
+    const stateProgram: any = ref(state.debriefer.program);
+    const displayCodes: any = ref(state.debriefer.displayCodes);
 
     function clearFilters() {
       filters.value = {};
@@ -229,9 +271,16 @@ export default createComponent ({
       editingCol.value = '';
     }
 
-    function converToCode(key: any, val: any) {
-      const code: any = find(props.lookupsMap, { key: key + ':' + val});
-      return code ? code.value : undefined;
+    function converToCode(view: any, val: any, context: any) {
+      let code: any;
+      let lookupView: string = view === 'taxonomy-alias' && context.catchContent ? context.catchContent.type : view;
+      if (lookupView === 'taxonomy-alias' && context.catchContent) {
+        code = find(props.lookupsMap, { key: lookupView + ':' + val});
+        return code.value + ' - ' + val;
+      } else {
+        code = find(props.lookupsMap, { key: lookupView + ':' + val});
+        return code ? code.value : undefined;
+      }      
     }
 
     function displayData(data: any, col: any) {
@@ -239,7 +288,7 @@ export default createComponent ({
       const colField = col.field;
       let value: any = data.node.data[colField];
       if (state.debriefer.displayCodes && col.lookupView && value) {
-        value = converToCode(col.lookupView, value);
+        value = converToCode(col.lookupView, value, data.node.data);
       }
       if (value && colType === 'double' && value % 1 !== 0) {
         value = parseFloat(value).toFixed(2);
@@ -261,11 +310,21 @@ export default createComponent ({
             }
           });
           if (state.debriefer.displayCodes && col.lookupView) {
+            const data = jp.query(props.nodes, '$..data');
             for (let i = 0; i < filterList[col.header].length; i++) {
-              filterList[col.header][i] = converToCode(col.lookupView, filterList[col.header][i]);
+              filterList[col.header][i] = {
+                label: converToCode(col.lookupView, filterList[col.header][i], data[i]),
+                value: filterList[col.header][i]
+              };
             }
+            remove(filterList[col.header], (item: any) => {
+              return !item || !item.label ? true : false;
+          });
           }
           filterList[col.header] = filterList[col.header].sort();
+          remove(filterList[col.header], (item: any) => {
+            return !item;
+          });
         }
       }
       return filterList;
@@ -273,25 +332,25 @@ export default createComponent ({
 
     const displayColumns = computed({
       get: () => {
-        if (!stateDisplayCols[tableType]) {
+        if (!displayCodes[tableType]) {
           currCols.value = [...(props.columns ? props.columns : [])];
         } else {
-          currCols.value = stateDisplayCols[tableType];
+          currCols.value = displayCodes[tableType];
         }
         currCols.value = orderBy(currCols.value, ['order']);
         return currCols.value;
       },
       set: (val) => {
         currCols.value = val;
-        stateDisplayCols[tableType] = val;
-        store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
+        displayCodes[tableType] = val;
+        store.dispatch('debriefer/updateDisplayColumns', displayCodes);
       },
     });
 
     async function init(data: any, col: any) {
       tempVal.value = data.node.data[col.field];
       if (state.debriefer.displayCodes && col.lookupView && tempVal.value) {
-        tempVal.value = converToCode(col.lookupView, tempVal.value);
+        tempVal.value = converToCode(col.lookupView, tempVal.value, data.node.data);
       }
       const nodeKey = data.node.key;
       if (editingRow.value !== data.node.key) {
@@ -328,11 +387,11 @@ export default createComponent ({
         }
       }
       const programState = state.debriefer.program;
-      const results = await getCouchLookupInfo(programState ? programState : dbProgram, 'obs_web', key, [lookupField]);
+      const results = await getCouchLookupInfo(programState, 'obs_web', key, [lookupField]);
       for (let i = 0; i < results.length; i++) {
         let label = get(results[i].doc, lookupField);
         if (state.debriefer.displayCodes && label) {
-            label = converToCode(key, label);
+            label = converToCode(key, label, data.node.data);
             label = label ? label : '';
           }
         lookupList[i] = { label, value: results[i].doc };
@@ -393,6 +452,23 @@ export default createComponent ({
       window.open(route, '_blank');
     }
 
+    async function updateDisplayCodes(status: any) {
+      store.dispatch('debriefer/updateDisplayCodes', status);
+    }
+
+    async function updateProgram(status: string) {
+      store.dispatch('debriefer/updateProgram', status);
+    }
+
+    function isAuthorized(authorizedRoles: string[]) {
+      for (const role of authorizedRoles) {
+        if (state.user.userRoles.includes(role)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     return {
       displayColumns,
       columnOptions,
@@ -419,7 +495,9 @@ export default createComponent ({
       select,
       selectedRow, dcsDetailsDialog,  afiChoice,
       onNodeSelect, onNodeUnselect, addToDcs,
-      tempVal
+      tempVal,
+      stateProgram, displayCodes, isAuthorized,
+      updateDisplayCodes, updateProgram
     };
   }
 });

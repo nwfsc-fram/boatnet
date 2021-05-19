@@ -107,7 +107,6 @@ export default createComponent({
           header: 'Name',
           field: 'name',
           width: '200',
-          codeWidth: '100',
           isEditable: true,
           type: 'toggle-search',
           lookupView: 'taxonomy-alias',
