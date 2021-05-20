@@ -277,7 +277,8 @@ export default createComponent ({
       let lookupView: string = view === 'taxonomy-alias' && context.catchContent ? context.catchContent.type : view;
       if (lookupView === 'taxonomy-alias' && context.catchContent) {
         code = find(props.lookupsMap, { key: lookupView + ':' + val});
-        return code.value + ' - ' + val;
+        code = code ? code.value : '';
+        return code + ' - ' + val;
       } else {
         code = find(props.lookupsMap, { key: lookupView + ':' + val});
         return code ? code.value : undefined;
