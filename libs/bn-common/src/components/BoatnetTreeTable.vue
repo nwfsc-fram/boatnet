@@ -258,6 +258,7 @@ export default createComponent ({
 
     const stateProgram: any = ref(state.debriefer.program);
     const displayCodes: any = ref(state.debriefer.displayCodes);
+    const stateDisplayCols = state.debriefer.displayColumns;
 
     function clearFilters() {
       filters.value = {};
@@ -332,18 +333,18 @@ export default createComponent ({
 
     const displayColumns = computed({
       get: () => {
-        if (!displayCodes[tableType]) {
+        if (!stateDisplayCols[tableType]) {
           currCols.value = [...(props.columns ? props.columns : [])];
         } else {
-          currCols.value = displayCodes[tableType];
+          currCols.value = stateDisplayCols[tableType];
         }
         currCols.value = orderBy(currCols.value, ['order']);
         return currCols.value;
       },
       set: (val) => {
         currCols.value = val;
-        displayCodes[tableType] = val;
-        store.dispatch('debriefer/updateDisplayColumns', displayCodes);
+        stateDisplayCols[tableType] = val;
+        store.dispatch('debriefer/updateDisplayColumns', stateDisplayCols);
       },
     });
 

@@ -21,9 +21,10 @@
 <script lang="ts">
 import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
-import { Client } from 'davenport';
+import { Client, ListOptions } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { merge, get, orderBy } from 'lodash';
+import { cloneDeep, difference, merge, get, orderBy, remove, uniq } from 'lodash';
+
 
 export default createComponent({
   props: {
@@ -42,6 +43,7 @@ export default createComponent({
     const unflatten = flatten.unflatten;
     const jp = require('jsonpath');
     const expandedKeys: any = state.debriefer.expandedCatch ? state.debriefer.expandedCatch : {};
+    const masterDB: Client<any> = couchService.masterDB;
 
     const wcgopColumns = [
         {
@@ -209,150 +211,147 @@ export default createComponent({
     async function getCatches() {
       let catches: any[] = [];
       let color = '#344B5F';
-      if (state.debriefer.catches.length > 1) {
-       catches = state.debriefer.catches;
-      } else {
-        for (const operation of state.debriefer.selectedOperations) {
-          const unflattenedOperation = unflatten(operation, { delimiter: '-' });
-          let catchIndex = 0;
-          color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
-          for (const c of unflattenedOperation.catches) {
-            const tripId = unflattenedOperation.legacy.tripId;
-            const operationNum = unflattenedOperation.operationNum;
-            const operationId = unflattenedOperation._id;
-            let disposition = c.disposition ? c.disposition.description : '';
-            const wm = c.weightMethod ? c.weightMethod.description : '';
-            let weight: any = c.weight ? c.weight.value : null;
-            const sampleWeight: any = c.sampleWeight
-              ? c.sampleWeight.value
-              : null;
-            weight = weight ? weight : sampleWeight;
-            const count = c.count;
-            const catchContent = c.catchContent;
-            const name = catchContent ? catchContent.name : '';
-            const children: any[] = [];
-            let childIndex = 0;
-            const key = operationId + '_' + catchIndex;
 
-            if (disposition === 'Retained') {
-              disposition = 'R';
-            } else if (disposition === 'Discarded') {
-              disposition = 'D';
-            }
+      for (const operation of state.debriefer.selectedOperations) {
+        const unflattenedOperation = unflatten(operation, { delimiter: '-' });
+        let catchIndex = 0;
+        color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
+        for (const c of unflattenedOperation.catches) {
+          const tripId = unflattenedOperation.legacy.tripId;
+          const operationNum = unflattenedOperation.operationNum;
+          const operationId = unflattenedOperation._id;
+          let disposition = c.disposition ? c.disposition.description : '';
+          const wm = c.weightMethod ? c.weightMethod.description : '';
+          let weight: any = c.weight ? c.weight.value : null;
+          const sampleWeight: any = c.sampleWeight
+            ? c.sampleWeight.value
+            : null;
+          weight = weight ? weight : sampleWeight;
+          const count = c.count;
+          const catchContent = c.catchContent;
+          const name = catchContent ? catchContent.name : '';
+          const children: any[] = [];
+          let childIndex = 0;
+          const key = operationId + '_' + catchIndex;
 
-            if (c.children) {
-              for (const child of c.children) {
-                const discardReason =  jp.query(child, '$..discardReason.description')[0];
-
-                const catchContents = child.catchContent;
-                const catchName = catchContents
-                  ? catchContents.commonNames[0]
-                  : '';
-                const childWeight = jp.query(child, 'weight.value')[0];
-                const childCount = child.sampleCount;
-                let toolTipInfo: string = '';
-
-                const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
-                const specimensCnt: number = child.specimens ? child.specimens.length : 0;
-
-                const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
-                toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
-
-                const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
-                toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
-
-                const sex: string[] = jp.query(child, '$..specimens[*].sex');
-                toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
-
-                const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
-                toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
-
-                const baskets: any[] = [];
-                let basketCnt;
-                if (child.baskets) {
-                  basketCnt = child.baskets.length;
-                  let basketCount = 1;
-                  for (const basket of child.baskets) {
-                    baskets.push({
-                      key: key + '_' + childIndex + '_' + basketCount,
-                      data: {
-                        name: 'Basket ' + basketCount,
-                        weight: basket.weight.value,
-                        count: basket.count,
-                        avgWt: basket.weight.value / basket.count,
-                        disposition,
-                        weightMethod: wm,
-                        operationNum,
-                        catchNum: c.catchNum,
-                        type: 'basket'
-                      }
-                    });
-                    basketCount++;
-                  }
-                }
-                const newChild: any = {
-                  key: key + '_' + childIndex,
-                  data: {
-                    specimensCnt,
-                    specimenIds,
-                    basketCnt,
-                    toolTipInfo,
-                    discardReason,
-                    name: catchName,
-                    catchContent: catchContents,
-                    weight: childWeight,
-                    count: childCount,
-                    disposition,
-                    weightMethod: wm,
-                    operationNum,
-                    catchNum: c.catchNum,
-                    type: 'child'
-                  }
-                };
-                // if there is only one basket do not show dropdown row
-                // instead, merge info with top level item
-                if (baskets.length === 1) {
-                  const combined = merge(newChild, baskets[0]);
-                  combined.data.type = 'child';
-                  combined.data.name = catchName;
-                  children.push(combined);
-                } else {
-                  newChild.children = baskets;
-                  children.push(newChild);
-                }
-                childIndex++;
-              }
-            }
-
-            const newCatchItem: any = {
-              key,
-              style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
-              data: {
-                tripId,
-                operationNum,
-                operationId,
-                catchNum: c.catchNum,
-                disposition,
-                weightMethod: wm,
-                name,
-                catchContent,
-                weight,
-                count,
-                type: 'topLevel'
-              }
-            };
-            // if there is only one basket do not show dropdown row
-            // instead, merge info with top level item
-            if (children.length === 1) {
-              const combined = merge(newCatchItem, children[0]);
-              combined.data.type = 'topLevel';
-              catches.push(combined);
-            } else {
-              newCatchItem.children = children;
-              catches.push(newCatchItem);
-            }
-            catchIndex++;
+          if (disposition === 'Retained') {
+            disposition = 'R';
+          } else if (disposition === 'Discarded') {
+            disposition = 'D';
           }
+
+          if (c.children) {
+            for (const child of c.children) {
+              const discardReason =  jp.query(child, '$..discardReason.description')[0];
+
+              const catchContents = child.catchContent;
+              const catchName = catchContents
+                ? catchContents.commonNames[0]
+                : '';
+              const childWeight = jp.query(child, 'weight.value')[0];
+              const childCount = child.sampleCount;
+              let toolTipInfo: string = '';
+
+              const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
+              const specimensCnt: number = child.specimens ? child.specimens.length : 0;
+
+              const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
+              toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
+
+              const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
+              toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
+
+              const sex: string[] = jp.query(child, '$..specimens[*].sex');
+              toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
+
+              const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
+              toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
+
+              const baskets: any[] = [];
+              let basketCnt;
+              if (child.baskets) {
+                basketCnt = child.baskets.length;
+                let basketCount = 1;
+                for (const basket of child.baskets) {
+                  baskets.push({
+                    key: key + '_' + childIndex + '_' + basketCount,
+                    data: {
+                      name: 'Basket ' + basketCount,
+                      weight: basket.weight.value,
+                      count: basket.count,
+                      avgWt: basket.weight.value / basket.count,
+                      disposition,
+                      weightMethod: wm,
+                      operationNum,
+                      catchNum: c.catchNum,
+                      type: 'basket'
+                    }
+                  });
+                  basketCount++;
+                }
+              }
+              const newChild: any = {
+                key: key + '_' + childIndex,
+                data: {
+                  specimensCnt,
+                  specimenIds,
+                  basketCnt,
+                  toolTipInfo,
+                  discardReason,
+                  name: catchName,
+                  catchContent: catchContents,
+                  weight: childWeight,
+                  count: childCount,
+                  disposition,
+                  weightMethod: wm,
+                  operationNum,
+                  catchNum: c.catchNum,
+                  type: 'child'
+                }
+              };
+              // if there is only one basket do not show dropdown row
+              // instead, merge info with top level item
+              if (baskets.length === 1) {
+                const combined = merge(newChild, baskets[0]);
+                combined.data.type = 'child';
+                combined.data.name = catchName;
+                children.push(combined);
+              } else {
+                newChild.children = baskets;
+                children.push(newChild);
+              }
+              childIndex++;
+            }
+          }
+
+          const newCatchItem: any = {
+            key,
+            style: color === '#FFFFFF' ? 'background: #FFFFFF' : 'background: #E9ECEF', // f4f4f4
+            data: {
+              tripId,
+              operationNum,
+              operationId,
+              catchNum: c.catchNum,
+              disposition,
+              weightMethod: wm,
+              name,
+              catchContent,
+              weight,
+              count,
+              type: 'topLevel'
+            }
+          };
+          // if there is only one basket do not show dropdown row
+          // instead, merge info with top level item
+          if (children.length === 1) {
+            const combined = merge(newCatchItem, children[0]);
+            combined.data.type = 'topLevel';
+            catches.push(combined);
+          } else {
+            newCatchItem.children = children;
+            catches.push(newCatchItem);
+          }
+          catchIndex++;
         }
       }
       catches = orderBy(catches, ['data.tripId', 'data.operationNum', 'data.catchNum'], ['asc', 'asc', 'asc']);
@@ -362,7 +361,6 @@ export default createComponent({
 
     async function save(newRecord: any) {
       store.dispatch('debriefer/updateCatches', WcgopCatches.value);
-      const masterDB: Client<any> = couchService.masterDB;
 
       const columnInfo = newRecord.data.column;
       const recordInfo = newRecord.data.node;
@@ -372,6 +370,8 @@ export default createComponent({
       const columnName = columnInfo.field;
       const newValue = get(recordData, columnName);
       const newId = get(newRecord.event.value, '_id');
+
+      const selectedOperations = state.debriefer.selectedOperations;
 
       try {
         const operationRecord = await masterDB.get(ids[0]);
@@ -427,11 +427,19 @@ export default createComponent({
           }
         }
         operationRecord.catches = catches;
-        await masterDB.put(
+        const result = await masterDB.put(
           operationRecord._id,
           operationRecord,
           operationRecord._rev
         );
+        // update selected operations, remove the old and insert the new
+        remove(selectedOperations, (op: any) => {
+          return op._id === result.id ? true : false;
+        })
+        let updatedOperation = await masterDB.get(result.id, result.rev);
+        updatedOperation = flatten(updatedOperation, { delimiter: '-' });
+        selectedOperations.push(updatedOperation);
+        store.dispatch('debriefer/updateSelectedOperations', selectedOperations);
       } catch (err) {
         console.log(err);
       }
