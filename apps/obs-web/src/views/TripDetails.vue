@@ -139,7 +139,7 @@
                                     :rules="[val => !!val || 'Departure Date/Time is required']"
                                     >
                                     <template #footer>
-                                        <q-btn v-if="depDateTime !== ''" style="float: right" color="primary" size="sm" @click="submitDepartureDate">Enter</q-btn>
+                                        <q-btn v-if="depDateTime !== ''" style="float: right" color="primary" size="sm" @click="submitDepartureDate">Done</q-btn>
                                     </template>
                                 </pCalendar>
                             </q-item-section>
