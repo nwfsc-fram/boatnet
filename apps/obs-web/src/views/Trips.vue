@@ -270,9 +270,9 @@
           <p>Are you sure you want to cancel {{ activeTrip && activeTrip.tripNum ? ' trip # ' +  activeTrip.tripNum  : ' trip'}}?  <br>A trip can not be un-cancelled. (You may need to create it again)
           <br><br>Note: Cancelled trip selection will be applied to the next trip in the same fishery.</p>
           <div style="float: right">
-            <q-btn color="red" size="md" @click="cancelActiveTrip">yes, cancel trip</q-btn>
+            <q-btn color="red" size="sm" @click="cancelActiveTrip">yes, cancel trip</q-btn>
             &nbsp;
-            <q-btn color="primary" size="md" @click="cancelAlert = false">no, keep trip</q-btn>
+            <q-btn color="primary" size="sm" @click="cancelAlert = false">no, keep trip</q-btn>
           </div>
           <br><br>
         </q-card-section>
