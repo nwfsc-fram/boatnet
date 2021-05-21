@@ -272,17 +272,17 @@ export default createComponent ({
       editingCol.value = '';
     }
 
-    function converToCode(view: any, val: any, context: any) {
+    function converToCode(view: any, val: any, data: any) {
       let code: any;
-      let lookupView: string = view === 'taxonomy-alias' && context.catchContent ? context.catchContent.type : view;
-      if (lookupView === 'taxonomy-alias' && context.catchContent) {
+      const lookupView: string = view === 'taxonomy-alias' && data.catchContent ? data.catchContent.type : view;
+      if (lookupView === 'taxonomy-alias' && data.catchContent) {
         code = find(props.lookupsMap, { key: lookupView + ':' + val});
         code = code ? code.value : '';
         return code + ' - ' + val;
       } else {
         code = find(props.lookupsMap, { key: lookupView + ':' + val});
         return code ? code.value : undefined;
-      }      
+      }
     }
 
     function displayData(data: any, col: any) {

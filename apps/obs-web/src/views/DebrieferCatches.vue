@@ -341,16 +341,8 @@ export default createComponent({
               type: 'topLevel'
             }
           };
-          // if there is only one basket do not show dropdown row
-          // instead, merge info with top level item
-          if (children.length === 1) {
-            const combined = merge(newCatchItem, children[0]);
-            combined.data.type = 'topLevel';
-            catches.push(combined);
-          } else {
-            newCatchItem.children = children;
-            catches.push(newCatchItem);
-          }
+          newCatchItem.children = children;
+          catches.push(newCatchItem);
           catchIndex++;
         }
       }
@@ -435,7 +427,7 @@ export default createComponent({
         // update selected operations, remove the old and insert the new
         remove(selectedOperations, (op: any) => {
           return op._id === result.id ? true : false;
-        })
+        });
         let updatedOperation = await masterDB.get(result.id, result.rev);
         updatedOperation = flatten(updatedOperation, { delimiter: '-' });
         selectedOperations.push(updatedOperation);
