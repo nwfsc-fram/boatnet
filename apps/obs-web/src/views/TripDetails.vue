@@ -138,7 +138,7 @@
                                     onfocus="blur()"
                                     :rules="[val => !!val || 'Departure Date/Time is required']"
                                     >
-                                    <template #footer>
+                                    <template #header>
                                         <q-btn v-if="depDateTime !== ''" style="float: right" color="primary" size="sm" @click="submitDepartureDate">Done</q-btn>
                                     </template>
                                 </pCalendar>
