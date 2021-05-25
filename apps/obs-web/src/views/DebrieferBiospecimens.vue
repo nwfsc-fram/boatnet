@@ -221,14 +221,14 @@ export default createComponent({
       }
     ];
 
-    watch(() => state.debriefer.selectedOperations, getBiospecimens);
+    watch(() => state.debriefer.operations, getBiospecimens);
 
     async function getBiospecimens() {
       let bioSpecimens: any[] = [];
       if (state.debriefer.biospecimens.length > 1) {
         bioSpecimens = state.debriefer.biospecimens;
       } else {
-        const operations = state.debriefer.selectedOperations;
+        const operations = state.debriefer.operations;
         const unflattenedOperations: any[] = [];
         for (const op of operations) {
           unflattenedOperations.push(unflatten(op, { delimiter: '-' }));

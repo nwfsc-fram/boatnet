@@ -7,11 +7,9 @@
             uniqueKey="_id"
             :enableSelection="true"
             :isFullSize="isFullSize"
-            :initialSelection="initialSelection"
             :loading="loading"
-            :showSelectionBoxes="true"
+            :showSelectionBoxes="false"
             :lookupsMap="lookupsMap"
-            @selectValues="selectValues"
             @save="save"
         />
     </div>
@@ -36,9 +34,6 @@ export default createComponent({
     setup(props, context) {
         const store = context.root.$store;
         const state: any = store.state;
-        const initialSelection = state.debriefer.selectedOperations
-            ? state.debriefer.selectedOperations
-            : [];
         const masterDB: Client<any> = couchService.masterDB;
         const operations: any = ref([]);
         const loading: any = ref(false);
@@ -314,7 +309,6 @@ export default createComponent({
         return {
             wcgopColumns,
             selectValues,
-            initialSelection,
             save,
             displayColumns,
             operations,

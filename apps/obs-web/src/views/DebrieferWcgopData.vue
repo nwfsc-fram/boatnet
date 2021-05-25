@@ -137,12 +137,6 @@ export default createComponent({
         tripLabel
       );
       filters.value = filters.value.concat(trips);
-      const hauls = updateFilter(
-        state.debriefer.selectedOperations,
-        'Haul',
-        'operationNum'
-      );
-      filters.value = filters.value.concat(hauls);
     }
 
     function updateFilter(list: any[], label: string, idLabel: string) {
@@ -182,13 +176,6 @@ export default createComponent({
           updateTab('cruises');
         }
         store.dispatch('debriefer/updateSelectedCruises', cruises);
-      } else {
-        index = findIndex(ops, item);
-        ops.splice(index, 1);
-        if (ops.length === 0) {
-          updateTab('operations');
-        }
-        store.dispatch('debriefer/updateSelectedOperations', ops);
       }
     }
 

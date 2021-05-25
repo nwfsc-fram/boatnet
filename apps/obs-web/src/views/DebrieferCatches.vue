@@ -194,7 +194,7 @@ export default createComponent({
     ];
 
     watch(() => state.debriefer.selectedTrips, getCatches);
-    watch(() => state.debriefer.selectedOperations, getCatches);
+    watch(() => state.debriefer.operations, getCatches);
 
     function select(item: string[]) {
       store.dispatch('debriefer/updateSelectedBiospecimens', item);
@@ -212,7 +212,7 @@ export default createComponent({
       let catches: any[] = [];
       let color = '#344B5F';
 
-      for (const operation of state.debriefer.selectedOperations) {
+      for (const operation of state.debriefer.operations) {
         const unflattenedOperation = unflatten(operation, { delimiter: '-' });
         let catchIndex = 0;
         color = color === '#FFFFFF' ? '#344B5F' : '#FFFFFF';
@@ -363,7 +363,7 @@ export default createComponent({
       const newValue = get(recordData, columnName);
       const newId = get(newRecord.event.value, '_id');
 
-      const selectedOperations = state.debriefer.selectedOperations;
+      const selectedOperations = state.debriefer.operations;
 
       try {
         const operationRecord = await masterDB.get(ids[0]);
