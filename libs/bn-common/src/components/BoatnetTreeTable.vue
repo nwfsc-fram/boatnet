@@ -136,7 +136,7 @@
                 <span
                   class="tooltiptext"
                   style="pointer-events: none"
-                >{{ displayData(slotProps, col) }}</span>
+                >{{ slotProps.node.data.toolTipInfo }}</span>
               </span>
               <span
                 v-else-if="(slotProps.node.data.type === 'child' ||
