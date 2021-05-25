@@ -356,7 +356,7 @@ export default createComponent({
     const tempVal: any = ref('');
 
     const program: any = ref('');
-    const displayCodes: any = ref(false);
+    const displayCodes: any = ref(state.debriefer.displayCodes);
 
     onActivated(() => {
       filters.value = state.debriefer.filters[tableType];
@@ -571,7 +571,7 @@ export default createComponent({
       } else if (type === 'coordinate') {
         const lat = get(slotProps.data, displayField[0]);
         const long = get(slotProps.data, displayField[1]);
-        formattedValue = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+        formattedValue = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
       } else if (formattedValue && type === 'double' && formattedValue % 1 !== 0) {
         formattedValue = formattedValue.toFixed(2);
       }
@@ -593,7 +593,7 @@ export default createComponent({
       } else if (type === 'coordinate') {
         const lat = get(event.data, columnInfo.displayField[0]);
         const long = get(event.data, columnInfo.displayField[1]);
-        cellVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+        cellVal.value = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
       }
     }
 
@@ -605,7 +605,7 @@ export default createComponent({
       } else if (colInfo.type === 'coordinate') {
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
-        tempVal.value = toDMS([lat, long], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+        tempVal.value = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
       } else if (colInfo.type === 'date') {
         tempVal.value = moment(tempVal.value).format('MM/DD/YYYY HH:mm');
       }
