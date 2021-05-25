@@ -98,6 +98,11 @@
       <br>
       <q-toggle v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="captainMode" label="Captain Mode" style="margin-top: 30px;"/>
       <q-toggle v-if="isAuthorized(['debriefer', 'development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator'])" v-model="observerMode" label="Observer Mode" style="margin-top: 30px;"/>
+      <br>
+      <div style="padding: 5px">
+        <q-btn v-if="isAuthorized(['data_steward'])" color="primary" @click="updateProviders">Update Providers</q-btn>&nbsp;
+        <q-btn v-if="isAuthorized(['data_steward'])" color="primary" @click="updateEMRoster">Update EM Roster</q-btn>
+      </div>
       </div>
 
       <div v-else-if="!activeUser && !isSyncing" style="display: block; text-align: center">
@@ -136,11 +141,12 @@ import { AuthState, authService } from '@boatnet/bn-auth';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import { CouchDBInfo, couchService } from '@boatnet/bn-couch';
 import { pouchService, pouchState, PouchDBState } from '@boatnet/bn-pouch';
-import { EmEfp, Permit } from '@boatnet/bn-models';
+import { EmEfp, Permit, Vessel } from '@boatnet/bn-models';
 import moment from 'moment';
 
 import { Notify } from 'quasar';
 import axios from 'axios';
+import { startCase, max } from 'lodash';
 
 @Component
 export default class Home extends Vue {
@@ -179,6 +185,7 @@ export default class Home extends Vue {
   private offlineTrips: any = null;
   private url: string = '';
   // private online: boolean = this.onlineStatus;
+  private masterDB: Client<any> = couchService.masterDB;
 
   constructor() {
     super();
@@ -195,14 +202,13 @@ export default class Home extends Vue {
 
     private async getUserFromCouchDB() {
         try {
-          const db = couchService.masterDB;
           const queryOptions = {
             limit: 1,
             key: authService.getCurrentUser()!.username,
             include_docs: true
             };
 
-          const userquery = await db.viewWithDocs(
+          const userquery: any = await this.masterDB.viewWithDocs(
             'obs_web',
             'all_active_persons',
             queryOptions
@@ -237,13 +243,12 @@ export default class Home extends Vue {
       if (!this.user.activeUserAlias) {
         console.log('getting active user alias');
 
-        const masterDb: Client<any> = couchService.masterDB;
         const queryOptions = {
           include_docs: true,
           key: authService.getCurrentUser()!.username
         };
 
-        let couchAlias: any = await masterDb.view<any>(
+        let couchAlias: any = await this.masterDB.view<any>(
           'obs_web',
           'all_person_alias',
           queryOptions
@@ -262,13 +267,13 @@ export default class Home extends Vue {
               couchAlias.roles = JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles));
               couchAlias.providerAssociations = this.user.activeUser.providerAssociations ? this.user.activeUser.providerAssociations : [];
 
-              await masterDb.put(
+              await this.masterDB.put(
                 couchAlias._id,
                 couchAlias,
                 couchAlias._rev)
                 .then(
                   async () => {
-                    const updatedAlias: any = await masterDb.view<any>(
+                    const updatedAlias: any = await this.masterDB.view<any>(
                       'obs_web',
                     'all_person_alias',
                     queryOptions
@@ -312,14 +317,13 @@ export default class Home extends Vue {
     console.log('getting permits from masterDB');
     this.permit.permits = [];
     this.permit.vesselPermits = {};
-    const masterDB: Client<any> = couchService.masterDB;
     try {
         const queryOptions = {
           reduce: false,
           include_docs: true,
           key: 'permit'
         };
-        const permits: any = await masterDB.view<any>(
+        const permits: any = await this.masterDB.view<any>(
             'obs_web',
             'all_doc_types',
             queryOptions
@@ -378,6 +382,133 @@ export default class Home extends Vue {
       });
   }
 
+  private async updateProviders() {
+      const couchProvidersQuery = await this.masterDB.view(
+        'obs_web',
+        'all_doc_types',
+        {include_docs: true, keys: ['third-party-reviewer', 'em-hardware']} as any
+      );
+      const couchProviders = couchProvidersQuery.rows.map( (row: any) => row.doc );
+
+      const config = {
+          headers: {
+              authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+              }
+          };
+
+      axios.get(this.url + '/api/v1/providers', config)
+      .then( async (response) => {
+        if (response.data.length) {
+          const permittedProviders = response.data.map( (row: any) => row.provider);
+          for (const provider of permittedProviders) {
+            if (!couchProviders.find( (row: any) => row.description === provider) ) {
+              await this.masterDB.bulk(
+                [
+                  {type: 'em-hardware', description: provider, createdBy: 'SDM', createdDate: moment().format(), isWcgop: true, isActive: true},
+                  {type: 'third-party-reviewer', description: provider, createdBy: 'SDM', createdDate: moment().format(), isWcgop: true, isActive: true}
+                ]
+              );
+            }
+          }
+          for (const couchProvider of couchProviders) {
+            if (!permittedProviders.includes(couchProvider.description) ) {
+               couchProvider.isActive = false;
+               couchProvider.updatedBy = 'SDM';
+               couchProvider.updateDate = moment().format();
+               this.masterDB.bulk([couchProvider]);
+            }
+          }
+        }
+      });
+  }
+
+  private async updateEMRoster() {
+
+    const config = {
+      headers: {
+        authorization: 'Bearer ' + authService.getCurrentUser()!.jwtToken
+      }
+    };
+
+    axios.get(this.url + '/api/v1/em-vessel-roster', config)
+    .then( async (response) => {
+      if (response.data.length) {
+        const emUpdate = response.data;
+        const vesselNums = emUpdate.map( (row: any) => row.registration_number);
+        let couchVessels: any = await this.masterDB.view('obs_web', 'all_vessel_nums', {include_docs: true, keys: vesselNums} as any);
+        couchVessels = couchVessels.rows.map( (row: any) => row.doc );
+
+        // add missing vessels
+        for (const vessel of emUpdate) {
+          if (!couchVessels.map( (row: any) => row.coastGuardNumber || row.stateRegulationNumber ).includes(vessel.registration_number)) {
+            const newVessel: Vessel = {
+                type: 'vessel',
+                vesselName: this.formatName(vessel.vessel_name),
+                coastGuardNumber: vessel.registration_number,
+                createdBy: 'em-roster-update',
+                createdDate: moment().format(),
+                emPermit: vessel.permit_number,
+                vesselStatus: 'Active',
+                isActive: true
+              };
+            const postResult: any = await this.masterDB.post(newVessel);
+            newVessel._id = postResult.id;
+            newVessel._rev = postResult.rev;
+            couchVessels.push(newVessel);
+          }
+        }
+
+        // update vessel providers
+        let emHardware: any = await this.masterDB.view('obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'em-hardware'} as any);
+        emHardware = emHardware.rows.map( (row: any) => row.doc );
+        let emReviewer: any = await this.masterDB.view('obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'third-party-reviewer'} as any);
+        emReviewer = emReviewer.rows.map( (row: any) => row.doc );
+
+        for (const couchVessel of couchVessels) {
+          const updateVessel = emUpdate.find( (row: any) => [couchVessel.coastGuardNumber, couchVessel.stateRegulationNumber].includes(row.registration_number));
+          couchVessel.emHardware = emHardware.find( (row: any) => row.description === updateVessel.provider );
+          couchVessel.thirdPartyReviewer = emReviewer.find( (row: any) => row.description === updateVessel.provider );
+        }
+        const result = await this.masterDB.bulk(couchVessels);
+
+        // update em roster
+        let emRoster: any = await this.masterDB.view('obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'emefp'} as any );
+        emRoster = emRoster.rows.map( (row: any) => row.doc );
+
+        for (const vessel of emUpdate) {
+          if (!emRoster.map( (row: any) => row.vesselCGNumber).includes(vessel.registration_number)) {
+            const maxEMNum: any = max(emRoster.map( (row: any) => parseInt(row.emEfpNumber.split('-')[1], 10)) );
+            const couchVessel = couchVessels.find( (row: any) => (row.coastGuardNumber || row.stateRegulationNumber) === vessel.registration_number );
+            const newRosterMember = {
+              type: 'emefp',
+              emEfpNumber: 'EM-' + (maxEMNum + 1),
+              createdBy: 'em-roster-update',
+              createdDate: moment().format(),
+              vessel: couchVessel,
+              vesselId: couchVessel._id,
+              vesselName: couchVessel.vesselName,
+              vesselCGNumber: vessel.registration_number,
+              efpTypes: [],
+              gear: [],
+              sector: null
+            };
+            emRoster.push(newRosterMember);
+          } else {
+            const rosterMember = emRoster.find( (row: any) => row.vesselCGNumber === vessel.registration_number);
+            rosterMember.vessel = couchVessels.find( (row: any) => (row.coastGuardNumber || row.stateRegulationNumber) === vessel.registration_number );
+            rosterMember.updatedBy = 'em-roster-update';
+            rosterMember.updatedDate = moment().format();
+          }
+        }
+        await this.masterDB.bulk(emRoster);
+      }
+    });
+  }
+
+  private formatName(name: any) {
+    return startCase(name.toLowerCase());
+  }
+
   private async buildDesignDoc() {
     try {
         await pouchService.db.query('my_index/by_type', {
@@ -434,7 +565,7 @@ export default class Home extends Vue {
   }
 
   private async determineNetworStatus() {
-    const db: Client<any> = couchService.masterDB;
+
     const queryOptions = {
       reduce: false,
       limit: 1
@@ -443,7 +574,7 @@ export default class Home extends Vue {
     this.offlineTrips = null;
 
     try {
-      const userquery = await db.view<any>(
+      const userquery = await this.masterDB.view<any>(
       'obs_web',
       'all_doc_types',
       queryOptions
@@ -498,53 +629,52 @@ export default class Home extends Vue {
   }
 
   private async created() {
-      if (authService.apiUrl) {
-          this.url = authService.apiUrl;
-      } else {
-          this.url = '';
-      }
-
-      this.getPermits();
-      this.getUserFromCouchDB().then(
-        async () => {
-          this.getUserAliasfromCouchDB();
-          // create debriefer-config doc if it doesn't exist already
-          const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
-          const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
-          if (userColConfig.rows.length === 0) {
-            const updatedRecord = {
-              columnConfig: {},
-              type: 'debriefer-config',
-              personDocId: id,
-              displayCodes: false
-            };
-            await couchService.masterDB.bulk([updatedRecord], true);
-          } else {
-            const currDoc = userColConfig.rows[0].doc;
-            this.setProgram(currDoc.program);
-            this.setDisplayCols(currDoc.columnConfig);
-          }
+    if (authService.apiUrl) {
+      this.url = authService.apiUrl;
+    } else {
+        this.url = '';
+    }
+    this.getPermits();
+    this.getUserFromCouchDB().then(
+      async () => {
+        this.getUserAliasfromCouchDB();
+        // create debriefer-config doc if it doesn't exist already
+        const docid: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
+        const colConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: docid });
+        if (colConfig.rows.length === 0) {
+          const updatedRecord = {
+            columnConfig: {},
+            type: 'debriefer-config',
+            personDocId: docid,
+            displayCodes: false
+          };
+          await couchService.masterDB.bulk([updatedRecord], true);
+        } else {
+          const currDoc = colConfig.rows[0].doc;
+          this.setProgram(currDoc.program);
+          this.setDisplayCols(currDoc.columnConfig);
         }
-      );
-      if ( authService.getCurrentUser() ) {
-        this.setUserRoles(JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)));
       }
-      this.buildDesignDoc();
-      this.determineNetworStatus();
+    );
+    if ( authService.getCurrentUser() ) {
+      this.setUserRoles(JSON.parse(JSON.stringify(authService.getCurrentUser()!.roles)));
+    }
+    this.buildDesignDoc();
+    this.determineNetworStatus();
 
-      // create debriefer-config doc if it doesn't exist already
-      const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
-      const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
-      if (userColConfig.rows.length === 0) {
-        const updatedRecord = {
-          columnConfig: {},
-          type: 'debriefer-config',
-          personDocId: id,
-          displayCodes: false
-        };
-        await couchService.masterDB.bulk([updatedRecord], true);
-      }
-      // this.getUserProviderGroups();
+    // create debriefer-config doc if it doesn't exist already
+    const id: string = this.user.activeUser && this.user.activeUser._id ? this.user.activeUser._id : '';
+    const userColConfig: any = await couchService.masterDB.viewWithDocs('obs_web', 'debriefer-config', { key: id });
+    if (userColConfig.rows.length === 0) {
+      const updatedRecord = {
+        columnConfig: {},
+        type: 'debriefer-config',
+        personDocId: id,
+        displayCodes: false
+      };
+      await couchService.masterDB.bulk([updatedRecord], true);
+    }
+    // this.getUserProviderGroups();
   }
 
 }

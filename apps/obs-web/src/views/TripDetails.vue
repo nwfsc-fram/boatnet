@@ -138,10 +138,10 @@
                                     onfocus="blur()"
                                     :rules="[val => !!val || 'Departure Date/Time is required']"
                                     >
+                                    <template #header>
+                                        <q-btn v-if="depDateTime !== ''" style="float: right" color="primary" size="sm" @click="submitDepartureDate">Done</q-btn>
+                                    </template>
                                 </pCalendar>
-                            </q-item-section>
-                            <q-item-section avatar v-if="depDateTime !== ''" style="cursor: pointer">
-                                <q-icon avatar name="done" @click="submitDepartureDate"></q-icon>
                             </q-item-section>
                         </q-item>
                         <q-item class="choices-list-item" :key="'singleDay'" :class="getChoiceClasses(1)" clickable @click="singleDayTrip" manual-focus v-if="trip.activeTrip.departureDate && !trip.activeTrip.returnDate">
@@ -166,13 +166,11 @@
                                     :selectOtherMonths="true"
                                     title="Return Date"
                                     :showTime="false"
+                                    @date-select="submitReturnDate"
                                     onfocus="blur()"
                                     :rules="[val => !!val || 'Return date is required']"
                                     >
                                 </pCalendar>
-                            </q-item-section>
-                            <q-item-section avatar v-if="retDate !== ''" style="cursor: pointer">
-                                <q-icon avatar name="done" @click="submitReturnDate"></q-icon>
                             </q-item-section>
                         </q-item>
                         <q-item class="choices-list-item" :key="'departureport'" :class="getChoiceClasses(0)" v-if="trip.activeTrip.returnDate && !trip.activeTrip.departurePort">
