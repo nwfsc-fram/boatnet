@@ -22,6 +22,7 @@
         />
 
         <q-toolbar-title>
+          <span v-if="this.$router.currentRoute.name === 'Debriefer Assessment Editor' "> {{ this.getProgram.toUpperCase() }} </span>
           <span
             v-if="(['Trips', 'Trip Detail', 'Trip Detail 2', 'Log Missing Trip'].includes(this.$router.currentRoute.name)) && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
@@ -532,7 +533,8 @@ import {
   TripState,
   VesselState,
   UserState,
-  GeneralState
+  GeneralState,
+  DebrieferState
 } from '../_store/types/types';
 import { pouchService, PouchDBState } from '@boatnet/bn-pouch';
 import {
@@ -555,6 +557,7 @@ export default class DefaultLayout extends Vue {
   @State('vessel') private vessel!: VesselState;
   @State('user') private user!: UserState;
   @State('general') private general!: GeneralState;
+  @State('debriefer') private debriefer!: DebrieferState;
 
   @Action('reconnect', { namespace: 'pouchState' }) private reconnect: any;
   @Action('reconnectNoLookupsSync', {namespace: 'pouchState'}) private reconnectNoLookupsSync: any;
@@ -575,6 +578,8 @@ export default class DefaultLayout extends Vue {
   @Getter('getCaptainMode', {namespace: 'user'}) private getCaptainMode: any;
   @Getter('getUserRoles', {namespace: 'user'}) private getUserRoles: any;
   @Action('setUserRoles', {namespace: 'user'}) private setUserRoles: any;
+
+  @Getter('program', {namespace: 'debriefer'}) private getProgram: any;
 
   private leftDrawerOpen: boolean = false;
   private syncIsComplete: boolean = false;
