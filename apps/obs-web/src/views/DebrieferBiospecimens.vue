@@ -1,7 +1,7 @@
 <template>
   <div>
     <prime-table
-      :value="WcgopBiospecimens"
+      :value="data"
       :columns="columns"
       type="biospecimens"
       uniqueKey="_id"
@@ -10,7 +10,9 @@
       :showSelectionBoxes="false"
       :isFullSize="isFullSize"
       :lookupsMap="lookupsMap"
+      :totalRecords="totalRecords"
       @save="save"
+      @paginate="paginate"
     />
   </div>
 </template>
@@ -19,7 +21,7 @@
 import { createComponent, ref, watch, onUnmounted } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { cloneDeep, filter, findIndex, orderBy, slice } from 'lodash';
+import { cloneDeep, filter, findIndex, flattenDeep, orderBy, slice } from 'lodash';
 
 export default createComponent({
   props: {
@@ -31,19 +33,22 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
     const debriefer = state.debriefer;
-    const WcgopBiospecimens: any = ref([]);
+    const data: any = ref([]);
 
     const jp = require('jsonpath');
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const initialSelection: any = ref([]);
+    const columns: any = ref([])
     const displayColumns: any = state.debriefer.displayColumns;
+
+    const totalRecords: any = ref(0);
 
     onUnmounted(() => {
       store.dispatch('debriefer/updateSelectedBiospecimens', []);
     });
 
-    const columns = [
+    const wcgopColumns = [
       {
         field: 'tripId',
         header: 'Trip',
@@ -221,9 +226,121 @@ export default createComponent({
       }
     ];
 
-    watch(() => state.debriefer.operations, getBiospecimens);
+    const ashopColumns = [
+      {
+        field: 'haulNum',
+        header: 'Haul',
+        type: 'number',
+        key: 'ashopBioHaulNum',
+        width: '80'
+      },
+      {
+        field: 'sampleNum',
+        header: 'Sample',
+        type: 'number',
+        key: 'ashopBioSampleNum',
+        width: '80'
+      },
+      {
+        field: 'speciesCode',
+        header: 'Species Code',
+        type: 'number',
+        key: 'ashopBioSpeciesCode',
+        width: '80'
+      },
+      {
+        field: 'speciesName',
+        header: 'Species Name',
+        type: 'input',
+        key: 'ashopBioSpeciesName',
+        width: '150'
+      },
+      {
+        field: 'sampleDesign',
+        header: 'Sample Design',
+        type: 'toggle',
+        listType: 'fetch',
+        lookupKey: 'ashop-sample-system',
+        lookupField: 'description',
+        isEditable: true,
+        key: 'ashopBioSampleDesign',
+        width: '120'
+      },
+      {
+        field: 'frequency',
+        header: 'Frequency',
+        type: 'input',
+        key: 'ashopBioFrequency',
+        width: '80'
+      },
+    ];
 
-    async function getBiospecimens() {
+    function setColumns() {
+      const program = state.debriefer.program;
+      columns.value = [];
+      if (program === 'ashop') {
+          columns.value = ashopColumns;
+      } else {
+          columns.value = wcgopColumns;
+      }
+      console.log('columns')
+      console.log(columns.value)
+    }
+    setColumns();
+
+    watch(() => state.debriefer.operations, () => {
+      if (state.debriefer.program === 'ashop') {
+        getAshopBios(0, state.debriefer.pageSize);
+      } else {
+        getWcgopBios();
+      }
+    });
+
+    function getAshopBios(start: number, rowCount: number) {
+      data.value = [];
+      const currOps = state.debriefer.operations;
+
+      let specimens: any[] = jp.query(currOps, '$[*]..specimens');
+      specimens = flattenDeep(specimens);
+      totalRecords.value = specimens.length;
+      const currSpecimens = slice(specimens, start, start + rowCount);
+
+      for (const spec of currSpecimens) {
+        const path = '$[*]..specimens[?(@._id=="' + spec._id + '")]';
+        let info: any = jp.nodes(currOps, path);
+        info = info[0];
+
+        const haulPath = jp.stringify(slice(info.path, 0, 2));
+        const haulNum = jp.value(currOps, haulPath + '.haulNum');
+
+        const samplePath = jp.stringify(slice(info.path, 0, 4));
+        const sampleNum = jp.value(currOps, samplePath + '.sampleNum');
+
+        const catchContentPath = jp.stringify(slice(info.path, 0, 6));
+        const speciesCode = jp.value(currOps, catchContentPath + '.catchContent.taxonomy.legacy.ashopSpeciesId');
+        const speciesName = jp.value(currOps, catchContentPath + '.catchContent.commonNames[0]');
+
+        const specimenPath = jp.stringify(info.path);
+        const sampleDesign = jp.value(currOps, specimenPath + '.sampleSystem.description');
+        const sex = jp.value(currOps, specimenPath + '.sex');
+        const frequency = jp.value(currOps, specimenPath + '.frequency');
+
+        data.value.push({
+          haulNum,
+          sampleNum,
+          speciesCode,
+          speciesName,
+          sampleDesign,
+          sex,
+          frequency
+        });
+      }
+
+      console.log(data.value)
+
+    }
+
+    function getWcgopBios() {
       let bioSpecimens: any[] = [];
       if (state.debriefer.biospecimens.length > 1) {
         bioSpecimens = state.debriefer.biospecimens;
@@ -280,8 +397,8 @@ export default createComponent({
           }
         }
       }
-      WcgopBiospecimens.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
-      initialSelection.value = filter(WcgopBiospecimens.value, (val: any) => {
+      data.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
+      initialSelection.value = filter(data.value, (val: any) => {
         if (debriefer.selectedBiospecimens.includes(val._id)) {
           return val;
         }
@@ -297,23 +414,29 @@ export default createComponent({
       jp.apply(currOperationDoc, path, () => data.specimen);
 
       const result = await masterDB.put(currOperationDoc._id, currOperationDoc, currOperationDoc._rev);
-      const currIndex = findIndex(WcgopBiospecimens.value, { _id: speciesId });
-      const updatedvalue: any[] = cloneDeep(WcgopBiospecimens.value);
+      const currIndex = findIndex(data.value, { _id: speciesId });
+      const updatedvalue: any[] = cloneDeep(data.value);
       updatedvalue[currIndex] = data;
-      jp.apply(WcgopBiospecimens.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', (value: any) => {
+      jp.apply(data.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', (value: any) => {
         value.operationRev = result.rev;
         return value;
       });
-      WcgopBiospecimens.value = updatedvalue;
-      store.dispatch('debriefer/updateBiospecimens', WcgopBiospecimens.value);
+      data.value = updatedvalue;
+      store.dispatch('debriefer/updateBiospecimens', data.value);
+    }
+
+    function paginate(event: any) {
+      getAshopBios(event.first, event.rows)
     }
 
     return {
-      WcgopBiospecimens,
+      data,
       initialSelection,
       columns,
       save,
-      displayColumns
+      displayColumns,
+      totalRecords,
+      paginate
     };
   }
 });

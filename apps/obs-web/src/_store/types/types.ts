@@ -32,6 +32,7 @@ export interface DebrieferState {
   expandedCatch: {};
   catches: any[];
   summarySelection: any;
+  pageSize: number;
 }
 
 export interface TripState {

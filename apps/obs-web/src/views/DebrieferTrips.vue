@@ -7,13 +7,15 @@
       :simple="false"
       uniqueKey="_id"
       :enableSelection="true"
-      :showSelectionBoxes="true"
+      :showSelectionBoxes="program === 'ashop' ? false : true"
       :isFullSize="isFullSize"
       :loading="loading"
       :initialSelection="initialSelection"
       :lookupsMap="lookupsMap"
+      :totalRecords="totalRecords"
       @save="save"
       @selectValues="selectValues"
+      @paginate="paginate"
     />
   </div>
 </template>
@@ -30,7 +32,7 @@ import {
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
-import { cloneDeep, findIndex } from 'lodash';
+import { cloneDeep, findIndex, slice } from 'lodash';
 import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 
 import PrimeTable from './PrimeTable.vue';
@@ -46,6 +48,8 @@ export default createComponent({
     const store = context.root.$store;
     const state: any = store.state;
     const displayColumns: any = state.debriefer.displayColumns;
+    const totalRecords: any = ref(0);
+    const program: any = state.debriefer.program;
 
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
@@ -88,15 +92,6 @@ export default createComponent({
         key: 'ashopDeparturePort',
         width: '160'
       },
-      {
-          field: 'departureLocation-coordinates',
-          displayField: ['departureLocation-coordinates-0', 'departureLocation-coordinates-1'],
-          header: 'Dept Loc',
-          type: 'coordinate',
-          key: 'ashopDeptLoc',
-          width: '150',
-          isEditable: true,
-      },
       // fish in hold at start?
       {
         field: 'departureDate',
@@ -118,15 +113,6 @@ export default createComponent({
         width: '150'
       },
       {
-        field: 'returnLocation-coordinates',
-        displayField: ['returnLocation-coordinates-0', 'returnLocation-coordinates-1'],
-        header: 'Return Loc',
-        type: 'coordinate',
-        key: 'ashopRetLoc',
-        width: '150',
-        isEditable: true
-      },
-      {
         field: 'returnDate',
         header: 'Return Date',
         type: 'date',
@@ -139,7 +125,8 @@ export default createComponent({
         header: 'Fishing Occur?',
         type: 'boolean',
         key: 'ashopFishingOccur',
-        width: '150'
+        width: '150',
+        isEditable: true
       },
       // bait used
       {
@@ -443,7 +430,6 @@ export default createComponent({
       if (state.debriefer.trips.length > 0) {
           trips.value = state.debriefer.trips;
         }
-
     });
 
     setColumns();
@@ -471,23 +457,30 @@ export default createComponent({
                                               new Date(evalPeriod.endDate),
                                               observer);
         } else if (type === 'tripIds') {
-          await getTrips();
+          totalRecords.value = state.debriefer.tripIds.length;
+          const tripIds: string[] = slice(state.debriefer.tripIds, 0, state.debriefer.pageSize);
+          await getTrips(tripIds);
         }
         store.dispatch('debriefer/updateTrips', trips.value);
       }
       loading.value = false;
     }
 
-    async function getTrips() {
+    async function getTrips(tripIds: string[]) {
       try {
         const options: ListOptions = {
-          keys: state.debriefer.tripIds
+          keys: tripIds
         };
         const result = await masterDB.listWithDocs(options);
         trips.value = result.rows;
       } catch (err) {
         console.log('error');
       }
+    }
+
+    async function paginate(event: any) {
+      const tripIds: string[] = slice(state.debriefer.tripIds, event.first, event.first + event.rows);
+      await getTrips(tripIds);
     }
 
     function setColumns() {
@@ -512,7 +505,7 @@ export default createComponent({
 
     function selectValues(data: any) {
       store.dispatch('debriefer/updateSelectedTrips', data);
-      getOperations();
+     // getOperations();
     }
 
     async function getOperations() {
@@ -541,7 +534,10 @@ export default createComponent({
       loading,
       selectValues,
       initialSelection,
-      displayColumns
+      displayColumns,
+      program,
+      totalRecords,
+      paginate
     };
   }
 });

@@ -30,7 +30,8 @@
           <q-tab v-if="program === 'ashop'" name="cruises" label="Cruises" />
           <q-tab name="trips" label="Trips" />
           <q-tab name="operations" label="Hauls" />
-          <q-tab name="catch" label="Catch" />
+          <q-tab v-if="program === 'wcgop'" name="catch" label="Catch" />
+          <q-tab v-if="program === 'ashop'" name="samples" label="Samples" />
           <q-tab name="biospecimens" label="Biospecimens" />
         </q-tabs>
 
@@ -48,8 +49,12 @@
             <app-debriefer-operations :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-operations>
           </q-tab-panel>
 
-          <q-tab-panel name="catch">
+          <q-tab-panel v-if="program === 'wcgop'" name="catch">
             <app-debriefer-catches :isFullSize="isFullSize" @changeTab="updateTab" :lookupsMap="lookupsMap"></app-debriefer-catches>
+          </q-tab-panel>
+
+          <q-tab-panel v-if="program === 'ashop'" name="samples">
+            <app-debriefer-samples :isFullSize="isFullSize" @changeTab="updateTab" :lookupsMap="lookupsMap"></app-debriefer-samples>
           </q-tab-panel>
 
           <q-tab-panel name="biospecimens">
