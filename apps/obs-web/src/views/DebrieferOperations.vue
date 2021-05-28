@@ -2,7 +2,7 @@
     <div>
         <prime-table
             :value="operations"
-            :columns="wcgopColumns"
+            :columns="columns"
             type="Operations"
             uniqueKey="_id"
             :enableSelection="true"
@@ -10,7 +10,9 @@
             :loading="loading"
             :showSelectionBoxes="false"
             :lookupsMap="lookupsMap"
+            :totalRecords="totalRecords"
             @save="save"
+            @paginate="paginate"
         />
     </div>
 </template>
@@ -24,7 +26,7 @@ import {
 } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
-import { cloneDeep, findIndex, orderBy } from 'lodash';
+import { cloneDeep, findIndex, orderBy, replace, slice } from 'lodash';
 
 export default createComponent({
     props: {
@@ -38,10 +40,15 @@ export default createComponent({
         const operations: any = ref([]);
         const loading: any = ref(false);
         const displayColumns: any = state.debriefer.displayColumns;
+        const totalRecords: any = ref(0);
+        const columns: any = ref([]);
 
-        watch(() => state.debriefer.operations, getOperations);
+        const flatten = require('flat');
+        const unflatten = flatten.unflatten;
 
-        getOperations();
+        watch(() => state.debriefer.selectedTrips, async () => {
+            await getOperations(0, state.debriefer.pageSize);
+        });
 
         const wcgopColumns = [
             {
@@ -286,6 +293,131 @@ export default createComponent({
             }
         ];
 
+        const ashopColumns = [
+            {
+                field: 'gearType-gearTypeCode',
+                header: 'Gear Type',
+                type: 'number',
+                key: 'ashopOpGearType',
+                width: '80',
+            },
+            {
+                field: 'legacy-tripSeq',
+                header: 'Trip',
+                type: 'number',
+                key: 'ashopOpTripId',
+                width: '80',
+            },
+            {
+                field: 'haulNum',
+                header: 'Haul',
+                type: 'number',
+                key: 'ashopOpHaulNum',
+                width: '80',
+            },
+            {
+                field: 'vesselType-vesselType',
+                header: 'Vessel Type',
+                type: 'number',
+                key: 'ashopOpVesselType',
+                width: '80',
+            },
+            {
+                field: 'gearPerformance-gearPerformanceCode',
+                header: 'Gear Perf',
+                type: 'number',
+                key: 'ashopOpGearPerf',
+                width: '80',
+            },
+            {
+                field: 'startFishingLocation-date',
+                header: 'Start Date',
+                type: 'date',
+                key: 'ashopOpStartDate',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'startFishingLocation-ddLocation-coordinates',
+                displayField: ['startFishingLocation-ddLocation-coordinates-0', 'startFishingLocation-ddLocation-coordinates-1'],
+                header: 'Start location',
+                type: 'coordinate',
+                key: 'ashopOpStartLoc',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'bottomDepth-value',
+                header: 'Bottom Depth',
+                type: 'number',
+                key: 'ashopOpBottomDepth',
+                width: '120',
+            },
+            {
+                field: 'fishingDepth-value',
+                header: 'Fishing Depth',
+                type: 'number',
+                key: 'ashopOpFishingDepth',
+                width: '120',
+            },
+             {
+                field: 'fishingDepth-units',
+                header: 'Depth Units',
+                type: 'input',
+                key: 'ashopOpDepthUnits',
+                width: '100',
+            },
+            {
+                field: 'endFishingLocation-date',
+                header: 'End Date',
+                type: 'date',
+                key: 'ashopOpEndDate',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'endFishingLocation-ddLocation-coordinates',
+                displayField: ['endFishingLocation-ddLocation-coordinates-0', 'endFishingLocation-ddLocation-coordinates-1'],
+                header: 'End location',
+                type: 'coordinate',
+                key: 'ashopOpEndLoc',
+                width: '150',
+                isEditable: true,
+            },
+            {
+                field: 'legacy-rstCode',
+                header: 'RST',
+                type: 'input',
+                key: 'ashopOpRST',
+                width: '80',
+            },
+            {
+                field: 'legacy-rbtCode',
+                header: 'RBT',
+                type: 'input',
+                key: 'ashopOpRBT',
+                width: '80',
+            },
+            {
+                field: 'sampleDesignType-sampleSystemCode',
+                header: 'Sample Design',
+                type: 'number',
+                key: 'ashopOpSampleDesign',
+                width: '120',
+            },
+        ];
+
+        function setColumns() {
+            const program = state.debriefer.program;
+            columns.value = [];
+            if (program === 'ashop') {
+                columns.value = ashopColumns;
+            } else {
+                columns.value = wcgopColumns;
+            }
+        }
+        setColumns();
+
         function selectValues(data: any) {
             store.dispatch('debriefer/updateSelectedOperations', data);
         }
@@ -299,20 +431,47 @@ export default createComponent({
             operations.value = updatedvalue;
             store.dispatch('debriefer/updateOperations', operations.value);
         }
-        async function getOperations() {
+
+        async function paginate(event: any) {
+            await getOperations(event.first, event.rows);
+        }
+
+        async function getOperations(start: number, rowSize: number) {
             loading.value = true;
-            operations.value = state.debriefer.operations;
-            operations.value = orderBy(operations.value, ['legacy.tripId', 'operationNum'], ['asc', 'asc']);
+            let operationIds: any[] = [];
+            const currTrips = state.debriefer.program === 'ashop' ?
+                state.debriefer.trips :
+                state.debriefer.selectedTrips;
+
+            for (const trip of currTrips) {
+                const unflattenedTrip = unflatten(trip, { delimiter: '-' });
+                if (unflattenedTrip.operationIDs) {
+                    operationIds = operationIds.concat(unflattenedTrip.operationIDs);
+                }
+            }
+            totalRecords.value = operationIds.length;
+            try {
+                // get just the operations we want to display
+                operationIds = slice(operationIds, start, start + rowSize);
+                const operationOptions = { keys: operationIds };
+                const operationDocs = await masterDB.listWithDocs(operationOptions);
+                operations.value = operationDocs.rows;
+                store.dispatch('debriefer/updateOperations', operationDocs.rows);
+            } catch (err) {
+                console.log('cannot fetch operation docs ' + err);
+            }
             loading.value = false;
         }
 
         return {
-            wcgopColumns,
+            columns,
             selectValues,
             save,
             displayColumns,
             operations,
             loading,
+            totalRecords,
+            paginate
         };
     },
 });

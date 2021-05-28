@@ -19,7 +19,7 @@
 
 
 <script lang="ts">
-import { createComponent, ref, onMounted } from '@vue/composition-api';
+import { createComponent, ref, onMounted, watch } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
@@ -100,19 +100,8 @@ export default createComponent({
       }
     ];
 
-    onMounted(async () => {
-      const present: string = moment().format();
-      const result = await masterDB.viewWithDocs(
-        'obs_web',
-        'ashop-cruise',
-        {
-          limit: 50,
-          start_key: '2020-01-01T00:00:00.000Z',
-          end_key: present,
-        }
-      );
-      cruises.value = jp.query(result.rows, '$[*].doc');
-      cruises.value = orderBy(cruises.value, ['statusDate'], ['desc']);
+    watch(() => state.debriefer.cruises, async () => {
+      cruises.value = jp.query(state.debriefer.cruises, '$[*].doc');
     });
 
     async function selectValues(data: any) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="state.debriefer.program === 'wcgop'">
+    <div>
       <q-tabs
 
         v-model="topTab"
@@ -21,7 +21,8 @@
       </q-tabs>
       <q-tab-panels v-model="topTab" animated>
         <q-tab-panel name="evaluation" v-show="show">
-          <app-debriefer-wcgop-evaluation class="z-index5 1"/>
+          <app-debriefer-wcgop-evaluation v-if="state.debriefer.program === 'wcgop'"/>
+          <app-debriefer-ashop-evaluation v-else/>
         </q-tab-panel>
         <q-tab-panel name="search">
           <app-debriefer-wcgop-search v-show="show"/>

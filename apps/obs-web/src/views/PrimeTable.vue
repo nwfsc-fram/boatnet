@@ -17,12 +17,17 @@
       :data-key="uniqueKey"
       :resizableColumns="true"
       :loading="loading"
-      stateStorage="local"
-      :stateKey="tableType"
       contextMenu
       @row-contextmenu="onRowContextMenu"
       @column-resize-end="resizeColumn"
       @column-reorder="reorderColumn"
+      :paginator="totalRecords > 50 && program === 'ashop' ? true : false"
+      :lazy="totalRecords > 50 && program === 'ashop' ? true : false"
+      :totalRecords="totalRecords"
+      :rows="10"
+      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+      @page="onPage"
+      @sort="onSort"
     >
       <template #empty>
         No data available
@@ -102,7 +107,7 @@
         </div>
         <div style="text-align:left">
          <q-btn-toggle
-            v-if="type === 'Operations'"
+            v-if="type === 'Operations' && program === 'wcgop'"
             v-model="displayMode"
             toggle-color="primary"
             :options="[
@@ -229,7 +234,7 @@
             appendTo="body"
             :filter="true"
           />
-          <InputText v-else type="text" v-model="filters[col.field]" class="p-column-filter"/>
+          <InputText v-else type="text" v-model="filters[col.field]" class="p-column-filter" @input="onFilter"/>
         </template>
       </Column>
     </DataTable>
@@ -312,7 +317,8 @@ export default createComponent({
     isFullSize: Boolean,
     loading: Boolean,
     initialSelection: Array,
-    lookupsMap: Array
+    lookupsMap: Array,
+    totalRecords: Number
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
@@ -471,12 +477,8 @@ export default createComponent({
      * example: { wcgop-Trips: {}, wcgop-Operations: {} }
      */
     function saveFilters() {
-      let localStorageInfo = localStorage.getItem(tableType);
-      localStorageInfo = localStorageInfo ? localStorageInfo : '';
-      const storageObj = JSON.parse(localStorageInfo);
-
       const currFilters = state.debriefer.filters;
-      currFilters[tableType] = storageObj.filters;
+      currFilters[tableType] = filters.value;
       store.dispatch('debriefer/updateFilters', currFilters);
     }
 
@@ -576,25 +578,6 @@ export default createComponent({
         formattedValue = formattedValue.toFixed(2);
       }
       return formattedValue;
-    }
-
-    function onCellEditInit(event: any) {
-      let columnInfo: any = filter(props.columns, ['field', event.field]);
-      columnInfo = columnInfo[0];
-      const type = columnInfo.type;
-      const value = get(event.data, event.field);
-      cellVal.value = value ? value.toString() : '';
-      if (type === 'date') {
-        if (cellVal.value) {
-          cellVal.value = new Date(cellVal.value);
-        } else {
-          cellVal.value = new Date(moment().format());
-        }
-      } else if (type === 'coordinate') {
-        const lat = get(event.data, columnInfo.displayField[0]);
-        const long = get(event.data, columnInfo.displayField[1]);
-        cellVal.value = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
-      }
     }
 
     async function init(data: any, colInfo: any) {
@@ -840,13 +823,24 @@ export default createComponent({
       return false;
     }
 
+    function onPage(event: any) {
+      context.emit('paginate', event);
+    }
+
+    function onSort(event: any) {
+      context.emit('sort', event);
+    }
+
+    function onFilter() {
+      context.emit('filter', filters.value);
+    }
+
     return {
       containsMultiples,
       filters,
       columnOptions,
       displayColumns,
       cellVal,
-      onCellEditInit,
       onCellEdit,
       getLookupInfo,
       lookupsList,
@@ -879,7 +873,8 @@ export default createComponent({
       addToDcs,
       updateDisplayCodes, displayCodes,
       updateProgram, program,
-      isAuthorized
+      isAuthorized,
+      onPage, onSort, onFilter
     };
   },
 });

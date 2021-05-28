@@ -25,7 +25,8 @@ export const state: DebrieferState = {
   newDcsRow: '',
   expandedCatch: {},
   catches: [],
-  summarySelection: {}
+  summarySelection: {},
+  pageSize: 50
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {
@@ -85,6 +86,9 @@ const actions: ActionTree<DebrieferState, RootState> = {
   },
   updateSummarySelection({ commit }: any, value: any) {
     commit('updateVal', {id: 'summarySelection', val: value});
+  },
+  updatePageSize({ commit }: any, value: number) {
+    commit('updateVal', {id: 'pageSize', val: value});
   },
 };
 
