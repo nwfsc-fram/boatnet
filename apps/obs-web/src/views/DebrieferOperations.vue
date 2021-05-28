@@ -397,7 +397,7 @@ export default createComponent({
                 type: 'input',
                 key: 'ashopOpRBT',
                 width: '80',
-            },          
+            },
             {
                 field: 'sampleDesignType-sampleSystemCode',
                 header: 'Sample Design',
@@ -405,9 +405,8 @@ export default createComponent({
                 key: 'ashopOpSampleDesign',
                 width: '120',
             },
-            
         ];
-  
+
         function setColumns() {
             const program = state.debriefer.program;
             columns.value = [];
@@ -440,7 +439,7 @@ export default createComponent({
         async function getOperations(start: number, rowSize: number) {
             loading.value = true;
             let operationIds: any[] = [];
-            const currTrips = state.debriefer.program === 'ashop' ? 
+            const currTrips = state.debriefer.program === 'ashop' ?
                 state.debriefer.trips :
                 state.debriefer.selectedTrips;
 
@@ -451,11 +450,10 @@ export default createComponent({
                 }
             }
             totalRecords.value = operationIds.length;
-            
             try {
                 // get just the operations we want to display
                 operationIds = slice(operationIds, start, start + rowSize);
-                let operationOptions = { keys: operationIds };
+                const operationOptions = { keys: operationIds };
                 const operationDocs = await masterDB.listWithDocs(operationOptions);
                 operations.value = operationDocs.rows;
                 store.dispatch('debriefer/updateOperations', operationDocs.rows);

@@ -416,7 +416,6 @@ export default createComponent({
 
     const filterOptions = computed(() => {
       const filterList: any = {};
-      console.log(props.value)
       for (const col of columnOptions.value) {
         if (col.type === 'toggle') {
           if (col.listType === 'template') {
@@ -833,7 +832,7 @@ export default createComponent({
     }
 
     function onFilter() {
-      context.emit('filter', filters.value)
+      context.emit('filter', filters.value);
     }
 
     return {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <prime-table
-      :value="data"
+      :value="bios"
       :columns="columns"
       type="biospecimens"
       uniqueKey="_id"
@@ -33,13 +33,13 @@ export default createComponent({
     const state = store.state;
     const masterDB: Client<any> = couchService.masterDB;
     const debriefer = state.debriefer;
-    const data: any = ref([]);
+    const bios: any = ref([]);
 
     const jp = require('jsonpath');
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
     const initialSelection: any = ref([]);
-    const columns: any = ref([])
+    const columns: any = ref([]);
     const displayColumns: any = state.debriefer.displayColumns;
 
     const totalRecords: any = ref(0);
@@ -283,8 +283,6 @@ export default createComponent({
       } else {
           columns.value = wcgopColumns;
       }
-      console.log('columns')
-      console.log(columns.value)
     }
     setColumns();
 
@@ -297,7 +295,7 @@ export default createComponent({
     });
 
     function getAshopBios(start: number, rowCount: number) {
-      data.value = [];
+      bios.value = [];
       const currOps = state.debriefer.operations;
 
       let specimens: any[] = jp.query(currOps, '$[*]..specimens');
@@ -325,7 +323,7 @@ export default createComponent({
         const sex = jp.value(currOps, specimenPath + '.sex');
         const frequency = jp.value(currOps, specimenPath + '.frequency');
 
-        data.value.push({
+        bios.value.push({
           haulNum,
           sampleNum,
           speciesCode,
@@ -335,9 +333,6 @@ export default createComponent({
           frequency
         });
       }
-
-      console.log(data.value)
-
     }
 
     function getWcgopBios() {
@@ -397,8 +392,8 @@ export default createComponent({
           }
         }
       }
-      data.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
-      initialSelection.value = filter(data.value, (val: any) => {
+      bios.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
+      initialSelection.value = filter(bios.value, (val: any) => {
         if (debriefer.selectedBiospecimens.includes(val._id)) {
           return val;
         }
@@ -414,23 +409,23 @@ export default createComponent({
       jp.apply(currOperationDoc, path, () => data.specimen);
 
       const result = await masterDB.put(currOperationDoc._id, currOperationDoc, currOperationDoc._rev);
-      const currIndex = findIndex(data.value, { _id: speciesId });
-      const updatedvalue: any[] = cloneDeep(data.value);
+      const currIndex = findIndex(bios.value, { _id: speciesId });
+      const updatedvalue: any[] = cloneDeep(bios.value);
       updatedvalue[currIndex] = data;
-      jp.apply(data.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', (value: any) => {
+      jp.apply(bios.value, '$..[?(@.operationId=="' + currOperationDoc._id + '")]', (value: any) => {
         value.operationRev = result.rev;
         return value;
       });
-      data.value = updatedvalue;
-      store.dispatch('debriefer/updateBiospecimens', data.value);
+      bios.value = updatedvalue;
+      store.dispatch('debriefer/updateBiospecimens', bios.value);
     }
 
     function paginate(event: any) {
-      getAshopBios(event.first, event.rows)
+      getAshopBios(event.first, event.rows);
     }
 
     return {
-      data,
+      bios,
       initialSelection,
       columns,
       save,

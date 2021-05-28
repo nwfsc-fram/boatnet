@@ -41,7 +41,6 @@ export default createComponent({
 
         const flatten = require('flat');
         const unflatten = flatten.unflatten;
-        let dictOperations: any[] = [];
 
         const ashopColumns: any[] = [];
 

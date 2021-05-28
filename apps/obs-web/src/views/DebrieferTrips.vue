@@ -484,9 +484,8 @@ export default createComponent({
     }
 
     function setColumns() {
-      const program = state.debriefer.program;
       columns.value = [];
-      if (program === 'ashop') {
+      if (state.debriefer.program === 'ashop') {
         columns.value = ashopColumns;
       } else {
         columns.value = wcgopColumns;
