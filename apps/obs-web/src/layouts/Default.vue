@@ -22,7 +22,7 @@
         />
 
         <q-toolbar-title>
-          <span v-if="this.$router.currentRoute.name === 'Debriefer Assessment Editor' "> {{ this.getProgram.toUpperCase() }} </span>
+          <span v-if="this.$router.currentRoute.name === 'Debriefer Assessment Editor' "> {{ this.getProgram === 'wcgop' ? this.getProgram.toUpperCase() : 'A-SHOP' }} </span>
           <span
             v-if="(['Trips', 'Trip Detail', 'Trip Detail 2', 'Log Missing Trip'].includes(this.$router.currentRoute.name)) && this.vessel.activeVessel"
           >{{ this.vessel.activeVessel.vesselName }}</span>
@@ -174,7 +174,7 @@
            <q-item
             to="/editAssessment"
             exact
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'lead_debriefer']) && !getCaptainMode && !getObserverMode"
           >
             <q-item-section avatar>
               <q-icon name="assignment" />
