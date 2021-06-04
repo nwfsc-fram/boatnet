@@ -88,15 +88,23 @@ export default createComponent({
     const evaluatorOptions = ref(['equals', 'greater than', 'less than']);
 
     const getSearchTypes = async () => {
-      const types: any = [
-          'tripId', 'trip-status', 'observer', 'vesselName', 'vesselId', 'program', 'fishery', 'firstReceiver',
-          'year', 'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
-          'logbookNum', 'observerLogbookNum', 'departurePort', 'returnPort', 'fishTicket', 'state',
-          'commonName', 'speciesCode', 'disposition', 'weightMethod', 'gearType', 'gearPerformance',
-          'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize',
-      ];
+        const wcgopTypes: any = [
+            'tripId', 'trip-status', 'observer', 'vesselName', 'vesselId', 'program', 'fishery', 'firstReceiver',
+            'year', 'departureDate', 'returnDate', 'fishingActivity', 'isPartialTrip', 'isFishProcessed',
+            'logbookNum', 'observerLogbookNum', 'departurePort', 'returnPort', 'fishTicket', 'state',
+            'commonName', 'speciesCode', 'disposition', 'weightMethod', 'gearType', 'gearPerformance',
+            'isDataQualityPassing', 'isEfpUsed', 'beaufortValue', 'crewSize',
+        ];
 
-      searchTypes.value.push.apply(searchTypes.value, types);
+        const ashopTypes: any = [
+            'tripNum', 'year', 'fishery', 'vesselId', 'vesselName', 'departureDate', 'returnDate',
+            'departurePort', 'returnPort', 'crewSize', 'bottomDepth', 'fishingDepth', 'gearPerformance',
+            'gearType', 'haulNum', 'isBirdShortwired', 'officialTotalCatch', 'totalEstimatedDiscard',
+            'vesselEstimatedCatch', 'vesselType', 'groupingName', 'groupingType', 'commonName', 'sampleDesignType'
+        ];
+
+        searchTypes.value.length = 0;
+        searchTypes.value.push.apply(searchTypes.value, state.debriefer.program === 'wcgop' ? wcgopTypes : ashopTypes);
     };
 
     const getSearchOptions = async () => {
@@ -105,7 +113,7 @@ export default createComponent({
         if (!['departureDate', 'returnDate'].includes(selectedSearchType.value)) {
             const tripSearchOptionResults = await masterDB.view(
                 'obs_web',
-                'wcgop_trips_compound_fields',
+                state.debriefer.program === 'wcgop' ? 'wcgop_trips_compound_fields' : 'ashop_trips_compound_fields',
                 {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
             );
             sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(tripSearchOptionResults.rows.map( (row: any) => {
@@ -118,7 +126,7 @@ export default createComponent({
             );
             const operationSearchOptionResults = await masterDB.view(
                 'obs_web',
-                'wcgop_operations_compound_fields',
+                state.debriefer.program === 'wcgop' ? 'wcgop_operations_compound_fields' : 'ashop_hauls_compound_fields',
                 {reduce: true, include_docs: false, start_key: [selectedSearchType.value], end_key: [selectedSearchType.value, {}], group_level: 2} as any
             );
             sourceSearchOptions.value.push.apply(sourceSearchOptions.value, [...new Set(operationSearchOptionResults.rows.map( (row: any) => {
@@ -163,7 +171,7 @@ export default createComponent({
 
         const tripSearchResults: any = await masterDB.view(
             'obs_web',
-            'wcgop_trips_compound_fields',
+            state.debriefer.program === 'wcgop' ? 'wcgop_trips_compound_fields' : 'ashop_trips_compound_fields',
             {
                 reduce: false,
                 include_docs: false,
@@ -177,7 +185,7 @@ export default createComponent({
         selectedSearchResults.value.push.apply(selectedSearchResults.value, tripSearchResults.rows.map( (row: any) => row.value ));
         const operationSearchResults: any = await masterDB.view(
             'obs_web',
-            'wcgop_operations_compound_fields',
+            state.debriefer.program === 'wcgop' ? 'wcgop_operations_compound_fields' : 'ashop_hauls_compound_fields',
             {
                 reduce: false,
                 include_docs: false,
@@ -203,7 +211,7 @@ export default createComponent({
 
         const tripsFromOperations: any = await masterDB.view(
             'obs_web',
-            'wcgop_trips_compound_fields',
+            state.debriefer.program === 'wcgop' ? 'wcgop_trips_compound_fields' : 'ashop_trips_compound_fields',
             {
                 reduce: false,
                 include_docs: false,

@@ -41,13 +41,13 @@
             <q-tab name="data" label="Data" />
             <q-tab name="errors" label="Errors" />
             <q-tab name="summary" label="Summary" />
-            <q-tab v-if="topTab === 'evaluation'" name="assessment" label="Assessment" />
-            <q-tab v-if="topTab === 'evaluation'" name="dcs" label="DCS" />
+            <q-tab v-if="topTab === 'evaluation'" name="assessment" :label="state.debriefer.program === 'wcgop' ? 'Assessment' : 'Evaluation'" />
+            <q-tab v-if="topTab === 'evaluation' && state.debriefer.program === 'wcgop'" name="dcs" label="DCS" />
           </q-tabs>
 
       <q-tab-panels v-model="bottomTab" animated>
         <q-tab-panel name="data">
-          <app-debriefer-wcgop-data 
+          <app-debriefer-wcgop-data
             :startingTab="startingDataTab"
             :isFullSize="false"
             @updateDataTab="setDataTab"

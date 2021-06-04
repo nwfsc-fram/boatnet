@@ -1,6 +1,5 @@
 <template>
     <div class="q-pa-md q-gutter-md">
-
         <q-table
           title="SECTIONS"
           :data="sections"
@@ -61,13 +60,13 @@
               <q-td key="section" :props="props">
                 {{ props.row.section }}
                 <q-popup-edit v-model="props.row.section" buttons @save="save(props.row)">
-                    <q-select v-model="props.row.section" :options="sections" dense></q-select>
+                    <q-select v-model="props.row.section" :options="sections[0].sections" dense></q-select>
                 </q-popup-edit>
               </q-td>
               <q-td key="question" :props="props">
                 {{ getQuestionString(props.row.question) }}
                 <q-popup-edit v-model="props.row.question" buttons @save="save(props.row)">
-                    <q-input v-model="props.row.question" dense></q-input>
+                    <q-input type="textarea" v-model="props.row.question" dense></q-input>
                 </q-popup-edit>
               </q-td>
               <q-td key="answerSet" :props="props">
@@ -201,7 +200,7 @@ export default createComponent({
       { name: 'answerSet', label: 'Answer Set', field: 'answerSet', sortable: true, align: 'left' },
       { name: 'order', label: 'Order', field: 'order', sortable: true, align: 'center' },
       { name: 'isWcgop', label: 'WCGOP?', field: 'isWcgop', sortable: true, align: 'center' },
-      { name: 'isAshop', label: 'ASHOP?', field: 'isAshop', sortable: true, align: 'center' }
+      { name: 'isAshop', label: 'A-SHOP?', field: 'isAshop', sortable: true, align: 'center' }
     ];
     const getQuestions = async () => {
       const results = await masterDB.view(
@@ -221,7 +220,7 @@ export default createComponent({
       { name: 'name', label: 'Name', field: 'name', sortable: true, align: 'left' },
       { name: 'options', label: 'Options', field: 'options', sortable: true, align: 'left' },
       { name: 'isWcgop', label: 'WCGOP?', field: 'isWcgop', sortable: true, align: 'center' },
-      { name: 'isAshop', label: 'ASHOP?', field: 'isAshop', sortable: true, align: 'center' },
+      { name: 'isAshop', label: 'A-SHOP?', field: 'isAshop', sortable: true, align: 'center' },
     ];
     const getAnswerSets = async () => {
       const results = await masterDB.view(
@@ -240,7 +239,7 @@ export default createComponent({
     const sectionsColumns: any = [
       { name: 'sections', label: 'Sections', field: 'sections', sortable: true, align: 'left'},
       { name: 'isWcgop', label: 'WCGOP?', field: 'isWcgop', sortable: true, align: 'center' },
-      { name: 'isAshop', label: 'ASHOP?', field: 'isAshop', sortable: true, align: 'center' },
+      { name: 'isAshop', label: 'A-SHOP?', field: 'isAshop', sortable: true, align: 'center' },
     ];
 
     const getArrayString = (array: any) => {
