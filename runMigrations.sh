@@ -78,7 +78,7 @@ if [ $status != 1 ];then
 	fi
 	exit -1
 fi
-echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_USER}'"
+echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
 
 
 
