@@ -27,7 +27,6 @@ else
 	. $configFile
 fi
 
-
 if [ hash gh >& /dev/null ];then
 	echo "Aborting:  The Git Hub CLI 'gh' must be installed in the scripts path."
 	echo "For installation instructions see: "
@@ -257,59 +256,3 @@ rm -f -r $repo.bfg-report
 echo "Migration completed."
 exit 0
 
-#--#	lfs_list="$(IFS=, ; echo "${lfs_array[*]}"|sed 's+\*\.++g')"
-#--   
-#--	echo "   - LFS preprocessing using BFG on '$lfs_list' files."	
-#--	git lfs install >> lfs_log 2>&1
-#--	if [ $? -ne 0 ];then
-#--		echo "      Aborting '$repo' LFS migration: git lfs install failed."
-#--		if [ -r $lfs_log ];then
-#--			cat $lfs_log |fold -w 80| sed 's+^+      +'
-#--		fi
-#--		exit -1
-#--	fi
-#--	
-#--
-#--	java -jar ${BFG_JAR} --convert-to-git-lfs "*.{$lfs_list}" --no-blob-protection $PWD >>$lfs_log 2>&1
-#--	if [ $? -ne 0 ];then
-#--		echo "      Aborting '$repo' LFS migration: executing  bfg.jar failed."
-#--		if [ -r $lfs_log ];then
-#--			cat $lfs_log |fold -w 80| sed 's+^+      +'
-#--		fi
-#--		exit -1
-#--	fi
-#--	
-#--	 git reflog expire --expire=now --all && git gc --prune=now --aggressive  >> $lfs_log 2>&1
-#--	if [ $? -ne 0 ];then
-#--		echo "      Aborting '$repo' LFS migration: git clean/garbage collection failed."
-#--		if [ -r $lfs_log ];then
-#--			cat $lfs_log |fold -w 80| sed 's+^+      +'
-#--		fi
-#--		exit -1
-#--	fi
-#--fi
-#--
-#--
-#--lfs_list=(git lfs migrate info --above 99Mb 2>/dev/null|sed 's+\s.*++'|sed 's+^\*.++'))
-#--if [  ${#lfs_list[@]} -eq 0 ];then
-#--	echo "   - No Large files found: Skipping LFS preprocessing using BFG"
-#--else
-#--	lfs_list="$(IFS=, ; echo "${lfs_list[*]}")"
-#--	echo "   - LFS preprocessing using BFG on $lfs_list files."	
-#--	check=0
-#--	
-#--	java -jar ${BFG_JAR} --convert-to-git-lfs "*.{$lfs_list}" \
-#--		 --no-blob-protection $PWD >> $lfs_log 2>&1
-#--	check=$?
-#--	git reflog expire --expire=now --all && git gc --prune=now --aggressive >> $lfs_log 2>&1
-#--	check=$(($? + $check))
-#--	if [ $check -ne 0 ];then
-#--		echo "      Aborting '$repo' migration: Migrating to LFS using BFG failed"
-#--		if [ -r $lfs_log ];then
-#--			cat $lfs_log |fold -w 80| sed 's+^+      +'
-#--		fi
-#--		exit -1
-#--	fi
-#--fi
-#--
-#--
