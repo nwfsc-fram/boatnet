@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#Template configuration file that defines environment
+#used to process GitLab to GitHub processing.
+#
+# Must be save to $HOME/.ssh, and have 600 permissions
+
+
+unset GH_ENTERPRISE_TOKEN
+unset GH_TOKEN
+unset GH_HOST
+
+export GL_ORG=fram-data
+export GL_HOST=nwcgit.nwfsc.noaa.gov
+export GL_TOKEN=XXXXXXXXXXXXXXXX
+export GL_GIT_USER=git
+
+export GH_ORG=FRAMTesting
+export GH_HOST=github.nwfsc2.noaa.gov
+export GH_TOKEN=YYYYYYYYYYY
+export GH_GIT_USER=git
+export GH_OWNER=FRAMTesting
+export GH_TEAM=fram-repository-team
+
+
+#Make sure we have latest GH and it is in our path
+
