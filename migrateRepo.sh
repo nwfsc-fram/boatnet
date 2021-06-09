@@ -70,12 +70,12 @@ function selectLFS {
 
 	# sort files by SHA1, de-dupe list and finally re-sort by filesize
 	for line in $(sort --key 3 "$tempFile" | uniq | sort --key 4 --numeric-sort -r);do
-		file=$(echo ${line}| cut -d " " -f 5)
+		file="$(echo ${line}| cut -d " " -f 5-|sed 's+\s+\\ +g')"
 		size=$(echo ${line}| cut -d " " -f 4)
 		if [ $size -le $cutOff ];then
 			break
 		fi
-		echo $file
+		basename $file  # all we need
 		
 	done
 
@@ -90,7 +90,7 @@ wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
 
 gl_connect_log="${wrkingDir}/${repo}.gl_connect.${time_stamp}.log"
-touch $gl_connect_log
+
 git ls-remote ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo >> $gl_connect_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting: Unable to access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
@@ -112,7 +112,7 @@ echo "   - Confirmed Git and GitHub CLI (gh) access to '${GH_HOST}'"
 
 #Create or overright remote repo
 target_repo_log="${wrkingDir}/${repo}.target_repo.${time_stamp}.log"
-touch $target_repo_log
+
 gh repo view ${GH_ORG}/$repo >> $target_repo_log 2>&1
 if [ $? -eq 0 ];then
 	echo "   - Deleting existing repo ${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo"
@@ -151,7 +151,7 @@ rm -f $target_repo_log
 # Clean up for cloning
 echo "   - Creating local clone of '${GL_HOST}:${GL_ORG}/$repo'"
 clone_log="${wrkingDir}/${repo}.clone.${time_stamp}.log"
-touch $clone_log
+
 rm -f -r $repo
 git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo} >> $clone_log 2>&1
 #git clone --mirror ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo} >> $clone_log 2>&1
@@ -166,36 +166,32 @@ rm -f  $clone_log
 
 #check if we need lfs
 cd "${repo}"
-lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
-touch $lfs_log
 
-#lfs_array=($(git lfs migrate info --above 99Mb 2>/dev/null |sed 's+\s.*++'))
-echo "   - LFS check and preprocessing using BFG on branch by branch"	
-git lfs install >> lfs_log 2>&1
-lsfBranches=0
-lsfFiles=0
-for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
-	git checkout $branch >>$lfs_log 2>&1
-	if [ $? -ne 0 ];then
-		echo ""
-		echo "       Aborting LFS migration on $repo' branch '$branch': "
-		echo "       LFS migration: unable to check out branch."
-		if [ -r $lfs_log ];then
-			cat $lfs_log |fold -w 80| sed 's+^+      +'
-		fi
-		exit -1
-	fi
+lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
+
+lfs_array="$(selectLFS)"
+if [ "$lfs_array" = "" ];then
+	echo "   - LFS preprocessing skipped: no large (>99MB) files found."
+else
+	echo "   - LFS  preprocessing using BFG on large (>99MB) files."
 	
-	#lfs_array="$(find . -type f -size +99M 2> /dev/null|grep -v '\.git/'|sed 's+^./++')"
-	lfs_array="$(selectLFS)"
-	# Only do this if we find large files
-	if [ "$lfs_array" != "" ];then
-		lsfBranches=$(( $lsfBranches + 1))
-		
+	git lfs install >> $lfs_log 2>&1
+	for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
+		git checkout $branch >>$lfs_log 2>&1
+		if [ $? -ne 0 ];then
+			echo ""
+			echo "       Aborting LFS migration on $repo' branch '$branch': "
+			echo "       LFS migration: unable to check out branch."
+			if [ -r $lfs_log ];then
+				cat $lfs_log |fold -w 80| sed 's+^+      +'
+			fi
+			exit -1
+		fi
+	
 		#Set up .gitattributes
+
 		for file in $lfs_array;do
-			lsfFiles=$(($? + $lsfFiles))
-			git lfs track $file >>$lfs_log 2>&1
+			git lfs track "*/${file}" >>$lfs_log 2>&1
 			if [ $? -ne 0 ];then
 				echo ""
 				echo "       Aborting LFS migration on $repo' branch '$branch': "
@@ -206,13 +202,14 @@ for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 				exit -1
 			fi
 		done
-
+		
+		
 		git add .gitattributes >& /dev/null
 		git commit -am "Adding .gitattributes"  >& /dev/null
-
-		# Do BFG git to lfs conversion
+		
 		for file in $lfs_array;do
-			java -jar ${BFG_JAR} --convert-to-git-lfs $(basename $file) \
+			# Do BFG git to lfs conversion
+			java -jar ${BFG_JAR} --convert-to-git-lfs $file \
 				 --no-blob-protection $PWD >>$lfs_log 2>&1
 			if [ $? -ne 0 ];then
 				echo ""
@@ -224,8 +221,9 @@ for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 				exit -1
 			fi
 		done
-		git reflog expire --expire=now --all >>$lfs_log 2>&1 && \
-			git gc --prune=now --aggressive  >> $lfs_log 2>&1
+
+		#Garbage collect
+		(git reflog expire --expire=now --all  && git gc --prune=now --aggressive)  >> $lfs_log 2>&1
 		if [ $? -ne 0 ];then
 			echo "       Aborting LFS migration on $repo' branch '$branch': "
 			echog"       git clean/garbage collection failed."
@@ -234,14 +232,16 @@ for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 			fi
 			exit -1
 		fi
-	fi
-done
-rm -f $lfs_log
+	done
+fi
 
+
+#--	fi
+#rm -f $lfs_log
 
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
 push_log="${wrkingDir}/${repo}.push.${time_stamp}.log"
-touch $push_log
+
 git remote add $repo "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" >> $push_log 2>&1
 git config lfs.https://${GH_HOST}/${GH_ORG}/${repo}.git/info/lfs.locksverify true
 

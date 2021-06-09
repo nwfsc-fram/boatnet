@@ -78,6 +78,7 @@ if [ $status != 1 ];then
 	fi
 	exit -1
 fi
+rm -r $gl_connect_log
 echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
 
 
@@ -91,13 +92,10 @@ for repo in ${repos[@]};do
 		if [ -r  $wrkingDir/$repo.log ];then
 			echo "     Error Log '$wrkingDir/$repo.log':"
 			cat  $wrkingDir/$repo.log
-			if [ -d $repo ];then  #Needed as some of the repos eat up too much space.
-				rm -f -r $repo
-			fi
 		fi
 	else
 		echo "...succeeded."
-		rm -f -r 
+		rm -f -r $repo
+		rm -f -r  $wrkingDir/$repo.log
 	fi
 done
-rm -f $wrkingDir/$repo.log
