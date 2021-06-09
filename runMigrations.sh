@@ -100,3 +100,4 @@ for repo in ${repos[@]};do
 		rm -f -r 
 	fi
 done
+rm -f $wrkingDir/$repo.log

@@ -55,12 +55,41 @@ if [ ! -f $BFG_JAR ];then
 	exit -1
 fi
 
+function selectLFS {
+	cutOff=$(( 99 * 1024 * 1024 ))
+	local tempFile=AAA
+	rm -f $tempFile
+
+	# work over each commit and append all files in tree to $tempFile
+	local IFS=$'\n'
+	local commitSHA1
+	for commitSHA1 in $(git rev-list --all); do
+		git ls-tree -r --long "$commitSHA1" | sed 's+\s\s*+ +g' >>"$tempFile"
+	done
+
+
+	# sort files by SHA1, de-dupe list and finally re-sort by filesize
+	for line in $(sort --key 3 "$tempFile" | uniq | sort --key 4 --numeric-sort -r);do
+		file=$(echo ${line}| cut -d " " -f 5)
+		size=$(echo ${line}| cut -d " " -f 4)
+		if [ $size -le $cutOff ];then
+			break
+		fi
+		echo $file
+		
+	done
+
+	# remove temp file
+	rm -f  "$tempFile"
+}
+
+
 echo "GitLab to GitHub Migraton:"
 echo "$GL_HOST:$GL_ORG/$repo => to $GH_HOST/$GH_ORG"
-WrkingDir=$(realpath $PWD)
+wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
 
-gl_connect_log="${WrkingDir}/${repo}.gl_connect.${time_stamp}.log"
+gl_connect_log="${wrkingDir}/${repo}.gl_connect.${time_stamp}.log"
 touch $gl_connect_log
 git ls-remote ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo >> $gl_connect_log 2>&1
 if [ $? -ne 0 ];then
@@ -82,7 +111,7 @@ fi
 echo "   - Confirmed Git and GitHub CLI (gh) access to '${GH_HOST}'"
 
 #Create or overright remote repo
-target_repo_log="${WrkingDir}/${repo}.target_repo.${time_stamp}.log"
+target_repo_log="${wrkingDir}/${repo}.target_repo.${time_stamp}.log"
 touch $target_repo_log
 gh repo view ${GH_ORG}/$repo >> $target_repo_log 2>&1
 if [ $? -eq 0 ];then
@@ -121,7 +150,7 @@ rm -f $target_repo_log
 
 # Clean up for cloning
 echo "   - Creating local clone of '${GL_HOST}:${GL_ORG}/$repo'"
-clone_log="${WrkingDir}/${repo}.clone.${time_stamp}.log"
+clone_log="${wrkingDir}/${repo}.clone.${time_stamp}.log"
 touch $clone_log
 rm -f -r $repo
 git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo} >> $clone_log 2>&1
@@ -137,7 +166,7 @@ rm -f  $clone_log
 
 #check if we need lfs
 cd "${repo}"
-lfs_log="${WrkingDir}/${repo}.lsf.${time_stamp}.log"
+lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
 touch $lfs_log
 
 #lfs_array=($(git lfs migrate info --above 99Mb 2>/dev/null |sed 's+\s.*++'))
@@ -157,7 +186,8 @@ for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 		exit -1
 	fi
 	
-	lfs_array="$(find . -type f -size +99M 2> /dev/null|grep -v '\.git/'|sed 's+^./++')"
+	#lfs_array="$(find . -type f -size +99M 2> /dev/null|grep -v '\.git/'|sed 's+^./++')"
+	lfs_array="$(selectLFS)"
 	# Only do this if we find large files
 	if [ "$lfs_array" != "" ];then
 		lsfBranches=$(( $lsfBranches + 1))
@@ -210,7 +240,7 @@ rm -f $lfs_log
 
 
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
-push_log="${WrkingDir}/${repo}.push.${time_stamp}.log"
+push_log="${wrkingDir}/${repo}.push.${time_stamp}.log"
 touch $push_log
 git remote add $repo "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" >> $push_log 2>&1
 git config lfs.https://${GH_HOST}/${GH_ORG}/${repo}.git/info/lfs.locksverify true
@@ -235,7 +265,7 @@ fi
 
 
 #git push --force --mirror $repo >> $push_log 2>&1
-git push --force  $repo >> $push_log 2>&1
+git push --mirror --force  $repo >> $push_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git push --force --mirror' failed:"
 	if [ -r $push_log ];then
@@ -244,7 +274,6 @@ if [ $? -ne 0 ];then
 	exit -1
 fi
 rm -f $push_log
-
 cd $wrkingDir
 rm -f $gl_connect_log
 rm -f $target_repo_log
