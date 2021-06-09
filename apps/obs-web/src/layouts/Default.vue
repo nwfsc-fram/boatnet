@@ -260,6 +260,20 @@
             </q-item-section>
           </q-item>
 
+          <q-item
+            to="/waivers"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !getCaptainMode && !getObserverMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="fa fa-pause" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Waivers</q-item-label>
+              <q-item-label caption>view and edit vessel waivers</q-item-label>
+            </q-item-section>
+          </q-item>
+
           <q-item to="/manage-users" exact>
             <q-item-section avatar>
               <q-icon name="people" />

@@ -59,6 +59,8 @@ import VesselDetails from './views/VesselDetails.vue';
 import Vessels from './views/Vessels.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
+import WaiverDetails from './views/WaiverDetails.vue';
+import Waivers from './views/Waivers.vue';
 
 import { authService } from '@boatnet/bn-auth';
 
@@ -321,6 +323,18 @@ const router = new Router({
         },
         {
           path: '/vessels/:id', name: 'Vessel Details', component: VesselDetails,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/waivers', name: 'Waivers', component: Waivers,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/waivers/:id', name: 'Waiver Details', component: WaiverDetails,
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
