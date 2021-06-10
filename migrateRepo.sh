@@ -3,6 +3,7 @@
 SCRIPT_HOME="$(realpath $(dirname $0))"
 BFG_JAR="$SCRIPT_HOME/bfg.jar"
 configFile=$HOME/.ssh/MigrationConfig
+size_cutoff=49 # max size in MB before we need to lfs.
 
 if [ "$#" -ne 1 ];then
 	echo "Usage: $(basename $0) [repository_name]"
@@ -56,7 +57,7 @@ if [ ! -f $BFG_JAR ];then
 fi
 
 function selectLFS {
-	cutOff=$(( 49 * 1024 * 1024 ))
+	cutOff=$(( $size_cutoff * 1024 * 1024 ))
 	local tempFile=mktemp
 
 	# work over each commit and append all files in tree to $tempFile
@@ -170,9 +171,9 @@ lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
 
 lfs_array="$(selectLFS)"
 if [ "$lfs_array" = "" ];then
-	echo "   - LFS preprocessing skipped: no large (>99MB) files found."
+	echo "   - LFS preprocessing skipped: no large (>${size_cutoff}MB) files found."
 else
-	echo "   - LFS  preprocessing using BFG on large (>99MB) files."
+	echo "   - LFS  preprocessing using BFG on large (>${size_cutoff}MB) files."
 	
 	git lfs install --local >> $lfs_log 2>&1  # Need to install in repository
 	for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
