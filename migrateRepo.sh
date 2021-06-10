@@ -34,7 +34,7 @@ if [ hash gh >& /dev/null ];then
 	exit -1
 fi
 
-if [ $(git lfs --help >& /dev/null;echo $?) -ne 0 ];then
+if [ $(git lfs install >& /dev/null;echo $?) -ne 0 ];then
 	echo "Aborting:  Git Large File Storage LFS is not installed."
 	echo "For installation instructions see: https://git-lfs.github.com/"
 	exit -1
@@ -56,9 +56,8 @@ if [ ! -f $BFG_JAR ];then
 fi
 
 function selectLFS {
-	cutOff=$(( 99 * 1024 * 1024 ))
-	local tempFile=AAA
-	rm -f $tempFile
+	cutOff=$(( 49 * 1024 * 1024 ))
+	local tempFile=mktemp
 
 	# work over each commit and append all files in tree to $tempFile
 	local IFS=$'\n'
@@ -175,7 +174,7 @@ if [ "$lfs_array" = "" ];then
 else
 	echo "   - LFS  preprocessing using BFG on large (>99MB) files."
 	
-	git lfs install >> $lfs_log 2>&1
+	git lfs install --local >> $lfs_log 2>&1  # Need to install in repository
 	for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 		git checkout $branch >>$lfs_log 2>&1
 		if [ $? -ne 0 ];then
