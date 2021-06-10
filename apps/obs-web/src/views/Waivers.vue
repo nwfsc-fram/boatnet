@@ -1,19 +1,12 @@
 <template>
     <div class='q-pa-md  q-gutter-md'>
 
-        <q-banner rounded inline-actions v-show="!!alert.message" class="bg-red text-white">
-            {{alert.message}}
-            <template v-slot:action>
-                <q-btn flat label="Dismiss" @click="clearAlert"/>
-            </template>
-        </q-banner>
-
         <div class="centered-page-item">
             <q-btn class="bg-primary text-white q-ma-md" @click="newWaiver">New Waiver</q-btn>
         </div>
 
         <q-table
-            :data="Waivers"
+            :data="waivers"
             :columns="columns"
             dense
             row-key="id"
@@ -25,28 +18,24 @@
             hide-bottom
         >
 
-            <!-- :filter="vessel.filterText"
-            @request="onRequest" -->
             <template v-slot:top>
-                <q-input label="Vessel Name or Id" v-model="vessel.filterText" debounce="1000" placeholder="Search" style="width:100%" autofocus>
-                    <template v-if="vessel.filterText">
-                        <q-avatar dense icon="close" @click="vessel.filterText = ''"></q-avatar>
+                <q-input label="Search" v-model="filterText" debounce="1000" style="width:100%" autofocus>
+                    <template v-if="filterText">
+                        <q-avatar dense icon="close" @click="filterText = ''"></q-avatar>
                     </template>
                 </q-input>
             </template>
 
             <template v-slot:body="props">
-                <q-tr :props="props" @click.native="vesselDetails(props.row, props)">
+                <q-tr :props="props" @click.native="waiverDetails(props.row, props)">
                     <q-td key="id"></q-td>
-                    <q-td key="vesselName" :props="props">{{ props.row.vesselName }}</q-td>
-                    <q-td key="vesselCGNumber" :props="props">{{ (props.row.coastGuardNumber ? props.row.coastGuardNumber : props.row.stateRegulationNumber) }}</q-td>
-                    <q-td key="vesselType" :props="props">{{ props.row.vesselType ? props.row.vesselType.description : '' }}</q-td>
-                    <q-td key="registeredLength" :props="props">{{ props.row.registeredLength ? props.row.registeredLength.value : '' }}</q-td>
-                    <q-td key="port" :props="props">{{ props.row.homePort ? props.row.homePort.name : '' }}</q-td>
-                    <q-td key="isActive" :props="props">{{ props.row.isActive ? 'Active' : 'Inactive' }}</q-td>
-                    <q-td key="notes" :props="props">{{ props.row.notes }}</q-td>
-                    <q-td key="emHardware" :props="props">{{ props.row.emHardware ? props.row.emHardware.description : '' }}</q-td>
-                    <q-td key="thirdPartyReviewer" :props="props">{{ props.row.thirdPartyReviewer ? props.row.thirdPartyReviewer.description : '' }}</q-td>
+                    <q-td key="waiverId" :props="props">{{ props.row.waiverId }}</q-td>
+                    <q-td key="vesselName" :props="props">{{ props.row.vessel.vesselName }}</q-td>
+                    <q-td key="vesselCGNumber" :props="props">{{ (props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber) }}</q-td>
+                    <q-td key="createdBy" :props="props">{{ formatIssuerName(props.row.createdBy) }}</q-td>
+                    <q-td key="date" :props="props">{{ formatDateTime(props.row.createdDate) }}</q-td>
+                    <q-td key="waiverType" :props="props">{{ props.row.waiverType.description }}</q-td>
+                    <q-td key="reason" :props="props">{{ props.row.reason.description }}</q-td>
                 </q-tr>
             </template>
 
@@ -74,7 +63,9 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { WatchOptions } from 'vue';
 
 import moment from 'moment';
+import { startCase } from 'lodash';
 import { Waiver, WaiverTypeTypeName } from '@boatnet/bn-models';
+import { AuthState, authService } from '@boatnet/bn-auth';
 
 export default createComponent({
     setup(props, context) {
@@ -82,48 +73,46 @@ export default createComponent({
         const state = store.state;
         const router = context.root.$router;
 
-        const selected = [];
+        const selected: any = ref([]);
         const pagination = {
-            sortBy: 'name',
-            descending: false,
-            page: 1,
-            rowsPerPage: 20,
-            rowsNumber: 10
+            sortBy: 'waiverId',
+            descending: true,
             };
 
+        const filterText: any = ref('');
+
+        const allWaivers: any = ref([]);
         const waivers: any = ref([]);
         const loading: any = ref(false);
 
         const columns = [
-            {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true },
+            {name: 'waiverId', label: 'Waiver ID', field: 'waiverId', required: true, align: 'left', sortable: true},
+            {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.description > b.description },
             {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
             sortable: true, align: 'left' },
-            {name: 'vesselType', label: 'Vessel Type', field: 'vesselType', required: true, align: 'left', sortable: true },
-            {name: 'registeredLength', label: 'Length (ft)', field: 'registeredLength', required: true, align: 'left', sortable: true },
-            {name: 'port', label: 'Home Port', field: 'port', required: true, align: 'left', sortable: true },
-            {name: 'isActive', label: 'Status', field: 'isActive', required: true, align: 'left', sortable: true },
-            {name: 'notes', label: 'Notes', field: 'notes', required: true, align: 'left', sortable: false },
-            {name: 'emHardware', label: 'EM Hardware', field: 'emHardware', required: false, align: 'left', sortable: true },
-            {name: 'thirdPartyReviewer', label: '3rd Party Reviewer', field: 'thirdPartyReviewer', required: false, align: 'left', sortable: true },
-
+            {name: 'createdBy', label: 'Issuer', field: 'createdBy', required: true, align: 'left', sortable: true},
+            {name: 'date', label: 'Issue Date', field: 'createdDate', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b) },
+            {name: 'waiverType', label: 'Type', field: 'waiverType', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.description > b.description},
+            {name: 'reason', label: 'Reason', field: 'reason', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.description > b.description },
         ];
 
-        const getVessels = async () => {
+        const getWaivers = async () => {
             const masterDB: Client<any> = couchService.masterDB;
+            const queryOptions: any = {
+                include_docs: true,
+                descending: true
+            };
+
             try {
                 loading.value = true;
-                const queryOptions: any = {
-                include_docs: true,
-                reduce: false,
-                key: 'waiver'
-                };
 
                 const waiversQuery = await masterDB.view<any>(
                     'obs_web',
-                    'all_doc_types',
+                    'waiverId',
                     queryOptions
-                    );
+                );
 
+                allWaivers.value = waiversQuery.rows.map( (row: any) => row.doc);
                 waivers.value = waiversQuery.rows.map( (row: any) => row.doc);
 
                 loading.value = false;
@@ -133,37 +122,66 @@ export default createComponent({
             }
         };
 
+        const formatDateTime = (dateTime: string) => {
+            return moment(dateTime).format('MM/DD/YYYY');
+        };
+
+        const formatIssuerName = (username: string) => {
+            return startCase(username.replace('.', ' '));
+        }
+
         onMounted( async () => {
-            await getVessels();
+            await getWaivers();
         });
 
         const waiverDetails = async (waiver: any) => {
-            const i = waiver.__index;
-            router.push({path: '/vessels/' + i});
+            router.push({path: '/waivers/' + waiver._id});
         };
 
         const newWaiver = () => {
-            const waiver = {
-                type: WaiverTypeTypeName,
-                createdBy: state.authService.getCurrentUser()!.username,
-                createdDate: moment().format(),
-                vesselName: '',
-                homePort: undefined,
-                vesselType: {},
-                registeredLength: {
-                        measurementType: 'length',
-                        value: undefined,
-                        units: 'FT'
-                    },
-                isActive: true
-            };
-            router.push({path: '/vessels/' + 'new'});
+            router.push({path: '/waivers/' + 'new'});
         };
+
+        const watcherOptions: WatchOptions = {
+            immediate: true, deep: false
+        };
+
+        watch(
+            () => filterText.value,
+            (newVal, oldVal) => {
+                if (newVal !== '') {
+                    const needle = newVal.toLowerCase()
+                    let waiverResults: any = [];
+                        waiverResults = allWaivers.value.filter( (row: any) => {
+                            return row.vessel.vesselName.toLowerCase().includes(needle) ||
+                                   (row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber).toLowerCase().includes(needle) ||
+                                   row.createdBy.toLowerCase().includes(needle) ||
+                                   row.createdDate.includes(needle) ||
+                                   row.waiverType.description.toLowerCase().includes(needle) ||
+                                   row.reason.description.toLowerCase().includes(needle)
+                        })
+                    waivers.value.length = 0;
+                    waivers.value.push.apply(waivers.value, waiverResults);
+                } else {
+                    waivers.value.length = 0;
+                    waivers.value.push.apply(waivers.value, allWaivers.value);
+                }
+            },
+            watcherOptions
+        );
+
 
         return {
             columns,
+            filterText,
+            formatDateTime,
+            formatIssuerName,
             loading,
-            newWaiver
+            newWaiver,
+            pagination,
+            selected,
+            waiverDetails,
+            waivers
         };
     }
 });

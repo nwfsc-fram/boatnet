@@ -335,6 +335,7 @@ const router = new Router({
         },
         {
           path: '/waivers/:id', name: 'Waiver Details', component: WaiverDetails,
+          props: (route: any) => ({ id: String(route.params.id) }),
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
