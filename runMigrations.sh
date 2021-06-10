@@ -91,7 +91,7 @@ for repo in ${repos[@]};do
 		echo "...Failed."
 		if [ -r  $wrkingDir/$repo.log ];then
 			echo "     Error Log '$wrkingDir/$repo.log':"
-			cat  $wrkingDir/$repo.log
+			cat  $wrkingDir/$repo.log | sed 's+^+      +'
 		fi
 	else
 		echo "...succeeded."

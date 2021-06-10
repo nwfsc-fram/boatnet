@@ -236,8 +236,7 @@ else
 fi
 
 
-#--	fi
-#rm -f $lfs_log
+rm -f $lfs_log
 
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
 push_log="${wrkingDir}/${repo}.push.${time_stamp}.log"
