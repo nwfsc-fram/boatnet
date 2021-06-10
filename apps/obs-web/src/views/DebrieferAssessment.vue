@@ -367,7 +367,7 @@ export default createComponent({
         if (debriefer.program === 'wcgop') {
             observer = await masterDB.get(debriefer.observer);
         } else {
-            observer = {}
+            observer = {};
         }
 
         // const config = {

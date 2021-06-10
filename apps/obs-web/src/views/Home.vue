@@ -448,7 +448,7 @@ export default class Home extends Vue {
                 createdBy: 'em-roster-update',
                 createdDate: moment().format(),
                 emPermit: vessel.permit_number,
-                vesselStatus: 'Active',
+                vesselStatus: {description: 'Active'},
                 isActive: true
               };
             const postResult: any = await this.masterDB.post(newVessel);

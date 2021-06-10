@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Species Details', 'EM Results'].includes($route.name)"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Species Details', 'EM Results', 'Waiver Details'].includes($route.name)"
           flat
           dense
           round
@@ -257,6 +257,20 @@
             <q-item-section>
               <q-item-label>Vessel Management</q-item-label>
               <q-item-label caption>associate personnel with vessels</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            to="/waivers"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])  && !getCaptainMode && !getObserverMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="fa fa-pause" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Waivers</q-item-label>
+              <q-item-label caption>view and edit vessel waivers</q-item-label>
             </q-item-section>
           </q-item>
 

@@ -1,0 +1,557 @@
+<template>
+    <div class="flex flex-center q-pa-md  q-gutter-md">
+        <h6>WAIVER: {{ waiver.waiverId }}, DATE ISSUED: {{ formatDateTime(waiver.createdDate) }}, ISSUED BY: {{ formatIssuerName(waiver.createdBy) }} </h6>
+
+        <div class="break"></div>
+
+        <q-select
+        v-model="waiver.vessel"
+        label="Vessel"
+        :options="vessels"
+        :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber) + ')'"
+        option-value="_id"
+        stack-label
+        use-input
+        fill-input
+        hide-selected
+        @filter="vesselsFilterFn"
+        @click.native="selectText"
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.vessel && !oldRecord">
+                <q-btn icon="clear" @click="waiver.vessel = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <q-select
+        v-model="waiver.waiverType"
+        label="Type"
+        :options="waiverTypes"
+        :option-label="opt => opt.description"
+        option-value="_id"
+        stack-label
+        fill-input
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.waiverType && !oldRecord">
+                <q-btn icon="clear" @click="waiver.waiverType = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <q-select
+        v-model="waiver.reason"
+        label="Reason"
+        :options="waiverReasons"
+        :option-label="opt => opt.description"
+        option-value="_id"
+        stack-label
+        fill-input
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.reason && !oldRecord">
+                <q-btn icon="clear" @click="waiver.reason = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <div class="break"></div>
+
+        <q-select
+        v-model="waiver.fishery"
+        label="fishery"
+        :options="fisheries"
+        :option-label="opt => opt.description"
+        option-value="_id"
+        stack-label
+        fill-input
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.fishery && !oldRecord">
+                <q-btn icon="clear" @click="waiver.fishery = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <q-select
+        v-model="waiver.certificateNumber"
+        label="permit"
+        :options="permits"
+        :option-label="opt => opt.permitNumber"
+        option-value="_id"
+        stack-label
+        fill-input
+        use-input
+        hide-selected
+        @filter="permitsFilterFn"
+        @click.native="selectText"
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.certificateNumber && !oldRecord">
+                <q-btn icon="clear" @click="waiver.certificateNumber = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <q-select
+        v-model="waiver.landingPort"
+        label="port"
+        :options="ports"
+        :option-label="opt => opt.name"
+        option-value="_id"
+        @filter="portsFilterFn"
+        stack-label
+        fill-input
+        use-input
+        hide-selected
+        @click.native="selectText"
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.landingPort && !oldRecord">
+                <q-btn icon="clear" @click="waiver.landingPort = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <q-select
+        v-if="waiver.vessel"
+        v-model="waiver.contact"
+        label="contact"
+        :options="vesselCaptains"
+        :option-label="opt => opt.firstName + ' ' + opt.lastName"
+        option-value="_id"
+        stack-label
+        fill-input
+        dense
+        options-dense
+        style="width: 350px"
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+            <template #append v-if="waiver.contact && !oldRecord">
+                <q-btn icon="clear" @click="waiver.contact = null" flat size="sm"></q-btn>
+            </template>
+        </q-select>
+
+        <div class="break"></div>
+
+        <div style="width: 350px" :disabled="oldRecord" :readonly="oldRecord">
+            <div class="text-subtitle2" >Start Date</div>
+
+            <pCalendar
+            v-model="startDate"
+            :inline="true"
+            >
+            </pCalendar>
+        </div>
+        <div style="margin: 20px">&nbsp;</div>
+        <div style="width: 350px" :disabled="oldRecord" :readonly="oldRecord">
+            <div class="text-subtitle2">End Date</div>
+
+            <pCalendar
+            v-model="endDate"
+            :inline="true"
+            >
+            </pCalendar>
+        </div>
+
+        <div class="break"></div>
+
+            <q-input
+            v-model="waiver.notes"
+            label="Notes"
+            type="textarea"
+            style="width: 70%"
+            outlined
+            :disabled="oldRecord"
+            :readonly="oldRecord"
+            >
+            </q-input>
+
+        <div class="break"></div>
+
+        <div>
+            <div v-if="oldRecord" style="color: #007EC6">
+                Waiver entries older than 30 days cannot be edited. 
+                &nbsp;
+                <q-btn label="back" @click="navigateBack"></q-btn>
+            </div>
+            <div v-else>
+                <q-btn label="cancel" @click="navigateBack"></q-btn>
+                &nbsp;
+                <q-btn  v-if="validatedWaiver && waiver._id" label="update waiver" color="primary" @click="updateWaiver"></q-btn>
+                <q-btn  v-if="validatedWaiver && !waiver._id" label="save waiver" color="primary" @click="saveWaiver"></q-btn>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+import {
+  createComponent,
+  ref,
+  reactive,
+  computed,
+  watch,
+  onMounted
+} from '@vue/composition-api';
+
+import { Vue, Watch } from 'vue-property-decorator';
+import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
+import { Client, CouchDoc, ListOptions } from 'davenport';
+
+import { WatchOptions } from 'vue';
+
+import moment from 'moment';
+import { startCase, toLower, set } from 'lodash';
+import { Waiver, WaiverTypeTypeName } from '@boatnet/bn-models';
+import { AuthState, authService } from '@boatnet/bn-auth';
+import { Notify } from 'quasar';
+import { updatePropertySignature } from 'typescript';
+
+export default createComponent({
+    props: {
+        id: String,
+    },
+    setup(props, context) {
+        const store = context.root.$store;
+        const state = store.state;
+        const router = context.root.$router;
+        const id = props.id;
+        const masterDB = couchService.masterDB;
+
+        const vessels: any = ref([]);
+        const allPorts: any = ref([]);
+        const ports: any = ref([]);
+        const waiver: any = ref({});
+        const waiverTypes: any = ref([]);
+        const waiverReasons: any = ref([]);
+        const fisheries: any = ref([]);
+        const permits: any = ref([]);
+
+        const portsFilterFn = (val: string, update: any, abort: any) => {
+
+            update(() => {
+
+            if (val !== '') {
+                ports.value = ports.value.filter((port: any) => {
+                return (
+                    port.description.includes(val.toUpperCase()) ||
+                    port.lookupValue.includes(val.toUpperCase())
+                );
+                });
+            } else {
+                ports.value = allPorts.value;
+            }
+            });
+            return;
+        };
+
+        const vesselsFilterFn = (val: string, update: any, abort: any) => {
+
+            update( async () => {
+
+            if (val !== '') {
+                const vesselNameResults = await masterDB.view('obs_web', 'all_vessel_names', {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'});
+                const vesselNumResults = await masterDB.view('obs_web', 'all_vessel_nums', {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'});
+                vessels.value.length = 0;
+                vessels.value.push.apply(vessels.value, vesselNameResults.rows.map( (row: any) => row.doc ));
+                vessels.value.push.apply(vessels.value, vesselNumResults.rows.map( (row: any) => row.doc ));
+            } else {
+                const vesselsQuery = await masterDB.view(
+                    'obs_web',
+                    'all_vessel_names',
+                    {include_docs: true, limit: 20}
+                );
+
+                vessels.value = vesselsQuery.rows.map( (row: any) => row.doc );
+            }
+            });
+            return;
+        };
+
+        const permitsFilterFn = (val: string, update: any, abort: any) => {
+
+            update( async () => {
+
+            if (val !== '') {
+                const permitResults = await masterDB.view('obs_web', 'permit_numbers', {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'})
+                permits.value = permitResults.rows.map( (row: any) => row.doc );
+            } else {
+                const permitsQuery = await masterDB.view(
+                    'obs_web',
+                    'permit_numbers',
+                    {include_docs: true, limit: 20}
+                );
+
+                permits.value = permitsQuery.rows.map( (row: any) => row.doc );
+            }
+            });
+            return;
+        };
+
+        const navigateBack = () => {
+            router.back();
+        }
+
+        const getOptions = async () => {
+
+            try {
+                const vesselsQuery = await masterDB.view(
+                    'obs_web',
+                    'all_vessel_names',
+                    {include_docs: true, limit: 20}
+                );
+
+                vessels.value = vesselsQuery.rows.map( (row: any) => row.doc );
+            } catch (err) { console.log(err); };
+
+            try {
+                const waiverTypesQuery = await masterDB.view(
+                    'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'waiver-type'}
+                )
+                waiverTypes.value = waiverTypesQuery.rows.map( (row: any) => row.doc );
+            } catch (err) { console.log(err); };
+
+            try {
+                const waiverReasonsQuery = await masterDB.view(
+                    'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'waiver-reason'}
+                )
+                waiverReasons.value = waiverReasonsQuery.rows.map( (row: any) => row.doc );
+                waiverReasons.value.sort( (a: any, b: any) => {
+                    if (a.lookupValue > b.lookupValue) {
+                        return 1;
+                    } else if (a.lookupValue < b.lookupValue) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                } )
+            } catch (err) { console.log(err); };
+
+            try {
+                const fisheriesQuery = await masterDB.view(
+                    'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'fishery'}
+                )
+                fisheries.value = fisheriesQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
+                fisheries.value.sort( (a: any, b: any) => {
+                    if (a.description > b.description) {
+                        return 1;
+                    } else if (a.description < b.description) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                } )
+            } catch (err) { console.log(err); };
+
+            try {
+                const permitsQuery = await masterDB.view(
+                    'obs_web', 'permit_numbers', {include_docs: true, reduce: false, limit: 20}
+                )
+                permits.value = permitsQuery.rows.map( (row: any) => row.doc );
+            } catch (err) { console.log(err); };
+
+            try {
+                const portsQuery = await masterDB.view(
+                    'obs_web', 'all_port_names', {include_docs: true}
+                )
+                allPorts.value = portsQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
+                ports.value = portsQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
+            } catch (err) { console.log(err); };
+        }
+
+        const getWaiver = async (id: any) => {
+            if (id === 'new') {
+                const maxIdQuery = await masterDB.view('obs_web', 'waiverId', {descending: true, limit: 1});
+                const newId = parseInt(maxIdQuery.rows[0].key) + 1;
+                waiver.value = {
+                    type: 'waiver',
+                    createdBy: authService.getCurrentUser()!.username,
+                    createdDate: moment().format(),
+                    vessel: null,
+                    contact: null,
+                    reason: null,
+                    waiverType: null,
+                    startDate: null,
+                    endDate: null,
+                    fishery: null,
+                    certificateNumber: null,
+                    landingPort: null,
+                    notes: null,
+                    waiverId: newId.toString()
+                }
+            } else {
+                try {
+                    waiver.value = await masterDB.get(id);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        }
+
+        const selectText = (event: any) => {
+            event.target.select();
+        }
+
+        const formatDateTime = (dateTime: string) => {
+            return moment(dateTime).format('MM/DD/YYYY');
+        };
+
+        const formatIssuerName = (username: string) => {
+            return username ? startCase(username.replace('.', ' ')) : '';
+        }
+
+        const validatedWaiver = computed( () => {
+            if (waiver.value.vessel && waiver.value.startDate && waiver.value.endDate && waiver.value.waiverType && waiver.value.reason) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+
+        const saveWaiver = async () => {
+            try {
+                const result = await masterDB.post(waiver.value);
+                waiver.value._id = result.id;
+                waiver.value._rev = result.rev;
+                Notify.create({
+                    message: 'Waiver saved.'
+                });
+                navigateBack();
+            } catch (err) {
+                Notify.create({
+                    message: err
+                })
+            }
+        }
+
+        const updateWaiver = async () => {
+            try {
+                waiver.updatedDate = moment().format();
+                waiver.updatedBy = authService.getCurrentUser()!.username;
+                const result = await masterDB.post(waiver.value);
+                waiver.value._rev = result.rev;
+                Notify.create({
+                    message: 'Waiver updated.'
+                });
+                navigateBack();
+            } catch (err) {
+                Notify.create({
+                    message: err
+                })
+            }
+        }
+
+        const startDate = computed({
+            get: () => {
+                return waiver.value.startDate? new Date(waiver.value.startDate) : null;
+            },
+            set: (val) => {
+                set(waiver.value, 'startDate', moment(val).format());
+            }
+        });
+
+        const endDate = computed({
+            get: () => {
+                return waiver.value.endDate ? new Date(waiver.value.endDate) : null;
+            },
+            set: (val) => {
+                set(waiver.value, 'endDate', moment(val).format());
+            }
+        });
+
+        const oldRecord = computed( () => {
+            if (moment().diff(moment(waiver.value.createdDate), 'days') > 30) {
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        const vesselCaptains = computed( () => {
+            if (waiver.value && waiver.value.vessel && waiver.value.vessel.captains) {
+                return waiver.value.vessel.captains
+            } else {
+                return [];
+            }
+        })
+
+        const watcherOptions: WatchOptions = {
+            immediate: true, deep: false
+        };
+
+        watch(
+            () => waiver.value.vessel,
+            (newVal, oldVal) => {
+                if (oldVal && newVal !== oldVal) {
+                    set(waiver.value, 'contact', null)
+                }
+            },
+            watcherOptions
+        );
+
+        onMounted( async () => {
+            await getOptions();
+            await getWaiver(id);
+        })
+
+        return {
+            endDate,
+            fisheries,
+            formatDateTime,
+            formatIssuerName,
+            navigateBack,
+            oldRecord,
+            permits,
+            permitsFilterFn,
+            ports,
+            portsFilterFn,
+            saveWaiver,
+            selectText,
+            startDate,
+            updateWaiver,
+            validatedWaiver,
+            vesselCaptains,
+            vesselsFilterFn,
+            vessels,
+            waiver,
+            waiverReasons,
+            waiverTypes
+        };
+    }
+})
+
+</script>
+
+<style scoped>
+* >>> .p-datepicker {
+  padding-left: 0 !important;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0 !important;
+    margin: 0;
+    padding: 0;
+}
+</style>

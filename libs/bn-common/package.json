@@ -11,11 +11,11 @@
   "dependencies": {
     "@boatnet/bn-auth": "^0.1.18",
     "@boatnet/bn-couch": "^0.1.6",
-    "@boatnet/bn-models": "^0.5.7",
+    "@boatnet/bn-models": "^0.6.0",
     "coordinate-parser": "^1.0.7",
     "davenport": "^2.8.2",
     "primeicons": "^4.1.0",
-    "primevue": "^3.5.0",
+    "primevue": "^2.4.0",
     "quasar": "1.8.5",
     "vue": "^2.6.6",
     "vue-class-component": "^6.0.0",
