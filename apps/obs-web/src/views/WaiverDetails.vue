@@ -12,12 +12,10 @@
         option-value="_id"
         stack-label
         use-input
-        fill-input
-        hide-selected
         @filter="vesselsFilterFn"
         @click.native="selectText"
         dense
-        options-dense
+
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -36,7 +34,6 @@
         stack-label
         fill-input
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -55,7 +52,6 @@
         stack-label
         fill-input
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -69,14 +65,13 @@
 
         <q-select
         v-model="waiver.fishery"
-        label="fishery"
+        label="Fishery"
         :options="fisheries"
         :option-label="opt => opt.description"
         option-value="_id"
         stack-label
         fill-input
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -88,18 +83,15 @@
 
         <q-select
         v-model="waiver.certificateNumber"
-        label="permit"
+        label="Permit"
         :options="permits"
         :option-label="opt => opt.permitNumber"
         option-value="_id"
         stack-label
-        fill-input
         use-input
-        hide-selected
         @filter="permitsFilterFn"
         @click.native="selectText"
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -111,18 +103,15 @@
 
         <q-select
         v-model="waiver.landingPort"
-        label="port"
+        label="Port"
         :options="ports"
         :option-label="opt => opt.name"
         option-value="_id"
         @filter="portsFilterFn"
         stack-label
-        fill-input
         use-input
-        hide-selected
         @click.native="selectText"
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -135,14 +124,12 @@
         <q-select
         v-if="waiver.vessel"
         v-model="waiver.contact"
-        label="contact"
+        label="Contact"
         :options="vesselCaptains"
         :option-label="opt => opt.firstName + ' ' + opt.lastName"
         option-value="_id"
         stack-label
-        fill-input
         dense
-        options-dense
         style="width: 350px"
         :disabled="oldRecord"
         :readonly="oldRecord"
@@ -156,42 +143,40 @@
 
         <div style="width: 350px" :disabled="oldRecord" :readonly="oldRecord">
             <div class="text-subtitle2" >Start Date</div>
-
             <pCalendar
             v-model="startDate"
-            :inline="true"
+            :touchUI="isMobile"
             >
             </pCalendar>
         </div>
-        <div style="margin: 20px">&nbsp;</div>
+
         <div style="width: 350px" :disabled="oldRecord" :readonly="oldRecord">
             <div class="text-subtitle2">End Date</div>
-
             <pCalendar
             v-model="endDate"
-            :inline="true"
+            :touchUI="isMobile"
             >
             </pCalendar>
         </div>
 
         <div class="break"></div>
 
-            <q-input
-            v-model="waiver.notes"
-            label="Notes"
-            type="textarea"
-            style="width: 70%"
-            outlined
-            :disabled="oldRecord"
-            :readonly="oldRecord"
-            >
-            </q-input>
+        <q-input
+        v-model="waiver.notes"
+        label="Notes"
+        type="textarea"
+        style="width: 100%"
+        outlined
+        :disabled="oldRecord"
+        :readonly="oldRecord"
+        >
+        </q-input>
 
         <div class="break"></div>
 
         <div>
             <div v-if="oldRecord" style="color: #007EC6">
-                Waiver entries older than 30 days cannot be edited. 
+                Waiver entries older than 30 days cannot be edited.
                 &nbsp;
                 <q-btn label="back" @click="navigateBack"></q-btn>
             </div>
@@ -496,6 +481,14 @@ export default createComponent({
             }
         })
 
+        const isMobile = computed( () => {
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+
         const watcherOptions: WatchOptions = {
             immediate: true, deep: false
         };
@@ -520,6 +513,7 @@ export default createComponent({
             fisheries,
             formatDateTime,
             formatIssuerName,
+            isMobile,
             navigateBack,
             oldRecord,
             permits,
@@ -553,5 +547,31 @@ export default createComponent({
     height: 0 !important;
     margin: 0;
     padding: 0;
+}
+
+* >>> .p-calendar {
+    background-color: white !important;
+    padding: 5px !important;
+    border-bottom: 1px solid rgb(170, 169, 169) !important;
+    width: 100%
+}
+
+* >>> .p-inputtext {
+    border: none !important;
+    font-weight: bold;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.text-subtitle2 {
+    font-size: 10px;
+    color: #007EC6;
+    position: relative;
+    top: 3px;
+    z-index: 999;
+}
+
+.p-inputwrapper-focus {
+    border: none !important;
 }
 </style>
