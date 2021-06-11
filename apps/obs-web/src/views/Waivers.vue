@@ -158,7 +158,8 @@ export default createComponent({
                                    row.createdBy.toLowerCase().includes(needle) ||
                                    row.createdDate.includes(needle) ||
                                    row.waiverType.description.toLowerCase().includes(needle) ||
-                                   row.reason.description.toLowerCase().includes(needle)
+                                   row.reason.description.toLowerCase().includes(needle) ||
+                                   row.waiverId.includes(needle)
                         })
                     waivers.value.length = 0;
                     waivers.value.push.apply(waivers.value, waiverResults);
