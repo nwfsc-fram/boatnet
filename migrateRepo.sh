@@ -84,8 +84,7 @@ function selectLFS {
 }
 
 
-echo "GitLab to GitHub Migraton:"
-echo "$GL_HOST:$GL_ORG/$repo => to $GH_HOST/$GH_ORG"
+echo "Migration: $GL_HOST:$GL_ORG/$repo => $GH_HOST/$GH_ORG"
 wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
 
@@ -133,12 +132,14 @@ if [ $? -eq 0 ];then
 fi
 
 echo "   - Creating repository '${GH_HOST}:${GH_ORG}/$repo'"
+# Clean up for cloning
 rm -r -f $repo
 
-gh repo create -y  -t ${GH_TEAM} --public ${GH_ORG}/$repo >> $target_repo_log  2>&1
-#Sometimes hg repo create returns bac value even after successful creation
+#NB Sometimes hg repo create returns bac value even after successful creation
 #So check with gh repo view
-gh repo view ${GH_ORG}/$repo >> $target_repo_log 2>&1
+
+gh repo create -y  -t ${GH_TEAM} --public ${GH_ORG}/$repo >> $target_repo_log 2>&1
+gh repo view ${GH_ORG}/$repo  >> $target_repo_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting '$repo' migration: Could not create '${GH_HOST}:${GH_ORG}/$repo'"
 	if [ -r $target_repo_log ];then
@@ -148,13 +149,14 @@ if [ $? -ne 0 ];then
 fi
 rm -f $target_repo_log
 
-# Clean up for cloning
+
 echo "   - Creating local clone of '${GL_HOST}:${GL_ORG}/$repo'"
 clone_log="${wrkingDir}/${repo}.clone.${time_stamp}.log"
 
 rm -f -r $repo
-git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo} >> $clone_log 2>&1
-#git clone --mirror ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo} >> $clone_log 2>&1
+#change 'origin' so git lfs migrate info doesn't get confused.
+
+git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo}  >>$clone_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting local clone of '${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo'"
 	if [ -r $clone_log ];then
@@ -162,20 +164,25 @@ if [ $? -ne 0 ];then
 	fi
 	exit -1
 fi
+
 rm -f  $clone_log
 
 #check if we need lfs
 cd "${repo}"
-
+#set up remotes and lfs
 lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
+git remote remove origin 
+git remote add $repo "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" 
+git lfs install --local
 
-lfs_array="$(selectLFS)"
-if [ "$lfs_array" = "" ];then
+
+tracked="$(git lfs migrate info --above=1kb 2> /dev/null |sed 's+\s.*++'|tr '\n' ' ' )"
+
+if [ "$tracked" = "" ];then
 	echo "   - LFS preprocessing skipped: no large (>${size_cutoff}MB) files found."
 else
 	echo "   - LFS  preprocessing using BFG on large (>${size_cutoff}MB) files."
 	
-	git lfs install --local >> $lfs_log 2>&1  # Need to install in repository
 	for branch in $(git branch -a|sed 's+^.* ++'|sed 's+^.*/++'|sort -u);do
 		git checkout $branch >>$lfs_log 2>&1
 		if [ $? -ne 0 ];then
@@ -187,43 +194,38 @@ else
 			fi
 			exit -1
 		fi
+
+		#Set up tracking and .gitattribute
+		(git lfs track $tracked && \
+			 git add .gitattributes && \
+			 git commit -am "Adding .gitattributes" ) >> $lfs_log 2>&1
+		if [ $? -ne 0 ];then
+				echo ""
+				echo "       Aborting LFS migration on $repo' branch '$branch': "
+				echo "       Unable to set up lfs tracking'."
+				if [ -r $lfs_log ];then
+					cat $lfs_log |fold -w 80| sed 's+^+      +'
+				fi
+				exit -1
+		fi
 	
-		#Set up .gitattributes
 
-		for file in $lfs_array;do
-			git lfs track "*/${file}" >>$lfs_log 2>&1
-			if [ $? -ne 0 ];then
-				echo ""
-				echo "       Aborting LFS migration on $repo' branch '$branch': "
-				echo "       unable to track '$file'."
-				if [ -r $lfs_log ];then
-					cat $lfs_log |fold -w 80| sed 's+^+      +'
-				fi
-				exit -1
+		bfg_list="*.{$(echo "${tracked}"|sed 's+\*.++g'|sed 's+ +,+g')}"
+		# Do BFG git to lfs conversion
+		java -jar ${BFG_JAR} \
+			 --convert-to-git-lfs $bfg_list --no-blob-protection $PWD >>$lfs_log 2>&1
+		if [ $? -ne 0 ];then
+			echo ""
+			echo "       Aborting LFS migration on $repo' branch '$branch': "
+			echo "       java -jar ${BFG_JAR} failed"
+			if [ -r $lfs_log ];then
+				cat $lfs_log |fold -w 80| sed 's+^+      +'
 			fi
-		done
-		
-		
-		git add .gitattributes >& /dev/null
-		git commit -am "Adding .gitattributes"  >& /dev/null
-		
-		for file in $lfs_array;do
-			# Do BFG git to lfs conversion
-			java -jar ${BFG_JAR} --convert-to-git-lfs $file \
-				 --no-blob-protection $PWD >>$lfs_log 2>&1
-			if [ $? -ne 0 ];then
-				echo ""
-				echo "       Aborting LFS migration on $repo' branch '$branch': "
-				echo "       java -jar ${BFG_JAR} failed"
-				if [ -r $lfs_log ];then
-					cat $lfs_log |fold -w 80| sed 's+^+      +'
-				fi
-				exit -1
-			fi
-		done
-
+			exit -1
+		fi
 		#Garbage collect
-		(git reflog expire --expire=now --all  && git gc --prune=now --aggressive)  >> $lfs_log 2>&1
+	(git reflog expire --expire=now --all  && \
+		 git gc --prune=now --aggressive)  >> $lfs_log 2>&1
 		if [ $? -ne 0 ];then
 			echo "       Aborting LFS migration on $repo' branch '$branch': "
 			echog"       git clean/garbage collection failed."
@@ -241,7 +243,6 @@ rm -f $lfs_log
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
 push_log="${wrkingDir}/${repo}.push.${time_stamp}.log"
 
-git remote add $repo "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" >> $push_log 2>&1
 git config lfs.https://${GH_HOST}/${GH_ORG}/${repo}.git/info/lfs.locksverify true
 
 git lfs push --all $repo >> $push_log 2>&1
@@ -253,6 +254,7 @@ if [ $? -ne 0 ];then
 	exit -1
 fi
 
+#Make sure all references work.
 git lfs fetch --all $repo >> $push_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git lfs fetch' failed:"
@@ -262,9 +264,9 @@ if [ $? -ne 0 ];then
 	exit -1
 fi
 
-
 #git push --force --mirror $repo >> $push_log 2>&1
 git push --mirror --force  $repo >> $push_log 2>&1
+
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git push --force --mirror' failed:"
 	if [ -r $push_log ];then
