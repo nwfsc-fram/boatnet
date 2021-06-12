@@ -35,7 +35,7 @@ if [ hash gh >& /dev/null ];then
 	exit -1
 fi
 
-if [ $(git lfs install >& /dev/null;echo $?) -ne 0 ];then
+if [ $(git lfs --help --man >& /dev/null;echo $?) -ne 0 ];then
 	echo "Aborting:  Git Large File Storage LFS is not installed."
 	echo "For installation instructions see: https://git-lfs.github.com/"
 	exit -1
