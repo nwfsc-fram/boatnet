@@ -155,7 +155,6 @@ export default createComponent({
             const currOps = state.debriefer.operations;
 
             const sampleInfo: any[] = jp.nodes(currOps, '$[*]..samples');
-            console.log(sampleInfo);
             for (const sample of sampleInfo) {
                 const children: any[] = [];
                 let childIndex = 0;
