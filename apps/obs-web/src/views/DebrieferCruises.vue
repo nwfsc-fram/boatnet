@@ -97,7 +97,15 @@ export default createComponent({
         type: 'date',
         key: 'ashopStatusDate',
         isEditable: true
-      }
+      },
+      {
+        field: '',
+        header: 'Status Time',
+        type: 'time',
+        isEditable: true,
+        key: 'ashopStatustime',
+        width: '150'
+      },
     ];
 
     watch(() => state.debriefer.cruises, async () => {

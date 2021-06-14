@@ -395,8 +395,10 @@ export default createComponent ({
         if (state.debriefer.displayCodes && label) {
             label = converToCode(key, label, data.node.data);
             label = label ? label : '';
-          }
-        lookupList[i] = { label, value: results[i].doc };
+            lookupList.push({ label, value: results[i].doc });
+        } else if (label) {
+          lookupList.push({ label, value: results[i].doc });
+        }
       }
       return lookupList;
     }

@@ -102,6 +102,14 @@ export default createComponent({
         width: '150'
       },
       {
+        field: '',
+        header: 'Dept Time',
+        type: 'time',
+        isEditable: true,
+        key: 'ashopDepartureTime',
+        width: '150'
+      },
+      {
         field: 'returnPort-name',
         header: 'Return Port',
         type: 'toggle',
@@ -118,6 +126,14 @@ export default createComponent({
         type: 'date',
         isEditable: true,
         key: 'ashopReturnDate',
+        width: '150'
+      },
+      {
+        field: '',
+        header: 'Return Time',
+        type: 'time',
+        isEditable: true,
+        key: 'ashopReturnTime',
         width: '150'
       },
       {
