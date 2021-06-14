@@ -56,32 +56,6 @@ if [ ! -f $BFG_JAR ];then
 	exit -1
 fi
 
-function selectLFS {
-	cutOff=$(( $size_cutoff * 1024 * 1024 ))
-	local tempFile=mktemp
-
-	# work over each commit and append all files in tree to $tempFile
-	local IFS=$'\n'
-	local commitSHA1
-	for commitSHA1 in $(git rev-list --all); do
-		git ls-tree -r --long "$commitSHA1" | sed 's+\s\s*+ +g' >>"$tempFile"
-	done
-
-
-	# sort files by SHA1, de-dupe list and finally re-sort by filesize
-	for line in $(sort --key 3 "$tempFile" | uniq | sort --key 4 --numeric-sort -r);do
-		file="$(echo ${line}| cut -d " " -f 5-|sed 's+\s+\\ +g')"
-		size=$(echo ${line}| cut -d " " -f 4)
-		if [ $size -le $cutOff ];then
-			break
-		fi
-		basename $file  # all we need
-		
-	done
-
-	# remove temp file
-	rm -f  "$tempFile"
-}
 
 
 echo "Migration: $GL_HOST:$GL_ORG/$repo => $GH_HOST/$GH_ORG"
