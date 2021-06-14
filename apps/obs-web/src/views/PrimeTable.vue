@@ -149,7 +149,22 @@
               autofocus
             />
             <q-input
-              v-if="col.type === 'number' || col.type === 'double'"
+              v-if="col.type === 'time'"
+              v-model="tempVal"
+              mask="time"
+              :rules="['time']"
+              dense
+              autofocus
+            />
+            <q-input
+              v-else-if=" col.type === 'latitude' || col.type === 'longitude'"
+              v-model="tempVal"
+              bottom-slots
+              dense
+              autofocus
+            />
+            <q-input
+              v-else-if="col.type === 'number' || col.type === 'double'"
               type="number"
               v-model="tempVal"
               dense
@@ -157,6 +172,21 @@
             />
             <q-input
               v-else-if="col.type === 'date'"
+              v-model="tempVal">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy transition-show="scale" transition-hide="scale">
+                      <q-date v-model="tempVal" mask="MM/DD/YYYY">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup label="Set" color="primary" flat></q-btn>
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+            </q-input>
+            <q-input
+              v-else-if="col.type === 'dateTime'"
               v-model="tempVal">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
@@ -269,7 +299,7 @@ import {
 } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
 import { cloneDeep, find, findIndex, filter, get, intersection,
-         remove, set, startsWith, uniq } from 'lodash';
+         remove, reverse, set, split, startsWith, uniq } from 'lodash';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import DataTable from 'primevue/datatable';
@@ -513,7 +543,7 @@ export default createComponent({
       update(async () => {
           const needle = val.toLowerCase();
           lookupsList.value = sortedList.filter(
-            (v: any) => startsWith(v.label.toLowerCase(), needle)
+            (v: any) => v.label && startsWith(v.label.toLowerCase(), needle)
           );
       });
     }
@@ -566,14 +596,23 @@ export default createComponent({
           formattedValue = converToCode(col.lookupKey, formattedValue);
         }
       }
-      if (type === 'date') {
+      if (type === 'dateTime') {
         if (formattedValue !== '-') {
           formattedValue = moment(formattedValue).format('MM/DD/YYYY HH:mm');
         }
-      } else if (type === 'coordinate') {
+      } else if (type === 'date') {
+        formattedValue = moment(formattedValue).format('MM/DD/YYYY');
+      } else if (type === 'time') {
+        formattedValue = moment(formattedValue).format('HH:mm');
+      } else if (type === 'coordinate' || type === 'latitude' || type === 'longitude') {
         const lat = get(slotProps.data, displayField[0]);
         const long = get(slotProps.data, displayField[1]);
         formattedValue = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
+        if (col.type === 'latitude') {
+          formattedValue = split(formattedValue, '\n')[0];
+        } else if (col.type === 'longitude') {
+          formattedValue = split(formattedValue, '\n')[1];
+        }
       } else if (formattedValue && type === 'double' && formattedValue % 1 !== 0) {
         formattedValue = formattedValue.toFixed(2);
       }
@@ -585,12 +624,21 @@ export default createComponent({
       tempVal.value = get(data.data, field);
       if (state.debriefer.displayCodes && colInfo.lookupKey && tempVal.value) {
         tempVal.value = converToCode(colInfo.lookupKey, tempVal.value);
-      } else if (colInfo.type === 'coordinate') {
+      } else if (colInfo.type === 'coordinate' || colInfo.type === 'latitude' || colInfo.type === 'longitude') {
         const lat = get(data.data, colInfo.displayField[0]);
         const long = get(data.data, colInfo.displayField[1]);
         tempVal.value = toDMS([long, lat], 'DD mm X', { decimalPlaces: 2, latLonSeparator: '\n' });
-      } else if (colInfo.type === 'date') {
+        if (colInfo.type === 'latitude') {
+          tempVal.value = split(tempVal.value, '\n')[0];
+        } else if (colInfo.type === 'longitude') {
+          tempVal.value = split(tempVal.value, '\n')[1];
+        }
+      } else if (colInfo.type === 'dateTime') {
         tempVal.value = moment(tempVal.value).format('MM/DD/YYYY HH:mm');
+      } else if (colInfo.type === 'date') {
+        tempVal.value = moment(tempVal.value).format('MM/DD/YYYY');
+      } else if (colInfo.type === 'time') {
+        tempVal.value = moment(tempVal.value).format('HH:mm');
       }
       if (colInfo.type === 'toggle' && colInfo.listType === 'fetch') {
         await populateLookupsList(colInfo);
@@ -617,8 +665,23 @@ export default createComponent({
           newValue = moment(newValue).format();
         } else if (col.type === 'coordinate') {
           newValue = fromDMS(newValue);
+          newValue = reverse(newValue);
         }
         set(editingCellRow, fields, newValue);
+
+        if (col.type === 'latitude' || col.type === 'longitude') {
+          const lat = get(slotProps.data, col.displayField[0]);
+          const long = get(slotProps.data, col.displayField[1]);
+          let updatedCoords = col.type === 'latitude' ? newValue + ' ' + long : lat + ' ' + newValue;
+          try {
+            updatedCoords = fromDMS(updatedCoords);
+          } catch (error) {
+            console.log('error converting coordinate');
+          }
+          updatedCoords = reverse(updatedCoords);
+          set(editingCellRow, col.displayField[0], updatedCoords[0]);
+          set(editingCellRow, col.displayField[1], updatedCoords[1]);
+        }
         editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
       }
       context.emit('save', editingCellRow);

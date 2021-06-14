@@ -146,8 +146,6 @@ export default createComponent({
       immediate: true
     };
 
-    watch(() => props.showDialog, init, watcherOptions);
-
     const startDate: any = ref(new Date());
     const endDate: any = ref(new Date());
     const formattedMinDate = ref(new Date());
@@ -155,6 +153,8 @@ export default createComponent({
     const evalType = ref('');
     const startErrorMessage = ref('');
     const endErrorMessage = ref('');
+
+    watch(() => props.showDialog, init, watcherOptions);
 
     async function init() {
       const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};

@@ -251,7 +251,11 @@ export default createComponent({
       {
         field: 'speciesName',
         header: 'Species Name',
-        type: 'input',
+        type: 'toggle',
+        listType: 'fetch',
+        lookupKey: 'taxonomy-alias',
+        lookupField: 'commonNames[0]',
+        isEditable: true,
         key: 'ashopBioSpeciesName',
         width: '150'
       },
@@ -273,6 +277,66 @@ export default createComponent({
         key: 'ashopBioFrequency',
         width: '80'
       },
+      {
+        field: 'biostructures-0-structureType-description',
+        header: 'Type 1',
+        type: 'toggle',
+        listType: 'fetch',
+        key: 'ashopBioType1',
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200',
+        codeWidth: '100'
+      },
+      {
+        field: 'biostructures-0-label',
+        header: 'Label 1',
+        type: 'input',
+        key: 'ashopBioBarcode1',
+        width: '80',
+        isEditable: true
+      },
+      {
+        field: 'biostructures-1-structureType-description',
+        header: 'Type 2',
+        type: 'toggle',
+        listType: 'fetch',
+        key: 'ashopBioType2',
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200',
+        codeWidth: '100'
+      },
+      {
+        field: 'biostructures-1-label',
+        header: 'Label 2',
+        type: 'input',
+        key: 'ashopBioBarcode2',
+        width: '80',
+        isEditable: true
+      },
+      {
+        field: 'biostructures-2-structureType-description',
+        header: 'Type 3',
+        type: 'toggle',
+        listType: 'fetch',
+        key: 'ashopBioType3',
+        lookupKey: 'biostructure-type',
+        lookupField: 'description',
+        isEditable: true,
+        width: '200',
+        codeWidth: '100'
+      },
+      {
+        field: 'biostructures-2-label',
+        header: 'Label 3',
+        type: 'input',
+        key: 'ashopBioBarcode3',
+        width: '80',
+        isEditable: true
+      }
     ];
 
     function setColumns() {
@@ -322,6 +386,7 @@ export default createComponent({
         const sampleDesign = jp.value(currOps, specimenPath + '.sampleSystem.description');
         const sex = jp.value(currOps, specimenPath + '.sex');
         const frequency = jp.value(currOps, specimenPath + '.frequency');
+        const biostructures = jp.value(currOps, specimenPath + '.biostructures');
 
         bios.value.push({
           haulNum,
@@ -330,7 +395,8 @@ export default createComponent({
           speciesName,
           sampleDesign,
           sex,
-          frequency
+          frequency,
+          biostructures
         });
       }
     }
