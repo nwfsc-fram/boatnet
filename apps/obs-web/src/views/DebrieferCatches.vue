@@ -23,7 +23,7 @@ import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { cloneDeep, difference, merge, get, orderBy, remove, uniq } from 'lodash';
+import { cloneDeep, forEach, merge, get, orderBy, remove, uniq } from 'lodash';
 
 
 export default createComponent({
@@ -240,89 +240,87 @@ export default createComponent({
             disposition = 'D';
           }
 
-          if (c.children) {
-            for (const child of c.children) {
-              const discardReason =  jp.query(child, '$..discardReason.description')[0];
+          forEach(c.children, function(child) {
+          const discardReason =  jp.query(child, '$..discardReason.description')[0];
 
-              const catchContents = child.catchContent;
-              const catchName = catchContents
-                ? catchContents.commonNames[0]
-                : '';
-              const childWeight = jp.query(child, 'weight.value')[0];
-              const childCount = child.sampleCount;
-              let toolTipInfo: string = '';
+            const catchContents = child.catchContent;
+            const catchName = catchContents
+              ? catchContents.commonNames[0]
+              : '';
+            const childWeight = jp.query(child, 'weight.value')[0];
+            const childCount = child.sampleCount;
+            let toolTipInfo: string = '';
 
-              const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
-              const specimensCnt: number = child.specimens ? child.specimens.length : 0;
+            const specimenIds: string[] = jp.query(child, '$..specimens[*]._id');
+            const specimensCnt: number = child.specimens ? child.specimens.length : 0;
 
-              const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
-              toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
+            const lengths: number[] = jp.query(child, '$..specimens[*].length.value');
+            toolTipInfo += lengths.length > 0 ? 'lengths: ' + lengths.join(', ') : '';
 
-              const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
-              toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
+            const specimenType: string[] = jp.query(child, '$..specimens[*].biostructures[*].structureType.description');
+            toolTipInfo += specimenType.length > 0 ? ' specimen types: ' + specimenType.join(', ') : '';
 
-              const sex: string[] = jp.query(child, '$..specimens[*].sex');
-              toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
+            const sex: string[] = jp.query(child, '$..specimens[*].sex');
+            toolTipInfo += sex.length > 0 ? ' sex: ' + sex.join(', ') : '';
 
-              const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
-              toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
+            const viability: string[] = jp.query(child, '$..specimens[*].viability.description');
+            toolTipInfo += viability.length > 0 ? ' viability: ' + viability.join(', ') : '';
 
-              const baskets: any[] = [];
-              let basketCnt;
-              if (child.baskets) {
-                basketCnt = child.baskets.length;
-                let basketCount = 1;
-                for (const basket of child.baskets) {
-                  baskets.push({
-                    key: key + '_' + childIndex + '_' + basketCount,
-                    data: {
-                      name: 'Basket ' + basketCount,
-                      weight: basket.weight.value,
-                      count: basket.count,
-                      avgWt: basket.weight.value / basket.count,
-                      disposition,
-                      weightMethod: wm,
-                      operationNum,
-                      catchNum: c.catchNum,
-                      type: 'basket'
-                    }
-                  });
-                  basketCount++;
-                }
+            const baskets: any[] = [];
+            let basketCnt;
+            if (child.baskets) {
+              basketCnt = child.baskets.length;
+              let basketCount = 1;
+              for (const basket of child.baskets) {
+                baskets.push({
+                  key: key + '_' + childIndex + '_' + basketCount,
+                  data: {
+                    name: 'Basket ' + basketCount,
+                    weight: basket.weight.value,
+                    count: basket.count,
+                    avgWt: basket.weight.value / basket.count,
+                    disposition,
+                    weightMethod: wm,
+                    operationNum,
+                    catchNum: c.catchNum,
+                    type: 'basket'
+                  }
+                });
+                basketCount++;
               }
-              const newChild: any = {
-                key: key + '_' + childIndex,
-                data: {
-                  specimensCnt,
-                  specimenIds,
-                  basketCnt,
-                  toolTipInfo,
-                  discardReason,
-                  name: catchName,
-                  catchContent: catchContents,
-                  weight: childWeight,
-                  count: childCount,
-                  disposition,
-                  weightMethod: wm,
-                  operationNum,
-                  catchNum: c.catchNum,
-                  type: 'child'
-                }
-              };
-              // if there is only one basket do not show dropdown row
-              // instead, merge info with top level item
-              if (baskets.length === 1) {
-                const combined = merge(newChild, baskets[0]);
-                combined.data.type = 'child';
-                combined.data.name = catchName;
-                children.push(combined);
-              } else {
-                newChild.children = baskets;
-                children.push(newChild);
-              }
-              childIndex++;
             }
-          }
+            const newChild: any = {
+              key: key + '_' + childIndex,
+              data: {
+                specimensCnt,
+                specimenIds,
+                basketCnt,
+                toolTipInfo,
+                discardReason,
+                name: catchName,
+                catchContent: catchContents,
+                weight: childWeight,
+                count: childCount,
+                disposition,
+                weightMethod: wm,
+                operationNum,
+                catchNum: c.catchNum,
+                type: 'child'
+              }
+            };
+            // if there is only one basket do not show dropdown row
+            // instead, merge info with top level item
+            if (baskets.length === 1) {
+              const combined = merge(newChild, baskets[0]);
+              combined.data.type = 'child';
+              combined.data.name = catchName;
+              children.push(combined);
+            } else {
+              newChild.children = baskets;
+              children.push(newChild);
+            }
+            childIndex++;
+        })
 
           const newCatchItem: any = {
             key,

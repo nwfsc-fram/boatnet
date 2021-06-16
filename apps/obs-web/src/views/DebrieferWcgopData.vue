@@ -33,6 +33,7 @@
           <q-tab v-if="program === 'wcgop'" name="catch" label="Catch" />
           <q-tab v-if="program === 'ashop'" name="samples" label="Samples" />
           <q-tab name="biospecimens" label="Biospecimens" />
+          <q-tab v-if="program === 'wcgop'" name="interactions" label="Species Interactions" />
         </q-tabs>
 
         <q-separator />
@@ -59,6 +60,10 @@
 
           <q-tab-panel name="biospecimens">
             <app-debriefer-biospecimens :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-biospecimens>
+          </q-tab-panel>
+
+          <q-tab-panel name="interactions">
+            <app-debriefer-species-interactions :isFullSize="isFullSize" :lookupsMap="lookupsMap"></app-debriefer-species-interactions>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>

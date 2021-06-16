@@ -651,10 +651,10 @@ export default createComponent({
       if (col.listType === 'fetch') {
         const fieldArr: string[] = fields.split('-');
         fieldArr.pop();
-        fields = fieldArr.join('-');
+        fields = fieldArr.join('.');
         newValue = newValue.doc;
-        editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
         set(editingCellRow, fields, newValue);
+        editingCellRow = unflatten(editingCellRow, {delimiter: '-'});
       } else {
         if (col.type === 'boolean') {
           newValue = newValue;
