@@ -267,8 +267,8 @@ rm -f $target_repo_log
 rm -f $clone_log
 rm -f $lfs_log
 rm -f $push_log
-#rm -f -r $repo
-#rm -f -r $repo.bfg-report
+rm -f -r $repo
+rm -f -r $repo.bfg-report
 echo "Migration completed."
 exit 0
 
