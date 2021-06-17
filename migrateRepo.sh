@@ -127,10 +127,12 @@ rm -f $target_repo_log
 echo "   - Creating local clone of '${GL_HOST}:${GL_ORG}/$repo'"
 clone_log="${wrkingDir}/${repo}.clone.${time_stamp}.log"
 
-rm -f -r $repo
-#change 'origin' so git lfs migrate info doesn't get confused.
+rm -f -r $repo  # cleanup
 
-git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo ${repo}  >>$clone_log 2>&1
+mkdir $repo
+cd $repo
+
+git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo .	>>$clone_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting local clone of '${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo'"
 	if [ -r $clone_log ];then
@@ -139,17 +141,28 @@ if [ $? -ne 0 ];then
 	exit -1
 fi
 
+#Make sure we have all branches
+
+( git branch -r | awk -F'origin/' '!/HEAD|master/{print $2 " " $1"origin/"$2}' | xargs -L 1 git branch -f --track && \
+	  git fetch --all --prune --tags && git pull --all) 	>>$clone_log 2>&1
+
+if [ $? -ne 0 ];then
+	echo "      Aborting: Could not recover all branches of '${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo'"
+	if [ -r $clone_log ];then
+		cat $clone_log |fold -w 80 | sed 's+^+      +'
+	fi
+	exit -1
+fi
 rm -f  $clone_log
 
-#check if we need lfs
-cd "${repo}"
-#set up remotes and lfs
-lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
+
+# Protect origin from accidents, and create a purely local repo, which helps lfs
 git remote remove origin 
-git remote add $repo "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" 
-git lfs install --local
+#check if we need lfs 
+lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
 
-
+git lfs install --local >> $lfs_log 2>&1
+set -xv
 tracked="$(git lfs migrate info --above=1kb 2> /dev/null |sed 's+\s.*++'|tr '\n' ' ' )"
 
 if [ "$tracked" = "" ];then
@@ -210,16 +223,17 @@ else
 		fi
 	done
 fi
-
-
+set +xv
 rm -f $lfs_log
 
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
 push_log="${wrkingDir}/${repo}.push.${time_stamp}.log"
+git remote add gitlab "${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/$repo"
+git remote add github "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/$repo" 
 
 git config lfs.https://${GH_HOST}/${GH_ORG}/${repo}.git/info/lfs.locksverify true
 
-git lfs push --all $repo >> $push_log 2>&1
+git lfs push --all github >> $push_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git lfs push' failed:"
 	if [ -r $push_log ];then
@@ -229,7 +243,7 @@ if [ $? -ne 0 ];then
 fi
 
 #Make sure all references work.
-git lfs fetch --all $repo >> $push_log 2>&1
+git lfs fetch --all github >> $push_log 2>&1
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git lfs fetch' failed:"
 	if [ -r $push_log ];then
@@ -238,8 +252,8 @@ if [ $? -ne 0 ];then
 	exit -1
 fi
 
-#git push --force --mirror $repo >> $push_log 2>&1
-git push --mirror --force  $repo >> $push_log 2>&1
+#git push --force --mirror github >> $push_log 2>&1
+git push --mirror --force  github >> $push_log 2>&1
 
 if [ $? -ne 0 ];then
 	echo "      Aborting 'git push --force --mirror' failed:"
@@ -255,8 +269,8 @@ rm -f $target_repo_log
 rm -f $clone_log
 rm -f $lfs_log
 rm -f $push_log
-rm -f -r $repo
-rm -f -r $repo.bfg-report
+#rm -f -r $repo
+#rm -f -r $repo.bfg-report
 echo "Migration completed."
 exit 0
 
