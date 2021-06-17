@@ -76,6 +76,7 @@ export interface UserState {
 export interface VesselState {
   activeVessel?: any;
   filterText: string;
+  vesselSelection: any;
 }
 
 export interface OTSState {

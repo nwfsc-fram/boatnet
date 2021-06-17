@@ -57,6 +57,8 @@ import UserConfig from './views/UserConfig.vue';
 import UserDetails from './views/UserDetails.vue';
 import VesselDetails from './views/VesselDetails.vue';
 import Vessels from './views/Vessels.vue';
+import VesselSelectionDetails from './views/VesselSelectionDetails.vue';
+import VesselSelections from './views/VesselSelections.vue';
 import ViewHauls from './views/ViewHauls.vue';
 import ViewImage from './views/ViewImage.vue';
 import WaiverDetails from './views/WaiverDetails.vue';
@@ -336,6 +338,19 @@ const router = new Router({
         {
           path: '/waivers/:id', name: 'Waiver Details', component: WaiverDetails,
           props: (route: any) => ({ id: String(route.params.id) }),
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/vessel-selections', name: 'Vessel Selections', component: VesselSelections,
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/vessel-selections/:id', name: 'Vessel Selection Details', component: VesselSelectionDetails,
+          props: (route: any) => ({ id: String(route.params.id)}),
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
           }
