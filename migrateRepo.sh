@@ -158,12 +158,11 @@ rm -f  $clone_log
 
 # Protect origin from accidents, and create a purely local repo, which helps lfs
 git remote remove origin 
-#check if we need lfs 
-lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
 
+lfs_log="${wrkingDir}/${repo}.lsf.${time_stamp}.log"
 git lfs install --local >> $lfs_log 2>&1
-set -xv
-tracked="$(git lfs migrate info --above=49Mb 2> /dev/null |sed 's+\s.*++'|tr '\n' ' ' )"
+
+tracked="$(git lfs migrate info --above=${size_cutoff}Mb 2> /dev/null |sed 's+\s.*++'|tr '\n' ' ' )"
 
 if [ "$tracked" = "" ];then
 	echo "   - LFS preprocessing skipped: no large (>${size_cutoff}MB) files found."
