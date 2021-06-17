@@ -1,5 +1,9 @@
 <template>
-  <q-dialog v-model="showDialog">
+  <q-dialog
+    v-model="show"
+    @escape-key="closeDialog"
+    @before-show="beforeShow"
+  >
     <q-card style="width: 800px; max-width: 80vw; height: 800px">
       <q-card-section>
         <div class="text-h6" style="text-align: center">Evaluation Period</div>
@@ -108,6 +112,7 @@ export default createComponent({
 
     const defaultEvaluationPeriods: any = ref([]);
     const pagination = { rowsPerPage: 12 };
+    const show: any = ref();
 
     const columns = [
       {
@@ -118,6 +123,13 @@ export default createComponent({
         field: (row: any) => row.legacy.tripId
       },
       {
+        name: 'program',
+        label: 'Program',
+        align: 'left',
+        sortable: true,
+        field: (row: any) => row.program.name
+      },
+      {
         name: 'vessel',
         label: 'Vessel',
         align: 'left',
@@ -126,27 +138,48 @@ export default createComponent({
       },
       {
         name: 'startDate',
-        label: 'Start Date',
+        label: 'Departure',
         align: 'left',
         sortable: true,
         field: 'departureDate',
-        format: (val: any) => moment(val).format('MM/DD/YYYY HH:mm:ss')
+        format: (val: any) => moment(val).format('MM/DD/YYYY')
       },
       {
         name: 'endDate',
-        label: 'End Date',
+        label: 'Return',
         align: 'left',
         sortable: true,
         field: 'returnDate',
-        format: (val: any) => moment(val).format('MM/DD/YYYY HH:mm:ss')
+        format: (val: any) => moment(val).format('MM/DD/YYYY')
+      },
+      {
+        name: 'uploadDate',
+        label: 'Upload',
+        align: 'left',
+        sortable: true,
+        field: 'uploadedDate',
+        format: (val: any) => moment(val).format('MM/DD/YYYY')
+      },
+      {
+        name: 'reviewedDate',
+        label: 'Reviewed',
+        align: 'left',
+        sortable: true,
+        field: 'reviewedDate',
+        format: (val: any) => val ? moment(val).format('MM/DD/YYYY') : ''
+      },
+      {
+        name: 'status',
+        label: 'Status',
+        align: 'left',
+        sortable: true,
+        field: (row: any) => row.tripStatus.description
       }
     ];
 
     const watcherOptions: WatchOptions = {
       immediate: true
     };
-
-    watch(() => props.showDialog, init, watcherOptions);
 
     const startDate: any = ref(new Date());
     const endDate: any = ref(new Date());
@@ -156,7 +189,13 @@ export default createComponent({
     const startErrorMessage = ref('');
     const endErrorMessage = ref('');
 
+    watch(() => props.showDialog, init, watcherOptions);
+
     async function init() {
+      show.value = props.showDialog;
+    }
+
+    function beforeShow() {
       const evalPeriod = props.evaluationPeriod ? props.evaluationPeriod : {};
       formattedMinDate.value = props.minDate ? new Date(props.minDate) : new Date(1970, 1, 1);
       formattedMaxDate.value = props.maxDate ? new Date(props.maxDate) : new Date();
@@ -248,6 +287,7 @@ export default createComponent({
     }
 
     function closeDialog() {
+      show.value = false;
       context.emit('update:showDialog', false);
     }
 
@@ -279,6 +319,8 @@ export default createComponent({
     }
 
     return {
+      show,
+      beforeShow,
       formattedMinDate,
       formattedMaxDate,
       startDate,
