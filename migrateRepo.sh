@@ -223,7 +223,6 @@ else
 		fi
 	done
 fi
-set +xv
 rm -f $lfs_log
 
 echo "   - Pushing to ${GH_HOST}:${GH_ORG}/$repo"
