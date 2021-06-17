@@ -279,7 +279,11 @@ export default createComponent({
             update( async () => {
 
             if (val !== '') {
-                const permitResults = await masterDB.view('obs_web', 'permit_numbers', {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'})
+                const permitResults = await masterDB.view(
+                    'obs_web',
+                    'permit_numbers',
+                    {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'}
+                );
                 permits.value = permitResults.rows.map( (row: any) => row.doc );
             } else {
                 const permitsQuery = await masterDB.view(
@@ -296,7 +300,7 @@ export default createComponent({
 
         const navigateBack = () => {
             router.back();
-        }
+        };
 
         const getOptions = async () => {
 
@@ -308,19 +312,19 @@ export default createComponent({
                 );
 
                 vessels.value = vesselsQuery.rows.map( (row: any) => row.doc );
-            } catch (err) { console.log(err); };
+            } catch (err) { console.log(err); }
 
             try {
                 const waiverTypesQuery = await masterDB.view(
                     'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'waiver-type'}
-                )
+                );
                 waiverTypes.value = waiverTypesQuery.rows.map( (row: any) => row.doc );
-            } catch (err) { console.log(err); };
+            } catch (err) { console.log(err); }
 
             try {
                 const waiverReasonsQuery = await masterDB.view(
                     'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'waiver-reason'}
-                )
+                );
                 waiverReasons.value = waiverReasonsQuery.rows.map( (row: any) => row.doc );
                 waiverReasons.value.sort( (a: any, b: any) => {
                     if (a.lookupValue > b.lookupValue) {
@@ -330,13 +334,13 @@ export default createComponent({
                     } else {
                         return 0;
                     }
-                } )
-            } catch (err) { console.log(err); };
+                } );
+            } catch (err) { console.log(err); }
 
             try {
                 const fisheriesQuery = await masterDB.view(
                     'obs_web', 'all_doc_types', {include_docs: true, reduce: false, key: 'fishery'}
-                )
+                );
                 fisheries.value = fisheriesQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
                 fisheries.value.sort( (a: any, b: any) => {
                     if (a.description > b.description) {
@@ -346,29 +350,29 @@ export default createComponent({
                     } else {
                         return 0;
                     }
-                } )
-            } catch (err) { console.log(err); };
+                } );
+            } catch (err) { console.log(err); }
 
             try {
                 const permitsQuery = await masterDB.view(
                     'obs_web', 'permit_numbers', {include_docs: true, reduce: false, limit: 20}
-                )
+                );
                 permits.value = permitsQuery.rows.map( (row: any) => row.doc );
-            } catch (err) { console.log(err); };
+            } catch (err) { console.log(err); }
 
             try {
                 const portsQuery = await masterDB.view(
                     'obs_web', 'all_port_names', {include_docs: true}
-                )
+                );
                 allPorts.value = portsQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
                 ports.value = portsQuery.rows.map( (row: any) => row.doc ).filter( (row: any) => row.isWcgop && row.isActive );
-            } catch (err) { console.log(err); };
-        }
+            } catch (err) { console.log(err); }
+        };
 
-        const getWaiver = async (id: any) => {
-            if (id === 'new') {
+        const getWaiver = async (waiverId: any) => {
+            if (waiverId === 'new') {
                 const maxIdQuery = await masterDB.view('obs_web', 'waiverId', {descending: true, limit: 1});
-                const newId = parseInt(maxIdQuery.rows[0].key) + 1;
+                const newId = parseInt(maxIdQuery.rows[0].key, 10) + 1;
                 waiver.value = {
                     type: 'waiver',
                     createdBy: authService.getCurrentUser()!.username,
@@ -384,7 +388,7 @@ export default createComponent({
                     landingPort: null,
                     notes: null,
                     waiverId: newId.toString()
-                }
+                };
             } else {
                 try {
                     waiver.value = await masterDB.get(id);
@@ -392,11 +396,11 @@ export default createComponent({
                     console.log(err);
                 }
             }
-        }
+        };
 
         const selectText = (event: any) => {
             event.target.select();
-        }
+        };
 
         const formatDateTime = (dateTime: string) => {
             return moment(dateTime).format('MM/DD/YYYY');
@@ -404,7 +408,7 @@ export default createComponent({
 
         const formatIssuerName = (username: string) => {
             return username ? startCase(username.replace('.', ' ')) : '';
-        }
+        };
 
         const validatedWaiver = computed( () => {
             if (waiver.value.vessel && waiver.value.startDate && waiver.value.endDate && waiver.value.waiverType && waiver.value.reason) {
@@ -412,7 +416,7 @@ export default createComponent({
             } else {
                 return false;
             }
-        })
+        });
 
         const saveWaiver = async () => {
             try {
@@ -426,14 +430,20 @@ export default createComponent({
             } catch (err) {
                 Notify.create({
                     message: err
-                })
+                });
             }
-        }
+        };
 
         const updateWaiver = async () => {
             try {
-                waiver.updatedDate = moment().format();
-                waiver.updatedBy = authService.getCurrentUser()!.username;
+                waiver.value.updatedDate = moment().format();
+                waiver.value.updatedBy = authService.getCurrentUser()!.username;
+                const previous = await masterDB.get(waiver.value._id);
+                delete previous.changeLog;
+                if (!waiver.value.changeLog) {
+                    waiver.value.changeLog = [];
+                }
+                waiver.value.changeLog.push(previous);
                 const result = await masterDB.post(waiver.value);
                 waiver.value._rev = result.rev;
                 Notify.create({
@@ -443,13 +453,13 @@ export default createComponent({
             } catch (err) {
                 Notify.create({
                     message: err
-                })
+                });
             }
-        }
+        };
 
         const startDate = computed({
             get: () => {
-                return waiver.value.startDate? new Date(waiver.value.startDate) : null;
+                return waiver.value.startDate ? new Date(waiver.value.startDate) : null;
             },
             set: (val) => {
                 set(waiver.value, 'startDate', moment(val).format());
@@ -475,11 +485,11 @@ export default createComponent({
 
         const vesselCaptains = computed( () => {
             if (waiver.value && waiver.value.vessel && waiver.value.vessel.captains) {
-                return waiver.value.vessel.captains
+                return waiver.value.vessel.captains;
             } else {
                 return [];
             }
-        })
+        });
 
         const isMobile = computed( () => {
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -487,7 +497,7 @@ export default createComponent({
             } else {
                 return false;
             }
-        })
+        });
 
         const watcherOptions: WatchOptions = {
             immediate: true, deep: false
@@ -497,7 +507,7 @@ export default createComponent({
             () => waiver.value.vessel,
             (newVal, oldVal) => {
                 if (oldVal && newVal !== oldVal) {
-                    set(waiver.value, 'contact', null)
+                    set(waiver.value, 'contact', null);
                 }
             },
             watcherOptions
@@ -506,7 +516,7 @@ export default createComponent({
         onMounted( async () => {
             await getOptions();
             await getWaiver(id);
-        })
+        });
 
         return {
             endDate,
@@ -533,14 +543,11 @@ export default createComponent({
             waiverTypes
         };
     }
-})
+});
 
 </script>
 
 <style scoped>
-* >>> .p-datepicker {
-  padding-left: 0 !important;
-}
 
 .break {
     flex-basis: 100%;

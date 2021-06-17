@@ -22,6 +22,19 @@ function getCruiseApiUrl() {
 function getEmailUrl() {
     return authService.getTripsApiUrl() + '/api/v1/email';
 }
+
+function getSelectionsUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/getSelections';
+}
+
+function getWaiversUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/getWaivers';
+}
+
+function getFishTicketUrl() {
+    return authService.getTripsApiUrl() + '/api/vi/getFishTicket';
+}
+
 function getTripsApiMongoUrl() {
     return authService.getTripsApiUrl() + '/api/v1/mongo';
 }
@@ -313,6 +326,80 @@ export function mongoDelete(document: any) {
                     authorization: 'Token ' + getJwt()
                 },
                 body: document
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getSelections(query?: any, queryValue?: any) {
+    let formattedQuery = '';
+    if (query) {
+        formattedQuery = '?' + query + '=' + queryValue;
+    }
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getSelectionsUrl() + formattedQuery;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getOracleWaivers(year: any, vesselId?: any) {
+    let formattedQuery = '';
+    if (vesselId) {
+        formattedQuery = '?year=' + year + '&vesselId=' + vesselId;
+    } else {
+        formattedQuery = '?year=' + year;
+    }
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getWaiversUrl() + formattedQuery;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getFishTicket(ftid: any) {
+    let formattedQuery = '?ftid=' + ftid;
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getFishTicketUrl() + formattedQuery;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
                     resolve(body);

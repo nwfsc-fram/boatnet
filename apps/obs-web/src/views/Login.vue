@@ -15,13 +15,18 @@
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
 
-              <div class="q-ma-md" style="text-align: center">
-                <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="height: 80px">
-                &nbsp;
-                <div class="text-h6 text-primary" style="font-size: 24px; display: inline; line-height: 80px; vertical-align: top">BOATNET</div>
-                <br><br>
-              </div>
-
+          <div class="flex flex-center q-pa-md" style="text-align: center">
+                <transition-group name="transition-list">
+                  <img v-if="pageLoad" alt="animated_noaa_fisheries_logo" src="../assets/intro3.gif" style="width: 100%" class="transition-item" :key="0">
+                  <div v-else :key="1">
+                    <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="height: 80px" class="transition-item">
+                    &nbsp;
+                    <div class="text-h6 text-primary" style="font-size: 24px; display: inline; line-height: 80px; vertical-align: top">BOATNET</div>
+                    <br><br>
+                  </div>
+                </transition-group>
+          </div>
+          <br>
           <q-input
             outlined
             ref="username"
@@ -67,12 +72,12 @@
         <div class="column justify-center" style="text-align: center">
           <router-link to="/" disabled="true">Forgot Password</router-link>
           <router-link to="/" disabled="true">Change Password</router-link>
-        <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 50px">
-          <!-- Version: {{general.appVersion}} -->
-          Version: todo | Updated: {{this.lastSoftwareUpdateDate}}
-          <br>Last Data Sync: {{this.lastDataSyncDate}}
-          <br>Last Login Date: {{this.lastLoginDate}}
-        </div>
+          <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 50px">
+            <!-- Version: {{general.appVersion}} -->
+            Version: todo | Updated: {{this.lastSoftwareUpdateDate}}
+            <br>Last Data Sync: {{this.lastDataSyncDate}}
+            <br>Last Login Date: {{this.lastLoginDate}}
+          </div>
         </div>
       </div>
     </q-page-container>
@@ -131,6 +136,8 @@ export default class Login extends Vue {
     preventClickEvent: false
   };
 
+  private pageLoad = true;
+
   private unsubscribe: any;
 
   public get isLoggingIn(): boolean {
@@ -180,6 +187,11 @@ export default class Login extends Vue {
   // }
 
   private mounted() {
+
+
+    setTimeout(() => {
+      this.pageLoad = false;
+    }, 5000)
     // this.refreshPage();
     this.logout(); // reset login status
     this.disconnectPouch();
@@ -245,3 +257,14 @@ export default class Login extends Vue {
 
 }
 </script>
+
+<style scoped>
+  .transition-item {
+    transition: all .5s;
+  }
+
+    .transition-list-enter,
+    .transition-list-leave-to {
+        opacity: 0;
+    }
+</style>

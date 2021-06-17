@@ -12,18 +12,25 @@ Vue.use(Vuex);
 
 export const state: VesselState = {
   activeVessel: undefined,
-  filterText: ''
+  filterText: '',
+  vesselSelection: undefined
 };
 
 const actions: ActionTree<VesselState, RootState> = {
   setActiveVessel({ commit}: any, choice: any) {
     commit('setActiveVessel', choice);
+  },
+  setVesselSelection({commit}: any, choice: any) {
+    commit('setVesselSelection', choice);
   }
 };
 
 const mutations: MutationTree<VesselState> = {
   setActiveVessel(newState: any, val: any) {
     newState.activeVessel = val;
+  },
+  setVesselSelection(newState: any, val: any) {
+    newState.vesselSelection = val;
   }
 };
 

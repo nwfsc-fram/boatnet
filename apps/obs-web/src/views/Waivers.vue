@@ -128,7 +128,7 @@ export default createComponent({
 
         const formatIssuerName = (username: string) => {
             return startCase(username.replace('.', ' '));
-        }
+        };
 
         onMounted( async () => {
             await getWaivers();
@@ -150,17 +150,17 @@ export default createComponent({
             () => filterText.value,
             (newVal, oldVal) => {
                 if (newVal !== '') {
-                    const needle = newVal.toLowerCase()
+                    const needle = newVal.toLowerCase();
                     let waiverResults: any = [];
-                        waiverResults = allWaivers.value.filter( (row: any) => {
-                            return row.vessel.vesselName.toLowerCase().includes(needle) ||
-                                   (row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber).toLowerCase().includes(needle) ||
-                                   row.createdBy.toLowerCase().includes(needle) ||
-                                   row.createdDate.includes(needle) ||
-                                   row.waiverType.description.toLowerCase().includes(needle) ||
-                                   row.reason.description.toLowerCase().includes(needle) ||
-                                   row.waiverId.includes(needle)
-                        })
+                    waiverResults = allWaivers.value.filter( (row: any) => {
+                        return row.vessel.vesselName.toLowerCase().includes(needle) ||
+                                (row.vessel.coastGuardNumber ? row.vessel.coastGuardNumber : row.vessel.stateRegulationNumber).toLowerCase().includes(needle) ||
+                                row.createdBy.toLowerCase().includes(needle) ||
+                                row.createdDate.includes(needle) ||
+                                row.waiverType.description.toLowerCase().includes(needle) ||
+                                row.reason.description.toLowerCase().includes(needle) ||
+                                row.waiverId.includes(needle);
+                    });
                     waivers.value.length = 0;
                     waivers.value.push.apply(waivers.value, waiverResults);
                 } else {
