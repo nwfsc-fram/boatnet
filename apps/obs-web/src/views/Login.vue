@@ -191,7 +191,7 @@ export default class Login extends Vue {
 
     setTimeout(() => {
       this.pageLoad = false;
-    }, 5000)
+    }, 5000);
     // this.refreshPage();
     this.logout(); // reset login status
     this.disconnectPouch();

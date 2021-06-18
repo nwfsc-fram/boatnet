@@ -72,7 +72,7 @@ export default createComponent({
 
         const fishTickets: any = ref([]);
 
-        const ftLoading: any = ref(false);;
+        const ftLoading: any = ref(false);
 
         const navigateBack = () => {
             router.back();
@@ -98,22 +98,20 @@ export default createComponent({
                     'em-views',
                     'wcgopCode-to-pacfinCode-map',
                     {include_docs: true, keys: speciesCodes}
-                )
+                );
                 speciesDocs = speciesQuery.rows.map((row: any) => row.doc);
             } catch (err) {
                 console.error(err);
             }
             return speciesDocs;
-        }
-
+        };
 
         const getFishTickets = async () => {
             const ids = ftids!.split(', ');
             for (const id of ids) {
-                const ticketRows = await getFishTicket(id);
-                const speciesDocs = await getSpeciesDocs(ticketRows.map((row: any) => row.PACFIN_SPECIES_CODE))
-                console.log(speciesDocs);
-                for (let row of ticketRows) {
+                const ticketRows: any = await getFishTicket(id);
+                const speciesDocs = await getSpeciesDocs(ticketRows.map((row: any) => row.PACFIN_SPECIES_CODE));
+                for (const row of ticketRows) {
                     row.FTID = id;
                     const species = speciesDocs.find( (speciesRow: any) => speciesRow.pacfinSpeciesCode === row.PACFIN_SPECIES_CODE );
                     console.log(species);
