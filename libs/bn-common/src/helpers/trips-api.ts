@@ -32,7 +32,7 @@ function getWaiversUrl() {
 }
 
 function getFishTicketUrl() {
-    return authService.getTripsApiUrl() + '/api/vi/getFishTicket';
+    return authService.getTripsApiUrl() + '/api/v1/getFishTicket';
 }
 
 function getTripsApiMongoUrl() {

@@ -29,6 +29,7 @@ import EMReview from './views/EMReview.vue';
 import EMResults from './views/EMResults.vue';
 import EMTaskManagement from './views/EMTaskManagement.vue';
 import ErrorManagement from './views/ErrorManagement.vue';
+import FishTickets from './views/FishTickets.vue';
 import Help from './views/Help.vue';
 import Home from './views/Home.vue';
 import ManageUsers from './views/ManageUsers.vue';
@@ -350,6 +351,13 @@ const router = new Router({
         },
         {
           path: '/vessel-selections/:id', name: 'Vessel Selection Details', component: VesselSelectionDetails,
+          props: (route: any) => ({ id: String(route.params.id)}),
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
+          path: '/fish-tickets/:id', name: 'Vessel Selection Details', component: FishTickets,
           props: (route: any) => ({ id: String(route.params.id)}),
           beforeEnter: (to, from, next) => {
             if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }

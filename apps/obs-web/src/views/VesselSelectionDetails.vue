@@ -19,11 +19,11 @@
 
         <div class="break"></div>
 
-        <h6>Current Status</h6>
+        <b>Current Status</b>
 
         <div class="break"></div>
 
-        <h6>Waivers</h6>
+        <b>Waivers</b>
 
         <div class="break"></div>
 
@@ -60,7 +60,7 @@
 
         <div class="break"></div>
 
-        <h6>Trips</h6>
+        <b>Trips (occuring after period selection start date)</b>
 
         <div class="break"></div>
 
@@ -87,7 +87,7 @@
                     <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
                     <q-td key="departurePort" :props="props">{{ props.row.departurePort ? props.row.departurePort.name : '' }}</q-td>
                     <q-td key="returnPort" :props="props">{{ props.row.returnPort ? props.row.returnPort.name : '' }}</q-td>
-                    <q-td key="fishTickets" :props="props">{{ props.row.fishTickets ? getFishTicketNumbers(props.row.fishTickets) : '' }}</q-td>
+                    <q-td key="fishTickets" :props="props"><q-btn @click="displayFishTickets(props.row.fishTickets)" flat>{{ props.row.fishTickets ? getFishTicketNumbers(props.row.fishTickets) : '' }}</q-btn></q-td>
                 </q-tr>
             </template>
 
@@ -169,8 +169,8 @@ export default createComponent({
                 'waivers_by_vesselId',
                 {include_docs: true, key: selection.value.VESSEL_DRVID}
             );
-            vesselWaivers.value.push.apply(vesselWaivers.value, waiversQuery.rows.map((row: any) => row.doc));
-            const oracleWaivers = await getOracleWaivers(moment(selection.value.issueDate).format('YYYY'), selection.value.VESSEL_DRVID);
+            vesselWaivers.value.push.apply(vesselWaivers.value, waiversQuery.rows.filter((row: any) => moment(row.doc.startDate).isSame(selection.value.startDate, 'year') ||  moment(row.doc.endDate).isSame(selection.value.endDate, 'year')).map((row: any) => row.doc));
+            const oracleWaivers = await getOracleWaivers(moment(selection.value.PERIOD_END).format('YYYY'), selection.value.VESSEL_DRVID);
             vesselWaivers.value.push.apply(vesselWaivers.value, oracleWaivers);
             waiversLoading.value = false;
         };
@@ -189,12 +189,14 @@ export default createComponent({
         const getTrips = async () => {
             tripsLoading.value = true;
             const selectionYear = moment(selection.value.PERIOD_END).format('YYYY')
+            console.log(moment(selection.value.PERIOD_START).format());
+            console.log(moment('12/31/' + selectionYear).format());
             const tripsQuery = await masterDB.view(
                 'obs_web',
                 'wcgop_trips_vesselId_returnDate',
                 {
                     include_docs: true,
-                    start_key: [selection.value.VESSEL_DRVID, selection.value.PERIOD_START],
+                    start_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format()],
                     end_key: [selection.value.VESSEL_DRVID, moment('12/31/' + selectionYear).format()]
                 }
             );
@@ -228,6 +230,10 @@ export default createComponent({
             return returnString;
         }
 
+        const displayFishTickets = (fishTickets: any) => {
+            router.push({path: '/fish-tickets/' + getFishTicketNumbers(fishTickets)})
+        }
+
         onMounted( async () => {
             selection.value = state.vessel.vesselSelection;
             getWaivers();
@@ -235,6 +241,7 @@ export default createComponent({
         });
 
         return {
+            displayFishTickets,
             formatDate,
             getCertificateNumbers,
             getFishTicketNumbers,
