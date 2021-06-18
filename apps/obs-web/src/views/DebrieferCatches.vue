@@ -240,8 +240,8 @@ export default createComponent({
             disposition = 'D';
           }
 
-          forEach(c.children, function(child) {
-          const discardReason =  jp.query(child, '$..discardReason.description')[0];
+          forEach(c.children, (child) => {
+            const discardReason =  jp.query(child, '$..discardReason.description')[0];
 
             const catchContents = child.catchContent;
             const catchName = catchContents
@@ -320,7 +320,7 @@ export default createComponent({
               children.push(newChild);
             }
             childIndex++;
-        })
+        });
 
           const newCatchItem: any = {
             key,

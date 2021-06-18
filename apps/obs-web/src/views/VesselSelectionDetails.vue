@@ -188,7 +188,7 @@ export default createComponent({
 
         const getTrips = async () => {
             tripsLoading.value = true;
-            const selectionYear = moment(selection.value.PERIOD_END).format('YYYY')
+            const selectionYear = moment(selection.value.PERIOD_END).format('YYYY');
             console.log(moment(selection.value.PERIOD_START).format());
             console.log(moment('12/31/' + selectionYear).format());
             const tripsQuery = await masterDB.view(
@@ -204,10 +204,6 @@ export default createComponent({
             tripsLoading.value = false;
         };
 
-        const getFishTickets = async () => {
-
-        };
-
         const getCertificateNumbers = (certificates: any[]) => {
             let returnString = '';
             for (const cert of certificates) {
@@ -217,7 +213,7 @@ export default createComponent({
                 }
             }
             return returnString;
-        }
+        };
 
         const getFishTicketNumbers = (fishTickets: any[]) => {
             let returnString = '';
@@ -228,11 +224,11 @@ export default createComponent({
                 }
             }
             return returnString;
-        }
+        };
 
         const displayFishTickets = (fishTickets: any) => {
-            router.push({path: '/fish-tickets/' + getFishTicketNumbers(fishTickets)})
-        }
+            router.push({path: '/fish-tickets/' + getFishTicketNumbers(fishTickets)});
+        };
 
         onMounted( async () => {
             selection.value = state.vessel.vesselSelection;

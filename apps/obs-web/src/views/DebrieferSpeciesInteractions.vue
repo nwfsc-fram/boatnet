@@ -168,11 +168,11 @@ export default createComponent({
 
     function getData() {
         data.value = [];
-        forEach(state.debriefer.selectedTrips, function(trip) {
+        forEach(state.debriefer.selectedTrips, (trip) => {
           const unflattenedTrip = unflatten(trip, { delimiter: '-' });
           const interactionEvents = unflattenedTrip.interactionEvents;
 
-          forEach(interactionEvents, function(interaction) {
+          forEach(interactionEvents, (interaction) => {
               const interactionDescriptions = jp.query(interaction, '$.interactions[*].description');
               interaction.interactionDescriptions = join(interactionDescriptions, ', ');
 
@@ -187,8 +187,8 @@ export default createComponent({
               interaction.tripId = unflattenedTrip._id;
 
               data.value.push(interaction);
-          })
-        })
+          });
+        });
     }
     getData();
 
