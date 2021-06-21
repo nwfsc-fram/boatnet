@@ -486,7 +486,6 @@ export default createComponent({
             totalRecords.value = operationIds.length;
             try {
                 // get just the operations we want to display
-                operationIds = slice(operationIds, start, start + rowSize);
                 const operationOptions = { keys: operationIds };
                 const operationDocs = await masterDB.listWithDocs(operationOptions);
                 operations.value = operationDocs.rows;

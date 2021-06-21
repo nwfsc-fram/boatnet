@@ -12,6 +12,7 @@
       @save="save"
       @selected="select"
       :initExpandedKeys="expandedKeys"
+      :totalRecords="totalRecords"
       @expand="addNode"
       @collapse="removeNode"
     ></boatnet-tree-table>
@@ -23,7 +24,7 @@ import { createComponent, ref, watch } from '@vue/composition-api';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { updateCatchWeight } from '@boatnet/bn-expansions';
-import { cloneDeep, forEach, merge, get, orderBy, remove, uniq } from 'lodash';
+import { cloneDeep, forEach, merge, get, orderBy, remove, slice, flattenDeep } from 'lodash';
 
 
 export default createComponent({
@@ -36,6 +37,7 @@ export default createComponent({
     const state = store.state;
     const WcgopCatches: any = ref([]);
     const program = state.debriefer.program;
+    const totalRecords = ref(0);
 
     const lookupsList: any = ref([]);
 
@@ -211,6 +213,10 @@ export default createComponent({
     async function getCatches() {
       let catches: any[] = [];
       let color = '#344B5F';
+
+      let catchRecords = jp.query(state.debriefer.operations, '$[*].catches');
+      catchRecords = flattenDeep(catchRecords);
+      totalRecords.value = catchRecords.length;
 
       for (const operation of state.debriefer.operations) {
         const unflattenedOperation = unflatten(operation, { delimiter: '-' });
@@ -476,6 +482,7 @@ export default createComponent({
     }
 
     return {
+      totalRecords,
       addNode,
       removeNode,
       WcgopCatches,

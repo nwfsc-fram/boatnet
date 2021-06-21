@@ -26,7 +26,7 @@ export const state: DebrieferState = {
   expandedCatch: {},
   catches: [],
   summarySelection: {},
-  pageSize: 50
+  pageSize: 10
 };
 
 const actions: ActionTree<DebrieferState, RootState> = {

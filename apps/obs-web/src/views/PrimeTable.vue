@@ -21,13 +21,12 @@
       @row-contextmenu="onRowContextMenu"
       @column-resize-end="resizeColumn"
       @column-reorder="reorderColumn"
-      :paginator="totalRecords > 50 && program === 'ashop' ? true : false"
-      :lazy="totalRecords > 50 && program === 'ashop' ? true : false"
+      :paginator="totalRecords > state.debriefer.pageSize ? true : false"
       :totalRecords="totalRecords"
-      :rows="10"
+      :rows="state.debriefer.pageSize"
       paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+      :lazy="lazy"
       @page="onPage"
-      @sort="onSort"
     >
       <template #empty>
         No data available
@@ -348,7 +347,8 @@ export default createComponent({
     loading: Boolean,
     initialSelection: Array,
     lookupsMap: Array,
-    totalRecords: Number
+    totalRecords: Number,
+    lazy: Boolean
   },
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;

@@ -12,6 +12,10 @@
       @node-unselect="onNodeUnselect"
       @node-expand="expand"
       @node-collapse="collapse"
+      :paginator="totalRecords > state.debriefer.pageSize ? true : false"
+      :totalRecords="totalRecords"
+      :rows="10"
+      paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
     >
       <template #header>
         <div>
@@ -232,7 +236,8 @@ export default createComponent ({
     selectionMode: String,
     initExpandedKeys: Object,
     isFullSize: Boolean,
-    lookupsMap: Array
+    lookupsMap: Array,
+    totalRecords: Number
   },
   setup(props, context) {
     const store = context.root.$store;

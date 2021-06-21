@@ -354,35 +354,29 @@ export default createComponent({
       if (state.debriefer.program === 'ashop') {
         getAshopBios(0, state.debriefer.pageSize);
       } else {
-        getWcgopBios();
+        getWcgopBios(0, state.debriefer.pageSize);
       }
     });
 
     function getAshopBios(start: number, rowCount: number) {
       bios.value = [];
       const currOps = state.debriefer.operations;
-
-      let specimens: any[] = jp.query(currOps, '$[*]..specimens');
-      specimens = flattenDeep(specimens);
+      let specimens: any[] = jp.nodes(currOps, '$[*]..specimens[*]');
       totalRecords.value = specimens.length;
-      const currSpecimens = slice(specimens, start, start + rowCount);
+      specimens = slice(specimens, start, start + rowCount);
 
-      for (const spec of currSpecimens) {
-        const path = '$[*]..specimens[?(@._id=="' + spec._id + '")]';
-        let info: any = jp.nodes(currOps, path);
-        info = info[0];
-
-        const haulPath = jp.stringify(slice(info.path, 0, 2));
+      for (const spec of specimens) {
+        const haulPath = jp.stringify(slice(spec.path, 0, 2));
         const haulNum = jp.value(currOps, haulPath + '.haulNum');
 
-        const samplePath = jp.stringify(slice(info.path, 0, 4));
+        const samplePath = jp.stringify(slice(spec.path, 0, 4));
         const sampleNum = jp.value(currOps, samplePath + '.sampleNum');
 
-        const catchContentPath = jp.stringify(slice(info.path, 0, 6));
+        const catchContentPath = jp.stringify(slice(spec.path, 0, 6));
         const speciesCode = jp.value(currOps, catchContentPath + '.catchContent.taxonomy.legacy.ashopSpeciesId');
         const speciesName = jp.value(currOps, catchContentPath + '.catchContent.commonNames[0]');
 
-        const specimenPath = jp.stringify(info.path);
+        const specimenPath = jp.stringify(spec.path);
         const sampleDesign = jp.value(currOps, specimenPath + '.sampleSystem.description');
         const sex = jp.value(currOps, specimenPath + '.sex');
         const frequency = jp.value(currOps, specimenPath + '.frequency');
@@ -401,63 +395,58 @@ export default createComponent({
       }
     }
 
-    function getWcgopBios() {
-      let bioSpecimens: any[] = [];
-      if (state.debriefer.biospecimens.length > 1) {
-        bioSpecimens = state.debriefer.biospecimens;
-      } else {
-        const operations = state.debriefer.operations;
-        const unflattenedOperations: any[] = [];
-        for (const op of operations) {
-          unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
-        }
+    function getWcgopBios(start: number, rowCount: number) {
+      const bioSpecimens: any[] = [];
+      const operations = state.debriefer.operations;
+      const unflattenedOperations: any[] = [];
+      for (const op of operations) {
+        unflattenedOperations.push(unflatten(op, { delimiter: '-' }));
+      }
 
-        const id: number = 1;
-        const specimens = jp.nodes(unflattenedOperations, '$..specimens');
+      const specimens = jp.nodes(unflattenedOperations, '$..specimens[*]');
+      totalRecords.value = specimens.length;
 
-        for (const specimen of specimens) {
-          const operationPath = jp.stringify(slice(specimen.path, 0, 2));
-          const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
-          const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
+      for (const specimen of specimens) {
+        const operationPath = jp.stringify(slice(specimen.path, 0, 2));
+        const catchesPath = jp.stringify(slice(specimen.path, 0, 4));
+        const childrenPath = jp.stringify(slice(specimen.path, 0, 6));
 
-          const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
-          const operationNum = jp.value(
-            unflattenedOperations,
-            operationPath + '.operationNum'
-          );
-          const operationId = jp.value(unflattenedOperations, operationPath + '._id');
-          const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
-          const catchNum = jp.value(unflattenedOperations, catchesPath + '.catchNum');
-          let disposition = jp.value(
-            unflattenedOperations,
-            catchesPath + '.disposition.description'
-          );
-          disposition = disposition === 'Retained' ? 'R' : 'D';
-          const species = jp.value(
-            unflattenedOperations,
-            childrenPath + '.catchContent.commonNames[0]'
-          );
+        const tripId = jp.value(unflattenedOperations, operationPath + '.legacy.tripId');
+        const operationNum = jp.value(
+          unflattenedOperations,
+          operationPath + '.operationNum'
+        );
+        const operationId = jp.value(unflattenedOperations, operationPath + '._id');
+        const operationRev = jp.value(unflattenedOperations, operationPath + '._rev');
+        const catchNum = jp.value(unflattenedOperations, catchesPath + '.catchNum');
+        let disposition = jp.value(
+          unflattenedOperations,
+          catchesPath + '.disposition.description'
+        );
+        disposition = disposition === 'Retained' ? 'R' : 'D';
+        const species = jp.value(
+          unflattenedOperations,
+          childrenPath + '.catchContent.commonNames[0]'
+        );
 
-          for (const indivSpecimen of specimen.value) {
-            if (indivSpecimen._id) {
-              const biospecimen = {
-                _id: indivSpecimen._id,
-                tripId,
-                operationNum,
-                catchNum,
-                operationId,
-                operationRev,
-                disposition,
-                species,
-                specimen: indivSpecimen
-              };
-              bioSpecimens.push(biospecimen);
-            } else {
-              console.log('id not found skipping record');
-            }
-          }
+        if (specimen.value._id) {
+          const biospecimen = {
+            _id: specimen.value._id,
+            tripId,
+            operationNum,
+            catchNum,
+            operationId,
+            operationRev,
+            disposition,
+            species,
+            specimen: specimen.value
+          };
+          bioSpecimens.push(biospecimen);
+        } else {
+          console.log('id not found skipping record');
         }
       }
+
       bios.value = orderBy(bioSpecimens, ['tripId', 'operationNum', 'catchNum'], ['asc', 'asc', 'asc']);
       initialSelection.value = filter(bios.value, (val: any) => {
         if (debriefer.selectedBiospecimens.includes(val._id)) {
@@ -487,7 +476,13 @@ export default createComponent({
     }
 
     function paginate(event: any) {
-      getAshopBios(event.first, event.rows);
+      const first = event.first;
+      const rowSize = event.rows;
+      if (state.debriefer.program === 'ashop') {
+        getAshopBios(first, rowSize);
+      } else {
+        getWcgopBios(first, rowSize);
+      }
     }
 
     return {
