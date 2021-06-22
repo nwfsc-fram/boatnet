@@ -1,6 +1,5 @@
 <template>
     <div class="flex flex-center q-pa-md  q-gutter-md">
-        {{ ftids }}
 
         <q-table
             :data="fishTickets"
@@ -21,7 +20,7 @@
                     <q-td key="FTID" :props="props">{{ props.row.FTID }}</q-td>
                     <q-td key="VESSEL_NUM" :props="props">{{ props.row.VESSEL_NUM }}</q-td>
                     <q-td key="CONDITION_CODE" :props="props">{{ props.row.CONDITION_CODE = 'R' ? 'Retained' : 'Discarded' }}</q-td>
-                    <q-td key="SPECIES_NAME" :props="props">{{ props.row.SPECIES_NAME }}</q-td>
+                    <q-td key="SPECIES_NAME" :props="props">{{ props.row.SPECIES_NAME ? props.row.SPECIES_NAME : props.row.PACFIN_SPECIES_CODE }}</q-td>
                     <q-td key="LANDED_WEIGHT_LBS" :props="props">{{ props.row.LANDED_WEIGHT_LBS }}</q-td>
                     <q-td key="NUM_OF_FISH" :props="props">{{ props.row.NUM_OF_FISH }}</q-td>
                 </q-tr>

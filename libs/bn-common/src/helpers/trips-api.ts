@@ -35,6 +35,10 @@ function getFishTicketUrl() {
     return authService.getTripsApiUrl() + '/api/v1/getFishTicket';
 }
 
+function getVesselFishTicketUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/getVesselFishTickets';
+}
+
 function getTripsApiMongoUrl() {
     return authService.getTripsApiUrl() + '/api/v1/mongo';
 }
@@ -393,6 +397,29 @@ export function getFishTicket(ftid: any) {
     let formattedQuery = '?ftid=' + ftid;
     return new Promise( (resolve, reject) => {
         const queryUrl = getFishTicketUrl() + formattedQuery;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getVesselFishTickets(vesselId: any, startDate: any, endDate: any) {
+
+    let formattedQuery = '?vesselId=' + vesselId + '&startDate=' + moment(startDate).format('YYYY-MM-DD') + '&endDate=' + moment(endDate).format('YYYY-MM-DD');
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getVesselFishTicketUrl() + formattedQuery;
         request.get(
             {
                 url: queryUrl,

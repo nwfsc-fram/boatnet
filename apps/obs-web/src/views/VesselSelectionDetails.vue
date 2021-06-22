@@ -34,7 +34,7 @@
             row-key="id"
             selection="single"
             :selected.sync="selected"
-            :pagination.sync="pagination"
+            :pagination.sync="waiversPagination"
             :loading="waiversLoading"
             binary-state-sort
             style="width: 100%"
@@ -60,7 +60,7 @@
 
         <div class="break"></div>
 
-        <b>Trips (occuring after period selection start date)</b>
+        <b>Trips</b>
 
         <div class="break"></div>
 
@@ -71,12 +71,11 @@
             row-key="id"
             selection="single"
             :selected.sync="selected"
-            :pagination.sync="pagination"
+            :pagination.sync="tripsPagination"
             :loading="tripsLoading"
             binary-state-sort
             style="width: 100%"
         >
-
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td key="id"></q-td>
@@ -90,7 +89,39 @@
                     <q-td key="fishTickets" :props="props"><q-btn @click="displayFishTickets(props.row.fishTickets)" flat>{{ props.row.fishTickets ? getFishTicketNumbers(props.row.fishTickets) : '' }}</q-btn></q-td>
                 </q-tr>
             </template>
+        </q-table>
 
+        <div class="break"></div>
+
+        <b>Fish Tickets</b>
+
+        <div class="break"></div>
+
+        <q-table
+            :data="vesselFishTickets"
+            :columns="fishTicketColumns"
+            dense
+            row-key="id"
+            selection="single"
+            :selected.sync="selected"
+            :pagination.sync="fishTicketsPagination"
+            :loading="fishTicketsLoading"
+            binary-state-sort
+            style="width: 100%"
+        >
+            <template v-slot:body="props">
+                <q-tr :props="props">
+                    <q-td key="id"></q-td>
+                    <q-td key="FTID" :props="props">{{ props.row.FTID }}</q-td>
+                    <q-td key="LANDING_DATE" :props="props">{{ formatDate(props.row.LANDING_DATE) }}</q-td>
+                    <q-td key="PACFIN_SPECIES_CODE" :props="props">{{ props.row.PACFIN_SPECIES_CODE }}</q-td>
+                    <q-td key="LANDED_WEIGHT_LBS" :props="props">{{ props.row.LANDED_WEIGHT_LBS }}</q-td>
+                    <q-td key="FISHER_LICENSE_NUM" :props="props">{{ props.row.FISHER_LICENSE_NUM }}</q-td>
+                    <q-td key="CONDITION_NAME" :props="props">{{ props.row.CONDITION_NAME }}</q-td>
+                    <q-td key="PORT_NAME" :props="props">{{ props.row.PORT_NAME }}</q-td>
+                    <q-td key="SPECIES_CODE_NAME" :props="props">{{ props.row.SPECIES_CODE_NAME }}</q-td>
+                </q-tr>
+            </template>
         </q-table>
 
     </div>
@@ -109,11 +140,12 @@ import {
 import { Vue, Watch } from 'vue-property-decorator';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { getSelections, getOracleWaivers, getFishTicket } from '@boatnet/bn-common';
+import { getSelections, getOracleWaivers, getFishTicket, getVesselFishTickets } from '@boatnet/bn-common';
 
 import { WatchOptions } from 'vue';
 
 import moment from 'moment';
+import { vessel } from '../_store/vessel.module';
 
 export default createComponent({
     props: {
@@ -128,18 +160,32 @@ export default createComponent({
         const masterDB = couchService.masterDB;
 
         const selected: any = ref([]);
-        const pagination = {
+        const waiversPagination = {
             sortBy: 'period_end',
             descending: true,
             rowsPerPage: 15
             };
 
+        const tripsPagination = {
+            sortBy: 'period_end',
+            descending: true,
+            rowsPerPage: 15
+            };
+
+        const fishTicketsPagination = {
+            sortBy: 'period_end',
+            descending: true,
+            rowsPerPage: 100
+            };
+
         const selection: any = ref({});
         const vesselWaivers: any = ref([]);
         const vesselTrips: any = ref([]);
+        const vesselFishTickets: any = ref([]);
 
         const waiversLoading: any = ref(false);
         const tripsLoading: any = ref(false);
+        const fishTicketsLoading: any = ref(false);
 
         const navigateBack = () => {
             router.back();
@@ -189,19 +235,36 @@ export default createComponent({
         const getTrips = async () => {
             tripsLoading.value = true;
             const selectionYear = moment(selection.value.PERIOD_END).format('YYYY');
-            console.log(moment(selection.value.PERIOD_START).format());
-            console.log(moment('12/31/' + selectionYear).format());
             const tripsQuery = await masterDB.view(
                 'obs_web',
                 'wcgop_trips_vesselId_returnDate',
                 {
                     include_docs: true,
                     start_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format()],
-                    end_key: [selection.value.VESSEL_DRVID, moment('12/31/' + selectionYear).format()]
+                    end_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_END).format()]
                 }
             );
             vesselTrips.value.push.apply(vesselTrips.value, tripsQuery.rows.map((row: any) => row.doc));
             tripsLoading.value = false;
+        };
+
+        const fishTicketColumns = [
+            {name: 'FTID', 'label': 'Fish Ticket #', field: 'FTID', required: true, align: 'left', sortable: true},
+            {name: 'LANDING_DATE', 'label': 'Landing Date', field: 'LANDING_DATE', required: true, align: 'left', sortable: true},
+            {name: 'PACFIN_SPECIES_CODE', 'label': 'Species Code', field: 'PACFIN_SPECIES_CODE', required: true, align: 'left', sortable: true},
+            {name: 'LANDED_WEIGHT_LBS', 'label': 'Landed Weight (lbs)', field: 'LANDED_WEIGHT_LBS', required: true, align: 'left', sortable: true},
+            {name: 'FISHER_LICENSE_NUM', 'label': 'Permit #', field: 'FISHER_LICENSE_NUM', required: true, align: 'left', sortable: true},
+            {name: 'CONDITION_NAME', 'label': 'Condition', field: 'CONDITION NAME', required: true, align: 'left', sortable: true},
+            {name: 'PORT_NAME', 'label': 'Landing Port', field: 'PORT_NAME', required: true, align: 'left', sortable: true},
+            {name: 'SPECIES_CODE_NAME', 'label': 'Species Name', field: 'SPECIES_CODE_NAME', required: true, align: 'left', sortable: true},
+        ];
+
+        const getFishTickets = async () => {
+            fishTicketsLoading.value = true;
+            const fishTickets = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, selection.value.PERIOD_END);
+            vesselFishTickets.value.push.apply(vesselFishTickets.value, fishTickets);
+            fishTicketsLoading.value = false;
+            console.log(vesselFishTickets.value);
         };
 
         const getCertificateNumbers = (certificates: any[]) => {
@@ -232,25 +295,32 @@ export default createComponent({
 
         onMounted( async () => {
             selection.value = state.vessel.vesselSelection;
+            console.log(selection.value);
             getWaivers();
             getTrips();
+            getFishTickets();
         });
 
         return {
             displayFishTickets,
+            fishTicketColumns,
+            fishTicketsPagination,
+            fishTicketsLoading,
             formatDate,
             getCertificateNumbers,
             getFishTicketNumbers,
             navigateBack,
-            pagination,
             selected,
             selection,
             tripsColumns,
             tripsLoading,
+            tripsPagination,
+            vesselFishTickets,
             vesselTrips,
             vesselWaivers,
             waiversColumns,
-            waiversLoading
+            waiversLoading,
+            waiversPagination
         };
     }
 });
