@@ -1,0 +1,55 @@
+{
+  "name": "gitlab-2-github",
+  "version": "0.1.5",
+  "description": "Migrate Issues, Wiki from gitlab to github",
+  "main": "index.js",
+  "scripts": {
+    "start": "node node_modules/ts-node/dist/bin.js ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piceaTech/node-gitlab-2-github.git"
+  },
+  "keywords": [
+    "github",
+    "gitlab",
+    "import",
+    "export",
+    "issue",
+    "issues"
+  ],
+  "author": "Spruce, <dev@spruce.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/piceaTech/node-gitlab-2-github/issues"
+  },
+  "homepage": "https://github.com/piceaTech/node-gitlab-2-github#readme",
+  "dependencies": {
+    "@gitbeaker/node": "^23.1.0",
+    "@octokit/rest": "^18.0.0",
+    "aws-sdk": "^2.712.0",
+    "axios": "^0.21.1",
+    "mime-types": "^2.1.27",
+    "ts-node": "^8.10.2"
+  },
+  "devDependencies": {
+    "@types/mime-types": "^2.1.0",
+    "@types/node": "^14.0.20",
+    "husky": "^4.2.5",
+    "lint-staged": "^10.2.11",
+    "prettier": "^2.0.5",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^3.9.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,json,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}

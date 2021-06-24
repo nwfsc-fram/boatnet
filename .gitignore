@@ -4,3 +4,5 @@ a.sh
 fred/
 new/
 temp*
+node_modules/
+*.save
