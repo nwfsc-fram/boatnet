@@ -122,7 +122,7 @@ export default class Password extends Vue {
     this.successMsg = "";
 
     const appShortName = 'BOATNET_OBSERVER';
-    const appName = 'Research Catch';
+    const appName = 'Observer Web';
 
     try {
       const e = await authService.resetPassword(this.username, this.newPassword,
