@@ -49,6 +49,7 @@ if [ $(java -h >& /dev/null;echo $?) -ne 0 ];then
 	echo "https://java.com/en/download/help/download_options.html"
 	exit -1
 fi
+
 if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
 	echo "Aborting:  The command-line JSON processor 'jq' must be installed in"
 	echo "this scripts path. For installation instructions see: "
@@ -78,7 +79,7 @@ wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
 
 gl_connect_log="${wrkingDir}/${REPO}.gl_connect.${time_stamp}.log"
-GL_REPO_ID=$(curl -s -k --header "Authorization: Bearer xCVsx4vgD37CbZCZGRQb" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/fram-data/search?scope=projects&search=${REPO}"|jq '.[]| select( .path == "'${REPO}'").id') 2>>$gl_connect_log
+GL_REPO_ID=$(curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GL_ORG}?per_page=1000"|jq '.projects[]|select(.path_with_namespace == "'$GL_ORG/$REPO'").id') 2>>$gl_connect_log
 
 #git ls-remote ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/${REPO} >> $gl_connect_log 2>&1
 if [ "$GL_REPO_ID" = "" ];then
@@ -90,7 +91,7 @@ if [ "$GL_REPO_ID" = "" ];then
 fi
 echo "   - Confirmed git access '${GL_HOST}:${GL_ORG}/${REPO}'"
 rm -f $gl_connect_log
-
+exit
 #Verify GitHub Access login
 echo ${GH_TOKEN}|gh auth login -h ${GH_HOST} --with-token
 if [ $? -ne 0 ];then
@@ -272,6 +273,7 @@ if [ $? -ne 0 ];then
 	fi
 	exit -1
 fi
+exit
 echo "   - Synching metadata (issues, pull requests, etc)"
 meta_log="${wrkingDir}/${REPO}.meta.${time_stamp}.log"
 cd "$METADATA_SYNC_HOME"

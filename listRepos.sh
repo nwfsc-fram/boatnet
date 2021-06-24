@@ -6,7 +6,6 @@ wrkingDir=$PWD
 configFile=$HOME/.ssh/MigrationConfig
 SCRIPT_HOME="$(realpath $(dirname $0))"
 BFG_JAR="$SCRIPT_HOME/bfg.jar"
-MIGRATION_SCRIPT="$(realpath $(dirname $0))/migrateRepo.sh"
 
 if [ "$#" -ne 0 ];then
 	echo "Usage: $(basename $0) "
@@ -40,32 +39,13 @@ if [ hash gh >& /dev/null ];then
 	exit -1
 fi
 
-if [ $(git lfs --help --man >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  Git Large File Storage LFS is not installed."
-	echo "For installation instructions see: https://git-lfs.github.com/"
+
+if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
+	echo "Aborting:  The command-line JSON processor 'jq' must be installed in"
+	echo "this scripts path. For installation instructions see: "
+	echo "https://stedolan.github.io/jq/"
 	exit -1
 fi
-
-if [ $(java -h >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  The executable 'java' is not in PATH."
-	echo "For installation instructions see: "
-	echo "https://java.com/en/download/help/download_options.html"
-	exit -1
-fi
-
-
-if [ ! -f $BFG_JAR ];then
-	echo "Aborting:  BFG Repo-Cleaner jar file $BFG_JAR not found."
-	echo "Use wget to get latest version from: "
-	echo "https://repo1.maven.org/maven2/com/madgag/bfg/"
-	exit -1
-fi
-
-if [ $(python3 --help >& /dev/null ;echo $?) -ne 0 ];then
-	echo "Aborting:  python3 is require to run this script."
-	exit 1
-fi	
-
 
 gl_connect_log=$(mktemp -u)
 status=$(curl -s -k  -w '\nX%{http_code}X\n' https://${GL_HOST}/api/v4/projects --output $gl_connect_log |grep -c X200X)
@@ -83,7 +63,5 @@ echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
 
 
 
-declare -a repos=$(curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://${GL_HOST}/api/v4/projects?per_page=1000"|python3 -m json.tool| grep path_with_name |grep ${GL_ORG}|sed 's+^.*/++'|sed 's+".*++'|sort -u |grep -v -i dummy )
-for repo in ${repos[@]};do
-	echo "'$repo'"
-done
+curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GL_ORG}?per_page=1000"|jq '.projects[]|(.path_with_namespace +" (id: " + (.id|tostring)) + ")"'|sed 's+"++g'| sort -u
+

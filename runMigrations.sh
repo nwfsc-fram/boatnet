@@ -61,10 +61,12 @@ if [ ! -f $BFG_JAR ];then
 	exit -1
 fi
 
-if [ $(python3 --help >& /dev/null ;echo $?) -ne 0 ];then
-	echo "Aborting:  python3 is require to run this script."
-	exit 1
-fi	
+if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
+	echo "Aborting:  The command-line JSON processor 'jq' must be installed in"
+	echo "this scripts path. For installation instructions see: "
+	echo "https://stedolan.github.io/jq/"
+	exit -1
+fi
 
 
 gl_connect_log=$(mktemp -u)
@@ -83,7 +85,7 @@ echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
 
 
 
-declare -a repos=$(curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://${GL_HOST}/api/v4/projects?per_page=1000"|python3 -m json.tool| grep path_with_name |grep ${GL_ORG}|sed 's+^.*/++'|sed 's+".*++'|sort -u |grep -v -i dummy )
+declare -a repos=$(curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GL_ORG}?per_page=1000"|jq '.projects[].path'|sed 's+"++g'| grep -v dummy|sort -u )
 for repo in ${repos[@]};do
 	echo -n "   - Migrating '$repo'"
 	$MIGRATION_SCRIPT $repo >&  $wrkingDir/$repo.log
