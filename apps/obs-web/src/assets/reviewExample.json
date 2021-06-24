@@ -38,7 +38,7 @@
     {
       "haulNum": 1,
       "deliveryDate": "2020-09-01T17:00:00Z",
-      "gearTypeCode": "3",
+      "gear": "trawl",
       "startDateTime": "2020-09-01T17:00:00Z",
       "startDepth": 40,
       "startLatitude": 44.245,
@@ -50,7 +50,7 @@
       "codendCapacity": 3000,
       "isCodendLost": false,
       "comments": "camera was a little foggy",
-      "targetStrategy": "203",
+      "targetStrategy": 203,
       "systemPerformance": 1,
       "catchHandlingPerformance": 1,
       "catch": [
@@ -58,14 +58,14 @@
           "catchId": 1,
           "disposition": "Discarded",
           "fate": "11",
-          "speciesCode": "360",
+          "speciesCode": 360,
           "weight": 320
         },
         {
           "catchId": 2,
           "disposition": "Discarded",
           "fate": "11",
-          "speciesCode": "200",
+          "speciesCode": 200,
           "weight": 200
         }
       ]

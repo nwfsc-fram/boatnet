@@ -1,5 +1,5 @@
 <template>
-    <div class="q-pa-md" style="max-width: 450px" :disabled="trip.readOnly" >
+    <div class="q-pa-md" style="max-width: 450px">
         <div v-if="tripNotRequired && trip.newTrip && !trip.logTrip" class="trip-alert">
             <q-list>
                 <q-item>
@@ -39,7 +39,7 @@
 
 
         <transition name="selection-list-item">
-            <div v-if="selections.length > 0">
+            <div v-if="selections.length > 0" :disabled="trip.readOnly" >
                 <b>Trip Details:</b>
                 <q-list dense>
                     <transition-group name="selections-list">
@@ -75,11 +75,10 @@
             </div>
         </transition>
         <div v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator']) && !user.captainMode">
-          <strong :disable="trip.readOnly">Coverage Waived? (Staff Only)</strong><br>
+          <strong>Coverage Waived? (Staff Only)</strong><br>
           <q-btn-toggle
           v-model="trip.activeTrip.isWaived"
           toggle-color="primary"
-          :disable="trip.readOnly"
           :options="[
             {label: 'Yes', value: true},
             {label: 'No', value: false}
