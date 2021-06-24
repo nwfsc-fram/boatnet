@@ -1,8 +1,9 @@
 {
     "source": "logbook",
     "tripNum": 123456,
+    "provider": "ABC EM Provider",
     "logbookPageNumber": 123,
-    "fishery": "Limited Entry Sablefish",
+    "fishery": "Limited Entry Sablefish Fixed Gear EM",
     "year": 2020,
     "vesselName": "Fish Master 3000",
     "vesselNumber": "5664321",
@@ -17,7 +18,7 @@
     "departurePortCode": "BLL",
     "returnDateTime": "2020-03-05T11:32:53-08:00",
     "returnState": "WA",
-    "returnPortCode": "PAG",
+    "returnPortCode": "LWC",
     "buyers": [
       "Best Seafood Co",
       "Pretty Good Seafood Co"
@@ -32,7 +33,7 @@
     "hauls": [
       {
         "haulNum": 1,
-        "gearTypeCode": "2",
+        "gear": "fish pot",
         "gearPerSet": 7,
         "gearLost": 0,
         "avgHooksPerSeg": 9,
@@ -44,8 +45,9 @@
         "endDepth": 60,
         "endLatitude": 47.681706,
         "endLongitude": -122.425239,
-        "netType": 2,
+        "netType": "M",
         "codendCapacity": 120,
+        "isCodendLost": false,
         "comments": "this is a haul comment",
         "avgDepth": 55,
         "targetStrategy": "PCHK",
