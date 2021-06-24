@@ -38,7 +38,7 @@
 
         <q-separator />
 
-        <q-tab-panels v-model="tab" animated keep-alive>
+        <q-tab-panels v-model="tab" animated>
           <q-tab-panel v-if="program === 'ashop'" name="cruises">
             <app-debriefer-cruises/>
           </q-tab-panel>
