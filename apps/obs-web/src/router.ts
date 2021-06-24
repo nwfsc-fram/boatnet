@@ -35,6 +35,8 @@ import Home from './views/Home.vue';
 import ManageUsers from './views/ManageUsers.vue';
 import Permits from './views/Permits.vue';
 import Login from './views/Login.vue';
+import Username from './views/Username.vue';
+import Password from './views/Password.vue';
 import LogTrip from './views/LogTrip.vue';
 import LookupEditor from './views/LookupEditor.vue';
 import MissedTripLog from './views/MissedTripLog.vue';
@@ -79,6 +81,15 @@ const router = new Router({
     {
       path: '/login',
       component: Login
+    },
+    {
+      path: '/username',
+      component: Username
+    },
+    {
+      path: '/password',
+      component: Password,
+      props: route => ({ username: route.query.username, SESS: route.query.SESS })
     },
     {
       path: '/',
@@ -374,7 +385,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login'];
+  const publicPages = ['/login', '/username', '/password'];
   const authRequired = !publicPages.includes(to.path);
   const logged = authService.isLoggedIn();
 
