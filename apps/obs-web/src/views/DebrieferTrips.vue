@@ -13,6 +13,7 @@
       :initialSelection="initialSelection"
       :lookupsMap="lookupsMap"
       :totalRecords="totalRecords"
+      :lazy="lazy"
       @save="save"
       @selectValues="selectValues"
       @paginate="paginate"
@@ -49,10 +50,12 @@ export default createComponent({
     const state: any = store.state;
     const displayColumns: any = state.debriefer.displayColumns;
     const totalRecords: any = ref(0);
+    const lazy: any = ref(false);
     const program: any = state.debriefer.program;
 
     const flatten = require('flat');
     const unflatten = flatten.unflatten;
+    const jp = require('jsonpath');
 
     const columns: any = ref([]);
     const trips: any = ref([]);
@@ -463,6 +466,8 @@ export default createComponent({
 
     async function populateTrips(type: string) {
       loading.value = true;
+      lazy.value = false;
+      const pageSize = state.debriefer.pageSize;
       if (!mounted) {
         if (type === 'observer') {
           trips.value = [];
@@ -472,9 +477,13 @@ export default createComponent({
           trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
                                               new Date(evalPeriod.endDate),
                                               observer);
+          store.dispatch('debriefer/setTripIds', jp.query(trips.value, '$[*]._id'));
+          totalRecords.value = trips.value.length;
+          trips.value = slice(trips.value, 0, pageSize);
         } else if (type === 'tripIds') {
           totalRecords.value = state.debriefer.tripIds.length;
-          const tripIds: string[] = slice(state.debriefer.tripIds, 0, state.debriefer.pageSize);
+          lazy.value = true;
+          const tripIds: string[] = slice(state.debriefer.tripIds, 0, pageSize);
           await getTrips(tripIds);
         }
         store.dispatch('debriefer/updateTrips', trips.value);
@@ -552,7 +561,8 @@ export default createComponent({
       displayColumns,
       program,
       totalRecords,
-      paginate
+      paginate,
+      lazy
     };
   }
 });
