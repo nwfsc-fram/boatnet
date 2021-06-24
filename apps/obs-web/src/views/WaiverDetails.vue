@@ -298,30 +298,6 @@ export default createComponent({
             return;
         };
 
-        // const permitsFilterFn = (val: string, update: any, abort: any) => {
-
-        //     update( async () => {
-
-        //     if (val !== '') {
-        //         const permitResults = await masterDB.view(
-        //             'obs_web',
-        //             'permit_numbers',
-        //             {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'}
-        //         );
-        //         permits.value = permitResults.rows.map( (row: any) => row.doc );
-        //     } else {
-        //         const permitsQuery = await masterDB.view(
-        //             'obs_web',
-        //             'permit_numbers',
-        //             {include_docs: true, limit: 20}
-        //         );
-
-        //         permits.value = permitsQuery.rows.map( (row: any) => row.doc );
-        //     }
-        //     });
-        //     return;
-        // };
-
         const navigateBack = () => {
             router.back();
         };
@@ -396,7 +372,7 @@ export default createComponent({
         const getWaiver = async (waiverId: any) => {
             if (waiverId === 'new') {
                 const maxIdQuery = await masterDB.view('obs_web', 'waiverId', {descending: true, limit: 1});
-                const newId = 'b' + (parseInt(maxIdQuery.rows[0].key.substring(1,5), 10) + 1);
+                const newId = 'b' + (parseInt(maxIdQuery.rows[0].key.substring(1, 5), 10) + 1);
                 waiver.value = {
                     type: 'waiver',
                     createdBy: authService.getCurrentUser()!.username,
@@ -446,18 +422,18 @@ export default createComponent({
             if (waiver.value.vessel) {
                 const vesselId = waiver.value.vessel.coastGuardNumber ? waiver.value.vessel.coastGuardNumber : waiver.value.vessel.stateRegulationNumber;
                 const selectionForVessel = vesselSelections.value.filter( (row: any) => row.VESSEL_DRVID === vesselId);
-                const returnPermits: any = []
+                const returnPermits: any = [];
                 for (const sfv of selectionForVessel) {
                     if (sfv.PERMIT_NUMBER && sfv.PERMIT_NUMBER !== null && !returnPermits.includes(sfv.PERMIT_NUMBER)) {
-                        returnPermits.push(sfv.PERMIT_NUMBER)
+                        returnPermits.push(sfv.PERMIT_NUMBER);
                     }
                     if (sfv.PERMIT_NUMBER_2 && sfv.PERMIT_NUMBER_2 !== null && !returnPermits.includes(sfv.PERMIT_NUMBER_2)) {
-                        returnPermits.push(sfv.PERMIT_NUMBER)
+                        returnPermits.push(sfv.PERMIT_NUMBER);
                     }
                 }
                 return returnPermits;
             }
-        })
+        });
 
         const saveWaiver = async () => {
             try {
@@ -549,19 +525,12 @@ export default createComponent({
             immediate: true, deep: false
         };
 
-      const newPermit = (val: any, done: any) => {
-        if (val.length > 0) {
-          set(waiver.value, 'certificateNumber', val);
-          done(val, 'toggle')
-        }
-      }
-
-      const newContact = (val: any, done: any) => {
-        if (val.length > 0) {
-          set(waiver.value, 'contact', {_id: 'new', firstName: val});
-          done(val, 'toggle')
-        }
-      }
+        const newPermit = (val: any, done: any) => {
+            if (val.length > 0) {
+            set(waiver.value, 'certificateNumber', val);
+            done(val, 'toggle');
+            }
+        };
 
         watch(
             () => waiver.value.vessel,
@@ -595,10 +564,8 @@ export default createComponent({
             isMobile,
             navigateBack,
             newPermit,
-            newContact,
             oldRecord,
             permits,
-            // permitsFilterFn,
             ports,
             portsFilterFn,
             saveWaiver,

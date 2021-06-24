@@ -261,10 +261,10 @@ export default createComponent({
 
         const getFishTickets = async () => {
             fishTicketsLoading.value = true;
-            let fishTicketRows: any = [];
+            const fishTicketRows: any = [];
             const fishTickets: any = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, selection.value.PERIOD_END);
             for (const fishTicket of fishTickets) {
-                if (!fishTicketRows.filter( (row: any) => row.FTID == fishTicket.FTID)[0]) {
+                if (!fishTicketRows.filter( (row: any) => row.FTID === fishTicket.FTID)[0]) {
                     fishTicketRows.push(
                         {
                             FTID: fishTicket.FTID,
@@ -278,9 +278,8 @@ export default createComponent({
                             DECLARATION_TYPES: fishTicket.DECLARATION_TYPES
                         }
                     );
-                }
-                else {
-                    const ftRow = fishTicketRows.find( (row: any) => row.FTID == fishTicket.FTID);
+                } else {
+                    const ftRow = fishTicketRows.find( (row: any) => row.FTID === fishTicket.FTID);
                     ftRow.LANDED_WEIGHT_LBS += fishTicket.LANDED_WEIGHT_LBS;
                     if (!ftRow.PACFIN_SPECIES_CODES.includes(fishTicket.PACFIN_SPECIES_CODE)) {
                         ftRow.PACFIN_SPECIES_CODES += (', ' + fishTicket.PACFIN_SPECIES_CODE);
