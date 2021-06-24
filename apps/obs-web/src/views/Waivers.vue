@@ -31,6 +31,8 @@
                 <q-tr :props="props" @click.native="props.row.createdBy ? waiverDetails(props.row, props) : null">
                     <q-td key="id"></q-td>
                     <q-td key="waiverId" :props="props">{{ props.row.waiverId ? props.row.waiverId : props.row.WAIVER_ID }}</q-td>
+                    <q-td key="startDate" :props="props">{{ props.row.startDate ? formatDateTime(props.row.startDate) : formatDateTime(props.row.START_DATE) }}</q-td>
+                    <q-td key="endDate" :props="props">{{ props.row.endDate ? formatDateTime(props.row.endDate) : formatDateTime(props.row.END_DATE) }}</q-td>
                     <q-td key="vesselName" :props="props">{{ props.row.vessel ? props.row.vessel.vesselName : props.row.VESSEL_NAME }}</q-td>
                     <q-td key="vesselCGNumber" :props="props">{{ (props.row.vessel ? (props.row.vessel.coastGuardNumber ? props.row.vessel.coastGuardNumber : props.row.vessel.stateRegulationNumber) : props.row.VESSEL_DRVID) }}</q-td>
                     <q-td key="fishery" :props="props">{{ props.row.fishery ? props.row.fishery.description : props.row.FISHERY }}</q-td>
@@ -105,6 +107,8 @@ export default createComponent({
 
         const columns = [
             {name: 'waiverId', label: 'Waiver ID', field: 'waiverId', required: true, align: 'left', sortable: true},
+            {name: 'startDate', label: 'Start Date', field: 'startDate', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b) },
+            {name: 'endDate', label: 'End Date', field: 'endDate', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => (a).localeCompare(b) },
             {name: 'vesselName', label: 'Vessel Name', field: 'vesselName', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.description > b.description },
             {name: 'vesselCGNumber', label: 'Vessel ID', field: 'vesselCGNumber', required: true,
             sortable: true, align: 'left' },

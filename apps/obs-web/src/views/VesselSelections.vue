@@ -27,8 +27,6 @@
                 <q-tr :props="props" @click.native="vesselSelectionDetails(props.row, props)">
                     <q-td key="id"></q-td>
                     <q-td key="fishery" :props="props">{{ props.row.FISHERY }}</q-td>
-                    <q-td key="cycle_number" :props="props">{{ props.row.CYCLE_NUMBER }}</q-td>
-                    <q-td key="period_number" :props="props">{{ props.row.PERIOD_NUMBER }}</q-td>
                     <q-td key="period_start" :props="props">{{ formatDate(props.row.PERIOD_START) }}</q-td>
                     <q-td key="period_end" :props="props">{{ formatDate(props.row.PERIOD_END) }}</q-td>
                     <q-td key="port_group_code" :props="props">{{ props.row.PORT_GROUP_CODE }}</q-td>
@@ -98,8 +96,6 @@ export default createComponent({
 
         const columns = [
             {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true, sort: (a: any, b: any) => a.toLowerCase() > b.toLowerCase()},
-            {name: 'cycle_number', label: 'Cycle', field: 'cycle_number', required: true, align: 'left', sortable: true},
-            {name: 'period_number', label: 'Period', field: 'period_number', required: true, align: 'left', sortable: true},
             {name: 'period_start', label: 'Period Start', field: 'period_start', required: true, align: 'left', sortable: true,  sort: (a: any, b: any) => (a).localeCompare(b)},
             {name: 'period_end', label: 'Period End', field: 'period_end', required: true, align: 'left', sortable: true,  sort: (a: any, b: any) => (a).localeCompare(b)},
             {name: 'port_group_code', label: 'Port Group', field: 'port_group_code', required: true, align: 'left', sortable: true},
@@ -123,7 +119,7 @@ export default createComponent({
         };
 
         const formatDate = (dateTime: string) => {
-            return moment(dateTime).format('MM/DD/YYYY');
+            return moment.utc(dateTime).format('MM/DD/YYYY');
         };
 
         const formatIssuerName = (username: string) => {

@@ -113,7 +113,6 @@ export default createComponent({
                 for (const row of ticketRows) {
                     row.FTID = id;
                     const species = speciesDocs.find( (speciesRow: any) => speciesRow.pacfinSpeciesCode === row.PACFIN_SPECIES_CODE );
-                    console.log(species);
                     row.SPECIES_NAME = species ? species.commonNames[0] : '';
                     fishTickets.value.push(row);
                 }

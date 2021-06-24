@@ -15,9 +15,9 @@
             <q-banner rounded class="bg-red text-white">{{alert.message}}</q-banner>
           </div>
 
-          <div class="flex flex-center q-pa-md" style="text-align: center">
+          <div class="flex flex-center" style="text-align: center">
                 <transition-group name="transition-list">
-                  <img v-if="pageLoad" alt="animated_noaa_fisheries_logo" src="../assets/intro3.gif" style="width: 100%" class="transition-item" :key="0">
+                  <img v-if="pageLoad" alt="animated_noaa_fisheries_logo" src="../assets/intro3.gif" style="width: 100%; margin: 0; padding: 0" class="transition-item" :key="0">
                   <div v-else :key="1">
                     <img alt="noaa logo" src="../assets/NOAA_logo.svg" style="height: 80px" class="transition-item">
                     &nbsp;
