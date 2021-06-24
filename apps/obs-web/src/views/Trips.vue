@@ -446,6 +446,8 @@ export default class Trips extends Vue {
   private cancel: boolean = false;
   private csv: any = 'initial';
 
+  private masterDB: Client<any> = couchService.masterDB;
+
   private pagination = {
     sortBy: 'departureDate',
     descending: true,
@@ -570,13 +572,12 @@ export default class Trips extends Vue {
 
       const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
 
-      const masterDb: Client<any> = couchService.masterDB;
       const queryOptions = {
         include_docs: true,
         key: vesselId
       };
 
-      const vesselSelections: any = await masterDb.view<any>(
+      const vesselSelections: any = await this.masterDB.view<any>(
         'obs_web',
         'saved_selections',
         queryOptions
@@ -629,11 +630,10 @@ export default class Trips extends Vue {
     }
 
     private getMatchingVessels(ids: any[]) {
-      const db = couchService.masterDB;
       const tempVessels: any = [];
       ids.splice(0, 100).forEach( async (id) => {
         try {
-          const doc = await db.get(id);
+          const doc = await this.masterDB.get(id);
           tempVessels.push(doc);
         } catch (err) {
           console.log(err);
@@ -649,7 +649,6 @@ export default class Trips extends Vue {
           this.vessels = this.vesselNames;
           return;
         } else {
-          const masterDb = couchService.masterDB;
           const queryOptions: any = {
             inclusive_end: true,
             descending: false,
@@ -659,7 +658,7 @@ export default class Trips extends Vue {
             end_key: val.toLowerCase() + '\u9999'
           };
 
-          const vessels = await masterDb.view(
+          const vessels = await this.masterDB.view(
             'obs_web',
             'all_vessel_names',
             queryOptions
@@ -713,9 +712,8 @@ export default class Trips extends Vue {
           app: 'Observer Web'
         }
       );
-      const masterDB: Client<any> = couchService.masterDB;
       this.transferring = true;
-      return await masterDB.put(
+      return await this.masterDB.put(
         trip._id as string,
         trip,
         trip._rev as string
@@ -773,13 +771,12 @@ export default class Trips extends Vue {
       const vesselId = this.trip.activeTrip!.vessel!.coastGuardNumber ? this.trip.activeTrip!.vessel!.coastGuardNumber : this.trip.activeTrip!.vessel!.stateRegulationNumber;
       const fisheryName: any = this.trip.activeTrip!.fishery!.description ? this.trip.activeTrip!.fishery!.description : 'fish';
 
-      const masterDb: Client<any> = couchService.masterDB;
       const queryOptions = {
         include_docs: true,
         key: vesselId
       };
 
-      let vesselSelections: any = await masterDb.view<any>(
+      let vesselSelections: any = await this.masterDB.view<any>(
               'obs_web',
               'saved_selections',
               queryOptions
@@ -806,7 +803,7 @@ export default class Trips extends Vue {
                               selectionDate: this.openTrips[1].selectionDate ? this.openTrips[1].selectionDate : this.openTrips[1].createdDate
                             });
         this.openTrips[1].isSelected = this.activeTrip.isSelected;
-        await masterDb.post(this.openTrips[1]);
+        await this.masterDB.post(this.openTrips[1]);
       } else {
         if (!['Maximized Retention Trip - Not Selected', 'Maximized Retention chosen - selection removed'].includes(this.activeTrip.notes ) ) {
           vesselSelections[fisheryName].push({
@@ -817,7 +814,7 @@ export default class Trips extends Vue {
         }
       }
 
-      await masterDb.post(vesselSelections);
+      await this.masterDB.post(vesselSelections);
 
     }
 
@@ -969,7 +966,6 @@ private async getVesselTrips() {
   if (this.vessel.activeVessel) {
     this.loading = true;
     const vesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
-    const masterDB: Client<any> = couchService.masterDB;
     const queryOptions: any = {
             include_docs: true,
             reduce: false,
@@ -977,7 +973,7 @@ private async getVesselTrips() {
           };
 
     try {
-      const vesselTrips = await masterDB.view<any>(
+      const vesselTrips = await this.masterDB.view<any>(
               'obs_web',
               'ots_trips_by_vesselId',
               queryOptions
@@ -1052,9 +1048,7 @@ private async storeOfflineData() {
 }
 
 private async getVesselNames() {
-    const masterDB: Client<any> = couchService.masterDB;
     try {
-        const masterDb = couchService.masterDB;
         const queryOptions: any = {
           inclusive_end: true,
           descending: false,
@@ -1064,7 +1058,7 @@ private async getVesselNames() {
           end_key: '' + '\u9999'
         };
 
-        const vessels = await masterDb.view(
+        const vessels = await this.masterDB.view(
           'obs_web',
           'all_vessel_names',
           queryOptions
@@ -1081,15 +1075,13 @@ private async getAuthorizedVessels() {
       return;
     }
 
-    const masterDB: Client<any> = couchService.masterDB;
-
     const queryOptions = {
         key: 'vessel-permissions',
         reduce: false,
         include_docs: true
     };
 
-    const permissionsQuery: any = await masterDB.view<any>(
+    const permissionsQuery: any = await this.masterDB.view<any>(
       'obs_web',
       'all_doc_types',
       queryOptions
@@ -1114,7 +1106,7 @@ private async getAuthorizedVessels() {
         include_docs: true
       };
 
-      const vesselQuery: any = await masterDB.view(
+      const vesselQuery: any = await this.masterDB.view(
         'obs_web',
         'all_vessel_nums',
         vesselQueryOptions

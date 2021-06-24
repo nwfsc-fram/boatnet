@@ -112,14 +112,14 @@
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td key="id"></q-td>
-                    <q-td key="FTID" :props="props">{{ props.row.FTID }}</q-td>
-                    <q-td key="LANDING_DATE" :props="props">{{ formatDate(props.row.LANDING_DATE) }}</q-td>
-                    <q-td key="PACFIN_SPECIES_CODE" :props="props">{{ props.row.PACFIN_SPECIES_CODE }}</q-td>
-                    <q-td key="LANDED_WEIGHT_LBS" :props="props">{{ props.row.LANDED_WEIGHT_LBS }}</q-td>
+                    <q-td key="FTID" :props="props"><q-btn @click="displayFishTickets([{fishTicketNumber: props.row.FTID}])" flat>{{ props.row.FTID }}</q-btn></q-td>
                     <q-td key="FISHER_LICENSE_NUM" :props="props">{{ props.row.FISHER_LICENSE_NUM }}</q-td>
-                    <q-td key="CONDITION_NAME" :props="props">{{ props.row.CONDITION_NAME }}</q-td>
+                    <q-td key="LANDING_DATE" :props="props">{{ formatDate(props.row.LANDING_DATE) }}</q-td>
                     <q-td key="PORT_NAME" :props="props">{{ props.row.PORT_NAME }}</q-td>
-                    <q-td key="SPECIES_CODE_NAME" :props="props">{{ props.row.SPECIES_CODE_NAME }}</q-td>
+                    <q-td key="PACFIN_SPECIES_CODES" :props="props">{{ props.row.PACFIN_SPECIES_CODES }}</q-td>
+                    <q-td key="LANDED_WEIGHT_LBS" :props="props">{{ props.row.LANDED_WEIGHT_LBS }}</q-td>
+                    <q-td key="DECLARATION_CODES" :props="props">{{ props.row.DECLARATION_CODES }}</q-td>
+                    <q-td key="DECLARATION_TYPES" :props="props">{{ props.row.DECLARATION_TYPES }}</q-td>
                 </q-tr>
             </template>
         </q-table>
@@ -192,7 +192,7 @@ export default createComponent({
         };
 
         const formatDate = (dateTime: string) => {
-            return moment(dateTime).format('MM/DD/YYYY');
+            return moment.utc(dateTime).format('MM/DD/YYYY');
         };
 
         const waiversColumns = [
@@ -249,22 +249,45 @@ export default createComponent({
         };
 
         const fishTicketColumns = [
-            {name: 'FTID', 'label': 'Fish Ticket #', field: 'FTID', required: true, align: 'left', sortable: true},
-            {name: 'LANDING_DATE', 'label': 'Landing Date', field: 'LANDING_DATE', required: true, align: 'left', sortable: true},
-            {name: 'PACFIN_SPECIES_CODE', 'label': 'Species Code', field: 'PACFIN_SPECIES_CODE', required: true, align: 'left', sortable: true},
-            {name: 'LANDED_WEIGHT_LBS', 'label': 'Landed Weight (lbs)', field: 'LANDED_WEIGHT_LBS', required: true, align: 'left', sortable: true},
-            {name: 'FISHER_LICENSE_NUM', 'label': 'Permit #', field: 'FISHER_LICENSE_NUM', required: true, align: 'left', sortable: true},
-            {name: 'CONDITION_NAME', 'label': 'Condition', field: 'CONDITION NAME', required: true, align: 'left', sortable: true},
-            {name: 'PORT_NAME', 'label': 'Landing Port', field: 'PORT_NAME', required: true, align: 'left', sortable: true},
-            {name: 'SPECIES_CODE_NAME', 'label': 'Species Name', field: 'SPECIES_CODE_NAME', required: true, align: 'left', sortable: true},
+            {name: 'FTID', label: 'Fish Ticket #', field: 'FTID', required: true, align: 'left', sortable: true},
+            {name: 'FISHER_LICENSE_NUM', label: 'Permit #', field: 'FISHER_LICENSE_NUM', required: true, align: 'left', sortable: true},
+            {name: 'LANDING_DATE', label: 'Landing Date', field: 'LANDING_DATE', required: true, align: 'left', sortable: true},
+            {name: 'PORT_NAME', label: 'Landing Port', field: 'PORT_NAME', required: true, align: 'left', sortable: true},
+            {name: 'PACFIN_SPECIES_CODES', label: 'Species Codes', field: 'PACFIN_SPECIES_CODES', required: true, align: 'left', sortable: true},
+            {name: 'LANDED_WEIGHT_LBS', label: 'Landed Weight (lbs)', field: 'LANDED_WEIGHT_LBS', required: true, align: 'left', sortable: true},
+            {name: 'DECLARATION_CODES', label: 'Declaration Codes', field: 'DECLARATION_CODES', required: true, align: 'left', sortable: true},
+            {name: 'DECLARATION_TYPES', label: 'Declaration Types', field: 'DECLARATION_TYPES', required: true, align: 'left', sortable: true},
         ];
 
         const getFishTickets = async () => {
             fishTicketsLoading.value = true;
-            const fishTickets = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, selection.value.PERIOD_END);
-            vesselFishTickets.value.push.apply(vesselFishTickets.value, fishTickets);
+            const fishTicketRows: any = [];
+            const fishTickets: any = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, selection.value.PERIOD_END);
+            for (const fishTicket of fishTickets) {
+                if (!fishTicketRows.filter( (row: any) => row.FTID === fishTicket.FTID)[0]) {
+                    fishTicketRows.push(
+                        {
+                            FTID: fishTicket.FTID,
+                            LANDING_DATE: fishTicket.LANDING_DATE,
+                            FISHER_LICENSE_NUM: fishTicket.FISHER_LICENSE_NUM,
+                            PORT_NAME: fishTicket.PORT_NAME,
+                            LANDED_WEIGHT_LBS: fishTicket.LANDED_WEIGHT_LBS,
+                            PACFIN_SPECIES_CODES: fishTicket.PACFIN_SPECIES_CODE,
+                            VESSEL_NUM: fishTicket.VESSEL_NUM,
+                            DECLARATION_CODES: fishTicket.DECLARATION_CODES,
+                            DECLARATION_TYPES: fishTicket.DECLARATION_TYPES
+                        }
+                    );
+                } else {
+                    const ftRow = fishTicketRows.find( (row: any) => row.FTID === fishTicket.FTID);
+                    ftRow.LANDED_WEIGHT_LBS += fishTicket.LANDED_WEIGHT_LBS;
+                    if (!ftRow.PACFIN_SPECIES_CODES.includes(fishTicket.PACFIN_SPECIES_CODE)) {
+                        ftRow.PACFIN_SPECIES_CODES += (', ' + fishTicket.PACFIN_SPECIES_CODE);
+                    }
+                }
+            }
+            vesselFishTickets.value.push.apply(vesselFishTickets.value, fishTicketRows);
             fishTicketsLoading.value = false;
-            console.log(vesselFishTickets.value);
         };
 
         const getCertificateNumbers = (certificates: any[]) => {
@@ -295,7 +318,6 @@ export default createComponent({
 
         onMounted( async () => {
             selection.value = state.vessel.vesselSelection;
-            console.log(selection.value);
             getWaivers();
             getTrips();
             getFishTickets();

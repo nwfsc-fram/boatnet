@@ -85,11 +85,10 @@
         v-model="waiver.certificateNumber"
         label="Permit"
         :options="permits"
-        :option-label="opt => opt.permitNumber"
-        option-value="_id"
         stack-label
         use-input
-        @filter="permitsFilterFn"
+        new-value-mode="add"
+        @new-value="newPermit"
         @click.native="selectText"
         dense
         style="width: 350px"
@@ -139,6 +138,8 @@
             </template>
         </q-select>
 
+        <q-btn v-if="waiver.vessel" @click="showContactDialog = true">add unlisted contact</q-btn>
+
         <div class="break"></div>
 
         <div style="width: 350px" :disabled="oldRecord" :readonly="oldRecord">
@@ -187,6 +188,26 @@
                 <q-btn  v-if="validatedWaiver && !waiver._id" label="save waiver" color="primary" @click="saveWaiver"></q-btn>
             </div>
         </div>
+
+        <q-dialog v-model="showContactDialog">
+            <q-card class="q-pa-md">
+                <q-card-section>
+                    <b>Waiver Contact</b>
+                    <q-input v-model="waiverContact.firstName" label="First Name"></q-input>
+                    <q-input v-model="waiverContact.lastName" label="Last Name"></q-input>
+                    <q-input v-model="waiverContact.email" label="Email" type="email" :rules="[val => val.includes('@') && val.split('@')[1].includes('.') || 'Must be a valid email address']"></q-input>
+                    <q-input v-model="waiverContact.phone" label="Phone #" type="phone" :rules="[val => parseInt(val, 10) && val.length == 10 || 'Must be a valid phone number']"></q-input>
+                </q-card-section>
+                <q-card-actions>
+                    <q-btn
+                        v-if="waiverContact.firstName && waiverContact.lastName && waiverContact.email && waiverContact.phone"
+                        @click="waiver.contact = waiverContact; showContactDialog = false"
+                        color="primary"
+                    >save</q-btn>
+                    <q-btn @click="showContactDialog = false">cancel</q-btn>
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
     </div>
 </template>
 
@@ -207,11 +228,12 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import { WatchOptions } from 'vue';
 
 import moment from 'moment';
-import { startCase, toLower, set } from 'lodash';
+import { startCase, toLower, set, cloneDeep } from 'lodash';
 import { Waiver, WaiverTypeTypeName } from '@boatnet/bn-models';
 import { AuthState, authService } from '@boatnet/bn-auth';
 import { Notify } from 'quasar';
 import { updatePropertySignature } from 'typescript';
+import { getSelections } from '@boatnet/bn-common';
 
 export default createComponent({
     props: {
@@ -231,7 +253,9 @@ export default createComponent({
         const waiverTypes: any = ref([]);
         const waiverReasons: any = ref([]);
         const fisheries: any = ref([]);
-        const permits: any = ref([]);
+        const vesselSelections: any = ref([]);
+        const showContactDialog: any = ref(false);
+        const waiverContact: any = ref({});
 
         const portsFilterFn = (val: string, update: any, abort: any) => {
 
@@ -269,30 +293,6 @@ export default createComponent({
                 );
 
                 vessels.value = vesselsQuery.rows.map( (row: any) => row.doc );
-            }
-            });
-            return;
-        };
-
-        const permitsFilterFn = (val: string, update: any, abort: any) => {
-
-            update( async () => {
-
-            if (val !== '') {
-                const permitResults = await masterDB.view(
-                    'obs_web',
-                    'permit_numbers',
-                    {include_docs: true, start_key: val.toLowerCase(), end_key: val.toLowerCase() + '\u9999'}
-                );
-                permits.value = permitResults.rows.map( (row: any) => row.doc );
-            } else {
-                const permitsQuery = await masterDB.view(
-                    'obs_web',
-                    'permit_numbers',
-                    {include_docs: true, limit: 20}
-                );
-
-                permits.value = permitsQuery.rows.map( (row: any) => row.doc );
             }
             });
             return;
@@ -353,12 +353,12 @@ export default createComponent({
                 } );
             } catch (err) { console.log(err); }
 
-            try {
-                const permitsQuery = await masterDB.view(
-                    'obs_web', 'permit_numbers', {include_docs: true, reduce: false, limit: 20}
-                );
-                permits.value = permitsQuery.rows.map( (row: any) => row.doc );
-            } catch (err) { console.log(err); }
+            // try {
+            //     const permitsQuery = await masterDB.view(
+            //         'obs_web', 'permit_numbers', {include_docs: true, reduce: false, limit: 20}
+            //     );
+            //     permits.value = permitsQuery.rows.map( (row: any) => row.doc );
+            // } catch (err) { console.log(err); }
 
             try {
                 const portsQuery = await masterDB.view(
@@ -372,7 +372,7 @@ export default createComponent({
         const getWaiver = async (waiverId: any) => {
             if (waiverId === 'new') {
                 const maxIdQuery = await masterDB.view('obs_web', 'waiverId', {descending: true, limit: 1});
-                const newId = parseInt(maxIdQuery.rows[0].key, 10) + 1;
+                const newId = 'b' + (parseInt(maxIdQuery.rows[0].key.substring(1, 5), 10) + 1);
                 waiver.value = {
                     type: 'waiver',
                     createdBy: authService.getCurrentUser()!.username,
@@ -415,6 +415,23 @@ export default createComponent({
                 return true;
             } else {
                 return false;
+            }
+        });
+
+        const permits = computed( () => {
+            if (waiver.value.vessel) {
+                const vesselId = waiver.value.vessel.coastGuardNumber ? waiver.value.vessel.coastGuardNumber : waiver.value.vessel.stateRegulationNumber;
+                const selectionForVessel = vesselSelections.value.filter( (row: any) => row.VESSEL_DRVID === vesselId);
+                const returnPermits: any = [];
+                for (const sfv of selectionForVessel) {
+                    if (sfv.PERMIT_NUMBER && sfv.PERMIT_NUMBER !== null && !returnPermits.includes(sfv.PERMIT_NUMBER)) {
+                        returnPermits.push(sfv.PERMIT_NUMBER);
+                    }
+                    if (sfv.PERMIT_NUMBER_2 && sfv.PERMIT_NUMBER_2 !== null && !returnPermits.includes(sfv.PERMIT_NUMBER_2)) {
+                        returnPermits.push(sfv.PERMIT_NUMBER);
+                    }
+                }
+                return returnPermits;
             }
         });
 
@@ -499,15 +516,35 @@ export default createComponent({
             }
         });
 
+        const getVesselSelections = async () => {
+            const selections: any = await getSelections('year', moment().format('YYYY'));
+            vesselSelections.value = cloneDeep(selections);
+        };
+
         const watcherOptions: WatchOptions = {
             immediate: true, deep: false
+        };
+
+        const newPermit = (val: any, done: any) => {
+            if (val.length > 0) {
+            set(waiver.value, 'certificateNumber', val);
+            done(val, 'toggle');
+            }
         };
 
         watch(
             () => waiver.value.vessel,
             (newVal, oldVal) => {
                 if (oldVal && newVal !== oldVal) {
+                    set(waiver.value, 'certificateNumber', null);
                     set(waiver.value, 'contact', null);
+                    set(waiver.value, 'landingPort', null);
+                    if (waiver.value.vessel.captains && waiver.value.vessel.captains[0]) {
+                        set(waiver.value, 'contact', waiver.value.vessel.captains[0]);
+                    }
+                    if (waiver.value.vessel.homePort) {
+                        set(waiver.value, 'landingPort', waiver.value.vessel.homePort);
+                    }
                 }
             },
             watcherOptions
@@ -516,6 +553,7 @@ export default createComponent({
         onMounted( async () => {
             await getOptions();
             await getWaiver(id);
+            await getVesselSelections();
         });
 
         return {
@@ -525,20 +563,23 @@ export default createComponent({
             formatIssuerName,
             isMobile,
             navigateBack,
+            newPermit,
             oldRecord,
             permits,
-            permitsFilterFn,
             ports,
             portsFilterFn,
             saveWaiver,
             selectText,
+            showContactDialog,
             startDate,
             updateWaiver,
             validatedWaiver,
             vesselCaptains,
             vesselsFilterFn,
             vessels,
+            vesselSelections,
             waiver,
+            waiverContact,
             waiverReasons,
             waiverTypes
         };
