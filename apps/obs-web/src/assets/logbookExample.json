@@ -55,8 +55,8 @@
           {
             "disposition": "Retained",
             "speciesCode": "CLPR",
-            "weight": 1200,
-            "catchCount": 37,
+            "speciesWeight": 1200,
+            "speciesCount": 37,
             "calcWeightType": "Estimated Weight",
             "length": 32,
             "comments": "this is a catch comment"
@@ -64,16 +64,16 @@
           {
             "disposition": "Discarded",
             "speciesCode": "CMEL",
-            "weight": 200,
-            "catchCount": 37,
+            "speciesWeight": 200,
+            "speciesCount": 37,
             "calcWeightType": "Estimated Weight",
             "comments": "this is a catch comment"
           },
           {
             "disposition": "Discarded",
             "speciesCode": "STAR",
-            "weight": 75,
-            "catchCount": 3,
+            "speciesWeight": 75,
+            "speciesCount": 3,
             "calcWeightType": "Estimated Weight",
             "comments": "this is a catch comment"
           }

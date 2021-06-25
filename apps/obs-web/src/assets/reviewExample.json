@@ -59,14 +59,14 @@
           "disposition": "Discarded",
           "fate": "11",
           "speciesCode": 360,
-          "weight": 320
+          "speciesWeight": 320
         },
         {
           "catchId": 2,
           "disposition": "Discarded",
           "fate": "11",
           "speciesCode": 200,
-          "weight": 200
+          "speciesWeight": 200
         }
       ]
     }
