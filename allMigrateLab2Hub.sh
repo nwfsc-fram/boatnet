@@ -6,7 +6,7 @@ wrkingDir=$PWD
 configFile=$HOME/.ssh/MigrationConfig
 SCRIPT_HOME="$(realpath $(dirname $0))"
 BFG_JAR="$SCRIPT_HOME/bfg.jar"
-MIGRATION_SCRIPT="$(realpath $(dirname $0))/migrateRepo.sh"
+MIGRATION_SCRIPT="$(realpath $(dirname $0))/migrateLab2Hub.sh"
 
 if [ "$#" -ne 0 ];then
 	echo "Usage: $(basename $0) "
