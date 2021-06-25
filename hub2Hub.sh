@@ -9,9 +9,10 @@ size_cutoff=49 # max size in MB before we need to lfs.
 
 if [ "$#" -ne 1 ];then
 	echo "Usage: $(basename $0) [repository_name]"
-	echo "       Migrates a repository from GitLab to GitHub."
+	echo "       Migrates a repository from one GitHub to GitHub."
 	echo "       Specification of servers, tokens, user names, and git namespaces"
 	echo "       is found in '$configFile' which must have permissions of '600'."
+	echo "       NB: This migration does not preserve pull requests and issues."
 	exit
 else
 	REPO="$1"
@@ -74,45 +75,45 @@ fi
 
 
 
-echo "Migration: $GL_HOST:$GL_ORG/${REPO} => $GH_HOST/$GH_ORG"
+echo "Migration: $GH_PUB_HOST:$GH_PUB_ORG/${REPO} => $GH_ENT_HOST/$GH_ENT_ORG"
 wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
 
 gl_connect_log="${wrkingDir}/${REPO}.gl_connect.${time_stamp}.log"
-GL_REPO_ID=$(curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GL_ORG}?per_page=1000"|jq '.projects[]|select(.path_with_namespace == "'$GL_ORG/$REPO'").id') 2>>$gl_connect_log
+GH_PUB_REPO_ID=$(curl -s -k --header "Authorization: Bearer ${GH_PUB_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GH_PUB_ORG}?per_page=1000"|jq '.projects[]|select(.path_with_namespace == "'$GH_PUB_ORG/$REPO'").id') 2>>$gl_connect_log
 
-#git ls-remote ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/${REPO} >> $gl_connect_log 2>&1
-if [ "$GL_REPO_ID" = "" ];then
-	echo "      Aborting: Unable to access '${GL_HOST}:${GL_ORG}/${REPO}'"
+#git ls-remote ${GH_PUB_GIT_USER}@${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO} >> $gl_connect_log 2>&1
+if [ "$GH_PUB_REPO_ID" = "" ];then
+	echo "      Aborting: Unable to access '${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO}'"
 	if [ -r $gl_connect_log ];then
 		cat $gl_connect_log |fold -w 80| sed 's+^+      +'
 	fi
 	exit -1
 fi
-echo "   - Confirmed git access '${GL_HOST}:${GL_ORG}/${REPO}'"
+echo "   - Confirmed git access '${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO}'"
 rm -f $gl_connect_log
 exit
 #Verify GitHub Access login
-echo ${GH_TOKEN}|gh auth login -h ${GH_HOST} --with-token
+echo ${GH_ENT_TOKEN}|gh auth login -h ${GH_ENT_HOST} --with-token
 if [ $? -ne 0 ];then
-	echo "      Aborting: Unable to access '${GH_HOST}' with git or GitHub CLI (gh)"
+	echo "      Aborting: Unable to access '${GH_ENT_HOST}' with git or GitHub CLI (gh)"
 	exit -1
 fi
-echo "   - Confirmed Git and GitHub CLI (gh) access to '${GH_HOST}'"
+echo "   - Confirmed Git and GitHub CLI (gh) access to '${GH_ENT_HOST}'"
 
 #Create or overright remote repo
 target_repo_log="${wrkingDir}/${REPO}.target_repo.${time_stamp}.log"
 
-gh repo view ${GH_ORG}/${REPO} >> $target_repo_log 2>&1
+gh repo view ${GH_ENT_ORG}/${REPO} >> $target_repo_log 2>&1
 if [ $? -eq 0 ];then
-	echo "   - Deleting existing repo ${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/${REPO}"
+	echo "   - Deleting existing repo ${GH_ENT_GIT_USER}@${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}"
 	out=$(mktemp)
 	curl -s -X DELETE \
 		 -H "Accept: application/vnd.github.v3+json" \
-		 -H "Authorization: token ${GH_TOKEN}" \
-		 https://${GH_HOST}/api/v3/repos/${GH_ORG}/${REPO} --output $out  >> $target_repo_log 2>&1
+		 -H "Authorization: token ${GH_ENT_TOKEN}" \
+		 https://${GH_ENT_HOST}/api/v3/repos/${GH_ENT_ORG}/${REPO} --output $out  >> $target_repo_log 2>&1
 	if [ $(cat $out|wc -l) -ne 0 ];then
-		echo "      Aborting: Failed to delete ${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/${REPO}"
+		echo "      Aborting: Failed to delete ${GH_ENT_GIT_USER}@${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}"
 		if [ -r $out ];then
 			cat $out |fold -w 80 | sed 's+^+      +'
 		fi
@@ -122,17 +123,17 @@ if [ $? -eq 0 ];then
 
 fi
 
-echo "   - Creating repository '${GH_HOST}:${GH_ORG}/${REPO}'"
+echo "   - Creating repository '${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}'"
 # Clean up for cloning
 rm -r -f ${REPO}
 
 #NB Sometimes hg repo create returns bac value even after successful creation
 #So check with gh repo view
 
-gh repo create -y  -t ${GH_TEAM} --public ${GH_ORG}/${REPO} >> $target_repo_log 2>&1
-gh repo view ${GH_ORG}/${REPO}  >> $target_repo_log 2>&1
+gh repo create -y  -t ${GH_ENT_TEAM} --public ${GH_ENT_ORG}/${REPO} >> $target_repo_log 2>&1
+gh repo view ${GH_ENT_ORG}/${REPO}  >> $target_repo_log 2>&1
 if [ $? -ne 0 ];then
-	echo "      Aborting '${REPO}' migration: Could not create '${GH_HOST}:${GH_ORG}/${REPO}'"
+	echo "      Aborting '${REPO}' migration: Could not create '${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}'"
 	if [ -r $target_repo_log ];then
 		cat $target_repo_log |fold -w 80| sed 's+^+      +'
 	fi
@@ -141,7 +142,7 @@ fi
 rm -f $target_repo_log
 
 
-echo "   - Creating local clone of '${GL_HOST}:${GL_ORG}/${REPO}'"
+echo "   - Creating local clone of '${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO}'"
 clone_log="${wrkingDir}/${REPO}.clone.${time_stamp}.log"
 
 rm -f -r ${REPO}  # cleanup
@@ -149,9 +150,9 @@ rm -f -r ${REPO}  # cleanup
 mkdir ${REPO}
 cd ${REPO}
 
-git clone ${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/${REPO} .	>>$clone_log 2>&1
+git clone ${GH_PUB_GIT_USER}@${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO} .	>>$clone_log 2>&1
 if [ $? -ne 0 ];then
-	echo "      Aborting local clone of '${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/${REPO}'"
+	echo "      Aborting local clone of '${GH_PUB_GIT_USER}@${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO}'"
 	if [ -r $clone_log ];then
 		cat $clone_log |fold -w 80 | sed 's+^+      +'
 	fi
@@ -164,7 +165,7 @@ fi
 	  git fetch --all --prune --tags && git pull --all) 	>>$clone_log 2>&1
 
 if [ $? -ne 0 ];then
-	echo "      Aborting: Could not recover all branches of '${GL_GIT_USER}@${GL_HOST}:${GL_ORG}/${REPO}'"
+	echo "      Aborting: Could not recover all branches of '${GH_PUB_GIT_USER}@${GH_PUB_HOST}:${GH_PUB_ORG}/${REPO}'"
 	if [ -r $clone_log ];then
 		cat $clone_log |fold -w 80 | sed 's+^+      +'
 	fi
@@ -238,11 +239,11 @@ else
 fi
 rm -f $lfs_log
 
-echo "   - Pushing to ${GH_HOST}:${GH_ORG}/${REPO}"
+echo "   - Pushing to ${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}"
 push_log="${wrkingDir}/${REPO}.push.${time_stamp}.log"
-git remote add github "${GH_GIT_USER}@${GH_HOST}:${GH_ORG}/${REPO}" 
+git remote add github "${GH_ENT_GIT_USER}@${GH_ENT_HOST}:${GH_ENT_ORG}/${REPO}" 
 
-git config lfs.https://${GH_HOST}/${GH_ORG}/${REPO}.git/info/lfs.locksverify true
+git config lfs.https://${GH_ENT_HOST}/${GH_ENT_ORG}/${REPO}.git/info/lfs.locksverify true
 
 git lfs push --all github >> $push_log 2>&1
 if [ $? -ne 0 ];then
@@ -279,13 +280,13 @@ meta_log="${wrkingDir}/${REPO}.meta.${time_stamp}.log"
 cd "$METADATA_SYNC_HOME"
 npm install >> $meta_log 2>&1
 cat "$METADATA_SYNC_SETTING_TEMPLATE" \
-	| sed 's+{{GL_HOST}}+'$GL_HOST'+'\
-	| sed 's+{{GH_HOST}}+'$GH_HOST'+'\
-	| sed 's+{{GL_TOKEN}}+'$GL_TOKEN'+'\
-	| sed 's+{{GH_TOKEN}}+'$GH_TOKEN'+'\
-	| sed 's+{{GL_REPO_ID}}+'$GL_REPO_ID'+'\
-	| sed 's+{{GL_ORG}}+'$GL_ORG'+'\
-	| sed 's+{{GH_ORG}}+'$GH_ORG'+'\
+	| sed 's+{{GH_PUB_HOST}}+'$GH_PUB_HOST'+'\
+	| sed 's+{{GH_ENT_HOST}}+'$GH_ENT_HOST'+'\
+	| sed 's+{{GH_PUB_TOKEN}}+'$GH_PUB_TOKEN'+'\
+	| sed 's+{{GH_ENT_TOKEN}}+'$GH_ENT_TOKEN'+'\
+	| sed 's+{{GH_PUB_REPO_ID}}+'$GH_PUB_REPO_ID'+'\
+	| sed 's+{{GH_PUB_ORG}}+'$GH_PUB_ORG'+'\
+	| sed 's+{{GH_ENT_ORG}}+'$GH_ENT_ORG'+'\
 	| sed 's+{{REPO}}+'$REPO'+' >settings.ts
 
 npm run start >> $meta_log 2>&1
