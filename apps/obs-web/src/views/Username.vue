@@ -70,7 +70,7 @@ export default class Username extends Vue {
     this.showDialog = true;
     this.submitted = true;
 
-    const appName: string = 'Research Catch';
+    const appName: string = 'Observer Web';
     const appShortName = 'BOATNET_OBSERVER';
 
     try {
