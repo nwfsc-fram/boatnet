@@ -1,69 +1,128 @@
 <template>
-  <div class="q-pa-md">
-    <debriefer-select-comp
-      label="Search Barcode"
-      style="display: inline-block; width: 30%"
-      :val.sync="biospecimen"
-      lookupView="biostructures_barcode"
-      lookupLabel="key"
-      lookupValue="value"
-      @select="select"
-    />
-    <div class="q-pa-sm"><b>Dissection Type: </b>{{ structureDesc }}</div>
-    <div class="q-pa-sm"><b>Trip #: </b>{{ currVal.tripNum ? currVal.tripNum : null }}</div>
-    <div class="q-pa-sm"><b>Haul #: </b>{{ currVal.haulNum ? currVal.haulNum: null }}</div>
-    <div class="q-pa-sm"><b>Catch #: </b>{{ currVal.catchNum ? currVal.catchNum : null }}</div>
-    <div class="q-pa-sm"><b>Species: </b>{{ currVal.species ? currVal.species : null }}</div>
-    <span class="q-pa-sm"><b>Assign to Rack:</b></span>
-    <multiselect style="width: 400px" v-model="racks" :options="options" placeholder="Rack Id" />
-  </div>
+    <div class="q-pa-md">
+      <debriefer-select-comp
+        style="display: inline-block; width: 30%"
+        label="Dissection Type"
+        :val.sync="inputDissection"
+        lookupView="wcgop-lookups"
+        lookupLabel="doc.description"
+        lookupValue="doc.description"
+        :lookupQueryOptions="{ key: 'biostructure-type' }"
+      />
+      <q-input
+        class="q-px-md" 
+        style="display: inline-block; width: 30%"
+        label="Barcode"
+        debounce="500"
+        v-model="barcode"
+        clearable
+        clear-icon="close"
+        @input="populateSpecimenInfo"
+      >
+        <template v-slot:prepend>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+      <debriefer-select-comp
+        style="display: inline-block; width: 30%"
+        label="Rack Name"
+        :val.sync="inputDissection"
+        lookupView="rack"
+        lookupLabel="key"
+        lookupValue="value"
+      />
+      <q-space/>
+      <q-card class="bg-grey-2 q-mt-lg">
+        <q-card-section>
+          <div class="text-subtitle2" style="color: bg-primary"></div>
+          <q-input
+            v-model="dissectionType"
+            label="Dissection Type"
+            readonly
+            :rules="[ val => !! inputDissection || 'No dissection above selected',
+                      val => inputDissection === val || 'Doesn\'t match selected dissection type: ' + inputDissection
+                    ]"
+          />
+          <q-input v-model="observerName" label="Observer" readonly />
+          <q-input v-model="tripNum" label="Trip #" readonly />
+          <q-input v-model="haulNum" label="Haul #" readonly />
+          <q-input v-model="catchNum" label="Catch #" readonly />
+          <q-input v-model="species" label="Species" readonly />
+          <q-input v-model="rackName" label="Rack Name" readonly />
+        </q-card-section>
+      </q-card>
+    </div>
 </template>
 
 
 <script lang="ts">
 import { createComponent, ref, reactive, watch } from '@vue/composition-api';
 import Vue from 'vue';
-import { Biostructure, BiostructureType } from '@boatnet/bn-models';
-import { CouchDBCredentials, couchService } from '@boatnet/bn-couch';
-import { Client, CouchDoc, ListOptions } from 'davenport';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
+import { couchService } from '@boatnet/bn-couch';
+import { Client } from 'davenport';
+import { get } from 'lodash';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 
 export default createComponent({
-  setup(props, context) {
-    const biospecimen: any = ref([]);
-    const racks: any = ref([]);
+    setup(props, context) {
+        const inputDissection: any = ref('');
+        const barcode: any = ref('');
+        const rack: any = ref('');
 
-    const currVal: any = ref({});
-    const structureDesc: any = ref('');
+        const dissectionType: any = ref('');
+        const observerName: any = ref('');
+        const tripNum: any = ref();
+        const haulNum: any = ref();
+        const catchNum: any = ref();
+        const species: any = ref('');
+        const rackName: any = ref('');
 
-    const options: any = [
-      'BCAC-2004-01',
-      'BCAC-2013-01',
-      'CHNK-2005',
-      'CNRY-2004-02',
-      'DBRK-2005-07'
-    ];
+        async function populateSpecimenInfo(val: any) {
+            const masterDB: Client<any> = couchService.masterDB;
+            let specimen = await masterDB.view('obs_web', 'biostructures_barcode', { key: parseInt(val) });
 
-    function select(selected: any) {
-      const biostructure: Biostructure = selected.biostructure;
-      const biostructureType: BiostructureType = biostructure && biostructure.structureType
-        ? biostructure.structureType
-        : {};
-      structureDesc.value = biostructureType ? biostructureType.description : '';
-      currVal.value = selected;
-    }
-    return {
-      biospecimen,
-      currVal,
-      select,
-      racks,
-      options,
-      structureDesc
-    };
-  }
+            specimen = get(specimen, 'rows[0].value', {});
+            dissectionType.value = get(specimen, 'biostructure.structureType.description', '');
+            tripNum.value = get(specimen, 'tripNum');
+            haulNum.value = get(specimen, 'haulNum');
+            catchNum.value = get(specimen, 'catchNum');
+            species.value = get(specimen, 'species', '');
+            rackName.value = get(specimen, 'biostructure.legacy.rackPosition', '');
+
+            // get trip doc to get observer name
+            const tripDetails = await masterDB.viewWithDocs(
+                'obs_web',
+                'wcgop_trips_compound_fields',
+                {
+                    start_key: ['tripId', tripNum.value],
+                    end_key: ['tripId', tripNum.value],
+                }
+            );
+            const firstName = get(tripDetails, 'rows[0].doc.observer.firstName', '');
+            const lastName = get(tripDetails, 'rows[0].doc.observer.lastName', '');
+            observerName.value = firstName + ' ' + lastName;
+        }
+
+        return {
+            inputDissection,
+            barcode,
+            rack,
+
+            dissectionType,
+            observerName,
+            tripNum,
+            haulNum,
+            catchNum,
+            species,
+            rackName,
+
+            populateSpecimenInfo,
+            get,
+        };
+    },
 });
 </script>
