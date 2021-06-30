@@ -65,7 +65,7 @@ export default createComponent({
       update(() => {
         const needle = val.toLowerCase();
         filteredOptions.value = filter(options.value, (option: any) => {
-          const currLabel = option.label.toLowerCase();
+          const currLabel = option.label.toString().toLowerCase();
           return currLabel.includes(needle);
         });
       });
@@ -95,10 +95,10 @@ export default createComponent({
       const masterDB: Client<any> = couchService.masterDB;
       try {
         const results = await masterDB
-          .view<any>('obs_web', view, queryOptions)
+          .viewWithDocs<any>('obs_web', view, queryOptions)
           .then((response: any) => {
             for (const row of response.rows) {
-              lookupVals.push({ label: get(row, label), value: row[value] });
+              lookupVals.push({ label: get(row, label), value: get(row, value) });
             }
             lookupVals.sort((a: any, b: any) => {
               if (a.label > b.label) {
