@@ -65,8 +65,8 @@ export default class Username extends Vue {
     const pathArr: string[] = path.split('/');
     path = dropRight(pathArr).join('/');
 
-    const resetPasswordURL = window.origin + path + "/password?username=" + this.username;
-    const usernamePage = window.origin + path + "/username";
+    const resetPasswordURL = window.origin + path + '/password?username=' + this.username;
+    const usernamePage = window.origin + path + '/username';
     this.showDialog = true;
     this.submitted = true;
 
@@ -77,7 +77,7 @@ export default class Username extends Vue {
       await authService.sendPasswordResetEmail(this.username, appName, appShortName,
         resetPasswordURL, usernamePage);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 }
