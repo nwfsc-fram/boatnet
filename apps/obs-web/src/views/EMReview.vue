@@ -13,7 +13,7 @@
       </template>
     </q-input>
     <TabView class="q-ma-md">
-      <TabPanel header="Data" :active="true">
+      <TabPanel header="Data" :active="true" >
         <DataTable
           :value="data"
           :filters="filters"
@@ -104,6 +104,7 @@
         <app-view-image :ids.sync="docId" />
       </TabPanel>
     </TabView>
+    {{ data }}
   </div>
 </template>
 
@@ -432,7 +433,7 @@ export default createComponent({
         docId.value.push(screenshot.id);
       }
 
-      data.value = [];
+      data.value.length = 0;
       const results = await masterDB.viewWithDocs(
         'TripsApi',
         'all_api_catch',

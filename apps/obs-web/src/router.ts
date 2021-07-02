@@ -89,7 +89,7 @@ const router = new Router({
     {
       path: '/password',
       component: Password,
-      props: route => ({ username: route.query.username, SESS: route.query.SESS })
+      props: (route) => ({ username: route.query.username, SESS: route.query.SESS })
     },
     {
       path: '/',

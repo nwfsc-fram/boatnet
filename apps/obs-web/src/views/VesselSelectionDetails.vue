@@ -15,7 +15,7 @@
         <p>Cycle: <b>{{ selection.CYCLE_NUMBER }}</b></p>
         <p>Period: <b>{{ selection.PERIOD_NUMBER }}</b></p>
         <p>Period Start: <b>{{ formatDate(selection.PERIOD_START) }}</b></p>
-        <p>Period END: <b>{{ formatDate(selection.PERIOD_END) }}</b></p>
+        <p>Period End: <b>{{ formatDate(selection.PERIOD_END) }}</b></p>
 
         <div class="break"></div>
 
@@ -50,8 +50,8 @@
                     <q-td key="certificateNumber" :props="props">{{ props.row.certificateNumber ? props.row.certificateNumber.permitNumber : props.row.PERMIT_OR_LICENSE ? props.row.PERMIT_OR_LICENSE : '' }}</q-td>
                     <q-td key="landingPort" :props="props">{{ props.row.landingPort ? props.row.landingPort.name : props.row.PORT_NAME ? props.row.PORT_NAME : '' }}</q-td>
                     <q-td key="contact" :props="props">{{ props.row.contact ? props.row.contact.firstName + ' ' + props.row.contact.lastName : props.row.CONTACT ? props.row.CONTACT : '' }}</q-td>
-                    <q-td key="startDate" :props="props">{{ formatDate(props.row.startDate) }}</q-td>
-                    <q-td key="endDate" :props="props">{{ formatDate(props.row.endDate) }}</q-td>
+                    <q-td key="startDate" :props="props">{{ props.row.startDate ? formatDate(props.row.startDate) : formatDate(props.row.START_DATE)}}</q-td>
+                    <q-td key="endDate" :props="props">{{ props.row.endDate ? formatDate(props.row.endDate) : formatDate(props.row.END_DATE) }}</q-td>
                     <q-td key="notes" :props="props">{{ props.row.notes ? props.row.notes : props.row.NOTES }}</q-td>
                 </q-tr>
             </template>
@@ -60,7 +60,7 @@
 
         <div class="break"></div>
 
-        <b>Trips</b>
+        <b>Observed Trips</b>
 
         <div class="break"></div>
 

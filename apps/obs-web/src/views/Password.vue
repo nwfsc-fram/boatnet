@@ -118,8 +118,8 @@ export default class Password extends Vue {
   private successMsg = '';
 
   private async handleSubmit() {
-    this.errorMsg = "";
-    this.successMsg = "";
+    this.errorMsg = '';
+    this.successMsg = '';
 
     const appShortName = 'BOATNET_OBSERVER';
     const appName = 'Observer Web';
