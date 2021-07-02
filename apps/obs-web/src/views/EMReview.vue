@@ -104,7 +104,6 @@
         <app-view-image :ids.sync="docId" />
       </TabPanel>
     </TabView>
-    {{ data }}
   </div>
 </template>
 
@@ -131,17 +130,74 @@ export default createComponent({
   setup(props, context) {
     const masterDB: Client<any> = couchService.masterDB;
 
-    const columns: any = ref([]);
+    const columns: any = ref([
+        { field: 'tripNum', key: 'tripNum', header: 'Trip #', width: 100, },
+        { field: 'vesselName', key: 'vesselName', header: 'Vessel Name', width: 150, },
+        { field: 'vesselNumber', key: 'vesselNumber', header: 'Vessel #', width: 110, },
+        { field: 'haulNum', key: 'haulNum', header: 'Haul #', width: 100, },
+        // catch
+        { field: 'catchId', key: 'catchId', header: 'Catch Id', width: 110, },
+        { field: 'disposition', key: 'disposition', header: 'Disposition', width: 150, },
+        { field: 'fate', key: 'fate', header: 'Fate', width: 100, },
+        { field: 'speciesName', key: 'speciesName', header: 'Species Name', width: 160, },
+        { field: 'speciesCode', key: 'speciesCode', header: 'Species Code', width: 140, },
+        { field: 'speciesWeight', key: 'speciesWeight', header: 'Species Weight', width: 100, },
+        { field: 'speciesLength', key: 'speciesLength', header: 'Species Length', width: 100, },
+        { field: 'speciesCount', key: 'speciesCount', header: 'Species Count',width: 100, },
+        { field: 'fisherySector', key: 'fisherySector', header: 'Fishery Sector', width: 175, },
+        { field: 'year', key: 'year', header: 'Year', width: 80, },
+        { field: 'permitNumber', key: 'permitNumber', header: 'Permit #', width: 120, },
+        { field: 'isEFPTrip', key: 'isEFPTrip', header: 'EFP Trip?', width: 110, },
+        { field: 'isObserved', key: 'isObserved', header: 'Observed?', width: 120, },
+        { field: 'crewSize', key: 'crewSize', header: 'Crew Size', width: 120, },
+        { field: 'departureDateTime', key: 'departureDateTime', header: 'Departure Date Time', width: 220, },
+        { field: 'departureState', key: 'departureState', header: 'Departure State', width: 220, },
+        { field: 'departurePortCode', key: 'departurePortCode', header: 'Departure Port Code', width: 220, },
+        { field: 'returnDateTime', key: 'returnDateTime', header: 'Return Date Time', width: 220, },
+        { field: 'returnState', key: 'returnState', header: 'Return State', width: 220, },
+        { field: 'returnPortCode', key: 'returnPortCode', header: 'Return Port Code', width: 220, },
+        // buyers?
+        // fish tickets
+        { field: 'skipperName', key: 'skipperName', header: 'Skipper Name', width: 220, },
+        { field: 'comment', key: 'comment', header: 'Comment', width: 220, },
+        { field: 'resubmission', key: 'resubmission', header: 'Resubmission', width: 150, },
+        { field: 'provider', key: 'provider', header: 'Provider', width: 120, },
+        { field: 'reviewerName', key: 'reviewerName', header: 'Reviewer Name', width: 170, },
+        { field: 'totalReviewTime', key: 'totalReviewTime', header: 'Total Review Time', width: 200, },
+        // haul
+        { field: 'gearTypeCode', key: 'gearTypeCode', header: 'Gear Type Code', width: 170, },
+        { field: 'startDateTime', key: 'startDateTime', header: 'Start Date Time', width: 170, },
+        { field: 'startDepth', key: 'startDepth', header: 'Start Depth', width: 150, },
+        { field: 'startLatitude', key: 'startLatitude', header: 'Start Long', width: 150, },
+        { field: 'startLongitude', key: 'startLongitude', header: 'Start Lat', width: 150, },
+        { field: 'endDateTime', key: 'endDateTime', header: 'End Date Time', width: 150, },
+        { field: 'endDepth', key: 'endDepth', header: 'End Depth', width: 150, },
+        { field: 'endLatitude', key: 'endLatitude', header: 'End Lat', width: 150, },
+        { field: 'endLongitude', key: 'endLongitude', header: 'End Long', width: 150, },
+        { field: 'codendCapacity', key: 'codendCapacity', header: 'Codend Capacity', width: 170, },
+        { field: 'isCodendLost', key: 'isCodendLost', header: 'Codend Lost', width: 150, },
+        { field: 'haulComments', key: 'haulComments', header: 'Haul Comments', width: 170, },
+        { field: 'targetStrategy', key: 'targetStrategy', header: 'Target Strategy', width: 170, },
+        { field: 'systemPerformance', header: 'System Perf', width: 150, },
+        { field: 'catchHandlingPerformance', header: 'Catch Handling Perf', width: 200, },
+        { field: 'revision', key: 'revision', header: 'Revision #', width: 120, }
+    ]);
     const columnOptions: any = ref([]);
 
-    const data: any = ref([]);
+    const data: any = ref([{},{},{}]);
     const filters: any = reactive({});
 
     const emReviewTable: any = ref();
     const tripNumVal: any = ref('');
     const loadingState: any = ref(false);
 
-    const errorColumns: any = ref([]);
+    const errorColumns: any = ref([
+        { field: 'haulNum', header: 'Haul #', width: 80, key: 'haulNum' },
+        { field: 'catchId', header: 'Catch Id', width: 80, key: 'catchId' },
+        { field: 'field', header: 'Field', width: 80, key: 'field' },
+        { field: 'type', header: 'Type', width: 80, key: 'type' },
+        { field: 'message', header: 'Message', width: 110, key: 'message' }
+    ]);
     const errorData: any = ref([]);
 
     const docId: any = ref([]);
@@ -152,271 +208,6 @@ export default createComponent({
       const tripNum = parseInt(context.root.$route.params.id, 10);
       tripNumVal.value = tripNum;
       await populateTripInfo(tripNum);
-
-      errorColumns.value = [
-        {
-          field: 'haulNum',
-          header: 'Haul #',
-          width: 80,
-        },
-        {
-          field: 'catchId',
-          header: 'Catch Id',
-          width: 80,
-        },
-        {
-          field: 'field',
-          header: 'Field',
-          width: 80,
-        },
-        {
-          field: 'type',
-          header: 'Type',
-          width: 80,
-        },
-        {
-          field: 'message',
-          header: 'Message',
-          width: 110,
-        }
-      ];
-
-      columns.value = [
-        {
-          field: 'tripNum',
-          header: 'Trip #',
-          width: 100,
-        },
-        {
-          field: 'vesselName',
-          header: 'Vessel Name',
-          width: 150,
-        },
-        {
-          field: 'vesselNumber',
-          header: 'Vessel #',
-          width: 110,
-        },
-        {
-          field: 'haulNum',
-          header: 'Haul #',
-          width: 100,
-        },
-        // catch
-        {
-          field: 'catchId',
-          header: 'Catch Id',
-          width: 110,
-        },
-        {
-          field: 'disposition',
-          header: 'Disposition',
-          width: 150,
-        },
-        {
-          field: 'fate',
-          header: 'Fate',
-          width: 100,
-        },
-        {
-          field: 'speciesName',
-          header: 'Species Name',
-          width: 160,
-        },
-        {
-          field: 'speciesCode',
-          header: 'Species Code',
-          width: 140,
-        },
-        {
-          field: 'speciesWeight',
-          header: 'Species Weight',
-          width: 100,
-        },
-        {
-          field: 'speciesLength',
-          header: 'Species Length',
-          width: 100,
-        },
-        {
-          field: 'speciesCount',
-          header: 'Species Count',
-          width: 100,
-        },
-        {
-          field: 'fisherySector',
-          header: 'Fishery Sector',
-          width: 175,
-        },
-        {
-          field: 'year',
-          header: 'Year',
-          width: 80,
-        },
-        {
-          field: 'permitNumber',
-          header: 'Permit #',
-          width: 120,
-        },
-        {
-          field: 'isEFPTrip',
-          header: 'EFP Trip?',
-          width: 110,
-        },
-        {
-          field: 'isObserved',
-          header: 'Observed?',
-          width: 120,
-        },
-        {
-          field: 'crewSize',
-          header: 'Crew Size',
-          width: 120,
-        },
-        {
-          field: 'departureDateTime',
-          header: 'Departure Date Time',
-          width: 220,
-        },
-        {
-          field: 'departureState',
-          header: 'Departure State',
-          width: 220,
-        },
-        {
-          field: 'departurePortCode',
-          header: 'Departure Port Code',
-          width: 220,
-        },
-        {
-          field: 'returnDateTime',
-          header: 'Return Date Time',
-          width: 220,
-        },
-        {
-          field: 'returnState',
-          header: 'Return State',
-          width: 220,
-        },
-        {
-          field: 'returnPortCode',
-          header: 'Return Port Code',
-          width: 220,
-        },
-        // buyers?
-        // fish tickets
-        {
-          field: 'skipperName',
-          header: 'Skipper Name',
-          width: 220,
-        },
-        {
-          field: 'comment',
-          header: 'Comment',
-          width: 220,
-        },
-        {
-          field: 'resubmission',
-          header: 'Resubmission',
-          width: 150,
-        },
-        {
-          field: 'provider',
-          header: 'Provider',
-          width: 120,
-        },
-        {
-          field: 'reviewerName',
-          header: 'Reviewer Name',
-          width: 170,
-        },
-        {
-          field: 'totalReviewTime',
-          header: 'Total Review Time',
-          width: 200,
-        },
-        // haul
-        {
-          field: 'gearTypeCode',
-          header: 'Gear Type Code',
-          width: 170,
-        },
-        {
-          field: 'startDateTime',
-          header: 'Start Date Time',
-          width: 170,
-        },
-        {
-          field: 'startDepth',
-          header: 'Start Depth',
-          width: 150,
-        },
-        {
-          field: 'startLatitude',
-          header: 'Start Long',
-          width: 150,
-        },
-        {
-          field: 'startLongitude',
-          header: 'Start Lat',
-          width: 150,
-        },
-        {
-          field: 'endDateTime',
-          header: 'End Date Time',
-          width: 150,
-        },
-        {
-          field: 'endDepth',
-          header: 'End Depth',
-          width: 150,
-        },
-        {
-          field: 'endLatitude',
-          header: 'End Lat',
-          width: 150,
-        },
-        {
-          field: 'endLongitude',
-          header: 'End Long',
-          width: 150,
-        },
-        {
-          field: 'codendCapacity',
-          header: 'Codend Capacity',
-          width: 170,
-        },
-        {
-          field: 'isCodendLost',
-          header: 'Codend Lost',
-          width: 150,
-        },
-        {
-          field: 'haulComments',
-          header: 'Haul Comments',
-          width: 170,
-        },
-        {
-          field: 'targetStrategy',
-          header: 'Target Strategy',
-          width: 170,
-        },
-        {
-          field: 'systemPerformance',
-          header: 'System Perf',
-          width: 150,
-        },
-        {
-          field: 'catchHandlingPerformance',
-          header: 'Catch Handling Perf',
-          width: 200,
-        },
-        {
-          field: 'revision',
-          header: 'Revision #',
-          width: 120,
-        }
-      ];
       columnOptions.value = [...columns.value];
     }
 
