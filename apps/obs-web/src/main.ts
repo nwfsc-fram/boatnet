@@ -47,6 +47,8 @@ import DebrieferLayoutAshop from './views/DebrieferLayoutAshop.vue';
 import DebrieferWcgopSearch from './views/DebrieferWcgopSearch.vue';
 import DebrieferAshopEvaluation from './views/DebrieferAshopEvaluation.vue';
 import DebrieferWcgopEvaluation from './views/DebrieferWcgopEvaluation.vue';
+import RackBiospecimens from './views/RackBiospecimens.vue';
+import ProcessBiostructures from './views/ProcessBiostructures.vue';
 import CruiseDialog from './views/CruiseDialog.vue';
 import ViewImage from './views/ViewImage.vue';
 import VCalendar from 'v-calendar';
@@ -105,6 +107,8 @@ Vue.component('appDebrieferLayoutAshop', DebrieferLayoutAshop);
 Vue.component('appDebrieferWcgopSearch', DebrieferWcgopSearch);
 Vue.component('appDebrieferAshopEvaluation', DebrieferAshopEvaluation);
 Vue.component('appDebrieferWcgopEvaluation', DebrieferWcgopEvaluation);
+Vue.component('appRackBiospecimens', RackBiospecimens);
+Vue.component('appProcessBiostructures', ProcessBiostructures);
 Vue.component('appCruiseDialog', CruiseDialog);
 Vue.component('appViewImage', ViewImage);
 

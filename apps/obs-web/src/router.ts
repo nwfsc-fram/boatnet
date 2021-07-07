@@ -51,6 +51,7 @@ import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
 import PermitDetails from './views/PermitDetails.vue';
 import RackBiospecimens from './views/RackBiospecimens.vue';
+import Biostructures from './views/Biostructures.vue';
 import SpeciesDetail from './views/SpeciesDetail.vue';
 import SpeciesViewer from './views/SpeciesViewer.vue';
 import TripDetails from './views/TripDetails.vue';
@@ -131,7 +132,7 @@ const router = new Router({
         },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-        { path: '/rack', name: 'Rack Biospecimens', component: RackBiospecimens },
+        { path: '/bio-structures', name: 'Biostructures', component: Biostructures },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         { path: '/editAssessment', name: 'Debriefer Assessment Editor', component: DebrieferAssessmentEditor },
         {
