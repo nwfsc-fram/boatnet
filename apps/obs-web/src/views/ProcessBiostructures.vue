@@ -60,7 +60,7 @@
                 rowsPerPage: 25
             }"
             :visible-columns="visibleColumns"
-            no-data-label="No data in this rack"
+            no-data-label="No data"
             :loading="loading"
         >
             <template v-slot:top>
@@ -102,6 +102,9 @@
                         <q-popup-edit
                             v-if="col.isEditable"
                             v-model="props.row[col.field]"
+                            buttons
+                            :title="col.label"
+                            @save="save(props.row, col, props.row[col.field])"
                         >
                             <q-input
                                 v-model="props.row[col.field]"
@@ -112,7 +115,7 @@
                         </q-popup-edit>
                     </q-td>
                     <q-td auto-width>
-                        <q-btn size="sm" color="primary" round dense icon="delete_outline" />
+                        <q-btn size="sm" color="primary" round dense icon="delete_outline" @click="deleteBio(props.row)"/>
                     </q-td>
                 </q-tr>
             </template>
@@ -239,9 +242,8 @@ import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { get, filter, orderBy, slice, uniqBy } from 'lodash';
+import { get, filter, findIndex, orderBy, remove, set, slice, uniqBy } from 'lodash';
 import { Rack, RackType } from '@boatnet/bn-models';
-import { trip } from '../_store/trip.module';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
@@ -252,13 +254,13 @@ export default createComponent({
         const jp = require('jsonpath');
         const compKey: any = ref(0); // Ensures the rack list is refreshed when a new rack is added
 
-        const species: any = ref(null);
-        const dissection: any = ref(null);
-        const rack: any = ref(null);
+        const species: any = ref('');
+        const dissection: any = ref('');
+        const rack: any = ref('');
 
-        const speciesLabel = "doc.speciesId.commonNames[0]";
-        const dissectionLabel = "doc.dissectionType.description";
-        const rackLabel = "value";
+        const speciesLabel = 'doc.speciesId.commonNames[0]';
+        const dissectionLabel = 'doc.dissectionType.description';
+        const rackLabel = 'value';
 
         const showRackDialog: any = ref(false);
         const newRack: any = ref({});
@@ -298,9 +300,10 @@ export default createComponent({
                 field: 'dissection',
             },
             {
-                name: 'barcodeNum',
+                name: 'label',
                 label: 'Barcode #',
-                field: 'barcodeNum',
+                path: 'label',
+                field: 'label',
             },
             {
                 name: 'received',
@@ -311,18 +314,21 @@ export default createComponent({
                 name: 'cwtStatus',
                 label: 'CWT Status',
                 field: 'cwtStatus',
+                path: 'legacy.cwtStatus',
                 isEditable: true,
             },
             {
                 name: 'cwtCode',
                 label: 'CWT Code',
                 field: 'cwtCode',
+                path: 'legacy.cwtCode',
                 isEditable: true,
             },
             {
                 name: 'cwtType',
                 label: 'CWT Type',
                 field: 'cwtType',
+                path: 'legacy.cwtType',
                 isEditable: true,
             },
         ];
@@ -361,7 +367,7 @@ export default createComponent({
 
             update(() => {
                 const needle = val.toLowerCase();
-                 optionsList.value = filter(optionsList.value, (option: any) => {
+                optionsList.value = filter(optionsList.value, (option: any) => {
                     const currLabel = get(option, label).toLowerCase();
                     return currLabel.includes(needle);
                 });
@@ -393,6 +399,8 @@ export default createComponent({
 
         async function selectRack(val: any) {
             loading.value = true;
+            species.value = val;
+            dissection.value = val;
             tableData.value = val ? await select('rackId', val.doc.rackId) : [];
             loading.value = false;
         }
@@ -422,15 +430,43 @@ export default createComponent({
                     haulNum: get(operation, 'doc.operationNum'),
                     species: speciesName,
                     dissection: get(bioValue, 'structureType.description'),
-                    barcodeNum: get(bioValue, 'label'),
+                    label: get(bioValue, 'label'),
                     received: get(bioValue, 'isReceived', 'No'),
                     cwtStatus: get(bioValue, 'legacy.cwtStatus'),
                     cwtCode: get(bioValue, 'legacy.cwtCode'),
-                    cwtType: get(bioValue, 'legacy.cwtType')
-                })
+                    cwtType: get(bioValue, 'legacy.cwtType'),
+                    doc: operation.doc,
+                    id: operation.value
+                });
             }
             results = orderBy(results, ['position'], ['asc']);
             return results;
+        }
+
+        function save(newValObj: any, colInfo: any, updatedVal: any) {
+            const doc = newValObj.doc;
+            const couchBio = jp.nodes(doc,  '$..biostructures[?(@._id=="' + newValObj.id + '")]');
+            const path = jp.stringify(couchBio[0].path);
+            const currBio = couchBio[0].value;
+
+            set(currBio, colInfo.path, updatedVal)
+            set(doc, path, currBio);
+            masterDB.put(doc._id, doc, doc._rev);
+        }
+
+        function deleteBio(val: any) {
+            // delete from the ui
+            const deleteIndex = findIndex(tableData.value, ['id', val.id]);
+            tableData.value.splice(deleteIndex, 1);
+
+            // delete bio from couch doc
+            const doc = val.doc;
+            const couchBio = jp.nodes(doc,  '$..biostructures[?(@._id=="' + val.id + '")]');
+            const path = jp.stringify(slice(couchBio[0].path, 0, 8));
+            const biostructures: any[] = jp.query(doc, path);
+            remove(biostructures[0], (bio: any) => bio._id === val.id);
+            set(doc, path, biostructures);
+            masterDB.put(doc._id, doc, doc._rev);
         }
 
         return {
@@ -458,7 +494,9 @@ export default createComponent({
             addRack,
             saveRack,
             selectRack,
-            showRackDialog
+            showRackDialog,
+            save,
+            deleteBio
         };
     },
 });

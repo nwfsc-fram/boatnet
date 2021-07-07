@@ -47,7 +47,7 @@ export default createComponent({
         return {
             tab,
             splitterModel
-        }
+        };
     }
 });
 </script>

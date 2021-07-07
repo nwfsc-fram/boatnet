@@ -143,7 +143,7 @@ export default createComponent({
         { field: 'speciesCode', key: 'speciesCode', header: 'Species Code', width: 140, },
         { field: 'speciesWeight', key: 'speciesWeight', header: 'Species Weight', width: 100, },
         { field: 'speciesLength', key: 'speciesLength', header: 'Species Length', width: 100, },
-        { field: 'speciesCount', key: 'speciesCount', header: 'Species Count',width: 100, },
+        { field: 'speciesCount', key: 'speciesCount', header: 'Species Count', width: 100, },
         { field: 'fisherySector', key: 'fisherySector', header: 'Fishery Sector', width: 175, },
         { field: 'year', key: 'year', header: 'Year', width: 80, },
         { field: 'permitNumber', key: 'permitNumber', header: 'Permit #', width: 120, },
@@ -184,7 +184,7 @@ export default createComponent({
     ]);
     const columnOptions: any = ref([]);
 
-    const data: any = ref([{},{},{}]);
+    const data: any = ref([{}, {}, {}]);
     const filters: any = reactive({});
 
     const emReviewTable: any = ref();
