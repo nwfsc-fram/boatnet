@@ -2,23 +2,23 @@ import Settings from './src/settings';
 
 export default {
   gitlab: {
-    url: 'https://{{GL_HOST}}',
-    token: '{{GL_TOKEN}}',
-      projectId: {{GL_REPO_ID}},
+    url: 'https://{{SRC_HOST}}',
+    token: '{{SRC_TOKEN}}',
+      projectId: {{SRC_REPO_ID}},
   },
   github: {
-    baseUrl: 'https://{{GH_HOST}}/api/v3',
-    owner: '{{GH_ORG}}',
-    token: '{{GH_TOKEN}}',
+    baseUrl: 'https://{{TARG_HOST}}/api/v3',
+    owner: '{{TARG_ORG}}',
+    token: '{{TARG_TOKEN}}',
     repo: '{{REPO}}',
   },
  
   usermap: {
       'smontsaroff': 'smontsaroff',
-	  'bhorness': 'smontsaroff',
-	  'sogaz': 'smontsaroff',
-	  'thay': 'smontsaroff',
-	  'wsmith': 'smontsaroff',
+	  'bhorness': 'fram-jenkins',
+	  'sogaz': 'fram-jenkins',
+	  'thay': 'fram-jenkins',
+	  'wsmith': 'fram-jenkins',
 	  'nshaffer': 'nshaffer',
 	  'mshak': 'mshak',
 	  'kselton': 'kselton',
@@ -31,7 +31,7 @@ export default {
 	  'sahmad': 'sahmad',
   },
   projectmap: {
-      'fram-data/boatnet-etl': 'FRAMTesting/boatnet-etl',
+      '{{SRC_ORG}}/{{REPO}}': '{{TARG_ORG}}/{{REPO}}',
   },
   conversion: {
     useLowerCaseLabels: true,

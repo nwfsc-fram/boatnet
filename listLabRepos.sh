@@ -48,20 +48,20 @@ if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
 fi
 
 gl_connect_log=$(mktemp -u)
-status=$(curl -s -k  -w '\nX%{http_code}X\n' https://${GL_HOST}/api/v4/projects --output $gl_connect_log |grep -c X200X)
+status=$(curl -s -k  -w '\nX%{http_code}X\n' https://${SRC_HOST}/api/v4/projects --output $gl_connect_log |grep -c X200X)
 ret=0
 if [ $status != 1 ];then
 	echo
-	echo "Aborting: Unable to access ${GL_HOST} via GitLab API."
+	echo "Aborting: Unable to access ${SRC_HOST} via GitLab API."
 	if [ -r $gl_connect_log ];then
 		cat $gl_connect_log
 	fi
 	exit -1
 fi
 rm -r $gl_connect_log
-echo "   - Confirmed access '${GL_HOST}:${GL_ORG}/$repo' as '${GL_GIT_USER}'"
+echo "   - Confirmed access '${SRC_HOST}:${SRC_ORG}/$repo' as '${SRC_GIT_USER}'"
 
 
 
-curl -s -k --header "Authorization: Bearer ${GL_TOKEN}" "https://nwcgit.nwfsc.noaa.gov/api/v4/groups/${GL_ORG}?per_page=1000"|jq '.projects[]|(.path_with_namespace +" (id: " + (.id|tostring)) + ")"'|sed 's+"++g'| sort -u
+curl -s -k --header "Authorization: Bearer ${SRC_TOKEN}" "https://${SRC_HOST}/api/v4/groups/${SRC_ORG}?per_page=1000"|jq '.projects[]|(.path_with_namespace +" (id: " + (.id|tostring)) + ")"'|sed 's+"++g'| sort -u
 
