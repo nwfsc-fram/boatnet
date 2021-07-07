@@ -211,6 +211,7 @@ export default createComponent({
     }
 
     async function selectObserver(id: string) {
+      observer.value = id;
       store.dispatch('debriefer/updateObserver', id);
       clearFilters();
       evaluationPeriod.value = undefined;
