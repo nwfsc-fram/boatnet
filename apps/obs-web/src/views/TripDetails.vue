@@ -1549,4 +1549,8 @@ export default createComponent({
     * >>> .q-select__dropdown-icon {
         color: black !important;
     }
+
+    * >>> .p-datepicker:not(.p-datepicker-inline) {
+        z-index: 9990 !important;
+    }
 </style>
