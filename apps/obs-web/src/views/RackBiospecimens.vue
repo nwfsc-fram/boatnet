@@ -87,7 +87,7 @@ export default createComponent({
 
         async function populateSpecimenInfo(val: any) {
             const masterDB: Client<any> = couchService.masterDB;
-            specimen.value = await masterDB.view('obs_web', 'biostructures_barcode', { key: parseInt(val) });
+            specimen.value = await masterDB.view('obs_web', 'biostructures_barcode', { key: parseInt(val, 10) });
 
             specimen.value = get(specimen.value, 'rows[0].value', {});
             const tripNum = get(specimen.value, 'tripNum');

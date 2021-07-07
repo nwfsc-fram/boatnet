@@ -174,7 +174,7 @@ export default createComponent({
                 const trips = await getTrips(selection);
                 trips.sort( (a: any, b: any) => {
                     return a.returnDate > b.returnDate ? 1 : a.returnDate < b.returnDate ? -1 : 0;
-                } )
+                } );
                 let fishTickets: any[] = [];
                 try {
                     fishTickets = await getVesselFishTickets(selection.VESSEL_DRVID, selection.PERIOD_START, moment().format()) as any;

@@ -35,6 +35,7 @@
             autocorrect="off" autocapitalize="off" spellcheck="false"
             label="Username"
             @input="username = username.toLowerCase()"
+            for="username"
             />
 
           <q-input
@@ -46,6 +47,7 @@
             dense
             autocorrect="off" autocapitalize="off" spellcheck="false"
             autocomplete="boatnet password"
+            for="password"
           >
             <template v-slot:append>
               <q-icon
