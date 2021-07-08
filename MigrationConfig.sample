@@ -1,24 +1,122 @@
 #!/usr/bin/env bash
-#Template configuration file that defines environment
-#used to process GitLab to GitHub processing.
-#
-# Must be save to $HOME/.ssh, and have 600 permissions
+
+#Defines environment used to process GitLab to GitHub processing.
 
 
-unset GH_ENTERPRISE_TOKEN
-unset GH_TOKEN
-unset GH_HOST
+export SRC_ORG=fram-data
+export SRC_TEAM=fram-data
+export SRC_HOST=nwcgit.nwfsc.noaa.gov
+export SRC_TOKEN=XXXXXXX
+export SRC_GIT_USER=git
+export SRC_TYPE=GITLAB
 
-export GL_ORG=fram-data
-export GL_HOST=nwcgit.nwfsc.noaa.gov
-export GL_TOKEN=XXXXXXXXXXXXXXXX
-export GL_GIT_USER=git
+export TARG_ORG=nwfsc-fram-private
+export TARG_TEAM=nwfsc-fram-private
+export TARG_HOST=github.nwfsc2.noaa.gov
+export TARG_TOKEN=YYYYY
+export TARG_GIT_USER=git
+export TARG_TYPE=GITHUB
 
-export GH_ORG=nwfsc-fram-private
-export GH_HOST=github.nwfsc2.noaa.gov
-export GH_TOKEN=YYYYYYYYYYY
-export GH_GIT_USER=git
+SRC_TYPE=$(echo "$SRC_TYPE"|tr [a-z] [A-Z] )
+TARG_TYPE=$(echo "$TARG_TYPE"|tr [a-z] [A-Z] )
 
 
-#Make sure we have latest GH and it is in our path
+
+ENVs=( "SRC_ORG" "SRC_HOST" "SRC_TOKEN" "SRC_GIT_USER" "SRC_TYPE" \
+				 "TARG_ORG" "TARG_HOST" "TARG_TOKEN" "TARG_GIT_USER" "TARG_TYPE")
+for env in ${ENVs[@]};do
+
+	if [ -z $(eval echo \${${env}})  ];then
+		echo "Configuration parameter \$$env is missing from $configFile"
+		exit -1
+	fi
+done
+
+
+if [ $SRC_TYPE != "GITLAB" -a $SRC_TYPE != "GITHUB" ];then
+	echo "Invalid  SRC_TYPE ($SRC_TYPE) in '$configFile'"
+	echo "SCR_TYPE must be 'GITLAB' or 'GITHUB'."
+	exit -1
+fi
+if [ "$TARG_TYPE" != "GITHUB" ];then
+	echo "Invalid TARG_TYPE ($TARG_TYPE) in '$configFile'"
+	echo "HUB_TYPE must be 'GITHUB'."
+	exit -1
+fi
+if [ "$SRC_TYPE" = "GITHUB" ];then
+	echo "Invalide SRC_TYPE GITHUB is currently not implemented."
+	exit -1
+fi
+
+
+if [ hash gh >& /dev/null ];then
+	echo "Aborting:  The Git Hub CLI 'gh' must be installed in the scripts path."
+	echo "For installation instructions see: "
+	echo "https://computingforgeeks.com/how-to-install-github-cli-on-linux-and-windows"
+	exit -1
+fi
+
+if [ $(git lfs --help --man >& /dev/null;echo $?) -ne 0 ];then
+	echo "Aborting:  Git Large File Storage LFS is not installed."
+	echo "For installation instructions see: https://git-lfs.github.com/"
+	exit -1
+fi
+
+if [ $(java -h >& /dev/null;echo $?) -ne 0 ];then
+	echo "Aborting:  The executable 'java' is not in PATH."
+	echo "For installation instructions see: "
+	echo "https://java.com/en/download/help/download_options.html"
+	exit -1
+fi
+
+
+if [ ! -f $BFG_JAR ];then
+	echo "Aborting:  BFG Repo-Cleaner jar file $BFG_JAR not found."
+	echo "Use wget to get latest version from: "
+	echo "https://repo1.maven.org/maven2/com/madgag/bfg/"
+	exit -1
+fi
+
+if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
+	echo "Aborting:  The command-line JSON processor 'jq' must be installed in"
+	echo "this scripts path. For installation instructions see: "
+	echo "https://stedolan.github.io/jq/"
+	exit -1
+fi
+
+targ_connect_log=$(mktemp -u)
+ssh -T -o "StrictHostKeyChecking no" $TARG_GIT_USER@$TARG_HOST >& targ_connect_log
+if [ $? -ne 0 -a $? -ne 1 ];then  ##Github returns 1 and gitlab 0
+	echo
+	echo "Aborting: Unable to access ${TARG_HOST} via ssh."
+	if [ -r $targ_connect_log ];then
+		cat $targ_connect_log
+	fi
+	exit
+fi
+rm -f $targ_connect_log
+
+
+src_connect_log=$(mktemp -u)
+ssh -T -o "StrictHostKeyChecking no" $SRC_GIT_USER@$SRC_HOST >& src_connect_log
+if [ $? -ne 0 -a $? -ne 1 ];then
+	echo
+	echo "Aborting: Unable to access ${SRC_HOST} via ssh."
+	if [ -r $src_connect_log ];then
+		cat $src_connect_log
+	fi
+	exit
+fi
+
+status=$(curl -s -k  -w '\nX%{http_code}X\n' https://${SRC_HOST}/api/v4/projects --output $src_connect_log |grep -c X200X)
+ret=0
+if [ $status != 1 ];then
+	echo
+	echo "Aborting: Unable to access ${SRC_HOST} via GitLab API."
+	if [ -r $src_connect_log ];then
+		cat $src_connect_log
+	fi
+	exit -1
+fi
+rm -f $src_connect_log
 

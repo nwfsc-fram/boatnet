@@ -43,84 +43,12 @@ elif [ "$(stat -c '%a' $configFile)" != "600" ];then
 else
 	. $configFile
 fi
-
-ENVs=( "SRC_ORG" "SRC_HOST" "SRC_TOKEN" "SRC_GIT_USER" "SRC_TYPE" \
-				 "TARG_ORG" "TARG_HOST" "TARG_TOKEN" "TARG_GIT_USER" "TARG_TYPE")
-for env in ${ENVs[@]};do
-
-	if [ -z $(eval echo \${${env}})  ];then
-		echo "Configuration parameter \$$env is missing from $configFile"
-		exit -1
-	fi
-done
-SRC_TYPE=$(echo $SRC_TYPE|tr [a-z] [A-Z] )
-TARG_TYPE=$(echo $SRC_TYPE|tr [a-z] [A-Z] )
-if [ $SRC_TYPE != "GITLAB" -a $SRC_TYPE != "GITHUB" ];then
-	echo "Invalide SRC_TYPE ($SRC_TYPE) in '$configFile'"
-	echo "SCR_TYPE must be 'GITLAB' or 'GITHUB'."
-	exit -1
-fi
-if [ "$TARG_TYPE" != "GITLAB" ];then
-	echo "Invalide TARG_TYPE ($TARG_TYPE) in '$configFile'"
-	echo "SCR_TYPE must be 'GITHUB'."
-	exit -1
-fi
-if [ "$SRC_TYPE" = "GITHUB" ];then
-	echo "Invalide SRC_TYPE GITHUB is currently not implemented."
-	exit -1
-fi
-
-
-if [ $(hash gh >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  The Git Hub CLI 'gh' must be installed in the scripts path."
-	echo "For installation instructions see: "
-	echo "https://computingforgeeks.com/how-to-install-github-cli-on-linux-and-windows"
-	exit -1
-fi
-
-if [ $(git lfs --help --man >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  Git Large File Storage LFS is not installed."
-	echo "For installation instructions see: https://git-lfs.github.com/"
-	exit -1
-fi
-
-if [ $(java -h >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  The executable 'java' is not in PATH."
-	echo "For installation instructions see: "
-	echo "https://java.com/en/download/help/download_options.html"
-	exit -1
-fi
-
-if [ $(hash jq >& /dev/null;echo $?) -ne 0 ];then
-	echo "Aborting:  The command-line JSON processor 'jq' must be installed in"
-	echo "this scripts path. For installation instructions see: "
-	echo "https://stedolan.github.io/jq/"
-	exit -1
-fi
-
-
-if [ ! -f $BFG_JAR ];then
-	echo "Aborting:  BFG Repo-Cleaner jar file $BFG_JAR not found."
-	echo "Use wget to get latest version from: "
-	echo "https://repo1.maven.org/maven2/com/madgag/bfg/"
-	exit -1
-fi
-
-if [ ! -f $BFG_JAR ];then
-	echo "Aborting:  BFG Repo-Cleaner jar file $BFG_JAR not found."
-	echo "Use wget to get latest version from: "
-	echo "https://repo1.maven.org/maven2/com/madgag/bfg/"
-	exit -1
-fi
-
-
-
 echo "Migration: $SRC_HOST:$SRC_ORG/${REPO} => $TARG_HOST/$TARG_ORG"
+
+
+
 wrkingDir=$(realpath $PWD)
 time_stamp=$(date +'%Y%m%d%H%m%s')
-
-src_connect_log="${wrkingDir}/${REPO}.src_connect.${time_stamp}.log"
-
 SRC_REPO_ID=""
 if [ "$SRC_TYPE" = "GITLAB" ];then
 	SRC_REPO_ID=$(curl -s -k --header "Authorization: Bearer ${SRC_TOKEN}" "https://${SRC_HOST}/api/v4/groups/${SRC_ORG}?per_page=1000"|jq '.projects[]|select(.path_with_namespace == "'$SRC_ORG/$REPO'").id') 2>>$src_connect_log
@@ -130,22 +58,25 @@ fi
 
 
 if [ "$SRC_REPO_ID" = "" ];then
-	echo "      Aborting: Unable to access '${SRC_HOST}:${SRC_ORG}/${REPO}'"
+	echo "      Aborting: Unable to get respository ID of '${SRC_HOST}:${SRC_ORG}/${REPO}'"
 	if [ -r $src_connect_log ];then
 		cat $src_connect_log |fold -w 80| sed 's+^+      +'
 	fi
 	exit -1
 fi
-echo "   - Confirmed git access '${SRC_HOST}:${SRC_ORG}/${REPO}'"
+echo "   - Confirmed access to source repository '${SRC_HOST}:${SRC_ORG}/${REPO}'"
 rm -f $src_connect_log
 
 #Verify GitHub Access login
 echo ${TARG_TOKEN}|gh auth login -h ${TARG_HOST} --with-token 2>/dev/null
 if [ $? -ne 0 ];then
-	echo "      Aborting: Unable to access '${TARG_HOST}' with git or GitHub CLI (gh)"
+	echo "      Aborting: GitHub CLI (gh) unable to access '${TARG_HOST}'"
 	exit -1
 fi
-echo "   - Confirmed Git and GitHub CLI (gh) access to '${TARG_HOST}'"
+echo "   - Confirmed access to target system '${TARG_HOST}'"
+
+src_connect_log="${wrkingDir}/${REPO}.src_connect.${time_stamp}.log"
+
 
 #Create or overright remote repo
 target_repo_log="${wrkingDir}/${REPO}.target_repo.${time_stamp}.log"
@@ -169,7 +100,7 @@ if [ $? -eq 0 ];then
 
 fi
 
-echo "   - Creating repository '${TARG_HOST}:${TARG_ORG}/${REPO}'"
+echo "   - Creating empty repository '${TARG_HOST}:${TARG_ORG}/${REPO}'"
 # Clean up for cloning
 rm -r -f ${REPO}
 
@@ -319,7 +250,6 @@ if [ $? -ne 0 ];then
 	fi
 	exit -1
 fi
-set -xv
 
 echo "   - Synching metadata (issues, pull requests, etc)"
 if [ "$SRC_TYPE" = "GITLAB" ];then
