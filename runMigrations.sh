@@ -6,7 +6,7 @@ wrkingDir=$PWD
 configFile=$HOME/.ssh/MigrationConfig
 SCRIPT_HOME="$(realpath $(dirname $0))"
 BFG_JAR="$SCRIPT_HOME/bfg.jar"
-MIGRATION_SCRIPT="$(realpath $(dirname $0))/lab2Hub.sh"
+MIGRATION_SCRIPT="$(realpath $(dirname $0))/migrateRepo.sh"
 
 if [ "$#" -ne 0 ];then
 	echo "Usage: $(basename $0) "
@@ -38,7 +38,8 @@ fi
 
 
 
-declare -a REPOs=('auth-centraly' 'auvy' 'bar-data-pully' 'boatnet-etly' 'boatnety' 'boatnet-internaly' 'BudgetDBy' 'distance-fishedy' 'dockery' 'efh-catalog-staticy' 'field-collectiony' 'Fish-Ticket-Matchingy' 'hudy' 'hud_web2pyy' 'ifqy' 'infrastructurey' 'mod_wsgiy' 'multicorn-couchdb_fdwy' 'nodeobservery' 'ObserverDB_speciesCatchExpansionsy' 'Observer-Legacyy' 'observer-maintenancey' 'Observer-Refreshy' 'observer-sector-definitionsy' 'observerxy' 'obsprody' 'obs-sync-uploady' 'odpy' 'optecsy' 'oracle-clienty' 'permits-etly' 'PyICAMy' 'pyqt5-framdatay' 'pySurveyy' 'rapid-db-appy' 'survey_dbsy' 'trawl-analyzery' 'trawldby' 'trawl-retroy' 'warehousey' 'warehouse-internaly' 'warehouse-resty')
+declare -a REPOs=('auth-central' 'auv' 'bar-data-pull' 'boatnet-etl' 'boatnet' 'boatnet-internal' 'BudgetDB' 'distance-fished' 'docker' 'efh-catalog-static' 'field-collection' 'Fish-Ticket-Matching' 'hud' 'hud_web2py' 'ifq' 'infrastructure' 'mod_wsgi' 'multicorn-couchdb_fdw' 'nodeobserver' 'ObserverDB_speciesCatchExpansions' 'Observer-Legacy' 'observer-maintenance' 'Observer-Refresh' 'observer-sector-definitions' 'observerx' 'obsprod' 'obs-sync-upload' 'odp' 'optecs' 'oracle-client' 'permits-etl' 'PyICAM' 'pyqt5-framdata' 'pySurvey' 'rapid-db-app' 'survey_dbs' 'trawl-analyzer' 'trawldb' 'trawl-retro' 'warehouse' 'warehouse-internal' 'warehouse-rest')
+
 for repo in ${REPOs[@]};do
 	echo -n "   - Migrating '$repo'"
 	$MIGRATION_SCRIPT $repo >&  $wrkingDir/$repo.log

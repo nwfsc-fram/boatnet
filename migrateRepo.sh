@@ -7,6 +7,11 @@ fi
 BFG_JAR="$SCRIPT_HOME/bfg.jar"
 METADATA_SYNC_HOME="$SCRIPT_HOME/node-gitlab-2-github"
 METADATA_SYNC_SETTING_TEMPLATE="$SCRIPT_HOME/meta_sync_setting_template.ts"
+
+wrkingDir=$(realpath $PWD)
+time_stamp=$(date +'%Y%m%d%H%m%s')
+
+
 if [ -z $GIT_MIGRATION_CONF ];then
 	configFile=$HOME/.ssh/MigrationConfig
 else
@@ -46,16 +51,15 @@ fi
 echo "Migration: $SRC_HOST:$SRC_ORG/${REPO} => $TARG_HOST/$TARG_ORG"
 
 
+src_connect_log="${wrkingDir}/${REPO}.src_connect.${time_stamp}.log"
 
-wrkingDir=$(realpath $PWD)
-time_stamp=$(date +'%Y%m%d%H%m%s')
+
 SRC_REPO_ID=""
 if [ "$SRC_TYPE" = "GITLAB" ];then
 	SRC_REPO_ID=$(curl -s -k --header "Authorization: Bearer ${SRC_TOKEN}" "https://${SRC_HOST}/api/v4/groups/${SRC_ORG}?per_page=1000"|jq '.projects[]|select(.path_with_namespace == "'$SRC_ORG/$REPO'").id') 2>>$src_connect_log
 else
 	SCR_REPO_ID=""
 fi
-
 
 if [ "$SRC_REPO_ID" = "" ];then
 	echo "      Aborting: Unable to get respository ID of '${SRC_HOST}:${SRC_ORG}/${REPO}'"
@@ -75,7 +79,6 @@ if [ $? -ne 0 ];then
 fi
 echo "   - Confirmed access to target system '${TARG_HOST}'"
 
-src_connect_log="${wrkingDir}/${REPO}.src_connect.${time_stamp}.log"
 
 
 #Create or overright remote repo
