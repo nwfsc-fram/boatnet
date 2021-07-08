@@ -394,7 +394,7 @@ export function getOracleWaivers(year: any, vesselId?: any) {
 }
 
 export function getFishTicket(ftid: any) {
-    let formattedQuery = '?ftid=' + ftid;
+    const formattedQuery = '?ftid=' + ftid;
     return new Promise( (resolve, reject) => {
         const queryUrl = getFishTicketUrl() + formattedQuery;
         request.get(
@@ -417,7 +417,7 @@ export function getFishTicket(ftid: any) {
 
 export function getVesselFishTickets(vesselId: any, startDate: any, endDate: any) {
 
-    let formattedQuery = '?vesselId=' + vesselId + '&startDate=' + moment(startDate).format('YYYY-MM-DD') + '&endDate=' + moment(endDate).format('YYYY-MM-DD');
+    const formattedQuery = '?vesselId=' + vesselId + '&startDate=' + moment(startDate).format('YYYY-MM-DD') + '&endDate=' + moment(endDate).format('YYYY-MM-DD');
     return new Promise( (resolve, reject) => {
         const queryUrl = getVesselFishTicketUrl() + formattedQuery;
         request.get(

@@ -69,7 +69,7 @@ import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { get } from 'lodash';
+import { get, parseInt } from 'lodash';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);

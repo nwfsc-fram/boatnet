@@ -413,7 +413,6 @@ export default createComponent({
                 {
                     key: [ fieldName, fieldVal ],
                     include_docs: true,
-                    //limit: 100
                 } as any
             );
             for (const operation of operationDocs.rows) {
@@ -449,7 +448,7 @@ export default createComponent({
             const path = jp.stringify(couchBio[0].path);
             const currBio = couchBio[0].value;
 
-            set(currBio, colInfo.path, updatedVal)
+            set(currBio, colInfo.path, updatedVal);
             set(doc, path, currBio);
             masterDB.put(doc._id, doc, doc._rev);
         }

@@ -714,7 +714,7 @@
   dependencies:
     "@boatnet/bn-auth" "^0.1.19"
     "@boatnet/bn-couch" "^0.1.6"
-    "@boatnet/bn-models" "^0.6.0"
+    "@boatnet/bn-models" "^0.6.2"
     coordinate-parser "^1.0.7"
     davenport "^2.8.2"
     primeicons "^4.1.0"
@@ -758,17 +758,10 @@
   dependencies:
     geojson "^0.5.0"
 
-"@boatnet/bn-models@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.6.0.tgz#701810483c41a245f5eef6f4aac62cd1bf3d85f3"
-  integrity sha512-NM5lbSN/R3knkYHtwxajQgEknwWwcrODef6xuOkY1fyeGKoX8vAFkWDD0kFzyCFpBNVhpVrEvv/BE+6KLyAU/Q==
-  dependencies:
-    geojson "^0.5.0"
-
-"@boatnet/bn-models@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.6.1.tgz#7e9e55e2015cfb3f0f437d1e1cb6fdf4b33abacc"
-  integrity sha512-lnPqM6P9C0afkkENxUN4+10v9vbab5jREcu5Kpy+0LgiXVJDCxhIkgA3+Grj/7wMl6nX19mefVV60BMaMK+24g==
+"@boatnet/bn-models@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.6.2.tgz#b98aac4a70f5e1e6befe014f9615f41f3b89dbdc"
+  integrity sha512-4uACs/4Qt5UAFV2gd7y5hndCm8+uMADKVuezFh5yhUsqZpzgqCO+itF86fhjbpRuRH+YwkpvTKOf/5W8wxYUMg==
   dependencies:
     geojson "^0.5.0"
 
