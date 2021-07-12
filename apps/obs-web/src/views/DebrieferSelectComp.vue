@@ -43,7 +43,7 @@ Vue.component('multiselect', Multiselect);
 export default createComponent({
   props: {
     label: String,
-    val: String || Object,
+    val: [String, Object],
     lookupView: String,
     lookupLabel: String,
     lookupValue: String,
@@ -92,6 +92,7 @@ export default createComponent({
     function select(value: any) {
       const lookupValue = get(props, 'lookupValue', '');
       const val = get(value, lookupValue);
+      context.emit('update:val', val);
       context.emit('select', val);
     }
 
