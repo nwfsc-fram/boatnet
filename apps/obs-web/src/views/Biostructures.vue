@@ -8,7 +8,11 @@
 
         <q-tabs
           v-model="tab"
-          class="text-teal"
+          align="left"
+          dense
+          class="q-mt-sm bg-primary text-white shadow-2"
+          narrow-indicator
+          no-caps
         >
           <q-tab name="log" label="Log Bio-structures"></q-tab>
           <q-tab name="process" label="Process Bio-structures"></q-tab>

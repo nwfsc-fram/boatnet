@@ -765,6 +765,13 @@
   dependencies:
     geojson "^0.5.0"
 
+"@boatnet/bn-models@^0.6.3":
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.6.3.tgz#48b1c182cde4b67b486caa4923ab47ebb8c43108"
+  integrity sha512-F0LIBKifuRSbrbulJqKAL/y3uYSsRNpJ8J9mVMRk662XjOANxmSqfYwB+qR/pmAwW4mJSCRKcQCfi8rpIFY/GQ==
+  dependencies:
+    geojson "^0.5.0"
+
 "@boatnet/bn-pouch@^0.2.12", "@boatnet/bn-pouch@^0.2.14", "@boatnet/bn-pouch@^0.2.6":
   version "0.2.14"
   resolved "https://registry.yarnpkg.com/@boatnet/bn-pouch/-/bn-pouch-0.2.14.tgz#6fa97fa395818bcbd44a6b198f9b40dd1f4b3b4f"
