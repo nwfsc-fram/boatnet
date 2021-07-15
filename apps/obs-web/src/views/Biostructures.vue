@@ -5,14 +5,12 @@
 -->
 <div id="q-app">
   <div>
+    <q-card>
 
         <q-tabs
           v-model="tab"
           align="left"
-          dense
-          class="q-mt-sm bg-primary text-white shadow-2"
-          narrow-indicator
-          no-caps
+          class="bg-primary text-white shadow-2 q-my-md"
         >
           <q-tab name="log" label="Log Bio-structures"></q-tab>
           <q-tab name="process" label="Process Bio-structures"></q-tab>
@@ -28,7 +26,7 @@
             <app-process-biostructures/>
           </q-tab-panel>
         </q-tab-panels>
-
+    </q-card>
   </div>
 </div>
 </template>

@@ -41,7 +41,9 @@
                             filled
                             label-color="black"
                             :rules="[(val) => !!newRack.name || 'Rack Name Required']"
-                        />
+                        >
+                            <template v-slot:hint>Format: pacfin species code - year created</template>
+                        </q-input>
                     </div>
                     <div class="q-pt-md">
                         <q-input

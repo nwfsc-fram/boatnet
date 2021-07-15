@@ -7,7 +7,9 @@
         lookupView="wcgop-lookups"
         lookupLabel="doc.description"
         lookupValue="doc.description"
+        :clearable="true"
         :lookupQueryOptions="{ key: 'biostructure-type' }"
+        @select="clear"
       />
       <q-input
         class="q-px-md" 
@@ -30,6 +32,8 @@
         lookupView="rack"
         lookupLabel="value"
         lookupValue="value"
+        :clearable="true"
+        @select="clear"
       />
       <q-space/>
       <q-card class="bg-grey-2 q-mt-lg">
@@ -39,6 +43,7 @@
             v-model="structureType"
             label="Dissection Type"
             readonly
+            :reactive-rules="true"
             :rules="[ val => !! inputDissection || 'No dissection above selected',
                       val => inputDissection === val || 'Doesn\'t match selected dissection type: ' + inputDissection
                     ]"
@@ -52,8 +57,9 @@
             v-model="rackName"
             label="Rack Name"
             readonly
+            :reactive-rules="true"
             :rules="[ val => !! rack || 'No rack above selected',
-                      val => rack === val || 'Doesn\'t match selected rack: ' + rackName
+                      val => rack === val || 'Doesn\'t match selected rack: ' + rack
                     ]"
             />
         </q-card-section>
@@ -69,13 +75,14 @@ import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { get, parseInt } from 'lodash';
+import { get, parseInt, set } from 'lodash';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 
 export default createComponent({
     setup(props, context) {
+        const jp = require('jsonpath');
         const inputDissection: any = ref('');
         const barcode: any = ref('');
         const rack: any = ref('');
@@ -87,12 +94,12 @@ export default createComponent({
 
         async function populateSpecimenInfo(val: any) {
             const masterDB: Client<any> = couchService.masterDB;
-            specimen.value = await masterDB.view('obs_web', 'biostructures_barcode', { key: parseInt(val, 10) });
+            const barcodeDoc = await masterDB.viewWithDocs('obs_web', 'biostructures_barcode', { key: parseInt(val, 10) });
 
-            specimen.value = get(specimen.value, 'rows[0].value', {});
+            specimen.value = get(barcodeDoc, 'rows[0].value', {});
             const tripNum = get(specimen.value, 'tripNum');
             structureType.value = get(specimen.value, 'biostructure.structureType.description', '');
-            const rackId = get(specimen.value, 'biostructure.legacy.rackId', '');
+            const rackId = get(specimen.value, 'biostructure.legacy.rackId', 0);
 
             // get trip doc to get observer name
             const tripDetails = await masterDB.viewWithDocs(
@@ -110,6 +117,22 @@ export default createComponent({
             // get rack name
             const rackDetails = await masterDB.viewWithDocs('obs_web', 'rack', { key: rackId });
             rackName.value = get(rackDetails, 'rows[0].value');
+
+            // if dissection type and rack match then mark as received
+            if (inputDissection.value === structureType.value && (rackId !== 0 ? rack.value === rackName.value : true) && barcodeDoc.rows.length > 0) {
+              const doc: any = barcodeDoc.rows[0].doc;
+              const biostructure: any = jp.nodes(doc, '$..biostructures[?(@.label=="' + val + '")]');
+              const path: string = jp.stringify(biostructure[0].path).slice(2);
+
+              set(biostructure[0].value, 'isReceived', true);
+              set(doc, path, biostructure[0].value);
+              await masterDB.put(doc._id, doc, doc._rev);
+            }
+        }
+
+        function clear() {
+          rackName.value = '';
+          structureType.value = '';
         }
 
         return {
@@ -121,6 +144,7 @@ export default createComponent({
             specimen,
             structureType,
             rackName,
+            clear,
 
             populateSpecimenInfo
         };

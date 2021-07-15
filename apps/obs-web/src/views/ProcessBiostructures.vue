@@ -10,6 +10,7 @@
                 hide-selected
                 fill-input
                 clearable
+                clear-icon="close"
                 @filter="speciesFilterFn"
                 :option-label="(item) => get(item, speciesLabel)"
                 :option-value="(item) => get(item, speciesLabel)"
@@ -23,6 +24,7 @@
                 hide-selected
                 fill-input
                 clearable
+                clear-icon="close"
                 @filter="dissectionFilterFn"
                 :options="dissectionOptions"
                 :option-label="(item) => get(item, dissectionLabel)"
@@ -37,6 +39,7 @@
                 hide-selected
                 fill-input
                 clearable
+                clear-icon="close"
                 @filter="rackFilterFn"
                 :options="rackOptions"
                 :option-label="(item) => get(item, rackLabel)"
@@ -44,6 +47,7 @@
                 @input="selectRack"
             />
             <q-btn
+                v-if="isAuthorized(['debriefer'])"
                 round
                 class="q-mr-md"
                 style="display: inline-block"
@@ -51,7 +55,9 @@
                 text-color="black"
                 icon="add"
                 @click="addRack"
-            />
+            >
+                <q-tooltip class="bg-accent">Create New Rack</q-tooltip>
+            </q-btn>
         </div>
         <q-table
             :data="tableData"
@@ -106,7 +112,17 @@
                             :title="col.label"
                             @save="save(props.row, col, props.row[col.field])"
                         >
+                             <debriefer-select-comp
+                                v-if="col.type === 'select'"
+                                :val.sync="props.row[col.field]"
+                                lookupView="wcgop-lookups"
+                                lookupLabel="value"
+                                lookupValue="value"
+                                :clearable="true"
+                                :lookupQueryOptions="{ key: col.key }"
+                            />
                             <q-input
+                                v-else
                                 v-model="props.row[col.field]"
                                 :type="col.type"
                                 dense
@@ -167,6 +183,7 @@ Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 
 export default createComponent({
     setup(props, context) {
+        const state = context.root.$store.state;
         const masterDB: Client<any> = couchService.masterDB;
         const jp = require('jsonpath');
         const compKey: any = ref(0); // Ensures the rack list is refreshed when a new rack is added
@@ -291,7 +308,8 @@ export default createComponent({
                 field: 'ageMethod',
                 path: 'legacy.ageMethod',
                 isEditable: true,
-                type: 'text',
+                type: 'select',
+                key: 'age-methods'
             },
             {
                 name: 'ageDate',
@@ -305,9 +323,10 @@ export default createComponent({
                 name: 'ageLocation',
                 label: 'Location',
                 field: 'ageLocation',
-                path: 'legacy.agelocation',
+                path: 'legacy.ageLocation',
                 isEditable: true,
-                type: 'text',
+                type: 'select',
+                key: 'reader-location'
             },
         ];
 
@@ -383,7 +402,47 @@ export default createComponent({
                 field: 'haulSetCoord',
                 type: 'coord',
             },
+            {
+                name: 'sex',
+                label: 'Sex',
+                field: 'sex'
+            },
+            {
+                name: 'length',
+                label: 'Length',
+                field: 'length'
+            },
+            {
+                name: 'weight',
+                label: 'Weight',
+                field: 'weight',
+                type: 'number'
+            },
+            {
+                name: 'rackName',
+                label: 'Rack Name',
+                field: 'rackName',
+            },
+            {
+                name: 'rackLocation',
+                label: 'Rack Location',
+                field: 'rackLocation',
+            },
+            {
+                name: 'tag',
+                label: 'Tag/Band Id',
+                field: 'tag'
+            },
         ];
+
+        function isAuthorized(authorizedRoles: string[]) {
+            for (const role of authorizedRoles) {
+                if (state.user.userRoles.includes(role)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         function setCols(val: any) {
             const dissectionType = get(val, dissectionLabel);
@@ -396,7 +455,7 @@ export default createComponent({
             visibleColumns.value = jp.query(columns.value, '$[*].name');
             columns.value = concat(columns.value, reportCols);
         }
-        setCols(null);
+        setCols(null); 
 
         async function speciesFilterFn(val: any, update: any) {
             await filterFn(val, update, speciesLabel, speciesOptions, 'species');
@@ -471,6 +530,7 @@ export default createComponent({
             species.value = val;
             dissection.value = val;
             tableData.value = val ? await select('rackId', val.doc.rackId) : [];
+            setCols(val);
             loading.value = false;
         }
 
@@ -480,6 +540,8 @@ export default createComponent({
                 val = moment(val).format('DD-MMM-YY, hh:mm');
             } else if (col.type === 'coord') {
                 val = '[' + round(val[0], 2) + ', ' + round(val[1], 2) + ']';
+            } else if (col.type === 'number'  && val) {
+                val = round(val, 2);
             }
             return val;
         }
@@ -501,13 +563,13 @@ export default createComponent({
                 { keys: operationIds }
             );
             for (const operation of operationDocs.rows) {
-                const findStr =
-                    '$..biostructures[?(@._id=="' + operation.value + '")]';
+                const findStr = '$..biostructures[?(@._id=="' + operation.value + '")]';
                 const bios = jp.nodes(operation, findStr);
                 const bioValue = bios[0].value;
 
                 const catchPath = jp.stringify(slice(bios[0].path, 0, 4));
                 const speciesPath = jp.stringify(slice(bios[0].path, 0, 6));
+                const specimenPath = jp.stringify(slice(bios[0].path, 0, 8));
 
                 const tripIndex = findIndex(tripDocs.rows, ['key', operation.id]);
                 const trip = tripDocs.rows[tripIndex].doc;
@@ -536,46 +598,32 @@ export default createComponent({
                     ageMethod: get(bioValue, 'legacy.ageMethod'),
 
                     // haul report attributes
-                    gearType: get(operation, 'doc.gearType.description'),
-                    gearPerformance: get(
-                        operation,
-                        'doc.gearPerformance.description'
-                    ),
-                    haulUpDate: get(operation, 'doc.locations[0].locationDate'),
+                    gearType: get(operation, 'gearType.description'),
+                    gearPerformance: get(operation, 'gearPerformance.description'),
+                    haulUpDate: get(operation, 'locations[0].locationDate'),
                     haulUpCoord: [
-                        get(
-                            operation,
-                            'doc.locations[0].location.coordinates[0]'
-                        ),
-                        get(
-                            operation,
-                            'doc.locations[0].location.coordinates[1]'
-                        ),
+                        get(operation, 'locations[0].location.coordinates[0]'),
+                        get(operation, 'locations[0].location.coordinates[1]'),
                     ],
-                    haulSetDate: get(
-                        operation,
-                        'doc.locations[1].locationDate'
-                    ),
+                    haulSetDate: get(operation, 'locations[1].locationDate'),
                     haulSetCoord: [
-                        get(
-                            operation,
-                            'doc.locations[1].location.coordinates[0]'
-                        ),
-                        get(
-                            operation,
-                            'doc.locations[1].location.coordinates[1]'
-                        ),
+                        get(operation, 'locations[1].location.coordinates[0]'),
+                        get(operation, 'locations[1].location.coordinates[1]'),
                     ],
 
                     // trip report attributes
-                    observer:
-                        get(trip, 'observer.firstName') + ' ' + get(trip, 'observer.lastName'),
+                    observer: get(trip, 'observer.firstName') + ' ' + get(trip, 'observer.lastName'),
                     vessel: get(trip, 'vessel.vesselName'),
                     departureDate: get(trip, 'departureDate', ''),
                     departurePort: get(trip, 'departurePort.name', ''),
                     returnDate: get(trip, 'returnDate', ''),
                     returnPort: get(trip, 'returnPort.name', ''),
                     fishery: get(trip, 'fishery.description', ''),
+
+                    sex: jp.value(operation, specimenPath + '.sex'),
+                    length: jp.value(operation, specimenPath + '.length.value'),
+                    weight: jp.value(operation, specimenPath + '.weight.value'),
+                    tag: jp.value(operation, specimenPath + '.tags[0]')
                 });
             }
             results = orderBy(results, ['position'], ['asc']);
@@ -672,7 +720,8 @@ export default createComponent({
             showRackDialog,
             save,
             deleteBio,
-            pagination
+            pagination,
+            isAuthorized,
         };
     },
 });
