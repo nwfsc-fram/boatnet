@@ -12,7 +12,7 @@
         />
 
         <q-btn
-          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Species Details', 'EM Results', 'Waiver Details', 'Vessel Selection Details'].includes($route.name)"
+          v-if="['Trip Detail', 'Permit Details', 'OTS Target Detail', 'User Config', 'User Details', 'EM EFP Details', 'Observer Assignment Details', 'Vessel Details', 'OTS Trip History', 'OTS Trips', 'View Image', 'E Logbook', 'EM Data Comparison', 'Log Missing Trip', 'EM Review', 'EM API Portal', 'EM Footage Manager', 'EM Footage Details', 'Revision History', 'Species Details', 'EM Results', 'Waiver Details', 'Vessel Selection Details'].includes($route.name)"
           flat
           dense
           round
@@ -331,7 +331,7 @@
         </q-expansion-item>
 
         <q-expansion-item
-          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
+          v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider']) && !getCaptainMode && !getObserverMode"
           label="Electronic Monitoring"
           icon="videocam"
           v-model="emExpanded"
@@ -340,7 +340,7 @@
           :content-inset-level=".5"
         >
           <q-item
-            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider']) && !getCaptainMode && !getObserverMode"
             to="/em-task-management"
             exact
             @click="autoHide"

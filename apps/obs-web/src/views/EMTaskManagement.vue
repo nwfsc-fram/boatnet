@@ -25,7 +25,13 @@
                 <q-td key="thirdPartyReviewer" :props="props" >{{ getReviewer(props.row) }}</q-td>
                 <q-td key="returnDate" :props="props" >{{ getAttribute(props.row.returnDate, 'date') }}</q-td>
                 <q-td key="stage" :props="props" >{{ getAttribute(props.row.stage) }}</q-td>
-                <q-td key="revision" :props="props" >{{ getAttribute(props.row.revision, 'revision') }}</q-td>
+                <q-td key="revision" :props="props" >
+                    <q-btn color="primary" size="sm" flat @click="router.push({path: '/em-revision-history/' + getId(props.row, 'logbook')})" v-if="getRevision(props.row.revision, 'logbook') > 0">{{ getRevision(props.row.revision, 'logbook') }}</q-btn>
+                    <span v-else>{{getRevision(props.row.revision, 'logbook')}}</span>
+                    /
+                    <q-btn color="primary" size="sm" flat @click="router.push({path: '/em-revision-history/' + getId(props.row, 'thirdParty')})" v-if="getRevision(props.row.revision, 'thirdParty') > 0">{{ getRevision(props.row.revision, 'thirdParty') }}</q-btn>
+                    <span v-else>{{getRevision(props.row.revision, 'thirdParty')}}</span>
+                </q-td>
                 <q-td key="errors" :props="props" >{{ getAttribute(props.row.errors, 'errors') }}</q-td>
                 <q-td key="status" :props="props" >{{ getAttribute(props.row.status) }}</q-td>
                 <q-td key="statusDate" :props="props" >{{ getAttribute(props.row.statusDate, 'date') }}</q-td>
@@ -60,6 +66,8 @@ import { Notify } from 'quasar';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
+import {intersection } from 'lodash';
+import { authService } from '@boatnet/bn-auth';
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
 
@@ -99,11 +107,19 @@ export default createComponent({
                 return attribute ? moment(attribute).format('MMM DD, YYYY HH:mm') : '';
             } else if ( format === 'errors' && attribute) {
                 return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
-            } else if ( format === 'revision' && attribute ) {
-                return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
+            // } else if ( format === 'revision' && attribute ) {
+            //     return (attribute.logbook ? attribute.logbook : '0') + ' / ' + (attribute.thirdParty ? attribute.thirdParty : '0');
             } else {
                 return attribute ? attribute : '';
             }
+        };
+
+        const getRevision = (attribute: any, source: any) => {
+            return attribute[source] ? attribute[source] : 0;
+        };
+
+        const getId = (row: any, source: any) => {
+            return row.revisionId[source] ? row.revisionId[source] : '-';
         };
 
         const router = context.root.$router;
@@ -192,18 +208,29 @@ export default createComponent({
                     const tripCatch: any = catchStatus.filter( (row: any) => row.key === trip.tripNum );
                     trip.errors = {};
                     trip.revision = {};
+                    trip.revisionId = {};
                     trip.stage = '';
                     trip.statusDate = '';
-                    trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ footage', '+ audit'];
-                    if (results.includes(trip.tripNum)) {
+                    const userRoles = authService.getCurrentUser()!.roles;
+                    const adminRoles = ['staff', 'development_staff', 'data_administrator'];
+                    const isAuthorized = intersection(userRoles, adminRoles).length > 0 ? true : false;
+                    if (isAuthorized) {
+                        trip.actions = ['image', 'e logbook', 'em review', '+ lb data', '+ em review', 'compare', '+ footage', '+ audit'];
+                    } else {
+                        trip.actions = ['image', 'e logbook', 'em review', 'compare', '+ lb data', '+ em review'];
+                    }
+                    if (results.includes(trip.tripNum) && isAuthorized) {
                         trip.actions.push('results');
                     }
                     const stagePriority = ['logbook', 'thirdParty', 'nwfscAudit'];
                     if (tripCatch.length > 0) {
 
                         for (const dataSource of tripCatch) {
-                            if (dataSource.value[2]) { trip.errors[dataSource.value[0]] = dataSource.value[2]; }
-                            if (dataSource.value[3]) { trip.revision[dataSource.value[0]] = dataSource.value[3]; }
+                            if (dataSource.value[2]) {trip.errors[dataSource.value[0]] = dataSource.value[2]; }
+                            if (dataSource.value[3]) {
+                                trip.revision[dataSource.value[0]] = dataSource.value[3];
+                                trip.revisionId[dataSource.value[0]] = dataSource.id;
+                            }
                             if (stagePriority.indexOf(dataSource.value[0]) > stagePriority.indexOf(trip.stage)) {
                                 trip.stage = dataSource.value[0];
                                 trip.statusDate = dataSource.value[1];
@@ -290,7 +317,7 @@ export default createComponent({
         watch(() => state.user.showOpenEmTrips, getTripsWithCaptures);
 
         return {
-            activeTasks, columns, selected, pagination, getReviewer, getVesselId, getAttribute, transferring, navigateTo
+            activeTasks, columns, selected, pagination, getId, getReviewer, getRevision, getVesselId, getAttribute, router, transferring, navigateTo
         };
 
     }
