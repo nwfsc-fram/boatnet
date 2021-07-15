@@ -145,7 +145,7 @@
           </q-item>
 
           <q-item
-            to="/rack"
+            to="/bio-structures"
             exact
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           >
@@ -153,7 +153,7 @@
               <q-icon name="scanner" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Rack Biospecimens</q-item-label>
+              <q-item-label>Bio-structures</q-item-label>
               <q-item-label caption>Scan Biospecimens</q-item-label>
             </q-item-section>
           </q-item>
