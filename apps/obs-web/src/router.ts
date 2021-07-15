@@ -26,6 +26,7 @@ import EMFootageManager from './views/EMFootageManager.vue';
 import EMFootageDetail from './views/EMFootageDetail.vue';
 import EMRateManagement from './views/EMRateManagement.vue';
 import EMReview from './views/EMReview.vue';
+import EMRevisionHistory from './views/EMRevisionHistory.vue';
 import EMResults from './views/EMResults.vue';
 import EMTaskManagement from './views/EMTaskManagement.vue';
 import ErrorManagement from './views/ErrorManagement.vue';
@@ -223,17 +224,17 @@ const router = new Router({
         },
         { path: '/log-trip', name: 'Log Trip', component: LogTrip,
         beforeEnter: (to, from, next) => {
-          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         { path: '/e-logbook/:id', name: 'E Logbook', component: ELogbook,
         beforeEnter: (to, from, next) => {
-          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         { path: '/em-review/:id', name: 'EM Review', component: EMReview,
         beforeEnter: (to, from, next) => {
-          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+          if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
@@ -257,19 +258,19 @@ const router = new Router({
         {
           path: '/em-task-management', name: 'EM Task Management', component: EMTaskManagement,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
           path: '/em-api-portal/:id/:type', name: 'EM API Portal', component: EMApiPortal,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
           path: '/em-api-portal', name: 'EM API Portal', component: EMApiPortal,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
@@ -293,7 +294,7 @@ const router = new Router({
         {
           path: '/em-errors', name: 'EM Errors', component: EMErrors,
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
@@ -303,10 +304,17 @@ const router = new Router({
           }
         },
         {
+          path: '/em-revision-history/:id', name: 'Revision History', component: EMRevisionHistory,
+          props: (route: any) => ({ id: String(route.params.id)}),
+          beforeEnter: (to, from, next) => {
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
+          }
+        },
+        {
           path: '/view-image/:id', name: 'View Image', component: ViewImage,
           props: (route: any) => ({ ids: [String(route.params.id)] }),
           beforeEnter: (to, from, next) => {
-            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer'])) { return next(); } else { return next('/login'); }
+            if (isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer', 'provider'])) { return next(); } else { return next('/login'); }
           }
         },
         {
