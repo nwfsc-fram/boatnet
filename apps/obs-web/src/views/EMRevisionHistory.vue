@@ -58,7 +58,6 @@ import { authService } from '@boatnet/bn-auth';
 import { Catches } from '@boatnet/bn-models';
 
 import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
-const jp = require('jsonpath');
 
 export default createComponent({
     props: {
@@ -91,7 +90,7 @@ export default createComponent({
             revisionHistory.value.length = 0;
             transferring.value = true;
             trip.value = await masterDB.get(id);
-            trip.value.history.push(omit(trip.value, ['history']))
+            trip.value.history.push(omit(trip.value, ['history']));
             const ignoreKeys = ['changeLog', 'value', '_rev', '_id', 'updatedBy', 'updatedDate', 'errors', 'history', 'hauls', 'catch', 'updateDate', 'revision', 'resubmission', 'createdBy'];
             for (const version of trip.value.history) {
                 if (trip.value.history.indexOf(version) !== (trip.value.history.length - 1)) {
@@ -99,7 +98,7 @@ export default createComponent({
                     let allKeys: any = union(keys(version), keys(nextVersion));
                     allKeys = allKeys.filter( (row: any) => {
                         return !ignoreKeys.includes(row);
-                    })
+                    });
                     for (const key of allKeys) {
                         if (!isEqual(version[key], nextVersion[key])) {
                             revisionHistory.value.push(
@@ -138,7 +137,7 @@ export default createComponent({
                         'systemPerformance',
                         'catchHandlingPerformance'
                     ];
-                    for (let i = 0; i<maxHaulLength; i++) {
+                    for (let i = 0; i < maxHaulLength; i++) {
                         if (version.hauls[i] && nextVersion.hauls[i]) {
                             for (const haulKey of haulKeys) {
                                 if (!isEqual(version.hauls[i][haulKey], nextVersion.hauls[i][haulKey])) {
@@ -172,8 +171,8 @@ export default createComponent({
                                 'comments',
                                 'isWcgopEmPriority',
                                 'isProtected'
-                            ]
-                            for (let j = 0; j<maxCatchLength; j++) {
+                            ];
+                            for (let j = 0; j < maxCatchLength; j++) {
                                 if (version.hauls[i].catch[j] && nextVersion.hauls[i].catch[j]) {
                                     for (const catchKey of catchKeys) {
                                         if (!isEqual(version.hauls[i].catch[j][catchKey], nextVersion.hauls[i].catch[j][catchKey])) {
@@ -239,7 +238,7 @@ export default createComponent({
                                     updatedBy: nextVersion.updatedBy,
                                     id: nextVersion._rev,
                                 }
-                            )
+                            );
                         } else if (!version.hauls[i] && nextVersion.hauls[i]) {
                             revisionHistory.value.push(
                                 {
@@ -253,7 +252,7 @@ export default createComponent({
                                     updatedBy: nextVersion.updatedBy,
                                     id: nextVersion._rev,
                                 }
-                            )
+                            );
                         }
 
                     }
@@ -266,7 +265,7 @@ export default createComponent({
 
         onMounted( async () => {
             await getRevisionHistory();
-        })
+        });
 
         return {
             revisionHistory, columns, selected, pagination, transferring, trip
