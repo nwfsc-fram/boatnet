@@ -18,9 +18,20 @@
         binary-state-sort
         style="table-layout: fixed"
         >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    {{ col.label }}
+                <q-input dense outlined @input="searchBy" v-model="searchString[col.field]"></q-input>
+                </q-th>
+            </q-tr>
+        </template>
         <template v-slot:body="props">
             <q-tr :props="props">
-                <q-td></q-td>
                 <q-td key="revNum" :props="props">{{ props.row.revNum }}</q-td>
                 <q-td key="haulNum" :props="props">{{ props.row.haulNum }}</q-td>
                 <q-td key="catchIndex" :props="props">{{ props.row.catchIndex }}</q-td>
@@ -29,7 +40,7 @@
                 <q-td key="field" :props="props" >{{ props.row.field }}</q-td>
                 <q-td key="oldVal" :props="props" >{{ props.row.oldVal }}</q-td>
                 <q-td key="newVal" :props="props" >{{ props.row.newVal }}</q-td>
-                <q-td key="updatedDate" :props="props" >{{ props.row.updatedDate }}</q-td>
+                <q-td key="updatedDate" :props="props" >{{ formatDate(props.row.updatedDate) }}</q-td>
                 <q-td key="updatedBy" :props="props" >{{ props.row.updatedBy }}</q-td>
             </q-tr>
         </template>
@@ -54,7 +65,7 @@ import { Notify } from 'quasar';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import {intersection, union, omit, isEqual, reduce, keys, flattenDeep, differenceWith, get } from 'lodash';
+import {intersection, union, omit, isEqual, reduce, keys, flattenDeep, differenceWith, get, filter as Lfilter, cloneDeep } from 'lodash';
 import { authService } from '@boatnet/bn-auth';
 import { Catches } from '@boatnet/bn-models';
 
@@ -77,18 +88,36 @@ export default createComponent({
             {name: 'field', label: 'Field', field: 'field', required: false, align: 'left', sortable: true, style: 'max-width: 120px', headerStyle: 'max-width: 120px'},
             {name: 'oldVal', label: 'Old Value', field: 'oldVal', required: false, align: 'left', sortable: true, style: 'max-width: 300px', headerStyle: 'max-width: 300px'},
             {name: 'newVal', label: 'New Value', field: 'newVal', required: false, align: 'left', sortable: true, style: 'max-width: 300px', headerStyle: 'max-width: 300px'},
-            {name: 'updatedDate', label: 'Updated Date', field: 'updatedDate', required: false, align: 'left', sortable: true, style: 'max-width: 100px', headerStyle: 'max-width: 100px'},
+            {name: 'updatedDate', label: 'Updated Date', field: 'updatedDate', required: false, align: 'left', sortable: true, style: 'max-width: 150px', headerStyle: 'max-width: 150px'},
             {name: 'updatedBy', label: 'Updated By', field: 'updatedBy', required: false, align: 'left', sortable: true, style: 'max-width: 100px', headerStyle: 'max-width: 100px'},
         ];
+
+        const searchBy = () => {
+            revisionHistory.value = cloneDeep(allRevisionHistory.value);
+            for (const key of Object.keys(searchString.value)) {
+                if (searchString.value[key] !== '') {
+                    const needle = searchString.value[key].toString().toLowerCase();
+                    revisionHistory.value = Lfilter(revisionHistory.value, (object) => {
+                        if (object[key]) {
+                            return object[key].toString().toLowerCase().indexOf(needle) > -1
+                        }
+                    })
+                }
+            }
+        };
+
+        const searchString: any = ref({});
 
         const id: any = props.id;
         const trip: any = ref({});
         const revisionHistory: any = ref([]);
+        const allRevisionHistory: any = ref([]);
         const selected: any = [];
         const pagination = {sortBy: 'revNum', descending: true, rowsPerPage: 100};
         const transferring: any = ref(false);
 
         const getRevisionHistory = async () => {
+            allRevisionHistory.value.length = 0;
             revisionHistory.value.length = 0;
             transferring.value = true;
             trip.value = await masterDB.get(id);
@@ -262,15 +291,17 @@ export default createComponent({
 
                 }
             }
-
+            allRevisionHistory.value = cloneDeep(revisionHistory.value);
             transferring.value = false;
         };
 
         let speciesNames: any = [];
 
         const getSpeciesNames = async() => {
+            transferring.value = true;
             const speciesNamesQuery = await masterDB.view('em-views', 'wcgopCode-to-pacfinCode-map', {include_docs: true} as any);
             speciesNames = speciesNamesQuery.rows.map((row: any) => row.doc);
+            transferring.value = false;
         }
 
         const getSpeciesName = (speciesCode: any) => {
@@ -284,13 +315,17 @@ export default createComponent({
           };
         }
 
+        const formatDate = (date: any) => {
+            return moment(date).format('MM/DD/YYYY, HH:mm')
+        }
+
         onMounted( async () => {
             await getSpeciesNames();
             await getRevisionHistory();
         });
 
         return {
-            revisionHistory, columns, selected, pagination, transferring, trip, getSpeciesName
+            revisionHistory, columns, selected, pagination, transferring, trip, getSpeciesName, searchBy, searchString, formatDate
         };
 
     }
