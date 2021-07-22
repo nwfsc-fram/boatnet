@@ -144,6 +144,7 @@ export default createComponent({
         { field: 'speciesWeight', key: 'speciesWeight', header: 'Species Weight', width: 100, },
         { field: 'speciesLength', key: 'speciesLength', header: 'Species Length', width: 100, },
         { field: 'speciesCount', key: 'speciesCount', header: 'Species Count', width: 100, },
+        { field: 'timeOnDeck', key: 'timeOnDeck', header: 'Time On Deck', width: 100, },
         { field: 'fisherySector', key: 'fisherySector', header: 'Fishery Sector', width: 175, },
         { field: 'year', key: 'year', header: 'Year', width: 80, },
         { field: 'permitNumber', key: 'permitNumber', header: 'Permit #', width: 120, },
@@ -248,6 +249,7 @@ export default createComponent({
 
           const currHaul = get(emReview, 'hauls[' + i + ']', {});
           const currCatch = get(emReview, 'hauls[' + i + '].catch[' + j + ']', {});
+          console.log(currCatch)
 
           // given species code query view to get species name
           const lookupOptions = { key: currCatch.speciesCode.toString(), include_docs: true };
@@ -317,7 +319,8 @@ export default createComponent({
             speciesName,
             speciesWeight: currCatch.speciesWeight,
             speciesLength: get(currCatch, 'speciesLength'),
-            speciesCount: get(currCatch, 'speciesCount')
+            speciesCount: get(currCatch, 'speciesCount'),
+            timeOnDeck: currCatch.timeOnDeck
           });
         }
       }

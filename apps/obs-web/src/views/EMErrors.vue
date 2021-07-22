@@ -168,11 +168,11 @@ export default createComponent({
                 revision: row.value[4],
                 reviewerName: row.value[5],
                 totalReviewTime: row.value[6],
-                errorType: row.value[7].type,
-                errorField: row.value[7].field,
-                errorMessage: row.value[7].message,
-                errorHaulNum: row.value[7].HaulNum,
-                errorCatchId: row.value[7].CatchId
+                errorType: row.value[7] ? row.value[7].type : '',
+                errorField: row.value[7] ? row.value[7].field : '',
+                errorMessage: row.value[7] ? row.value[7].message : '',
+                errorHaulNum: row.value[7] ? row.value[7].HaulNum : '',
+                errorCatchId: row.value[7] ? row.value[7].CatchId : ''
             });
         }
         loading.value = false;

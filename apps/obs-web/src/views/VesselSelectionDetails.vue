@@ -79,14 +79,14 @@
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td key="id"></q-td>
-                    <q-td key="fishery" :props="props">{{ props.row.fishery ? props.row.fishery.description : '' }}</q-td>
-                    <q-td key="permit" :props="props">{{ props.row.certificates ? getCertificateNumbers(props.row.certificates) : '' }}</q-td>
-                    <q-td key="observer" :props="props">{{ props.row.observer ? props.row.observer.firstName + ' ' + props.row.observer.lastName : '' }}</q-td>
-                    <q-td key="departureDate" :props="props">{{ formatDate(props.row.departureDate) }}</q-td>
-                    <q-td key="returnDate" :props="props">{{ formatDate(props.row.returnDate) }}</q-td>
-                    <q-td key="departurePort" :props="props">{{ props.row.departurePort ? props.row.departurePort.name : '' }}</q-td>
-                    <q-td key="returnPort" :props="props">{{ props.row.returnPort ? props.row.returnPort.name : '' }}</q-td>
-                    <q-td key="fishTickets" :props="props"><q-btn @click="displayFishTickets(props.row.fishTickets)" flat>{{ props.row.fishTickets ? getFishTicketNumbers(props.row.fishTickets) : '' }}</q-btn></q-td>
+                    <q-td key="FISHERY" :props="props">{{ props.row.FISHERY }}</q-td>
+                    <q-td key="LICENSE_NUMBER" :props="props">{{ props.row.LICENSE_NUMBER ? props.row.LICENSE_NUMBER : ''  }}</q-td>
+                    <q-td key="OBSERVER" :props="props">{{ props.row.OBSERVER }}</q-td>
+                    <q-td key="DEPARTURE_DATE" :props="props">{{ formatDate(props.row.DEPARTURE_DATE) }}</q-td>
+                    <q-td key="RETURN_DATE" :props="props">{{ formatDate(props.row.RETURN_DATE) }}</q-td>
+                    <q-td key="DEPARTURE_PORT" :props="props">{{ props.row.DEPARTURE_PORT }}</q-td>
+                    <q-td key="RETURN_PORT" :props="props">{{ props.row.RETURN_PORT }}</q-td>
+                    <q-td key="FISH_TICKETS" :props="props"><q-btn @click="displayFishTickets(props.row.FISH_TICKETS)" flat>{{ props.row.FISH_TICKETS ? getFishTicketNumbers(props.row.FISH_TICKETS) : '' }}</q-btn></q-td>
                 </q-tr>
             </template>
         </q-table>
@@ -112,7 +112,7 @@
             <template v-slot:body="props">
                 <q-tr :props="props">
                     <q-td key="id"></q-td>
-                    <q-td key="FTID" :props="props"><q-btn @click="displayFishTickets([{fishTicketNumber: props.row.FTID}])" flat>{{ props.row.FTID }}</q-btn></q-td>
+                    <q-td key="FTID" :props="props"><q-btn @click="displayFishTickets(props.row.FTID)" flat>{{ props.row.FTID }}</q-btn></q-td>
                     <q-td key="FISHER_LICENSE_NUM" :props="props">{{ props.row.FISHER_LICENSE_NUM }}</q-td>
                     <q-td key="LANDING_DATE" :props="props">{{ formatDate(props.row.LANDING_DATE) }}</q-td>
                     <q-td key="PORT_NAME" :props="props">{{ props.row.PORT_NAME }}</q-td>
@@ -140,7 +140,7 @@ import {
 import { Vue, Watch } from 'vue-property-decorator';
 import { CouchDBInfo, CouchDBCredentials, couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
-import { getSelections, getOracleWaivers, getFishTicket, getVesselFishTickets } from '@boatnet/bn-common';
+import { getSelections, getOracleWaivers, getFishTicket, getVesselFishTickets, getOracleTrips } from '@boatnet/bn-common';
 
 import { WatchOptions } from 'vue';
 
@@ -222,29 +222,31 @@ export default createComponent({
         };
 
         const tripsColumns = [
-            {name: 'fishery', label: 'Fishery', field: 'fishery', required: true, align: 'left', sortable: true},
-            {name: 'permit', label: 'Permits', field: 'permit', required: true, align: 'left', sortable: true},
-            {name: 'observer', label: 'Observer', field: 'observer', required: true, align: 'left', sortable: true},
-            {name: 'departureDate', label: 'Departure Date', field: 'departureDate', required: true, align: 'left', sortable: true},
-            {name: 'returnDate', label: 'Return Date', field: 'returnDate', required: true, align: 'left', sortable: true},
-            {name: 'departurePort', label: 'Departure Port', field: 'departurePort', required: true, align: 'left', sortable: true},
-            {name: 'returnPort', label: 'Return Port', field: 'returnPort', required: true, align: 'left', sortable: true},
-            {name: 'fishTickets', label: 'Fish Tickets', field: 'fishTickets', required: true, align: 'left', sortable: true},
+            {name: 'FISHERY', label: 'Fishery', field: 'FISHERY', required: true, align: 'left', sortable: true},
+            {name: 'LICENSE_NUMBER', label: 'Permits', field: 'LICENSE_NUMBER', required: true, align: 'left', sortable: true},
+            {name: 'OBSERVER', label: 'Observer', field: 'OBSERVER', required: true, align: 'left', sortable: true},
+            {name: 'DEPARTURE_DATE', label: 'Departure Date', field: 'DEPARTURE_DATE', required: true, align: 'left', sortable: true},
+            {name: 'RETURN_DATE', label: 'Return Date', field: 'RETURN_DATE', required: true, align: 'left', sortable: true},
+            {name: 'DEPARTURE_PORT', label: 'Departure Port', field: 'DEPARTURE_PORT', required: true, align: 'left', sortable: true},
+            {name: 'RETURN_PORT', label: 'Return Port', field: 'RETURN_PORT', required: true, align: 'left', sortable: true},
+            {name: 'FISH_TICKETS', label: 'Fish Tickets', field: 'FISH_TICKETS', required: true, align: 'left', sortable: true},
         ];
 
         const getTrips = async () => {
             tripsLoading.value = true;
-            const selectionYear = moment(selection.value.PERIOD_END).format('YYYY');
-            const tripsQuery = await masterDB.view(
-                'obs_web',
-                'wcgop_trips_vesselId_returnDate',
-                {
-                    include_docs: true,
-                    start_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format()],
-                    end_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_END).format()]
-                }
-            );
-            vesselTrips.value.push.apply(vesselTrips.value, tripsQuery.rows.map((row: any) => row.doc));
+            const oracleTrips = await getOracleTrips(selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format(), moment().format());
+            console.log(oracleTrips)
+            // const selectionYear = moment(selection.value.PERIOD_END).format('YYYY');
+            // const tripsQuery = await masterDB.view(
+            //     'obs_web',
+            //     'wcgop_trips_vesselId_returnDate',
+            //     {
+            //         include_docs: true,
+            //         start_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format()],
+            //         end_key: [selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_END).format()]
+            //     }
+            // );
+            vesselTrips.value.push.apply(vesselTrips.value, oracleTrips);
             tripsLoading.value = false;
         };
 
@@ -262,7 +264,7 @@ export default createComponent({
         const getFishTickets = async () => {
             fishTicketsLoading.value = true;
             const fishTicketRows: any = [];
-            const fishTickets: any = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, selection.value.PERIOD_END);
+            const fishTickets: any = await getVesselFishTickets(selection.value.VESSEL_DRVID, selection.value.PERIOD_START, moment().format());
             for (const fishTicket of fishTickets) {
                 if (!fishTicketRows.filter( (row: any) => row.FTID === fishTicket.FTID)[0]) {
                     fishTicketRows.push(
@@ -301,11 +303,11 @@ export default createComponent({
             return returnString;
         };
 
-        const getFishTicketNumbers = (fishTickets: any[]) => {
+        const getFishTicketNumbers = (fishTickets: string) => {
             let returnString = '';
-            for (const ticket of fishTickets) {
-                returnString += ticket.fishTicketNumber;
-                if (fishTickets.indexOf(ticket) !== fishTickets.length - 1) {
+            for (const ticket of fishTickets.split(',')) {
+                returnString += ticket;
+                if (fishTickets.split(',').indexOf(ticket) !== fishTickets.split(',').length - 1) {
                     returnString += ', ';
                 }
             }
