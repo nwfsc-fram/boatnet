@@ -61,7 +61,7 @@ import { WatchOptions } from 'vue';
 import moment from 'moment';
 import { startCase, cloneDeep, set } from 'lodash';
 import { AuthState, authService } from '@boatnet/bn-auth';
-import { getSelections, getOracleWaivers, getFishTicket, getVesselFishTickets } from '@boatnet/bn-common';
+import { getSelections, getOracleWaivers, getFishTicket, getVesselFishTickets, getOracleTrips } from '@boatnet/bn-common';
 
 export default createComponent({
     setup(props, context) {
@@ -154,16 +154,20 @@ export default createComponent({
         };
 
         const getTrips = async (selection: any) => {
-            const tripsQuery = await masterDB.view(
-                'obs_web',
-                'wcgop_trips_vesselId_returnDate',
-                {
-                    include_docs: true,
-                    start_key: [selection.VESSEL_DRVID, moment(selection.PERIOD_START).format()],
-                    end_key: [selection.VESSEL_DRVID, moment().format()]
-                }
-            );
-            return tripsQuery.rows.map((row: any) => row.doc);
+            const oracleTrips: any[] = await getOracleTrips(selection.VESSEL_DRVID, moment(selection.PERIOD_START).format(), moment().format()) as any[];
+            console.log('Oracle Trips:');
+            console.log(oracleTrips);
+            // const tripsQuery = await masterDB.view(
+            //     'obs_web',
+            //     'wcgop_trips_vesselId_returnDate',
+            //     {
+            //         include_docs: true,
+            //         start_key: [selection.VESSEL_DRVID, moment(selection.PERIOD_START).format()],
+            //         end_key: [selection.VESSEL_DRVID, moment().format()]
+            //     }
+            // );
+            // return tripsQuery.rows.map((row: any) => row.doc);
+            return oracleTrips;
         };
 
         const getRolloverStatus = async (selection: any) => {
@@ -173,7 +177,7 @@ export default createComponent({
             } else if ( moment(selection.PERIOD_END).isBefore(moment()) ) {
                 const trips = await getTrips(selection);
                 trips.sort( (a: any, b: any) => {
-                    return a.returnDate > b.returnDate ? 1 : a.returnDate < b.returnDate ? -1 : 0;
+                    return a.RETURN_DATE > b.RETURN_DATE ? 1 : a.RETURN_DATE < b.RETURN_DATE ? -1 : 0;
                 } );
                 let fishTickets: any[] = [];
                 try {
@@ -184,9 +188,9 @@ export default createComponent({
                 if (trips.length > 0) {
                     // const allTripsticketNumbers = jp.query(trips, '$..fishTicketNumber');
                     for (const trip of trips) {
-                        if (trip.fishTickets && trip.fishTickets[0]) {
-                            for (const ticket of trip.fishTickets) {
-                                const tripTicket = fishTickets.find( (row: any) => row.FTID === ticket.fishTicketNumber || row.FTID === ticket.fishTicketNumber + 'E');
+                        if (trip.FISH_TICKETS && trip.FISH_TICKETS.split(',')[0]) {
+                            for (const ticket of trip.FISH_TICKETS.split(',')) {
+                                const tripTicket = fishTickets.find( (row: any) => row.FTID === ticket || row.FTID === ticket + 'E');
                                 if (tripTicket && tripTicket.LANDED_WEIGHT_LBS && tripTicket.LANDED_WEIGHT_LBS > 0) {
                                     set(selection, 'rolloverStatus', 'N - observed w/ landed lbs - ' + moment(tripTicket.LANDING_DATE).format('MM/DD/YYYY'));
                                     break;

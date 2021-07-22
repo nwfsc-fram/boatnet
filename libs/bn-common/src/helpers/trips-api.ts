@@ -39,8 +39,32 @@ function getVesselFishTicketUrl() {
     return authService.getTripsApiUrl() + '/api/v1/getVesselFishTickets';
 }
 
+function getOracleTripsUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/getOracleTrips';
+}
+
 function getTripsApiMongoUrl() {
     return authService.getTripsApiUrl() + '/api/v1/mongo';
+}
+
+export function getEmLookups() {
+    const queryUrl = authService.getTripsApiUrl() + '/em-lookups';
+    return new Promise( (resolve, reject) => {
+        request.get(
+            {
+                url: queryUrl,
+                json: false,
+                headers: {
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
 }
 
 export function getTripsApiTrips(query?: any, queryValue?: any) {
@@ -420,6 +444,29 @@ export function getVesselFishTickets(vesselId: any, startDate: any, endDate: any
     const formattedQuery = '?vesselId=' + vesselId + '&startDate=' + moment(startDate).format('YYYY-MM-DD') + '&endDate=' + moment(endDate).format('YYYY-MM-DD');
     return new Promise( (resolve, reject) => {
         const queryUrl = getVesselFishTicketUrl() + formattedQuery;
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getOracleTrips(vesselId: any, startDate: any, endDate: any) {
+
+    const formattedQuery = '?vesselId=' + vesselId + '&startDate=' + moment(startDate).format() + '&endDate=' + moment(endDate).format();
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getOracleTripsUrl() + formattedQuery;
         request.get(
             {
                 url: queryUrl,
