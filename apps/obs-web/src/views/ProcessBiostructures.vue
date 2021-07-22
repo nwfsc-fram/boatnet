@@ -59,96 +59,20 @@
                 <q-tooltip class="bg-accent">Create New Rack</q-tooltip>
             </q-btn>
         </div>
-        <q-table
-            :data="tableData"
-            :columns="columns"
-            row-key="name"
-            :visible-columns="visibleColumns"
-            no-data-label="No data"
+        <quasar-table
+            :columns.sync="columns"
+            :tableData="tableData"
             :loading="loading"
-        >
-            <template v-slot:top>
-                <q-select
-                    v-model="visibleColumns"
-                    multiple
-                    outlined
-                    dense
-                    options-dense
-                    :display-value="$q.lang.table.columns"
-                    emit-value
-                    map-options
-                    :options="columns"
-                    option-value="name"
-                    options-cover
-                    style="min-width: 150px"
-                />
-                <q-space />
-                <q-btn color="primary" icon-right="archive" label="Download" no-caps @click="exportTable"/>
-            </template>
-            <template v-slot:header="props">
-                <q-tr :props="props">
-                    <q-th
-                        v-for="col in props.cols"
-                        :key="col.name"
-                        :props="props"
-                    >
-                        {{ col.label }}
-                    </q-th>
-                    <q-th auto-width />
-                </q-tr>
-            </template>
-            <template v-slot:body="props">
-                <q-tr :props="props">
-                    <q-td
-                        v-for="col of columns"
-                        :key="col.field"
-                        :props="props"
-                    >
-                        {{ displayValue(props, col) }}
-                        <q-popup-edit
-                            v-if="col.isEditable"
-                            v-model="props.row[col.field]"
-                            buttons
-                            :title="col.label"
-                            @save="save(props.row, col, props.row[col.field])"
-                        >
-                             <debriefer-select-comp
-                                v-if="col.type === 'select'"
-                                :val.sync="props.row[col.field]"
-                                lookupView="wcgop-lookups"
-                                lookupLabel="value"
-                                lookupValue="value"
-                                :clearable="true"
-                                :lookupQueryOptions="{ key: col.key }"
-                            />
-                            <q-input
-                                v-else
-                                v-model="props.row[col.field]"
-                                :type="col.type"
-                                dense
-                                autofocus
-                                counter
-                            />
-                        </q-popup-edit>
-                    </q-td>
-                    <q-td auto-width>
-                        <q-btn
-                            size="sm"
-                            color="primary"
-                            round
-                            dense
-                            icon="delete_outline"
-                            @click="deleteBio(props.row)"
-                        >
-                            <q-tooltip class="bg-accent"
-                                >Delete Record</q-tooltip
-                            >
-                        </q-btn>
-                    </q-td>
-                </q-tr>
-            </template>
-        </q-table>
-        <rack-dialog :show.sync="showRackDialog" @saveRack="saveRack"/>
+            :visibleColumns="visibleColumns"
+            :isDownloadable="true"
+            @save="save"
+            @delete="deleteBio"
+        />
+        <rack-dialog
+            :show.sync="showRackDialog"
+            :rackInfo="rack"
+            @saveRack="saveRack"
+        />
     </div>
 </template>
 
@@ -176,6 +100,10 @@ import moment from 'moment';
 import { exportFile } from 'quasar'
 
 import RackDialog from './RackDialog.vue';
+
+import QuasarTable from './QuasarTable.vue';
+Vue.component('QuasarTable', QuasarTable);
+
 Vue.component('RackDialog', RackDialog);
 
 Vue.component('multiselect', Multiselect);
@@ -452,7 +380,7 @@ export default createComponent({
                 columns.value = concat(commonCols, snoutCols);
             }
             columns.value.map((obj: any) =>  obj.sortable = true);
-            visibleColumns.value = jp.query(columns.value, '$[*].name');
+            visibleColumns.value = columns.value;
             columns.value = concat(columns.value, reportCols);
         }
         setCols(null); 
@@ -532,18 +460,6 @@ export default createComponent({
             tableData.value = val ? await select('rackId', val.doc.rackId) : [];
             setCols(val);
             loading.value = false;
-        }
-
-        function displayValue(props: any, col: any) {
-            let val = get(props.row, col.field);
-            if (col.type === 'date') {
-                val = moment(val).format('DD-MMM-YY, hh:mm');
-            } else if (col.type === 'coord') {
-                val = '[' + round(val[0], 2) + ', ' + round(val[1], 2) + ']';
-            } else if (col.type === 'number'  && val) {
-                val = round(val, 2);
-            }
-            return val;
         }
 
         async function select(fieldName: any, fieldVal: any) {
@@ -630,7 +546,11 @@ export default createComponent({
             return results;
         }
 
-        async function save(newValObj: any, colInfo: any, updatedVal: any) {
+        async function save(newInfo: any) {
+            const newValObj = get(newInfo, 'newValObj');
+            const colInfo = get(newInfo, 'colInfo');
+            const updatedVal = get(newInfo, 'updatedVal');
+
             const doc = newValObj.doc;
             const couchBio = jp.nodes(doc, '$..biostructures[?(@._id=="' + newValObj.id + '")]');
 
@@ -659,37 +579,6 @@ export default createComponent({
             masterDB.put(doc._id, doc, doc._rev);
         }
 
-        function exportTable() {
-            // naive encoding to csv format
-            const content = [columns.value.map((col: any) => wrapCsvValue(col.label))].concat(
-                tableData.value.map((row: any) => columns.value.map((col: any) => wrapCsvValue(
-                    typeof col.field === 'function'
-                    ? col.field(row)
-                    : row[ col.field === void 0 ? col.name : col.field ],
-                    col.format
-                )).join(','))
-                ).join('\r\n');
-
-            const status = exportFile('table-export.csv', content, 'text/csv');
-        }
-
-        function wrapCsvValue(val: any, formatFn?: any) {
-            let formatted = formatFn !== void 0 ? formatFn(val) : val;
-
-            formatted =
-                formatted === void 0 || formatted === null ? '' : String(formatted);
-
-            formatted = formatted.split('"').join('""');
-            /**
-             * Excel accepts \n and \r in strings, but some other CSV parsers do not
-             * Uncomment the next two lines to escape new lines
-             */
-            // .split('\n').join('\\n')
-            // .split('\r').join('\\r')
-
-            return `"${formatted}"`;
-        }
-
         return {
             columns,
             visibleColumns,
@@ -714,9 +603,7 @@ export default createComponent({
             addRack,
             saveRack,
             selectRack,
-            exportTable,
             setCols,
-            displayValue,
             showRackDialog,
             save,
             deleteBio,

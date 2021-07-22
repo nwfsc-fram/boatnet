@@ -35,7 +35,32 @@
         :clearable="true"
         @select="clear"
       />
+      <q-btn
+        v-if="isAuthorized(['debriefer'])"
+        round
+        class="q-mr-md"
+        style="display: inline-block"
+        color="white"
+        text-color="black"
+        icon="add"
+        @click="addRack"
+      >
+        <q-tooltip class="bg-accent">Create New Rack</q-tooltip>
+      </q-btn>
       <q-space/>
+          <q-banner
+            v-if="itemReceived"
+            dense
+            class="bg-green q-mt-sm text-white">
+            <template v-slot:avatar>
+              <q-icon name="done" color="white" />
+            </template>
+              Item marked as received
+            <template v-slot:action>
+              <q-btn flat label="Dismiss" @click="hideBanner"/>
+            </template>
+        </q-banner>
+
       <q-card class="bg-grey-2 q-mt-lg">
         <q-card-section>
           <div class="text-subtitle2" style="color: bg-primary"></div>
@@ -44,8 +69,8 @@
             label="Dissection Type"
             readonly
             :reactive-rules="true"
-            :rules="[ val => !! inputDissection || 'No dissection above selected',
-                      val => inputDissection === val || 'Doesn\'t match selected dissection type: ' + inputDissection
+            :rules="[ val => !val || !! inputDissection || 'No dissection above selected',
+                      val => !val || inputDissection === val || 'Doesn\'t match selected dissection type: ' + inputDissection
                     ]"
           />
           <q-input v-model="observerName" label="Observer" readonly />
@@ -58,12 +83,13 @@
             label="Rack Name"
             readonly
             :reactive-rules="true"
-            :rules="[ val => !! rack || 'No rack above selected',
-                      val => rack === val || 'Doesn\'t match selected rack: ' + rack
+            :rules="[ val => !val || !! rack || 'No rack above selected',
+                      val => !val || rack === val || 'Doesn\'t match selected rack: ' + rack
                     ]"
             />
         </q-card-section>
       </q-card>
+      <rack-dialog :show.sync="showRackDialog" @saveRack="saveRack"/>
     </div>
 </template>
 
@@ -83,6 +109,9 @@ Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 export default createComponent({
     setup(props, context) {
         const jp = require('jsonpath');
+        const state = context.root.$store.state;
+        const masterDB: Client<any> = couchService.masterDB;
+
         const inputDissection: any = ref('');
         const barcode: any = ref('');
         const rack: any = ref('');
@@ -91,8 +120,34 @@ export default createComponent({
         const specimen: any = ref({});
         const structureType: any = ref('');
         const rackName: any = ref('');
+        const showRackDialog: any = ref(false);
+
+        const itemReceived: any = ref(false);
+
+        function isAuthorized(authorizedRoles: string[]) {
+            for (const role of authorizedRoles) {
+                if (state.user.userRoles.includes(role)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function hideBanner() {
+          itemReceived.value = false;
+        }
+
+        function addRack() {
+            showRackDialog.value = true;
+        }
+
+        async function saveRack() {
+            const updatedRacks = await masterDB.viewWithDocs('obs_web', 'rack');
+           // allRacks.value = orderBy(updatedRacks.rows, rackLabel);
+        }
 
         async function populateSpecimenInfo(val: any) {
+            itemReceived.value = false;
             const masterDB: Client<any> = couchService.masterDB;
             const barcodeDoc = await masterDB.viewWithDocs('obs_web', 'biostructures_barcode', { key: parseInt(val, 10) });
 
@@ -120,6 +175,7 @@ export default createComponent({
 
             // if dissection type and rack match then mark as received
             if (inputDissection.value === structureType.value && (rackId !== 0 ? rack.value === rackName.value : true) && barcodeDoc.rows.length > 0) {
+              itemReceived.value = true;
               const doc: any = barcodeDoc.rows[0].doc;
               const biostructure: any = jp.nodes(doc, '$..biostructures[?(@.label=="' + val + '")]');
               const path: string = jp.stringify(biostructure[0].path).slice(2);
@@ -139,12 +195,18 @@ export default createComponent({
             inputDissection,
             barcode,
             rack,
+            isAuthorized,
+            itemReceived,
 
             observerName,
+            hideBanner,
             specimen,
             structureType,
             rackName,
             clear,
+            addRack,
+            showRackDialog,
+            saveRack,
 
             populateSpecimenInfo
         };
