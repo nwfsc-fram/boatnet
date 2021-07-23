@@ -1,6 +1,6 @@
 {
-  "name": "obs-web",
-  "description": "Observer Web",
+  "name": "boatnet",
+  "description": "NWFSC NOAA Boatnet",
   "version": "0.1.0",
   "private": true,
   "scripts": {

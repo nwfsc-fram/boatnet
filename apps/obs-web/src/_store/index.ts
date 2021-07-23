@@ -29,7 +29,7 @@ Vue.use(Vuex);
 
 // Preserves state between page refreshes.
 const vuexLocalStorage = new VuexPersistence<RootState>({
-  key: 'obs-web',
+  key: 'boatnet',
   storage: window.localStorage
 });
 

@@ -1,6 +1,6 @@
 {
-  "name": "obs-web",
-  "short_name": "obs-web",
+  "name": "boatnet",
+  "short_name": "boatnet",
   "icons": [
     {
       "src": "./img/icons/android-icon-192x192.png",
