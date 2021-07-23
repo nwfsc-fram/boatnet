@@ -252,7 +252,7 @@ export default createComponent({
           console.log(currCatch)
 
           // given species code query view to get species name
-          const lookupOptions = { key: currCatch.speciesCode.toString(), include_docs: true };
+          const lookupOptions = { key: currCatch.speciesCode, include_docs: true };
           let lookupInfo: any = await masterDB.view('em-views', 'wcgopCode-to-pacfinCode-map', lookupOptions);
           lookupInfo = get(lookupInfo, 'rows[0].doc', {});
           let speciesName = '';
