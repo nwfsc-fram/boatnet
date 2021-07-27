@@ -38,6 +38,8 @@
           <q-td key="logbookDiscard" :props="props" >{{ props.row.logbookDiscard ? roundVal(props.row.logbookDiscard) : '' }}</q-td>
           <q-td key="logbookRetained" :props="props" >{{ props.row.logbookRetained ? roundVal(props.row.logbookRetained) : '' }}</q-td>
           <q-td key="thirdPartyReview" :props="props" >{{ props.row.thirdPartyReview ? roundVal(props.row.thirdPartyReview) : '' }}</q-td>
+          <q-td key="grade" :props="props" >{{ props.row.grade ? props.row.grade : '' }}</q-td>
+          <q-td key="criteria" :props="props" >{{ props.row.criteria ? props.row.criteria : '' }}</q-td>
           <q-td key="diffReviewLogbook" :props="props" :class="getClass(props.row.diffReviewLogbook)" >{{ props.row.diffReviewLogbook ? roundVal(props.row.diffReviewLogbook) : '' }}</q-td>
           <q-td key="audit" :props="props">{{ props.row.audit ? roundVal(props.row.audit) : '' }}</q-td>
           <q-td key="diffAuditReview" :props="props" :class="getClass(props.row.diffAuditReview)">{{ props.row.diffAuditReview ? roundVal(props.row.diffAuditReview) : '' }}</q-td>
@@ -104,7 +106,9 @@ export default createComponent({
       { name: 'logbookDiscard', label: 'Logbook Discard (lbs)', field: 'logbookDiscard', required: false, align: 'center', sortable: true },
       { name: 'logbookRetained', label: 'Logbook Retained (lbs)', field: 'logbookRetained', required: false, align: 'center', sortable: true },
       { name: 'thirdPartyReview', label: 'Third Party Review (lbs)', field: 'thirdPartyReview', required: false, align: 'center', sortable: true },
-      { name: 'diffReviewLogbook', label: 'Diff Review Logbook', field: 'diffReviewLogbook', required: false, align: 'right', sortable: true },
+      { name: 'grade', label: 'Grade', field: 'grade', required: false, align: 'center', sortable: true },
+      { name: 'criteria', label: 'Criteria', field: 'criteria', required: false, align: 'center', sortable: true },
+      { name: 'diffReviewLogbook', label: 'Logbook % of review', field: 'diffReviewLogbook', required: false, align: 'right', sortable: true },
       { name: 'audit', label: 'NWFSC Audit Discard (lbs)', field: 'audit', required: false, align: 'center', sortable: true },
       { name: 'diffAuditReview', label: 'Diff Audit Review', field: 'diffAuditReview', required: false, align: 'right', sortable: true }
     ];
@@ -117,7 +121,9 @@ export default createComponent({
       'thirdPartyReview',
       'diffReviewLogbook',
       'audit',
-      'diffAuditReview'
+      'diffAuditReview',
+      'grade',
+      'criteria'
     ]);
 
     const apiTrip: any = reactive({});
@@ -240,10 +246,12 @@ export default createComponent({
             id: Math.random(),
             haul: 'Trip',
             speciesCode: key,
+            grade: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key).grade) : '' ),
+            criteria: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key).criteria) : '' ),
             logbookDiscard: tripTotals[key].logbook ? tripTotals[key].logbook.discard : '',
             logbookRetained: tripTotals[key].logbook ? tripTotals[key].logbook.retained : '',
             thirdPartyReview: tripTotals[key].thirdParty ? tripTotals[key].thirdParty.discard : '',
-            diffReviewLogbook: tripTotals[key].thirdParty && tripTotals[key].logbook ? getPercentDifference( tripTotals[key].thirdParty.discard, tripTotals[key].logbook.discard) : '',
+            diffReviewLogbook: tripTotals[key].thirdParty && tripTotals[key].logbook ? getPercentDifference( tripTotals[key].logbook.discard, tripTotals[key].thirdParty.discard) : '',
             audit: tripTotals[key].nwfscAudit ? tripTotals[key].nwfscAudit.discard : '',
             diffAuditReview: tripTotals[key].nwfscAudit && tripTotals[key].thirdParty ? getPercentDifference( tripTotals[key].nwfscAudit.discard, tripTotals[key].thirdParty.discard) : ''
           }
@@ -256,10 +264,12 @@ export default createComponent({
             id: Math.random(),
             haul: 'Reviewed',
             speciesCode: key,
+            grade: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key).grade) : '' ),
+            criteria: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === key).criteria) : '' ),
             logbookDiscard: reviewedTotals[key].logbook ? reviewedTotals[key].logbook.discard : '',
             logbookRetained: reviewedTotals[key].logbook ? reviewedTotals[key].logbook.retained : '',
             thirdPartyReview: reviewedTotals[key].thirdParty ? reviewedTotals[key].thirdParty.discard : '',
-            diffReviewLogbook: reviewedTotals[key].thirdParty && reviewedTotals[key].logbook ? getPercentDifference( reviewedTotals[key].thirdParty.discard, reviewedTotals[key].logbook.discard) : '',
+            diffReviewLogbook: reviewedTotals[key].thirdParty && reviewedTotals[key].logbook ? getPercentDifference( reviewedTotals[key].logbook.discard, reviewedTotals[key].thirdParty.discard) : '',
             audit: reviewedTotals[key].nwfscAudit ? reviewedTotals[key].nwfscAudit.discard : '',
             diffAuditReview: reviewedTotals[key].nwfscAudit && reviewedTotals[key].thirdParty ? getPercentDifference( reviewedTotals[key].nwfscAudit.discard, reviewedTotals[key].thirdParty.discard) : ''
           }
@@ -272,10 +282,12 @@ export default createComponent({
               id: Math.random(),
               haul: key,
               speciesCode: subKey,
+              grade: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === subKey) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === subKey).grade) : '' ),
+              criteria: (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === subKey) ? (apiCatch.reviewedGroupingTotals.find( (row: any) => row.grouping === subKey).criteria) : '' ),
               logbookDiscard: haulTotals[key][subKey].logbook ? haulTotals[key][subKey].logbook.discard : '',
               logbookRetained: haulTotals[key][subKey].logbook ? haulTotals[key][subKey].logbook.retained : '',
               thirdPartyReview: haulTotals[key][subKey].thirdParty ? haulTotals[key][subKey].thirdParty.discard : '',
-              diffReviewLogbook: haulTotals[key][subKey].thirdParty && haulTotals[key][subKey].logbook ? getPercentDifference( haulTotals[key][subKey].thirdParty.discard, haulTotals[key][subKey].logbook.discard ) : '',
+              diffReviewLogbook: haulTotals[key][subKey].thirdParty && haulTotals[key][subKey].logbook ? getPercentDifference( haulTotals[key][subKey].logbook.discard, haulTotals[key][subKey].thirdParty.discard ) : '',
               audit: haulTotals[key][subKey].nwfscAudit ? haulTotals[key][subKey].nwfscAudit.discard : '',
               diffAuditReview: haulTotals[key][subKey].nwfscAudit && haulTotals[key][subKey].thirdParty ? getPercentDifference( haulTotals[key][subKey].nwfscAudit.discard, haulTotals[key][subKey].thirdParty.discard ) : ''
             }
