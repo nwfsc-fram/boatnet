@@ -112,6 +112,7 @@ export default createComponent({
     const columns: any = [
         {field: 'section', header: 'Section'},
         {field: 'ifqGrouping', header: 'IFQ Grouping'},
+        {field: 'fishingArea', header: 'Fishing Area'},
         {field: 'pacfinSpeciesCode', header: 'Pacfin Code'},
         {field: 'wcgopSpeciesCode', header: 'Wcgop Code'},
         {field: 'disposition', header: 'Disposition'},
