@@ -6,6 +6,9 @@
           <span class="col" style="text-align: center">{{ tripDetails.vesselName }} ({{ tripDetails.vesselId }})</span>
           <br>
           <span class="col" style="text-align: right">{{ formatDateTime(tripDetails.departureDate) }} - {{ formatDate(tripDetails.returnDate) }}</span>
+          <br>
+          &nbsp;&nbsp;
+          <span style="color: #007EC6; cursor: pointer" @click="evalTripCatch(tripDetails.tripNum)">RE-CALCULATE</span>
         </h6>
 
       <DataTable
@@ -102,7 +105,7 @@ import moment from 'moment';
 import { get, set } from 'lodash';
 import _ from 'lodash';
 
-import { getTripsApiTrip, getCatchApiCatch } from '@boatnet/bn-common';
+import { getTripsApiTrip, getCatchApiCatch, evalCatch } from '@boatnet/bn-common';
 
 export default createComponent({
   setup(props, context) {
@@ -215,6 +218,23 @@ export default createComponent({
         loading.value = false;
     };
 
+    const evalTripCatch = async (tripNum: number) => {
+        await evalCatch(tripNum);
+        console.log('catch re-evaluated');
+        await getResults();
+        console.log('new results loaded');
+        Notify.create(
+            {
+                message: 'Catch re-evaluated / results re-loaded',
+                position: 'top-right',
+                color: 'green',
+                timeout: 2000,
+                icon: 'check',
+                multiLine: true
+            }
+        )
+    }
+
     const formatDateTime = (date: any) => {
         return moment(date).format('MMM DD, YYYY HH:mm');
     };
@@ -233,6 +253,7 @@ export default createComponent({
         cellVal,
         columns,
         columnOptions,
+        evalTripCatch,
         filters,
         formatDate,
         formatDateTime,
