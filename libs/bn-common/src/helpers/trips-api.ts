@@ -15,6 +15,9 @@ function getTripsApiUrl() {
 function getCatchApiUrl() {
     return authService.getTripsApiUrl() + '/api/v1/tripCatch';
 }
+function getEvalCatchUrl() {
+    return authService.getTripsApiUrl() + '/api/v1/evalCatch';
+}
 function getCruiseApiUrl() {
     return authService.getTripsApiUrl() + '/api/v1/cruise';
 }
@@ -116,6 +119,27 @@ export function getTripsApiTrip(tripNum: any) {
 export function getCatchApiCatch(tripNum: any) {
     return new Promise( (resolve, reject) => {
         const queryUrl = getCatchApiUrl() + '/' + parseInt(tripNum, 10);
+        request.get(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function evalCatch(tripNum: any) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getEvalCatchUrl() + '/' + parseInt(tripNum, 10);
         request.get(
             {
                 url: queryUrl,
