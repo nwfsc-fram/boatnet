@@ -221,15 +221,12 @@ export default createComponent({
     const evalTripCatch = async (tripNum: number) => {
         await evalCatch(tripNum);
         console.log('catch re-evaluated');
-        await getResults();
-        console.log('new results loaded');
         Notify.create(
             {
-                message: 'Catch re-evaluated / results re-loaded',
+                message: 'Catch re-evaluated  - manually refresh page after about a minute',
                 position: 'top-right',
-                color: 'green',
-                timeout: 2000,
-                icon: 'check',
+                color: 'grey',
+                timeout: 5000,
                 multiLine: true
             }
         )
