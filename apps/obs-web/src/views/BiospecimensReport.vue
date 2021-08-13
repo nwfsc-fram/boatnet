@@ -29,7 +29,6 @@
             :loading="loading"
             :visibleColumns="visibleColumns"
             :isDownloadable="true"
-            @save="save"
             @delete="showDelete"
         />
         <q-dialog v-model="showDeleteDialog">
@@ -217,30 +216,6 @@ export default createComponent({
             };
         }
 
-        async function save(newInfo: any) {
-            const newValObj = get(newInfo, 'newValObj');
-            const colInfo = get(newInfo, 'colInfo');
-            const updatedVal = get(newInfo, 'updatedVal');
-
-            const doc = newValObj.doc;
-            const couchBio = jp.nodes(
-                doc,
-                '$..biostructures[?(@._id=="' + newValObj.id + '")]'
-            );
-
-            const path = jp.stringify(couchBio[0].path).slice(2);
-            const currBio = couchBio[0].value;
-
-            set(currBio, colInfo.path, updatedVal);
-            set(doc, path, currBio);
-            const result = await masterDB.put(doc._id, doc, doc._rev);
-            const updateIndex = findIndex(tableData.value, [
-                'id',
-                newValObj.id,
-            ]);
-            set(tableData.value, '[' + updateIndex + '].doc._rev', result.rev);
-        }
-
         function showDelete(val: any) {
             showDeleteDialog.value = true;
             deleteItem.value = val;
@@ -275,7 +250,6 @@ export default createComponent({
             observer,
             evaluationPeriod,
 
-            save,
             deleteBio,
 
             showDeleteDialog,

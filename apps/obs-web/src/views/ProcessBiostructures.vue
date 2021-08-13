@@ -20,7 +20,6 @@
                 lookupValue="doc"
                 :lookupQueryOptions="{ key: observer}"
                 :emptyMessage="observer ? 'No evaluation periods found' : 'Select observer to populate list'"
-                @select="getTrips"
             />
             <span  v-if="type === 'rack'">
             <v-date-picker v-model="range" is-range style="display: inline-block; width: 30%" class="q-mx-md">
@@ -104,7 +103,9 @@
             </q-input>
             </span>
         </div>
-        <q-btn v-if="type === 'rack'" label="search" color="primary" @click="search"/>
+        <div class="row">
+            <q-btn v-if="type === 'rack'" label="search" color="primary" @click="search" style="text-align: right"/>
+        </div>
         <quasar-table
             :columns.sync="columns"
             :tableData="tableData"
@@ -141,22 +142,22 @@ import { Client } from 'davenport';
 import {
     concat,
     get,
+    groupBy,
     flattenDeep,
     findIndex,
     orderBy,
-    round,
     remove,
     set,
-    slice,
+    slice
 } from 'lodash';
 import QuasarTable from './QuasarTable.vue';
-import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
+import moment from 'moment';
 
 Vue.component('QuasarTable', QuasarTable);
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 import { proccessDissectionsCols, snoutCols, otolithCols, reportCols } from '../helpers/biospecimensToolCols';
-
+import { createResult } from '../helpers/biospecimensReportCommons';
 
 export default createComponent({
     components: { DebrieferSelectComp },
@@ -206,15 +207,6 @@ export default createComponent({
             }
         });
 
-        function isAuthorized(authorizedRoles: string[]) {
-            for (const role of authorizedRoles) {
-                if (state.user.userRoles.includes(role)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         function setCols(dissectionType: any) {
             if (dissectionType === 'Otolith') {
                 columns.value = concat(proccessDissectionsCols, otolithCols);
@@ -227,45 +219,37 @@ export default createComponent({
         }
         setCols(null);
 
-        async function getTrips(evalPeriod: any) {
-            if (evalPeriod && evalPeriod.startDate && evalPeriod.endDate && observer.value) {
-                loading.value = true;
-                const results: any[] = [];
-                const trips = await getTripsByDates(new Date(evalPeriod.startDate),
-                                                new Date(evalPeriod.endDate),
-                                                observer.value);
-            for (const trip of trips) {
-                let operationIds = jp.query(trip, '$.operationIDs');
-                operationIds = flattenDeep(operationIds);
-                const operations: any = await masterDB.listWithDocs({keys: operationIds});
-                for (const operation of operations.rows) {
-                    let bios = jp.query(operation, '$..biostructures');
-                        bios = flattenDeep(bios);
-                        for (const bio of bios) {
-                            if (bio) {
-                                results.push({
-                                    id: operation._id,
-                                    doc: operation,
-                                    value: bio._id
-                                });
-                            }
-                        }
-                    }
-                }
-                tableData.value = orderBy(results, ['position'], ['asc']);
-                loading.value = false;
-            } else {
-                tableData.value = [];
-            }
-        }
-
         async function search() {
-            console.log('search')
             loading.value = true;
             let results = [];
-            const searchKeys = [];
+            let searchKeys: any[] = [];
             if (observer.value) {
-               // results = await getTrips();
+                const trips = await masterDB.viewWithDocs('obs_web', 'wcgop_trips_by_observerId', { key: observer.value});
+                let operationIds = jp.query(trips.rows, '$[*].doc.operationIDs');
+                operationIds = flattenDeep(operationIds);
+
+                const operations = await masterDB.listWithDocs({keys: operationIds});
+                let biostructures = jp.query(operations.rows, '$[*]..biostructures');
+                biostructures = flattenDeep(biostructures);
+
+                const biostructureIds = jp.apply(biostructures, '$[*]._id', (val: any) => {return ['id', val]});
+                const formattedBioIds = jp.query(biostructureIds, '$[*].value');
+                searchKeys = concat(searchKeys, formattedBioIds);
+            }
+            if (range.value) {
+                const biostructures: any = await masterDB.viewWithDocs(
+                    'obs_web',
+                    'biostructures_compound_fields',
+                    {
+                        start_key: ['upDate', moment(range.value.start).hour(0).minute(0).second(0).format()],
+                        end_key: ['upDate', moment(range.value.end).hour(0).minute(0).second(0).format()],
+                        include_docs: true,
+                        limit: 100
+                    } as any
+                );
+                const biostructureIds = jp.apply(biostructures.rows, '$[*].value', (val: any) => {return ['id', val]});
+                const formattedBioIds = jp.query(biostructureIds, '$[*].value');
+                searchKeys = concat(searchKeys, formattedBioIds);
             }
             if (species.value) {
                 searchKeys.push(['species', species.value]);
@@ -279,8 +263,8 @@ export default createComponent({
             if (barcode.value) {
                 searchKeys.push(['barcode', parseInt(barcode.value)]);
             }
-            const operationDocs: any = await masterDB.viewWithDocs(
-                'obs_web_new',
+            let operationDocs: any = await masterDB.viewWithDocs(
+                'obs_web',
                 'biostructures_compound_fields',
                 {
                     keys: searchKeys,
@@ -288,8 +272,6 @@ export default createComponent({
                     limit: 100
                 } as any
             );
-            console.log('op docs')
-            console.log(operationDocs)
             const operationIds = jp.query(operationDocs.rows, '$[*].id');
 
             const tripDocs: any = await masterDB.viewWithDocs(
@@ -297,19 +279,22 @@ export default createComponent({
                 'get_trip_by_operationId',
                 { keys: operationIds }
             );
-            for (const operation of operationDocs.rows) {
+            for (let operation of operationDocs.rows) {
+                const operationDoc = operation.doc;
                 const findStr = '$..biostructures[?(@._id=="' + operation.value + '")]';
-                const bios = jp.nodes(operation, findStr);
+                const bios = jp.nodes(operationDoc, findStr);
                 const bioValue = bios[0].value;
 
-                const catchPath = jp.stringify(slice(bios[0].path, 0, 4));
-                const speciesPath = jp.stringify(slice(bios[0].path, 0, 6));
-                const specimenPath = jp.stringify(slice(bios[0].path, 0, 8));
+                //const catchPath = jp.stringify(slice(bios[0].path, 0, 4));
+                //const speciesPath = jp.stringify(slice(bios[0].path, 0, 6));
+                //const specimenPath = jp.stringify(slice(bios[0].path, 0, 8));
 
                 const tripIndex = findIndex(tripDocs.rows, ['key', operation.id]);
-                const trip = tripDocs.rows[tripIndex].doc;
+                const trip = get(tripDocs, "rows[tripIndex].doc", {});
 
-                results.push({
+                results.push(createResult(trip, operationDoc, bioValue, bios[0].path));
+
+              /*  results.push({
                     position: get(bioValue, 'legacy.rackPosition'),
                     tripNum: get(operation, 'doc.legacy.tripId'),
                     haulNum: get(operation, 'doc.operationNum'),
@@ -333,17 +318,17 @@ export default createComponent({
                     ageMethod: get(bioValue, 'legacy.ageMethod'),
 
                     // haul report attributes
-                    gearType: get(operation, 'gearType.description'),
-                    gearPerformance: get(operation, 'gearPerformance.description'),
-                    haulUpDate: get(operation, 'locations[0].locationDate'),
+                    gearType: get(operation, 'doc.gearType.description'),
+                    gearPerformance: get(operation, 'doc.gearPerformance.description'),
+                    haulUpDate: get(operation, 'doc.locations[0].locationDate'),
                     haulUpCoord: [
-                        get(operation, 'locations[0].location.coordinates[0]'),
-                        get(operation, 'locations[0].location.coordinates[1]'),
+                        get(operation, 'doc.locations[0].location.coordinates[0]'),
+                        get(operation, 'doc.locations[0].location.coordinates[1]'),
                     ],
-                    haulSetDate: get(operation, 'locations[1].locationDate'),
+                    haulSetDate: get(operation, 'doc.locations[1].locationDate'),
                     haulSetCoord: [
-                        get(operation, 'locations[1].location.coordinates[0]'),
-                        get(operation, 'locations[1].location.coordinates[1]'),
+                        get(operation, 'doc.locations[1].location.coordinates[0]'),
+                        get(operation, 'doc.locations[1].location.coordinates[1]'),
                     ],
 
                     // trip report attributes
@@ -359,68 +344,10 @@ export default createComponent({
                     length: jp.value(operation, specimenPath + '.length.value'),
                     weight: jp.value(operation, specimenPath + '.weight.value'),
                     tag: jp.value(operation, specimenPath + '.tags[0]')
-                });
+                });*/
             }
             tableData.value = orderBy(results, ['position'], ['asc']);
             loading.value = false;
-        }
-
-        function createResult(trip: any, operation: any, bio: any, path: string[]) {
-            const catchPath = jp.stringify(slice(path, 0, 3));
-            const speciesPath = jp.stringify(slice(path, 0, 5));
-            const specimenPath = jp.stringify(slice(path, 0, 7));
-
-            return {
-                position: get(bio, 'legacy.rackPosition'),
-                tripNum: get(operation, 'legacy.tripId'),
-                haulNum: get(operation, 'operationNum'),
-                catchNum: jp.value(operation, catchPath + '.catchNum'),
-                species: jp.value(
-                    operation,
-                    speciesPath + '.catchContent.commonNames[0]'
-                ),
-                dissection: get(bio, 'structureType.description'),
-                label: get(bio, 'label'),
-                received: get(bio, 'isReceived', 'No'),
-                cwtStatus: get(bio, 'legacy.cwtStatus'),
-                cwtCode: get(bio, 'legacy.cwtCode'),
-                cwtType: get(bio, 'legacy.cwtType'),
-                doc: operation.doc,
-                id: operation.value,
-                age: get(bio, 'legacy.age'),
-                ageReader: get(bio, 'legacy.ageReader'),
-                ageDate: get(bio, 'legacy.ageDate'),
-                ageLocation: get(bio, 'legacy.ageLocation'),
-                ageMethod: get(bio, 'legacy.ageMethod'),
-
-                // haul report attributes
-                gearType: get(operation, 'gearType.description'),
-                gearPerformance: get(operation, 'gearPerformance.description'),
-                haulUpDate: get(operation, 'locations[0].locationDate'),
-                haulUpCoord: [
-                    get(operation, 'locations[0].location.coordinates[0]'),
-                    get(operation, 'locations[0].location.coordinates[1]'),
-                ],
-                haulSetDate: get(operation, 'locations[1].locationDate'),
-                haulSetCoord: [
-                    get(operation, 'locations[1].location.coordinates[0]'),
-                    get(operation, 'locations[1].location.coordinates[1]'),
-                ],
-
-                // trip report attributes
-                observer: get(trip, 'observer.firstName') + ' ' + get(trip, 'observer.lastName'),
-                vessel: get(trip, 'vessel.vesselName'),
-                departureDate: get(trip, 'departureDate', ''),
-                departurePort: get(trip, 'departurePort.name', ''),
-                returnDate: get(trip, 'returnDate', ''),
-                returnPort: get(trip, 'returnPort.name', ''),
-                fishery: get(trip, 'fishery.description', ''),
-
-                sex: jp.value(operation, specimenPath + '.sex'),
-                length: jp.value(operation, specimenPath + '.length.value'),
-                weight: jp.value(operation, specimenPath + '.weight.value'),
-                tag: jp.value(operation, specimenPath + '.tags[0]')
-            }
         }
 
         async function save(newInfo: any) {
@@ -489,13 +416,11 @@ export default createComponent({
             save,
             deleteBio,
             pagination,
-            isAuthorized,
 
             search,
             showDeleteDialog,
             deleteItem,
-            showDelete,
-            getTrips
+            showDelete
         };
     },
 });

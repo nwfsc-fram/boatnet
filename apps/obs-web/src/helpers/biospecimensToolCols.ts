@@ -236,6 +236,12 @@ export const reportCols = [
         type: 'coord',
     },
     {
+        name: 'haulUpDate',
+        label: 'Haul Up Date',
+        field: 'haulUpDate',
+        type: 'date',
+    },
+    {
         name: 'haulSetDate',
         label: 'Haul Set Date',
         field: 'haulSetDate',
