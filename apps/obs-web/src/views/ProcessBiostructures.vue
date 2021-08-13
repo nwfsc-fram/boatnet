@@ -141,6 +141,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import {
     concat,
+    find,
     get,
     groupBy,
     flattenDeep,
@@ -272,8 +273,14 @@ export default createComponent({
                     limit: 100
                 } as any
             );
-            const operationIds = jp.query(operationDocs.rows, '$[*].id');
+            const rackIds = jp.query(operationDocs.rows, '$[*]..rackId');
+            const rackDocs: any = await masterDB.viewWithDocs(
+                'obs_web',
+                'rack',
+                { keys: rackIds}
+            );
 
+            const operationIds = jp.query(operationDocs.rows, '$[*].id');
             const tripDocs: any = await masterDB.viewWithDocs(
                 'obs_web',
                 'get_trip_by_operationId',
@@ -284,8 +291,11 @@ export default createComponent({
                 const findStr = '$..biostructures[?(@._id=="' + operation.value + '")]';
                 const bios = jp.nodes(operationDoc, findStr);
                 const bioValue = bios[0].value;
-                const trip = get(tripDocs, "rows[tripIndex].doc", {});
-                results.push(createResult(trip, operationDoc, bioValue, bios[0].path));
+
+                const trip = find(tripDocs.rows, ['key', operation.id]);
+                const rackId = get(bioValue, 'legacy.rackId');
+                const rack = find(rackDocs.rows, ['key', rackId]);
+                results.push(await createResult(trip, operationDoc, bioValue, rack, bios[0].path));
             }
             tableData.value = orderBy(results, ['position'], ['asc']);
             loading.value = false;

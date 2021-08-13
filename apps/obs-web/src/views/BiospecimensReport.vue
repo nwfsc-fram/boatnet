@@ -80,7 +80,6 @@ import { getTripsByDates } from '../helpers/getFields';
 import { commonCols, reportCols } from '../helpers/biospecimensToolCols';
 import { createResult } from '../helpers/biospecimensReportCommons';
 
-
 Vue.component('QuasarTable', QuasarTable);
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
@@ -140,7 +139,7 @@ export default createComponent({
                                 const bioId = get(bio, '_id', '');
                                 const findStr ='$..biostructures[?(@._id=="' + bioId + '")]';
                                 const path = jp.paths(operation, findStr);
-                                results.push(createResult(trip, operation, bio, path[0]));
+                                results.push(await createResult(trip, operation, bio, path[0]));
                             }
                         }
                     }

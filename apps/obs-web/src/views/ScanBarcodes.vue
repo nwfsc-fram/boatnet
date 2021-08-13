@@ -70,7 +70,7 @@
         v-model="barcode"
         clearable
         clear-icon="close"
-        @input="populateSpecimenInfo"
+        @input="scanBarcode"
         @clear="clear"
       >
         <template v-slot:prepend>
@@ -135,6 +135,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { get, isEmpty, parseInt, set } from 'lodash';
 import RackDialog from './RackDialog.vue';
+import BoatnetInputDialog from 'libs/bn-common/src/components/BoatnetInputDialog.vue';
 
 Vue.component('RackDialog', RackDialog);
 Vue.component('multiselect', Multiselect);
@@ -192,18 +193,26 @@ export default createComponent({
       populateSpecimenInfo(barcode.value);
     }
 
-    async function populateSpecimenInfo(val: any) {
+    async function scanBarcode(val: any) {
       if (val) {
         const masterDB: Client<any> = couchService.masterDB;
         const barcodeDoc = await masterDB.viewWithDocs('obs_web', 'biostructures_barcode', { key: parseInt(val, 10) });
+        await populateSpecimenInfo(barcodeDoc);
+        if (props.type === 'scan') {
+          await checkInBio(val, barcodeDoc);
+        } else {
+          await rackBio(val, barcodeDoc);
+        }
+      }
+    }
 
-        specimen.value = get(barcodeDoc, 'rows[0].value', {});
-        const tripNum = get(specimen.value, 'tripNum');
+    async function populateSpecimenInfo(barcodeInfo: any) {
+        specimen.value = get(barcodeInfo, 'rows[0].value', {});
         const structureType = get(specimen.value, 'biostructure.structureType.description', '');
         specimen.value.structureType = structureType;
-        const rackId = get(specimen.value, 'biostructure.legacy.rackId', 0);
 
         // get trip doc to get observer name
+        const tripNum = get(specimen.value, 'tripNum');
         const tripDetails = await masterDB.viewWithDocs(
             'obs_web',
             'wcgop_trips_compound_fields',
@@ -214,10 +223,50 @@ export default createComponent({
         );
         const firstName = get(tripDetails, 'rows[0].doc.observer.firstName', '');
         const lastName = get(tripDetails, 'rows[0].doc.observer.lastName', '');
-        specimen.value.observerName = firstName + ' ' + lastName;
+        specimen.value.observerName = firstName + ' ' + lastName;        
+    }
 
-        // populating banner messages
-        if (!inputDissection.value) {
+    async function rackBio(barcode: string, barcodeDoc: any) {
+      const doc: any = get(barcodeDoc, 'rows[0].doc');
+      const biostructure: any = jp.nodes(doc, '$..biostructures[?(@.label=="' + barcode + '")]');
+      const rackInfo = get(rack, 'value', {});
+
+      if (!get(rackInfo, 'rackName')) {
+        bannerInfo.value = {
+          message: 'Select a rack before proceeding',
+          icon: 'warning',
+          style: 'bg-red q-mt-sm text-white'
+        }
+      } else if (get(biostructure, '[0].value.legacy.rackId')) {
+        const rackId = get(biostructure, '[0].value.legacy.rackId');
+        const lookupRackInfo = await masterDB.viewWithDocs('obs_web', 'rack', { key: rackId});
+  
+        bannerInfo.value = {
+          message: 'Biostructure already assigned to rack: <b>' + get(lookupRackInfo, 'rows[0].doc.rackName') + '</b>',
+          icon: "info",
+          style: 'bg-grey text-white q-mt-sm'
+        }
+      } else {
+        bannerInfo.value = {
+          message: 'Successfully added biostructure with barcode: <b>' + barcode + '</b> to rack: <b>' + rackInfo.rackName + '</b>',
+          icon: 'done',
+          style: 'bg-green q-mt-sm text-white'
+        };
+
+        set(biostructure[0].value, 'legacy.rackId', rackInfo.rackId);
+
+        const path: string = jp.stringify(biostructure[0].path).slice(2);
+        set(doc, path, biostructure[0].value);
+        await masterDB.put(doc._id, doc, doc._rev);
+      }
+    }
+
+    async function checkInBio(barcode: string, barcodeDoc: any) {
+      specimen.value = get(barcodeDoc, 'rows[0].value', {});
+      const structureType = get(specimen.value, 'biostructure.structureType.description', '');
+
+      // populating banner messages
+      if (!inputDissection.value) {
           bannerInfo.value = {
             message: 'Missing dissection type',
             icon: 'warning',
@@ -248,14 +297,13 @@ export default createComponent({
             style: 'bg-green q-mt-sm text-white'
           };
           const doc: any = barcodeDoc.rows[0].doc;
-          const biostructure: any = jp.nodes(doc, '$..biostructures[?(@.label=="' + val + '")]');
+          const biostructure: any = jp.nodes(doc, '$..biostructures[?(@.label=="' + barcode + '")]');
           const path: string = jp.stringify(biostructure[0].path).slice(2);
 
           set(biostructure[0].value, 'isReceived', true);
           set(doc, path, biostructure[0].value);
           await masterDB.put(doc._id, doc, doc._rev);
         }
-      }
     }
 
     function hideBanner() {
@@ -286,7 +334,7 @@ export default createComponent({
         deleteRack,
         isEmpty,
 
-        populateSpecimenInfo,
+        scanBarcode,
         validate,
 
         scanKey

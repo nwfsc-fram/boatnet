@@ -1,23 +1,16 @@
 import { get, slice } from 'lodash'
 
-
-export function createResult(
+export async function createResult(
     trip: any,
     operation: any,
     bio: any,
+    rack: any,
     path: string[]
 ) {
     const jp = require('jsonpath');
     const catchPath = jp.stringify(slice(path, 0, 3));
     const speciesPath = jp.stringify(slice(path, 0, 5));
     const specimenPath = jp.stringify(slice(path, 0, 7));
-
-    console.log(operation)
-    console.log(catchPath)
-
-    console.log(bio)
-    console.log(speciesPath)
-    console.log(speciesPath)
 
     return {
         position: get(bio, 'legacy.rackPosition'),
@@ -41,6 +34,8 @@ export function createResult(
         ageDate: get(bio, 'legacy.ageDate'),
         ageLocation: get(bio, 'legacy.ageLocation'),
         ageMethod: get(bio, 'legacy.ageMethod'),
+        rack: get(rack, 'doc.rackName'),
+        rackLocation: get(rack, 'doc.rackLocation'),
 
         // haul report attributes
         gearType: get(operation, 'gearType.description'),
@@ -64,13 +59,13 @@ export function createResult(
         vessel: get(trip, 'vessel.vesselName'),
         departureDate: get(trip, 'departureDate', ''),
         departurePort: get(trip, 'departurePort.name', ''),
-          sex: jp.value(operation, specimenPath + '.sex'),
+        sex: jp.value(operation, specimenPath + '.sex'),
         length: jp.value(operation, specimenPath + '.length.value'),
-       returnDate: get(trip, 'returnDate', ''),
+        returnDate: get(trip, 'returnDate', ''),
         returnPort: get(trip, 'returnPort.name', ''),
         fishery: get(trip, 'fishery.description', ''),
 
-       weight: jp.value(operation, specimenPath + '.weight.value'),
-    tag: jp.value(operation, specimenPath + '.tags[0]'),
+        weight: jp.value(operation, specimenPath + '.weight.value'),
+        tag: jp.value(operation, specimenPath + '.tags[0]'),
     };
 }

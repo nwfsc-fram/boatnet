@@ -138,9 +138,9 @@ export const otolithCols = [
 
 export const proccessDissectionsCols = [
     {
-        name: 'rackName',
+        name: 'rack',
         label: 'Rack Name',
-        field: 'rackName',
+        field: 'rack',
     },
     {
         name: 'rackLocation',
