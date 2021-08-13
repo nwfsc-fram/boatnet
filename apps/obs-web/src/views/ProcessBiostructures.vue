@@ -284,67 +284,8 @@ export default createComponent({
                 const findStr = '$..biostructures[?(@._id=="' + operation.value + '")]';
                 const bios = jp.nodes(operationDoc, findStr);
                 const bioValue = bios[0].value;
-
-                //const catchPath = jp.stringify(slice(bios[0].path, 0, 4));
-                //const speciesPath = jp.stringify(slice(bios[0].path, 0, 6));
-                //const specimenPath = jp.stringify(slice(bios[0].path, 0, 8));
-
-                const tripIndex = findIndex(tripDocs.rows, ['key', operation.id]);
                 const trip = get(tripDocs, "rows[tripIndex].doc", {});
-
                 results.push(createResult(trip, operationDoc, bioValue, bios[0].path));
-
-              /*  results.push({
-                    position: get(bioValue, 'legacy.rackPosition'),
-                    tripNum: get(operation, 'doc.legacy.tripId'),
-                    haulNum: get(operation, 'doc.operationNum'),
-                    catchNum: jp.value(operation, catchPath + '.catchNum'),
-                    species: jp.value(
-                        operation,
-                        speciesPath + '.catchContent.commonNames[0]'
-                    ),
-                    dissection: get(bioValue, 'structureType.description'),
-                    label: get(bioValue, 'label'),
-                    received: get(bioValue, 'isReceived', 'No'),
-                    cwtStatus: get(bioValue, 'legacy.cwtStatus'),
-                    cwtCode: get(bioValue, 'legacy.cwtCode'),
-                    cwtType: get(bioValue, 'legacy.cwtType'),
-                    doc: operation.doc,
-                    id: operation.value,
-                    age: get(bioValue, 'legacy.age'),
-                    ageReader: get(bioValue, 'legacy.ageReader'),
-                    ageDate: get(bioValue, 'legacy.ageDate'),
-                    ageLocation: get(bioValue, 'legacy.ageLocation'),
-                    ageMethod: get(bioValue, 'legacy.ageMethod'),
-
-                    // haul report attributes
-                    gearType: get(operation, 'doc.gearType.description'),
-                    gearPerformance: get(operation, 'doc.gearPerformance.description'),
-                    haulUpDate: get(operation, 'doc.locations[0].locationDate'),
-                    haulUpCoord: [
-                        get(operation, 'doc.locations[0].location.coordinates[0]'),
-                        get(operation, 'doc.locations[0].location.coordinates[1]'),
-                    ],
-                    haulSetDate: get(operation, 'doc.locations[1].locationDate'),
-                    haulSetCoord: [
-                        get(operation, 'doc.locations[1].location.coordinates[0]'),
-                        get(operation, 'doc.locations[1].location.coordinates[1]'),
-                    ],
-
-                    // trip report attributes
-                    observer: get(trip, 'observer.firstName') + ' ' + get(trip, 'observer.lastName'),
-                    vessel: get(trip, 'vessel.vesselName'),
-                    departureDate: get(trip, 'departureDate', ''),
-                    departurePort: get(trip, 'departurePort.name', ''),
-                    returnDate: get(trip, 'returnDate', ''),
-                    returnPort: get(trip, 'returnPort.name', ''),
-                    fishery: get(trip, 'fishery.description', ''),
-
-                    sex: jp.value(operation, specimenPath + '.sex'),
-                    length: jp.value(operation, specimenPath + '.length.value'),
-                    weight: jp.value(operation, specimenPath + '.weight.value'),
-                    tag: jp.value(operation, specimenPath + '.tags[0]')
-                });*/
             }
             tableData.value = orderBy(results, ['position'], ['asc']);
             loading.value = false;
