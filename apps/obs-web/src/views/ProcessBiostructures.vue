@@ -1,63 +1,110 @@
 <template>
     <div>
         <div class="q-pa-md">
-            <q-select
+            <debriefer-select-comp
+                label="Observer"
+                style="display: inline-block; width: 30%"
+                :val.sync="observer"
+                lookupView="all_wcgop_observers"
+                lookupLabel="value"
+                lookupValue="id"
+            />
+            <debriefer-select-comp
+                v-if="type === 'scan'"
+                style="display: inline-block; width: 30%"
+                class="q-pl-md"
+                :val:sync="evaluationPeriod"
+                label="Evaluation Period"
+                lookupView="evaluation_periods"
+                lookupLabel="value"
+                lookupValue="doc"
+                :lookupQueryOptions="{ key: observer}"
+                :emptyMessage="observer ? 'No evaluation periods found' : 'Select observer to populate list'"
+            />
+            <span  v-if="type === 'rack'">
+            <v-date-picker v-model="range" is-range style="display: inline-block; width: 30%" class="q-mx-md">
+                <template v-slot="{ inputValue, inputEvents }">
+                    <div>
+                        <input
+                            :value="inputValue.start"
+                            v-on="inputEvents.start"
+                            class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
+                        />
+                            <input
+                            :value="inputValue.end"
+                            v-on="inputEvents.end"
+                            class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
+                        />
+      
+                       <!-- <q-input
+                            style="display: inline-block; width: 45%"
+                            class="q-mr-md"
+                            v-model="inputValue.start"
+                            v-on="inputEvents.start"
+                            label="Start Date"
+                        >
+                            <template v-slot:prepend>
+                                <q-icon name="event" />
+                            </template>
+                        </q-input>
+                        <q-input
+                            style="display: inline-block; width: 45%"
+                            v-model="inputValue.end"
+                            v-on="inputEvents.end"
+                            label="End Date"
+                        >
+                            <template v-slot:prepend>
+                                <q-icon name="event" />
+                            </template>
+                        </q-input>-->
+                    </div>
+                </template>
+            </v-date-picker>
+            <debriefer-select-comp
                 style="display: inline-block; width: 30%"
                 label="Species"
-                v-model="species"
-                :options="speciesOptions"
-                use-input
-                hide-selected
-                fill-input
-                clearable
-                clear-icon="close"
-                @filter="speciesFilterFn"
-                :option-label="(item) => get(item, speciesLabel)"
-                :option-value="(item) => get(item, speciesLabel)"
+                :val.sync="species"
+                lookupView="biostructures_species"
+                lookupLabel="key"
+                lookupValue="key"
+                :clearable="true"
             />
-            <q-select
-                style="display: inline-block; width: 30%"
-                class="q-px-md"
-                label="DissectionType"
-                v-model="dissection"
-                use-input
-                hide-selected
-                fill-input
-                clearable
-                clear-icon="close"
-                @filter="dissectionFilterFn"
-                :options="dissectionOptions"
-                :option-label="(item) => get(item, dissectionLabel)"
-                :option-value="(item) => get(item, dissectionLabel)"
-                @input="setCols"
-            />
-            <q-select
+            <debriefer-select-comp
                 style="display: inline-block; width: 30%"
                 label="Rack Name"
-                v-model="rack"
-                use-input
-                hide-selected
-                fill-input
+                :val.sync="rack"
+                lookupView="rack"
+                lookupLabel="doc.rackName"
+                lookupValue="doc"
+                :clearable="true"
+            />
+            <debriefer-select-comp
+                style="display: inline-block; width: 30%"
+                class="q-px-md"
+                label="Dissection Type"
+                :val.sync="dissection"
+                lookupView="wcgop-lookups"
+                lookupLabel="doc.description"
+                lookupValue="doc.description"
+                :clearable="true"
+                :lookupQueryOptions="{ key: 'biostructure-type' }"
+            />
+            <q-input
+                style="display: inline-block; width: 30%"
+                label="Barcode"
+                debounce="500"
+                v-model="barcode"
                 clearable
                 clear-icon="close"
-                @filter="rackFilterFn"
-                :options="rackOptions"
-                :option-label="(item) => get(item, rackLabel)"
-                :option-value="(item) => get(item, rackLabel)"
-                @input="selectRack"
-            />
-            <q-btn
-                v-if="isAuthorized(['debriefer'])"
-                round
-                class="q-mr-md"
-                style="display: inline-block"
-                color="white"
-                text-color="black"
-                icon="add"
-                @click="addRack"
             >
-                <q-tooltip class="bg-accent">Create New Rack</q-tooltip>
-            </q-btn>
+                <template v-slot:prepend>
+                    <q-icon name="search" />
+                </template>
+            </q-input>
+            </span>
+        </div>
+        <div class="row">
+            <q-btn v-if="type === 'rack'" label="search" color="primary" @click="search" style="text-align: right"/>
         </div>
         <quasar-table
             :columns.sync="columns"
@@ -66,13 +113,21 @@
             :visibleColumns="visibleColumns"
             :isDownloadable="true"
             @save="save"
-            @delete="deleteBio"
+            @delete="showDelete"
         />
-        <rack-dialog
-            :show.sync="showRackDialog"
-            :rackInfo="rack"
-            @saveRack="saveRack"
-        />
+        <q-dialog v-model="showDeleteDialog">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="primary" text-color="white" />
+          <span class="q-ml-sm">Are you sure you want to delete rack with barcode {{deleteItem.label}}?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Yes" color="primary" @click="deleteBio" v-close-popup />
+          <q-btn flat label="No" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
     </div>
 </template>
 
@@ -86,30 +141,30 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import {
     concat,
+    find,
     get,
-    filter,
+    groupBy,
+    flattenDeep,
     findIndex,
     orderBy,
-    round,
     remove,
     set,
-    slice,
-    uniqBy,
+    slice
 } from 'lodash';
-import moment from 'moment';
-import { exportFile } from 'quasar'
-
-import RackDialog from './RackDialog.vue';
-
 import QuasarTable from './QuasarTable.vue';
+import moment from 'moment';
+
 Vue.component('QuasarTable', QuasarTable);
-
-Vue.component('RackDialog', RackDialog);
-
 Vue.component('multiselect', Multiselect);
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
+import { proccessDissectionsCols, snoutCols, otolithCols, reportCols } from '../helpers/biospecimensToolCols';
+import { createResult } from '../helpers/biospecimensReportCommons';
 
 export default createComponent({
+    components: { DebrieferSelectComp },
+    props: {
+        type: String
+    },
     setup(props, context) {
         const state = context.root.$store.state;
         const masterDB: Client<any> = couchService.masterDB;
@@ -118,13 +173,16 @@ export default createComponent({
 
         const species: any = ref('');
         const dissection: any = ref('');
-        const rack: any = ref('');
+        const rack: any = ref({});
+        const barcode: any = ref('');
+        const observer: any = ref('');
+        const evaluationPeriod: any = ref({});
+        const range: any = ref({});
 
         const speciesLabel = 'doc.speciesId.commonNames[0]';
         const dissectionLabel = 'doc.dissectionType.description';
         const rackLabel = 'value';
 
-        const showRackDialog: any = ref(false);
         const tableData: any = ref([]);
         const loading: any = ref(false);
 
@@ -135,6 +193,8 @@ export default createComponent({
 
         const columns: any = ref([]);
         const visibleColumns: any = ref([]);
+        const showDeleteDialog: any = ref(false);
+        const deleteItem: any = ref({});
 
         const pagination: any = {
             sortBy: 'desc',
@@ -142,408 +202,103 @@ export default createComponent({
             rowsPerPage: 25
         }
 
-        const commonCols: any[] = [
-            {
-                name: 'position',
-                label: 'Position',
-                field: 'position',
-            },
-            {
-                name: 'tripNum',
-                label: 'Trip #',
-                field: 'tripNum',
-            },
-            {
-                name: 'haulNum',
-                label: 'Haul #',
-                field: 'haulNum',
-            },
-            {
-                name: 'catchNum',
-                label: 'Catch #',
-                field: 'catchNum',
-            },
-            {
-                name: 'species',
-                label: 'Species',
-                field: 'species',
-            },
-            {
-                name: 'dissection',
-                label: 'Dissection',
-                field: 'dissection',
-            },
-            {
-                name: 'label',
-                label: 'Barcode #',
-                path: 'label',
-                field: 'label',
-            },
-            {
-                name: 'received',
-                label: 'Received',
-                field: 'received',
-            },
-        ];
-
-        const snoutCols = [
-            {
-                name: 'cwtCode',
-                label: 'CWT Code',
-                field: 'cwtCode',
-                path: 'legacy.cwtCode',
-                isEditable: true,
-                type: 'text',
-            },
-            {
-                name: 'cwtType',
-                label: 'CWT Type',
-                field: 'cwtType',
-                path: 'legacy.cwtType',
-                isEditable: true,
-                type: 'text',
-            },
-            {
-                name: 'cwtStatus',
-                label: 'CWT Status',
-                field: 'cwtStatus',
-                path: 'legacy.cwtStatus',
-                isEditable: true,
-                type: 'text',
-            },
-        ];
-
-        const otolithCols = [
-            {
-                name: 'age',
-                label: 'Age',
-                field: 'age',
-                path: 'legacy.age',
-                isEditable: true,
-                type: 'number',
-            },
-            {
-                name: 'ageReader',
-                label: 'Reader',
-                field: 'ageReader',
-                path: 'legacy.ageReader',
-                isEditable: true,
-                type: 'text',
-            },
-            {
-                name: 'ageMethod',
-                label: 'Method',
-                field: 'ageMethod',
-                path: 'legacy.ageMethod',
-                isEditable: true,
-                type: 'select',
-                key: 'age-methods'
-            },
-            {
-                name: 'ageDate',
-                label: 'Date',
-                field: 'ageDate',
-                path: 'legacy.ageDate',
-                isEditable: true,
-                type: 'date',
-            },
-            {
-                name: 'ageLocation',
-                label: 'Location',
-                field: 'ageLocation',
-                path: 'legacy.ageLocation',
-                isEditable: true,
-                type: 'select',
-                key: 'reader-location'
-            },
-        ];
-
-        const reportCols = [
-            {
-                name: 'observer',
-                label: 'Observer',
-                field: 'observer',
-            },
-            {
-                name: 'vessel',
-                label: 'Vessel',
-                field: 'vessel',
-            },
-            {
-                name: 'departureDate',
-                label: 'Departure Date',
-                field: 'departureDate',
-                type: 'date',
-            },
-            {
-                name: 'departurePort',
-                label: 'Departure Port',
-                field: 'departurePort',
-            },
-            {
-                name: 'returnDate',
-                label: 'Return Date',
-                field: 'returnDate',
-                type: 'date',
-            },
-            {
-                name: 'returnPort',
-                label: 'Return Port',
-                field: 'returnPort',
-            },
-            {
-                name: 'fishery',
-                label: 'Fishery',
-                field: 'fishery',
-            },
-            {
-                name: 'gearType',
-                label: 'Gear Type',
-                field: 'gearType',
-            },
-            {
-                name: 'gearPerformance',
-                label: 'Gear Perf',
-                field: 'gearPerformance',
-            },
-            {
-                name: 'haulUpDate',
-                label: 'Haul Up Date',
-                field: 'haulUpDate',
-                type: 'date',
-            },
-            {
-                name: 'haulUpCoord',
-                label: 'Haul Up Coord',
-                field: 'haulUpCoord',
-                type: 'coord',
-            },
-            {
-                name: 'haulSetDate',
-                label: 'Haul Set Date',
-                field: 'haulSetDate',
-                type: 'date',
-            },
-            {
-                name: 'haulSetCoord',
-                label: 'Haul Set Coord',
-                field: 'haulSetCoord',
-                type: 'coord',
-            },
-            {
-                name: 'sex',
-                label: 'Sex',
-                field: 'sex'
-            },
-            {
-                name: 'length',
-                label: 'Length',
-                field: 'length'
-            },
-            {
-                name: 'weight',
-                label: 'Weight',
-                field: 'weight',
-                type: 'number'
-            },
-            {
-                name: 'rackName',
-                label: 'Rack Name',
-                field: 'rackName',
-            },
-            {
-                name: 'rackLocation',
-                label: 'Rack Location',
-                field: 'rackLocation',
-            },
-            {
-                name: 'tag',
-                label: 'Tag/Band Id',
-                field: 'tag'
-            },
-        ];
-
-        function isAuthorized(authorizedRoles: string[]) {
-            for (const role of authorizedRoles) {
-                if (state.user.userRoles.includes(role)) {
-                    return true;
-                }
+        watch(dissection, (updatedSelection, prevSelection) => {
+            if (updatedSelection) {
+                setCols(updatedSelection)
             }
-            return false;
-        }
+        });
 
-        function setCols(val: any) {
-            const dissectionType = get(val, dissectionLabel);
+        function setCols(dissectionType: any) {
             if (dissectionType === 'Otolith') {
-                columns.value = concat(commonCols, otolithCols);
+                columns.value = concat(proccessDissectionsCols, otolithCols);
             } else {
-                columns.value = concat(commonCols, snoutCols);
+                columns.value = concat(proccessDissectionsCols, snoutCols);
             }
-            columns.value.map((obj: any) =>  obj.sortable = true);
             visibleColumns.value = columns.value;
             columns.value = concat(columns.value, reportCols);
+            columns.value.map((obj: any) =>  obj.sortable = true);
         }
-        setCols(null); 
+        setCols(null);
 
-        async function speciesFilterFn(val: any, update: any) {
-            await filterFn(val, update, speciesLabel, speciesOptions, 'species');
-        }
-
-        async function dissectionFilterFn(val: any, update: any) {
-            await filterFn(val, update, dissectionLabel, dissectionOptions, 'dissection');
-        }
-
-        async function rackFilterFn(val: any, update: any) {
-            await filterFn(val, update, rackLabel, rackOptions, 'rack');
-        }
-
-        async function filterFn(
-            val: any,
-            update: any,
-            label: string,
-            optionsList: any,
-            type: string
-        ) {
-            if (allRacks.value === null) {
-                allRacks.value = await masterDB.viewWithDocs('obs_web', 'rack');
-                allRacks.value = allRacks.value.rows;
-            }
-            let filteredList: any[] = allRacks.value;
-
-            if (type !== 'species') {
-                const speciesName = get(species.value, speciesLabel);
-                filteredList = filter(
-                    filteredList,
-                    speciesName ? [speciesLabel, speciesName] : {}
-                );
-            }
-            if (type !== 'dissection') {
-                const dissectionName = get(dissection.value, dissectionLabel);
-                filteredList = filter(
-                    filteredList,
-                    dissectionName ? [dissectionLabel, dissectionName] : {}
-                );
-            }
-
-            speciesOptions.value = uniqBy(filteredList, speciesLabel);
-            speciesOptions.value = orderBy(speciesOptions.value, speciesLabel);
-            dissectionOptions.value = uniqBy(filteredList, dissectionLabel);
-            dissectionOptions.value = orderBy(
-                dissectionOptions.value,
-                dissectionLabel
-            );
-            rackOptions.value = orderBy(filteredList, rackLabel);
-
-            update(() => {
-                const needle = val.toLowerCase();
-                optionsList.value = filter(optionsList.value, (option: any) => {
-                    const currLabel = get(option, label, '').toLowerCase();
-                    return currLabel.includes(needle);
-                });
-                return optionsList.value;
-            });
-        }
-
-        function addRack() {
-            showRackDialog.value = true;
-        }
-
-        async function saveRack() {
-            const updatedRacks = await masterDB.viewWithDocs('obs_web', 'rack');
-            allRacks.value = orderBy(updatedRacks.rows, rackLabel);
-        }
-
-        async function selectRack(val: any) {
+        async function search() {
             loading.value = true;
-            species.value = val;
-            dissection.value = val;
-            tableData.value = val ? await select('rackId', val.doc.rackId) : [];
-            setCols(val);
-            loading.value = false;
-        }
-
-        async function select(fieldName: any, fieldVal: any) {
             let results = [];
-            const operationDocs: any = await masterDB.viewWithDocs(
+            let searchKeys: any[] = [];
+            if (observer.value) {
+                const trips = await masterDB.viewWithDocs('obs_web', 'wcgop_trips_by_observerId', { key: observer.value});
+                let operationIds = jp.query(trips.rows, '$[*].doc.operationIDs');
+                operationIds = flattenDeep(operationIds);
+
+                const operations = await masterDB.listWithDocs({keys: operationIds});
+                let biostructures = jp.query(operations.rows, '$[*]..biostructures');
+                biostructures = flattenDeep(biostructures);
+
+                const biostructureIds = jp.apply(biostructures, '$[*]._id', (val: any) => {return ['id', val]});
+                const formattedBioIds = jp.query(biostructureIds, '$[*].value');
+                searchKeys = concat(searchKeys, formattedBioIds);
+            }
+            if (range.value) {
+                const biostructures: any = await masterDB.viewWithDocs(
+                    'obs_web',
+                    'biostructures_compound_fields',
+                    {
+                        start_key: ['upDate', moment(range.value.start).hour(0).minute(0).second(0).format()],
+                        end_key: ['upDate', moment(range.value.end).hour(0).minute(0).second(0).format()],
+                        include_docs: true,
+                        limit: 100
+                    } as any
+                );
+                const biostructureIds = jp.apply(biostructures.rows, '$[*].value', (val: any) => {return ['id', val]});
+                const formattedBioIds = jp.query(biostructureIds, '$[*].value');
+                searchKeys = concat(searchKeys, formattedBioIds);
+            }
+            if (species.value) {
+                searchKeys.push(['species', species.value]);
+            }
+            if (get(rack, 'value.rackId')) {
+                searchKeys.push(['rackId', rack.value.rackId]);
+            }
+            if (dissection.value) {
+                searchKeys.push(['structureType', dissection.value]);
+            }
+            if (barcode.value) {
+                searchKeys.push(['barcode', parseInt(barcode.value)]);
+            }
+            let operationDocs: any = await masterDB.viewWithDocs(
                 'obs_web',
                 'biostructures_compound_fields',
                 {
-                    key: [fieldName, fieldVal],
+                    keys: searchKeys,
                     include_docs: true,
+                    limit: 100
                 } as any
             );
+            const rackIds = jp.query(operationDocs.rows, '$[*]..rackId');
+            const rackDocs: any = await masterDB.viewWithDocs(
+                'obs_web',
+                'rack',
+                { keys: rackIds}
+            );
+
             const operationIds = jp.query(operationDocs.rows, '$[*].id');
             const tripDocs: any = await masterDB.viewWithDocs(
                 'obs_web',
                 'get_trip_by_operationId',
                 { keys: operationIds }
             );
-            for (const operation of operationDocs.rows) {
+            for (let operation of operationDocs.rows) {
+                const operationDoc = operation.doc;
                 const findStr = '$..biostructures[?(@._id=="' + operation.value + '")]';
-                const bios = jp.nodes(operation, findStr);
+                const bios = jp.nodes(operationDoc, findStr);
                 const bioValue = bios[0].value;
 
-                const catchPath = jp.stringify(slice(bios[0].path, 0, 4));
-                const speciesPath = jp.stringify(slice(bios[0].path, 0, 6));
-                const specimenPath = jp.stringify(slice(bios[0].path, 0, 8));
-
-                const tripIndex = findIndex(tripDocs.rows, ['key', operation.id]);
-                const trip = tripDocs.rows[tripIndex].doc;
-
-                results.push({
-                    position: get(bioValue, 'legacy.rackPosition'),
-                    tripNum: get(operation, 'doc.legacy.tripId'),
-                    haulNum: get(operation, 'doc.operationNum'),
-                    catchNum: jp.value(operation, catchPath + '.catchNum'),
-                    species: jp.value(
-                        operation,
-                        speciesPath + '.catchContent.commonNames[0]'
-                    ),
-                    dissection: get(bioValue, 'structureType.description'),
-                    label: get(bioValue, 'label'),
-                    received: get(bioValue, 'isReceived', 'No'),
-                    cwtStatus: get(bioValue, 'legacy.cwtStatus'),
-                    cwtCode: get(bioValue, 'legacy.cwtCode'),
-                    cwtType: get(bioValue, 'legacy.cwtType'),
-                    doc: operation.doc,
-                    id: operation.value,
-                    age: get(bioValue, 'legacy.age'),
-                    ageReader: get(bioValue, 'legacy.ageReader'),
-                    ageDate: get(bioValue, 'legacy.ageDate'),
-                    ageLocation: get(bioValue, 'legacy.ageLocation'),
-                    ageMethod: get(bioValue, 'legacy.ageMethod'),
-
-                    // haul report attributes
-                    gearType: get(operation, 'gearType.description'),
-                    gearPerformance: get(operation, 'gearPerformance.description'),
-                    haulUpDate: get(operation, 'locations[0].locationDate'),
-                    haulUpCoord: [
-                        get(operation, 'locations[0].location.coordinates[0]'),
-                        get(operation, 'locations[0].location.coordinates[1]'),
-                    ],
-                    haulSetDate: get(operation, 'locations[1].locationDate'),
-                    haulSetCoord: [
-                        get(operation, 'locations[1].location.coordinates[0]'),
-                        get(operation, 'locations[1].location.coordinates[1]'),
-                    ],
-
-                    // trip report attributes
-                    observer: get(trip, 'observer.firstName') + ' ' + get(trip, 'observer.lastName'),
-                    vessel: get(trip, 'vessel.vesselName'),
-                    departureDate: get(trip, 'departureDate', ''),
-                    departurePort: get(trip, 'departurePort.name', ''),
-                    returnDate: get(trip, 'returnDate', ''),
-                    returnPort: get(trip, 'returnPort.name', ''),
-                    fishery: get(trip, 'fishery.description', ''),
-
-                    sex: jp.value(operation, specimenPath + '.sex'),
-                    length: jp.value(operation, specimenPath + '.length.value'),
-                    weight: jp.value(operation, specimenPath + '.weight.value'),
-                    tag: jp.value(operation, specimenPath + '.tags[0]')
-                });
+                const trip = find(tripDocs.rows, ['key', operation.id]);
+                const rackId = get(bioValue, 'legacy.rackId');
+                const rack = find(rackDocs.rows, ['key', rackId]);
+                results.push(await createResult(trip, operationDoc, bioValue, bios[0].path, rack));
             }
-            results = orderBy(results, ['position'], ['asc']);
-            return results;
+            tableData.value = orderBy(results, ['position'], ['asc']);
+            loading.value = false;
         }
 
         async function save(newInfo: any) {
@@ -564,8 +319,14 @@ export default createComponent({
             set(tableData.value, '[' + updateIndex + '].doc._rev', result.rev);
         }
 
-        function deleteBio(val: any) {
+        function showDelete(val: any) {
+            showDeleteDialog.value = true;
+            deleteItem.value = val;
+        }
+
+        function deleteBio() {
             // delete from the ui
+            const val = deleteItem.value;
             const deleteIndex = findIndex(tableData.value, ['id', val.id]);
             tableData.value.splice(deleteIndex, 1);
 
@@ -587,28 +348,30 @@ export default createComponent({
             compKey,
             get,
 
+            barcode,
             species,
-            speciesFilterFn,
+            observer,
+            evaluationPeriod,
+            range,
+
             speciesLabel,
             speciesOptions,
             dissection,
-            dissectionFilterFn,
             dissectionLabel,
             dissectionOptions,
             rack,
-            rackFilterFn,
             rackLabel,
             rackOptions,
 
-            addRack,
-            saveRack,
-            selectRack,
             setCols,
-            showRackDialog,
             save,
             deleteBio,
             pagination,
-            isAuthorized,
+
+            search,
+            showDeleteDialog,
+            deleteItem,
+            showDelete
         };
     },
 });
