@@ -295,7 +295,7 @@ export default createComponent({
                 const trip = find(tripDocs.rows, ['key', operation.id]);
                 const rackId = get(bioValue, 'legacy.rackId');
                 const rack = find(rackDocs.rows, ['key', rackId]);
-                results.push(await createResult(trip, operationDoc, bioValue, rack, bios[0].path));
+                results.push(await createResult(trip, operationDoc, bioValue, bios[0].path, rack));
             }
             tableData.value = orderBy(results, ['position'], ['asc']);
             loading.value = false;

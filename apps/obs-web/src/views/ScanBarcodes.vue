@@ -272,6 +272,12 @@ export default createComponent({
             icon: 'warning',
             style: 'bg-red q-mt-sm text-white'
           }
+        } else if (get(specimen.value, 'biostructure.isReceived')) {
+          bannerInfo.value = {
+            message: "Item already marked as received",
+            icon: 'info',
+            style: 'bg-grey text-white q-mt-sm'
+          };
         } else if (barcodeDoc.rows.length === 0) {
           bannerInfo.value = {
             message: 'Barcode not found',
@@ -284,12 +290,6 @@ export default createComponent({
             icon: 'warning',
             style: 'bg-red q-mt-sm text-white'
           }
-        } else if (get(specimen.value, 'biostructure.isReceived')) {
-          bannerInfo.value = {
-            message: "Item already marked as received",
-            icon: 'info',
-            style: 'bg-grey text-white q-mt-sm'
-          };
         } else {
           bannerInfo.value = {
             message: "Item received",

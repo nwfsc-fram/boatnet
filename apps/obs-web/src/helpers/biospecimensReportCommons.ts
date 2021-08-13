@@ -4,8 +4,8 @@ export async function createResult(
     trip: any,
     operation: any,
     bio: any,
-    rack: any,
-    path: string[]
+    path: string[],
+    rack?: any,
 ) {
     const jp = require('jsonpath');
     const catchPath = jp.stringify(slice(path, 0, 3));

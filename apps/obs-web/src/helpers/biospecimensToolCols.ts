@@ -236,12 +236,6 @@ export const reportCols = [
         type: 'coord',
     },
     {
-        name: 'haulUpDate',
-        label: 'Haul Up Date',
-        field: 'haulUpDate',
-        type: 'date',
-    },
-    {
         name: 'haulSetDate',
         label: 'Haul Set Date',
         field: 'haulSetDate',
@@ -253,9 +247,6 @@ export const reportCols = [
         field: 'haulSetCoord',
         type: 'coord',
     },
-    
-    
-    
     {
         name: 'tag',
         label: 'Tag/Band Id',
