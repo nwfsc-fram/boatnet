@@ -110,7 +110,7 @@
 
 
 <script lang="ts">
-import { createComponent, ref } from '@vue/composition-api';
+import { createComponent, ref, watch } from '@vue/composition-api';
 import Vue from 'vue';
 import Multiselect from 'vue-multiselect';
 import { filter, get, round } from 'lodash';
@@ -131,14 +131,13 @@ export default createComponent({
         const filterHolder: any = ref('');
         const jp = require('jsonpath');
         const formattedVisibleCols: any = ref([]);
-
-        function init() {
+        
+        watch(() => props.visibleColumns, (first, second) => {
             formattedVisibleCols.value = jp.query(
                 props.visibleColumns,
                 '$[*].name'
             );
-        }
-        init();
+        });
 
         function displayValue(props: any, col: any) {
             let val = get(props.row, col.field);

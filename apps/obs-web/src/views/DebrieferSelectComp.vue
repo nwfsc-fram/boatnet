@@ -7,6 +7,7 @@
     hide-selected
     fill-input
     @input="select"
+    @clear="clear"
     @filter="filterFn"
     :filled="filled"
     :label-color="color"
@@ -18,7 +19,7 @@
             <q-item>
               <q-item-section class="text-grey">
                 <div>
-                  {{ emptyMessage }}
+                  {{ emptyMessage ? emptyMessage : 'No item found' }}
                 </div>
               </q-item-section>
             </q-item>
@@ -104,7 +105,12 @@ export default createComponent({
       context.emit('select', val);
     }
 
+    function clear(val: any) {
+      context.emit('clear');
+    }
+
     return {
+      clear,
       select,
       filteredOptions,
       options,

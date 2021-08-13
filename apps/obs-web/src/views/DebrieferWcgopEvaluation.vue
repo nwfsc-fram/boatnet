@@ -134,7 +134,6 @@ import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
 import { filter, findIndex } from 'lodash';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import Multiselect from 'vue-multiselect';
-import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 
 Vue.component('multiselect', Multiselect);
 Vue.component('Accordion', Accordion);
