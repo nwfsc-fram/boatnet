@@ -1,5 +1,8 @@
 module.exports = {
   devServer: {
+    headers: {
+      'X-Frame-Options': 'DENY'
+    },
     proxy: 'https://localhost:9000'
   },
   pluginOptions: {
