@@ -1,7 +1,7 @@
 <template>
   <div class="centered-page-item">
     <div class="q-pa-md q-gutter-sm">
-      <q-banner class="bg-cyan-2 text-body1 justify-around" style="border: 1px solid black">
+      <q-banner class="bg-blue-2 text-body1 justify-around" style="border: 1px solid black; border-radius: 5px">
         <p><font size="4"><b>Declaration recieved!</b></font></p>
 
         <p>

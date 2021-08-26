@@ -7,25 +7,40 @@
       <q-btn
         class="bg-primary text-white q-ma-md"
         color="primary"
-        to="/new-declaration"
-      >Add Declaration to Cart</q-btn>
-      <q-btn class="bg-green text-white q-ma-md" @click="submitDeclarations">Submit Declaration/s</q-btn>
+        to="/new-declaration">
+        Add Declaration to Cart
+      </q-btn>
+
+      <q-btn
+        v-if="cartEmpty"
+        class="bg-grey-7 text-white q-ma-md"
+        disable>
+        Submit Declaration/s
+      </q-btn>
+      <q-btn
+        v-else
+        class="bg-secondary text-white q-ma-md"
+        @click="submitDeclarations">
+        Submit Declaration/s
+      </q-btn>
     </div>
 
     <br />
-    <div class="centered-page-item">Declarations Cart</div>
+    <div class="centered-page-item"><q-icon name="shopping_cart"></q-icon> Declarations Cart</div>
 
+    <div class="bg-grey-4 q-ma-xs" style="min-height: 20em; border-radius: 5px;">
     <div
       v-if="cartEmpty"
       class="text-primary centered-page-item"
-    >The declarations cart is currently empty. To add a declaration click "ADD DECLARATION TO CART" above.</div>
+      style="text-align: center; font-size: 1em"
+    ><b>Cart is empty. Click "ADD DECLARATION TO CART".</b></div>
 
     <div v-if="Object.keys(oleVessel).length > 0">
       <div class="q-pa-md column">
         <q-card
           v-for="(obj, index) in oleVessel.cartDeclarations"
           :key="index"
-          class="my-card bg-green text-white"
+          class="my-card bg-primary text-white"
         >
           <q-card-section>
             <div class="row no-wrap">
@@ -45,6 +60,7 @@
           </q-card-section>
         </q-card>
       </div>
+    </div>
     </div>
   </div>
 </template>

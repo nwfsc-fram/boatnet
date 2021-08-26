@@ -1,17 +1,34 @@
 <template>
   <div>
-    <p v-if="!isAuthorized(['enforcement'])">
-      If you would like to make your declaration/s by phone, please call the Office
-      of Law Enforcement at
-      <a
-        href="tel: 888-585-5518"
-        data-rel="external"
-      >888-585-5518</a>
-    </p>
-    <br />
+    <q-card v-if="!isAuthorized(['enforcement'])" class="bg-blue-2 q-ma-xs" style="font-weight: bold; text-align: center">
+      <q-card-section>
+        To make declaration/s by phone, please call <br>
+        Office of Law Enforcement at
+        <a
+          style="color: black; font-size: 1em"
+          href="tel: 888-585-5518"
+          data-rel="external"
+        >888-585-5518</a>
+      </q-card-section>
+    </q-card>
 
-    <div class="centered-page-item">
+    <b v-if="vessel.activeVessel">Active Vessel:</b>
+    <q-list>
+      <transition-group name="selections-list">
+        <q-item :class="getSelectionClasses(0)" key="0" dense v-if="vessel.activeVessel">
+          <q-item-section>
+            <b>{{ vessel.activeVessel.vesselName + ' (' + (vessel.activeVessel.coastGuardNumber ? vessel.activeVessel.coastGuardNumber : vessel.activeVessel.stateRegulationNumber)  + ')' }}</b>
+          </q-item-section>
+          <q-item-section avatar style="cursor: pointer">
+            <q-icon name="clear" @click="vessel.activeVessel = undefined"></q-icon>
+          </q-item-section>
+        </q-item>
+      </transition-group>
+    </q-list>
+
+    <div >
       <q-select
+        class="centered-page-item"
         v-if="isAuthorized(['enforcement'])"
         v-model="vessel.activeVessel"
         label="Staff - Select ANY vessel"
@@ -26,7 +43,22 @@
         @click.native="vessel.activeVessel = undefined"
       ></q-select>
 
-      <q-select
+      <div v-else>
+        <div v-if="!vessel.activeVessel">
+          <b>Vessel:</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(opt, index) in authorizedVessels" :key="index" :class="getChoiceClasses(index)" clickable @click="vessel.activeVessel = opt" manual-focus>
+                    <q-item-section>
+                        <b>{{ opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')' }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+      </div>
+
+      <!-- <q-select
         v-else
         v-model="vessel.activeVessel"
         label="Vessel"
@@ -36,14 +68,14 @@
         :options="authorizedVessels"
         :option-label="opt => opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')'"
         option-value="_id"
-      ></q-select>
+      ></q-select> -->
     </div>
 
     <div class="centered-page-item" v-if="vessel.activeVessel">
       <div v-if="oleVessel !== undefined">
-        <div class="centered-page-item">{{vessel.activeVessel['vesselName']}}</div>
+        <!-- <div class="centered-page-item">{{vessel.activeVessel['vesselName']}}</div>
 
-        <br />
+        <br /> -->
 
         <q-btn class="bg-primary text-white q-ma-md" to="/declaration-cart">New Declaration</q-btn>
 
@@ -103,7 +135,6 @@
               dense
               hide-bottom
             >
-              
             </q-table>
           </div>
 
@@ -206,7 +237,7 @@
       </div>
     </div>
     <div v-else>
-      <p class="centered-page-item text-primary">No active vessel</p>
+      <p class="centered-page-item text-primary">Select a vessel</p>
     </div>
 
   </div>
@@ -618,6 +649,22 @@ export default class Declarations extends Vue {
     }
   }
 
+  private getSelectionClasses (index: number) {
+    if (index % 2 === 0) {
+      return 'selections-list-item bg-primary text-white rounded';
+    } else {
+      return 'selections-list-item bg-blue-2 rounded';
+    }
+  }
+
+  private getChoiceClasses (index: number) {
+    if (index % 2 === 0) {
+      return 'choices-list-item bg-primary text-white rounded';
+    } else {
+      return 'choices-list-item bg-blue-2 rounded';
+    }
+  }
+
   private created() {
     this.getAuthorizedVessels();
     if (this.vessel.activeVessel) {
@@ -639,3 +686,54 @@ export default class Declarations extends Vue {
   }
 }
 </script>
+
+<style scoped>
+    .trip-alert {
+        background-color: #003D72;
+        color: white;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .selections-list-item {
+        transition: all .3s;
+    }
+    .selections-list-enter,
+    .selections-list-leave-to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    .choices-list-item {
+        transition: all .3s;
+    }
+    .choices-list-enter {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    .choices-list-leave-to {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    .rounded {
+        border-radius: 5px;
+        margin: 3px;
+    }
+
+    * >>> .p-inputtext {
+        border: 2px solid black !important;
+        cursor: pointer;
+        font-weight: bold;
+        padding: 6px 0;
+        line-height: 2.4em;
+    }
+
+    * >>> .q-select__dropdown-icon {
+        color: black !important;
+    }
+
+    * >>> .p-datepicker:not(.p-datepicker-inline) {
+        z-index: 9990 !important;
+    }
+</style>
