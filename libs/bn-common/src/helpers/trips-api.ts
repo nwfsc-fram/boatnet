@@ -292,25 +292,79 @@ export function emailCoordinators(trip: any, emailType: any) { // emailType - 'N
     });
 }
 
-export function mongoRead(collection: string, query: any) {
+export function mongoRead(database: any, collection: string, query: any, options?: any) {
     return new Promise( (resolve, reject) => {
-        let queryString = '';
-        Object.keys(query).forEach( (key: string) => {
-            if (Object.keys(query).indexOf(key) === 0) {
-                queryString += '?';
+        const queryOptions = options ? options : {};
+        const payload: any = {
+            query,
+            options: queryOptions
+        };
+        const queryUrl = getTripsApiMongoUrl() + '/' + database + '/' + collection;
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    'authorization': 'Token ' + getJwt(),
+                    'Content-Type': 'application/json'
+                },
+                body: payload
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
             }
-            if (key) {queryString += key + '=' + query[key]; }
-            if (Object.keys(query).indexOf(key) > 0) {
-                queryString += '&';
+        );
+    });
+};
+
+export function mongoAggregate(database: any, collection: string, pipeline: any) {
+    return new Promise( (resolve, reject) => {
+        const payload = {pipeline};
+        const queryUrl = getTripsApiMongoUrl() + '/aggregate/' + database + '/' + collection;
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    'authorization': 'Token ' + getJwt(),
+                    'Content-Type': 'application/json'
+                },
+                body: payload
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
             }
-        });
-        const queryUrl = getTripsApiMongoUrl() + '/' + collection + queryString;
+        );
+    });
+
+    // example query:
+    // const result = await mongoAggregate(
+    //     'boatnetdb',
+    //     'lookups.beauforts',
+    //     [
+    //         {$match: {isActive: true}},
+    //         {$limit: 3}
+    //     ]
+    // );
+    // console.log(result);
+};
+
+export function mongoGetOne(database: any, collection: string, id: string) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getTripsApiMongoUrl() + '/get/' + database + '/' + collection + '/' + id;
         request.get(
             {
                 url: queryUrl,
                 json: true,
                 headers: {
-                    authorization: 'Token ' + getJwt()
+                    'authorization': 'Token ' + getJwt(),
+                    'Content-Type': 'application/json'
                 }
             }, (err: any, response: any, body: any) => {
                 if (!err && response.statusCode === 200) {
@@ -321,7 +375,48 @@ export function mongoRead(collection: string, query: any) {
             }
         );
     });
-}
+
+    // example query:
+    // const getOneResult = await mongoGetOne(
+    //     'boatnetdb',
+    //     'trips_api.trips',
+    //     "612515f92feb772abc836e6c"
+    // )
+    // console.log(getOneResult);
+};
+
+export function mongoGetMany(database: any, collection: string, ids: string[]) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = getTripsApiMongoUrl() + '/getMany/' + database + '/' + collection + '/';
+        request.post(
+            {
+                url: queryUrl,
+                json: true,
+                headers: {
+                    'authorization': 'Token ' + getJwt(),
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    ids
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+
+    // example query:
+    // const getManyResult = await mongoGetMany(
+    //     'boatnetdb',
+    //     'trips_api.trips',
+    //     ["612515f92feb772abc836e6c"]
+    // )
+    // console.log(getManyResult)
+};
 
 export function mongoWrite(documents: object[]) {
     return new Promise( (resolve, reject) => {
