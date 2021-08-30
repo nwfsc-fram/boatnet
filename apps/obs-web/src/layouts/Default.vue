@@ -145,7 +145,20 @@
           </q-item>
 
           <q-item
-            to="/bio-structures"
+            to="/check-in-bios"
+            exact
+            v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
+          >
+            <q-item-section avatar>
+              <q-icon name="check" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Check-in biostructure</q-item-label>
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            to="/rack-bios"
             exact
             v-if="isAuthorized(['development_staff', 'staff', 'data_steward', 'program_manager', 'coordinator', 'debriefer']) && !getCaptainMode && !getObserverMode"
           >
@@ -153,8 +166,7 @@
               <q-icon name="scanner" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Bio-structures</q-item-label>
-              <q-item-label caption>Scan Biospecimens</q-item-label>
+              <q-item-label>Rack biostructure</q-item-label>
             </q-item-section>
           </q-item>
 

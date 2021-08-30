@@ -51,8 +51,8 @@ import OtsTargetDetail from './views/OtsTargetDetail.vue';
 import OtsTrips from './views/OtsTrips.vue';
 import OtsTripHistory from './views/OtsTripHistory.vue';
 import PermitDetails from './views/PermitDetails.vue';
-import RackBiospecimens from './views/RackBiospecimens.vue';
-import Biostructures from './views/Biostructures.vue';
+import CheckInBios from './views/CheckInBios.vue';
+import RackBios from './views/RackBios.vue';
 import SpeciesDetail from './views/SpeciesDetail.vue';
 import SpeciesViewer from './views/SpeciesViewer.vue';
 import TripDetails from './views/TripDetails.vue';
@@ -133,7 +133,8 @@ const router = new Router({
         },
         { path: '/trips', name: 'Trips', component: Trips },
         { path: '/trips/:id', name: 'Trip Detail', component: TripDetails },
-        { path: '/bio-structures', name: 'Biostructures', component: Biostructures },
+        { path: '/check-in-bios', name: 'Check In Bios', component: CheckInBios },
+        { path: '/rack-bios', name: 'Rack Bios', component: RackBios },
         { path: '/assign', name: 'Observer Debriefer Assignment', component: ObserverDebrieferAssignment },
         { path: '/editAssessment', name: 'Debriefer Assessment Editor', component: DebrieferAssessmentEditor },
         {

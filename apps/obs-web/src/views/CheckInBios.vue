@@ -1,8 +1,4 @@
 <template>
-<!--
-  Forked from:
-  https://quasar.dev/vue-components/tab-panels#example--with-vertical-qtabs-and-qsplitter
--->
 <div id="q-app">
   <div>
     <q-card>
@@ -12,18 +8,19 @@
           align="left"
           class="bg-primary text-white shadow-2 q-my-md"
         >
-          <q-tab name="log" label="Log Bio-structures"></q-tab>
-          <q-tab name="process" label="Process Bio-structures"></q-tab>
+          <q-tab name="scan" label="Scan Barcodes"></q-tab>
+          <q-tab name="report" label="Report"></q-tab>
         </q-tabs>
 
         <q-tab-panels
           v-model="tab"
+          keep-alive
         >
-          <q-tab-panel name="log">
-            <app-rack-biospecimens/>
+          <q-tab-panel name="scan">
+            <app-scan-barcodes type="scan"/>
           </q-tab-panel>
-          <q-tab-panel name="process">
-            <app-process-biostructures/>
+          <q-tab-panel name="report">
+            <app-biospecimens-report type="scan"/>
           </q-tab-panel>
         </q-tab-panels>
     </q-card>
@@ -43,12 +40,10 @@ Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 
 export default createComponent({
     setup(props, context) {
-        const tab: any = ref('log');
-        const splitterModel: any = ref(20);
+        const tab: any = ref('scan');
 
         return {
-            tab,
-            splitterModel
+            tab
         };
     }
 });

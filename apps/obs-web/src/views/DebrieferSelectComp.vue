@@ -7,18 +7,19 @@
     hide-selected
     fill-input
     @input="select"
+    @clear="clear"
     @filter="filterFn"
     :filled="filled"
     :label-color="color"
     :rules="rules"
-    :option-label="(item) => get(item, lookupLabel)"
-    :option-value="(item) => get(item, lookupValue)"
+    clearable
+    clear-icon="close"
   >
       <template v-slot:no-option>
             <q-item>
               <q-item-section class="text-grey">
                 <div>
-                  {{ emptyMessage }}
+                  {{ emptyMessage ? emptyMessage : 'No item found' }}
                 </div>
               </q-item-section>
             </q-item>
@@ -57,7 +58,7 @@ export default createComponent({
 
   setup(props, context) {
     const options: any = ref(null);
-    const valueHolder: any = ref(null);
+    const valueHolder: any = ref(props.val);
     const filteredOptions: any = ref(null);
     const masterDB: Client<any> = couchService.masterDB;
 
@@ -70,33 +71,46 @@ export default createComponent({
     async function getOptions() {
       const queryOptions = get(props, 'lookupQueryOptions', {});
       const view = get(props, 'lookupView', '');
-      options.value = await masterDB.viewWithDocs('obs_web', view, queryOptions);
-      options.value = orderBy(options.value.rows, props.lookupLabel);
+      const optionsList: any = await masterDB.viewWithDocs('obs_web', view, queryOptions);
+      options.value = [];
 
+      for (const option of optionsList.rows) {
+        const labelName: string = get(props, 'lookupLabel', '');
+        const valueName: string = get(props, 'lookupValue', '');
+
+        const label = get(option, labelName);
+        const value = get(option, valueName);
+
+        options.value.push({label, value});
+      }
+      options.value = orderBy(options.value, 'label');
     }
 
     async function filterFn(val: any, update: any) {
-      const label = get(props, 'lookupLabel', '');
       if (options.value === null) {
         await getOptions();
       }
       update(() => {
         const needle = val.toLowerCase();
         filteredOptions.value = filter(options.value, (option: any) => {
-          const currLabel = get(option, label).toString().toLowerCase();
+          const currLabel = get(option, 'label').toString().toLowerCase();
           return currLabel.includes(needle);
         });
       });
     }
 
     function select(value: any) {
-      const lookupValue = get(props, 'lookupValue', '');
-      const val = get(value, lookupValue);
+      const val = get(value, 'value');
       context.emit('update:val', val);
       context.emit('select', val);
     }
 
+    function clear(val: any) {
+      context.emit('clear');
+    }
+
     return {
+      clear,
       select,
       filteredOptions,
       options,

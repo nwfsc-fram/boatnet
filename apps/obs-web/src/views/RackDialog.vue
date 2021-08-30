@@ -1,79 +1,60 @@
 <template>
-    <q-dialog v-model="show">
-        <q-card>
+    <q-dialog v-model="show" @before-show="beforeShow">
+        <q-card style="width: 800px">
             <q-card-section>
-                <div class="text-h6">Add Rack</div>
+                <div class="text-h6">{{title}}</div>
             </q-card-section>
 
             <q-card-section class="q-pt-none">
                 <q-form @submit="saveRack" class="q-gutt-md" greedy>
                     <div>
                         <debriefer-select-comp
-                            style="display: inline-block; width: 30%"
+                            style="display: inline-block; width: 45%"
                             label="Species"
-                            :val.sync="newRack.species"
-                            lookupView="wcgop-lookups"
-                            lookupLabel="doc.commonNames[0]"
-                            lookupValue="doc"
+                            :val.sync="rack.speciesId"
+                            lookupView="biostructures_species"
+                            lookupLabel="key"
+                            lookupValue="key"
                             :filled="true"
                             color="black"
-                            :lookupQueryOptions="{ key: 'taxonomy-alias' }"
-                            :rules="[(val) => !!newRack.species || 'Species Required']"
+                            :rules="[(val) => !!rack.speciesId || 'Species Required']"
                         />
                         <debriefer-select-comp
-                            style="display: inline-block; width: 30%"
-                            class="q-mx-md"
+                            style="display: inline-block; width: 45%"
+                            class="q-ml-md"
                             label="Dissection Type"
-                            :val.sync="newRack.dissection"
+                            :val.sync="rack.dissectionType"
                             lookupView="wcgop-lookups"
                             lookupLabel="doc.description"
-                            lookupValue="doc"
+                            lookupValue="doc.description"
                             :filled="true"
                             color="black"
                             :lookupQueryOptions="{ key: 'biostructure-type' }"
-                            :rules="[(val) => !!newRack.dissection || 'Dissection Required']"
-
-                        />
-                        <q-input
-                            style="display: inline-block; width: 30%"
-                            v-model="newRack.name"
-                            label="Rack Name"
-                            filled
-                            label-color="black"
-                            :rules="[(val) => !!newRack.name || 'Rack Name Required']"
+                            :rules="[(val) => !!rack.dissectionType || 'Dissection Required']"
                         />
                     </div>
-                    <div class="q-pt-md">
-                        <q-input
-                            style="display: inline-block; width: 30%"
-                            v-model="newRack.cols"
-                            label="Cols"
-                            type="number"
-                            filled
-                            label-color="black"
-                            :rules="[(val) => !!newRack.cols || 'Column Required']"
-                        />
-                        <q-input
-                            style="display: inline-block; width: 30%"
-                            class="q-mx-md"
-                            type="number"
-                            v-model="newRack.rows"
-                            label="Rows"
-                            filled
-                            label-color="black"
-                            :rules="[(val) => !!newRack.rows || 'Row Required']"
-                        />
+                    <div>
                         <debriefer-select-comp
-                            style="display: inline-block; width: 30%"
+                            style="display: inline-block; width: 45%"
                             label="Location"
-                            :val.sync="newRack.location"
+                            :val.sync="rack.rackLocation"
                             lookupView="wcgop-lookups"
                             lookupLabel="doc.description"
-                            lookupValue="doc"
+                            lookupValue="doc.description"
                             :filled="true"
                             color="black"
                             :lookupQueryOptions="{ key: 'bs-location' }"
-                            :rules="[(val) => !!newRack.location || 'Location Required']"
+                            :rules="[(val) => !!rack.rackLocation || 'Location Required']"
+                        />
+                        <q-input
+                            style="display: inline-block; width: 45%"
+                            class="q-ml-md"
+                            type="number"
+                            filled
+                            v-model="rack.year"
+                            label="Year"
+                            label-color="black"
+                            :rules="[(val) => !!rack.year || 'Location Required']"
                         />
                     </div>
                     <div class="q-pt-md text-primary" align="right">
@@ -93,53 +74,65 @@
 
 
 <script lang="ts">
-import { createComponent, ref } from '@vue/composition-api';
+import { createComponent, onMounted, ref } from '@vue/composition-api';
 import Vue from 'vue';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
-import { get } from 'lodash';
-import { Rack, RackType } from '@boatnet/bn-models';
+import { get, isEmpty } from 'lodash';
+import moment from 'moment';
 
 Vue.component('DebrieferSelectComp', DebrieferSelectComp);
 
 export default createComponent({
     props: {
         show: Boolean,
+        rack: Object
     },
     setup(props, context) {
+        const state = context.root.$store.state;
         const masterDB: Client<any> = couchService.masterDB;
-        const newRack: any = ref({});
+        const title: any = ref('');
+
+        function beforeShow() {
+            if (isEmpty(props.rack)) {
+                title.value = "Create Rack";
+            } else {
+                title.value = "Edit Rack";
+            }
+        }
 
         async function saveRack() {
-            const currRacks = await masterDB.view('obs_web', 'rack');
-            const rackId = currRacks.rows[currRacks.rows.length - 1].key + 1;
-            const newVal: Rack = {
-                type: 'rack',
-                speciesId: {
-                    _id: get(newRack.value, 'species._id'),
-                    commonNames: get(newRack.value, 'species.commonNames'),
-                    wcgopSpeciesId: get(newRack.value, 'species.wcgopSpeciesCode')
-                },
-                dissectionType: newRack.value.dissection,
-                rackName: newRack.value.name,
-                rackId,
-                rackLocation: newRack.value.location,
-                cols: newRack.value.cols,
-                rows: newRack.value.rows,
-            };
-            const id = await masterDB.post(newVal);
+            const currRack: any = get(props, 'rack', {});
+            const currUser = get(state, 'user.activeUser.apexUserAdminUserName');
+            if (currRack._id) {
+                currRack.updatedDate = moment().format();
+                currRack.updatedBy = currUser;
+                const result = await masterDB.put(currRack._id, currRack, currRack._rev);
+            } else {
+                const currRacks = await masterDB.view('obs_web', 'rack');
+                const rackId = currRacks.rows[currRacks.rows.length - 1].key + 1;
+                const speciesInfo = await masterDB.viewWithDocs('obs_web', 'biostructures_species', { key: currRack.speciesId });
+                const pacfinCode = get(speciesInfo, 'rows[0].doc.taxonomy.pacfinSpeciesCode');
+                currRack.type = 'rack';
+                currRack.rackId = rackId;
+                currRack.rackName = pacfinCode ? pacfinCode : currRack.speciesId;
+                currRack.rackName += '-' + currRack.dissectionType + '-' + currRack.year;
+                currRack.createdDate = moment().format();
+                currRack.createdBy = currUser;
+                const result = masterDB.post(currRack);
+            }
             context.emit('saveRack');
             close();
         }
 
         function close() {
-          newRack.value = {};
-          context.emit('update:show', false);
+          context.emit('update:show', false);  
         }
 
         return {
-            newRack,
+            beforeShow,
+            title,
             saveRack,
             close
         };
