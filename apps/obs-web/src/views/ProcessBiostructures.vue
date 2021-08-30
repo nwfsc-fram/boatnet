@@ -157,7 +157,7 @@ import {
     uniqBy,
 } from 'lodash';
 import moment from 'moment';
-import { exportFile } from 'quasar'
+import { exportFile } from 'quasar';
 
 import RackDialog from './RackDialog.vue';
 Vue.component('RackDialog', RackDialog);
@@ -195,7 +195,7 @@ export default createComponent({
             sortBy: 'desc',
             descending: false,
             rowsPerPage: 25
-        }
+        };
 
         const commonCols: any[] = [
             {
@@ -474,8 +474,8 @@ export default createComponent({
             loading.value = false;
         }
 
-        function displayValue(props: any, col: any) {
-            let val = get(props.row, col.field);
+        function displayValue(propsVal: any, col: any) {
+            let val = get(propsVal.row, col.field);
             if (col.type === 'date') {
                 val = moment(val).format('DD-MMM-YY, hh:mm');
             } else if (col.type === 'coord') {

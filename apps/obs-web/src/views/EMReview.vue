@@ -249,7 +249,7 @@ export default createComponent({
 
           const currHaul = get(emReview, 'hauls[' + i + ']', {});
           const currCatch = get(emReview, 'hauls[' + i + '].catch[' + j + ']', {});
-          console.log(currCatch)
+          console.log(currCatch);
 
           // given species code query view to get species name
           const lookupOptions = { key: currCatch.speciesCode, include_docs: true };

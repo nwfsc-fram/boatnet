@@ -48,7 +48,7 @@
           <b>Vessel:</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(opt, index) in authorizedVessels" :key="index" :class="getChoiceClasses(index)" clickable @click="vessel.activeVessel = opt" manual-focus>
+                <q-item class="choices-list-item" v-for="(opt, index) in authorizedVessels" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="vessel.activeVessel = opt" manual-focus>
                     <q-item-section>
                         <b>{{ opt.vesselName + ' (' + (opt.coastGuardNumber ? opt.coastGuardNumber : opt.stateRegulationNumber)  + ')' }}</b>
                     </q-item-section>
@@ -649,7 +649,7 @@ export default class Declarations extends Vue {
     }
   }
 
-  private getSelectionClasses (index: number) {
+  private getSelectionClasses(index: number) {
     if (index % 2 === 0) {
       return 'selections-list-item bg-primary text-white rounded';
     } else {
@@ -657,7 +657,7 @@ export default class Declarations extends Vue {
     }
   }
 
-  private getChoiceClasses (index: number) {
+  private getChoiceClasses(index: number) {
     if (index % 2 === 0) {
       return 'choices-list-item bg-primary text-white rounded';
     } else {

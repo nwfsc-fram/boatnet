@@ -29,7 +29,7 @@
           <b>Choose a declaration ID:</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in Array.from(leafValues)" :key="index" :class="getChoiceClasses(index)" clickable @click="modelID = option, itemChosen(modelID, 5), scrollToTop()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in Array.from(leafValues)" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="modelID = option, itemChosen(modelID, 5), scrollToTop()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -129,7 +129,7 @@
           <b>Category of Declaration (fishery/landing):</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in options1" :key="index" :class="getChoiceClasses(index)" clickable @click="select1(option), itemChosen(model1, 1)" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in options1" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select1(option), itemChosen(model1, 1)" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -142,7 +142,7 @@
           <b>Is declaration for an EFP?</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in ['yes', 'no']" :key="index" :class="getChoiceClasses(index)" clickable @click="choose(option), efpToggled()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in ['yes', 'no']" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="choose(option), efpToggled()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -155,7 +155,7 @@
           <b>{{ row2Title }}</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in options2" :key="index" :class="getChoiceClasses(index)" clickable @click="select2(option), itemChosen(model2, 2), scrollToTop()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in options2" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select2(option), itemChosen(model2, 2), scrollToTop()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -168,7 +168,7 @@
           <b>{{ row2Title }}</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in options3" :key="index" :class="getChoiceClasses(index)" clickable @click="select3(option), itemChosen(model3, 3), scrollToTop()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in options3" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select3(option), itemChosen(model3, 3), scrollToTop()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -181,7 +181,7 @@
           <b>EFP Category</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in efpOptions" :key="index" :class="getChoiceClasses(index)" clickable @click="chooseEfp(option), efpCategoryChosen()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in efpOptions" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseEfp(option), efpCategoryChosen()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -204,7 +204,7 @@
           <b>EFP Category</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in efpOptions2" :key="index" :class="getChoiceClasses(index)" clickable @click="chooseEfp2(option), efpDeclarationChosen()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in efpOptions2" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseEfp2(option), efpDeclarationChosen()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -217,7 +217,7 @@
           <b>Observer Status</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in obsOptions" :key="index" :class="getChoiceClasses(index)" clickable @click="select6(option), obsChosen()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in obsOptions" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select6(option), obsChosen()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -230,7 +230,7 @@
           <b>Declaration in the Cook EFP?</b>
           <q-list>
             <transition-group name="choices-list">
-                <q-item class="choices-list-item" v-for="(option, index) in ['Yes', 'No']" :key="index" :class="getChoiceClasses(index)" clickable @click="chooseCook(option), cookEfpChosen()" manual-focus>
+                <q-item class="choices-list-item" v-for="(option, index) in ['Yes', 'No']" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseCook(option), cookEfpChosen()" manual-focus>
                     <q-item-section>
                         <b>{{ option }}</b>
                     </q-item-section>
@@ -834,7 +834,7 @@ export default class Dropdowns extends Vue {
     return this.oleDoc;
   }
 
-  private getSelectionClasses (index: number) {
+  private getSelectionClasses(index: number) {
     if (index % 2 === 0) {
       return 'selections-list-item bg-primary text-white rounded';
     } else {
@@ -842,7 +842,7 @@ export default class Dropdowns extends Vue {
     }
   }
 
-  private getChoiceClasses (index: number) {
+  private getChoiceClasses(index: number) {
     if (index % 2 === 0) {
       return 'choices-list-item bg-primary text-white rounded';
     } else {
@@ -884,7 +884,7 @@ export default class Dropdowns extends Vue {
   }
 
   private scrollToTop() {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   }
 
   private async created() {

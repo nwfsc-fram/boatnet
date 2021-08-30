@@ -235,7 +235,7 @@ export default createComponent({
         const getTrips = async () => {
             tripsLoading.value = true;
             const oracleTrips = await getOracleTrips(selection.value.VESSEL_DRVID, moment(selection.value.PERIOD_START).format(), moment().format());
-            console.log(oracleTrips)
+            console.log(oracleTrips);
             // const selectionYear = moment(selection.value.PERIOD_END).format('YYYY');
             // const tripsQuery = await masterDB.view(
             //     'obs_web',

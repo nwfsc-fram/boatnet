@@ -32,7 +32,7 @@
                             color="black"
                             :lookupQueryOptions="{ key: 'biostructure-type' }"
                             :rules="[(val) => !!newRack.dissection || 'Dissection Required']"
-                            
+
                         />
                         <q-input
                             style="display: inline-block; width: 30%"
@@ -127,7 +127,7 @@ export default createComponent({
                 rackLocation: newRack.value.location,
                 cols: newRack.value.cols,
                 rows: newRack.value.rows,
-            };            
+            };
             const id = await masterDB.post(newVal);
             context.emit('saveRack');
             close();
@@ -135,7 +135,7 @@ export default createComponent({
 
         function close() {
           newRack.value = {};
-          context.emit('update:show', false);  
+          context.emit('update:show', false);
         }
 
         return {
