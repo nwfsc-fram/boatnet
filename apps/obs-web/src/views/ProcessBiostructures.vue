@@ -200,7 +200,7 @@ export default createComponent({
             sortBy: 'desc',
             descending: false,
             rowsPerPage: 25
-        }
+        };
 
         watch(dissection, (updatedSelection, prevSelection) => {
             if (updatedSelection) {

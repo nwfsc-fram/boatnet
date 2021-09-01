@@ -5,18 +5,17 @@
       <q-btn-toggle
         v-if="!isAuthorized(['enforcement'])"
         v-model="worksheetModel"
-        dense
+        spread
         toggle-color="primary"
         @input="worksheetToggled()"
         :options="[
-          {label: 'Declaration ID Worksheet', value: true},
-          {label: 'Choose ID from dropdown', value: false},
+          {label: 'Worksheet', value: true},
+          {label: 'Choose ID', value: false},
       ]"
       />
-      <br />
-      <br />
+      <br>
 
-      <q-select
+      <!-- <q-select
         label="Choose a declaration ID"
         v-model="modelID"
         v-if="!worksheetModel"
@@ -24,9 +23,223 @@
         :options="Array.from(leafValues)"
         @input="itemChosen(modelID, 5)"
         style="width: 250px; padding-bottom: 32px"
-      ></q-select>
+      ></q-select> -->
 
-      <q-select
+        <div v-if="!modelID && !worksheetModel">
+          <b>Choose a declaration ID:</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in Array.from(leafValues)" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="modelID = option, itemChosen(modelID, 5), scrollToTop()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+          <b v-if="model1">Selections:</b>
+          <q-list dense>
+          <transition-group name="selections-list">
+
+                <q-item :class="getSelectionClasses(44)" key="44" dense  v-if="modelID">
+                  <q-item-section>
+                    <b>{{ modelID }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="modelID = '', databaseObject.showOtherGearTextBox = false, databaseObject.cartAddBool = false, databaseObject.showObsQuestion = false, model6 = null"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(0)" key="0" dense  v-if="model1">
+                  <q-item-section>
+                    <b>{{ model1 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="model1 = null, databaseObject.efpTog = null, model2 = null, mode3 = null, modelefp1 = null, modelfp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showefpQ2 = false, databaseObject.showefpQ0 = false, databaseObject.showEFPNote = false, databaseObject.showefpQ1 = false, databaseObject.showBoolArr[0] = false, databaseObject.showBoolArr[1] = false, databaseObject.showObsQuestion = false, databaseObject.showOtherGearTextBox = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(1)" key="1" dense v-if="databaseObject.efpTog">
+                  <q-item-section>
+                    <b>{{ databaseObject.efpTog === 'yes' ? 'EFP' : 'Non-EFP' }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="databaseObject.efpTog = null, model2 = null, mode3 = null, modelefp1 = null, modelfp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showefpQ2 = false, databaseObject.showEFPNote = false, databaseObject.showefpQ1 = false, databaseObject.showBoolArr[0] = false, databaseObject.showBoolArr[1] = false, databaseObject.showObsQuestion = false, databaseObject.showOtherGearTextBox = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(2)" key="2" dense v-if="model2">
+                  <q-item-section>
+                    <b>{{ model2 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="model2 = null, mode3 = null, modelefp1 = null, modelfp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showefpQ2 = false, databaseObject.showObsQuestion = false, databaseObject.showOtherGearTextBox = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(3)" key="3" dense v-if="model3">
+                  <q-item-section>
+                    <b>{{ model3 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="model3 = null, modelefp1 = null, modelfp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showefpQ2 = false, databaseObject.showObsQuestion = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(4)" key="4" dense v-if="modelefp1">
+                  <q-item-section>
+                    <b>{{ modelefp1 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="modelefp1 = null, modelefp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showObsQuestion = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(5)" key="5" dense v-if="modelefp2">
+                  <q-item-section>
+                    <b>{{ modelefp2 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="modelefp2 = null, model6 = null, databaseObject.cartAddBool = false, databaseObject.showObsQuestion = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(7)" key="7" dense v-if="model6">
+                  <q-item-section>
+                    <b>{{ model6 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="model6 = null, databaseObject.cartAddBool = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+
+                <q-item :class="getSelectionClasses(8)" key="8" dense v-if="model7">
+                  <q-item-section>
+                    <b>In Cook EFP: {{ model7 }}</b>
+                  </q-item-section>
+                  <q-item-section avatar style="cursor: pointer">
+                    <q-icon name="clear" @click="model7 = null, databaseObject.cartAddBool = false"></q-icon>
+                  </q-item-section>
+                </q-item>
+          </transition-group>
+          </q-list>
+
+        <div v-if="!model1 && worksheetModel">
+          <b>Category of Declaration (fishery/landing):</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in options1" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select1(option), itemChosen(model1, 1)" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showefpQ0 && !databaseObject.efpTog">
+          <b>Is declaration for an EFP?</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in ['yes', 'no']" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="choose(option), efpToggled()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showBoolArr[1] && !model2">
+          <b>{{ row2Title }}</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in options2" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select2(option), itemChosen(model2, 2), scrollToTop()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showBoolArr[2] && !model3">
+          <b>{{ row2Title }}</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in options3" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select3(option), itemChosen(model3, 3), scrollToTop()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showefpQ1 && !modelefp1">
+          <b>EFP Category</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in efpOptions" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseEfp(option), efpCategoryChosen()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+                <q-item class="choices-list-item" :class="getChoiceClasses(efpOptions.length + 1)" key="efpOptions.length + 1">
+                  <q-item-section>
+                    <b>Unlisted EFP? Call OLE:&nbsp;
+                    <a
+                      style="color: white"
+                      href="tel: 888-585-5518"
+                      data-rel="external"
+                    >888-585-5518</a></b>
+                  </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showefpQ2 && !modelefp2">
+          <b>EFP Category</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in efpOptions2" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseEfp2(option), efpDeclarationChosen()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showObsQuestion && !model6">
+          <b>Observer Status</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in obsOptions" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="select6(option), obsChosen()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+        <div v-if="databaseObject.showCookQuestion && !model7">
+          <b>Declaration in the Cook EFP?</b>
+          <q-list>
+            <transition-group name="choices-list">
+                <q-item class="choices-list-item" v-for="(option, index) in ['Yes', 'No']" :key="'key_' + index" :class="getChoiceClasses(index)" clickable @click="chooseCook(option), cookEfpChosen()" manual-focus>
+                    <q-item-section>
+                        <b>{{ option }}</b>
+                    </q-item-section>
+                </q-item>
+            </transition-group>
+          </q-list>
+        </div>
+
+      <!-- <q-select
         label="Category of Declaration (fishery/landing)"
         dense
         v-if="databaseObject.showBoolArr[0]"
@@ -64,14 +277,9 @@
         :options="options3"
         @input="itemChosen(model3, 3)"
         style="width: 250px; padding-bottom: 32px"
-      ></q-select>
+      ></q-select> -->
 
-      <p v-if="databaseObject.showEFPNote">
-        If you do not see your EFP category in the list below
-        please contact the OLE office at 888-585-5518
-      </p>
-
-      <q-select
+      <!-- <q-select
         label="EFP Category"
         dense
         v-if="databaseObject.showefpQ1"
@@ -99,9 +307,9 @@
         :options="obsOptions"
         @input="obsChosen"
         style="width: 250px; padding-bottom: 32px"
-      ></q-select>
+      ></q-select> -->
 
-      <q-select
+      <!-- <q-select
         label="Declaration in the Cook EFP?"
         dense
         v-if="databaseObject.showCookQuestion"
@@ -109,7 +317,7 @@
         :options="['Yes', 'No']"
         @input="cookEfpChosen"
         style="width: 250px; padding-bottom: 32px"
-      ></q-select>
+      ></q-select> -->
 
       <q-input
         label="Describe Activity/Gear/Fishery"
@@ -119,12 +327,12 @@
         filled
         type="textarea"
         lazy-rules
-        :rules="[val => val.length >= 3 || 'Sufficient details required for other gear type declaration']"
+        :rules="[val => val.length >= 3 || 'Description required for Other Gear (or Activity) declaration']"
       />
 
       <br />
 
-      <q-card v-if="databaseObject.cartAddBool" align="center" class="bg-light-blue-3" dense>
+      <q-card v-if="databaseObject.cartAddBool" align="center" class="bg-primary text-white" dense>
         <q-card-section>
           <div
             class="text-subtitle2"
@@ -163,7 +371,7 @@
       </q-dialog>
 
       <br />
-      
+
       <p v-if="showLineNote">
         * Line = Hook &amp Line
         <br />** Longline = Stationary buoyed and anchored ground line with hooks
@@ -484,10 +692,10 @@ export default class Dropdowns extends Vue {
     const out = await masterDB.post(this.oleVessel).then(
       setTimeout(() => {
         this.$q.notify({
-          color: 'green-4',
+          color: 'grey-1',
           textColor: 'white',
           icon: 'cloud_done',
-          message: 'Submitted'
+          message: 'cart updated'
         }),
           this.$router.push({ path: '/declaration-cart' });
       }, 500)
@@ -626,6 +834,59 @@ export default class Dropdowns extends Vue {
     return this.oleDoc;
   }
 
+  private getSelectionClasses(index: number) {
+    if (index % 2 === 0) {
+      return 'selections-list-item bg-primary text-white rounded';
+    } else {
+      return 'selections-list-item bg-blue-2 rounded';
+    }
+  }
+
+  private getChoiceClasses(index: number) {
+    if (index % 2 === 0) {
+      return 'choices-list-item bg-primary text-white rounded';
+    } else {
+      return 'choices-list-item bg-blue-2 rounded';
+    }
+  }
+
+  private select1(option: string) {
+    this.model1 = option;
+  }
+
+  private select2(option: string) {
+    this.model2 = option;
+  }
+
+  private select3(option: string) {
+    this.model3 = option;
+  }
+
+  private select6(option: string) {
+    this.model6 = option;
+  }
+
+
+  private choose(option: string) {
+    this.databaseObject.efpTog = option;
+  }
+
+  private chooseEfp(option: string) {
+    this.modelefp1 = option;
+  }
+
+  private chooseEfp2(option: string) {
+    this.modelefp2 = option;
+  }
+
+  private chooseCook(option: string) {
+    this.model7 = option;
+  }
+
+  private scrollToTop() {
+    window.scrollTo(0, 0);
+  }
+
   private async created() {
     this.activeVesselId = this.vessel.activeVessel.coastGuardNumber
       ? this.vessel.activeVessel.coastGuardNumber
@@ -670,3 +931,54 @@ export default class Dropdowns extends Vue {
 
 }
 </script>
+
+<style scoped>
+    .trip-alert {
+        background-color: #003D72;
+        color: white;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    .selections-list-item {
+        transition: all .3s;
+    }
+    .selections-list-enter,
+    .selections-list-leave-to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    .choices-list-item {
+        transition: all .3s;
+    }
+    .choices-list-enter {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    .choices-list-leave-to {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    .rounded {
+        border-radius: 5px;
+        margin: 3px;
+    }
+
+    * >>> .p-inputtext {
+        border: 2px solid black !important;
+        cursor: pointer;
+        font-weight: bold;
+        padding: 6px 0;
+        line-height: 2.4em;
+    }
+
+    * >>> .q-select__dropdown-icon {
+        color: black !important;
+    }
+
+    * >>> .p-datepicker:not(.p-datepicker-inline) {
+        z-index: 9990 !important;
+    }
+</style>

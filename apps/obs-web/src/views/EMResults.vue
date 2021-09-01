@@ -218,8 +218,8 @@ export default createComponent({
         loading.value = false;
     };
 
-    const evalTripCatch = async (tripNum: number) => {
-        await evalCatch(tripNum);
+    const evalTripCatch = async (tripNumber: number) => {
+        await evalCatch(tripNumber);
         console.log('catch re-evaluated');
         Notify.create(
             {
@@ -229,8 +229,8 @@ export default createComponent({
                 timeout: 5000,
                 multiLine: true
             }
-        )
-    }
+        );
+    };
 
     const formatDateTime = (date: any) => {
         return moment(date).format('MMM DD, YYYY HH:mm');

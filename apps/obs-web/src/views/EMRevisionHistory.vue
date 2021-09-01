@@ -99,9 +99,9 @@ export default createComponent({
                     const needle = searchString.value[key].toString().toLowerCase();
                     revisionHistory.value = Lfilter(revisionHistory.value, (object) => {
                         if (object[key]) {
-                            return object[key].toString().toLowerCase().indexOf(needle) > -1
+                            return object[key].toString().toLowerCase().indexOf(needle) > -1;
                         }
-                    })
+                    });
                 }
             }
         };
@@ -297,27 +297,27 @@ export default createComponent({
 
         let speciesNames: any = [];
 
-        const getSpeciesNames = async() => {
+        const getSpeciesNames = async () => {
             transferring.value = true;
             const speciesNamesQuery = await masterDB.view('em-views', 'wcgopCode-to-pacfinCode-map', {include_docs: true} as any);
             speciesNames = speciesNamesQuery.rows.map((row: any) => row.doc);
             transferring.value = false;
-        }
+        };
 
         const getSpeciesName = (speciesCode: any) => {
             const speciesLookup: any = speciesNames.find( (row: any) => {
-                return row.pacfinSpeciesCode === speciesCode || parseInt(row.wcgopSpeciesCode, 10) === speciesCode
+                return row.pacfinSpeciesCode === speciesCode || parseInt(row.wcgopSpeciesCode, 10) === speciesCode;
             });
-          if (speciesLookup.type === 'catch-grouping') {
-            return speciesLookup.name + ' (' + speciesCode + ')';
-          } else {
-            return speciesLookup.commonNames[0] + ' (' + speciesCode + ')';
-          };
-        }
+            if (speciesLookup.type === 'catch-grouping') {
+                return speciesLookup.name + ' (' + speciesCode + ')';
+            } else {
+                return speciesLookup.commonNames[0] + ' (' + speciesCode + ')';
+            }
+        };
 
         const formatDate = (date: any) => {
-            return moment(date).format('MM/DD/YYYY, HH:mm')
-        }
+            return moment(date).format('MM/DD/YYYY, HH:mm');
+        };
 
         onMounted( async () => {
             await getSpeciesNames();
