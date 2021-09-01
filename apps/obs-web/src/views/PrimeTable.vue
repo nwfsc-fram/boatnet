@@ -310,11 +310,11 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import moment from 'moment';
 import PrimeTableDialog from './PrimeTableDialog.vue';
-import { getCouchLookupInfo } from '@boatnet/bn-common/src/helpers/getLookupsInfo';
 import Textarea from 'primevue/textarea';
 import { fromDMS, toDMS } from 'dmsformat';
 import { authService } from '@boatnet/bn-auth/lib';
 import { DcsRow, TripLevel, CollectionMethod, DcsErrorType, AfiFlag } from '@boatnet/bn-models';
+import {baseLookupInfoo} from '@boatnet/bn-common';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);
@@ -526,16 +526,19 @@ export default createComponent({
 
     async function populateLookupsList(col: any) {
       lookupsList.value = [];
-      await getLookupInfo(col.list, col.listType, col.lookupField, col.lookupKey);
-      if (col.listType === 'fetch') {
-        for (let i = 0; i < lookupsList.value.length; i++) {
-          lookupsList.value[i].label = get(lookupsList.value[i].doc, col.lookupField);
-          if (state.debriefer.displayCodes && col.lookupKey && lookupsList.value[i].label) {
-            lookupsList.value[i].label = converToCode(col.lookupKey, lookupsList.value[i].label);
-          }
-          lookupsList.value[i].value = lookupsList.value[i].doc;
-        }
+      const c = {
+        view: state.debriefer.program + '-lookups',
+        label: 'doc.' + col.lookupField,
+        value: 'doc',
+        displayCode: col.lookupCode ? 'doc.' + col.lookupCode : 'doc.lookupValue',
+        queryOptions: { key: col.lookupKey}
       }
+      const m = {
+        collection: '',
+        label: '',
+        value: ''
+      }
+      lookupsList.value = await baseLookupInfoo.getLookups(c, m, state.debriefer.displayCodes);
       sortedList = cloneDeep(lookupsList.value);
     }
 
@@ -546,18 +549,6 @@ export default createComponent({
             (v: any) => v.label && startsWith(v.label.toLowerCase(), needle)
           );
       });
-    }
-
-    async function getLookupInfo(
-      list: any[],
-      listType: string,
-      displayField: string,
-      key: string
-    ) {
-        const mode = state.debriefer.program;
-        lookupsList.value = await getCouchLookupInfo(mode, 'obs_web', key, [
-          displayField,
-        ]);
     }
 
     async function getLookupName(columnInfo: any) {
@@ -905,7 +896,6 @@ export default createComponent({
       displayColumns,
       cellVal,
       onCellEdit,
-      getLookupInfo,
       lookupsList,
       formatValue,
       tableType,

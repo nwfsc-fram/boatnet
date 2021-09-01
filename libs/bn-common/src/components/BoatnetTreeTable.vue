@@ -208,7 +208,6 @@
 <script lang="ts">
 import { createComponent, ref, computed, onMounted, reactive } from '@vue/composition-api';
 import { Vue } from 'vue-property-decorator';
-import { getCouchLookupInfo } from '../helpers/getLookupsInfo';
 import { cloneDeep, find, get, orderBy, remove, uniq } from 'lodash';
 
 import { couchService } from '@boatnet/bn-couch';
@@ -219,6 +218,7 @@ import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import TreeTable from 'primevue/treetable';
 import ContextMenu from 'primevue/contextmenu';
+import {baseLookupInfoo} from '../helpers/baseLookupImpl';
 
 Vue.component('pColumn', Column);
 Vue.component('Dropdown', Dropdown);
@@ -252,7 +252,6 @@ export default createComponent ({
     const editingRow: any = ref('');
     const filters: any = ref({});
 
-    const lookupFieldName: any = ref('');
     const lookupsList: any = ref([]);
     const sortedList: any = ref([]);
     const jp = require('jsonpath');
@@ -364,10 +363,8 @@ export default createComponent ({
         editingRow.value = nodeKey;
       }
       editingCol.value = col.name;
-      lookupFieldName.value = col.lookupField;
       lookupsList.value = await getOptionsList(
-        col.lookupView,
-        [lookupFieldName.value],
+        col,
         data
       );
       sortedList.value = cloneDeep(lookupsList.value);
@@ -381,30 +378,37 @@ export default createComponent ({
       });
     }
 
-    async function getOptionsList(key: string, field: string[], data: any) {
-      const lookupList: any[] = [];
-      let lookupField = lookupFieldName.value;
+    async function getOptionsList(col: any, data: any) {
+      let lookupList: any[] = [];
+      let lookupField = col.lookupField;
+      let lookupView = col.lookupView;
+      let lookupCode = 'lookupValue';
+
       if (data.column.field === 'name') {
         const catchContent = data.node.data.catchContent;
-        key = catchContent.type;
-        if (key === 'catch-grouping') {
+        lookupView = catchContent.type;
+        if (lookupView === 'catch-grouping') {
           lookupField = 'name';
-        } else if (key === 'taxonomy-alias') {
+          lookupCode = 'code';
+        } else if (lookupView === 'taxonomy-alias') {
           lookupField = 'commonNames[0]';
+          lookupCode = 'wcgopSpeciesCode';
         }
       }
-      const programState = state.debriefer.program;
-      const results = await getCouchLookupInfo(programState, 'obs_web', key, [lookupField]);
-      for (let i = 0; i < results.length; i++) {
-        let label = get(results[i].doc, lookupField);
-        if (state.debriefer.displayCodes && label) {
-            label = converToCode(key, label, data.node.data);
-            label = label ? label : '';
-            lookupList.push({ label, value: results[i].doc });
-        } else if (label) {
-          lookupList.push({ label, value: results[i].doc });
-        }
+
+      const c = {
+        view: state.debriefer.program + '-lookups',
+        label: 'doc.' + lookupField,
+        value: 'doc',
+        displayCode: 'doc.' + lookupCode,
+        queryOptions: { key: lookupView}
       }
+      const m = {
+        collection: '',
+        label: '',
+        value: ''
+      }
+      lookupList = await baseLookupInfoo.getLookups(c, m, state.debriefer.displayCodes);
       return lookupList;
     }
 
@@ -486,7 +490,6 @@ export default createComponent ({
       expandedKeys,
       filters,
       filterOptions,
-      lookupFieldName,
       lookupsList,
       sortedList,
       state,

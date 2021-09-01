@@ -38,6 +38,7 @@ import { useAsync } from 'vue-async-function';
 import Vue, { WatchOptions } from 'vue';
 import { filter, get, orderBy } from 'lodash';
 import Multiselect from 'vue-multiselect';
+import {baseLookupInfoo} from '@boatnet/bn-common';
 
 Vue.component('multiselect', Multiselect);
 
@@ -69,21 +70,19 @@ export default createComponent({
     watch(() => props.lookupQueryOptions, getOptions, watcherOptions);
 
     async function getOptions() {
-      const queryOptions = get(props, 'lookupQueryOptions', {});
-      const view = get(props, 'lookupView', '');
-      const optionsList: any = await masterDB.viewWithDocs('obs_web', view, queryOptions);
-      options.value = [];
+      const c = {
+        view: get(props, 'lookupView', ''),
+        label: get(props, 'lookupLabel', ''),
+        value: get(props, 'lookupValue', ''),
+        queryOptions: get(props, 'lookupQueryOptions', {})
 
-      for (const option of optionsList.rows) {
-        const labelName: string = get(props, 'lookupLabel', '');
-        const valueName: string = get(props, 'lookupValue', '');
-
-        const label = get(option, labelName);
-        const value = get(option, valueName);
-
-        options.value.push({label, value});
       }
-      options.value = orderBy(options.value, 'label');
+      const m = {
+        collection: '',
+        label: '',
+        value: ''
+      }
+      options.value = await baseLookupInfoo.getLookups(c, m, false);
     }
 
     async function filterFn(val: any, update: any) {

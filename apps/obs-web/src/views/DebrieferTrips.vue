@@ -238,6 +238,7 @@ export default createComponent({
         lookupKey: 'program',
         lookupField: 'name',
         key: 'wcgopProgramName',
+        lookupCode: 'legacy.programId',
         isEditable: true,
         width: '150',
         codeWidth: '80'
@@ -363,6 +364,7 @@ export default createComponent({
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopDeparturePort',
+        lookupCode: 'code',
         isEditable: true,
         width: '200',
         codeWidth: '90'
@@ -376,6 +378,7 @@ export default createComponent({
         lookupKey: 'port',
         lookupField: 'name',
         key: 'wcgopReturnPort',
+        lookupCode: 'code',
         isEditable: true,
         width: '200',
         codeWidth: '80'
