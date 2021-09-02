@@ -34,7 +34,6 @@ import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex, slice } from 'lodash';
-import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
 import {wcgopTripImpll} from '@boatnet/bn-common';
 
 import PrimeTable from './PrimeTable.vue';
