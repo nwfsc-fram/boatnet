@@ -62,3 +62,4 @@ Boatnet uses the lerna + yarn workspace monorepo pattern.
 
 1. See more [specific `lerna` instructions, troubleshooting, and development setup here.](./docs/dev-notes/README.md)
 
+## Additional Comments
