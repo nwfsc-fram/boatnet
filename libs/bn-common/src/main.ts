@@ -77,4 +77,5 @@ export * from './models/BoatnetTripsSettings';
 export * from './_store/';
 export * from './helpers/trips-api';
 export * from './helpers/baseLookupImpl';
+export * from './helpers/wcgopTripInfo';
 export default Components;

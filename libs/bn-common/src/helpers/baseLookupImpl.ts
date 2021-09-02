@@ -2,7 +2,8 @@ import { get, orderBy } from 'lodash';
 import { couchService } from '@boatnet/bn-couch';
 import { Client } from 'davenport';
 import { mongoRead } from './trips-api';
-
+import { dbConfig } from './config';
+import { Base } from './base';
 interface CouchInfo {
     view: string,
     label: string,
@@ -18,11 +19,9 @@ interface MongoInfo {
     displayCode?: string
 }
 
-export class BaseLookupInfo {
-    type: string;
-
+export class BaseLookupInfo extends Base {
     constructor(type: string) {
-        this.type = type;
+        super(type);
     }
     
     async getLookups(couchInfo: CouchInfo, mongoInfo: MongoInfo, showCodes?: boolean) {
@@ -54,4 +53,4 @@ export class BaseLookupInfo {
       }
 }
 
-export const baseLookupInfoo = new BaseLookupInfo('mongo');
+export const baseLookupInfoo = new BaseLookupInfo(dbConfig.type);

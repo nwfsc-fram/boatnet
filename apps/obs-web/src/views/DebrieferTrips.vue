@@ -35,6 +35,7 @@ import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex, slice } from 'lodash';
 import { getTripsByDates, getTripsByObserverId } from '../helpers/getFields';
+import {wcgopTripImpll} from '@boatnet/bn-common';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
@@ -477,9 +478,12 @@ export default createComponent({
         } else if (type === 'evalPeriod') {
           const evalPeriod = state.debriefer.evaluationPeriod;
           const observer = state.debriefer.observer;
-          trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
+          trips.value = await wcgopTripImpll.getTripsByEvaluationPeriod(evalPeriod);
+          console.log('trips')
+        console.log(trips.value)
+          /*trips.value = await getTripsByDates(new Date(evalPeriod.startDate),
                                               new Date(evalPeriod.endDate),
-                                              observer);
+                                              observer);*/
           store.dispatch('debriefer/setTripIds', jp.query(trips.value, '$[*]._id'));
           totalRecords.value = trips.value.length;
           trips.value = slice(trips.value, 0, pageSize);
