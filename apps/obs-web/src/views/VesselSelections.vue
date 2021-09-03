@@ -110,29 +110,21 @@ export default createComponent({
 
         const getVesselSelections = async () => {
             loading.value = true;
+            let rolloverStatuses = await masterDB.view(
+                'obs_web',
+                'all_doc_types',
+                {key: 'fleet-rollover-statuses', reduce: false, include_docs: true}
+                );
+            rolloverStatuses = rolloverStatuses.rows[0].doc.statuses;
             const vesselSelections: any = await getSelections('year', selectionYear.value);
             for (const selection of vesselSelections) {
-                if (vesselSelections.indexOf(selection) < 35) {
-                    console.log(vesselSelections.indexOf(selection));
-                    await getRolloverStatus(selection);
-                }
+                selection.rolloverStatus = rolloverStatuses[selection.VESSEL_DRVID + '-' + selection.FISHERY + '-' + moment(selection.PERIOD_END).format('MM-DD-YYYY')];
             }
 
             allVesselSelections.value = cloneDeep(vesselSelections);
             selections.value = cloneDeep(vesselSelections);
 
             loading.value = false;
-        };
-
-        const getWaivers = async () => {
-            const waiversQuery = await masterDB.view(
-                'obs_web',
-                'waivers_by_vesselId',
-                {include_docs: true}
-            );
-            allWaivers.value.push.apply(allWaivers.value, waiversQuery.rows.filter((row: any) => moment(row.doc.startDate).isSame(moment(), 'year') ||  moment(row.doc.endDate).isSame(moment(), 'year')).map((row: any) => row.doc));
-            const oracleWaivers: any = await getOracleWaivers(moment().format('YYYY'));
-            allWaivers.value.push.apply(allWaivers.value, oracleWaivers);
         };
 
         const formatDate = (dateTime: string) => {
@@ -144,81 +136,13 @@ export default createComponent({
         };
 
         onMounted( async () => {
-            getWaivers();
+            // getWaivers();
             getYearOptions();
         });
 
         const vesselSelectionDetails = async (selection: any) => {
             store.dispatch('vessel/setVesselSelection', selection);
             router.push({path: '/vessel-selections/' + selection.VESSEL_DRVID});
-        };
-
-        const getTrips = async (selection: any) => {
-            const oracleTrips: any[] = await getOracleTrips(selection.VESSEL_DRVID, moment(selection.PERIOD_START).format(), moment().format()) as any[];
-            console.log('Oracle Trips:');
-            console.log(oracleTrips);
-            // const tripsQuery = await masterDB.view(
-            //     'obs_web',
-            //     'wcgop_trips_vesselId_returnDate',
-            //     {
-            //         include_docs: true,
-            //         start_key: [selection.VESSEL_DRVID, moment(selection.PERIOD_START).format()],
-            //         end_key: [selection.VESSEL_DRVID, moment().format()]
-            //     }
-            // );
-            // return tripsQuery.rows.map((row: any) => row.doc);
-            return oracleTrips;
-        };
-
-        const getRolloverStatus = async (selection: any) => {
-            status = '';
-            if (moment(selection.PERIOD_END).isBefore(moment(), 'year')) {
-                set(selection, 'rolloverStatus',  '- previous year');
-            } else if ( moment(selection.PERIOD_END).isBefore(moment()) ) {
-                const trips = await getTrips(selection);
-                trips.sort( (a: any, b: any) => {
-                    return a.RETURN_DATE > b.RETURN_DATE ? 1 : a.RETURN_DATE < b.RETURN_DATE ? -1 : 0;
-                } );
-                let fishTickets: any[] = [];
-                try {
-                    fishTickets = await getVesselFishTickets(selection.VESSEL_DRVID, selection.PERIOD_START, moment().format()) as any;
-                } catch (err) {
-                    console.log(err);
-                }
-                if (trips.length > 0) {
-                    // const allTripsticketNumbers = jp.query(trips, '$..fishTicketNumber');
-                    for (const trip of trips) {
-                        if (trip.FISH_TICKETS && trip.FISH_TICKETS.split(',')[0]) {
-                            for (const ticket of trip.FISH_TICKETS.split(',')) {
-                                const tripTicket = fishTickets.find( (row: any) => row.FTID === ticket || row.FTID === ticket + 'E');
-                                if (tripTicket && tripTicket.LANDED_WEIGHT_LBS && tripTicket.LANDED_WEIGHT_LBS > 0) {
-                                    set(selection, 'rolloverStatus', 'N - observed w/ landed lbs - ' + moment(tripTicket.LANDING_DATE).format('MM/DD/YYYY'));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (!selection.rolloverStatus) {
-                        set(selection, 'rolloverStatus', 'Y - no landed lbs');
-                    }
-                } else {
-                    const licenseNums = [ ...new Set(fishTickets.map( (row: any) => row.FISHER_LICENSE_NUM ).filter( (lic: any) => lic !== null ))];
-                    if (licenseNums.length > 0 && selection.LICENSE_NUMBER && licenseNums.includes( selection.LICENSE_NUMBER ) ) {
-                        // get waivers for period
-                        if (allWaivers.value.map( (row: any) => row.PERMIT_OR_LICENSE || row.certificateNumber ).find( (num: any) => num === selection.LICENSE_NUMBER )) {
-                            set(selection, 'rolloverStatus', 'Possibly Waived');
-                        } else {
-                            set(selection, 'rolloverStatus', 'Possible Out of Compliance');
-                        }
-                    } else {
-                        set(selection, 'rolloverStatus', 'Y - no observerd trips');
-                    }
-                }
-            } else if ( moment(selection.PERIOD_START).isBefore(moment()) && moment(selection.PERIOD_END).isAfter(moment()) ) {
-                set(selection, 'rolloverStatus', '- in period');
-            } else {
-                set(selection, 'rolloverStatus', '- before period');
-            }
         };
 
         const watcherOptions: WatchOptions = {
@@ -270,7 +194,7 @@ export default createComponent({
             filterText,
             formatDate,
             formatIssuerName,
-            getRolloverStatus,
+            // getRolloverStatus,
             loading,
             pagination,
             selected,
