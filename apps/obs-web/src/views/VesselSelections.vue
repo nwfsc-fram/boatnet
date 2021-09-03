@@ -157,16 +157,17 @@ export default createComponent({
                     let selectionResults: any = [];
                     selectionResults = allVesselSelections.value.filter( (row: any) => {
                         return row.FISHERY.toLowerCase().includes(needle) ||
-                                (row.CYCLE_NUMBER && row.CYCLE_NUMBER.toString().toLowerCase().includes(needle)) ||
-                                (row.PERIOD_NUMBER && row.PERIOD_NUMBER.toString().includes(needle)) ||
-                                (row.PERIOD_START && row.PERIOD_START.toLowerCase().includes(needle)) ||
-                                (row.PERIOD_END && row.PERIOD_END.toLowerCase().includes(needle)) ||
-                                (row.PORT_GROUP_CODE && row.PORT_GROUP_CODE.includes(needle.toUpperCase())) ||
-                                (row.VESSEL_NAME && row.VESSEL_NAME.toLowerCase().includes(needle)) ||
-                                (row.VESSEL_DRVID && row.VESSEL_DRVID.toLowerCase().includes(needle)) ||
-                                (row.LICENSE_NUMBER && row.LICENSE_NUMBER.toLowerCase().includes(needle)) ||
-                                (row.PERMIT_NUMBER && row.PERMIT_NUMBER.toLowerCase().includes(needle)) ||
-                                (row.PERMIT_NUMBER_2 && row.PERMIT_NUMBER_2.toLowerCase().includes(needle));
+                            (row.CYCLE_NUMBER && row.CYCLE_NUMBER.toString().toLowerCase().includes(needle)) ||
+                            (row.PERIOD_NUMBER && row.PERIOD_NUMBER.toString().includes(needle)) ||
+                            (row.PERIOD_START && row.PERIOD_START.toLowerCase().includes(needle)) ||
+                            (row.PERIOD_END && row.PERIOD_END.toLowerCase().includes(needle)) ||
+                            (row.PORT_GROUP_CODE && row.PORT_GROUP_CODE.includes(needle.toUpperCase())) ||
+                            (row.VESSEL_NAME && row.VESSEL_NAME.toLowerCase().includes(needle)) ||
+                            (row.VESSEL_DRVID && row.VESSEL_DRVID.toLowerCase().includes(needle)) ||
+                            (row.LICENSE_NUMBER && row.LICENSE_NUMBER.toLowerCase().includes(needle)) ||
+                            (row.PERMIT_NUMBER && row.PERMIT_NUMBER.toLowerCase().includes(needle)) ||
+                            (row.PERMIT_NUMBER_2 && row.PERMIT_NUMBER_2.toLowerCase().includes(needle)) ||
+                            (row.rolloverStatus && row.rolloverStatus.toLowerCase().includes(needle));
                     });
                     selections.value.length = 0;
                     selections.value.push.apply(selections.value, selectionResults);
