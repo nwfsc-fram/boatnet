@@ -39,6 +39,7 @@
         </q-table>
 
         <div v-if="selected.length > 0">{{ selected }}</div>
+        <b style="float: right">rollover statuses last updated: {{ lastUpdated }}</b>
     </div>
 </template>
 
@@ -86,6 +87,7 @@ export default createComponent({
         const allWaivers = ref([]);
         const selections: any = ref([]);
         const loading: any = ref(false);
+        const lastUpdated: any = ref('');
 
         const selectionYear = ref(moment().format('YYYY'));
 
@@ -115,6 +117,7 @@ export default createComponent({
                 'all_doc_types',
                 {key: 'fleet-rollover-statuses', reduce: false, include_docs: true}
                 );
+            lastUpdated.value = moment(rolloverStatuses.rows[0].doc.lastRun).format('MM/DD/YYYY, HH:mm');
             rolloverStatuses = rolloverStatuses.rows[0].doc.statuses;
             const vesselSelections: any = await getSelections('year', selectionYear.value);
             for (const selection of vesselSelections) {
@@ -195,7 +198,7 @@ export default createComponent({
             filterText,
             formatDate,
             formatIssuerName,
-            // getRolloverStatus,
+            lastUpdated,
             loading,
             pagination,
             selected,
