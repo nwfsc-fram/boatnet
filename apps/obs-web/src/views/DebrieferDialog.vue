@@ -93,7 +93,7 @@ import { useAsync } from 'vue-async-function';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import { wcgopTripImpll } from '@boatnet/bn-common';
+import { wcgopTripImpll } from '@boatnet/bn-data-access';
 
 export default createComponent({
   props: {

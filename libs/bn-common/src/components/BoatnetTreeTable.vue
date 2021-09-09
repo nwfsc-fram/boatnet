@@ -218,7 +218,7 @@ import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import TreeTable from 'primevue/treetable';
 import ContextMenu from 'primevue/contextmenu';
-import {baseLookupInfoo} from '../helpers/baseLookupImpl';
+import {baseLookupInfoo} from '@boatnet/bn-data-access';
 
 Vue.component('pColumn', Column);
 Vue.component('Dropdown', Dropdown);

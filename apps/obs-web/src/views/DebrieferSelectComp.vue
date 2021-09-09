@@ -38,7 +38,7 @@ import { useAsync } from 'vue-async-function';
 import Vue, { WatchOptions } from 'vue';
 import { filter, get, orderBy } from 'lodash';
 import Multiselect from 'vue-multiselect';
-import {baseLookupInfoo} from '@boatnet/bn-common';
+import {baseLookupInfoo} from '@boatnet/bn-data-access';
 
 Vue.component('multiselect', Multiselect);
 

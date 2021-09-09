@@ -78,7 +78,7 @@ import {
 import QuasarTable from './QuasarTable.vue';
 import { commonCols, reportCols } from '../helpers/biospecimensToolCols';
 import { createResult } from '../helpers/biospecimensReportCommons';
-import {wcgopTripImpll} from '@boatnet/bn-common';
+import {wcgopTripImpll} from '@boatnet/bn-data-access';
 
 Vue.component('QuasarTable', QuasarTable);
 Vue.component('multiselect', Multiselect);

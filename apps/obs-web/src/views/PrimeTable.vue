@@ -314,7 +314,7 @@ import Textarea from 'primevue/textarea';
 import { fromDMS, toDMS } from 'dmsformat';
 import { authService } from '@boatnet/bn-auth/lib';
 import { DcsRow, TripLevel, CollectionMethod, DcsErrorType, AfiFlag } from '@boatnet/bn-models';
-import {baseLookupInfoo} from '@boatnet/bn-common';
+import {baseLookupInfoo} from '@boatnet/bn-data-access';
 
 Vue.component('PrimeTableDialog', PrimeTableDialog);
 Vue.component('Button', Button);

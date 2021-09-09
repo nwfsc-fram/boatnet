@@ -34,7 +34,7 @@ import { Vue } from 'vue-property-decorator';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, ListOptions } from 'davenport';
 import { cloneDeep, findIndex, slice } from 'lodash';
-import {wcgopTripImpll} from '@boatnet/bn-common';
+import {wcgopTripImpll} from '@boatnet/bn-data-access';
 
 import PrimeTable from './PrimeTable.vue';
 Vue.component('PrimeTable', PrimeTable);
