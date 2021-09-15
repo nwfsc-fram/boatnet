@@ -603,3 +603,41 @@ export function getOracleTrips(vesselId: any, startDate: any, endDate: any) {
         );
     });
 }
+
+export function checkVesselPasscode(vesselId: any, passcode: any) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/vms/check?vesselId=' + vesselId.toString() + '&passcode=' + passcode.toString();
+        request.get(
+            {
+                url: queryUrl,
+                headers: {}
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}
+
+export function getDeclarations(vesselId: any) {
+    return new Promise( (resolve, reject) => {
+        const queryUrl = 'https://nwcdevmeow1.nwfsc.noaa.gov:9004/api/v1/vms/getDeclarations?vesselId=' + vesselId.toString();
+        request.get(
+            {
+                url: queryUrl,
+                headers: {
+                    authorization: 'Token ' + getJwt()
+                }
+            }, (err: any, response: any, body: any) => {
+                if (!err && response.statusCode === 200) {
+                    resolve(body);
+                } else {
+                    reject(body);
+                }
+            }
+        );
+    });
+}

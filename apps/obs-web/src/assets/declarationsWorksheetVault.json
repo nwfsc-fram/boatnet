@@ -1,14 +1,15 @@
 {
-    "Start": [ 
+    "Start": [
         "Federal Permit",
         "State Permit",
         "Tribal Trawl [50]",
-        "Other Gear (or Activity) [69]",
+        "Other Gear [69]",
         "Exemptions"
     ],
     "Federal Permit": [
         "Bottom Trawl IFQ [30]",
         "Demersal Trawl IFQ [31]",
+        "Limited entry selective flatfish trawl, shorebased IFQ [32]",
         "Fixed Gear",
         "Line* - Highly Migratory Species [66]",
         "Midwater Trawl"
@@ -50,8 +51,9 @@
         "Whiting CP [22]": "22 ‐ Limited entry midwater trawl, Pacific whiting catcher/processor sector",
         "Whiting CV (Mothership Sector) [23]": "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector (catcher vessel)",
         "Whiting MS [23]": "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector",
-        "Bottom Trawl IFQ [30]": "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl",
+        "Bottom Trawl IFQ [30]": "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl or selective flatfish trawl",
         "Demersal Trawl IFQ [31]": "31 ‐ Limited entry demersal trawl, shorebased IFQ",
+        "Limited entry selective flatfish trawl, shorebased IFQ [32]": "32 ‐ Limited entry selective flatfish trawl, shorebased IFQ",
         "Groundfish (longline**) [33]": "33 ‐ Open access† longline gear for groundfish",
         "Groundfish (trap/pot) [34]": "34 ‐ Open access† groundfish trap or pot gear",
         "Groundfish (line*) [35]": "35 ‐ Open access† line gear for groundfish",
@@ -67,9 +69,9 @@
         "CA Halibut (line*) [64]": "64 ‐ Open access† California halibut line gear",
         "Sheephead (trap/pot) [65]": "65 ‐ Open access† sheephead trap or pot gear",
         "Line* - Highly Migratory Species [66]": "66 ‐ Open access† Highly Migratory Species line gear",
-        "Coastal Pelagic Species Net Gear [67]": "67 ‐ Open access† Coastal Pelagic Species net gear",        
+        "Coastal Pelagic Species Net Gear [67]": "67 ‐ Open access† Coastal Pelagic Species net gear",
         "CA Gillnet Complex Gear [68]": "68 ‐ Open access† California gillnet complex gear",
-        "Other Gear (or Activity) [69]": "69 ‐ A gear (or activity) that is not listed above",
+        "Other Gear [69]": "69 ‐ Other, a gear that is not listed above",
         "Haul Out [10]": "10 ‐ Haul out exemption",
         "Outside Areas [20]": "20 ‐ Outside areas exemption",
         "Emergency [30]": "30 ‐ Emergency exemption",
@@ -95,16 +97,19 @@
         "23 ‐ Limited entry midwater trawl, Pacific whiting mothership sector",
         "223",
         "Bottom Trawl IFQ [30]",
-        "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl",
+        "30 ‐ Limited entry bottom trawl, shorebased IFQ, not including demersal trawl or selective flatfish trawl",
         "230",
         "Demersal Trawl IFQ [31]",
         "31 ‐ Limited entry demersal trawl, shorebased IFQ",
-        "231"
+        "231",
+        "32 ‐ Limited entry selective flatfish trawl, shorebased IFQ",
+        "Limited entry selective flatfish trawl, shorebased IFQ [32]",
+        "232"
     ],
     "Observed Options": [
-        "Observer", 
-        "Electronic Monitoring", 
-        "EM/Observer", 
+        "Observer",
+        "Electronic Monitoring",
+        "EM/Observer",
         "None"
     ],
     "Allowed Dual Declarations": {
@@ -116,6 +121,7 @@
         "223": [269],
         "230": [269],
         "231": [269],
+        "232": [269],
         "233": [210, 234, 235, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269],
         "234": [210, 233, 235, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269],
         "235": [210, 233, 234, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269],
@@ -133,6 +139,6 @@
         "266": [210, 233, 234, 235, 260, 261, 262, 263, 264, 265, 267, 268, 269],
         "267": [210, 233, 234, 235, 260, 261, 262, 263, 264, 265, 266, 268, 269],
         "268": [210, 233, 234, 235, 260, 261, 262, 263, 264, 265, 266, 267, 269],
-        "269": [210, 211, 220, 221, 222, 223, 230, 231, 233, 234, 235, 240, 241, 242, 243, 250, 260, 261, 262, 263, 264, 265, 266, 267, 268]
+        "269": [210, 211, 220, 221, 222, 223, 230, 231, 232, 233, 234, 235, 240, 241, 242, 243, 250, 260, 261, 262, 263, 264, 265, 266, 267, 268]
     }
 }
