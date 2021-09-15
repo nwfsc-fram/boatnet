@@ -73,6 +73,7 @@
         <br>
         <div class="column justify-center" style="text-align: center">
           <router-link to="/username">Set/Reset Password</router-link>
+          <router-link to="/newAccount">Create account</router-link>
           <div style="text-align: center; font-size: 10px; font-weight: bold; margin-top: 50px">
             <!-- Version: {{general.appVersion}} -->
             Version: todo | Updated: {{this.lastSoftwareUpdateDate}}

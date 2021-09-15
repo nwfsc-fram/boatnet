@@ -81,8 +81,21 @@
 
         <br />
 
-        <div class="centered-page-item">Active Declarations</div>
+        <b class="centered-page-item" v-if="vmsDeclarations.length > 0">Current Declaration(s):</b>
+        <div class="q-pa-sm bg-blue-2 rounded" v-if="vmsDeclarations.length > 0">
+          <span
+            v-for="dec of vmsDeclarations.slice(0, 3)"
+            :key="vmsDeclarations.indexOf(dec)"
+            dense
+            >
+              <span v-if="vmsDeclarations.indexOf(dec) === 0 || (vmsDeclarations.indexOf(dec) < 0 && dec.date === vmsDeclarations[0].date)">
+                <span style="font-size: .8em">{{ dec.code }}</span>
+                <span style="font-size: .6em"> {{ formatDate(dec.date) }}</span>
+              </span> &nbsp;
+            </span>
+        </div>
 
+        <div class="centered-page-item">App Declarations</div>
         <div v-if="oleVessel !== undefined && Object.keys(oleVessel.activeDeclarations).length > 0">
           <div class="q-pa-md column">
             <q-card
@@ -110,11 +123,10 @@
             </q-card>
           </div>
         </div>
-        <div v-else class="centered-page-item text-primary">No active declarations for this vessel.</div>
-        <br />
+        <div v-else class="centered-page-item text-primary">No app declarations for this vessel.</div>
 
         <div class="centered-page-item">
-          Past Declarations
+          Past App Declarations
           <q-btn
             :color="getBtnColor()"
             size="sm"
@@ -181,7 +193,7 @@
           </div>
         </div>
 
-        <div v-else class="centered-page-item text-primary">No past declarations for this vessel.</div>
+        <div v-else class="centered-page-item text-primary">No past app declarations for this vessel.</div>
 
         <q-dialog v-model="obsPrompt" persistent>
           <q-card class="q-gutter-sm">
@@ -254,6 +266,8 @@ import moment from 'moment';
 
 import { Vessel, OLEVessel, Declaration } from '@boatnet/bn-models';
 
+
+import { getDeclarations } from '@boatnet/bn-common';
 import { couchService } from '@boatnet/bn-couch';
 import { AuthState, authService } from '@boatnet/bn-auth';
 
@@ -294,6 +308,8 @@ export default class Declarations extends Vue {
   private dualRules: any = dropdownTree['Allowed Dual Declarations'];
   private ifqSet: Set<string> = new Set(dropdownTree['IFQ Fisheries']);
   private obsOptions: string[] = dropdownTree['Observed Options'];
+
+  private vmsDeclarations: any[] = [];
 
   private columns = [
     {
@@ -564,6 +580,10 @@ export default class Declarations extends Vue {
     return moment(date).format('MM/DD/YYYY, HH:mm');
   }
 
+  private formatDate(date: any) {
+    return moment(date).format('MM/DD/YYYY');
+  }
+
   // Had to split this part out so that qdialog could finish the add
   // to cart process as well.
   private async finishAddingToCart() {
@@ -640,6 +660,16 @@ export default class Declarations extends Vue {
         : this.vessel.activeVessel.stateRegulationNumber;
       try {
         this.dbReturn = this.getOleVessel();
+        const responseDeclarations: any = JSON.parse(await getDeclarations(this.activeVesselId) as string);
+        this.vmsDeclarations = [];
+        for (let row of responseDeclarations.rows) {
+          let declaration: any = {};
+          declaration.date = row[0];
+          declaration.code = row[1];
+          this.vmsDeclarations.push(declaration);
+
+        }
+        console.log(this.vmsDeclarations)
       } catch (err) {
         console.log('failed couch attempt');
       }
