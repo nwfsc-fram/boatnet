@@ -12,7 +12,7 @@
       </q-card-section>
     </q-card>
 
-    <b v-if="vessel.activeVessel">Active Vessel:</b>
+    <b class="q-ma-xs" v-if="vessel.activeVessel">Active Vessel:</b>
     <q-list>
       <transition-group name="selections-list">
         <q-item :class="getSelectionClasses(0)" key="0" dense v-if="vessel.activeVessel">
@@ -81,19 +81,27 @@
 
         <br />
 
-        <b class="centered-page-item" v-if="vmsDeclarations.length > 0">Current Declaration(s):</b>
-        <div class="q-pa-sm bg-blue-2 rounded" v-if="vmsDeclarations.length > 0">
-          <span
-            v-for="dec of vmsDeclarations.slice(0, 3)"
-            :key="vmsDeclarations.indexOf(dec)"
-            dense
+        <b class="centered-page-item" v-if="vmsDeclarations.length > 0">VMS Current Declaration(s):</b>
+          <div class="q-pa-md column">
+            <span v-for="dec of vmsDeclarations.slice(0, 6)"
+              :key="vmsDeclarations.indexOf(dec)">
+            <q-card
+              v-if="vmsDeclarations.indexOf(dec) === 0 || (vmsDeclarations.indexOf(dec) < 0 && dec.date === vmsDeclarations[0].date)"
+              class="my-card bg-primary text-white"
             >
-              <span v-if="vmsDeclarations.indexOf(dec) === 0 || (vmsDeclarations.indexOf(dec) < 0 && dec.date === vmsDeclarations[0].date)">
-                <span style="font-size: .8em">{{ dec.code }}</span>
-                <span style="font-size: .6em"> {{ formatDate(dec.date) }}</span>
-              </span> &nbsp;
+              <q-card-section>
+                <div class="text-h6">{{ dec.code }}</div>
+                <div v-if="getDescription(dec.code)" style="font-size: 14px">{{ getDescription(dec.code) }}</div>
+                <div v-if="dec.contact" style="font-size: 14px">Made By: {{ dec.contact }}</div>
+                <div
+                  style="font-size: 14px"
+                  class="text-overflow: ellipsis"
+                >Declaration Date: {{ formatDate(dec.date) }}</div>
+              </q-card-section>
+            </q-card>
             </span>
-        </div>
+          </div>
+
 
         <div class="centered-page-item">App Declarations</div>
         <div v-if="oleVessel !== undefined && Object.keys(oleVessel.activeDeclarations).length > 0">
@@ -413,6 +421,15 @@ export default class Declarations extends Vue {
     }
   }
 
+  private getDescription(code: string) {
+    const node = Object.keys(dropdownTree["Leaf Nodes"]).find( (row: any) => row.includes(parseInt(code.toString().substring(1), 10)) );
+    if (node) {
+      return node.split('[')[0];
+    } else {
+      return null;
+    }
+  };
+
   private async getOleVessel() {
     console.log('fetching declarations from couch');
     try {
@@ -427,6 +444,16 @@ export default class Declarations extends Vue {
         'all_ole_vessels',
         options
       );
+
+      const responseDeclarations: any = JSON.parse(await getDeclarations(this.activeVesselId) as string);
+      this.vmsDeclarations = [];
+      for (let row of responseDeclarations.rows) {
+        let declaration: any = {};
+        declaration.date = row[0];
+        declaration.code = row[1];
+        declaration.contact = row[2];
+        this.vmsDeclarations.push(declaration);
+      }
 
       // If not ole vessle doc is returned make a new one
       if (!(ovessels.rows.length  > 0)) {
@@ -660,16 +687,6 @@ export default class Declarations extends Vue {
         : this.vessel.activeVessel.stateRegulationNumber;
       try {
         this.dbReturn = this.getOleVessel();
-        const responseDeclarations: any = JSON.parse(await getDeclarations(this.activeVesselId) as string);
-        this.vmsDeclarations = [];
-        for (let row of responseDeclarations.rows) {
-          let declaration: any = {};
-          declaration.date = row[0];
-          declaration.code = row[1];
-          this.vmsDeclarations.push(declaration);
-
-        }
-        console.log(this.vmsDeclarations)
       } catch (err) {
         console.log('failed couch attempt');
       }

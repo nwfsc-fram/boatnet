@@ -327,7 +327,7 @@
         filled
         type="textarea"
         lazy-rules
-        :rules="[val => val.length >= 3 || 'Description required for Other Gear (or Activity) declaration']"
+        :rules="[val => val.length >= 3 || 'Description required for Other Gear declaration']"
       />
 
       <br />
@@ -547,6 +547,7 @@ export default class Dropdowns extends Vue {
     } else if (this.leafSet.has(model)) {
       this.decChoiceDisplay = dropdownTree['Leaf Nodes'][model];
     } else if (this.leafValues.has(model)) {
+      console.log('case 2 true');
       this.decChoiceDisplay = model;
     } else {
       this.databaseObject.showBoolArr[boolIndex] = true;
@@ -564,8 +565,8 @@ export default class Dropdowns extends Vue {
     this.handleObserverStatus();
     if (
       [
-        'Other Gear (or Activity) [69]',
-        '69 ‐ A gear (or activity) that is not listed above'
+        'Other Gear [69]',
+        '69 ‐ Other, a gear that is not listed above'
       ].includes(model)
     ) {
       this.databaseObject.showOtherGearTextBox = true;
@@ -687,6 +688,7 @@ export default class Dropdowns extends Vue {
 
   // Add declaration to cart in couch doc
   private async cartUpdate() {
+    console.log('executing cart update');
     const masterDB = couchService.masterDB;
 
     const out = await masterDB.post(this.oleVessel).then(

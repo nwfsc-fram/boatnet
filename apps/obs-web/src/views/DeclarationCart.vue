@@ -189,7 +189,7 @@ export default class DeclarationCart extends Vue {
   }
 
   private created() {
-    this.activeVesselId = this.vessel.activeVessel.coastGuardNumber;
+    this.activeVesselId = this.vessel.activeVessel.coastGuardNumber ? this.vessel.activeVessel.coastGuardNumber : this.vessel.activeVessel.stateRegulationNumber;
     if (authService.getCurrentUser()) {
       this.userRoles = JSON.parse(
         JSON.stringify(authService.getCurrentUser()!.roles)
