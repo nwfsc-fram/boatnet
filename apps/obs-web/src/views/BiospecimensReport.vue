@@ -76,9 +76,9 @@ import {
     slice,
 } from 'lodash';
 import QuasarTable from './QuasarTable.vue';
-import { getTripsByDates } from '../helpers/getFields';
 import { commonCols, reportCols } from '../helpers/biospecimensToolCols';
 import { createResult } from '../helpers/biospecimensReportCommons';
+import {wcgopTripImpll} from '@boatnet/bn-data-access';
 
 Vue.component('QuasarTable', QuasarTable);
 Vue.component('multiselect', Multiselect);
@@ -120,11 +120,7 @@ export default createComponent({
             ) {
                 loading.value = true;
                 const results: any[] = [];
-                const trips = await getTripsByDates(
-                    new Date(evalPeriod.startDate),
-                    new Date(evalPeriod.endDate),
-                    observer.value
-                );
+                const trips = await wcgopTripImpll.getTripsByEvaluationPeriod(evalPeriod);
                 for (const trip of trips) {
                     let operationIds = jp.query(trip, '$.operationIDs');
                     operationIds = flattenDeep(operationIds);

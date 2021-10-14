@@ -93,7 +93,7 @@ import { useAsync } from 'vue-async-function';
 import { couchService } from '@boatnet/bn-couch';
 import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
-import { getTripsByDates } from '../helpers/getFields';
+import { wcgopTripImpll } from '@boatnet/bn-data-access';
 
 export default createComponent({
   props: {
@@ -213,7 +213,12 @@ export default createComponent({
 
     async function getTripsByDate() {
       const observerId = state.debriefer.observer;
-      trips.value = await getTripsByDates(startDate.value, endDate.value, observerId);
+      const evaluationPeriod = {
+        startDate: startDate.value,
+        endDate: endDate.value,
+        observer: observerId
+      }
+      trips.value = await wcgopTripImpll.getTripsByEvaluationPeriod(evaluationPeriod);
     }
 
     async function getEvaluationPeriodLookups() {
