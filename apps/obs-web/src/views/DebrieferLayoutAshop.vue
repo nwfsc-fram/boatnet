@@ -63,7 +63,6 @@ import Column from 'primevue/column';
 import moment from 'moment';
 import { PersonAlias, AshopCruise } from '@boatnet/bn-models';
 import { findIndex } from 'lodash';
-import { getTripsByDates } from '../helpers/getFields';
 import DebrieferSelectComp from './DebrieferSelectComp.vue';
 
 export default createComponent({
