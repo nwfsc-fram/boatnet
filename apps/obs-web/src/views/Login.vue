@@ -120,6 +120,9 @@ export default class Login extends Vue {
   @Action('disconnect', { namespace: 'pouchState' })
   private disconnectPouch: any;
 
+  @Action('mongoConnect', { namespace: 'clientConnector'}) private connectMongo: any;
+  @Action('oracleConnect', { namespace: 'clientConnector'}) private connectOracle: any; 
+
   @Action('clear', { namespace: 'appState' }) private clearAppState: any;
 
   private username = '';
@@ -205,6 +208,16 @@ export default class Login extends Vue {
       switch (mutation.type) {
         case 'auth/loginSuccess':
           const creds = authService.getCouchDBCredentials();
+          
+          let token = authService.getCurrentUser()!.jwtToken;
+          token = token ? token : '';
+        
+          let tripsAPIUrl = authService.getTripsApiUrl();
+          tripsAPIUrl = tripsAPIUrl ? tripsAPIUrl + '/api/v1' : '';
+
+          this.connectMongo({url: tripsAPIUrl, token});
+          this.connectOracle({url: tripsAPIUrl, token});
+
           this.connectCouch(creds);
 
           this.connectPouch(creds, false);

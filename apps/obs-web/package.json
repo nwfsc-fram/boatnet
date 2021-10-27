@@ -12,9 +12,10 @@
   },
   "dependencies": {
     "@boatnet/bn-auth": "^0.1.19",
+    "@boatnet/bn-clients": "^1.0.8",
     "@boatnet/bn-common": "file:..\\..\\libs\\bn-common",
     "@boatnet/bn-couch": "^0.1.6",
-    "@boatnet/bn-data-access": "^1.0.6",
+    "@boatnet/bn-data-access": "^1.1.3",
     "@boatnet/bn-expansions": "^0.2.8",
     "@boatnet/bn-models": "^0.6.3",
     "@boatnet/bn-pouch": "^0.2.14",

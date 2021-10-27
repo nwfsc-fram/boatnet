@@ -21,6 +21,8 @@ import { RootState } from './types/types';
 import { auth } from '@boatnet/bn-auth';
 import { baseCouch } from '@boatnet/bn-couch';
 
+import { clientConnector} from '@boatnet/bn-clients';
+
 // Primary app store: following examples at:
 // https://codeburst.io/vuex-and-typescript-3427ba78cfa8
 // https://github.com/Armour/vue-typescript-admin-template
@@ -52,7 +54,8 @@ const store: StoreOptions<RootState> = {
     obact,
     pouchState,
     appState,
-    debriefer
+    debriefer,
+    clientConnector
   },
   plugins: [vuexLocalStorage.plugin]
 };
