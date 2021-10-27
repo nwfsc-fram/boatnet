@@ -588,6 +588,9 @@ import { Client, CouchDoc, ListOptions } from 'davenport';
 import moment from 'moment';
 import { Notify } from 'quasar';
 
+import { mongoService } from '@boatnet/bn-clients';
+import { oracleClient } from '@boatnet/bn-clients';
+
 @Component
 export default class DefaultLayout extends Vue {
   @State('alert') private alert!: AlertState;
@@ -610,6 +613,9 @@ export default class DefaultLayout extends Vue {
 
   @Action('reconnect', { namespace: 'baseCouch' }) private reconnectCouch: any;
   @Action('setShowOpenEmTrips', {namespace: 'user'}) private setShowOpenEmTrips: any;
+
+  @Action('mongoReconnect', { namespace: 'clientConnector' }) private reconnectMongo: any;
+  @Action('oracleReconnect', { namespace: 'clientConnector' }) private reconnectOracle: any;
 
   @Getter('getOnlineStatus', { namespace: 'general' }) private onlineStatus: any;
   @Getter('autoHideMenu', {namespace: 'user'}) private autoHideMenu: any;
@@ -641,6 +647,17 @@ export default class DefaultLayout extends Vue {
     }
     if (!couchService.isConnected) {
       this.reconnectCouch().catch((err: any) => {
+        this.errorAlert(err);
+      });
+    }
+
+    if (!mongoService.isClientConnected()) {
+      this.reconnectMongo().catch((err: any) => {
+        this.errorAlert(err);
+      });
+    }
+    if (!oracleClient.isClientConnected()) {
+      this.reconnectOracle().catch((err: any) => {
         this.errorAlert(err);
       });
     }
