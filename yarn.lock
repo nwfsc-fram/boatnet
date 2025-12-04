@@ -694,6 +694,21 @@
     "@babel/helper-validator-identifier" "^7.14.5"
     to-fast-properties "^2.0.0"
 
+"@boatnet/bn-auth@0.1.25":
+  version "0.1.25"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-auth/-/bn-auth-0.1.25.tgz#890d7f4cf3c8ac030fbabfe5f8dcefebb4c4b9b6"
+  integrity sha512-bs4SpOPZGVe+o0bCwCyEzLPoKFrKDamZMV9xAr2UFQLgazVFE84mA1ia/Vw263hx74qEXaEG5c9Thd61mpgpmQ==
+  dependencies:
+    "@boatnet/bn-couch" "0.1.12"
+    axios "^0.18.1"
+    core-js "2"
+    crypto-js "^3.1.9-1"
+    jsonwebtoken "^8.5.1"
+    pem-jwk "^2.0.0"
+    regenerator-runtime "^0.13.9"
+    vue "2.6.6"
+    vuex "3.1.2"
+
 "@boatnet/bn-auth@^0.1.18", "@boatnet/bn-auth@^0.1.19":
   version "0.1.19"
   resolved "https://registry.yarnpkg.com/@boatnet/bn-auth/-/bn-auth-0.1.19.tgz#3b9350c6b87b1f1585ca371a34870ffc748d6684"
@@ -709,12 +724,23 @@
     vue "^2.6.6"
     vuex "^3.1.2"
 
-"@boatnet/bn-common@file:libs/bn-common":
+"@boatnet/bn-clients@1.1.11":
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-clients/-/bn-clients-1.1.11.tgz#853a1375ae66cb0ff9dd65c152e8a430d7338303"
+  integrity sha512-fE1q7XdQyF5HO/im0qcVdiL3Qeymrg2sdnO+JmUfh8r6P3wKC39zxAmjDVMC/yimA7TqdOPMsOog9r9/VqiEUw==
+  dependencies:
+    "@boatnet/bn-auth" "0.1.25"
+    core-js "2"
+    vue "2.6.6"
+    vuex "3.1.3"
+
+"@boatnet/bn-common@file:apps/ashop/../../libs/bn-common", "@boatnet/bn-common@file:apps/obs-wcgop-optecs/../../libs/bn-common", "@boatnet/bn-common@file:apps/obs-web/../../libs/bn-common":
   version "0.1.0"
   dependencies:
     "@boatnet/bn-auth" "^0.1.19"
     "@boatnet/bn-couch" "^0.1.6"
-    "@boatnet/bn-models" "^0.6.2"
+    "@boatnet/bn-data-access" "^1.0.6"
+    "@boatnet/bn-models" "^0.6.3"
     coordinate-parser "^1.0.7"
     davenport "^2.8.2"
     primeicons "^4.1.0"
@@ -723,6 +749,16 @@
     vue "^2.6.6"
     vue-class-component "^6.0.0"
     vue-property-decorator "^7.0.0"
+
+"@boatnet/bn-couch@0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-couch/-/bn-couch-0.1.12.tgz#1a7662ff823276ef2f79c5bdf8440a369e94b0fb"
+  integrity sha512-7yWh61YbP95F7ZKG5HBTjZ35Gw1XN06onzKBgtTJlOi/wa4OiQ7CjDGc20XohH67/NbhaPFtOknFpcjCWM0bUQ==
+  dependencies:
+    core-js "2"
+    davenport "^2.8.2"
+    vue "2.6.6"
+    vuex "3.1.2"
 
 "@boatnet/bn-couch@^0.1.3", "@boatnet/bn-couch@^0.1.6", "@boatnet/bn-couch@^0.1.7":
   version "0.1.8"
@@ -733,6 +769,18 @@
     davenport "^2.8.2"
     vue "^2.6.6"
     vuex "^3.1.2"
+
+"@boatnet/bn-data-access@^1.0.6":
+  version "1.7.6"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-data-access/-/bn-data-access-1.7.6.tgz#7c06ca3a21707643e258b97e30d4ff7d55449cf0"
+  integrity sha512-zMnIEXfmzXc6rVoW75Tm3EdolYd+vu0W4qAxSZA5tRMLQc55y2dtWG6oIGgY3DMx08kgTAjWNkDBS5XHAeXErg==
+  dependencies:
+    "@boatnet/bn-auth" "0.1.25"
+    "@boatnet/bn-clients" "1.1.11"
+    "@boatnet/bn-couch" "0.1.12"
+    "@boatnet/bn-models" "^0.7.0"
+    "@types/geojson" "^7946.0.10"
+    moment "^2.29.4"
 
 "@boatnet/bn-expansions@^0.2.8":
   version "0.2.9"
@@ -770,6 +818,14 @@
   resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.6.3.tgz#48b1c182cde4b67b486caa4923ab47ebb8c43108"
   integrity sha512-F0LIBKifuRSbrbulJqKAL/y3uYSsRNpJ8J9mVMRk662XjOANxmSqfYwB+qR/pmAwW4mJSCRKcQCfi8rpIFY/GQ==
   dependencies:
+    geojson "^0.5.0"
+
+"@boatnet/bn-models@^0.7.0":
+  version "0.7.17"
+  resolved "https://registry.yarnpkg.com/@boatnet/bn-models/-/bn-models-0.7.17.tgz#415d11c9c5b44242e02a21fa753fbbe5f50c80c0"
+  integrity sha512-18Eh8ID3KrWMVtzW0scDZfADTXJf11MpmGLB8CYjk7CLI9DPFtSfbewwtxwYMOsdmQdIPgQxDxZAKkzBL15opg==
+  dependencies:
+    dayjs "^1.11.10"
     geojson "^0.5.0"
 
 "@boatnet/bn-pouch@^0.2.12", "@boatnet/bn-pouch@^0.2.14", "@boatnet/bn-pouch@^0.2.6":
@@ -2065,6 +2121,11 @@
   version "7946.0.7"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
   integrity sha512-wE2v81i4C4Ol09RtsWFAqg3BUitWbHSpSlIo+bNdsCJijO9sjme+zm+73ZMCa/qMC8UEERxzGbvmr1cffo2SiQ==
+
+"@types/geojson@^7946.0.10":
+  version "7946.0.16"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.16.tgz#8ebe53d69efada7044454e3305c19017d97ced2a"
+  integrity sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==
 
 "@types/glob@^7.1.1":
   version "7.1.3"
@@ -3898,10 +3959,10 @@ buffer-crc32@~0.2.3:
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.13.tgz#0d333e3f00eac50aa1454abd30ef8c2a5d9a7242"
   integrity sha1-DTM+PwDqxQqhRUq9MO+MKl2ackI=
 
-buffer-equal-constant-time@1.0.1:
+buffer-equal-constant-time@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/buffer-equal-constant-time/-/buffer-equal-constant-time-1.0.1.tgz#f8e71132f7ffe6e01a5c9697a4c6f3e48d5cc819"
-  integrity sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=
+  integrity sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==
 
 buffer-equal@0.0.1:
   version "0.0.1"
@@ -5608,6 +5669,11 @@ davenport@^2.8.2:
   dependencies:
     axios "^0.15.3"
     logspect "1.3.1"
+
+dayjs@^1.11.10:
+  version "1.11.19"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.19.tgz#15dc98e854bb43917f12021806af897c58ae2938"
+  integrity sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==
 
 de-indent@^1.0.2:
   version "1.0.2"
@@ -9198,21 +9264,21 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
-jwa@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/jwa/-/jwa-1.4.1.tgz#743c32985cb9e98655530d53641b66c8645b039a"
-  integrity sha512-qiLX/xhEEFKUAJ6FiBMbes3w9ATzyk5W7Hvzpa/SLYdxNtng+gcurvrI7TbACjIXlsJyr05/S1oUhZrc63evQA==
+jwa@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/jwa/-/jwa-1.4.2.tgz#16011ac6db48de7b102777e57897901520eec7b9"
+  integrity sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==
   dependencies:
-    buffer-equal-constant-time "1.0.1"
+    buffer-equal-constant-time "^1.0.1"
     ecdsa-sig-formatter "1.0.11"
     safe-buffer "^5.0.1"
 
 jws@^3.2.2:
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.2.tgz#001099f3639468c9414000e99995fa52fb478304"
-  integrity sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/jws/-/jws-3.2.3.tgz#5ac0690b460900a27265de24520526853c0b8ca1"
+  integrity sha512-byiJ0FLRdLdSVSReO/U4E7RoEyOCKnEnEPMjq3HxWtvzLsV08/i5RQKsFVNkCldrCaPr2vDNAOMsfs8T/Hze7g==
   dependencies:
-    jwa "^1.4.1"
+    jwa "^1.4.2"
     safe-buffer "^5.0.1"
 
 killable@^1.0.1:
@@ -10242,6 +10308,11 @@ moment@2.24.0:
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
+moment@^2.29.4:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -12680,6 +12751,11 @@ regenerator-runtime@^0.13.3, regenerator-runtime@^0.13.4:
   version "0.13.7"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.7.tgz#cac2dacc8a1ea675feaabaeb8ae833898ae46f55"
   integrity sha512-a54FxoJDIr27pgf7IgeQGxmqUNYrcV338lf/6gH456HZ/PhX+5BcwHXG9ajESmwe6WRO0tAzRUrRmNONWgkrew==
+
+regenerator-runtime@^0.13.9:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regenerator-transform@^0.14.2:
   version "0.14.5"
@@ -15338,6 +15414,11 @@ vue2-timepicker@^1.1.2:
   resolved "https://registry.yarnpkg.com/vue2-timepicker/-/vue2-timepicker-1.1.6.tgz#d74df71e3992c7073aa503d3e71d729d114be3da"
   integrity sha512-DhO2UH4CTer/lMWxg+jqxn/+h6g2vZrsM6vCe9u7/Ie+Pej9yA+8mQA3C3VPApZ+LauKc43WxCspOXb6SGBOTw==
 
+vue@2.6.6:
+  version "2.6.6"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.6.tgz#dde41e483c11c46a7bf523909f4f2f816ab60d25"
+  integrity sha512-Y2DdOZD8sxApS+iUlwv1v8U1qN41kq6Kw45lM6nVZKhygeWA49q7VCCXkjXqeDBXgurrKWkYQ9cJeEJwAq0b9Q==
+
 vue@^2.6.10, vue@^2.6.12, vue@^2.6.6:
   version "2.6.14"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.14.tgz#e51aa5250250d569a3fbad3a8a5a687d6036e235"
@@ -15360,6 +15441,16 @@ vuex@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.0.tgz#634b81515cf0cfe976bd1ffe9601755e51f843b9"
   integrity sha512-mdHeHT/7u4BncpUZMlxNaIdcN/HIt1GsGG5LKByArvYG/v6DvHcOxvDCts+7SRdCoIRGllK8IMZvQtQXLppDYg==
+
+vuex@3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.2.tgz#a2863f4005aa73f2587e55c3fadf3f01f69c7d4d"
+  integrity sha512-ha3jNLJqNhhrAemDXcmMJMKf1Zu4sybMPr9KxJIuOpVcsDQlTBYLLladav2U+g1AvdYDG5Gs0xBTb0M5pXXYFQ==
+
+vuex@3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.3.tgz#f2ad73e3fb73691698b38c93f66e58e267947180"
+  integrity sha512-k8vZqNMSNMgKelVZAPYw5MNb2xWSmVgCKtYKAptvm9YtZiOXnRXFWu//Y9zQNORTrm3dNj1n/WaZZI26tIX6Mw==
 
 vuex@^3.1.2:
   version "3.6.2"
